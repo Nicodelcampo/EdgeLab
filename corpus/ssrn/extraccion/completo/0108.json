@@ -1,0 +1,125 @@
+{
+  "doc_id": 108,
+  "titulo": "Effects of Market Microstructure Changes on Market Liquidity: The Case of Malaysia",
+  "resumen_operativo": "El paper analiza el impacto de eventos estructurales (transparencia, reglas de tick, horarios) en la liquidez de mercado en Malasia. Para un trader, ilustra el uso de modelos ARMA con variables de intervención (dummies) para medir el efecto de cambios de régimen o política sobre una métrica multidimensional de liquidez.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "market liquidity",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Nivel al que se pueden negociar grandes volúmenes rápidamente con bajo costo e impacto en precio mínimo.",
+      "relaciones": [],
+      "cita_textual": "liquidity describes the level at which large quantities of security can be traded quickly at low cost with little price discount"
+    },
+    {
+      "nombre": "market microstructure",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Reglas de trading, transparencia y mecanismos del mercado que determinan la formación de precios y su eficiencia.",
+      "relaciones": [
+        {
+          "tipo": "CAUSA",
+          "objeto": "market liquidity"
+        }
+      ],
+      "cita_textual": "The rules of trading securities determine how prices are formed; therefore, market regulations can affect their liquidity."
+    },
+    {
+      "nombre": "turnover-adjusted number of zero daily trading volumes",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida desarrollada por Liu (2006) que captura velocidad, cantidad y costo estandarizando los días sin trading ajustados por rotación.",
+      "relaciones": [
+        {
+          "tipo": "MIDE",
+          "objeto": "market liquidity"
+        }
+      ],
+      "cita_textual": "the standardized turnover-adjusted number of zero daily trading volumes over the prior x months"
+    },
+    {
+      "nombre": "Granger causality",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Prueba estadística sobre si una serie de tiempo ayuda a predecir a otra, usada para validar exogeneidad.",
+      "relaciones": [],
+      "cita_textual": "The Granger causality test was conducted based on the VAR(3) model."
+    },
+    {
+      "nombre": "ARMA",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo autorregresivo de promedios móviles usado para ajustar el comportamiento base de las series temporales estacionarias antes de introducir shocks discretos.",
+      "relaciones": [],
+      "cita_textual": "The ARMA model is built based on the approach of Box and Jenkins (1976)."
+    },
+    {
+      "nombre": "intervention model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Extensión de un modelo de series temporales clásico que introduce variables dummy para medir el impacto de eventos puntuales.",
+      "relaciones": [
+        {
+          "tipo": "USA",
+          "objeto": "ARMA"
+        }
+      ],
+      "cita_textual": "the transfer function approach is extended by inserting dummy variables accounting for the effect of market microstructure changes"
+    },
+    {
+      "nombre": "tick size",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Tamaño mínimo de cotización de un activo, el cual influye en los costos implícitos del spread.",
+      "relaciones": [
+        {
+          "tipo": "SE_OPONE_A",
+          "objeto": "market liquidity"
+        }
+      ],
+      "cita_textual": "larger tick sizes for higher priced stocks are detrimental to market liquidity"
+    },
+    {
+      "nombre": "transaction costs",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Fricciones asociadas a la compra y venta de valores, capturadas típicamente por los spreads.",
+      "relaciones": [
+        {
+          "tipo": "SE_OPONE_A",
+          "objeto": "market liquidity"
+        }
+      ],
+      "cita_textual": "liquidity is often measured by a number of proxies of transactions costs, for example, effective spread"
+    },
+    {
+      "nombre": "bid-ask spread",
+      "tipo": "metrica",
+      "definicion_en_contexto": "La brecha entre compra y venta en el libro, usada universalmente para aproximar los costos de fricción y la liquidez.",
+      "relaciones": [
+        {
+          "tipo": "MIDE",
+          "objeto": "transaction costs"
+        }
+      ],
+      "cita_textual": "liquidity is often measured by a number of proxies of transactions costs, for example, effective spread (Roll, 1984) and the quoted bid-ask spread"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Los rendimientos del mercado anteceden causalmente a la liquidez, pero no existe efecto inverso.",
+      "mercado": "Bursa Malaysia",
+      "periodo": "1990-2009",
+      "magnitud": "Chi-sq = 32.76, p-value < 0.01",
+      "condiciones": "Analizado mediante un test de causalidad de Granger en un modelo VAR(3) con retornos mensuales.",
+      "robustez": "media",
+      "cita_textual": "the market return Granger causes the liquidity of securities, as the null hypothesis is rejected at 1%. Conversely, liquidity of securities does not Granger cause the market return"
+    },
+    {
+      "afirmacion": "Múltiples alteraciones a la microestructura (como cambios de tick size, reglas de lista y horarios) tienen un impacto medible en la liquidez.",
+      "mercado": "Bursa Malaysia",
+      "periodo": "1990-2009",
+      "magnitud": "18 de los 50 eventos estructurales resultaron estadísticamente significativos.",
+      "condiciones": "Uso de modelo ARMA(3,2) con variables de intervención (dummies) evaluadas individualmente.",
+      "robustez": "media",
+      "cita_textual": "the market microstructure changes that took place in t = 13, 35, 55, 115,118, 139, 143, 156, 159, 198, 207,228, 234, 235, 236, 238, and 239 (18 out of 50) are statistically significant."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "Se enfoca en datos de baja frecuencia (mensuales) para eventos discretos macroestructurales; el modelado no es directamente transponible al libro de órdenes HFT del ES."
+  }
+}

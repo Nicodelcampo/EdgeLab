@@ -1,0 +1,131 @@
+{
+  "doc_id": 70,
+  "titulo": "Balancing Profit and Risk: Hybrid Reinforcement Learning for Algorithmic Trading",
+  "resumen_operativo": "El estudio demuestra que las estrategias de trading basadas en Reinforcement Learning (como DQN) mejoran significativamente su estabilidad y ratio de Sharpe al sustituir la recompensa tradicional de solo-beneficio por objetivos ajustados por riesgo. Proporciona evidencia empírica útil para diseñar funciones de recompensa más seguras en bots que operen en entornos de volatilidad.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "reinforcement learning",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Enfoque donde un agente descubre políticas de trading interaccionando con el mercado y maximizando una señal de recompensa, como el retorno o métricas ajustadas por riesgo.",
+      "relaciones": [
+        {
+          "tipo": "USA",
+          "objeto": "Q-learning"
+        }
+      ],
+      "cita_textual": "Reinforcement learning (RL) can discover trading policies directly from market data"
+    },
+    {
+      "nombre": "Q-learning",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Método tabular de reinforcement learning usado para encontrar valores estado-acción. En mercados financieros es limitado porque requiere discretización de variables y es menos estable.",
+      "relaciones": [
+        {
+          "tipo": "PARTE_DE",
+          "objeto": "reinforcement learning"
+        }
+      ],
+      "cita_textual": "A tabular method that updates a state-action value table using the Bellman equation."
+    },
+    {
+      "nombre": "deep Q-network",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Extensión del Q-learning que usa redes neuronales para aproximar la función Q, permitiendo manejar espacios de estado continuos y de alta dimensión en trading.",
+      "relaciones": [
+        {
+          "tipo": "MEJORA_A",
+          "objeto": "Q-learning"
+        },
+        {
+          "tipo": "PARTE_DE",
+          "objeto": "reinforcement learning"
+        }
+      ],
+      "cita_textual": "An extension of Q-learning that uses a neural network to approximate the Q-value function. It enables learning in continuous and high-dimensional state spaces."
+    },
+    {
+      "nombre": "Sharpe ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Métrica que divide el retorno medio por la desviación estándar. En el paper se integra dentro de una función de recompensa híbrida para el agente de RL.",
+      "relaciones": [
+        {
+          "tipo": "MIDE",
+          "objeto": "risk-adjusted return"
+        }
+      ],
+      "cita_textual": "Mean return divided by the standard deviation of returns, annualized"
+    },
+    {
+      "nombre": "maximum drawdown",
+      "tipo": "metrica",
+      "definicion_en_contexto": "La mayor caída porcentual desde un pico histórico en el valor del portafolio. Se usa como un término de penalización en el diseño de la recompensa.",
+      "relaciones": [],
+      "cita_textual": "The largest percentage drop from peak to trough in the portfolio value"
+    },
+    {
+      "nombre": "transaction costs",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Costo fijo por unidad de rotación que se resta a la función de retorno paso a paso del agente para evitar el exceso de trading.",
+      "relaciones": [],
+      "cita_textual": "transaction-cost penalty per unit turnover"
+    },
+    {
+      "nombre": "realized volatility",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Desviación estándar móvil de los retornos recientes usada como característica del estado y como término de penalización en la recompensa del agente de RL.",
+      "relaciones": [],
+      "cita_textual": "Computed as the standard deviation of log returns over a 14-day window. This provides a local estimate of risk"
+    },
+    {
+      "nombre": "backtest overfitting",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Riesgo de que las ganancias altas en la muestra no se repliquen fuera de ella debido a un uso inapropiado del conjunto de prueba para calibrar hiperparámetros.",
+      "relaciones": [],
+      "cita_textual": "when hyperparameter tuning used the full out-of-sample period improperly, overfitting signatures (large in-sample gains but poor out-of-sample performance) emerged"
+    },
+    {
+      "nombre": "walk-forward validation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Método de evaluación sugerido para mitigar el riesgo de sobreajuste y probar estrategias a medida que se mueven por diferentes regímenes del mercado.",
+      "relaciones": [
+        {
+          "tipo": "MITIGA",
+          "objeto": "backtest overfitting"
+        }
+      ],
+      "cita_textual": "walk-forward evaluation and strict data partitioning mitigated this risk."
+    },
+    {
+      "nombre": "slippage",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Costo implícito de ejecución asociado a la falta de liquidez o latencia, mencionado como un factor que reduce el borde de las estrategias reactivas de corto plazo en RL.",
+      "relaciones": [],
+      "cita_textual": "transaction cost and slippage: modest increases in transaction cost materially reduced short-term reactive strategies’ edge"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Integrar el ratio de Sharpe en la función de recompensa híbrida de un agente DQN genera estrategias de trading con un Sharpe superior y menor drawdown máximo en períodos de alta volatilidad frente a recompensas de solo-beneficio.",
+      "mercado": "US equities and ETFs",
+      "periodo": "2020-2021",
+      "magnitud": "Mean Sharpe ~1.93, mean max drawdown ~15%",
+      "condiciones": "Datos diarios, costos de transacción fijos, sin modelar dinámica de libro de órdenes",
+      "robustez": "media",
+      "cita_textual": "In 2020–2021, DQN with a Sharpe-hybrid reward attains a mean Sharpe of ∼1.93 and mean maximum drawdown near 15% across assets"
+    },
+    {
+      "afirmacion": "Deep Q-Networks supera consistentemente al Q-learning tabular en retornos acumulados en entornos de trading, debido a su capacidad para manejar espacios continuos de estado sin discretización.",
+      "mercado": "US equities and ETFs",
+      "periodo": "2020-2024",
+      "magnitud": "DQN Sharpe-hybrid ≈0.67 vs Q-Learning ≈0.30 median cumulative return in 2020-2021",
+      "condiciones": "Características de estado continuas (EMAs, RSI, volatilidad)",
+      "robustez": "media",
+      "cita_textual": "For both test periods, DQN agents achieved substantially higher median cumulative returns than Q-Learning agents (e.g., Sharpehybrid: DQN ≈0.67 vs Q-Learning ≈0.30 in 2020–2021)."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "El modelo fue entrenado con barras diarias usando indicadores lentos (EMA50), pero la arquitectura de reward shaping (penalizar volatilidad/drawdown en RL) es aplicable teóricamente a entornos de microestructura."
+  }
+}

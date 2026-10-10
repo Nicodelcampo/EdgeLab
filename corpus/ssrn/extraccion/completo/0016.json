@@ -1,0 +1,138 @@
+{
+  "doc_id": 16,
+  "titulo": "A note on model uncertainty for statistical arbitrage",
+  "resumen_operativo": "El paper deriva, para un spread modelado como proceso Ornstein-Uhlenbeck, la forma explícita de la frontera óptima de salida (optimal stopping boundary) de una estrategia de pairs trading/statistical arbitrage, incorporando incertidumbre de modelo (model uncertainty) vía divergencia de Kullback-Leibler. El resultado es una regla de entrada/salida más conservadora (frontera más cercana al punto de reversión a la media) cuanto mayor es la aversión a la ambigüedad del agente, lo que puede usarse como filtro de robustez frente a mala especificación de parámetros del OU (velocidad de reversión, volatilidad, media). Es un aporte puramente teórico/matemático: no hay backtest con datos de mercado ni costos de transacción, algo que el propio autor reconoce como trabajo futuro.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "statistical arbitrage",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Familia de estrategias que persigue ganancias estables tomando posiciones cuando el valor de un portafolio (spread) es estacionario, evitando pérdidas en un horizonte suficientemente largo.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "pairs trading"},
+        {"tipo": "REQUIERE", "objeto": "Ornstein-Uhlenbeck process"},
+        {"tipo": "USA", "objeto": "optimal stopping"}
+      ],
+      "cita_textual": "there is an opportunity for statistical arbitrage in the market if a profit can be gained without facing a loss for a sufficiently long, possibly infinite, time horizon"
+    },
+    {
+      "nombre": "pairs trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Forma más simple de arbitraje estadístico: tomar posiciones largas y cortas en acciones con movimientos similares, de modo que la apreciación de una compense la depreciación de la otra.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "statistical arbitrage"}
+      ],
+      "cita_textual": "pairs trading, the simplest form of statical arbitrage, is executed by taking long and short positions of stocks with similar movements"
+    },
+    {
+      "nombre": "model uncertainty",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Incertidumbre sobre los supuestos del modelo, como la forma de la distribución de probabilidad asumida y los parámetros embebidos en ella, que puede llevar a una estimación incorrecta y a una regla de trading mal calibrada.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "Kullback-Leibler divergence"},
+        {"tipo": "CAUSA", "objeto": "backtest overfitting"}
+      ],
+      "cita_textual": "Model uncertainty is the uncertainty affecting model assumptions, e.g., the assumed form of the probability distribution and the parameters embedded in the probability distribution"
+    },
+    {
+      "nombre": "Kullback-Leibler divergence",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Medida de disimilitud entre medidas de probabilidad (relative entropy), siempre positiva y cero solo si las medidas coinciden; se usa para penalizar la elección de un escenario Q distinto del estimado P, regulando cuánto se aparta la regla de trading del modelo calibrado según la confianza del agente.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "model uncertainty"},
+        {"tipo": "USA", "objeto": "optimal stopping"}
+      ],
+      "cita_textual": "EQ[log(dQ/dP)|Ft] is called Kullback–Leibler divergence or relative entropy"
+    },
+    {
+      "nombre": "optimal stopping",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Problema matemático de encontrar el tiempo de parada óptimo que maximiza el valor esperado de un proceso; en este paper se resuelve incorporando incertidumbre de modelo para identificar el punto más divergente del valor medio de reversión (frontera de salida) de un spread.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Ornstein-Uhlenbeck process"},
+        {"tipo": "APLICA_A", "objeto": "statistical arbitrage"}
+      ],
+      "cita_textual": "we consider the following optimal stopping problem"
+    },
+    {
+      "nombre": "Ornstein-Uhlenbeck process",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Proceso estocástico de reversión a la media usado para modelar el valor del portafolio/spread; sus parámetros (velocidad de reversión α, media µ, volatilidad σ) determinan el punto de reversión y la frontera óptima de salida.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "statistical arbitrage"},
+        {"tipo": "USA", "objeto": "mean reversion"}
+      ],
+      "cita_textual": "dXt = α(µ −Xt)dt + σdBt"
+    },
+    {
+      "nombre": "mean reversion",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Tendencia del valor del spread/portafolio a converger hacia un punto medio estable; el paper construye la estrategia especificando el punto de reversión y el punto más divergente respecto de él.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "momentum"}
+      ],
+      "cita_textual": "we can construct a strategy to pursue statistical arbitrage by specifying the meanreversion point and the most divergent point from the mean-reversion point"
+    },
+    {
+      "nombre": "optimal stopping boundary",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Frontera explícita bx(t) que identifica el punto más divergente del proceso respecto de la media de reversión y que sirve como disparador (trigger) para tomar posición; se deriva resolviendo el problema de parada óptima con incertidumbre de modelo.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "optimal stopping boundary without model uncertainty"},
+        {"tipo": "USA", "objeto": "optimal stopping"}
+      ],
+      "cita_textual": "The boundary bx(t) given in (4) identifies the maximum value since Vλ(t, bx(t)) = bx(t). Thus, bx(t) characterizes the most divergent point."
+    },
+    {
+      "nombre": "ambiguity aversion",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Grado de confianza del agente en su estimación del modelo, representado por la constante λ>0; a mayor λ, menor confianza y mayor exigencia de robustez frente a la especificación errónea de parámetros.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "optimal stopping boundary"}
+      ],
+      "cita_textual": "The constant λ > 0 represents the degree of agents' confidence in their estimation"
+    },
+    {
+      "nombre": "certainty equivalent",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Concepto de teoría de utilidad esperada que aquí se muestra estructuralmente análogo a la función de valor del problema de parada óptima con incertidumbre de modelo, dando lugar a una 'prima de ambigüedad' análoga a la prima de riesgo.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "value function for optimal stopping under model uncertainty"}
+      ],
+      "cita_textual": "Vλ(t, x) may be called the certainty equivalent for ambiguity"
+    },
+    {
+      "nombre": "parameter misspecification",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Error en la estimación de los parámetros del proceso OU (velocidad de reversión α, volatilidad σ, media µ) que puede llevar a una regla de trading incorrecta si no se corrige con un margen de robustez.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "model uncertainty"},
+        {"tipo": "MITIGA", "objeto": "ambiguity aversion"}
+      ],
+      "cita_textual": "the odds of the coin flip coming up heads or tails is incorrectly recognized, then this recognition could lead to a result opposite of that expected"
+    },
+    {
+      "nombre": "transaction costs",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Costos de transacción que el paper reconoce no haber incorporado en el análisis; señala que tienden a aumentar con la escala del arbitraje estadístico y pueden cancelar sus ganancias.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "statistical arbitrage"}
+      ],
+      "cita_textual": "we have yet to show the actual performance of the trading code presented in this study... We also need to account for transaction costs in the empirical study"
+    },
+    {
+      "nombre": "finite time horizon",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Restricción temporal finita (T) bajo la cual se resuelve el problema de parada óptima, a diferencia de trabajos previos que lo formulan en horizonte infinito; es central porque en la práctica el spread no puede sostenerse indefinidamente.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "optimal stopping"}
+      ],
+      "cita_textual": "we must construct this trading code so that it works well in a finite time horizon"
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "Es un desarrollo teórico puro sobre pairs trading/spreads OU sin backtest, costos ni datos de mercado; podría inspirar un filtro de robustez para frontera de entrada/salida en estrategias mean-reversion sobre ES, pero requeriría implementación y validación empírica propias antes de ser testeable."
+  }
+}

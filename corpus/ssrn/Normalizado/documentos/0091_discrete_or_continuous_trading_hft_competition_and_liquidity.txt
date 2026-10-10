@@ -1,0 +1,1077 @@
+Speed and Learning in High-Frequency Auctions
+Marlene Haas, Mariana Khapko, and Marius Zoican∗
+April 21, 2020
+Abstract
+Faster trading improves liquidity in periodic call auction markets, in contrast to continuous-time
+markets. We build a model where high-frequency traders (HFTs) engage in duels to trade on
+stale quotes. More frequent periodic auctions increase the likelihood that a single HFT arrives in
+any given auction and subsequently acts as a monopolist on information. Higher trading speed
+increases the expected number of arbitrageurs participating in auctions, promoting competition
+between snipers and improving liquidity. We ﬁnd that faster trading and longer auction intervals
+are substitute instruments to reduce bid-ask spreads. Relative to continuous-time trading,
+periodic batch auctions reduce HFT informational rents.
+∗Marlene Haas is aﬃliated with Cornerstone Research, 2001 K Street NW, North Tower, Suite 800, Washington,
+DC 20006, United States. Mariana Khapko is aﬃliated with University of Toronto Scarborough and the Rotman
+School of Management. Marius Zoican is aﬃliated with University of Toronto Mississauga and the Rotman School
+of Management. Marlene Haas can be contacted at mhaas@cornerstone.com. Mariana Khapko can be contacted at
+mariana.khapko@rotman.utoronto.ca. Marius Zoican can be contacted at marius.zoican@rotman.utoronto.ca. The
+views expressed in this paper are solely the responsibility of the authors and should not be interpreted as reﬂecting
+the views of Cornerstone Research. The paper received the 2016 Josseph de la Vega Prize from the Federation of
+European Securities Exchanges under the title “Discrete or continuous trading? HFT competition and liquidity on
+batch auction markets.” We have greatly beneﬁted from discussion on this research with Matthieu Bouvard, Eric
+Budish, J´erˆome Dugast, Carole Gresse, Bj¨orn Hagstr¨omer, Mario Milone, Sophie Moinas, Klaus Ritzberger, and Bart
+Yueshen Zhou. We are grateful to two anonymous referees, seminar participants at the Universit´e Paris-Dauphine and
+Bank of England for insightful comments, as well as conference participants at the 2016 New York Stern Microstructure
+meeting, the 2016 IFABS meeting, the 2016 Northern Finance Association conference, and the EUROFIDAI Paris
+December 2016 Finance Meeting. Mariana Khapko and Marius Zoican gratefully acknowledge Social Sciences and
+Humanities Research Council for an Insight Development Grant (430-2018-00125). Marius Zoican acknowledges
+ﬁnancial support from Quantitative Management Research Initiative (QMI) under the aegis of the Fondation du
+Risque, a joint initiative by Universit´e Paris-Dauphine, l’´Ecole Nationale de la Statistique et de l’Administration
+ParisTech, Addstones Groupe Fran¸cais d’Informatique et La Fran¸caise Investment Solutions.
+
+Speed and Learning in High-Frequency Auctions
+Abstract
+Faster trading improves liquidity in periodic call auction markets, in contrast to continuous-time
+markets. We build a model where high-frequency traders (HFTs) engage in duels to trade on
+stale quotes. More frequent periodic auctions increase the likelihood that a single HFT arrives in
+any given auction and subsequently acts as a monopolist on information. Higher trading speed
+increases the expected number of arbitrageurs participating in auctions, promoting competition
+between snipers and improving liquidity. We ﬁnd that faster trading and longer auction intervals
+are substitute instruments to reduce bid-ask spreads. Relative to continuous-time trading,
+periodic batch auctions reduce HFT informational rents.
+Keywords: High-frequency trading, batch auction markets, liquidity, adverse selection
+JEL Codes: D43, D47, G10, G14
+
+1
+Introduction
+Is continuous-time trading inherently ﬂawed? Modern exchanges are largely organized as continuoustime limit order books: One can buy and sell assets at any given time. Traders who react ﬁrst
+to proﬁtable opportunities have a comparative advantage. Consequently, continuous-time trading
+generates incentives for each trader to become marginally faster than her competitors. As a result,
+an “arms’ race” emerged between high-frequency traders: The round-trip trading times between
+New York and Chicago dropped from 16 milliseconds in 2010 to 8.02 milliseconds in July 2015. A
+London-based trader can buy stocks in Frankfurt within just 2.21 milliseconds. As a benchmark,
+light needs 2.12 milliseconds to travel the same distance.1
+Such arms’ race is not necessarily benign: Ever higher trading speeds come at a non-trivial
+social cost. In 2010, Spread Networks spent USD 300 million building a straight-line ﬁber optic
+cable between New York and Chicago for a 3 millisecond latency gain. Moreover, faster trading
+does not necessarily improve market quality (see, for example, Ye, Yao, and Gai, 2013; Shkilko and
+Sokolov, Forthcoming).
+Budish, Cramton, and Shim (2015) argue that the “arms’ race” for speed is a by-product of
+continuous-time trading, which is the prevailing market design for securities trading around the
+world. Their proposed alternative is a periodic batch auction market, i.e., a series of call auctions
+throughout the day. While traders can submit orders at any time, the batch auction market clears
+at discrete intervals, for example every second, through a uniform auction. Therefore, a batch
+auction market eliminates the “inherent ﬂaw” of the continuous-time limit order book: the discrete
+advantage from being marginally (e.g., one nanosecond) faster than competitors. Consequently, the
+scope for an HFT “arms’ race” is limited.
+Our paper “zooms in” on high-frequency batch auction markets, where the market clearing
+frequency is of the same order of magnitude as traders’ speed to respond to arbitrage opportunities.2
+We complement Budish, Cramton, and Shim (2015) and consider the role of learning frictions in
+1Sources for this paragraph: McKay Brothers Microwave Latencies Table and Bloomberg: “Wall Street Grabs
+NATO Towers in Traders Speed-of-Light Quest.”
+2To understand the order of magnitude, we note that in 2011 the median arbitrage opportunity in U.S. index
+futures had a duration of 7 milliseconds (Budish, Cramton, and Shim, 2015).
+1
+
+batch auctions. Whereas in Budish, Cramton, and Shim (2015) all high-frequency traders become
+informed simultaneously, we allow for HFTs to learn the news at heterogeneous times. For very short
+auctions, there is a positive probability that only one HFT becomes informed, who can subsequently
+extract monopoly rents. We ﬁnd that faster trading can be useful in high-frequency batch auction
+markets, as it reduces the probability that a single informed HFT participates in any given auction.
+Consequently, trading speed can improve liquidity as it stimulates competition between arbitrageurs.
+The economics of trading speed therefore crucially depends on the market design: In continuous-time
+markets, Menkveld and Zoican (2017) show that trading speed can actually harm liquidity as it
+triggers more zero-sum trading “duels” between high-frequency market-makers and arbitrageurs.
+Our model builds on the general structure in Menkveld and Zoican (2017), where we allow
+for the market to clear at discrete time-intervals. We model the discrete-time market to be fully
+transparent before market clearing. This means that traders are able to observe orders submissions
+and cancellations at all times. In addition, traders can submit and cancel orders at any time, but
+the market clears at equally-spaced discrete time intervals. Unlike in continuous-time markets,
+where a marketable order submission corresponds to the end of the trading round, the timing of
+market clearing is exogenous in periodic call auction markets, and thus unaﬀected by order arrival.
+High-frequency traders compete to provide liquidity at the beginning of the trading game. One
+of the HFTs, at random, is the ﬁrst to post orders in the book and becomes a high-frequency
+market-maker (HFM). The other HFTs assume the role of high-frequency speculators, or snipers
+(HFS), who try to proﬁt from short-term stale quotes. Following an innovation in the asset value,
+all HFTs rush to the market: the HFM to cancel or update the now stale quotes, the HFS to proﬁt
+from a temporary arbitrage opportunity.
+The main economic friction in the model is imperfect learning, which generates short-term
+asymmetric information. High-frequency traders still require time, albeit a short one, to process
+and react to trading signals (Brolley and Cimon, Forthcoming). If the inter-auction interval is very
+short, on par with high-frequency traders’ speed, the number of HFTs in each auction becomes
+random.3 This leads to three economically relevant auction types: (i) maker-auctions, in which the
+3In this sense, an “auction” stands for the time interval between two successive market clearings.
+2
+
+market-maker removes stale quotes before any sniper can trade on them, (ii) sniper-auctions, where
+a single sniper can take advantage of the HFM’s stale quotes, and (iii) competitive auctions, where
+multiple snipers compete in the same auction until information rents are eliminated. We refer to
+these auction types as “economically relevant” because they are the only three types for which our
+model results in updates to the auction order book. We ﬁnd that both a longer auction interval
+or a higher trading speed reduce the probability of sniper-auctions, adverse selection costs, and
+consequently improve liquidity.
+In our model, continuous-time markets emerge naturally as a limiting case of periodic batch
+auction markets, as the duration of the auction interval becomes arbitrarily small. In the setup of
+Budish, Cramton, and Shim (2015), HFT snipers engage in Bertrand competition in every auction,
+regardless of its duration. The outcome of this assumption is that zero-duration auction markets have
+better liquidity than continuous-time markets, although the market designs are otherwise equivalent.
+Introducing HFT speed as a parameter in the model allows us to eliminate the discontinuity: as the
+auction length decreases, the probability of two or more HFT arrivals in the same auction is lower.
+In the limit, at most one HFT can arrive in each auction and time-priority is de facto restored as in
+continuous-time markets.
+A periodic batch auction market always improves liquidity and reduces high-frequency trader
+proﬁts relative to the continuous-time limit order markets. We model HFT speed as an exogenous
+policy variable, rather than an endogenous investment in technology. In this sense, we interpret
+speed as being driven by common latency components, such as exchange architecture choices or
+co-location rules implemented by trading venues.4
+There is an active ongoing debate about the relative merits of continuous- and discrete-time
+trading mechanisms. The Securities and Exchanges Commission (SEC) chair indicated in June
+2014 her interest in batch auction markets as a “more ﬂexible, competitive” exchange design. In
+October 2015, Chicago Stock Exchange received approval from the SEC to launch a batch-auction
+platform, CHX SNAP. In March 2016, London Stock Exchange launched a midday auction for the
+4An alternative interpretation, where HFT speed refers to information processing latency would yield identical
+results, as long as speed is common to all high-frequency traders, rather than an individual investment choice.
+3
+
+most liquid securities.5 This paper oﬀers an important policy-relevant insight: the HFT “arms’ race”
+in a batch auction market intensiﬁes competition between arbitrageurs and decreases the spread.
+Stimulating HFT speed competition is eﬀective in scenarios where longer auction intervals conﬂict
+with short-term trading needs. Discrete-time trading can thus align private and social incentives,
+since the arms’ race is arguably privately optimal for HFTs.
+Our paper contributes to a growing literature on HFT and market design. A closely related
+paper is Budish, Cramton, and Shim (2015), who study a model of batch auction markets. The
+authors assume HFTs to react to new information without a delay. As a consequence, arbitrageurs
+always compete `a la Bertrand. We introduce a learning friction which generates adverse selection
+risk: In particular, we allow for auctions where a single HFT sniper participates, who consequently
+acts as a monopolist on information. The richer model we propose features a positive bid-ask spread
+and unveils new economic channels, in particular the role of speed in discrete-time markets. Our
+model nests the Budish, Cramton, and Shim (2015) setup for relatively infrequent auctions, as well
+as the continuous market outcome if the inter-auction delay is short enough.
+In a policy paper, Farmer and Skouras (2012) estimate the worldwide beneﬁts of the transition
+from limit order to periodic auction markets to be around USD 500 billion per year. Their paper is
+similar to ours as it models the batch auction time as a Poisson process. However, the authors do not
+consider the eﬀects of batch auctions on arbitrageur competition, nor the endogenous order choice
+for HFTs. Wah and Wellman (2013) and Wah, Hurd, and Wellman (2015) develop agent-based
+models to showcase the beneﬁts of batch auction markets. Batch auctions improve welfare as they
+better aggregate supply and demand. If traders can choose between a limit order and a batch
+auction market, HFTs will always follow the choice of slow traders to increase arbitrage proﬁts.
+Fricke and Gerig (2015) calibrate a batch auction trading model with risk-averse traders to U.S.
+data and ﬁnd the optimal batch length to be between 0.2 and 0.9 seconds. However, the authors
+focus on liquidity risk rather than on an adverse selection channel. Aldrich and L´opez Vargas (2019)
+build an experimental laboratory market to compare continuous- to discrete-time markets and ﬁnd
+that the latter are less conducive to predatory trading, while having better liquidity and lower price
+5Sources for this paragraph: SEC Chair Speech on June 5, 2014; the CHX SNAP Auction Market webpage; and
+the London Stock Exchange webpage.
+4
+
+volatility.
+Madhavan (1992) and Economides and Schwartz (1995) argue that batch auction markets
+improve price eﬃciency as they aggregate disparate information from traders for a longer interval
+of time. In a model of double-auction markets where “fast” traders act as intermediaries rather
+than arbitrageurs, Du and Zhu (2017) ﬁnd that, if news are not scheduled, the socially optimal
+trading frequency exceeds information arrival frequency. However, trading speed does not oﬀer an
+informational advantage. In our model, stochastic learning leads to a novel channel: infrequent
+trading improves the public-to-private news ratio, enhances learning, and reduces the adverse
+selection cost.
+Other solutions to the HFT arms’ race externality include exogenous order delays, or speed
+bumps (Baldauf and Mollner, Forthcoming; Aoyagi, 2019; Brolley and Cimon, Forthcoming). Kyle
+and Lee (2017) propose, at the opposite end of the spectrum, a fully-continuous exchange where
+traders submit buy or sell trade rates over time, rather than quantities. Brolley and Zoican (2019)
+argue for a FinTech-oriented solution where decentralized exchanges would incentivize HFTs to
+purchase low-latency infrastructure on an as-needed basis, reducing the overall cost of the arms’
+race.
+This paper is also related to the literature on auctions in ﬁnancial markets.
+Janssen and
+Rasmusen (2002) and Jovanovic and Menkveld (2017) study auction mechanisms where the number
+of competing bids (in our case, the number of informed HFTs) is not common knowledge. The
+bidding equilibrium is always symmetric and in mixed strategies. Our paper proposes asymmetric
+information as a rationale for the uncertain number of auction participants. Kremer and Nyborg
+(2004) study various allocation rules in uniform price auctions and ﬁnd that a discrete tick size or
+uniform rationing at infra-marginal prices eliminates arbitrarily large underpricing. Kandel, Rindi,
+and Bosetti (2012), Pagano and Schwartz (2003), and Pagano, Peng, and Schwartz (2013) document
+that the introduction of opening and closing call auctions on Paris Bourse in 1996 and Nasdaq in
+2004, respectively, reduced spreads and volatility and improved price discovery.
+Finally, this paper relates to a growing literature on high-frequency trading.
+Asymmetric
+information or asymmetric speed across traders may lead to “stale” quotes and adverse selection
+5
+
+costs for market-makers (as ﬁrst modeled in Copeland and Galai, 1983; Glosten and Milgrom, 1985).
+As in Foucault, Roell, and Sandas (2003) and Foucault, Kadan, and Kandel (2013), traders in our
+model engage in a speed race to react ﬁrst to new arbitrage opportunities. Several theoretical papers
+argue that the beneﬁts from the speed “arms’ race” between HFTs are limited. High-frequency
+market markers have an option to cancel their quotes before being “sniped” by arbitrageurs, a
+mechanism explored in Baruch and Glosten (2013).
+Biais, Foucault, and Moinas (2015) ﬁnd
+socially excessive investment in fast trading technology. According to Kumar and Seppi (1994) and
+Menkveld (2014), the HFT “arms’ race” can hurt market liquidity. In the same spirit, Menkveld and
+Zoican (2017) argue that ever faster exchanges promote a higher frequency of inter-HFT trades,
+increasing the adverse selection cost and consequently the spread. Empirical evidence suggests
+high-frequency traders use strategies to snipe stale quotes. Hendershott and Moulton (2011) and
+Brogaard, Hendershott, and Riordan (2014) ﬁnd HFT market orders to have a larger price impact.
+For more complete and in-depth analysis of the literature that studies the eﬀects of high-frequency
+trading on market liquidity, we refer the interested reader to Menkveld (2016).
+2
+Model
+Trading environment.
+One risky asset is traded in a call auction market as in Budish, Cramton,
+and Shim (2015). Traders can submit and cancel orders at any time, but the market clears at
+equally-spaced discrete time intervals of length τ, that is at t ∈{τ, 2τ, . . . , kτ . . . }. There is full
+pre-auction transparency, that is, traders observe new orders and cancellations at all times. Further,
+there is no time priority within the auction interval: all buy and sell orders entered in the kth
+auction between t ∈[(k −1) τ, kτ) are processed together and, if matched, executed at a unique
+clearing price. Traders can submit both limit orders and market orders. Limit orders are instructions
+to buy or sell a certain quantity of the asset at a given price or better. In contrast, market orders do
+not specify a limit price: Rather, they are instructions to execute at the best price that allows the
+order to be ﬁlled in full. Orders can be posted and cancelled at no cost before each market clearing.
+Orders left outstanding after the market clears at the end of the kth auction are carried over
+to the k + 1th auction, and have time-priority over new orders at the same price. In each auction,
+6
+
+if demand and supply intersect horizontally such that the price is uniquely determined and the
+quantity is not, then orders are executed with a non-unit probability such that the market clears.
+Conversely, if demand and supply intersect vertically, quantity is uniquely determined: all trades
+execute in full.6 However, the market clears at a range of prices, e.g., between [pL, pH]. We follow
+Budish, Cramton, and Shim (2015) and assume the market clearing price in this case is pL + pH
+2
+.
+Asset.
+The common value of the risky asset at the start of the trading game is v. Innovations
+about the value of the asset (news) arrive as a Poisson process with intensity η (as in Baruch and
+Glosten, 2013). The absolute size of value innovations is σ > 0: Conditional on news, the asset
+value either jumps to v + σ for “good” news or v −σ for “bad” news. The common value of the asset
+is a martingale; hence, good and bad news are equally likely.
+Agents.
+The risky asset is traded by two types of agents: a single liquidity trader and N > 2
+HFTs. There is no time discounting and all agents are risk neutral. The liquidity trader receives
+private value shocks according to a Poisson process with intensity µ. Conditional on the shock, they
+are equally likely to buy or sell exactly one unit of the asset.
+High-frequency traders, by contrast to the LT, possess a monitoring technology that allows them
+to process changes to the security’s fundamental value. Learning, however, takes time. The HFT
+market arrival times follow a Poisson process with rate ψ > 0, where ψ stands in for the traders’
+reaction speed. We interpret ψ as a technology-driven parameter: for example, the speed of incoming
+data feeds from trading platforms, the round-trip order latency between exchanges where the asset
+is cross-listed, or the performance of algorithms parsing news and social media feeds. Note that the
+traders’ reaction speed ψ governs both the expected time from news to order execution (equal to
+ψ−1), as well as the per-auction probability of HFT arrival. In continuous-time markets, only the
+former interpretation is relevant. In call auction markets, the latter interpretation becomes the most
+salient. Let tHFT denote the time at which an HFT observes the value innovation. The probability
+6In our model, trades always occur between limit orders on one side and market orders on the other side. In this
+case, the supply and demand always intersect horizontally, and the unique price is the one for which all market orders
+are executed in full.
+7
+
+that an HFT observes a value innovation in auction k for the ﬁrst time, conditional on news, is
+α ≡Prob (tHFT < kτ | tHFT ≥(k −1) τ) = exp (−ψ (k −1) τ) −exp (−ψkτ)
+exp (−ψ (k −1) τ)
+= 1 −exp (−ψτ) ,
+(1)
+which is constant for each individual auction k.
+Timing.
+The timing of our model mirrors Menkveld and Zoican (2017). At t = 0, the N highfrequency traders compete to provide price quotes. Let v −s and v + s denote the lowest buy and
+highest sell price quoted at t = 0, respectively. Two high-frequency trading roles emerge as a result.
+The HFT that succeeds in posting their quotes becomes the high-frequency market-maker (HFM).
+The other N −1 HFTs act as quote snipers, poised to trade on stale quotes: we refer to such HFTs
+as high-frequency speculators (HFS).
+We denote the“trigger event”to be the ﬁrst arrival of either news or a liquidity trader. Since both
+events are Poisson processes, the expected time until the trigger event is
+1
+η + µ. With probability
+µ
+η + µ, the trigger event is liquidity-driven: an LT arrives at the market and consumes either the
+bid or the ask quote. In this case, since there is no change in the asset’s value, the HFSs have no
+incentive to trade after the trigger event. Conversely, with the complementary probability
+η
+η + µ,
+news arrives instead. The N −1 HFS and the HFM rush to submit orders as soon as they observe
+the value innovation: the speculators send orders to trade against the stale quote, whereas the HFM
+rushes to cancel the order from t = 0. The game ends upon the ﬁrst market clearing with non-zero
+trading volume or a cancelled order.
+Figure 1:
+Example of event sequence in the model
+t=0
+News or LT arrival
+HFTs post quotes
+τ
+Trigger event
+2τ
+3τ
+4τ
+HFT1
+HFT2
+HFT3
+HFT4
+Auction times
+8
+
+Figure 1 illustrates an example of events sequence in the model. The labels HFT1, HFT2, . . . ,
+indicate HFT arrivals in chronological order. If the trigger event is an LT arrival, the liquidity
+trade is executed in the ﬁrst auction at τ. Conversely, if the trigger event is a news arrival, the ﬁrst
+auction elapses with no trades, since no HFTs arrive before τ. In the example in Figure 1, trade
+only happens at t = 2τ (that is, when the second auction clears), upon the arrival of HFT1.7
+All model parameters are summarized in Appendix A.
+3
+Equilibrium
+We search for symmetric Nash equilibria of the trading game. In particular, at any point in time
+t ≥0 an equilibrium consists of (i) HFT strategies to submit limit or market orders to buy or to
+sell a given quantity of the asset (for limit orders, at a speciﬁed price), or a decision to cancel such
+orders, and (ii) market clearing prices at the batch auction times t ∈{τ, 2τ, . . . , kτ, . . . }.
+3.1
+Optimal sniping behavior
+Let A denote the index of the ﬁrst auction following news, where at least one HFT is present
+at the market (either an HFS or the HFM). Auction A therefore starts at (A −1) τ and ends at
+tA = Aτ. Since HFTs do not participate in every auction, particularly for a very short τ, it could be
+that tA > tnews + τ such that several auction intervals elapse between the news event and the ﬁrst
+HFT order arrival. However, any auction interval that elapses at t ∈[tnews, tA) is not economically
+relevant since it does trigger any trades and does not reﬂect any order book updates.
+We distinguish between three possible economically relevant scenarios. First, the HFM might
+return at the market during A. In this case, we refer to A as a maker-auction or M-auction. The
+probability of a maker auction, conditional on at least one arrival during A, is
+πM ≡P (HFM order in A | at least one HFT arrival in A) =
+α
+1 −(1 −α)N .
+(2)
+Second, if the HFM is not active in the market during A (either through cancelling or submitting
+7We also note that if, for example, HFT2 would arrive before 2τ, both HFT1 and HFT2 orders are considered for
+market clearing in the second auction.
+9
+
+orders), but the quotes submitted at t = 0 are still live, it must be that at least one sniper submits
+an order. We distinguish two possibilities: either (i) exactly one or (ii) at least two HFS submit
+orders in auction A. We denote A as a sniper auction or S-auction if exactly one HFS is submitting
+orders to the market (and the HFM is not). The probability of a sniper auction is
+πS ≡P (Exactly one HFS order in A | at least one HFT arrival in A)
+= (N −1)α (1 −α)N−1
+1 −(1 −α)N
+.
+(3)
+Finally, auction A is a competitive-auction or C-auction if at least two HFS submit orders during A,
+while the HFM does not act in A. The probability of a competitive-auction is
+πC ≡P (Two or more HFS orders in A | at least one HFT arrival in A)
+=
+PN−1
+k=2
+ N−1
+k
+
+αk (1 −α)N−k
+1 −(1 −α)N
+.
+(4)
+It is easy to verify that πM + πS + πC = 1. Table 1 summarizes the three auction types and
+their respective probabilities.
+Table 1:
+Auction types
+Auction type
+HFM active?
+HFS active?
+Probability
+Maker (M) auction
+Yes
+Irrelevant
+πM =
+α
+1−(1−α)N
+Sniper (S) auction
+No
+One
+πS = (N−1)α(1−α)N−1
+1−(1−α)N
+Competitive (C) auction
+No
+Two or more
+πC =
+PN−1
+k=2 (N−1
+k )αk(1−α)N−k
+1−(1−α)N
+.
+Lemma 1 describes the HFT optimal order submission strategies for each of the three auction
+types in Table 1.
+Lemma 1. (Order submission upon a news trigger.) Following a news trigger event, highfrequency traders optimally submit the following orders as a function of the auction type:
+10
+
+(i) In a maker-auction, the HFM cancels any quotes posted at t = 0. High-frequency snipers do
+not submit any new orders.
+(ii) In sniper-auctions and competitive-auctions, each speculator present at the exchange sends
+a buy (sell) market order for one unit of the asset, if the trigger event was good (respectively,
+bad) news.
+First, we note that since the liquidity trader demand at most one unit of the security, the
+HFM infers that any directional order ﬂow |q| ≥2 indicates the presence of snipers. Consequently,
+competitive HFMs stand ready to buy (respectively, sell) any quantity of two units and above at a
+price of v + σ (respectively, at v −σ).
+The high-frequency snipers’ rationale for trading is to proﬁt from the existence of stale quotes
+as posted by the HFM at t = 0. If the HFM is actively present in the market at A, she optimally
+cancels the previously submitted quote on the news-relevant side of the market to avoid being
+adversely selected.8 Since there are no stale quotes in the book, high-frequency snipers have no
+incentives to trade and optimally refrain from submitting orders to the matching engine. As a
+consequence, maker-auctions have no trading volume and all HFTs earn a proﬁt of zero.
+The single HFS present at the market in a sniper-auction is essentially a monopolist on information.
+Consider the case of good news (the case of bad news is symmetrical): the asset value becomes
+v + σ, and the market-maker is willing to sell the security for v + s as per the quote submitted in
+t = 0. A market buy order for one unit executes at v + s (the lowest price that clears the market)
+and the unique sniper earns a monopoly proﬁt equal to σ −s. Since the informed trade is a zero-sum
+game, the market-maker loses s −σ < 0. A sniper-auction essentially mimics the outcome obtained
+in a continuous-time market (as in, for example, Glosten and Milgrom, 1985), where the ﬁrst sniper
+at the market has a monopoly on information due to time-priority rules.9
+In competitive auctions snipers submit two or more buy market orders. Consider again the
+case of good news: Since the auction is uniform price, the market clears at v + σ and both the
+8The quote on the no-news side is never executed in this case before the end of the game, and therefore the HFM
+is indiﬀerent between cancelling it or not.
+9Note that the HFS cannot proﬁtably deviate by posting a limit order with price diﬀerent from v + s: a buy order
+for v + s −ϵ would not be executed, and a buy order for v + s + ϵ would yield a lower proﬁt, for any ϵ > 0.
+11
+
+market-maker and speculators earn a proﬁt of zero. Again, no HFS can proﬁtably deviate from
+submitting a market order: a limit buy order with a price higher than v + σ would yield a loss,
+whereas a limit buy order with a price lower than v + σ would still get executed at v + σ.
+Adverse selection on stale quotes, as in Menkveld and Zoican (2017), only emerges therefore in
+sniper-auctions. In contrast, maker-auctions correspond to zero trading volume, whereas competitiveauctions trades execute at the eﬃcient price and generate no adverse selection.
+Lemma 2. (Sniping probability.) The probability of a sniping trade conditional on news, that is
+πS as given in equation (3), decreases in the HFT speed ψ.
+The result in Lemma 2 is driven by two channels. First, since a higher ψ increases the per-auction
+probability of HFT arrival α, the HFM is more likely to arrive in auction A and cancel her quotes.
+Second, even if the HFM does not cancel her stale quotes in the auction, a higher ψ increases the
+likelihood of a C-auction, where two or more snipers compete and drive the clearing price to the true
+asset value. Figure 2 illustrates how the probabilities of each auction type change with HFT speed.
+As HFTs become faster, sniper-auctions where a single HFS can trade on stale quotes become less
+likely. At the same time, a faster market-maker is more likely to update her quotes. The probability
+of an auction where snipers compete for stale quotes ﬁrst increases, then decreases in HFT speed,
+as market-makers are more likely to reach the market themselves and render sniper orders moot.
+12
+
+Figure 2:
+Probabilities of each auction type
+This ﬁgure illustrates the probabilities of each auction type (market-, sniper-, and competitive-auction) as a function
+of the HFT speed parameter ψ. Parameter values: µ = η = σ = 1, τ = 0.5, and N = 4.
+0
+1
+2
+3
+4
+5
+HFT speed (ψ)
+0.0
+0.2
+0.4
+0.6
+0.8
+Probability of each auction type
+Maker-auction
+Sniper-auction
+Competitive-auction
+Equivalence with price competition.
+While the strategies above do not involve explicit competition on prices as in Budish, Cramton, and Shim (2015), we note that a model where snipers can
+condition the order price on the presence or absence of competitors would yield identical results.
+In a sniper auction, conditional on good news, the unique HFS can submit a buy order for any
+price pHFS ∈[v + s, v + σ]. The market clears and one unit is traded at pHFS + (v + s)
+2
+. As a result,
+the HFS earns a positive proﬁt of v + σ −pHFS + (v + s)
+2
+. The speculator optimally selects the
+lowest buy price that clears the market, pHFS = v + s.
+Conversely, in a competitive-auction high-frequency speculators engage in Bertrand competition
+on prices. Consider again the case of good news, for illustration purposes. Any market-clearing
+price pC < v + σ cannot be an equilibrium. If there are m ≥2 HFS at the market posting an order
+to buy at pC, then each of them is randomly matched with probability 1
+m < 1. It is optimal for
+any HFS to bid a slightly higher amount, pC + ϵ and guarantee execution of his order, while still
+13
+
+earning a positive proﬁt. In equilibrium, the market clears at v + σ, and one of the HFS, randomly
+selected, is matched with the market-maker.
+A potential concern with the price competition is that snipers could wait to submit orders until
+an instant before market clearing, to avoid revealing themselves. The concern could be alleviated, for
+example, by allowing for a “soft close” auction (as implemented by Amazon, see Roth and Ockenfels,
+2002), where market clearing is automatically delayed for a very brief interval upon the arrival of
+new orders.10
+3.2
+Liquidity in batch auction markets
+In this section, we study the optimal HFT initial quotes (i.e., the ones submitted in t = 0). We
+focus on symmetric equilibria such that each HFT submits at t = 0 an order to buy the ﬁrst unit of
+the asset for v −s and an order to sell the ﬁrst unit of the asset at v + s, where s ≥0 denotes the
+outstanding half-spread on the limit orders around the common value v.
+At t = 0, all HFTs submit quotes to the markets without being assigned a market-market or
+speculator role. The expected utility of a market-maker is
+UHFM(s) =
+µ
+µ + ηs +
+η
+µ + ηπS(s −σ).
+(5)
+With probability
+µ
+µ + η, the trigger event is a liquidity trade. The liquidity trader submits order at
+a price that clears the market and minimizes their trading cost: either buy one unit at v + s, the
+lowest price that the HFM accepts as a seller, or sell one unit at v −s, the highest price that the
+HFM requests as a buyer. In this case, the market-maker earns s and the game ends.
+With probability
+η
+µ + η, the trigger event is a news arrival. From Lemma 1 and the discussion
+in Section 3.1, the HFM earns zero proﬁt in maker- and competitive-auctions, and makes a loss of
+s −σ in sniper-auctions which occur with probability πS.
+A high-frequency speculator has positive utility if both (i) the trigger event is a news arrival,
+with probability
+η
+µ + η, and (ii) she is the only trader to arrive in auction A. Since there are N −1
+10Cinnober, a Swedish ﬁnancial infrastructure provider, patented adaptive micro-auctions, where market clearing
+is automatically delayed if new order arrivals change the clearing price. See patent US 8719146 B2, available at:
+https://bit.ly/2SKI6mb.
+14
+
+potential snipers, each HFS is a monopolist with probability
+πS
+N −1. The expected utility of a
+high-frequency speculator becomes
+UHFS(s) =
+η
+µ + η
+1
+N −1πS(σ −s).
+(6)
+In equilibrium, HFTs must be indiﬀerent between the two roles. The equilibrium spread s⋆is
+pinned down by equating the expected utilities in (5) and (6). Intuitively, if an HFTi posts instead
+a larger half-spread s+ > s⋆, then she does not become the HFM. In this case, HFTi would earn
+the sniper utility in (6) and is therefore indiﬀerent between deviating or not.11 Conversely, if HFTi
+deviates and posts a tighter spread s−< s⋆, she is sure to assume the HFM role. However, the
+deviation is not proﬁtable since (i) the HFM and HFS utilities are equal in equilibrium and (ii) the
+HFM utility increases in the posted spread, that is
+UHFM (s−) < 1
+N UHFM (s⋆) + N −1
+N
+UHFS (s⋆) = UHFM (s⋆) .
+(7)
+Lemma 3 describes the half-spread pinned down by this indiﬀerence condition.
+Lemma 3 (Half-spread). The unique half-spread s⋆that ensures that UHFM(s⋆) = UHFS(s⋆) > 0
+is given by
+s⋆=
+ηNπS
+ηNπS + µ(N −1)σ
+=
+ηNα(1 −α)N
+µ(1 −α) + (1 −α)N (ηNα −µ(1 −α))σ.
+(8)
+Since from Lemma 3 the equilibrium spread s⋆< σ, from equation (6) it follows that HFTs earn
+positive utility in equilibrium. Therefore, all HFTs submit quotes at t = 0: with probability 1
+N ,
+each of them is equally likely to arrive ﬁrst and become HFM. The other N −1 high-frequency
+traders assume the role of HFS.
+11The intuition in this paragraph is identical to the proof of Proposition 1 from Menkveld and Zoican (2017), p. 1217.
+15
+
+Proposition 1 characterizes the equilibrium of the trading game by merging the optimal HFT
+strategy at t = 0 described in Lemma 3 and the optimal HFT strategy for t > 0 in Lemma 1.
+Proposition 1 (Equilibrium). The following strategies form a Nash equilibrium in the trading
+game.
+(i) At t = 0, each HFT submits a buy limit order for the ﬁrst unit at price v −s⋆and a sell limit
+order for the ﬁrst unit at price v + s⋆, where s⋆is given by (8). Further, HFTs submit buy
+and sell orders for the any further incremental units at prices v −σ and v + σ, respectively.
+The ﬁrst HFT to arrive and post his quotes becomes the HFM.
+(ii) In the event of LT arrival, no cancellations or new limit orders are submitted.
+(iii) In the event of news arrival, the HFTs send orders as described in Lemma 1.
+4
+HFT speed, auction duration, and liquidity
+The equilibrium decribed in Proposition 1, as well as the results in Lemmas 1 and 3 allow us to
+study the impact of auction duration and HFT speed on liquidity, as measured by quoted spreads.
+Corollary 1. The equilibrium half-spread s⋆increases in the size of value innovations, σ, news
+intensity, η, and decreases in the liquidity trader’s arrival intensity, µ.
+Corollary 1 serves as a “reality check” and is consistent with existing results in the literature
+(for a detailed survey see, e.g., Biais, Glosten, and Spatt, 2005). The positive spread emerges as a
+compensation for the adverse selection cost of being sniped by an HFS and is thus proportional to
+sniping proﬁts. Sniping proﬁts increase in the news intensity η and news size σ, and so does the
+equilibrium spread. A larger µ increases the HFM payoﬀfrom providing liquidity and therefore the
+spread decreases.
+Proposition 2 states the main result of the paper. In periodic batch auction markets, a higher
+HFT speed improves liquidity. Proposition 2 describes the behavior of the equilibrium spread s⋆
+with respect to the batch auction duration τ, the number of HFTs N, and the HFT speed ψ.
+16
+
+Proposition 2. The equilibrium half-spread in the batch auction market, s⋆, decreases in (i) the
+HFT speed ψ, (ii) the duration of an auction τ, and (iii) the number of HFTs N.
+Faster high-frequency traders are more likely to participate in any given auction. Keeping
+auction duration ﬁxed, the probability that a single HFS arrives in a given auction interval decreases
+in HFT speed. If high-frequency traders are faster, they are more likely to arrive in clusters and
+drive the clearing price to the fundamental value. At the same time, a faster HFM is also more
+likely to arrive and cancel quotes before being sniped.
+Auction duration has an equivalent impact on equilibrium liquidity. Longer batch auctions, for
+a ﬁxed HFT speed, increase the probability of either (i) the HFM to cancel quotes before being
+sniped or (ii) two or more HFS to compete over the stale quote. Consequently, sniper-auctions
+become relatively less likely, leading to lower adverse selection costs for the HFM and a lower spread.
+The number of competing HFTs and the HFT speed have a similar eﬀect. Therefore, longer batch
+auctions and faster trading are substitutes for market liquidity.
+Budish, Cramton, and Shim (2015) argue that to encourage competition between HFTs, the
+auction length should be “long” enough. However, slowing down the market clearing frequency may
+create a negative externality for impatient traders, such as option traders who hedge in real time,
+or institutions with large positions to execute. Our paper suggests that promoting low trading
+latencies, or at least not explicitly discouraging them, is a solution that can sustain both frequent
+market clearing and high liquidity. Figure 3 illustrates the main result in Proposition 2: if HFTs
+are slow relative to the auction frequency, the equilibrium spread converges to the outcome on a
+continuous-time market. Conversely, the equilibrium spread decreases to zero if HFTs can react
+very fast relative to the duration of auction intervals (essentially the result in Budish, Cramton, and
+Shim, 2015).
+17
+
+Figure 3:
+Equilibrium half-spread
+This ﬁgure illustrates the equilibrium half-spread (s⋆) on the periodic batch auction market as a function of the HFT
+speed parameter ψ. Parameter values: µ = η = σ = 1, τ = 0.5, and N = 4.
+0
+1
+2
+3
+4
+5
+HFT speed (ψ)
+0.0
+0.1
+0.2
+0.3
+0.4
+0.5
+Equilibrium half-spread (s⋆)
+periodic auction market
+continuous-time market
+Finally, the equilibrium spread decreases in the number of HFTs N. That is, stronger arbitrageur
+competition improves liquidity.
+As N becomes larger, two eﬀects come into play.
+First, the
+probability of a sniping auction (πS) is larger, leading to higher adverse selection costs for the
+market-maker. However, it is the second eﬀect which dominates in equilibrium. As more HFTs join
+the industry, the opportunity cost of the market-maker is lower, which reduces the spread. A larger
+N reduces each sniper’s individual probability to trade on a stale quote, leading to a lower sniper
+proﬁt. Since in equilibrium HFTs are indiﬀerent between the two roles, a lower HFS proﬁt implies
+a lower HFM proﬁt. Consequently, market-makers require a lower spread to be compensated for
+assuming a liquidity provision role. The result is in line with Brogaard and Garriott (2019) who
+document that HFT arbitrageur competition improves liquidity.
+In the limit, as τ decreases towards zero (very frequent auctions), the batch auction market
+converges to a continuous-time market.
+In this case, πS converges to N −1
+N
+and we recover
+18
+
+the equilibrium in Budish, Cramton, and Shim (2015) stating that the equilibrium spread on a
+continuous-time market does not depend on the number of HFTs.
+In Budish, Cramton, and Shim (2015), competition between snipers emerges even as the duration
+of an auction becomes arbitrarily small. Therefore, in their model, the discrete auction market does
+not converge to a continuous-time market as the auction interval goes to zero. Lemma 4 shows that
+if we allow for a ﬁnite HFT learning speed, we obtain an equilibrium that bridges the continuousand discrete-time markets.
+Lemma 4. For any N > 2, the equilibrium half-spread s⋆on the batch auction market converges
+to zero as auctions are inﬁnitely long or HFTs become inﬁnitely fast, that is,
+lim
+τ→∞s⋆= lim
+ψ→∞s⋆= 0.
+(9)
+As the auction length goes to zero, the equilibrium half-spread s⋆converges to the continuous-time
+market spread
+lim
+τ→0 s⋆= σ
+η
+µ + η.
+(10)
+Lemma 4 implies that, while the periodic batch auction spread is positive, it is always lower
+than the spread on a continuous-time market, and converges to it as auctions become arbitrarily
+frequent. It follows that periodic batch auctions always improve liquidity.
+The ﬁrst limiting result in Lemma 4 is an exact counterpart to the batch auction market
+equilibrium in Budish, Cramton, and Shim (2015). The authors assume “fast” HFTs act immediately
+on the information, i.e., inﬁnite monitoring intensity generates a zero spread. Therefore, policies
+that intensify HFT monitoring (e.g., allowing for colocation) can reduce the equilibrium spread on a
+frequent call auction market. Figure 4 illustrates that faster HFTs earn lower proﬁts in equilibrium,
+as sniping opportunities become less frequent.
+19
+
+Figure 4:
+Equilibrium HFT proﬁt
+This ﬁgure illustrates the equilibrium HFT proﬁt on the periodic batch auction market as a function of the HFT speed
+parameter ψ. Parameter values: µ = η = σ = 1, τ = 0.5, and N = 4.
+0
+1
+2
+3
+4
+5
+HFT speed (ψ)
+0.00
+0.01
+0.02
+0.03
+0.04
+0.05
+0.06
+Equilibrium HFT utility
+frequent auction market
+continuous-time market
+5
+Discussion
+In this section we discuss the robustness of the model analysis. First, we consider the incentives of
+traders to invest in the speed technology, when trading on a periodic call auction market. Second,
+we examine the eﬀect of the tick size on the equilibrium spread. Finally, we discuss the possible
+implications of multiple “trigger” events in one auction.
+5.1
+Implications for the HFT arms race
+In our model, the HFT speed parameter ψ is exogenous. In this subsection we discuss the implications
+of allowing HFTs to invest in speed technology on a periodic auction market. Figure 4 illustrates
+that the equilibrium HFT proﬁt decreases in trading speed (ψ). A natural consequence of our model,
+in line with the intuition in Budish, Cramton, and Shim (2015), would be that a frequent auction
+20
+
+market reduces traders’ incentives to invest in speed and alleviates the HFT arms race.
+To better understand the economic mechanism, suppose that at the start of the game, each
+HFT i can choose individual speed level ψi at a cost C (ψi), where C′ (·) > 0 and C′′ (·) > 0. Let
+Π (ψi(τ), τ; ψ−i) denote the ex-ante expected proﬁt of the high frequency trader i, where ψ−i is the
+vector of competitors’ speed choices. When making the decision to invest in the reaction speed ψi
+the trader’s objective is to maximize the net expected proﬁt, for a given ψ−i,
+max
+ψi Π (ψi(τ), τ; ψ−i) −C (ψi(τ)) .
+(11)
+The optimal speed investment ψ⋆
+i is determined by the ﬁrst order condition of this problem
+∂Π (ψ⋆
+i (τ), τ; ψ−i)
+∂ψi
+−∂C (ψ⋆
+i (τ))
+∂ψi
+= 0,
+(12)
+where the competitors’ speed levels, ψ−i, are held constant from the perspective of HFT i. In any
+symmetric equilibrium, it needs to be that ψ⋆
+i = ψ⋆
+−i; that is, a ﬁxed point of the HFTs’ investment
+reaction function.
+From the implicit function theorem, by taking the derivative of the optimality condition with
+respect to τ, we obtain
+∂ψ⋆
+i
+∂τ =
+∂2Π(ψ⋆
+i (τ),τ;ψ⋆
+−i)
+∂ψi∂τ
+∂2C(ψ⋆
+i (τ))
+∂ψ2
+i
+−
+∂2Π(ψ⋆
+i (τ),τ;ψ⋆
+−i)
+∂ψ2
+i
+.
+(13)
+First, ∂C(ψi(τ ⋆))
+∂ψi
+> 0 and ∂2C(ψi(τ ⋆))
+∂ψ2
+i
+> 0 since faster trading requires additional investment and
+we assume that the cost increases more and more per incremental increase in reaction speed (the cost
+function is convex). Second, the term
+∂2Π(ψ⋆
+i (τ),τ;ψ⋆
+−i)
+∂ψ2
+i
+is negative, due to decreasing returns to scale
+of the speed technology. Holding the competitors’ speed constant at ψ⋆
+−i, the probability of HFT i
+to be present in each given auction converges to a maximum of one. Finally,
+∂2Π(ψ⋆
+i (τ),τ;ψ⋆
+−i)
+∂ψi∂τ
+< 0:
+intuitively, as the auction duration increases (higher τ), the marginal return from speed is lower
+as sniper auctions become less likely. It follows that ∂ψ⋆
+i
+∂τ < 0: a higher auction duration reduces
+investment in speed technology, therefore de-escalating the HFT arms’ race.
+21
+
+5.2
+Discrete price grid
+An implicit assumption of the model is that HFTs can submit orders on a continuous price grid:
+That is, the equilibrium spread s⋆deﬁned in equation (8) is precisely pinned down by the HFT
+indiﬀerence condition between the two roles of market-maker and speculator. From equations (5)
+and (6), the HFS (respectively, HFM) utility is linearly decreasing (respectively, increasing) in the
+half-spread s.
+In reality, however, prices are likely to be constrained to a discrete grid. We normalize v = 0
+and denote the tick size as ∆> 0, such that the feasible prices for buy and sell orders are
+{0, ∆, 2∆, . . . , κ∆, . . . }. We focus on the ask quote, that is the quote at which HFM stands ready
+to sell the asset (the case of the bid quote is symmetric). If v = 0, then from Proposition 1 the
+equilibrium ask price is equal to the half-spread s⋆. Assume s⋆falls in between two consecutive
+feasible prices κ∆and (κ + 1)∆, as illustrated in Figure 5.
+Figure 5:
+Equilibrium spread on a price grid
+Half-spread s
+Expected utility HFT
+HFS utility
+HFM utility
+s⋆
+κ∆
+(κ + 1) ∆
+We proceed to analyze the two equilibrium candidate ask quotes, s′ = κ∆and s′′ = (κ + 1)∆,
+following the same process as in Section 3.2. First, we note that s′ cannot be an equilibrium: if
+N −1 HFTs quote s′ = κ∆, the Nth HFT can proﬁtably deviate by choosing not to submit a quote
+as she earns a higher expected utility as speculator. However, no HFT can proﬁtably deviate from
+22
+
+posting an ask quote with half-spread s′′. If an HFT submits a larger half-spread, for example,
+s+ = s′′ + ∆, then she does not become the HFM and will earn the strictly lower HFS expected
+utility. Conversely, if an HFT submits a smaller half-spread (e.g., s′) then she is sure to assume the
+HFM role, but will earn lower utility.
+The equilibrium ask quote therefore is the lowest price on the grid that exceeds s⋆: that is, there
+is a minimum spread equal to the tick size – even if the unconstrained spread s⋆becomes arbitrarily
+low due to high trading speed or longer auctions.
+5.3
+Multiple events in one auction
+In our model, a single news event or a single liquidity trader may arrive (i.e., the trigger event). A
+richer setting could allow for a second event in between the “trigger” and market clearing. Menkveld
+and Zoican (2017, Lemma 1 on p. 1203) provide useful insights into the impact of a second news or
+LT event on adverse selection costs and the equilibrium spread.
+First, since HFTs are risk-neutral and the asset value is a martingale, a second news event does
+not impact the equilibrium spread. For example, conditional on a “bad” news trigger, it is equally
+likely that the second news is also “bad” (doubling the potential HFM loss) or “good” (that is, a
+value reversal that eliminates adverse selection risk altogether).
+Further, allowing for a subsequent LT arrival would lead to even lower spreads in markets with
+lower auction intervals. The rationale is that, since LT arrivals are uncorrelated with news, an LT
+trade on the no-news side compensates the market maker for a potential sniping loss.
+6
+Conclusion
+We ﬁnd that in periodic batch auctions in contrast to a continuous-time limit order market, faster
+trading improves liquidity by stimulating competition across high-frequency snipers. A lower HFT
+speed, or shorter auction interval, increases the probability that each individual HFT has a monopoly
+on information in any given auction. This allows a single sniper to take advantage of the stale HFM
+quotes and consequently to earn rents. Conversely, faster HFTs are more likely to become informed
+in the same auction and compete to trade on arbitrage opportunities. Such competition reduces
+23
+
+arbitrage rents and adverse selection costs: as a consequence, the equilibrium spread decreases.
+Longer batch auctions, for a ﬁxed HFT speed, have the same eﬀect.
+Importantly, the equilibrium in our model bridges two alternative market designs: continuous
+and discrete markets. As the auctions become more frequent and the auction length decreases to
+zero, the equilibrium spread converges to the continuous-time market counterpart. Conversely, as
+the auction length increases or HFTs become inﬁnitely fast, the spread on the batch auction market
+converges to zero as in Budish, Cramton, and Shim (2015).
+The paper’s ﬁndings contribute to the public debate on high-frequency trading and alternative
+market designs. It generates an important implication: Policies that aim at intensifying HFT
+monitoring (e.g., allowing for colocation) can reduce the equilibrium spread and make batch call
+auction markets more attractive for investors. This in turn implies that the “arms race” implication
+strikingly diﬀers on batch auction markets when compared to limit order markets. Whereas for limit
+order markets speed does not impact liquidity, it turns out to be beneﬁcial in the case of periodic
+batch auction markets.
+References
+Aldrich, Eric M., and Kristian L´opez Vargas, 2019, Experiments in high-frequency trading: comparing
+two market institutions, Experimental Economics.
+Aoyagi, Jun, 2019, Speed Choice by High-Frequency Traders with Speed Bumps, Manuscript.
+Baldauf, Markus, and Joshua Mollner, Forthcoming, High-frequency trading and market performance,
+The Journal of Finance.
+Baruch, Shmuel, and Lawrence R. Glosten, 2013, Fleeting orders, Columbia Business School Research
+Paper 13-43.
+Biais, Bruno, Thierry Foucault, and Sophie Moinas, 2015, Equilibrium fast trading, Journal of
+Financial Economics 116, 292–313.
+24
+
+Biais, Bruno, Larry Glosten, and Chester Spatt, 2005, Market microstructure: A survey of microfoundations, empirical results, and policy implications, Journal of Financial Markets 8, 217–264.
+Brogaard, Jonathan, and Corey Garriott, 2019, High-Frequency Trading Competition, Journal of
+Financial and Quantitative Analysis 54, 1469–1497.
+Brogaard, Jonathan, Terrence Hendershott, and Ryan Riordan, 2014, High frequency trading and
+price discovery, Review of Financial Studies 27, 2267–2306.
+Brolley, Michael, and David Cimon, Forthcoming, Order Flow Segmentation, Liquidity and Price
+Discovery: The Role of Latency Delays, Journal of Financial and Quantitative Analysis.
+Brolley, Michael, and Marius Zoican, 2019, Liquid speed:On-demand fast trading at distributed
+exchanges, Rotman School of Management Working Paper No. 3377346.
+Budish, Eric, Peter Cramton, and John Shim, 2015, The high-frequency trading arms race: Frequent
+batch auctions as a market design response, The Quarterly Journal of Economics 130, 1547–1600.
+Copeland, Thomas E., and Dan Galai, 1983, Information eﬀects on the bid-ask spread, The Journal
+of Finance 38, 1457–1469.
+Du, Songzi, and Haoxiang Zhu, 2017, What is the Optimal Trading Frequency in Financial Markets?,
+The Review of Economic Studies 84, 1606–1651.
+Economides, Nicholas, and Robert A. Schwartz, 1995, Electronic call market trading, The Journal
+of Portfolio Management 21, 10–18.
+Farmer, J. Doyne, and Spyros Skouras, 2012, Review of the beneﬁts of a continuous market vs.
+randomised stop auctions and of alternative priority rules, Review of the Markets in Financial
+Instruments Directive.
+Foucault, Thierry, Ohad Kadan, and Eugene Kandel, 2013, Liquidity cycles and make/take fees in
+electronic markets, Journal of Finance 68, 299–341.
+Foucault, Thierry, Ailsa Roell, and Patrik Sandas, 2003, Market making with costly monitoring: An
+analysis of the soes controversy, Review of Financial Studies 16, 345–384.
+25
+
+Fricke, Daniel, and Austin Gerig, 2015, Too fast or too slow? Determining the optimal speed of
+ﬁnancial markets, Working paper.
+Glosten, Lawrence R., and Paul R. Milgrom, 1985, Bid, ask and transaction prices in a specialist
+market with heterogeneously informed traders, Journal of Financial Economics 14, 71–100.
+Hendershott, Terrence, and Pamela C. Moulton, 2011, Automation, speed, and stock market quality:
+The nyse’s hybrid, Journal of Financial Markets 14, 568–604.
+Janssen, Maarten, and Eric Rasmusen, 2002, Bertrand competition under uncertainty, The Journal
+of Industrial Economics 50, 11–21.
+Jovanovic, Boyan, and Albert J. Menkveld, 2017, Dispersion and skewness of bid prices, Working
+paper.
+Kandel, Eugene, Barbara Rindi, and Luisella Bosetti, 2012, The eﬀect of a closing call auction on
+market quality and trading strategies, Journal of Financial Intermediation 21, 23–49.
+Kremer, Ilan, and Kjell G. Nyborg, 2004, Underpricing and market power in uniform price auctions,
+The Review of Financial Studies 17, 849–877.
+Kumar, Praveen, and Duane J. Seppi, 1994, Information and index arbitrage, The Journal of
+Business 67, 481–509.
+Kyle, Albert (Pete) S, and Jeongmin Lee, 2017, Toward a Fully Continuous Exchange, Oxford
+Review of Economic Policy 33, 650–675.
+Madhavan, Ananth, 1992, Trading mechanisms in securities markets, The Journal of Finance 47,
+607–641.
+Menkveld, A.J., and M.A. Zoican, 2017, Need for speed? Exchange latency and liquidity, Review of
+Financial Studies 30, 1188–1228.
+Menkveld, Albert J., 2014, High frequency traders and market structure, The Financial Review
+(Special Issue: Computerized and High-Frequency Trading) 49, 333–344.
+26
+
+, 2016, The economics of high-frequency trading: Taking stock, Annual Review of Financial
+Economics 8, 1–24.
+Pagano, Michael S., Lin Peng, and Robert A. Schwartz, 2013, A call auction’s impact on price
+formation and order routing: Evidence from the nasdaq stock market, Journal of Financial
+Markets 16, 331–361.
+Pagano, Michael S., and Robert A. Schwartz, 2003, A closing call’s impact on market quality at
+euronext paris, Journal of Financial Economics 68, 439–484.
+Roth, Alvin E., and Axel Ockenfels, 2002, Last-minute bidding and the rules for ending second-price
+auctions: Evidence from ebay and amazon auctions on the internet, American Economic Review
+92, 1093–1103.
+Shkilko, Andriy, and Konstantin Sokolov, Forthcoming, Every Cloud Has a Silver Lining: Fast
+Trading, Microwave Connectivity and Trading Costs, Journal of Finance.
+Wah, Elaine, Dylan Hurd, and Mic Wellman, 2015, Strategic market choice: Frequent call markets
+vs. continuous double auctions for fast and slow traders, Proceedings of the 3rd EAI Conference.
+Wah, Elaine, and Michael Wellman, 2013, Latency arbitrage, market fragmentation, and eﬃciency:
+A two-market model, Proceedings of the 14th ACM Conference.
+Ye, Mao, Chen Yao, and Jiading Gai, 2013, The externalities of high frequency trading, WBS
+Finance Group Research Paper No. 180.
+27
+
+A
+Notation summary
+Parameter
+Deﬁnition
+v
+Common value of the risky asset.
+τ
+Length of auction interval (auction duration).
+η
+Poisson intensity of news arrival.
+µ
+Poisson intensity of LT arrival.
+ψ
+Poisson intensity of HFT news monitoring (HFT speed).
+σ
+Size of news, i.e., common value innovations.
+N
+Number of high-frequency traders.
+B
+Proofs
+Lemma 1
+Proof. The proof is presented in the main body of the paper.
+Lemma 2
+Proof. To sign the derivative of πS = (N−1)α(1−α)N−1
+1−(1−α)N
+with respect to ψ, we ﬁrst compute the ﬁrst
+order derivative of πS with respect to α:
+∂πS
+∂α = −(N −1)(1 −α)N−2  (1 −α)N + Nα −1
+
+((1 −α)N −1)2
+.
+(B.1)
+It is enough to show that f(α) ≡(1 −α)N + Nα −1 ≥0. This is true since f(0) = 0 and
+∂f
+∂α = N
+
+1 −(1 −α)N−1
+> 0. Therefore, πS decreases in α. Since ∂α
+∂ψ > 0, we conclude that πS
+decreases in ψ.
+Lemma 3
+Proof. The equilibrium spread obtains immediately from setting equal the market-maker utility in
+(5) and the sniper utility in (6).
+28
+
+Proposition 1
+Proof. The trading game equilibrium follows from Lemmas 1 and 3.
+Corollary 1
+Proof. We compute the ﬁrst order derivatives of s⋆with respect to σ, η, and µ.
+∂s⋆
+∂σ =
+ηNπS
+ηNπS + µ(N −1) > 0
+(B.2)
+∂s⋆
+∂η =
+µ(N −1)NπSσ
+(ηNπS + µ(N −1))2 > 0
+(B.3)
+∂s⋆
+∂µ = −
+η(N −1)NπSσ
+(ηNπS + µ(N −1))2 < 0.
+(B.4)
+It follows that s⋆increases in σ and η and decreases in µ, which concludes the proof.
+Proposition 2
+Proof. We ﬁrst show that the equilibrium spread increases in the sniping probability πS. Indeed,
+∂s⋆
+∂πS
+=
+ηµ(N −1)Nσ
+(ηNπS + µ(N −1))2 > 0.
+(B.5)
+From Lemma 2, the sniping probability πS decreases in the per-auction arrival probability of an
+HFT, α. Further, from equation (1), α increases in ψ and τ. Therefore,
+∂s⋆
+∂ψ = ∂s⋆
+∂πS
+|{z}
+>0
+∂πS
+∂α
+|{z}
+<0
+∂α
+∂ψ
+|{z}
+>0
+< 0 and
+(B.6)
+∂s⋆
+∂τ = ∂s⋆
+∂πS
+|{z}
+>0
+∂πS
+∂α
+|{z}
+<0
+∂α
+∂τ
+|{z}
+>0
+< 0
+(B.7)
+Therefore, the equilibrium spread s⋆decreases in the HFT speed ψ and the duration of an auction τ.
+Next, we compute the partial derivative of s⋆with respect to N:
+∂s⋆
+∂N = ηµασ(1 −α)N+1  1 −(1 −α)N + N log(1 −α)
+
+(µ + (1 −α)N(ηNα + µ(α −1)) −µα)2
+.
+(B.8)
+29
+
+The sign of the derivative in (B.8) is given by the sign of
+g ≡1 −(1 −α)N + N log(1 −α).
+We note that g (α = 0) = 0 and that g decreases in α since
+∂g
+∂α = −N
+ 1 −(1 −α)N
+1 −α
+< 0.
+(B.9)
+It follows that g < 0 and consequently ∂s⋆
+∂N < 0 which implies that the equilibrium spread decreases
+in the number of HFTs.
+30

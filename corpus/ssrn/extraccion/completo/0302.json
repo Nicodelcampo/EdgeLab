@@ -1,0 +1,110 @@
+{
+  "doc_id": 302,
+  "titulo": "Role of Market Microstructure in the Relationship between Market Co-movement and Market Efficiency",
+  "resumen_operativo": "Investiga cómo la microestructura de mercado afecta la relación entre co-movimiento y eficiencia cross-market usando los exchanges de Shanghai y Hong Kong. Propone que la similitud creciente de microestructuras explica parcialmente el aumento de correlación entre mercados, más allá de la globalización. Distingue co-movimiento (correlación simultánea) de eficiencia cross-market (dependencia predictiva), mostrando que fuerte co-movimiento no implica ineficiencia cross-market si el mercado doméstico es eficiente. Usa entropía normalizada e información mutua como medidas novedosas en dominio tiempo-frecuencia vía wavelets.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "Market Microstructure Dimensions",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Clasificación en dos sub-dimensiones: (1) mecanismo de trading (tipo de mercado, sesiones, tipos de orden, transparencia) y (2) regulación de mercado (prioridad de órdenes, tick size, listing, unidad de trading, price thresholds, short selling). Cada sub-dimensión tiene efectos teóricos sobre la eficiencia.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Market Efficiency Determinants"},
+        {"tipo": "CAUSA", "objeto": "Market Co-movement"}
+      ],
+      "cita_textual": "Based on the work of Asmar and Ahmad (2011), market microstructure could be analyzed from the two sub-dimensions of trading mechanism and market regulation."
+    },
+    {
+      "nombre": "Cross-Market Efficiency vs Co-movement",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Distinción clave: co-movimiento mide correlación simultánea de precios; eficiencia cross-market mide si precios pasados en un mercado predicen precios futuros en otro. Co-movimiento fuerte con mercado doméstico eficiente no implica ineficiencia cross-market (Dwyer y Wallace, 1992).",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "Market Co-movement"},
+        {"tipo": "REQUIERE", "objeto": "Self-Market Efficiency"}
+      ],
+      "cita_textual": "This study suggests that the market strong co-movement is unequal to the cross-market inefficiency, as suggested by Dwyer and Wallace (1992)."
+    },
+    {
+      "nombre": "BGS Entropy for Market Efficiency",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Entropía de Boltzmann-Gibbs-Shannon aplicada a series de precios: H(X) = -Σ f_X(x) log f_X(x). Mayor entropía indica mayor aleatoriedad y por tanto mayor eficiencia de mercado. La entropía normalizada nH(X) = H(X)/log(n) permite comparar entre mercados.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "Market Efficiency Degree"},
+        {"tipo": "SE_OPONE_A", "objeto": "AR/GARCH Models"}
+      ],
+      "cita_textual": "The entropy could be seen as a measurement of randomness of the future price movement. The higher the value of calculated value of entropy based on the price or return series, the more efficient of the market."
+    },
+    {
+      "nombre": "Mutual Information for Cross-Market Dependency",
+      "tipo": "metrica",
+      "definicion_en_contexto": "I(X;Y) = H(X) + H(Y) - H(X,Y). Mide la dependencia entre series de dos mercados considerando la secuencia temporal. I(X;Y)=0 si y solo si las series son independientes. A diferencia de correlación, captura dependencias no lineales.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "Pearson Correlation"},
+        {"tipo": "MIDE", "objeto": "Cross-Market Efficiency"}
+      ],
+      "cita_textual": "Mutual information is defined as I(X;Y) = H(X) + H(Y) - H(X,Y). Theoretically, the mutual information equals zero if and only if the two sets of time series are independent."
+    },
+    {
+      "nombre": "Wavelet Coherence for Time-Frequency Co-movement",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Análisis de coherencia via wavelets que permite examinar co-movimiento simultáneamente en dominios de tiempo y frecuencia. Diferencia entre horizontes cortos (alta frecuencia) relevantes para traders de corto plazo y largos (baja frecuencia) para inversores de largo plazo.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "Traditional Correlation Analysis"},
+        {"tipo": "USA", "objeto": "Time-Frequency Decomposition"}
+      ],
+      "cita_textual": "Squared wavelet coherence is used to investigate the co-movement pattern between markets from both time and frequency domains."
+    },
+    {
+      "nombre": "Tick Size Impact on Market Quality",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "La reducción del tick size disminuye el bid-ask spread, la profundidad de mercado y los costos de transacción, mejorando la eficiencia. Un tick size inadecuadamente alto genera costos de transacción innecesariamente elevados.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Lower Transaction Costs"},
+        {"tipo": "MEJORA_A", "objeto": "Market Efficiency"}
+      ],
+      "cita_textual": "Theoretically, the smaller the tick size, the small transaction cost it incurred in trading, and thus the higher the market quality."
+    },
+    {
+      "nombre": "Short Selling and Price Efficiency",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "El short selling permite a inversores operar cuando los precios bajan, acercando los precios al valor intrínseco. Mayor flujo de short selling reduce desviaciones del random walk y acelera la incorporación de información pública en los precios.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "Price Discovery"},
+        {"tipo": "CAUSA", "objeto": "Reduced Random Walk Deviations"}
+      ],
+      "cita_textual": "Greater shorting flow reduces deviations of transaction prices from a random walk, and accelerates the incorporation of public information into prices."
+    },
+    {
+      "nombre": "Call Auction Impact on Market Quality",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "La introducción de call auctions (subastas) de apertura y cierre reduce la volatilidad de precios y los spreads bid-ask. Mercados con call auction y sistemas electrónicos generalmente mejoran la calidad de mercado respecto a sistemas de corros.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "Price Volatility"},
+        {"tipo": "MEJORA_A", "objeto": "Bid-Ask Spread"}
+      ],
+      "cita_textual": "Markets with call auction and electronic systems improve the market quality."
+    },
+    {
+      "nombre": "Interaction Effect: Internal Efficiency × Co-movement",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "La eficiencia cross-market depende de la interacción entre eficiencia interna y co-movimiento. En condiciones de mercado extremas (crisis), la eficiencia cross-market depende más fuertemente de ambos factores que en condiciones normales.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "Cross-Market Efficiency"},
+        {"tipo": "REQUIERE", "objeto": "Self-Market Efficiency"}
+      ],
+      "cita_textual": "There are significant interaction effect of the internal market efficiency and the market co-movement on the cross-market efficiency... the cross-market efficiency depends heavier on the internal market efficiency and the market co-movement when the market is in emergency condition."
+    },
+    {
+      "nombre": "Market Microstructure Similarity Hypothesis",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Hipótesis central: mercados con microestructuras similares generan decisiones de inversión similares entre participantes, lo que conduce a mayor co-movimiento. Esto ofrece una explicación alternativa a la globalización para el aumento de correlaciones entre mercados.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Market Co-movement"},
+        {"tipo": "SE_OPONE_A", "objeto": "Globalization Hypothesis"}
+      ],
+      "cita_textual": "We hypothesize that similar market microstructures will result in similar investment decision made by trading participants, which leads to strong market co-movement and high correlation among the markets."
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {"nivel": "baja", "nota": "Paper conceptual/empírico con datos diarios de índices Shanghai y Hong Kong; no aborda frecuencia intradiaria aunque las dimensiones de microestructura analizadas son relevantes para HFT."}
+}

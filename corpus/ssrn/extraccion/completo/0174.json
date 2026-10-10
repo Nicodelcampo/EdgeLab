@@ -1,0 +1,103 @@
+{
+  "doc_id": 174,
+  "titulo": "Human bias in algorithmic trading",
+  "resumen_operativo": "El paper documenta una anomalía intradiaria donde el volumen y la cantidad de trades se disparan de manera regular (hasta un 15-18%) en marcas de tiempo 'redondas' (horas en punto, medias horas, 10 y 5 minutos). Se refuta la hipótesis de que esto genere mejoras en la liquidez; por el contrario, el impacto en precio empeora. Esta regularidad es atribuida al sesgo de los programadores humanos al definir los parámetros de tiempo de ejecución algorítmica.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "intraday seasonality",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Patrones periódicos en el comportamiento del mercado a lo largo del día; aquí se identifica una anomalía de incrementos agudos y regulares en la actividad operativa cada 5 a 30 minutos.",
+      "relaciones": [],
+      "cita_textual": "In this paper we document pervasive periodicity in intraday trades and volume."
+    },
+    {
+      "nombre": "algorithmic trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Uso de sistemas computacionales para ejecutar órdenes de forma automatizada, los cuales heredan los sesgos de anclaje de sus programadores humanos hacia números redondos.",
+      "relaciones": [],
+      "cita_textual": "We argue that this activity is the result of algorithmic trading influenced by human traders/programmers’ behavioral bias to transact on round time marks."
+    },
+    {
+      "nombre": "Amihud illiquidity",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Métrica de liquidez adaptada aquí para intervalos de 30 segundos, que relaciona el retorno de un activo con su volumen operado en dólares, indicando el impacto de las órdenes sobre el precio.",
+      "relaciones": [
+        {
+          "tipo": "MIDE",
+          "objeto": "market impact"
+        }
+      ],
+      "cita_textual": "ALIQ is the measure based on Amihiud’s illiquidity measure (Amihud (2002)) calculated as the ratio of returns for each individual stock over 30-second intervals to the dollar trading volume during the same interval."
+    },
+    {
+      "nombre": "market impact",
+      "tipo": "concepto",
+      "definicion_en_contexto": "El efecto sobre los precios resultante de la actividad de trading, el cual, contra lo esperado por la hipótesis racional, aumenta durante los picos periódicos de volumen (nombrado 'price impact' en el texto).",
+      "relaciones": [],
+      "cita_textual": "We calculate the measure of price impact using Amihud’s (2002) illiquidity measure."
+    },
+    {
+      "nombre": "transaction costs",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Costos de operar en el mercado, evaluados a través de varias métricas de spreads y profundidad, sin evidenciar mejoras significativas durante los picos de actividad.",
+      "relaciones": [],
+      "cita_textual": "We also report the measures of transaction costs measured by spreads, absolute and proportional, and depth, the quoted number of shares."
+    },
+    {
+      "nombre": "effective spread",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Diferencia calculada basándose en el doble del valor absoluto entre el precio de transacción y el precio intermedio entre el bid y el ask.",
+      "relaciones": [
+        {
+          "tipo": "MIDE",
+          "objeto": "transaction costs"
+        }
+      ],
+      "cita_textual": "ESPR – effective spread defined as 2 x |PT - PMidpoint|, where PT is the trade price,"
+    },
+    {
+      "nombre": "bid-ask spread",
+      "tipo": "metrica",
+      "definicion_en_contexto": "La diferencia estándar entre el precio de venta (ask) y el de compra (bid) expresada en dólares, descrita en el texto como quoted spread.",
+      "relaciones": [
+        {
+          "tipo": "MIDE",
+          "objeto": "transaction costs"
+        }
+      ],
+      "cita_textual": "QSPR – quoted spread defined as PASK – PBID and measured in dollars,"
+    },
+    {
+      "nombre": "VWAP",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Benchmark popular de calidad de ejecución que podría forzar a algoritmos sin anclajes temporales a interactuar durante los picos horarios para asegurar volumen.",
+      "relaciones": [],
+      "cita_textual": "The reason for such influence could be the commonly used VWAP quality of execution benchmark."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Existe una marcada monotonicidad en el aumento del volumen y cantidad de operaciones al acercarse a las marcas horarias más exactas, con un efecto mayor en horas y medias horas frente a divisiones de 10 o 5 minutos.",
+      "mercado": "US equities",
+      "periodo": "2003-2006",
+      "magnitud": "15.7% mayor volumen y 18.3% más trades en las horas en punto.",
+      "condiciones": "Promediado de trades y quotes de 33 activos en ventanas de 30 segundos, omitiendo los primeros y últimos 5 minutos del día.",
+      "robustez": "media",
+      "cita_textual": "reaching as high as 15.7% higher on the full hour marks for volume and 18.3% higher for the number of trades."
+    },
+    {
+      "afirmacion": "La concentración de volumen en intervalos regulares no mejora la liquidez, sino que empeora el impacto en el precio, lo que desmiente que la agrupación obedezca a una racionalización de los costos de transacción.",
+      "mercado": "US equities",
+      "periodo": "2003-2006",
+      "magnitud": "El impacto en precio aumenta un 10% en horas en punto y 10 minutos, y un 8% en la marca de media hora.",
+      "condiciones": "Evaluado mediante regresiones de métricas de liquidez sobre variables dummies de marcas de tiempo.",
+      "robustez": "media",
+      "cita_textual": "The impact increases by over 10% for the full hour and ten minute marks and by over 8% for the half hour mark."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "alta",
+    "nota": "Permite ajustar estrategias tipo VWAP/TWAP e inferir posibles shocks temporales de microestructura en el ES cerca de horas en punto y franjas cada 10-30 mins, donde la liquidez es ilusoria y el impacto en precio es mayor."
+  }
+}

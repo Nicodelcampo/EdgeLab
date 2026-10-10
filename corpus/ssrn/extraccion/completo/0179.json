@@ -1,0 +1,138 @@
+{
+  "doc_id": 179,
+  "titulo": "Impact of ASIC's Cost Recovery Regulation on High Frequency Trading and Market Quality in Australia",
+  "resumen_operativo": "El estudio evalúa el impacto del cost recovery regulation de ASIC (enero 2012) sobre el high frequency trading y la calidad de mercado en Australia, usando el order-to-trade ratio (OTT) como proxy de HFT. Se encuentra una reducción del 6.1% en OTT, 2.3 puntos básicos en el relative quoted spread, 0.4 puntos básicos en el relative effective spread y un aumento del 17.65% en quoted dollar depth. Se usa 2SLS IV con efectos fijos para abordar la endogeneidad entre liquidez, volatilidad y precio.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "Order-to-Trade Ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Ratio entre el tráfico de mensajes (órdenes, correcciones, cancelaciones) y las operaciones ejecutadas, usado como proxy de actividad HFT. Un OTT alto indica mayor actividad de high frequency trading.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "high frequency trading"},
+        {"tipo": "EQUIVALE_A", "objeto": "OTT"}
+      ],
+      "cita_textual": "We employ the order-to-trade ratio (OTT) as a proxy for HFT trades and examine the relationship between high OTT trading activities and liquidity based market quality metrics."
+    },
+    {
+      "nombre": "Relative Quoted Spread",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Diferencia entre el mejor bid y ask dividida por el midpoint, medida de coste de transacción. Tras la regulación ASIC, se redujo en 2.3 puntos básicos.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "market quality"},
+        {"tipo": "PARTE_DE", "objeto": "bid-ask spread"}
+      ],
+      "cita_textual": "This study finds a 6.1% reduction in OTT, a 2.3 basis point reduction in relative quoted spread, a 0.4 basis point reduction in relative effective spread."
+    },
+    {
+      "nombre": "High Frequency Trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Actividad de trading de alta velocidad y baja latencia que en Australia representa el 27% del turnover total en el mercado lit (ASIC, 2015a). Genera alto tráfico de mensajes y está sujeta a cargos de cost recovery.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "order-to-trade ratio"},
+        {"tipo": "CAUSA", "objeto": "high messaging traffic"}
+      ],
+      "cita_textual": "The increase in HFT is also evidence in Australia where HFT now accounts for approximately 27% of total turnover in the lit market (ASIC, 2015a)."
+    },
+    {
+      "nombre": "Quoted Dollar Depth",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Profundidad del order book en dólares al mejor bid y ask. Aumentó un 17.65% tras la regulación, indicando mejora en la liquidez del mercado.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "market liquidity"},
+        {"tipo": "PARTE_DE", "objeto": "market quality"}
+      ],
+      "cita_textual": "A 17.65% increase in quoted dollar depth after the introduction of ASIC's cost recovery regulation."
+    },
+    {
+      "nombre": "Relative Effective Spread",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Diferencia entre el precio de transacción y el midpoint, como porcentaje del midpoint. Captura el coste real de ejecución. Se redujo 0.4 puntos básicos post-regulación.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "execution cost"},
+        {"tipo": "EQUIVALE_A", "objeto": "transaction cost measure"}
+      ],
+      "cita_textual": "A 0.4 basis point reduction in relative effective spread."
+    },
+    {
+      "nombre": "2SLS Instrumental Variable Regression",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Regresión de mínimos cuadrados en dos etapas con variable instrumental y efectos fijos para abordar la endogeneidad entre medidas de liquidez, volatilidad y precio de las acciones.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "market quality metrics"},
+        {"tipo": "MITIGA", "objeto": "endogeneity bias"}
+      ],
+      "cita_textual": "We perform a 2SLS IV fixed effect regression to address the endogeneity issue between liquidity measures, volatility and share prices."
+    },
+    {
+      "nombre": "Natural Experiment",
+      "tipo": "metodo",
+      "definicion_en_contexto": "La introducción de la regulación de cost recovery de ASIC el 1 de enero de 2012 crea un experimento natural para examinar el impacto causal de los messaging fees sobre HFT y calidad de mercado.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "ASIC cost recovery regulation"},
+        {"tipo": "APLICA_A", "objeto": "causal inference"}
+      ],
+      "cita_textual": "This paper makes use of the natural experiment created by the introduction of ASIC's cost recovery regulation on January 1, 2012."
+    },
+    {
+      "nombre": "Market Quality",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Conjunto de métricas de liquidez y eficiencia del mercado, incluyendo spreads, profundidad y volatilidad. Se mide antes y después de la regulación para evaluar su impacto.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "relative quoted spread"},
+        {"tipo": "USA", "objeto": "quoted dollar depth"}
+      ],
+      "cita_textual": "We examine the relationship between high OTT trading activities and liquidity based market quality metrics."
+    },
+    {
+      "nombre": "Market Capitalization Quartiles",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Segmentación de las acciones en cuartiles por capitalización bursátil para analizar efectos heterogéneos de la regulación. Large caps (Q4) tienen OTT promedio de 3.134, small caps (Q1) de 4.280.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "S&P/ASX 200"},
+        {"tipo": "USA", "objeto": "heterogeneous treatment effects"}
+      ],
+      "cita_textual": "The large cap stocks in quartile Q4 have an average OTT of 3.134 with a standard deviation of 1.175. The small cap stocks in quartile Q1 have a higher average OTT of 4.280."
+    },
+    {
+      "nombre": "Bid-Ask Spread",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Diferencia entre el precio de compra y venta, medida clave de liquidez y coste de transacción en mercados financieros.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "market quality"},
+        {"tipo": "PARTE_DE", "objeto": "transaction cost"}
+      ],
+      "cita_textual": "A 2.3 basis point reduction in relative quoted spread."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Tras la introducción del cost recovery regulation de ASIC, el OTT se redujo un 6.1%, indicando una disminución significativa de la actividad HFT en el mercado australiano.",
+      "mercado": "ASX y Chi-X Australia (S&P/ASX 200)",
+      "periodo": "10 de noviembre de 2011 a 30 de marzo de 2012",
+      "magnitud": "Reducción de 6.1% en OTT (promedio general 3.715, SD 6.2); 162 acciones",
+      "condiciones": "Modelo 2SLS IV con efectos fijos; se excluyen subastas de apertura y cierre",
+      "robustez": "alta",
+      "cita_textual": "This study finds a 6.1% reduction in OTT."
+    },
+    {
+      "afirmacion": "El relative quoted spread se redujo en 2.3 puntos básicos y el relative effective spread en 0.4 puntos básicos tras la regulación, indicando mejora en los costes de transacción.",
+      "mercado": "ASX y Chi-X Australia (162 acciones del S&P/ASX 200)",
+      "periodo": "Nov 2011 - Mar 2012",
+      "magnitud": "-2.3 bps en relative quoted spread; -0.4 bps en relative effective spread; promedio OTT 3.715; mensajes diarios 8,742; volumen diario 2,942,015",
+      "condiciones": "Segmentación por cuartiles de market cap; datos winsorizados al 1% y 99%",
+      "robustez": "alta",
+      "cita_textual": "A 2.3 basis point reduction in relative quoted spread, a 0.4 basis point reduction in relative effective spread."
+    },
+    {
+      "afirmacion": "El quoted dollar depth aumentó un 17.65% tras la política, sugiriendo que la liquidez mejoró significativamente después de la regulación.",
+      "mercado": "ASX y Chi-X Australia",
+      "periodo": "Nov 2011 - Mar 2012",
+      "magnitud": "+17.65% en quoted dollar depth",
+      "condiciones": "2SLS IV fixed effect panel regression; controlando por endogeneidad de liquidez, volatilidad y precio",
+      "robustez": "alta",
+      "cita_textual": "A 17.65% increase in quoted dollar depth after the introduction of ASIC's cost recovery regulation."
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "Trabaja con datos intradía (order book millisegundo) excluyendo subastas; métricas de spread y profundidad son directamente aplicables a estrategias intradía."}
+}

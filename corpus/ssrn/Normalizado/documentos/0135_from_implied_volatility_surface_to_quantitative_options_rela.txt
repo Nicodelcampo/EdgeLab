@@ -1,0 +1,2132 @@
+Electronic copy available at: http://ssrn.com/abstract=2143101
+From Implied Volatility Surface To Quantitative
+Options Relative Value Trading ∗
+Daniel Bloch †
+Working Paper
+7th of September 2012
+Abstract
+The only thing one can say about ﬁnancial markets is that parsimonious information on option prices
+is available in time and space, and that we can only use the No-Dominance law (or stronger version of NoArbitrage) to account for it. Thus, one requires a consistent model to assess relative value between them.
+We describe a single parametric model for the entire volatility surface with interpolation and extrapolation
+technique generating a smooth and robust implied volatility surface without arbitrage in space and time.
+Prices can now be generated such that the No-Dominance principle is preserved, and one can safely
+assess relative value between them. In order to perform statistical analysis of the relationships between
+points on the implied volatility surface (IVS), we are left with ﬁnding a way of modeling dynamically the
+agents rational anticipations. We assume that the volatility surface is dynamically modiﬁed according
+to the stock price realisations. Having related the stock price level to the implied volatility surface, we
+use their respective historic evolution to characterise the transition probabilities, that is, the conditional
+densities. A statistical technique is used to regress the observed implied smile against the realised stock
+level. Therefore, the current stock evolution directly inﬂuences its future increment which means that,
+given the stock price at a future time, the conditional density is known.
+Implied Volatility Surface, Calibration, Options Relative Value, Quantitative Strategies, Statistical Dynamics Of The Smile
+1
+Introduction
+The Black-Scholes model
+[1973] for pricing European options assumes a continuous-time economy where
+trading can take place continuously with no diﬀerences between lending and borrowing rates, no taxes and
+short-sale constraints. Investors require no compensation for taking risk, and can construct a self-ﬁnancing
+riskless hedge which must be continuously adjusted as the asset price changes over time. In that model,
+the volatility is a parameter quantifying the risk associated to the returns of the underlying asset, and it is
+the only unknown variable. However, since the market crash of October 1987, options with diﬀerent strikes
+and expirations exhibit diﬀerent Black-Scholes implied volatilities (IV). Hence, the Black-Scholes formula
+can be used as a mapping device from the space of option prices to a single real number called the implied
+volatilities.
+The out-of-the-money (OTM) put prices have been viewed as an insurance product against
+substantial downward movements of the stock price and have been overpriced relative to OTM calls that will
+∗We are gratefull to Nicole El Karoui, Monique Jeanblanc, Mark Davis, the GRO and the GRM for their useful comments
+and suggestions. All mistakes are ours.
+†Universit´e Paris VI Pierre et Marie Curie, France, dan.bloch@yahoo.fr
+1
+Electronic copy available at: https://ssrn.com/abstract=2143101
+
+Electronic copy available at: http://ssrn.com/abstract=2143101
+pay oﬀonly if the market rises substantially. As a result, the implicit distribution inferred from option prices
+is substantially negatively skewed compared to the lognormal distribution inferred from the Black-Scholes
+model. That is, given the Black-Scholes assumptions of lognormally distributed returns, the market assumes
+a higher return than the risk-free rate in the tails of the distributions.
+In principle, one should use the future volatility in the Black-Scholes formula, but its value is not known
+and needs to be estimated. As a result, practitioners use the implied volatility when managing their books,
+assuming that the IV bears valuable information on the asset price process and its dynamics. Hence, acknowledging the limitations of the Black-Scholes model, traders keep having to change the volatility assumption in
+order to match market prices. Therefore, as explained by Fengler [2005], the information content of the IV
+and its capability of being a predictor for future asset price volatility is of particular importance on trading
+markets. It is assumed that the IV bears valuable information on the asset price process and its dynamics
+which can be exploited in models for the pricing and hedging of other complex derivatives. One of the reason
+being the existence of highly liquid option and futures markets dated back from the early nineteen-nineties.
+In an eﬃcient market, options instantaneously adjust to new information such that the IV predictions do
+not depend on the historical price or volatility series. The overall consensus of the literature is that IV based
+predictors do contain a substantial amount of information on future volatility and are better than only time
+series based methods. Nonetheless most authors conclude that IV is a biased predictor.
+As opposed to traditional ﬁelds of Applied Mathematics where fundamental laws exist, ﬁnancial markets
+only obey the No-Dominance principle (monotonicity rule), so that modeling is based upon comparison
+between assets (information driven). For instance the Black-Scholes model derives the price of an option by
+comparison to the underlying asset price. Hence, we need to incorporate the relevant information in the model
+(objective driven). Information being diﬀerent from one market to another, the relevant criterion depends
+on the objective for which the model is built, such as prediction, hedging, risk management etc. Therefore,
+the nature of the model depends on the corresponding market and its ﬁnal objective. In the same spirit as
+Blyth [2004], we want to establish a consistent framework for relative-value volatility trading that enables
+identiﬁcation of value within the universe of equity, FX, or commodity liquid option products. The logicist
+approach is concerned with reasoning and more speciﬁcally with what we can say about the derivatives
+markets (see Dempster
+[1998]).
+It requires choices, necessarily subjective, driven by the judgement of
+the investigator, about which objective features to include or omit in the modeling formulation. Careful
+assessment is required.
+This is to oppose to the pragmatic approach which is usually adopted whereby
+the simplest model that gives a price for the relevant instrument is used for pricing and risk management.
+Following the logicist approach, the only thing we can say about ﬁnancial markets is that parsimonious
+information on option prices is available in time and space, and that we can only use the No-Dominance
+law (or stronger version of No-Arbitrage) to account for it. Further, options on a single stock with diﬀerent
+strikes and maturities are functions of the same IV surface and depend in non-trivial ways on the same
+underlying dynamics. As a result, when analysing volatility surfaces, it makes little sense to consider an
+option with maturity T and strike K as an independent instrument with its own volatility. Thus, one requires
+a consistent model to assess relative value between them.
+To perfectly know the future expected dynamics of the underlying stock price requires the knowledge
+of call prices for all strikes and maturities, but since in practise we can only observe a few market prices
+from standard strikes and maturities, the market is therefore incomplete and there are more than one acceptable price (volatility) surfaces satisfying the no-arbitrage conditions. As a result, proper option portfolio
+management requires suitably chosen interpolation and extrapolation techniques of the IV surface, forcing
+practitioners to use a fully speciﬁed model. The standard approach is to interpolate and extrapolate market prices or volatilities to complete the market. Practitioners use the Black-Scholes implied volatility and
+smooth the prices in a parabolic way to generate the missing prices. Due to the diﬃculty of deﬁning a single
+parametric function for the entire volatility surface, a typical solution is to estimate each smile independently
+2
+Electronic copy available at: https://ssrn.com/abstract=2143101
+
+with some nonlinear function. Then, the IV surface is reconstructed by interpolating total variances along
+the forward moneyness. One way forward is to interpolate the smile within the region of observed prices with
+a polynomial as was done by Malz [1997] and to cut the volatility outside that region. Similarly, Daglish,
+Hull and Suo [2006] performed a Taylor expansion up to the second order of the implied volatility surface
+around the money forward level. Alternatively, one can ﬁt with little control a parametric form for the
+implied volatility derived from a model which is usually the result of an asymptotic expansion of a stochastic
+volatility model, see for examples Hagan et al.
+[2002] or Gatheral [2006]. However, direct interpolation
+and extrapolation of implied volatility surfaces does not guarantee a resulting smooth risk-neutral density,
+hence a proper local volatility surface.
+In a market with a limited number of prices, a model of interpolation and extrapolation of the volatility
+surface should have few parameters with the ability of mapping a large family of surfaces.
+Among the
+diﬀerent techniques proposed for obtaining a smooth volatility surface from market prices, Rebonato et
+al.
+[2004] argued that modeling directly the density was the most desirable approach. They extended the
+mixture of normals approach proposed by Alexander [2001], obtaining a density with non-zero skew and
+satisfying the risk-neutral forward condition while retaining an unconstrained numerical search. However, in
+markets with long maturity products and discrete dividends such as the Japanese market, it is important for
+model pricing to obtain a reliable volatility surface satisfying the no-arbitrage constraint not only in space
+but also in time. So, we intend to generate a surface without arbitrage in time and in space as closely as
+possible from the market data.
+Interpolation techniques to recover a globally arbitrage-free call price function have been proposed by
+Kahal´e [2004] where he considered a piecewise convex polynomials, and by Wang et al. [2004] who suggested
+the use of a cubic B-spline interpolation. Later, Fengler
+[2009] considered smoothing call prices with a
+natural cubic splines by choosing to minimise a penalised sum of squares resulting in an iterative quadratic
+minimisation problem under constraints. Similarly, we propose in Section (5.2) to impose smoothness and
+value constraints directly on the market prices and their resulting implied volatility surface. We impose the
+market prices to satisfy the no-arbitrage conditions and we smooth the implied volatility surface by ﬁtting a
+special functional form to the observed market prices. We consider in Section (5) a parametric representation
+of the market call prices under constraints in order to smooth the data and get nice probability distribution
+function (pdf). We use the Diﬀerential Evolution algorithm described by Bloch et al. [2011] to calibrate the
+model’s parameters to a ﬁnite set of option prices. Using the properties of our parametric model, in Section
+(5.3) we compute analytically the Greeks of the model. Similarly to Ingersoll [1998], we let the Digital Bond
+be the value at time t of receiving one dollar at the maturity T if and only if a probabilist event occurs, while
+the Digital Share is the value at time t of receiving one share of the stock at the maturity T if and only if a
+probabilist event occurs. In Section (5.4), we obtain analytical solution to the Digital Bond and the Digital
+Share in the special case where the instantaneous volatility of the stock price is a deterministic function
+of time and the stock price. In Section (5.5), using closed-form solutions for European options and Digital
+options, we infer analytically the skew and curvature of the parametric model for all strikes and maturities.
+Deﬁning in Section (2) option relative value, its principle which consists in taking advantage of price
+diﬀerences between related ﬁnancial instruments by simultaneously buying and selling the diﬀerent instruments, can be seen as a directional bet on the expected future dynamics of the underlying stock price. Hence,
+one need to provide traders with tools capable of properly quantifying market arbitrages to option prices,
+together with tools modeling dynamically the agents rational anticipations. Since parsimonious information
+is available in time and space, and since we can only use the No-Dominance law to account for it, our parametric model reaches its objectives by ﬁtting globally the market prices such that the no-arbitrage in time
+and space is satisﬁed. We are left with ﬁnding a way of modeling dynamically the agents belief of future
+evolution of the stock price returns. Bloch et al. [2002] showed that there exists a link between the implied
+volatility surface and the spot level over time. In Section (6) we take the spot level as driving factor, and
+3
+Electronic copy available at: https://ssrn.com/abstract=2143101
+
+assume that the volatility surface is dynamically modiﬁed according to the realisation of stock prices. Having
+related the stock price level to the volatility surface, we use the historic evolution of the implied volatility
+surface to characterise the transition probabilities, that is, the conditional densities. Then from the implied
+marginal distributions observed on the market, we infer the joint distributions which are consistent with the
+relationship between implied volatility and stock price level over time and satisfy the absence of arbitrage
+(AOA) constraint. This hypothesis implies that European call prices are not time-dependent, that is, do not
+depend on current time but are stock dependent. Therefore, the current stock evolution directly inﬂuences
+its future increment which means that, given the stock price at a future time, the conditional density is
+known.
+2
+Deﬁning option relative value
+Relative value is the attractiveness of one instrument relative to another measured in terms of risk, liquidity, and return. Given that options are a derivative instrument, meaning they derive their value from an
+underlying security, options themselves have value relative to other options. Hence, when comparing two
+options, one option’s value can be deduced from or deﬁned relative to another option’s value. In practise,
+even though options are quoted on the basis of price, option traders assess relative value on the basis of
+volatility. That is, knowing the price of the option, one can solve for the IV of the underlying stock by
+inverting the Black-Scholes formula.
+2.1
+From pair trading to skew trading
+2.1.1
+Pair trading
+One of the simplest relative-value arbitrage called pair trading is an investment strategy that seeks to take
+advantage of price diﬀerences between related ﬁnancial instruments by simultaneously buying and selling
+the diﬀerent instruments, thereby allowing investors to potentially proﬁt from the relative value of the two
+products. The simultaneous purchase and sale of two similar products whose prices are not in synchrony
+with what the trader believes to be ”true value” is called an arbitrage in the hedge funds world. For example,
+acting on the assumption that option prices will revert to their true value over time, traders will sell short
+the overpriced security and buy the underpriced one. Once prices revert to their true value, the trade can
+be liquidated at a proﬁt. It is clear from this example that what hedge funds call an arbitrage is simply the
+fact that their views about the future performance of the underlying asset diﬀer from the market’s view. It
+is a purely directional bet on the expected future dynamics of the underlying stock price. However, in the
+classical option pricing theory, arbitrages are quite diﬀerent (see Shreve [2004]). One can reconcile the two
+approaches by providing the traders with tools capable of properly quantifying market arbitrages to option
+prices, together with tools modeling dynamically the agents rational anticipations.
+2.1.2
+Skew trading
+The IV being a biased predictor of the future volatility, it bears valuable information on the asset price
+process and its dynamics. That is, the options market provides a remarkable outlook on future expectations
+of the value or performance of an underlying asset, allowing traders to compare various strike prices over
+diﬀerent maturities. Since supply and demand ultimately drive prices, traders can learn which options are
+cheap or expensive relative to others, as measured by the implied volatility of each option. This relative
+value is deﬁned as options skewness, or skew, and can be used to identify trading opportunities. Trading
+”with” the skew is deﬁned as buying higher valuation options and selling lower valuation options, while
+trading ”against” the skew is deﬁned as buying lower valuation options and selling higher valuation options.
+Traders can then use quantitative tools and decide to either trade ”with” or ”against” the skew or smile.
+Even though there are diﬀerent explanations for the skew, one of the most straightforward is leverage. Skew
+4
+Electronic copy available at: https://ssrn.com/abstract=2143101
+
+is priced to reﬂect the market’s assessment of future risk, which takes into account an asset’s current price,
+pricing trends, and the potential for a sudden price jump in either direction. The basis of skew is that
+even though options are founded on a risk-neutral concept, market participants have risk proﬁles that aﬀect
+the supply-demand relationship of the options market. For example, many equity option traders tend to
+sell upside calls and purchase downside puts (termed options collar) to reduce their overall risk exposure.
+Given that many participants have predetermined preferences, options with lower strikes tend to have higher
+implied volatilities relative to options with higher strikes. Consequently, if you believe that the skew is
+wrongly priced, then the market is either underestimating or overestimating the probability of a large upside
+or downside move in the underlying instrument. Hence, one can look at the volatility skews of an index or
+a single stock over diﬀerent maturities and compare their relative predicting power for the movement of the
+underlying index or stock. For example, in the case where the short term months have very low implied
+volatilities relative to intermediate term options, it is usually the case that the options market is expecting
+news likely to move the index or stock in a dramatic way in a few months’ time, but not in the shorter term.
+The trading strategies should be based on the trader’s prediction for market movements, or lack thereof,
+relative to market expectations (in the time period selected). However, one must recognise the conditions
+where a strategy might fail.
+2.1.3
+Taking a view on the Skew
+When trading ”with” the skew, the market is willing to overpay for a certain strike price or time frame. A
+trader can purchase the higher implied volatility and sell a diﬀerent strike price or month at a lower implied
+volatility. He chooses to purchase higher-valued options and sell lower-valued options because his market
+forecast could mirror the options market (more demand relative to supply creates the skew) where he gives
+away theoretical edge. Alternatively, he can trade ”against” the skew, assuming he forecasted a symmetric
+event and wanted to gain theoretical edge by selling higher-valued options and buying lower-valued options.
+Trading against the skew is a ”reversion to the mean” strategy, meaning that we are implementing an options
+strategy that beneﬁts from a more normalised trading scenario (think of symmetrical rather than asymmetric
+underlying moves).
+Recall, ”cheap” or ”expensive” attributions are based on a symmetric mathematical
+options model, such as the Black-Scholes formula. For example, if the trader believes the market will remain
+calm in the near-term but that, in the coming months, it’s going to become more volatile, he can implement
+a long calendar position. This is considered trading ”with” the skew if the shorter-dated options are priced
+much cheaper than the longer-dated options. There are many variations of trading ”with” the skew. The
+only requirement is that the option you sold has a lower implied volatility than the option you purchased.
+To conclude, since the IV is an indicator of potential outcomes for an underlying asset, with insight into
+market expectations, traders can choose to trade ”with” the skew (smile) or ”against” it.
+2.2
+Accounting for the dynamics of the IV surface
+The main idea behind relative value is that the goodness of the model is not so important as long as it
+is applied consistently across all option prices. That is, one focus on the price of options relative to each
+other. In general, many traders believe that to take advantage of skew opportunities they should plan to
+buy undervalued options and sell overvalued options. That is, whether the individual options in a speciﬁc
+market are out of line relative to each other, and not whether the market is out of line with the model.
+But, what does it mean to say that an option is undervalued or overvalued? The valuation of most assets is
+normally approached on a relative basis. In practise, most hedge funds assume stock prices are lognormally
+distributed, but the actual price distributions in all markets tend to have fatter tails than suggested by the
+lognormal distribution. As a result, in the real world extreme price movements occur far more frequently
+than implied by the standard Black-Scholes assumptions. Hence, in reality it makes more sense to be a
+buyer of deep OTM options than might be suggested by the model. Consequently, if you blindly believe
+the lognormal assumption, you would be selling more OTM options than you should, leading to potential
+5
+Electronic copy available at: https://ssrn.com/abstract=2143101
+
+big losses. Hence, traders should be wary of making blind assumptions about options being undervalued or
+overvalued.
+2.3
+Relating long-dated options to short-dated options
+2.3.1
+A mean-reverting volatility process
+Central to trading options is some understanding of the fundamental forces that aﬀect market volatility.
+Volatility in ﬁnancial markets tends to be a mean reverting process. One of the reason for volatility to be
+mean-reverting is that it can not be explosive, and implied volatilities can not deviate too far from their
+central tendency. As a result, the further away volatility gets from its long term average or normal level, the
+greater the likelihood that it will move back towards its mean. This property violates the constant volatility
+assumption of some major options valuation models, such as the BS model. Thus, an understanding of the
+mean reverting nature of the volatility process enables someone taking an option’s position to recover the
+market’s implicit beliefs about the dynamics of volatility as the option moves through time. If volatility is
+a mean-reverting process, then clearly buying or selling it at extreme levels should be a proﬁtable trading
+strategy. However, an options position has both a spot directional and a volatility component, making the
+strategy less trivial than expected. While volatility drops, as it should in a mean reverting process, the move
+in the spot price may rendered the position unproﬁtable. In addition, implied volatilities have to drop faster
+than the forward volatility curve anticipates for the position to make money.
+2.3.2
+Modeling the term-structure of volatility
+Options at diﬀerent dates or tenors Ti for i = 1, .., n reveal a term structure of implied volatilities that is
+a useful tool in relative value analysis. Long dated options are priced relative to the value of short dated
+options. The eﬀect is similar to that observed in ﬁxed income yield curves. In general, long dated implied
+volatilities do not fully respond to transitory movements in short-dated implied volatility because of the mean
+reverting nature of the series. That is, a shock to short-dated volatility is likely to dissipate over a longer
+time interval as the market reverts to its normal or average level. Finally, greater volatility of short-dated
+volatility reduces the value of short dated volatility as a benchmark for valuing long dated volatility. As
+a result, it tends to lower long-dated implied volatilities. Using this intuition, practitioners (see Simpson
+[2003]) have devised statistical models where the term-structure of the IV is a function of two factors, the
+short-dated volatility and the volatility of short-dated volatility
+σl(t) = α + β1σs(t) + β2σ2
+s(t) + ϵ
+where σl(t) is the volatility of the long-dated options and σs(t) is that of the short-dated option.
+The
+parameters of the model are α and βi for i = 1, 2 and ϵ is a white noise. Deviations from the expected
+values from this econometric model suggest a useful approach to determining whether implied volatilities in
+a speciﬁc portion of the yield curve are expensive or cheap.
+2.4
+Some trading strategies
+We saw in the Section (2.1) that having insight into market expectations of the future dynamics of the
+underlying price returns enables traders to deﬁne trading strategies. It requires skills originating from risk
+management and leveraged to systematic speculation, such as single surface risk management as well as delta
+and gamma trading. Other examples include vega trading, dispersion and correlation trading. As explained
+by Hutchinson [2011], there exists a large number of option value strategies among which the most famous
+one are
+1. Volatility Surface Relative Value. It optimises a portfolio of long and short option positions, on the
+same underlying security, to harvest gains from changes in the shape of the volatility surface.
+6
+Electronic copy available at: https://ssrn.com/abstract=2143101
+
+2. Implied Correlation / Dispersion. It trades the relative value relationship between the implied volatility
+of an Index option and the implied volatilities of the Component Stocks that comprise the Index.
+3. Capital Structure Arbitrage.
+It trades the relative value relationship between options on various
+segments of the capital structure of an individual company, or the options embedded in the same.
+4. Generic Volatility Long/Short. It trades the relative value relationship between options on a full array
+of securities, and is not limited to one underlying security or issuer of securities.
+5. Directional Volatility. It creates an option portfolio that exhibits a continuous short or long exposure
+to changes in implied volatility.
+Options on single stocks or indices with diﬀerent strikes and maturities being functions of the same IV
+surface and depending in non-trivial ways on the same underlying dynamics, one requires a consistent model
+to assess relative value between them. Since parsimonious information is available in time and space, and
+since we can only use the No-Dominance law to account for it, our model must ﬁt globally the market
+prices such that the no-arbitrage in time and space is satisﬁed. We are left with ﬁnding a way of modeling
+dynamically the agents rational anticipations in order to infer relative value between option prices and take
+advantage of their diﬀerences over time.
+2.5
+Some fundamental analysis
+2.5.1
+Volatility surface relative value
+As discussed previously in Section (2.4) many relative value strategies exist, and we are going to concentrate
+on volatility surface relative value. Note, as the IV surface is a three-dimensional array obtained by plotting
+the inverted option prices along two axes, the time to maturity and the strike prices, one must rely on tools
+quantifying the relative value of option prices not only on space but also on time. Since the IV surface
+changes shape as investors change their expectation of risk to come, and thus the price they are willing to
+pay for options on the surface, one can evaluates the IV surface and optimises a portfolio of long and short
+option positions. For example, point pairs on the surface may be initiated when the pair relationship is at
+statistical extreme, or it reﬂects misplaced expectations. In that setting the investment strategy relies on
+some fundamental analysis consisting of
+• examination of the IVS
+• analysis of option market values relative to model values
+• statistical analysis of relationships between points on the IVS
+• objective consideration of factors aﬀecting expectations of risk (IVS dynamics)
+Then the trades are implemented and executed based on some targeted opportunities. Notes, trades can
+also be identiﬁed for risk management purposes by oﬀsetting aggregated portfolio sensitivities (Greeks). In
+general the market volatility surface is analysed relative to a model volatility surface and an electronic eye
+is used to identify and display trade opportunities. Using quantitative tools, traders should be able to assess
+opportunities, identify hedges and execute orders. Therefore, one can identify potential opportunities by
+proﬁling a smile of IV generated by proprietary modeling against the IV of options actually observed in the
+market place. For instance, one can consider cheap IV versus model as well as the expensive one against
+model. For that relation to exist the model must be arbitrage-free, not just in space but also in time. In
+addition, the market surface can also be described statistically by looking at the relationship between each
+point. For example, one can look at the ratios and spreads of 10% OTM puts for various maturities, placed
+in one-year historical context via a percentile calculation. A pair with a Vol Ratio Percentile of less than
+15% would be coloured blue or green, while high ratios would be coloured red.
+7
+Electronic copy available at: https://ssrn.com/abstract=2143101
+
+2.5.2
+Dispersion relative value
+Assuming that we know the IV of a portfolio (or index) together with the weights and IV of the individual
+stocks in the portfolio, we can solve for the expected correlation also called the implied correlation (IC). The
+IC is traded via positions in single stock options oﬀset by index option positions. As the relationship between
+index volatilities and their component stock volatilities change quite a lot over time, so does the implied
+correlation. The IC is usually viewed by practitioners as one of the option market’s expectation of systematic
+risk. In principle it is increasing when investors sell stocks, and decrease as more benign expectations ﬁlter
+in.
+The growth of the variance swap (VS) market and the success of the VIX raised the proﬁle of volatility
+trading as an asset being negatively correlated to the underlying equity market. Rather than solving the
+diﬃcult questions of knowing which volatility to own, and how to mitigate the expense of decay, the VS
+is a liquid, non-strike dependent hedge. One strategy consists in owning a basket of single stock volatility,
+assuming that volatilities would increase when the underlying shares sell oﬀ, and then take advantage of the
+elevated implied correlation. Rather than selling the basket of single volatility, the relatively more elevated
+index volatility is sold against the basket of single stock volatilities. Based on empirical studies, it is assumed
+that a basket of higher beta single stock volatilities may have a larger absolute move up than index volatility
+during a sell-oﬀ. However, single stock volatility having wider bid/oﬀer spreads, exhibit a greater expected
+cost over the course of a year, and potentially unmanageable bid/oﬀer spreads. In addition, the relationship
+between single stock volatilities and index volatility may not perform as historically expected, leading to
+basis risk. Nonetheless, some opportunities each year to sell elevated index volatility present the possibility
+of signiﬁcantly mitigating the expense.
+3
+Understanding the mechanisms behind option relative value
+Given the deﬁnition of option relative value in Section (2), one must be able to evaluate risk, liquidity, and
+returns from the ﬁnancial instruments to infer their attractiveness.
+3.1
+The inconsistencies of the BS model
+The Black-Scholes model
+[1973] for pricing European options assumes a continuous-time economy where
+trading can take place continuously with no diﬀerences between lending and borrowing rates, no taxes and
+short-sale constraints. Investors require no compensation for taking risk, and can construct a self-ﬁnancing
+riskless hedge which must be continuously adjusted as the asset price changes over time. To the extent
+that the world deviates from the BS assumptions of constant volatility and a lognormal distribution to price
+changes, the BS model will be biased in certain, often predictable ways (see Hull and White
+[1987]). In
+reality, since the volatility is not constant it has a major impact on the values of certain options, especially
+those options that are away from the money, because the dynamics of the volatility process rapidly change
+the probability that a given out-of-the-money (OTM) option can reach the exercise price. Hence, the BS
+model consistently underestimates the value of an option to the extent that volatility is stochastic rather
+than constant as assumed. It is well known in the literature that both the crash fears and the volatility
+evolution are explanatory factors for the negatively skewed implicit distribution and that each of them implies
+a diﬀerent relationship between the option maturity and the implicit skewness. Stochastic diﬀusion models
+imply a direct relationship between the option maturity and the magnitude of the implicit skew while that
+relationship is inversed in a ﬁnite variation jump model. This is because jump components address moneyness
+biases while having stochastic latent variables allows distributions to evolve stochastically over time. A second
+major assumption of the BS model is that the underlying returns are normally distributed with a variance
+proportional to the length of time over which the asset trades. However, a number of academic studies
+show that the underlying price movements are neither normally nor lognormally distributed. Many ﬁnancial
+8
+Electronic copy available at: https://ssrn.com/abstract=2143101
+
+assets exhibit more skewness and kurtosis than it is consistent with the Geometric Brownian Motion model of
+Black-Scholes. According to Bakshi et al. [1997] only a combination of jump and stochastic volatility models
+is capable of capturing the IVS. Similarly, Bates [2000] studied empirically the impact of each explanatory
+factors on the shifted distribution and concluded that one need a combination of both to recover a good ﬁt
+to the market distribution. Again, the problem with the distributional assumption of the BS model means
+that it generally underestimates equity or FX option values because the likelihood of having an extreme
+price movement is greater than the model expects.
+3.2
+Accounting for the market price of risk
+When in incomplete market, we can not perfectly hedge an equity derivative, but we can divide the asset
+into two pieces, one which is hedgeable and the other being totally unhedgeable where the hedgeable portion
+can be priced using arbitrage-free arguments. However, market practise consists in using the Black-Scholes
+formula as a tool for representing market risk via the implied volatility surface and then devise hedging
+strategies based on the ﬁrst component of the option value. Even though most if not all the assumptions in
+the Black-Scholes model do not correspond to market realities, it gives a robust representation of market’s
+behaviour and should be used to guide us toward the correct market value (see El Karoui et al. [1998]). In
+that model, volatility is the only unknown variable when pricing options and as such it is the only parameter
+quantifying the risk associated to the returns of the underlying asset. In the Black-Scholes formula, the
+option price is equivalent to the cost of continuously hedging the option, but in practise dynamic hedging is
+not a risk-free proposition. Moreover, additional risks must be taken into consideration such as changes in
+volatility, changes in interest rates, changes in dividends, trading costs and liquidity. As a results, all these
+risks are incorporated into the implied volatility in such a way that the skew can be seen as the view from
+the market that options with diﬀerent strikes and diﬀerent expiries have diﬀerent risks and should be valued
+accordingly. That is, one expect a normal behaviour of the stock prices near ATM options which can be
+reasonably hedged, but when the stock prices exhibit large downward movements, the fear of non-headgeable
+jumps dominate. For example, in the case of short maturity options where OTM put prices should have a
+zero market value, they actually exhibit positive values representing exclusively a market risk premium. As
+discussed by Figlewski [1989] the IV is a free parameter containing expected volatility and everything else
+that aﬀects option demand and supply but it is not the model, making it very diﬃcult to disentangle the
+diﬀerent factors. Once the market price of risk has been implicitly entered into the pricing equation, the
+traders are left to deﬁne their hedging strategies. For example, when delta hedging, the traders make the
+derivative of the portfolio with respect to the stock price zero at a point, but the portfolio still change in
+value if the asset moves a short distance from that point. However, if the distance is small, the change in
+value will be proportional to its square, whereas for a non delta hedged portfolio the change will be linear in
+the distance (see Fengler [2005]). Fortunately, one simpliﬁcation to the trader’s position arises from the fact
+that he will have bought and sold many diﬀerent options on the same underlying. Each of these options has
+a delta and since in a complete market the model is linear, the traders can hedge them all by simply adding
+their deltas together. As the deltas of long and short positions have opposite signs, and if the portfolio is a
+mixture of such positions, the deltas will at least partially cancel each other.
+3.3
+Modeling the asset returns
+Alternative explanations, from jump-diﬀusion process for the dynamics of the underlying stock, for the
+divergence between the risk-neutral distributions and observed returns include peso problems, risk premia
+(see Lettau et al.
+[2003] and Novales et al.
+[2003]) and option mispricing but no consensus has yet been
+reached. The notion that equity returns exhibit stochastic volatility is well documented in the literature,
+and evidence indicates the existence of a negative volatility risk premium in the options market (see Bakshi
+et al.
+[2003]). CAPM suggests that the only common risk factor relevant to the pricing of any asset is
+its covariance with the market portfolio, making beta the right measure of risk. However, excess returns
+9
+Electronic copy available at: https://ssrn.com/abstract=2143101
+
+on the traded index options and on the market portfolio explain this variation, implying that options are
+non-redundant securities. As a result, Detemple et al.
+[1991] argued that there is a general interaction
+between the returns of risky assets and the returns of options, implying that option returns should help
+explain stock returns. That is, option returns should appear as factors in explaining the cross section of
+asset returns. For example, Bekaert et al.
+[2000] investigated the leverage eﬀect and the time-varying risk
+premium explanations of the asymmetric volatility phenomenon at both the market and ﬁrm level. They
+found covariance asymmetry to be the main mechanism behind the asymmetry for the high and medium
+leverage portfolios. Negative shocks increase conditional covariances substantially, whereas positive shocks
+have a mixed impact on conditional covariances. While the above evidence indicates that volatility risk is
+priced in options market, Arisoy et al. [2006] used straddle returns (volatility trade) on the S&P 500 index
+and showed that it is also priced in securities markets. As a result, one can assume the existence of arbitrage
+over short maturity option prices by assuming a non-null market risk premium. Similarly to the commodity
+markets where the holder of the spot is compensated for holding one unit of inventory in case of shortage,
+we can compensate the holder of the spot in the equity market for the risk of a large downward jumps.
+4
+The equity setup
+We consider the probability space (Ω, F, P) where Ft is a right continuous ﬁltration including all P negligible
+sets in F. For simplicity, we let the market be complete and assume that there exists an equivalent martingale
+measure Q as deﬁned in a mixed diﬀusion model by Bellamy and Jeanblanc [2000]. We let the underlying
+process (St)t≥0 be a one-dimensional Ito process valued in the open subset D with dynamics under the
+risk-neutral measure Q being
+dSt
+St
+= µ(t, St)dt + σ(t, St)dWS(t)
+(4.1)
+where the drift µ : D →R as well as the diﬀusion σ : D →R are regular enough to have a unique strong
+solution valued in D. There are various ways of modeling discrete dividends, all resulting in diﬀerent prices
+for path dependent options (see Bos et al.
+[2003]). We are going to introduce some notations on discrete
+dividends, and introduce the pure stock process with its corresponding pure implied volatility.
+4.1
+Discrete dividends
+We are now introducing discrete dividends to the stock price and describe our framework. Given t0 = 0 and
+µt = (r(t)−q(t)) where r(t) and q(t) are deterministic functions of time, we let C(t0, t) = Re(t0,t)
+P (t0,t) = e
+R t
+t0 µsds
+be the capitalisation factor from time zero until time t and Dt be the dividends paid till time t given by
+Dt =
+∞
+X
+i=0
+H(t −tdi)diC(tdi, t)
+with dynamics given by
+dDt = µtDtdt + D
+′
+tdt
+where D
+′
+t = P∞
+i=0 δ(t −tdi)diC(tdi, t). Similarly, the dividends paid from time t till time T and capitalised
+at maturity T are given by
+D(t, T) = DT −C(t, T)Dt
+Discounting these dividends to time t, we get the present value DP V (t; t, T) of the dividends paid between
+t and T
+10
+Electronic copy available at: https://ssrn.com/abstract=2143101
+
+DP V (t; t, T) = D(t, T)
+C(t, T) =
+DT
+C(t, T) −Dt
+Having made an assumtion on discrete dividends, for simplicity of exposition, we are going to consider the
+dynamics of the stock price in the Spot model.
+4.2
+The Spot model
+We can always rewrite the spot price with discrete dividends in terms of a pure process Z with no discrete
+dividends and no rates with the transformation
+St = a(t)Zt + b(t)
+(4.2)
+where a(t) and b(t) are deterministic function of time (see Overhaus et al.
+[2002]). We assume that the
+dynamics of the stock price (St)0≤t≤T in the Spot model and under the risk-neutral measure are given by
+St
+=
+Zt −Dt
+dZt
+Zt
+=
+µ(t)dt + σZ(t, Z)dWZ(t)
+Zt0
+=
+St0
+In that setting the price of a European call option with strike K and maturity T is
+CS(t0; K, T) = P(t0, T)Et0[(ZT −K
+′)+]
+where K
+′ = K + DT . This model is popular mainly due to the fact that when adding the already paid
+dividends to the strike and considering the special case where the volatility σZ is a consant, one can use the
+Black-Scoles formula to compute the call option price.
+4.3
+Pricing simple products : Digital contracts
+Similarly to Ingersoll [1998], we let D(S, t, T; ξ) be the value at time t of receiving $1 at the maturity T if
+and only if the event ξ occurs. Such a contract is called a binary option or a cash-or-nothing option and
+we will call it a Digital Bond. We also let S(S, t, T; ξ) be the value at time t of receiving one share of the
+stock at the maturity T (excluding any intervening dividends) if and only if the event ξ occurs. Such a
+contract is called a all-or-nothing share and we will call it a Digital Stock. Given the process (St)t≥0 and
+the appropriate measure, the price of a call option can be expressed in terms of those quantities as
+C(t, St, T, K)
+=
+P(t, T)Et[(ST −K)+] = P(t, T)Et[(ST −K)IST >K]
+=
+P(t, T)
+ Et[ST IST >K] −KEt[IST >K]
+
+and
+P(t, T)Et[ST IST >K] = C(t, St, T, K) + KP(t, T)Et[IST >K]
+Now from the deﬁnition of a digital option we have Et[IST >K] = −
+1
+P (t,T )∂KC(t, St, T, K) which is approximated with call-spread option, and the Digital Stock becomes
+S(S, t, T; ST > K) = P(t, T)Et[ST IST >K] = C(t, St, T, K) −K∂KC(t, St, T, K)
+11
+Electronic copy available at: https://ssrn.com/abstract=2143101
+
+and can be statically replicated with a call option and a call-spread. Therefore, the pricing of other European
+derivatives with piecewise linear and path-independent payoﬀs only requires valuing Digital Bond and Share
+with event ξ = {L < ST < H} for some constants L and H. For example, the call option price is
+C(t, T, K) = S(S, t, T; ST > K) −KD(S, t, T; ST > K)
+(4.3)
+while the put option price is
+P(t, T, K) = KD(S, t, T; ST < K) −S(S, t, T; ST < K)
+In the special case where the rate, repo and volatility are constants, Cox and Ross [1976] showed that the
+Digital Bond and Digital Share with event ξ = {ST > K} where K is the strike price could be valued under
+the risk-neutral measure with the Black-Scholes formula, that is
+D(S, t, T; ξ)
+=
+EQ[e−
+R T
+t rsdsIST >K|Ft] = e−r(T −t)N(d2(T −t, Ste(r−q)(T −t), K))
+S(S, t, T; ξ)
+=
+EQ[e−
+R T
+t rsdsST IST >K|Ft] = Ste−q(T −t)N(d1(T −t, Ste(r−q)(T −t), K))
+where
+d2(t, x, y) =
+1
+σ
+√
+t log x
+y −1
+2σ
+√
+t and d1(t, x, y) = d2(t, x, y) + σ
+√
+t
+However, when the volatility of the stock price is stochastic, and more generally when the instantaneous
+volatility of the stock price, the spot rate and repo rate are stochastic, one can no-longer use the BlackSholes formula. Under general Markov processes for the model parameters, the conditional probabilities of
+the Digital Bond and Digital Share are diﬃcult to solve analytically under any probability measure, and
+numerical tools must be used. We are going to show that in the special case where the instantaneous volatility
+of the stock price is a deterministic function of time and the stock price, one can obtain analytical solution
+to the Digital Bond and the Digital Share.
+5
+The choice of a volatility model
+Since in practise we can only observe a few market prices from standard strikes and maturities with wide or
+narrow spreads depending on the liquidity on the market and the volume traded, the market is incomplete
+and there are more than one acceptable price (volatility) surface satisfying the no-arbitrage conditions.
+Hence, multiple risk-neutral distributions can ﬁt the option prices so that one needs some additional criteria
+to generate a unique probability distribution function (pdf). To do so, one can either impose a functional
+form to the probability distribution and estimate its parameters using option data, or one can choose nonparametric methods obtaining perfect ﬁt to market data. However, non-parametric methods are less adapted
+to the extrapolation problem than the parametric ones, and they tolerate less control over the generated
+volatility surface. We are therefore going to concentrate on parametric methods.
+5.1
+The standard approach
+The standard approach is to interpolate and extrapolate market prices or volatilities to complete the market.
+Practitioners use the Black-Scholes implied volatility and smooth the prices in a parabolic way to generate
+the missing prices. However, direct interpolation and extrapolation of implied volatility surfaces does not
+guarantee a resulting smooth risk-neutral density, hence a proper local volatility surface. As described by
+Daglish et al.
+[2006], a natural choice would be to perform a Taylor expansion up to the second order of
+the implied volatility surface around the money forward level. In general, the implied volatility is modeled
+with a functional form of the smile around the money forward as
+12
+Electronic copy available at: https://ssrn.com/abstract=2143101
+
+Σ(t, St; K, T −t) = f
+ t, T −t, XT −t
+t
+, Y T −t
+t
+, ZT −t
+t
+; K
+
+where the processes XT −t
+t
+, Y T −t
+t
+and ZT −t
+t
+represent respectively the at-the-money volatility, the skew and
+the curvature of the smile at time t for call options with maturity T i.e. time to maturity T −t. Using
+historical data, some authors studied the dynamics of these process. For instance, assuming an OrnsteinUhlenbeck dynamic for the processes Cont et al. [2002] explained the deformation of the volatility surface.
+Alternatively, Bloch et al.
+[2002] assumed the parameters to be led by the spot process holding the whole
+market risk. When it comes to generating a volatility surface, the evaluation time t is ﬁxed and practitioners
+estimate one set of parameters X, Y and Z per trading maturities. Then they rely on some interpolation
+and extrapolation of parameters in time with no guarantee of satisfying the calendar spread. In the presence
+of discrete dividends, it is not an easy task to satisfy the time constraint given by the calendar spread. For
+example, we consider the functional form
+f(t, T −t, X, Y, Z; K) = X −Y ln
+KP(t, T)
+St
+
++ Z
+
+ln
+KP(t, T)
+St
+2
+(5.4)
+with P(t, T) = e−r(T −t) and X = Σ(t, KP(t, T); KP(t, T), T−t), Y = ∂Σ(t,St;K,T −t)
+∂K
+and Z = ∂2Σ(t,St;K,T −t)
+∂K2
+.
+Note, whatever the shape we take, the smile needs to be caped and ﬂoored in the lowest and highest strikes
+in order to avoid any arbitrage opportunity. If the slope of the smile is to high the implicit pdf can be
+negative. Quantitatively speaking, the implied risk-neutral probability density is given by
+φ(ST , T, St, t) =
+1
+ST Σ
+p
+2π(T −t)
+e−1
+2 d2
+1
+ 
+1 + ST d1
+√
+T −t ∂Σ
+∂K
+2
++ S2
+T (T −t)Σ
+ 
+∂2Σ
+∂K2 −d1
+ ∂Σ
+∂K
+2 √
+T −t
+!!
+with d1 = ln(St/ST )+(r+ 1
+2 Σ2)(T −t)
+Σ√T −t
+. Therefore, if the quantity
+∂2Σ
+∂K2 −d1
+ ∂Σ
+∂K
+2 √
+T −t
+is too negative, which happens when the slope of the smile
+∂Σ
+∂K is to high, the pdf can be negative. This
+means that the European call prices are not the result of the expectancy under the risk-neutral measure of
+future pay-oﬀand therefore allow for arbitrage opportunities 1.
+5.2
+The parametric model
+We are going to use a parametric representation of the market call prices in order to smooth the data and get
+nice probability distribution function (pdf). In order to get a model with a varying number of parameters
+to control the level of accuracy, we consider a weighted sum of interpolation functions taken in a parametric
+family. We want each function to satisfy the no-free lunch constraints in such way that they are preserved
+in the weighted sum.
+Several families can satisfy the No-Free-Lunch constraints, for instance a sum of
+lognormal distribution, but in order to match a wide variety of volatility surfaces the model has to produce
+prices that lead to risk-neutral pdf of the asset prices with a pronounced skew. Since we can always convert
+a density into call prices, we can then convert a mixture of normal densities into a linear combination of
+Black-Scholes formula, see Brigo et al. [2000]. Therefore, to obtain a pronounced skew we consider a sum of
+shifted log-normal distributions, that is, using the Black-Scholes formula with shifted strike (modiﬁed by the
+parameters µi(t)) as an interpolation function. In our parametric model, the market option price CM(K, t)
+of strike K and maturity t is estimated at time t0 = 0 by the weighted sum
+1In reality the slope of the smile can be higher than the one calculated using the risk-neutral measure as the market is
+incomplete. However we restrict ourselves to the complete market assumption.
+13
+Electronic copy available at: https://ssrn.com/abstract=2143101
+
+CM(t0, S0, Pt, Rt, Dt; K, t) =
+n
+X
+i=1
+ai(t)CallBS(t0, S0, Rt, Pt, K(K, t), t, Σi(t))
+(5.5)
+where ai(t) for i = 1, .., n are the weights, and K(K, t) = K
+′(K, t)(1+µi(t)) with K
+′(K, t) = K +Dt. In that
+setting Rt = Re(0, t) is the repo factor in the range [0, t], Pt = P(0, t) = e−rt is the zero-coupon bond price,
+Ct = C(0, t) = Rt
+Pt is the cost of carry and Dt = D(0, t) is the compounded sum of discrete dividends between
+[0, t] deﬁned in Section (4.1). The no-arbitrage theory imposes time and space constraints on market prices.
+Introducing the time dependent parameters ai(t) and µi(t), the simplest way of ensuring these constraints
+is to take the same time dependency for each µ, that is, µi(t) = µif(t, βi). As the pdf of the equity price
+should tend toward a single Dirac when t →0, to get control on µi(t) we choose to let the function f(t, x)
+tend to 1 when t →+∞, getting
+f(t, x) = 1 −
+2
+1 + (1 + t
+x)2
+with f
+′(t, x) = [1 −f(t, x)]2 1
+x(1 + t
+x). Moreover, to keep manageable the no-free lunch constraints, we make
+the weight ai(t) proportional to
+a0
+i
+f(t,βi) for some constant a0
+i > 0 getting the representation
+µi(t) = µ0
+i f(t, βi) and ai(t) =
+a0
+i
+f(t, βi) × norm
+where norm = Pn
+i=1
+a0
+i
+f(t,βi). As a result, with seperable functions of time, the no-free lunch constraints
+simplify to
+a0
+i
+≥
+0
+(5.6)
+n
+X
+i=1
+a0
+i µ0
+i
+=
+0
+µ0
+i
+≥
+−1
+At last, the no-arbitrage condition with respect to time holds if and only if the total variance ν(K, t) =
+Σ2
+imp(K, t)t is an increasing function of time t. Since we chose to model directly the square-root of the
+average variance, to guarantee the positivity of the local volatility we must verify
+Σ2
+i (t) + 2Σi(t)t∂tΣi(t) ≥0
+In the special case where the user has no information on the term-structure of the implied volatility surface,
+we set Σi(t) = di where di > 0. On all the other cases, the user can choose among diﬀerent term-structures
+based on his information of the implied volatility surface. To get a general volatility function capable of
+generating both an upward hump or a downward one, we consider the function
+Σi(t) =
+ ai + bi ln (1 + eit)
+
+e−cit + di
+where ci > 0, di > 0 and ai ∈R, bi ∈R and ei ∈] −1
+t , ∞[. The derivative of the function with respect to
+time t is
+Σ
+′
+i(t) =
+ −aici + bi
+ei
+1 + eit −bici ln (1 + eit)
+
+e−cit
+and the no-arbitrage constraint must satisfy
+14
+Electronic copy available at: https://ssrn.com/abstract=2143101
+
+e−cit
+(1 −2tci)
+ ai + bi ln (1 + eit)
+
++ 2tbi
+ei
+1 + eit
+
++ di ≥0
+Since ai ∈R, at time t = 0 the left hand side of the inequality can becomes negative. Consequently, we must
+impose the constraint
+ai + di > 0
+to get the constraint satisﬁed at t = 0. Further, when t >
+1
+ci then for ci suﬃciently large the constant di
+will dominates
+ ai + bi ln (1 + eit)
+
+ensuring positivity of the left hand side. Hence, at time t = 1
+ci we must
+impose
+di ≥
+ ai −2bi
+ci
+ei
+1 + ei
+ci
++ bi ln (1 + ei
+ci
+)
+
+e−1
+5.3
+Computing the Greeks analytically for European options
+Market risk management of an option portfolio requires simultaneous real-time transparency of the several
+diﬀerent elements that can inﬂuence an option price. Option prices have sensitivities or Greeks to movements
+in market data such as the underlying security, the expected volatility of the underlying security, dividends,
+the passage of time, and interest rates. Assuming that the dynamics of the spot price with discrete dividends
+follow the Spot model described in Section (4.2) with a(t, T) = 1 and b(t, T) = −D(t, T), then our parametric
+model in Equation (5.9) corresponds to a weighted sum of Black-Scholes formulas in the Z-space. In that
+setting, we can compute analytically the Greeks of the parametric model. The derivative of a call option
+price with respect to the spot is
+∂
+∂S0
+CM(t0, S0, Pt, Rt, Dt; K, t) =
+1
+norm
+n
+X
+i=1
+ai(t) ∂
+∂S0
+CallBS(t0, S0, Rt, 1, ˜K(K, t), t, Σi(t))
+where ˜K(K, t) = P(t0, t)K(K, t) and K(K, t) = K
+′(K, t)(1 + µi(t)) and ai(t) =
+a0
+i
+f(t,βi). Diﬀerentiating one
+more time the call price with respect to the spot, we get
+∂2
+∂S2
+0
+CM(t0, S0, Pt, Rt, Dt; K, t) =
+1
+norm
+n
+X
+i=1
+ai(t) ∂2
+∂S2
+0
+CallBS(t0, S0, Rt, 1, ˜K(K, t), t, Σi(t))
+Diﬀerentiating the call price with respect to the strike, we get
+∂
+∂K CM(t0, S0, Pt, Rt, Dt; K, t) =
+1
+norm
+n
+X
+i=1
+ai(t) ∂
+∂˜K
+CallBS(t0, S0, Rt, 1, ˜K(K, t), t, Σi(t))∂˜K
+∂K
+(5.7)
+where ∂˜
+K
+∂K = P(t0, t)(1 + µi(t)). Given the derivative of the Black-Scholes formula with respect to the strike
+K, that derivative simpliﬁes to
+∂
+∂K CM(t0, S0, Pt, Rt, Dt; K, t) = −
+1
+norm
+n
+X
+i=1
+ai(t)P(t0, t)(1 + µi(t))N(di
+2(t −t0, x, ˜K(K, t)))
+Diﬀerentiating one more time the call price with respect to the strike, we get
+15
+Electronic copy available at: https://ssrn.com/abstract=2143101
+
+∂2
+∂K2 CM(t0, S0, Pt, Rt, Dt; K, t) =
+1
+norm
+n
+X
+i=1
+ai(t)
+∂2
+∂( ˜K)2 CallBS(t0, S0, Rt, 1, ˜K(K, t), t, Σi(t))(∂˜K
+∂K )2
+(5.8)
+which we can write in terms of the vega Black-Scholes as
+∂2
+∂K2 CM(t0, S0, Pt, Rt, Dt; K, t) =
+1
+norm
+n
+X
+i=1
+ai(t)
+
+P(t0, t)(1+µi(t))
+2
+1
+˜K2(K, t)Σi(t)(t −t0)
+V ega( ˜K(K, t), t; Σi(t))
+Diﬀerentiating the call price with respect to time t0, we get
+∂
+∂t0
+CM(t0, S0, Pt, Rt, Dt; K, t) =
+d
+dt0
+ 1
+norm
+
+CM(t0, S0, Pt, Rt, Dt; K, t)norm
++
+1
+norm
+ n
+X
+i=1
+d
+dt0
+ai(t)CallBS(t0, S0, Rt, 1, ˜K(K, t), t, Σi(t))
++
+n
+X
+i=1
+ai(t) d
+dt0
+˜K(K, t)∂CallBS
+∂˜K
+(t0, S0, Rt, 1, ˜K(K, t), t, Σi(t))
++
+n
+X
+i=1
+ai(t) d
+dt0
+Σi(t)∂CallBS
+∂Σi
+(t0, S0, Rt, 1, ˜K(K, t), t, Σi(t))
++
+n
+X
+i=1
+ai(t)∂CallBS
+∂t0
+(t0, S0, Rt, 1, ˜K(K, t), t, Σi(t))
+
+where
+d
+dt0
+˜K(K, t) =
+d
+dt0
+D(t0, t)P(t0, t)(1 + µi(t)) + rt0 ˜K(K, t) + P(t0, t)(K + D(t0, t)) d
+dt0
+(1 + µi(t))
+with
+d
+dt0 µi(t) = µ0
+i
+d
+dt0 f(t, βi). Note, when there is no dividends between t0 and t0 + ϵ then the cumulative
+dividends term D(t0, t) = Dt does not depend on t0 and the derivative becomes
+d
+dt0 K(K, t) = rt0 ˜K(K, t) +
+P(t0, t)(K + D(t0, t)) d
+dt0 (1 + µi(t)). Note, replacing the Greeks of our model in Dupire’s forward Equation
+(see Dupire [1994]), we obtain a smooth and robust deterministic local volatility.
+5.4
+Digital contracts in the parametric model
+Given our discrete dividends assumption on the dynamics of the underlying stock in Section (4.1), we should
+always consider the modiﬁed strike K
+′(K, t) = K + Dt with event ξ = {Zt > K
+′} when pricing a Digital
+contracts. We are now going to obtain analytical solution to the Digital Bond and the Digital Share in
+the special case where the instantaneous volatility of the stock price is a deterministic function of time and
+the stock price. Setting the interest rate to zero and multiplying the strike with the discount factor, the
+parametric model for a call option price of maturity t becomes
+CM(t0, S0, Pt, Rt, Dt; K, t) =
+1
+norm
+n
+X
+i=1
+ai(t)CallBS(t0, S0, Rt, 1, ˜K(K, t), t, Σi(t))
+(5.9)
+16
+Electronic copy available at: https://ssrn.com/abstract=2143101
+
+where ˜K(K, t) = P(t0, t)K(K, t) and K(K, t) = K
+′(K, t)(1 + µi(t)) and ai(t) =
+a0
+i
+f(t,βi) for i = 1, .., n. As
+a result, to each modiﬁed Black-Scholes formula (see Annexe (A.2)) corresponds the event ξi = {Zt > K}.
+Given the deﬁnition of the Black-Scholes formula, we can always rewrite the model call price as
+CM(t0, S0, Pt, Rt, Dt; K, t)
+=
+xRe(t0, t)
+1
+norm
+n
+X
+i=1
+ai(t)N(di
+1(t −t0, x, ˜K(K, t))
+−
+K
+′(K, t)
+1
+norm
+n
+X
+i=1
+aiP(t0, t)(1 + µi(t))N(di
+2(t −t0, x, ˜K(K, t)))
+Given the derivative of the parametric model with respect to the strike estimated in Equation (5.7), and
+combining terms together, the parametric model for a call option becomes
+CM(t0, S0, Pt, Rt, Dt; K, t) = xRe(t0, t)
+1
+norm
+n
+X
+i=1
+ai(t)N(di
+1(t−t0, x, ˜K(K, t))+K
+′(K, t) ∂
+∂K CM(t0, S0, Pt, Rt, Dt; K, t)
+Since the Digital Bond can be expressed in terms of a digital option as D(S, t0, t; ξ) = −∂KC(t0, St0, t, K),
+its value in the parametric model is
+DM(S, t0, t; ξ) =
+1
+norm
+n
+X
+i=1
+ai(t)P(t0, t)(1 + µi(t))N(di
+2(t −t0, x, ˜K(K, t)))
+(5.10)
+which we can write as a shifted weighted sum of digital options on a shifted strike
+DM(S, t0, t; ξ) =
+1
+norm
+n
+X
+i=1
+ai(t)(1 + µi(t))D(S, t0, t; ξi)
+Similarly, by analogy to the call price in Equation (4.3), the Digital Share is
+SM(S, t0, t; ξ) = xRe(t0, t)
+1
+norm
+n
+X
+i=1
+ai(t)N(di
+1(t −t0, x, ˜K(K, t))
+so that the call option becomes
+CM(t0, S0, Pt, Rt, Dt; K, t) = SM(S, t0, t; Zt > K
+′) −K
+′(K, t)DM(S, t0, t; Zt > K
+′)
+Given
+∂
+∂d2 N(d2) = xRe(t0,t)
+KP (t0,t)
+∂
+∂d1 N(d1) and dd2
+dx =
+1
+xσ√t−t0 the delta of a Digital option is
+∂
+∂KS CM(t0, S0, Pt, Rt, Dt; K, t) = −
+1
+norm
+n
+X
+i=1
+ai(t)P(t0, t)(1 + µi(t))n(di
+2(t −t0, x, ˜K(K, t)))
+1
+xΣi(t)√t −t0
+5.5
+Computing the Skew and Curvature analytically
+For every model that one can deﬁne, we need to estimate the vector Ψ of model parameters from either
+the market prices or their implied volatility quotes. When the parametric model is calibrated to the market
+quotes and the optimum vector Ψ∗is obtained, the model call and put prices must equate the market ones.
+Since our model can retrieve analytically European prices as well as Digital price we show how to infer
+analytically the skew and curvature of the IV surface for all strikes and maturities.
+17
+Electronic copy available at: https://ssrn.com/abstract=2143101
+
+5.5.1
+Computing the Skew
+When the parametric model is calibrated to the market quotes and the optimum vector Ψ∗is obtained, the
+model Digital Bond in Equation (5.10) must equate the market digital price in Equation (C.16). As a result,
+we can infer analytically the skew of the parametric model for the strike K and the maturity t
+Skew(K, t) =
+1
+V ega(K, t; ΣBS(K, t))
+
+−∂
+∂K CBS(K, t; ΣBS) −DM(S, t0, t; ξ)
+
+Given the deﬁnition of the Black-Scholes digital option, we get
+Skew(K, t) =
+1
+V ega(K, t; ΣBS(K, t))
+
+DBS(S, t0, t; ξ) −DM(S, t0, t; ξ)
+
+which gives
+Skew(K, t) =
+1
+V ega(K, t; ΣBS(K, t))
+
+DBS(S, t0, t; ξ) −
+1
+norm
+n
+X
+i=1
+ai(t)(1 + µi(t))D(S, t0, t; ξi; Σi))
+
+When the shift terms are set to zero, µi(t) = 0 for i = 1, .., n, the Digital Bond simpliﬁes to
+1
+norm
+Pn
+i=1 ai(t)D(S, t0, t; ξ; Σi)
+which is a weighted sum of digital option on a GBM. Note, it still has a skew but much less prononced.
+5.5.2
+Computing the Curvature
+When the parametric model is calibrated to the market quotes, the parametric density in Equation (5.8)
+must equate the market density in Equation (C.17). From the formula of the convexity of the smile expressed
+in prices in Equation (B.15), we can infer analytically the curvature of the parametric model for the strike
+K and the maturity t
+∂KKΣ(K, t) =
+∂KKCM(t0, S0; K, t)
+V ega(K, t; ΣBS(K, t)) −
+1
+K2Σ(K, t)(t −t0)
+h
+1 + 2Kd1
+√t −t0Skew(K, t) + K2d1d2(t −t0)(Skew(K, t))2i
+Given the optimum vector Ψ∗of model parameters, we can compute analytically the European call and put
+prices for all maturity t and strike K. Inverting the Black-Scholes formula, we recover the implied volatility
+surface Σ(K, t). We can then use that surface to compute exactly the skew and curvature of the parametric
+IV surface. Alternatively, one can approximate the skew and curvature of the IV surface around the money
+by considering the ATM volatility ˆσ = ˆΣ(t) =
+1
+norm
+Pn
+i=1 ai(t)Σi(t). As a result, given a volatility function
+Σ(K, t) obtained with a parametric function such as a SVI or SABR, one can directly ﬁt our parametric
+model to volatilities without inverting the Black-Scoles formula.
+6
+Modeling statistically the IV surface
+Even though the implied volatility surface (IVS) characterises agents belief of future evolution of the stock
+price returns, it is evident that today’s market prices do not provide us with the right future anticipations
+of the stock price process. This is because the implied volatility surface is neither stationary nor Markovian
+but stochastic. We saw earlier that changes of the implied volatility surface have a signiﬁcant inﬂuence
+on the value of the option position. For instance, an incorrect estimate of the IV surface and its expected
+shifts could lead to a signiﬁcant miss pricing of the options. Further, model based quantitative forecasts can
+provide ﬁnancial institutions with a valuable estimate of a future market trend. Hence, in order to perform
+statistical analysis of the relationships between points on the IVS, we are left with ﬁnding a way of modeling
+dynamically the agents rational anticipations.
+18
+Electronic copy available at: https://ssrn.com/abstract=2143101
+
+6.1
+Existing models of the IVS and their dynamics
+We brieﬂy present the work done by Ladokhin [2009] who described a number of representations of the IV
+surface and performed a comparison analysis of their dynamics. He discussed and compared several models
+of the approximation of the surfaces, as well as several approaches to the dynamics of these surfaces including
+diﬀerent types of polynomial ﬁtting as well as a stochastic volatility model. Among the polynomial models
+describing the whole volatility surface with one equation are the Cubic model and the Spline model. In the
+former the IV is a cubic function of moneyness X = ln K
+S (or the time adjusted moneyness X =
+1
+√τ ln K
+S )
+and a quadratic function of time to expiry τ
+Σ(K, T) = a0 + a1X + a2X2 + a3X3 + a4τ + a5τ 2
+where ai for i = 0, .., 5 are parameters to be estimated. Similarly, one can build a Spline model of the
+volatility surface as
+Σ(K, T) = a0 + a1X + a2X2 + a3τ + a4τ 2 + D
+ a5 + a6X + a7X2 + a8τ + a9τ 2
+with
+D =
+ 0 if X < 0
+1 if X ≥0
+together with the constraints
+a5 + a6.0 + a7.02 + a8τ + a9τ 2 = 0 , Da6 = 0
+for the volatility function to be continuous and diﬀerentiable. Contrary to the polynomial models, stochastic
+volatility models such as the SABR model (see Hagan et al. [2002]) or the SVI model (see Gatheral [2006]),
+assume some behaviour of the underlying asset and connections with the values of the implied volatility. In
+those models the shape of the volatility skew is derived analytically from these assumptions. In the case of
+the SABR model, it can either be used as a model for a whole volatility surface or for the skew. Under the
+ﬁrst approach, the parameters α, β, ρ and ν are calibrated for all given times to expiration τi for i = 1, 2, ...
+In the second approach, one ﬁt a SABR skew for each observed time to expiration, and then interpolate the
+values of implied volatility for any arbitrary τ. The piecewise SABR (PSABR) parameters αi, βi, ρi and νi
+are calculated separately for each time to expiration τi, and the IV surface is built as a linear approximation
+of separate skews.
+While a model with a large number of parameters may calibrate well the volatility surface on a given day,
+the same model parameters may give poor results on the next day. On the other hand, any risk management
+system tries to estimate the future (short term forecast) behaviour of the volatility surface. As a result, one
+need a model that accurately ﬁt market prices with stable and robust parameters. Ladokhin [2009] focused
+on two diﬀerent approaches to model the dynamics of the IV surfaces, one applicable to the Cubic and the
+Spline model and the other used for SABR models. In the ﬁrst approach, the dynamics of the surface is
+treated as dynamics of these parameters. To reduce the dimensionality of the problem, he applied Principal
+Component Analysis (PCA) to the values of the parameters ai for i = 0, .., n. This is to switch to another
+space of the no-correlated factors, that fully describe the dynamic of the implied volatility surface. Since the
+ﬁrst few principal components explain most of the variance of the calibrated parameters, the dynamics of
+the volatility surface over time is explained by the dynamics of the ﬁrst two principal components modeled
+with an Autoregressive moving average model (ARMA). In the second approach, the SABR model already
+assumes certain dynamics of the volatility and the underlying asset expressed by a system of stochastic
+diﬀerential equations. Consequently, given the calibrated parameters, the spot price can be simulated with
+the Monte Carlo method, and for each path, the IV surface generated. The forecast of the implied volatility
+surface is an average surface over the simulated paths.
+19
+Electronic copy available at: https://ssrn.com/abstract=2143101
+
+Strong of these dynamics, Ladokhin
+[2009] used the rolling horizon technique to build a 1 and 5 day
+forecasts of the volatility skews. Setting N = 100, he used observations from days t−N till t−1 to calibrate
+the dynamic models in order to build a forecast of the skew for day t. Then, at time t+1 the horizon is rolled
+so that days t −N + 1 till t are used for calibration. An equivalent technique is used for the ﬁve days ahead
+forecast. He then tested how the models can hold the volatility skew pattern by performing a static test.
+Calibrating the models to observed IV surface at date t −1 or t −5 he calculated the weighted mean square
+error (WMSE) between the model results and the IV surface on day t. Cubic and Spline models approximate
+the implied volatility surface with the function of a certain form. The Spline model is perhaps, the most
+eﬀective to minimise the ﬁtting error. Good performance of the dynamic version of the Spline model is an
+empirical evidence of the dependence of the dynamics of the surface of two principal components. Both of
+these models use much less parameters, than the PSABR model. Even though the SABR and the PSABR
+assume a certain model for the joint dynamics of the volatility and the underlying asset, their ﬁtting results
+have a higher error than the polynomial models. Nonetheless, the PSABR tends to model the skew rather
+eﬀectively in case of insuﬃcient or bad data. Because these models assume some shape of the IV surface,
+they are predisposed to give a more theoretical shape of the skew resulting in lower relative forecasting
+error. As a result, models relating prices in time and space perform better on an incomplete market or with
+missing data. To conclude, no single method exhibits superior accuracy in the analysis of every data set.
+Some methods perform better for certain underlying assets, while other methods are more suitable for the
+other.
+6.2
+Evolving the IV surface
+Having deﬁned in Section (5.2) a consistent model with a global ﬁt to prices under constraints, prices can
+now be generated such that the No-Dominance principle is preserved, and one can safely assess relative value
+between them. Bloch [2010] showed that the dynamics implied by the single parametric model for the entire
+volatility surface in Equation (5.9) were those of a mixture diﬀusion process associated to an uncertainvolatility model. That is, similarly to the SABR models, our model already assumes some dynamics of
+the volatility and the underlying asset expressed by a system of stochastic diﬀerential equations. In that
+model, the instantaneous volatility being a deterministic function of the spot price and time, we can simulate
+the underlying process with a local volatility model. However, the implied volatility surface being neither
+stationary nor Markovian but stochastic, we are going to combine the two diﬀerent approaches to model
+the dynamics of the IV surfaces described in Section (6.1) by providing memory to the parameters of our
+model. Hence, we now consider the implied volatility surface to be a stochastic process driving the option
+prices and choose to model its dynamics in its full term and strike structure. Option prices deriving their
+values from an underlying security, it is natural to use mathematical tools to infer their dynamics from that
+of the underlying stock process. One approach is to model the implied volatility with dynamics based on
+a statistical analysis of its behaviour through time. It naturally leads us to model the stock price process
+discreetly with Markov chains. We impose that future smile surfaces should be compatible with today’s prices
+of calls and puts. Formalising the Kolmogorov-Compatibility condition, we impose that the future density
+is actually a conditional density. Knowing that when the number of ﬁxing dates in a model is ﬁnite there is
+an inﬁnity of conditional densities, we choose to satisfy this inﬁnity of solution by giving the forward smile
+a shape consistent with its historical evolution. Following Bloch et al. [2003], we assume that the volatility
+surface is dynamically modiﬁed according to the stock price realisations. Having related the stock price
+level to the implied volatility surface, we use their respective historic evolution to characterise the transition
+probabilities, that is, the conditional densities. A statistical technique is used to regress the observed implied
+smile against the realised stock level. Then from the implied marginal distributions observed on the market,
+we infer the joint distributions which are consistent with the relationship between implied volatility and
+stock price level over time and satisfy the AOA constraint. It implies that European call prices are not
+time-dependent, that is, do not depend on current time but are stock dependent. Therefore, the current
+stock evolution directly inﬂuences its future increment which means that, given the stock price St1 at time
+20
+Electronic copy available at: https://ssrn.com/abstract=2143101
+
+t1, the conditional density φ(., T, St1, t1) is known.
+6.3
+The forward IV surface
+In order to satisfy the Kolmogorov probability, that is, assure that the forward smile implies a compatible
+conditional pdf, the model must ﬁt European call prices observed at evaluation time t0. In continuous time
+models with volatility a deterministic function of time and stock price such as the Dupire model, the volatility
+surface is assumed Markovian and stationary, giving a unique solution to the forward volatility. However the
+prices of forward start call options given by Dupire’s model are lower than the ones observed in the market.
+In view of getting higher forward smile, practitioners either add a stochastic process into the local volatility
+or combine the local volatility with a jump process. It means that there is a risk attached to such products
+which is not taken into account in today’s information. Bloch et al. [2003] showed that this risk translated
+into a forward volatility being higher than the spot volatility. Consequently, in order to price correctly a
+forward start option, a model must be calibrated to some kind of evolution of the implied volatility surface
+in such a way that the forward volatility that we get is higher than today’s volatility. Knowing that when
+the number of ﬁxing dates in a model is ﬁnite there is an inﬁnity of conditional densities, we choose to satisfy
+this inﬁnity of solution by giving the forward smile a shape consistent with its historical evolution. That is,
+the past evolution of the implied smile regressed against its stock price level would help explaining its future
+dynamics. Therefore, we are going to deﬁne a shape for the volatility surface together with its dynamics by
+using a statistical method, such that we can price vanilla options and then deduce a proper forward smile
+for the pricing of forward start options.
+6.4
+Statistical Dynamics
+6.4.1
+Computing the smile parameters
+In this section, we are going to model the implied volatility Σ with dynamics based on a statistical analysis
+of its behaviour through time. We ﬁrst need to infer a shape of the volatility surface in accordance with
+market observable data. For the sake of clarity we will deal with the polynomial deﬁned in Equation (5.4)
+which is a special case of the Spline model presented in Section (6.1). Obviously the factor XT −t
+t
+is set equal
+to the observed at-the-money volatility i.e.
+XT −t
+t
+= Σ(t, St; St, T −t)
+Then, there exists several methods to ﬁt the skew factor Y T −t
+t
+and the curvature factor ZT −t
+t
+. The simplest
+method, based on ﬁnite diﬀerences, leads to computing Y T −t
+t
+and ZT −t
+t
+such that
+Y T −t
+t
+=
+−Σ(t, St; K+, T −t) −Σ(t, St; K−, T −t)
+K+ −K−
+ZT −t
+t
+=
+Σ(t, St; K+, T −t) + Σ(t, St; K−, T −t) −2Σ(t, St; St, T −t)
+
+K+−K−
+2
+2
+for some strikes K−and K+ close enough to the money and such that K−< St < K+. One possible
+setting would be to take K−= 0.8St and K+ = 1.2St. A much better approach, satisfying the no-arbitrage
+principle, consists in considering the properties of our parametric model, and directly use the analytical skew
+and curvature deﬁned in Section (5.5). That is, we project the complexity of the single parametric model in
+Equation (5.9) into a simpliﬁed version of the Spline model.
+21
+Electronic copy available at: https://ssrn.com/abstract=2143101
+
+6.4.2
+Providing some dynamics
+We are now going to provide these parameters with some dynamics. The fundamental idea (c.f. Bloch et al.
+[2002]) is to assume that these three parameters are driven by the spot process St, for the spot process holds
+the whole market risk. That is, the parameters of our model have memory given by the realised trajectory
+of the spot price. As such, they are now factors expressed as
+XT −t
+t
+≡
+XT −t
+t
+(St)
+Y T −t
+t
+≡
+Y T −t
+t
+(St)
+ZT −t
+t
+≡
+ZT −t
+t
+(St)
+and we need to infer a shape for the spot functions XT −t
+t
+(St), Y T −t
+t
+(St) and ZT −t
+t
+(St). Assuming a continuum
+of maturities, we consider that the maturity eﬀect, as traders are used to specify it, is proportional to
+1
+(T −t)θ
+for some parameter θ. Plotting XT −t
+t
+, Y T −t
+t
+and ZT −t
+t
+against St on a window of historical data, we consider
+the following shape
+XT −t
+t
+=
+exp(ax+bxSt+εx
+t )
+(T −t)θx
+,
+Y T −t
+t
+=
+exp(ay+bySt+εy
+t )
+(T −t)θy
+,
+ZT −t
+t
+=
+exp(az+bzSt+εz
+t )
+(T −t)θz
+.
+which we rewrite as
+log(XT −t
+t
+)
+=
+ax + bxSt −θx log(T −t) + εx
+t ,
+log(Y T −t
+t
+)
+=
+ay + bySt −θy log(T −t) + εy
+t ,
+log(ZT −t
+t
+)
+=
+az + bzSt −θz log(T −t) + εz
+t .
+At this point we need to estimate the model parameters. A ﬁrst and common method would consist in
+computing the ordinary least squares (OLS) i.e. minimising the L2(R) norm of residuals. Note, when using
+the OLS method it implicitly means that we suppose that the processes εx
+t , εy
+t and εz
+t are white noises and
+then that an hexogen perturbation of the stock has no consequence on the future option values. One need to
+perform the generalized Durbin-Watson tests on the data to see if the hypothesis for white noise is accepted
+or reject. In the case where it is rejected, it is not desirable to use ordinary regression analysis for the data
+we are dealing with since the assumptions on which the classical linear regression model is based will be
+obviously violated.
+Violation of the independent errors assumption has three important consequences for ordinary regression.
+First, statistical tests of the signiﬁcance of the parameters and the conﬁdence limits for the predicted values
+are not correct. Second, the estimates of the regression coeﬃcients are not as eﬃcient as they would be if the
+autocorrelation were taken into account. Third, since the ordinary regression residuals are not independent,
+they contain information that can be used to improve the prediction of future values. One way forward is
+to introduce some dynamics on the errors in order to capture this eﬀect.
+We now have a consistent and relevant model to explain the dynamics of the volatility surface over
+time. Tests need to be performed to measure the capability of the model to forecast the volatility ATM, the
+skew and the curve of the volatility smile. To do so, we can reproduce the tests presented in Section (6.1).
+For instance, one can perform a daily forecast moving test also called rolling horizon technique. Starting
+from an initial historical table of 300 observations (out of 368), we use the model calibrated to these 300
+observations to forecast the volatility parameters (ATM, skew, curve) over the next ﬁve days. We then
+compare these forecasted values to the market data by computing the mean over the ﬁve days of the relative
+22
+Electronic copy available at: https://ssrn.com/abstract=2143101
+
+errors 2 expressed in percentage. Then we add one day to the historical data and start again. We repeat
+the operation ten times (till we have an historical basis with 309 observations) and give the results for the
+ten iterations. We can also show how the model forecast the volatility ATM on a window of time given that
+it was calibrated to market data on a previous window of time. If the model is stable over time it will not
+need to be recalibrated too often.
+One application of our statistical deterministic implied volatility model is to run a computer program
+generating theoretical value to option prices within a range of stock prices. Any time an option pair is out
+of line with the theoretical model, one can buy or sell it to realise a proﬁt.
+7
+Conclusion
+Our goal was to devise a consistent volatility model to assess relative value between option prices, and to
+provide the implied volatility surface with general dynamics. We described a single parametric model for
+the entire volatility surface with interpolation and extrapolation technique generating a smooth and robust
+implied volatility surface without arbitrage in space and time. Marking option prices on indices and single
+stocks, one can safely use the model to devise relative value trading strategies. Greeks and stress scenarios
+are calculated analytically in the parametric model without recalibration of the model parameters. Further,
+getting analytical solutions to Digital options we can use them to recover analytically the Skew and Curvature
+of the IV surface for all strikes and maturities. To perform statistical analysis of the relationships between
+points on the IV surface we modeled dynamically the agents belief of future evolution of the stock price
+returns. Using the Skew and Curvature inferred from our model, we introduced a possible shape for the
+volatility surface by linking its future evolution to an observable stochastic process and by adding noises.
+Based on empirical results showing the existence of a strong link between the implied volatility surface and
+the spot level over time, we took the spot level as driving factor. It implied that the volatility surface was
+dynamically modiﬁed according to the realisation of stock prices which is a way of modeling dynamically
+the agents rational anticipations. Having related the stock price level to the volatility surface, we used the
+historic evolution of the implied volatility surface to characterise the transition probabilities, that is, the
+conditional densities. This hypothesis implies that European call prices are not time-dependent, that is,
+do not depend on current time but are stock dependent. Therefore, the current stock evolution directly
+inﬂuences its future increment which means that, given the stock price at a future time, the conditional
+density is known.
+2100 ∗forecasted value-realised value
+realised value
+23
+Electronic copy available at: https://ssrn.com/abstract=2143101
+
+Annexes
+A
+The Black-Scholes formula
+A.1
+Some Greeks
+We describe a few Greeks in the Black-Scholes formula that will be used later on to devise our parametric
+model. The option in the Black-Scholes model is hedged with a portfolio containing
+∆(t, St) = ∂xCBS(t, St, K, T) = e−q(T −t)N(d1(T −t, Ste(r−q)(T −t), K))
+(A.11)
+stocks. Similarly, the price of a put option is given by
+PBS(t, x, K, T)
+=
+−xe−q(T −t)N(−d1(T −t, xe(r−q)(T −t), K)) + Ke−r(T −t)N(−d2(T −t, xe(r−q)(T −t), K))
+=
+Ke−r(T −t)N(d1(T −t, K, xe(r−q)(T −t))) −xe−q(T −t)N(d2(T −t, K, xe(r−q)(T −t)))
+with delta
+∆(t, St)
+=
+∂xPBS(t, St, K, T) = −e−q(T −t)N(−d1(T −t, Ste(r−q)(T −t), K))
+=
+−e−q(T −t)N(d2(T −t, K, Ste(r−q)(T −t)))
+since
+d2(t, x, y, σ2) = −d2(t, y, x, σ2)
+The vega in the Black-Scholes model is
+V ega = xRe(t, T)
+√
+T −tn(d1)
+where n(x) =
+∂
+∂xN(x) and N
+′′(x) = −xn(x).
+Also, we have the limit cases lim(T −t)→0 V ega = 0 and
+lim(T −t)→∞V ega = 0. Diﬀerentiating one more time the Vega with respect to volatility which is called the
+Volga, and using the relations dd1
+dσ = −1
+σd2 or dd2
+dσ = −1
+σd1, we get
+∂
+∂σ V ega = V olga = xRe(t, T)
+√
+T −t 1
+σ d1d2n(d1) = 1
+σ d1d2V ega
+(A.12)
+Again, diﬀerentiating the Volga with respect to volatility, we get
+∂
+∂σ V olga =
+ −d1d2 −d2
+2 −d2
+1 + d2
+1d2
+2
+ 1
+σ2 V ega
+Now we diﬀerentiate the Vega with respect to the strike K, getting
+∂
+∂K V ega =
+d1
+Kσ
+√
+T −tV ega
+which we diﬀerentiate one more time with respect to the strike, getting
+∂2
+∂K2 V ega =
+d1d2
+K2σ2(T −t)V ega −
+1
+K2σ2(T −t)V ega =
+(d1d2 −1)
+K2σ2(T −t)V ega
+To conclude, we need to diﬀerentiate the Vega with respect to maturity T, getting
+24
+Electronic copy available at: https://ssrn.com/abstract=2143101
+
+∂
+∂T V ega = −q(T)V ega +
+1
+2(T −t)V ega + d1
+ 1
+2(T −t)d2 −(r(T) −q(T))
+σ
+√
+T −t
+
+V ega
+We now diﬀerentiate the call price with respect to the stike
+∂
+∂K CBS(t, x, K, T) = −P(t, T)N(d2(T −t, x, K))
+Diﬀerentiating the call price twice with respect to the strike we get
+∂2
+∂K2 CBS(t, x, K, T) =
+P(t, T)
+Kσ
+√
+T −tn(d2(T −t, x, k))
+which we rewrite as
+∂2
+∂K2 CBS(t, x, K, T) =
+xRe(t, T)
+K2σ
+√
+T −tn(d1(T −t, x, k)) =
+1
+K2σ(T −t)V ega(K, T; σ)
+Setting x = St, we diﬀerentiate the call price with respect to maturity T getting
+∂
+∂T CBS(t, St, K, T) =
+σ
+2(T −t)V ega + rT KP(t, T)N(d2) −qT xRe(t, T)N(d1)
+We deﬁne XBS(t, St, K, T) as
+XBS(t, St, K, T) =
+σ
+2(T −t)V ega + rT KP(t, T)N(d2)
+which is always positive, and rewrite the above derivative as
+∂
+∂T CBS(t, St, K, T) = XBS(t, St, K, T) −qT xRe(t, T)N(d1)
+Similarly, the derivative of the put price with respect to maturity T is
+∂
+∂T PBS(t, St, K, T) = −
+σ
+2(T −t)V ega + rT KP(t, T)N(d1) −qT xRe(t, T)N(d2)
+Since dτ
+dt = −1 where τ = T −t, the derivative of the price with respect to time t is given by ∂CBS(t,St,K,T )
+∂τ
+dτ
+dt .
+From the relation
+rtSt∆(t, St) −rtCBS(t, St, K, T) = rtKP(t, T)N(d2)
+the Theta becomes
+∂
+∂tCBS(t, St, K, T) = −
+σ
+2(T −t)V ega −rtx∆(t, St) + rtCBS(t, St, K, T) + qtxRe(t, T)N(d1)
+A.2
+Pricing the modiﬁed Black-Scholes call option
+Given the stock price (St)t∈[0,T ], the price of the modiﬁed Black-Scholes call option with strike K, maturity
+T and shift µT under the risk-neutral probability measure Q is
+Ct0
+=
+EQ[e−
+R T
+t0 rsds(ST −K(1 + µT ))+|Ft0]
+=
+EQ[e−
+R T
+t0 rsdsST I{ST >K}|Ft0] −KEQ[e−
+R T
+t0 rsdsI{ST >K}|Ft0]
+(A.13)
+25
+Electronic copy available at: https://ssrn.com/abstract=2143101
+
+where K = K(1 + µT ). Assuming a deterministic convenience yield, we let Xt = StD(t, T) be the present
+value of the stock price ST seen at time t, where D(t, T) = γ(t)
+γ(T ) and such that when t = T we get XT = ST .
+Hence, in the ﬁrst expectation of the call price, we can take the process Xt as Numeraire with the density
+ZX(t, T) = XT β(t)
+β(T )Xt , and since XT = ST we can re-express the ﬁrst expectation term as
+EQ[β(t0)
+β(T) XT I{XT >K}|Ft0] = Xt0EQ[ZX(T)I{XT >K}|Ft0]
+while in the second expectation we take the bond as Numeraire with density ZP (t) =
+P (t,T )
+β(t)P (t0,T ). Hence, we
+can re-write the call price as
+Ct0(K, T)
+=
+X0EQ[ZX(T)Iξ|Ft0] −KP(t0, T)EQ[ZP (T)Iξ|Ft0]
+=
+X0P X(XT > K) −KP(t0, T)P T (XT > K)
+where
+ξ = {XT > K}
+Since XT = F(T, T) where F(t, T) =
+Xt
+P (t,T ) and since F(t, T) is a martingale under PT and
+1
+F (t,T ) is a
+martingale under PX, the call price becomes
+C(t0; K, T)
+=
+Xt0P X(F(T, T) > K) −KP(t0, T)P T (F(T, T) > K)
+=
+Xt0P X(
+1
+F(T, T) < 1
+K ) −KP(t0, T)P T (F(T, T) > K)
+Expanding the solution of the forward price, we get
+C(t0; K, T)
+=
+Xt0P X(−1
+2σ2
+F (T −t0) + σF
+p
+(T −t0)y < log F(t0, T)
+K
+)
+−
+KP(t0, T)P T (−1
+2σ2
+F (T −t0) + σF
+p
+(T −t0)y > log
+K
+F(t0, T))
+=
+St0D(t0, T)N(d1) −KP(t0, T)N(d2)
+where
+d1 =
+1
+σF
+p
+(T −t0)
+log F(t0, T)
+K
++ 1
+2σF
+p
+(T −t0) and d2 = d1 −σF
+p
+(T −t0)
+from symmetry of the Brownian motion. Similarly to the displaced diﬀusion model, the present model is
+capable of generating asymmetric distribution to recover the market implied skew by using the standard
+Black-Scholes formula with appropriate input parameters.
+Assumption A.1 We assume that we can approximate the modiﬁed Black-Scholes price by
+Y = Y (0) + Z + H
+(A.14)
+where Y (0) = CBS(t, x, K, T; σ) with σ = I0(t, T), and such that Z and H account respectively for the skew
+and the curvature.
+26
+Electronic copy available at: https://ssrn.com/abstract=2143101
+
+To do, so we must express the modiﬁed Black-Scholes price in term of the Black-Scholes price plus some
+extra terms
+C(t0; K, T) = St0D(0, T)N(d1) −KP(t0, T)N(d2) −KµT P(t0, T)N(d2)
+Expanding the d1 term, we get
+d1 = d1 −
+1
+σF
+p
+(T −t0)
+log (1 + µT )
+so that the modiﬁed Black-Scholes price becomes
+C(t0; K, T)
+=
+St0D(0, T)N
+ d1 −
+1
+σF
+p
+(T −t0)
+log (1 + µT )
+
+−KP(t0, T)N
+ d2 −
+1
+σF
+p
+(T −t0)
+log (1 + µT )
+
+−
+KµT P(t0, T)N(d2)
+B
+Expressing the convexity of the smile in prices
+The implied volatility being a function of the strike K and the maturity T, we use the chain rule to express
+the derivatives of the market prices in terms of the Black-Scholes Greeks
+∂T C(t, St, K, T) = ∂T CBS(t, St, K, T) + ∂ΣCBS(t, St, K, T)∂T Σ(T, K)
+∂KC(t, St, K, T) = ∂KCBS(t, St, K, T) + ∂ΣCBS(t, St, K, T)∂KΣ(T, K)
+∂KKC(t, St, K, T) = ∂KKCBS(t, St, K, T) + 2∂ΣKCBS(t, St, K, T)∂KΣ(T, K) + ∂ΣCBS(t, St, K, T)∂KKΣ(T, K)
++
+∂ΣΣCBS(t, St, K, T)(∂KΣ(T, K))2
+Concentrating on the density, we get
+∂KKC(t, St, T, K) =
+1
+K2Σ(T, K)(T −t)V ega(K, T) + 2∂ΣKCBS(t, St, K, T)∂KΣ(T, K)
++
+∂ΣCBS(t, St, K, T)∂KKΣ(T, K) + ∂ΣΣCBS(t, St, K, T)(∂KΣ(T, K))2
+where V ega(K, T) is the BS vega with volatility Σ(K, T).
+Using the Black-Scholes Greeks, the density
+becomes
+∂KKC(t, St, T, K) =
+1
+K2Σ(T, K)(T −t)V ega(K, T) +
+2d1
+KΣ(T, K)
+√
+T −tV ega(K, T)∂KΣ(T, K)
++
+∂ΣCBS(t, St, K, T)∂KKΣ(T, K) +
+1
+Σ(T, K)d1d2V ega(K, T)(∂KΣ(T, K))2
+We multiply by K2
+2
+and factorise, getting
+K2
+2 ∂KKC(t, St, T, K) = V ega(K, T)
+2
+
+1
+Σ(T, K)(T −t) + K
+2d1
+Σ(T, K)
+√
+T −t∂KΣ(T, K)
++
+K2∂KKΣ(T, K) + K2
+d1d2
+Σ(T, K)(∂KΣ(T, K))2
+27
+Electronic copy available at: https://ssrn.com/abstract=2143101
+
+which we can write as
+V ega(K, T)
+2Σ(T, K)(T −t)
+h
+1+Σ(T, K)(T−t)K2
+2d1
+KΣ(T, K)
+√
+T −t∂KΣ(T, K)+∂KKΣ(T, K)+
+d1d2
+Σ(T, K)(∂KΣ(T, K))2i
+or
+K2
+2 ∂KKC(t, St, T, K) =
+V ega(K, T)
+2Σ(T, K)(T −t)
+h
+1 + 2Kd1
+√
+T −t∂KΣ(K, T) + K2d1d2(T −t)(∂KΣ(K, T))2 + K2Σ(K, T)(T −t)∂KKΣ(K, T)
+i
+Rearranging, we get the convexity of the smile expressed in prices as
+∂KKΣ(K, T) =
+(B.15)
+∂KKC(t, St, T, K)
+V ega(K, T)
+−
+1
+K2Σ(T, K)(T −t)
+h
+1 + 2Kd1
+√
+T −t∂KΣ(K, T) + K2d1d2(T −t)(∂KΣ(K, T))2i
+C
+Pricing exotic options
+C.1
+The density
+For all positive or bounded function h we have
+E[h(Sx
+t )] =
+Z
+h(y)φ(t, x, y)dy
+where φ(t, x, y) is the density function of St. In the special case where St follow a GBM we get
+φµ,σ2(t, x, y)
+=
+1
+σy
+√
+2πte−1
+2 d2(t,xeµt,y)2
+d2(t, x, y)
+=
+1
+σ
+√
+t log x
+y −1
+2σ
+√
+t
+where ν2t = σ2t is the total variance.
+C.2
+The digital option
+Given the stock price (St)t≥0, a Digital option D(K, T) for strike K and maturity T pays $1 when the stock
+price ST is greater than the strike K, and zero otherwise. The price of the Digital option is
+D(K, T) =
+lim
+∆K→0
+C(K, T) −C(K + ∆K, T)
+∆K
+= −∂
+∂K C(K, T)
+Given C(K, T) = CBS(K, T; ΣBS(K, T)) where ΣBS(K, T) is the BS implied volatility for strike K and
+maturity T, and using the chain rule, the Digital option becomes
+D(K, T) = −∂
+∂K CBS(K, T; ΣBS(K, T)) = −∂
+∂K CBS(K, T; ΣBS) −∂
+∂ΣCBS(K, T; Σ(K, T)) ∂
+∂K Σ(K, T)
+28
+Electronic copy available at: https://ssrn.com/abstract=2143101
+
+We can express the Digital option in terms of the Vega and the Skew as
+D(K, T) = −∂
+∂K CBS(K, T; ΣBS) −V ega(K, T)Skew(K, T)
+(C.16)
+where V ega(K, T; ΣBS(K, T)) is the Black-Scholes vega for the strike K and maturity T, and ∂KCBS(K, T; ΣBS)
+is the BS digital price for the volatility ΣBS(K, T).
+In the special case where r = q = 0, T = 1 and
+for S0 = 100 and K = 100, given a skew of 2.5% per 10% change in the strike and an ATM volatility
+ΣAT M = 25% we get
+D(100, 1)
+=
+N[−ΣAT M
+2
+] −S0n[ΣAT M
+2
+]−0.025
+0.1S0
+≈
+0.45 + 0.25 × 4 = 0.55
+Ignoring the skew, the price is 45% of notional which is signiﬁcantly lower than 55% of notional when the
+skew is included.
+C.3
+The Butterﬂy option
+Assuming that the volatility surface has been constructed from European option prices, we consider a
+butterﬂy strategy centered at K where we are long a call option with strike K −∆K, long a call option
+with strike K + ∆K, and short two call options with strike K. The value of the butterﬂy for strike K and
+maturity T is
+B(t0, K, T) = C(K −∆K, T) −2C(K, T) + C(K + ∆K, T) ≈P(t0, T)φ(t0; K, T)(∆K)2
+where φ(t0; K, T) is the probability density function (PDF) of ST evaluated at strike K. As a result, we
+have
+φ(t0; K, T) ≈
+1
+P(t0, T)
+C(K −∆K, T) −2C(K, T) + C(K + ∆K, T)
+(∆K)2
+and letting ∆K →0, the density becomes
+φ(t0; T, K) =
+1
+P(t0, T)
+∂2
+∂K2 C(K, T)
+(C.17)
+Hence, for any time T one can recover the marginal risk-neutral distribution of the stock price from the
+volatility surface. However, it tells us nothing about the joint distribution of the stock price at multiple
+times T1, .., Tn. This is because the volatility surface is constructed from European options prices which only
+depend on the marginal distribution of ST .
+29
+Electronic copy available at: https://ssrn.com/abstract=2143101
+
+References
+[2001]
+Alexander C., Market models - a guide to ﬁnancial data analysis, John Wiley and Sons, New York.
+[2006]
+Arisoy Y.E.,
+Altay-Salih A. and
+Akdeniz L., Is volatility risk priced in the securities market?
+Evidence from S&P 500 index options. Working Paper, Bilkent University, Faculty of Business Administration.
+[1997] Bakshi G., Cao C. and Chen Z., Empirical performance of alternative option pricing models, Journal
+of Finance, 52 (5), pp 2003–2049.
+[2003]
+Bakshi G., and Kapadia N., Delta-hedged gains and the negative market volatility risk premium.
+Review of Financial Studies, 16, pp 527–566.
+[2000]
+Bates D., Post-87 crash fears in the S & P 500 futures option market. Journal of Econometrics, 94,
+181-238.
+[2000] Bekaert G., Wu G., Asymmetric volatility and risk in equity markets. The Review of Financial Studies,
+13, No. 1: 1–42.
+[2000]
+Bellamy N.,
+Jeanblanc M., Incompleteness of markets driven by a mixed diﬀusion. Finance and
+Stochastics, 4, Number 2.
+[2001] Beneder R., Vorst T., Options on dividends paying stocks. International Conference on Mathematical
+Finance, Shanghai.
+[2004]
+Bergenthum J. and Ruschendorf L., Comparison of option prices in semimartingale models, University of Freiburg, Eckerstr.
+[1973]
+Black F., and Scholes M., The pricing of options and corporate liabilities. Journal of Political Economics, 81, 637–659.
+[2002]
+Bloch D., Miralles P., Statistical dynamics of the smile. Technical Report, DrKW.
+[2003]
+Bloch D., Aube JD., A statistical deterministic implied volatility model. Technical Report, Credit
+Lyonnais.
+[2010]
+Bloch D., A practical guide to implied and local volatility. Working Paper, Mizuho Securities.
+[2011] Bloch D., and Coello Coello C.A., Smiling at evolution. Applied Soft Computing, 11 (8), pp. 5724–5734.
+[2004]
+Blyth S., Practical relative-value volatility trading. Risk, 5, pp. 91–96.
+[2003]
+Bos R., Gairat A. and Shepeleva A., Dealing with discrete dividends. Risk, January, pp 109–112.
+[1988]
+Brenner M.,
+Subrahmanyan M.G., A simple formula to compute the implied standard deviation.
+Financial Analysts Journal, 44, No. 5, 80–83
+[2000]
+Brigo V, Mercurio F., A mixed-up smile, Risk, September, pp 123–126.
+[2008] Buehler H., Volatility and dividends: Volatility modelling with cash dividends and simple credit risk.
+Working Paper, Institut fur Mathematik, MA 7-4, 10623 Berlin, Germany.
+[2011]
+Coleman T.F., Li Y. and Wang c., Stable local volatility function calibration using spline kernel.
+Working Paper, University of Waterloo, May.
+[2002]
+Cont R., da Fonseca J., Dynamics of implied volatility surfaces. Quantitative Finance, 2, 45–60.
+30
+Electronic copy available at: https://ssrn.com/abstract=2143101
+
+[2002]
+Cont R., Tankov P., Calibration of jump-diﬀusion option-pricing models : a robust non-parametric
+approach. CMAP, 42, September.
+[2005]
+Cont R., Model uncertainty and its impact on the pricing of derivative instruments. CMAP, Ecole
+Polytechnique, F-91128 Palaiseau, France.
+[1996]
+Corrado C.J., Miller,Jr. T.W., A note on a simple, accurate formula to compute implied standard
+deviations. Journal of Banking and Finance, 20, p 595–603.
+[1976]
+Cox J.C. and
+Ross S.A., The valuation of options for alternative stochastic processes, Journal of
+Financial Economics, 3 (January-March), 145-166.
+[2006] Daglish T., Hull J. and Suo W., Volatility surfaces: Theory, rules of thumb and empirical evidence.
+Working Paper, August.
+[1998]
+Dempster A., Logicist statistics I. Models and modelling. Statistical Science, 13, pp. 248–276.
+[1999]
+Derman E., Regimes of volatility. Risk, 7 (2).
+[1991]
+Detemple J., and Selden L., A general equilibrium analysis of option and stock market interactions.
+International Economic Review, 32, pp 279–303.
+[1994]
+Dupire B., Pricing with a smile. Risk, 7, pp. 18–20.
+[1997]
+El Karoui N., Modeles stochastiques de taux d’interet, Laboratoire de Probabilites, Universite de
+Paris 6.
+[1998]
+ElKaroui N., Jeanblanc M. and Shreve S., Robustness of the BS formula, Mathematical Finance, 8,
+93–126.
+[2005] Fengler M.R., Semiparametric modeling of implied volatility, Springer Finance, Springer-Verlag Berlin
+Heidelberg.
+[2009]
+Fengler M.R., Arbitrage-free smoothing of the implied volatility surface. Quantitative Finance, 9 (4),
+pp. 417–428.
+[2010]
+Fengler M.R., Option data and modeling BSM implied volatility. Working Paper, University of St.
+Gallen.
+[1989]
+Figlewski S., What does an option pricing model tell us about option prices?
+Financial Analysts
+Journal, 45: 12–15.
+[1999]
+Gatheral J., The volatility skew: Arbitrage constraints and asymptotic behaviour. Merrill Lynch.
+[2006] Gatheral J., The volatility surface: A practitioner’s guide, John Wiley & Sons, Hoboken, New Jersey.
+[2002]
+Hagan P.S.,
+Kumar D.,
+Lesniewski A.S. and
+Woodward D.E., Managing smile risk. Wilmott
+Magazine, September, 84–108.
+[2003] Hentschel L., Errors in implied volatility estimation. Chapter 3 of PhD thesis ”Caveat invertor: Errors
+in implied volatility estimation”, Simon School, University of Rochester.
+[1987] Hull J., and White A., The pricing of options on assets with stochastic volatilities. Journal of Finance,
+42 (2), 281-300.
+[2011]
+Hutchinson D., Relative value concepts in volatility. CBOE Risk Management Conference, Dana
+Point, CA.
+31
+Electronic copy available at: https://ssrn.com/abstract=2143101
+
+[1998] Ingersoll J.E., Approximating american options and other ﬁnancial contracts using barrier derivatives,
+Journal of Computational Finance, 2 (Fall), 85-112.
+[1996]
+Jackwerth J.C., Rubinstein M., Recovering probability distributions from option prices. Journal of
+Finance, 51, 1611–1631.
+[2004]
+Kahal´e N., An arbitrage-free interpolation of volatilities. Risk, 17 (5), pp. 102–106.
+[2009] Kohler M., A review on regression-based Monte Carlo methods for pricing American options. Working
+Paper, Technical University of Darmstadt, Darmstadt.
+[2009]
+Ladokhin S., Volatility modeling in ﬁnancial markets. Master Thesis, VU University Amsterdam.
+[2005]
+Lapeyre B., Sulem A. and Talay D., Simulation of ﬁnancial models : mathematical foundation and
+applications, Working Paper, October.
+[2003] Lettau M. and Ludvigson S., Measuring and modeling variation in the risk return tradeoﬀ. Handbook
+of Financial Econometrics, forthcoming.
+[1997]
+Malz A., Estimating the probability distribution of the future exchange rate from option prices.
+Journal of Derivatives, Winter, pp 18–36.
+[1997]
+Melick W.,
+Thomas C., Recovering an asset’s implied pdf from option prices: An application to
+crude oil during the Gulf war. Journal of Financial and Quantitative Analysis, 32, (1), 91–115.
+[2003]
+Novales A. and
+Lafuente J.A., Optimal hedging under departures from cost-of-carry valuation :
+evidence from the spanish stock index futures market. Journal of Banking and Finance, 27, 1053-1078.
+[2002]
+Overhaus M., Ferraris A., Knudsen T., Milward R., Nguyen-Ngoc L., Schindlmayr G., Equity
+derivatives. Theory and Application John Wiley & Sons, New York.
+[2004]
+Rebonato R., Cardoso M.T., Unconstrained ﬁtting of implied volatility surfaces using a mixture of
+normals, Working Paper, QUARC and Oxford University, July 6.
+[2004]
+Shreve S.E., Stochastic calculus for ﬁnance II, Continuous-time models. Springer Finance, Textbook,
+NY, USA.
+[2003] Simpson J., Currency options and volatility. Goldman Sachs Working Paper, Chapter 11, Siegel M.J.
+at Stern NYU.
+[2000]
+Tankov P., GRM smile model, Rapport de stage de ﬁn d’etude de l’X.
+[2005]
+Tankov P., Calibration de modeles et couverture de produits derives, Working Paper, Universite
+Paris VII.
+[2004]
+Wang Y., Yin H. and Qi L., No-arbitrage interpolation of the option price function and its reformation, Journal of Optimization Theory and Applications, 120 (3), 627–649.
+32
+Electronic copy available at: https://ssrn.com/abstract=2143101

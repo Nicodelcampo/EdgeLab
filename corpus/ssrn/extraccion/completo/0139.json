@@ -1,0 +1,110 @@
+{
+ "doc_id": 139,
+ "titulo": "Generalizations of Functionally Generated Portfolios with Applications to Statistical Arbitrage",
+ "resumen_operativo": "El documento extiende la teoría de Portafolios Generados Funcionalmente (FGPs) de Fernholz al permitir un numéraire arbitrario (cualquier proceso de riqueza estrictamente positivo) y funciones generatrices estocásticamente dinámicas (mediante procesos auxiliares de variación finita). Estas extensiones preservan la tratabilidad analítica de la ecuación maestra (master equation) original (libre de integrales estocásticas). Se proponen aplicaciones prácticas en análisis de escenarios, arbitraje estadístico (explotando tasas de varianza que dependen del intervalo de muestreo), inmunización de portafolios frente a factores de riesgo, y análisis del comportamiento asintótico de portafolios espejo.",
+ "calidad_paper": "alta",
+ "conceptos": [
+  {
+   "nombre": "Functionally Generated Portfolios (FGPs)",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Portafolios construidos mediante funciones generatrices determinísticas o estocásticas cuyas ponderaciones garantizan una descripción de su rendimiento (master equation) relativa a un portafolio benchmark sin necesidad de usar integrales estocásticas.",
+   "relaciones": [
+    {
+     "tipo": "USA",
+     "objeto": "Master equation"
+    }
+   ],
+   "cita_textual": "The theory of functionally generated portfolios (FGPs) is an aspect of the continuous-time, continuouspath Stochastic Portfolio Theory of Robert Fernholz. FGPs have been formulated to yield a master equation..."
+  },
+  {
+   "nombre": "Master equation",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Una descripción de ruta (pathwise) del rendimiento relativo del FGP respecto a un benchmark pasivo (numéraire), libre de integrales estocásticas, muy útil para análisis y optimización.",
+   "relaciones": [
+    {
+     "tipo": "MIDE",
+     "objeto": "Relative return"
+    }
+   ],
+   "cita_textual": "This description is known as the master equation, and is a useful tool for portfolio analysis and optimization."
+  },
+  {
+   "nombre": "Stochastic generating functions",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Funciones generatrices que permiten ajustarse a condiciones dinámicas del mercado al admitir argumentos auxiliares estocásticos con trayectorias continuas de variación finita.",
+   "relaciones": [
+    {
+     "tipo": "APLICA_A",
+     "objeto": "Functionally Generated Portfolios (FGPs)"
+    }
+   ],
+   "cita_textual": "generating functions may be stochastically dynamic, adjusting to changing market conditions through an auxiliary continuous-path stochastic argument of finite variation."
+  },
+  {
+   "nombre": "Long-short statistical arbitrage with FGPs",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Estrategia que toma una posición larga en un FGP con rebalanceo frecuente (alta frecuencia) y una corta en un FGP generado por la misma función pero rebalanceado con menor frecuencia, explotando las diferencias en la tasa de captura de varianza.",
+   "relaciones": [
+    {
+     "tipo": "USA",
+     "objeto": "Functionally Generated Portfolios (FGPs)"
+    }
+   ],
+   "cita_textual": "The general idea is to take a long position in an FGP that is rebalanced over a time interval corresponding to a high variance rate, hedged with a short position in an FGP generated from the same generating function, but rebalanced over a different time interval corresponding to a low variance rate."
+  },
+  {
+   "nombre": "Quadratic generating functions",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Funciones generatrices de forma cuadrática útiles para generar FGPs aplicados en arbitraje estadístico en intervalos de tiempo muy cortos, donde el término de deriva se puede cubrir/eliminar.",
+   "relaciones": [
+    {
+     "tipo": "PARTE_DE",
+     "objeto": "Stochastic generating functions"
+    }
+   ],
+   "cita_textual": "Since statistical arbitrage portfolios are generally rebalanced quite frequently (intradaily), the above motivates consideration of FGPs having quadratic H for application in statistical arbitrage."
+  },
+  {
+   "nombre": "Portfolio immunization",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Modificación de la función generatriz para que el FGP sea invariante a cambios en los factores de riesgo a los que se desea permanecer sin exposición (por ejemplo, exposición excesiva al numéraire).",
+   "relaciones": [
+    {
+     "tipo": "MITIGA",
+     "objeto": "Risk exposure"
+    }
+   ],
+   "cita_textual": "One way to remove unwanted risk exposure is to modify the initial generating function, only in so far as to make it invariant to changes in the argument along the direction of given risk factors."
+  },
+  {
+   "nombre": "Mirror portfolios",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Un portafolio q-espejo refleja la exposición de un portafolio original invirtiendo en direcciones opuestas sin violar la admisibilidad de no tomar posiciones cortas excesivas e ilegales en activos no limitados.",
+   "relaciones": [
+    {
+     "tipo": "USA",
+     "objeto": "Generating functions"
+    }
+   ],
+   "cita_textual": "Flipping the sign of the shares invested in assets... does not in general produce a suitable notion of a reflected portfolio. Mirror portfolios accomplish that task."
+  }
+ ],
+ "hallazgos": [
+  {
+   "hallazgo": "La ecuación maestra previene conclusiones engañosas en el análisis de escenarios comparando retornos; aunque las trayectorias de dos portafolios se mantengan cercanas de forma continua, sus retornos no necesariamente convergen.",
+   "cita_textual": "Just because two portfolios remain arbitrarily close does not imply that their returns are close."
+  },
+  {
+   "hallazgo": "El rendimiento esperado de una estrategia de arbitraje estadístico largo-corto usando FGPs depende cuadráticamente del factor de apalancamiento, determinando un umbral máximo donde empieza a erosionar capital.",
+   "cita_textual": "We will show that the growth rate of the statistical arbitrage portfolio always has the quadratic form γ_π = Aκ - Bκ^2, A, B > 0, where κ is the leverage factor..."
+  },
+  {
+   "hallazgo": "Bajo condiciones típicas de mercado (la tasa de varianza local asintótica no decae a 0), un portafolio original o su portafolio espejo eventualmente perderán toda su riqueza frente a la tasa libre de riesgo, significando que invertir como espejo de una mala estrategia no garantiza el éxito.",
+   "cita_textual": "The preceding corollary shows that a portfolio, its mirror, or possibly both, lose all wealth relative to the money market asymptotically..."
+  }
+ ],
+ "aplicabilidad_es_intradia": {
+  "nivel": "media",
+  "nota": "El paper aborda estrategias de arbitraje estadístico intradiario explícitamente diseñadas para explotar cómo la tasa de varianza difiere a mayores frecuencias de muestreo (ej. rebalanceos cada 1.5 a 7 minutos). Aunque el modelo base asume ausencia de fricciones (costos de transacción), que penalizan excesivamente estas metodologías en la práctica por el apalancamiento extremo requerido (κ ~ 10^5), el sustento matemático y la formulación a nivel intradiario sí son altamente relevantes."
+ }
+}

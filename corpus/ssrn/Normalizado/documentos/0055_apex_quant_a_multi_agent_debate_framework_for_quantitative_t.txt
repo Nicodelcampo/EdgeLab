@@ -1,0 +1,1105 @@
+APEX QUANT: A MULTI-AGENT DEBATE FRAMEWORK FOR
+QUANTITATIVE TRADING
+TECHNICAL REPORT
+Shuting Sun
+Independent Researcher
+sst19910323@gmail.com
+March 30, 2026
+ABSTRACT
+We present Apex Quant, a multi-agent large language model (LLM) framework for quantitative trading
+decisions. The system employs three agents with distinct personas—an aggressive bull (Zealot), an
+aggressive bear (Reaper), and a moderating chief investment officer (Fulcrum)—engaged in structured
+multi-round debate before reaching a trading decision. Rather than reporting aggregate performance
+statistics, this paper documents a series of non-obvious architectural discoveries emerging from
+iterative development and live forward testing: that debate structure itself provides decision stability
+rather than prompt memory; that systematic persona bias can emerge wherein one agent consistently
+dominates through rhetorical structure rather than evidence quality; and that distilling behavioral
+finance principles directly into agent prompts produces qualitatively superior reasoning compared
+to relying on base model priors. We describe the full evolution of the system, including failed
+architectural variants, and present case studies from live forward testing that illustrate both the
+system’s decision mechanisms and the structural tensions inherent in its design—serving as a practical
+guide for researchers building LLM-based trading agents. The system is publicly available at
+https://github.com/sst19910323/apex_parliament.
+Keywords Large language models · Multi-agent systems · Quantitative trading · Debate architecture · Behavioral
+finance · Investment decision making
+1
+Introduction
+Quantitative trading has long relied on statistical models, rule-based systems, and more recently, machine learning
+approaches to extract signal from financial markets. These methods share a common limitation: they optimize for
+pattern recognition within historical data, with limited capacity to reason about novel market conditions or integrate
+qualitative judgment at the moment of decision.
+Large language models (LLMs) offer a fundamentally different capability: the ability to reason over heterogeneous
+inputs, weigh competing hypotheses, and articulate conditional judgments in natural language [Wei et al., 2022].
+However, deploying a single LLM as a trading agent introduces well-documented failure modes—overconfidence,
+susceptibility to confirmation bias, and inconsistent behavior across sessions [Sharma et al., 2023, Gallegos et al., 2024].
+We propose that these failure modes are not primarily prompt engineering problems, but architectural ones. A single
+agent, regardless of how carefully its prompt is designed, lacks an internal mechanism for adversarial self-correction.
+Our solution is a structured three-agent debate framework in which agents with fixed, opposing investment philosophies
+are required to build independent cases before deliberating toward a consensus position. Concurrently and independently,
+Xiao et al. [2024] arrived at a structurally similar conclusion through a different design philosophy, providing convergent
+evidence that adversarial debate addresses a genuine architectural gap in LLM-based trading.
+
+Apex Quant: A Multi-Agent Debate Framework
+TECHNICAL REPORT
+The resulting system, Apex Quant, has been deployed in live forward testing on Chinese A-share and futures markets.
+More importantly for the research community, the development process surfaced several architectural insights that we
+believe generalize beyond this specific application.
+The primary contributions of this paper are as follows:
+• A three-agent debate architecture for trading decisions, with a principled rationale for persona design and
+debate protocol structure.
+• The identification and partial resolution of systematic persona bias: a phenomenon where one agent consistently
+wins debates through rhetorical framing rather than evidence quality.
+• Empirical evidence that distilling behavioral finance principles into agent system prompts—rather than relying
+on emergent reasoning—produces measurable improvements in Sharpe ratio.
+• A documented development history including failed architectural variants, offered as practical guidance for
+future work.
+The remainder of this paper is organized as follows. Section 2 reviews related work on LLM agents and algorithmic
+trading. Section 3 describes the system architecture. Section 4 presents key design principles derived from iterative
+development. Section 5 documents the broader exploration process, including failed architectural variants. Section 6
+presents case studies from live forward testing and backtesting, illustrating representative trading decisions alongside
+two cases of particular structural and analytical interest. Section 7 concludes.
+2
+Related Work
+2.1
+LLM Agents for Financial Decision Making
+The application of large language models to financial tasks has expanded rapidly. Early work demonstrated that LLMs
+possess substantial financial knowledge and can perform sentiment analysis, earnings call summarization, and basic
+market commentary [Lopez-Lira and Tang, 2023, ?]. More recent efforts have explored LLM-based trading agents that
+consume market data and generate buy/sell signals directly [??].
+However, single-agent approaches face a fundamental tension: the same model that reasons fluently about market
+conditions is also prone to overconfident position-taking, anchoring to recent context, and inconsistent risk tolerance
+across sessions. ? document systematic hallucination in financial LLM applications, where models generate plausible
+but factually incorrect reasoning chains. Our architecture addresses this by structuring disagreement rather than
+attempting to eliminate it.
+2.2
+Multi-Agent Debate and Deliberation
+The use of multiple LLM agents to improve reasoning quality has gained significant attention. Du et al. [2023] show
+that having multiple LLM instances debate a question and update their answers based on responses from other agents
+leads to substantially improved factual accuracy and mathematical reasoning. Liang et al. [2023] demonstrate that agent
+disagreement, when properly structured, reduces sycophancy and improves output diversity.
+A critical design distinction in our work is between refutation-based and constructive debate architectures. In refutationbased designs, agents primarily respond to and attack each other’s positions. We find this leads to rhetorical dominance
+effects rather than evidence-based consensus. Our constructive design requires each agent to build an independent case
+before deliberation begins, a distinction elaborated in Section 3.
+2.3
+Behavioral Finance and Systematic Bias
+Behavioral finance research has catalogued a rich set of cognitive biases that affect human traders: loss aversion
+[Kahneman and Tversky, 1979], momentum chasing, and overreaction to recent events [?]. A non-obvious finding of
+our work is that LLM agents reproduce several of these biases spontaneously—not because they are explicitly prompted
+to, but because the biases are embedded in the training corpora derived from human-generated financial text. This
+motivates our approach of explicitly encoding counter-bias principles into agent system prompts, described in Section 4.
+2.4
+Quantitative Trading Systems
+Classical quantitative approaches range from statistical arbitrage [?] to deep reinforcement learning [??]. While
+these methods excel at exploiting well-defined statistical regularities, they require large labeled datasets and struggle
+2
+
+Apex Quant: A Multi-Agent Debate Framework
+TECHNICAL REPORT
+with regime changes. Our system occupies a complementary niche: it is designed for low-frequency, high-conviction
+decisions where qualitative reasoning about market context is as important as quantitative signal.
+3
+System Architecture
+3.1
+Design Philosophy
+A central premise of Apex Quant is that trading decision quality is fundamentally a problem of structured disagreement,
+not information aggregation. A single agent given all available market data will tend to converge on a dominant
+narrative—whichever interpretation is most salient in its training distribution. Real investment committees derive value
+not from averaging opinions, but from forcing independent, opposing cases to be articulated and defended before a
+decision is reached.
+This observation motivates a three-agent round-table architecture in which no agent is designed to be neutral or balanced.
+Each agent holds a fixed investment philosophy that it is constitutionally required to defend. Stability emerges from
+the tension between agents, not from any individual agent’s internal calibration. All three agents participate as equals;
+Fulcrum additionally serves as facilitator and rapporteur, a practical division of labor rather than a hierarchy of authority.
+3.2
+Agent Personas
+The three agents and their roles are illustrated in Figure 1. We name them Zealot, Reaper, and Fulcrum.
+Figure 1: The three-agent round-table architecture of Apex Quant. Zealot (Analyst) pulls toward BUY; Reaper (Auditor
+/ Cash Holder) pulls toward SELL; Fulcrum (CIO) holds the center. The system’s equilibrium is a conservative HOLD
+bias, which shifts only under the weight of well-evidenced arguments from either side.
+Zealot occupies the aggressive analyst role. Its mandate is to identify actionable long opportunities in current market
+conditions and to construct the strongest possible case for position entry. Zealot is explicitly instructed to seek
+asymmetric upside, to argue that the current thesis remains intact, and to resist premature exit. It is not a balanced
+analyst: it is constitutionally bullish, and its value to the debate lies precisely in its refusal to hedge. Zealot’s
+characteristic failure mode—which the architecture is designed to contain rather than eliminate—is the tendency to
+extend a valid thesis beyond its natural expiration, finding reasons to stay in a position after the original catalyst has
+been exhausted.
+Reaper occupies the capital preservation and profit-taking role. Its deeper mandate is realism: to ask, at every decision
+point, whether remaining in a position is still justified by current evidence, or whether the prudent action is to harvest
+existing gains and return to cash. Where Zealot argues that the thesis remains intact and further upside lies ahead,
+Reaper argues that the thesis has been fulfilled, the easy money has been made, and the risk/reward of continued holding
+no longer justifies the exposure. In the majority of cases, Reaper’s exit argument is not “the market is collapsing”—that
+3
+
+Apex Quant: A Multi-Agent Debate Framework
+TECHNICAL REPORT
+scenario is relatively rare—but the quieter and more common case: “we have made a reasonable return, conditions are
+uncertain, and cash is a position.” The name reflects not an appetite for decline, but a willingness to harvest gains that
+Zealot would leave on the table in pursuit of further upside.
+Fulcrum participates in the debate as an equal, but additionally serves two procedural roles: maintaining debate order
+and authoring the final report. Fulcrum is conservative by disposition—its natural tendency is to pull both agents
+toward the center, and its default output in the absence of compelling evidence is HOLD. This conservatism is a
+persona characteristic, not a structural privilege; Fulcrum’s vote carries no more weight than Zealot’s or Reaper’s during
+deliberation. Its role as rapporteur is a division of labor: someone must synthesize and record, and the most conservative
+agent is the natural choice for a task that rewards caution over advocacy.
+A key design principle is that all three agents first build independent assessments before seeing each other’s outputs.
+This prevents the debate from collapsing into refutation loops where rhetorical skill dominates evidence quality.
+3.3
+Debate Protocol
+Each decision cycle proceeds in three stages, as illustrated in Figure 2.
+Figure 2: The Apex Quant decision cycle. Stage 1: all three agents independently initialize their assessments from
+identical raw data inputs, with no inter-agent communication. Stage 2: agents engage in multi-round free deliberation,
+each responding to others’ arguments and introducing new evidence. Stage 3: Fulcrum authors the final report; Zealot
+and Reaper each provide a closing signature containing their own preferred action and a brief assessment of the report.
+Stage 1 — Independent Initialization. Each agent receives identical raw data inputs and independently produces an
+assessment. Each agent’s output must include explicit action and operation parameters—a directional recommendation and the specific trade operation it implies—in addition to the supporting reasoning. No inter-agent communication
+occurs in this stage.
+Stage 2 — Free Deliberation. Agents are shown each other’s Stage 1 outputs and engage in open multi-round debate.
+Each agent may respond to others’ arguments, introduce new evidence, or revise its position. Each deliberation round
+also produces action and operation outputs, creating a record of how each agent’s position evolves across rounds.
+Stage 3 — Report and Signatures. Fulcrum authors a structured final report summarizing the debate and stating an
+executable decision. Fulcrum is explicitly instructed to evaluate the quality of evidence presented by each agent, not the
+length or assertiveness of their arguments. Following the report, Zealot and Reaper each provide a closing signature:
+their own preferred action recommendation and a brief assessment of Fulcrum’s report. These signatures carry no
+binding authority over the final decision, but serve as a meaningful record of dissent—a minority opinion that operators
+with different risk tolerances may choose to weight.
+4
+
+Apex Quant: A Multi-Agent Debate Framework
+TECHNICAL REPORT
+Table 1: Key design principles in Apex Quant, the failure modes that motivated them, and their architectural expression.
+Principle
+Failure Mode Addressed
+Architectural Expression
+Cognitive
+Incompatibility
+Single agent cannot maintain
+contradictory stances; bullish
+priors dominate
+Separate Zealot and Reaper with fixed,
+opposing mandates
+Wisdom Distillation
+Base model applies sound principles inconsistently under live
+market framing pressure
+Behavioral finance rules embedded as
+constitutional prompt constraints
+Debate Constitution
+Debate degrades into assertion
+loops or hollow consensus
+Five explicit rules governing burden of
+proof, updates, and information increment
+Limited Data
+Self-referential feeding introduces inertial drift; errors compound across cycles
+Stateless inference; each cycle receives
+only current-period data
+Complexity
+Convergence
+Complex conditional strategies
+introduce execution error
+Deliberation unconstrained; final output
+forced to simple executable instruction
+3.4
+Output Format
+The system produces XML-structured output. Fulcrum’s final report contains the following fields: directional decision
+(BUY / SELL / HOLD), semantic position size (Strong / Moderate / Light / None), entry conditions, exit conditions,
+stop-loss level, primary reasoning, and dissenting considerations. Zealot and Reaper’s closing signatures follow the
+same action and operation field structure, accompanied by a brief free-text comment on the report.
+3.5
+Context Management
+Each decision cycle is executed as stateless inference: agents receive only current-period market data, with no access to
+prior debate transcripts or prior decisions. Two consecutive time points are treated as independent inputs.
+4
+Key Design Principles
+The following principles define the current architecture of Apex Quant. They were not conceived in advance but
+emerged from observed failure modes during iterative development. The exploration process that produced them is
+documented in Section 5; this section presents the principles as they stand in the current system. Table 1 provides an
+overview.
+4.1
+The Cognitive Incompatibility Principle
+A foundational observation motivating the three-agent architecture is that financial market data is sufficiently complex
+and ambiguous that a single agent cannot simultaneously maintain two contradictory investment stances with equal
+conviction. In practice, when a single agent is given both bullish and bearish reasoning frameworks, one set of priors
+dominates. An agent with strong “buy the dip, ride the trend” principles will interpret ambiguous data through a bullish
+lens—not because it lacks bearish knowledge, but because the two orientations are cognitively incompatible when
+applied to the same data at the same time.
+This was observed directly in an earlier two-agent design where a single analyst agent was given both entry and exit
+mandates. Despite possessing explicit sell-side reasoning in its prompt, the agent’s bullish tendencies dominated in
+practice. During a significant gold price decline, the analyst maintained an optimistic long bias while the risk agent
+flagged clear downside signals. The mechanism at the time only allowed the risk agent to pull the decision toward
+HOLD, not to generate an independent SELL recommendation—because the analyst, the only agent with an action
+mandate, could not simultaneously hold a bearish thesis. The result was a missed exit.
+This failure clarified the distinction between Zealot and Reaper that defines the current architecture. Zealot’s natural
+disposition is to buy the dip, hold through volatility, and exit only when the narrative has demonstrably collapsed. This
+is not a flaw—it is a coherent and internally consistent investment philosophy. Its natural counterpart is not a short-seller
+5
+
+Apex Quant: A Multi-Agent Debate Framework
+TECHNICAL REPORT
+but a realist who asks whether the gains already achieved justify the risk of continued exposure. Reaper embodies
+this counterpart. The two agents are not opposites on a bull-bear spectrum; they are opposites on an action-patience
+spectrum, each internally consistent, neither capable of naturally inhabiting the other’s stance.
+The three-agent structure also resolves the stability problem inherent in binary debate. When two agents disagree, one
+simply defeats the other, and outcomes oscillate with market conditions in ways that are difficult to predict or calibrate.
+The introduction of Fulcrum as a third party means that an extreme position must persuade two agents rather than one,
+substantially raising the bar for unilateral dominance and smoothing decision volatility across time.
+4.2
+Wisdom Distillation
+Early versions of the system provided agents with only their role definition and output format requirements, relying on
+the base model’s general financial knowledge to produce sound trading behavior. The result was consistent with what
+one might expect from an intelligent but inexperienced participant: the agents produced fluent, well-structured analysis,
+but committed elementary errors in practice. Momentum-chasing, overreaction to recent price moves, and failure to
+respect risk/reward asymmetry were recurring patterns.
+The key insight was not that the models lacked relevant knowledge—they demonstrably possessed it—but that they did
+not spontaneously apply it under the framing pressure of live market data. A compelling recent trend would override
+sound principles that the model could articulate perfectly well when asked directly. The solution was to make those
+principles explicit and constitutional: embedded directly in each agent’s system prompt as standing instructions that
+cannot be overridden by in-context narrative.
+We term this approach wisdom distillation: the compression of domain expertise into concise, imperative principles that
+operate at the constitutional level of the agent prompt. The intuition is analogous to ritual invocation—the principles
+do not participate in the debate as evidence to be weighed; they are the preconditions under which the debate occurs,
+inscribed into each agent’s constitution as commandments that in-context narrative cannot override. These principles
+were developed iteratively—added one by one as failure modes were observed—and later systematized with the
+assistance of LLM tools that helped organize scattered observations into coherent frameworks. Representative examples
+include: “true alpha appears when your thesis differs from consensus and you are correct, not when you follow
+momentum”; “a decision not to trade is a valid and often superior decision”; “do not enter a position because it
+has moved; enter because your thesis is intact and the risk/reward remains favorable”; and “size positions to survive
+adverse moves, not to maximize return on the expected case.”
+The improvement following systematic prompt refinement was qualitatively consistent across evaluation periods: report
+quality improved markedly, with agents producing more disciplined reasoning and fewer instances of momentumchasing or overconfident position-taking. A rigorous quantitative attribution is complicated by the confounding effects
+of concurrent architectural changes, and we do not claim precise measurement of this effect in isolation.
+4.3
+Debate Transparency as Interpretability
+A practical advantage of the debate architecture that extends beyond decision quality is the interpretability of the
+reasoning process. The full debate transcript—each agent’s independent assessment, the deliberation exchanges, and
+the dissenting signatures—constitutes a structured audit log of why a given decision was reached.
+This matters because LLMs are capable of producing outputs that appear authoritative and well-reasoned while
+containing substantive errors. A single-agent system that outputs a confident recommendation provides no internal
+mechanism for detecting such errors before execution. In the three-agent architecture, agents actively expose each
+other’s weaknesses: a momentum-chasing argument by Zealot will be challenged by Reaper; an overly cautious
+cash-holding position will be stress-tested by Zealot’s upside case. Logical gaps that would pass undetected in a
+single-agent output tend to surface during deliberation.
+The debate transcript therefore serves a dual purpose: it is the decision mechanism and the explanation simultaneously.
+Operators can inspect not just what the system decided, but the specific chain of argument that produced the decision—
+and crucially, whether the dissenting signatures suggest the decision was fragile or robust.
+4.4
+Debate Constitution
+Effective multi-agent deliberation requires more than structural separation of initial assessments. Without explicit rules
+governing how agents argue, debate degrades into one of two failure modes: repetitive assertion loops where agents
+restate their original positions with escalating rhetorical intensity, or hollow consensus where agents converge without
+6
+
+Apex Quant: A Multi-Agent Debate Framework
+TECHNICAL REPORT
+genuine engagement. The following principles, embedded as constitutional constraints in all three agents’ prompts,
+define what constitutes valid deliberation in Apex Quant.
+Cross-examination obligation. The burden of proof an agent must meet is proportional to the distance between its
+position and those of the other two agents. If an agent’s position diverges significantly from both others, it must rebut the
+core counterarguments of both parties point by point; failure to do so invalidates the extreme claim, which automatically
+converges toward the nearest opposing position. If an agent diverges from one party but aligns with the other, it need
+only address the strongest argument of the dissenting party. If all three positions are close, simple position restatement
+suffices. This asymmetric burden structure prevents fringe positions from persisting through rhetorical inertia alone.
+Epistemic humility constraint. Each agent is explicitly reminded that markets are complex systems and that no single
+agent can see the full picture. The three agents are constitutionally required to treat their initial assessment as a partial
+view—one cut through a multidimensional problem—rather than a complete analysis. The ideal final recommendation
+will almost certainly differ from any agent’s first-round intuition. This constraint is designed to counteract the tendency
+of agents to treat their initial output as a commitment to be defended rather than a hypothesis to be tested.
+Bayesian update protocol. If an opposing agent presents a valid argument—defined as introducing a dimension
+outside the agent’s current view, supported by data, internally consistent, and not falsifiable by available evidence—the
+receiving agent is required to adjust its action and operation parameters accordingly. This adjustment is mandatory
+and cannot be substituted by rhetorical resistance. The protocol distinguishes between core logic, which an agent may
+defend, and numerical position parameters, which must reflect all valid incoming evidence. Partial agreement is the
+expected norm: an agent need not abandon its thesis, but must propagate valid counterarguments into its output values.
+In the extreme case where an opposing argument demonstrably destroys an agent’s logical foundation, full reversal is
+permitted and should be explicitly flagged as a “logical falsification” event.
+Information increment requirement. Each round of deliberation must contribute at least one element not present in
+prior rounds: a new data point, a new analytical angle, or a substantive response to a new argument raised by another
+agent. Restating an existing argument with stronger language does not constitute new information. Rhetorical intensity
+is explicitly distinguished from argumentative strength: evidence is evidence; adjectives are not. Arguments that have
+been fully developed in prior rounds and have received no new supporting data are treated as already priced into the
+debate, with diminishing marginal persuasive weight.
+Dispute resolution. When a specific point of contention has been argued through without resolution and neither party
+can produce new evidence, agents are required to explicitly declare the dispute shelved and open a new line of argument.
+This prevents debates from stalling on unresolvable disagreements while other potentially decisive dimensions of the
+market situation remain unexplored.
+4.5
+The Limited Data Principle
+Apex Quant operates exclusively on freely available quantitative data: price and volume time series, derived technical
+indicators, and macroeconomic context where available. No proprietary feeds, news sentiment APIs, or alternative data
+sources are incorporated. This constraint was initially practical but became principled.
+The core reasoning is that if the agent system is well-constructed and the quantitative inputs are sufficient, the debate
+should converge on a well-reasoned conclusion organically, without referencing prior analysis cycles. Deliberately
+feeding agents their own previous outputs introduces inertial drift analogous to dead reckoning in navigation: each
+cycle’s errors compound into the next, and the system gradually fits itself to its own history rather than to current market
+conditions. Each decision session therefore receives only current-period data. Two time points are treated as statistically
+independent inputs.
+4.6
+Complexity Convergence
+Agents are encouraged to explore complex, conditional strategies during deliberation—multi-leg positions, staged
+entries, scenario-contingent plans. However, the final action and operation fields in Fulcrum’s output must resolve
+to simple, executable instructions. This constraint reflects a practical reality: execution simplicity reduces operational
+error, and the value of sophisticated reasoning should be captured in which simple action is chosen, not in the complexity
+of the action itself.
+This constraint is not without cost. There are cases where the debate genuinely supports a nuanced strategy that the
+output format cannot fully express, and the forced simplification loses information. We regard this tension as an open
+design problem rather than a resolved one; a representative case is discussed in Section 5.
+7
+
+Apex Quant: A Multi-Agent Debate Framework
+TECHNICAL REPORT
+4.7
+Model Independence and the Catfish Effect
+A practically significant property of the architecture is its insensitivity to the choice of underlying model. During
+development, the system was tested across multiple LLM providers and model generations. The observation was
+consistent: given identical prompts and identical market data, different models of comparable capability produced
+highly convergent outputs. Debate dynamics, agent persona fidelity, and final decision quality showed no meaningful
+degradation when the underlying model was substituted, provided the model met a threshold of instruction-following
+capability and context retention. This suggests that the behavioral properties of the system are determined primarily by
+the prompt architecture and ensemble structure—the persona definitions, debate constitution, and wisdom distillation
+principles—rather than by the idiosyncratic capabilities of any particular model. In our experience, swapping the
+underlying model for another of comparable capability produced less change in output quality than a substantive
+revision to the prompt architecture. However, a critical qualification emerged from limited but consistent testing: model
+compliance disposition introduces systematic bias that capability metrics do not capture. Certain models, despite strong
+benchmark performance, exhibit an excessive tendency toward premature convergence—not because the evidence
+warrants it, but as an artifact of over-optimization for cooperative dialogue during post-training alignment. This interacts
+in a non-obvious way with the system’s debate intensity mechanism. Each agent independently estimates the appropriate
+debate intensity for the current round based on asset complexity and market conditions; the ensemble then adopts the
+maximum of the three estimates as the operative intensity floor. Under a homogeneous ensemble of highly compliant
+models, all three agents systematically underestimate required intensity, producing a low ceiling that permits—and
+effectively licenses—early convergence. The adversarial pressure the architecture is designed to generate fails to
+materialize not because any single agent is incapable, but because the collective intensity floor is never raised. The
+remedy is not necessarily model diversity across providers, but intensity diversity in practice. A single agent with a less
+compliant disposition—one that independently judges the situation to warrant high-intensity scrutiny—is sufficient to
+raise the operative floor and compel genuine engagement from the remaining agents, including otherwise compliant
+ones. This functions analogously to the “catfish effect” in organizational behavior: one disruptive element is enough
+to prevent the group from settling into cooperative underperformance. The practical implication is twofold. First, the
+system can be migrated across model providers without retuning, as behavioral properties are governed by prompt
+architecture rather than model identity. Second, and more subtly, homogeneous ensembles of highly compliant models
+should be treated as a structural risk: the system’s adversarial guarantees hold only when at least one agent is willing to
+escalate. For ensemble debate systems of this kind, how you structure the conversation matters more than who you
+invite to it—with the addendum that who you mix together matters more than benchmark scores alone would suggest.
+5
+Exploration Process and Lessons Learned
+This section documents the actual development trajectory of Apex Quant, including the reasoning behind key transitions
+and the failure modes that drove them. We offer this account because the path from a naive single-agent prototype to
+the current architecture contains insights that the final system description alone does not convey.
+5.1
+Origins and Timeline
+Development began on October 13, 2025, as a personal side project pursued outside of regular working hours. The
+initial motivation was straightforward: LLMs demonstrably possess substantial financial knowledge, and the question
+was whether that knowledge could be channeled into actionable trading decisions with minimal engineering overhead.
+5.2
+Phase 1: The Naive Single-Agent System
+The first system was built on a confident premise: that a sufficiently capable LLM, given comprehensive market data,
+would reason its way to sound trading decisions without extensive guidance. Each decision cycle provided the agent
+with a rich input package covering macroeconomic context, political and market news, fear and greed indicators,
+index-level technical analysis for the S&P 500 and NASDAQ 100, and instrument-specific data including company
+profile, technical indicators, fundamentals, and recent news. Output format requirements were minimal. The agent was
+trusted to do the rest.
+The system produced fluent, well-structured analysis. It could articulate market dynamics, identify technical setups, and
+discuss risk factors with apparent sophistication. What it could not do reliably was apply sound trading discipline under
+the framing pressure of live market data. Momentum-chasing, overreaction to recent price moves, and failure to respect
+risk/reward asymmetry were recurring patterns—the characteristic errors of an intelligent but undisciplined participant.
+The model knew better; it simply did not apply what it knew without being explicitly told to.
+8
+
+Apex Quant: A Multi-Agent Debate Framework
+TECHNICAL REPORT
+Figure 3: Development timeline of Apex Quant. The system evolved through three phases: a single-agent prototype, a
+two-agent system in which prompt constitution and agent personas co-evolved, and the current three-agent round-table
+architecture. The gold trade episode (December 2025) was the critical turning point that revealed the structural limits of
+binary debate and motivated the transition to the current design.
+This observation shaped the two parallel responses that defined the subsequent development: adding explicit behavioral
+rules to the prompt on one hand, and introducing a second agent to provide adversarial pressure on the other.
+5.3
+Phase 2: Co-evolution of Prompt and Persona
+The single-agent system revealed a characteristic failure that shaped everything that followed: the model was entirely
+capable of producing fluent, authoritative-sounding analysis that was, on closer inspection, riddled with errors of
+judgment. It could articulate sound principles when asked directly, but under the framing pressure of live market data it
+would abandon them without apparent awareness. The problem, in short, was that the model was very good at sounding
+right.
+Two responses suggested themselves simultaneously. The first was architectural: introduce a second agent whose
+explicit mandate was to find fault with the first. If the analyst could not be trusted to self-correct, adversarial pressure
+from outside might supply what introspection could not. The second was constitutional: if the model would not
+spontaneously apply sound trading principles, those principles needed to be made explicit and inviolable—inscribed
+into the prompt as commandments rather than offered as suggestions.
+These two responses were not sequential. They developed in parallel, and more importantly, they developed interdependently. The introduction of a second agent immediately raised the question of what each agent was for—which forced a
+more precise articulation of role. A vague “analyst” and a vague “risk manager” produced vague debate. As the roles
+sharpened, the prompt rules needed to sharpen with them: an agent with a clearly defined investment philosophy requires
+a constitution consistent with that philosophy, not a generic list of trading dos and don’ts. Conversely, as the prompt
+rules accumulated and systematized, the agents’ characters became more distinct and stable. The analyst gravitated
+toward opportunity, momentum, and the case for action. The risk manager gravitated toward scrutiny, asymmetry, and
+the case for patience. Neither character was designed top-down; both crystallized through the mutual pressure of role
+definition and rule accumulation.
+By the end of this phase, the two agents had developed into recognizable precursors of Zealot and Reaper. The prompt
+had evolved from a brief role description into a structured constitution covering investment philosophy, distilled trading
+wisdom, counter-bias principles, and explicit fatal errors. The architecture had a skeleton. What it lacked was a
+resolution mechanism that could handle the cases where the two agents reached an irreconcilable impasse—a limitation
+that the gold trade episode would make impossible to ignore.
+9
+
+Apex Quant: A Multi-Agent Debate Framework
+TECHNICAL REPORT
+5.4
+Phase 3: The Gold Trade and the Limits of Binary Debate
+The transition to the three-agent architecture was precipitated by a specific failure. During a period of significant
+gold price decline, the analyst agent maintained a bullish thesis. The risk agent correctly identified the deteriorating
+conditions and argued against the position. The binary mechanism at the time could only resolve this disagreement
+in one direction: toward HOLD. The analyst, as the sole agent with an action mandate, could not generate a SELL
+recommendation—its constitutional bullishness made it structurally incapable of doing so. The risk agent could pull
+toward caution but could not push toward exit. The result was a position held too long, the losses that followed, and a
+forced reassessment of the architecture.
+The episode clarified something that had been implicit but not fully articulated: the analyst’s failure was not a prompt
+calibration problem. It was a consequence of cognitive incompatibility, as described in Section 4. An agent constituted
+to seek opportunity cannot simultaneously constitute itself to recognize when opportunity has passed. The natural
+counterpart to an optimist who rides trends is not a pessimist who shorts markets, but a realist who takes profits. This
+realization produced the Reaper persona as it exists today.
+It also revealed the structural fragility of binary debate. With two agents, one defeats the other, and the system’s
+behavior is hostage to whichever agent happens to construct the more rhetorically compelling case in a given cycle.
+Outcome volatility was high and difficult to predict. The introduction of Fulcrum as a third party—upgraded from its
+earlier role as a static summarizer to a dynamic arbitrator with its own conservative disposition—transformed the debate
+geometry. An extreme position now requires the agreement of two agents rather than one. The threshold for unilateral
+dominance is substantially higher, and decision volatility across cycles is correspondingly lower.
+5.5
+Unexpected Findings
+Two observations emerged during development that were not anticipated and that we believe warrant documentation.
+Latent market sensitivity. During a backtesting session on historical data, we observed an instance—September
+10, 2025—in which the system, running under an earlier version of the prompt without the complexity convergence
+constraint, produced a markedly atypical output. The agents converged on an aggressive position with an unusually
+precise directional forecast: that the target instrument was poised for a sharp short-term appreciation that would not
+be sustained. The output included a sophisticated, multi-leg strategy with staged exit conditions calibrated to the
+anticipated move duration. The forecast proved correct.
+We note this not as a performance claim but as an architectural observation. The episode suggests that the agents
+possess latent sensitivity to subtle market conditions that does not consistently surface in normal operation—either
+because the output format constraints suppress its expression, or because such sensitivity requires a particular alignment
+of inputs to manifest. Whether this represents genuine analytical capability or a pattern-matching artifact is unclear.
+The tension between output simplicity, which we enforce for operational reasons, and the full expressive range of the
+agents’ reasoning is a cost we acknowledge but have not resolved.
+Spontaneous data requests. During a backtesting session in which the limited data principle was temporarily suspended,
+we observed the agents spontaneously requesting additional information from each other during deliberation—asking,
+for instance, for Microsoft’s most recent earnings figures or specific macroeconomic releases not present in the standard
+input package. This behavior was not prompted or anticipated. Without being instructed to identify data gaps, the
+agents recognized the boundaries of the available information and attempted to fill them through inter-agent requests.
+The current system cannot act on these requests: the data infrastructure does not support dynamic data retrieval during a
+decision cycle. The limited data principle was in part adopted in response to this constraint. We regard the spontaneous
+request behavior as evidence that the agents’ information needs exceed what the current input package provides, and
+that a richer data infrastructure could unlock meaningfully different deliberation dynamics.
+6
+Case Studies
+This section presents six trading decisions drawn from live forward testing and backtesting of the Apex Quant system.
+The first subsection documents four representative decisions under the Zealot/Reaper/Fulcrum architecture, illustrating
+the system’s behavior across entry, trim, and full exit scenarios in U.S. equity markets during January–February 2026.
+The second subsection examines two cases of particular analytical interest: one exposing a structural role-design failure
+that motivated the transition to the three-agent architecture, and one demonstrating the emergent capacity of multi-agent
+debate to construct sophisticated market analysis under conditions of extreme sentiment dislocation.
+10
+
+Apex Quant: A Multi-Agent Debate Framework
+TECHNICAL REPORT
+6.1
+Representative Trading Decisions
+The following five cases are drawn from live forward testing on U.S. equity markets in 2025–2026. The two entry
+decisions (AAPL and XOM) are documented from system interface screenshots, as the full debate transcripts from
+that period were not retained; the two exit decisions (NVDA and AAPL) are documented from complete debate logs.
+The fifth case, an index-level tactical decision under acute geopolitical shock, is documented from a complete debate
+log and is included specifically for its illustration of high-intensity adversarial reasoning under a heterogeneous model
+configuration. Together they illustrate the system’s behavior across different decision types, market contexts, evidence
+environments, and model compositions.
+6.1.1
+AAPL Long Entry — January 2026
+Apple Inc. was flagged as a long entry opportunity in January 2026 at approximately $250, a level that represented a
+local trough following a multi-week pullback from prior highs. The system’s entry rationale centered on a combination
+of technical support at the MA200 level, a reset of momentum indicators to oversold territory after the decline, and an
+intact long-term fundamental narrative. The decision was classified as a buy-the-dip entry rather than a trend-following
+entry: the thesis was not that momentum had resumed, but that the pullback had created a favorable risk/reward entry
+point at a level where downside was structurally limited.
+Full debate transcripts from this period were not retained. The system issued a BUY verdict with a confidence score of
+65, a limit order at $248.50, and light exploratory sizing—consistent with a setup where the technical case was clear
+but near-term catalysts for resumption were not yet present. The psychological game theory distribution output (75%
+dip-buying, 25% awaiting confirmation) reflected the same ambivalence: the dominant read was constructive, but the
+system did not treat the setup as high-conviction.
+Figure 4: AAPL entry decision, January 2026. BUY verdict (confidence score: 65), limit order at $248.50, light
+exploratory sizing. Psychological game theory distribution: 75% dip-buying, 25% awaitingconfirmation. System
+interface displayed in Simplified Chinese; key fields translated in caption.
+6.1.2
+XOM Long Entry — January 2026
+ExxonMobil was flagged as a long entry in January 2026 against a backdrop of elevated geopolitical risk in the Western
+Hemisphere. The arrest of Venezuelan President Nicolás Maduro in the preceding period had introduced meaningful
+uncertainty into regional oil supply, providing a fundamental catalyst that the system identified as not yet fully priced
+into XOM’s valuation at the time of entry. Technical conditions were constructive: price was trending above key
+11
+
+Apex Quant: A Multi-Agent Debate Framework
+TECHNICAL REPORT
+moving averages with volume confirmation, and the risk/reward profile was assessed as favorable given the proximity
+of structural support levels.
+Full debate transcripts from this period were not retained. The system issued a BUY verdict with moderate sizing and a
+staged entry strategy. Notably, the system’s summary judgment explicitly acknowledged the Venezuelan geopolitical
+narrative as already partially priced into the market—consistent with the wisdom distillation principle that true alpha lies
+in identifying what the market has not yet fully discounted—while identifying the combination of technical breakout,
+fundamental quality, and a 3.29% dividend yield as a collectively sufficient basis for entry.
+Figure 5: XOM entry decision, January 6, 2026 (Asia/Shanghai time). BUY verdict with moderate sizing and staged
+entry strategy. The system acknowledged the Venezuelan supply disruption narrative as partially priced while identifying
+technical breakout, fundamental quality, and 3.29% dividend yield as a high-conviction entry combination. System
+interface displayed in Simplified Chinese; key fields translated in caption.
+6.1.3
+NVDA — Earnings Episode, February 25–26, 2026
+This case is the most analytically rich in the present study. Spanning two consecutive sessions, it illustrates three
+properties of the debate architecture simultaneously: the system’s capacity to override a dominant structural bull case
+on the basis of a single high-quality risk signal; its ability to maintain that bearish stance the following day against
+a strong fundamental counterargument; and the behavior of a constitutionally bullish agent when its argumentative
+resources are exhausted.
+February 25 — Pre-Earnings Trim. NVIDIA was trading at approximately $195 on the eve of its Q4 earnings release,
+having rebounded 15.1% from a $170 low reached on February 5. The debate opened with a sharp three-way divergence.
+Zealot initiated with an aggressive bullish stance (Action 70), arguing that NVDA’s structural position as the dominant
+AI infrastructure provider remained intact, that the upcoming GTC conference in March represented a larger catalyst
+than the earnings event itself, and that the low implied volatility reflected market confidence rather than complacency.
+Reaper immediately identified a single data point as the decisive variable: options markets were pricing NVDA’s
+post-earnings move at ±5.6%—the lowest implied volatility in at least three years for a stock with a beta of 2.31.
+Reaper’s interpretation was the inverse of Zealot’s: anomalously compressed volatility pricing on a high-beta stock
+approaching a binary event represented not confidence but fragile consensus. Any surprise, in either direction, could
+produce a move far exceeding the implied range. Reaper escalated progressively from tactical trim (Action 45) to
+aggressive harvest (Action 20) across deliberation rounds.
+12
+
+Apex Quant: A Multi-Agent Debate Framework
+TECHNICAL REPORT
+Fulcrum opened with a bullish lean (Action 60), but the debate constitution’s Bayesian update protocol produced a
+documented and traceable position shift. Reaper’s implied volatility argument met the L1 evidence threshold—datadriven, internally consistent, not falsifiable by available evidence—obligating Fulcrum to propagate it into its output
+values. Across four deliberation rounds, Fulcrum’s action parameter moved 60 →50 →40 →30 (TRIM_POSITION,
+AGGRESSIVE_SIZE). The dissenting signatures captured the residual disagreement cleanly: Zealot’s closing action
+remained at 65; Reaper and Fulcrum converged at 30. Fulcrum’s final statement: “Ahead of this decisive earnings event,
+the options market’s three-year-low implied volatility presents an overwhelming risk signal; aggressively trimming the
+position to prioritize capital preservation and await confirmation is the only rational choice.”
+February 26 — Post-Earnings Reassessment. NVIDIA reported Q4 revenue of $68.1B, substantially above consensus
+expectations, with strong forward guidance. The stock fell 3.41% on volume 2.27 times the daily average, with an
+end-of-session spike to 5.0 times average volume as the selloff accelerated. The system was run the same afternoon
+with post-earnings price and updated market data.
+The debate was more prolonged than the prior session—nine deliberation rounds—and more structurally revealing.
+Reaper argued from the outset that the market’s lukewarm reaction to its strongest-ever report constituted a narrative
+phase shift: the market had moved from “paying for the story” to “demanding stronger assurances on growth sustainability.” Two news items were introduced as L1-weight evidence: “investors are seeking stronger assurances that
+booming AI sales are here to stay” and “solid execution is no longer enough to impress investors.”
+Fulcrum again began bullish (Action 60) and again shifted progressively under the weight of Reaper’s evidence,
+converging to Action 30 (TRIM_POSITION, AGGRESSIVE_SIZE) by round four and holding that position through
+the remaining five rounds. The final report identified the combination of narrative phase shift, technical momentum
+exhaustion (cross_timeframe_momentum_score:
+Bearish), and high-volatility downside risk as collectively
+decisive.
+Zealot’s behavior across the nine rounds warrants specific documentation. From round one through round nine, Zealot
+reproduced its bullish thesis with near-identical argument structure and language in every round, maintaining Action
+65 throughout. No new data points were introduced; no counterarguments were engaged on their merits. The debate
+constitution’s information increment requirement explicitly prohibits restating an existing argument with stronger
+language as a substitute for new evidence. Zealot’s behavior in this session represents a documented case of that
+prohibition being reached: a constitutionally bullish agent, having exhausted its argumentative resources, continued to
+assert its thesis without being able to advance it. The debate constitution correctly identifies this pattern—the dissenting
+signature records it, and Fulcrum’s final report explicitly notes that Zealot “failed to provide new data points to rebut
+core counterarguments,” reducing the evidentiary weight of its position to near zero.
+This behavior is not a system failure. It is the architecture functioning as designed: Zealot’s role is to hold its thesis
+under pressure, and it did so. The value of the three-agent structure is precisely that Zealot’s persistence did not prevent
+the system from reaching a well-evidenced conclusion—it merely recorded, via the dissenting signature, that a minority
+view existed and what it was.
+Outcome. By February 27, NVDA had declined further to approximately $178. The pre-earnings trim (February 25,
+∼$195) avoided the bulk of the post-earnings drawdown. The post-earnings sell decision (February 26, $189) correctly
+identified the continuation of the downside move.
+The analytical significance of this case lies not in the outcome but in the mechanism. The February 25 decision required
+Fulcrum to override a strong structural bull case on the basis of a single volatility signal. The February 26 decision
+required the system to maintain a bearish stance against what appeared, on the surface, to be strong fundamental
+confirmation of the bull thesis. Both decisions are traceable through the debate transcript: the specific arguments that
+moved specific agents by specific amounts are fully documented. The complete debate transcripts for both sessions are
+available in the supplementary materials.
+6.1.4
+NDX Tactical Entry Under Geopolitical Shock — March 2026
+On March 3, 2026, the system was queried on the Nasdaq-100 index (NDX) following the outbreak of direct U.S.-Israeli
+military action against Iran. The macro environment was unambiguous: oil prices had surged to a one-year high,
+the 10-year Treasury yield stood at 4.13%, and VIX had spiked 22.6% intraday to 26.29. The Fear & Greed index
+had fallen from 41 to 35. NDX had declined approximately 2.4% on the session, breaking below its 20- and 50-day
+moving averages, with cross-timeframe momentum rated “Strongly Bearish.” This case is notable for two reasons:
+the heterogeneous model configuration (Zealot and Reaper instantiated on DeepSeek, Fulcrum on Qwen-Max), and
+the quality of adversarial reasoning it produced under conditions of extreme sentiment dislocation. Zealot opened at
+Action 85 with MARKET_ENTRY, arguing that the geopolitical shock had produced a technically oversold condition in
+a structurally intact bull market. The AI narrative remained uncontested in the news flow; the long-term trend line
+13
+
+Apex Quant: A Multi-Agent Debate Framework
+TECHNICAL REPORT
+(MA200 at 24,140) had not been breached; and the hourly RSI of 31.16 indicated acute short-term exhaustion of selling
+pressure. Reaper opened at Action 30 with TRIM_POSITION, contending that the macro shock had materially altered
+the pricing environment—oil prices, Treasury yields, and risk premia were all moving adversarially—and that the
+technical structure showed not a healthy correction but the early features of a Stage 3-to-4 transition. Fulcrum opened
+at Action 45 with HOLD_NEUTRAL, declining to adjudicate until both sides had been subjected to symmetric scrutiny.
+The debate ran five rounds at sustained HIGH intensity. The key inflection came in Round 3, when Zealot evolved
+his strategy from MARKET_ENTRY to LIMIT_ENTRY @ 24150—placing the order precisely at Reaper’s own quantified
+first downside target (MA200). This move reframed the dispute: rather than arguing about whether the market would
+recover, Zealot was now arguing that if Reaper’s worst-case scenario materialized, it would deliver the optimal entry
+point. The risk/reward calculation was explicit: a potential loss of approximately 0.6% against a conservative upside of
+4.7% to the 50-day moving average, yielding a ratio of 1:7.8 or better. Fulcrum found this argument decisive and moved
+to LIMIT_ENTRY @ 24150 in Round 3, raising Action to 60 and ultimately to 65. Reaper held at Action 15 through
+the final round, maintaining that the probability distribution was heavily skewed toward further downside and that the
+payoff calculation omitted the low base rate of near-term recovery in the presence of an active L1 geopolitical shock.
+The dissent was formally recorded. The final output was Action 65, LIMIT_ENTRY @ 24150, STANDARD_SIZE, with a
+hard stop below 24,000. The system’s judgment proved accurate: NDX recovered sharply in the sessions following the
+debate, never filling the limit order at 24,150 and rendering the position moot—but confirming that the panic pricing
+had indeed been transient. This case illustrates the system’s capacity for productive disagreement under high-stress
+conditions. The debate did not converge to false consensus; Reaper’s dissent was substantive and remained on record.
+What the architecture produced instead was a disciplined tactical solution that neither capitulated to panic nor ignored
+it—one that would have been difficult to construct through single-model analysis.
+6.1.5
+AAPL Partial Exit — February 26, 2026
+Apple Inc. was flagged for a partial exit on February 26, 2026, at a price of $271.07, following a rebound of
+approximately 11% from the January trough at $243.42. The complete debate transcript is available as a supplementary
+attachment (AAPL20260226.txt).
+The debate ran nine rounds under the standard Zealot/Reaper/Fulcrum architecture, with initial Action scores of 65
+(Zealot, MARKET_ENTRY), 55 (Reaper, HOLD_NEUTRAL), and 55 (Fulcrum, HOLD_NEUTRAL), converging to a
+final consensus of 38 (TRIM_POSITION, standard sizing). The mentality distribution settled at 65% profit-taking and
+35% wait-for-confirmation.
+The decisive analytical shift occurred when Reaper introduced the systemic sector drag dimension. Raw data showed the
+Nasdaq-100 carrying a “Strongly Bearish” cross-timeframe momentum score, with AAPL exhibiting a 0.877 correlation
+to NDX and a Beta of 1.133 against it. This reframed the decision: the question was no longer whether AAPL’s own
+trend was intact—it was—but whether that intact trend could withstand amplified sector-level selling pressure. Fulcrum,
+which had maintained HOLD_NEUTRAL through the first two rounds on the basis of the unbroken daily MA structure,
+shifted to TRIM_POSITION in round three once this systemic dimension was adequately weighted, and settled at
+Action 38 by the final round.
+Zealot’s dissent was principled: the daily MA20/50/200 alignment remained bullish, the $258.16 support level had not
+been tested, and the L2-level narratives (AI server manufacturing, Apple Pay India) were genuine developments that
+had not been priced in. The reservation was acknowledged in the final report but outweighed by the adverse risk/reward
+ratio—3.6% upside to $280.91 resistance versus 4.8% downside to $258.16 support—compounded by the sector drag
+evidence and intraday momentum decay (intraday trend vs. open at −1.13%, 5-minute RSI at 29.61, hourly MACD at
+−0.388).
+The contrast with the NVDA decision two weeks prior is structurally informative. Both cases resulted in a standard-sized
+trim of a profitable position in a high-quality asset with an intact long-term thesis. The operative difference was the
+availability of a near-term price catalyst: in the NVDA case, the observable AI capital expenditure cycle provided a
+concrete near-term mechanism for fundamental support; in the AAPL case, the relevant narratives required time to
+materialize in reported financials, leaving the position without a near-term anchor against technical and sector-level
+headwinds.
+6.2
+Structural and Emergent Behavior: Three Illustrative Cases
+The following three cases are selected not as performance demonstrations but as windows into the system’s failure
+modes and latent capabilities. The first documents a structural role-design failure that motivated the transition to the
+three-agent architecture. The second demonstrates the emergent capacity of multi-agent debate to construct sophisticated
+market analysis under conditions of extreme sentiment dislocation. The third exposes a subtler failure mode: the
+14
+
+Apex Quant: A Multi-Agent Debate Framework
+TECHNICAL REPORT
+tendency of homogeneous model ensembles toward consensus illusion, in which agents perform disagreement ritually
+without generating genuine adversarial pressure. Together they illuminate a tension inherent in the system’s design:
+the deliberate simplification of final output instructions constrains what the underlying debate process is capable of
+expressing—while the choice of model configuration determines whether that debate process is meaningful at all.
+6.2.1
+GLD Structural Blind Spot — January 2026
+The GLD case, drawn from live forward testing in January 2026 under the earlier two-agent Analyst/Auditor architecture,
+exposes a role-design failure that the current three-agent system was specifically engineered to address.
+At the time of the decision, GLD was trading at approximately $483, exhibiting extreme technical overbought conditions:
+daily RSI at 86.08, Bollinger %b at 1.01, and price trading at a 4.95% premium to its 52-week high. The Analyst’s initial
+recommendation was BUY_AGGRESSIVELY, constructed around a coherent macro narrative — dollar weakness,
+geopolitical risk, central bank demand — and supported by selective technical readings. The Auditor identified three
+critical errors in Round 1: a fundamental misreading of the nearest_support_resistance field (conflating the
+support level at 391.47 with an actionable downside anchor when price had already broken above resistance at 472.79,
+leaving no near-term technical floor); a post-hoc rationalization of a bearish warning article as a “buy signal”; and a
+structural contradiction between the Analyst’s own stated mentality distribution and the aggressive action proposed.
+By Round 3, the Analyst had accepted all three charges and revised the recommendation to HOLD_NEUTRAL,
+acknowledging that the setup constituted asymmetric downside risk rather than a “flaw with a floor.”
+The case is instructive not for the correction itself, which the debate mechanism executed cleanly, but for what the
+correction eliminated. Under the two-agent architecture, the Analyst is the sole initiator of directional recommendations:
+it is responsible for both entry and exit signals. Once the Analyst’s bullish thesis was suppressed, no architectural
+mechanism remained to generate a sell recommendation. The system arrived at the correct defensive posture but lost the
+capacity to identify the exit. This asymmetry — where the agent responsible for attack is also the only agent capable of
+calling retreat — represents a structural blind spot that scales with volatility: the more aggressively the Auditor corrects
+the Analyst, the more completely it disables the system’s ability to act. The three-agent redesign addresses this directly
+by assigning persistent bearish advocacy to a dedicated agent (Reaper) whose function is independent of whether the
+bullish case has been suppressed.
+6.2.2
+NDX Contrarian Entry — November 2025
+The November 2025 NDX case, drawn from backtesting conducted on 2025-11-23, illustrates a different property of the
+multi-agent debate architecture: its capacity to construct analytically sophisticated responses to complex, multi-layered
+market environments, and the tension between that capacity and the system’s deliberate output constraints.
+The market context at the time of analysis was one of maximal sentiment dislocation. The Fear & Greed Index
+stood at 25 (Extreme Fear), VIX had recently printed a weekly high, and prevailing news flow was dominated by
+warnings about yield curve inversion, credit market stress, and AI valuation bubbles. Under these conditions, a naive
+signal-following system would have generated a defensive or neutral recommendation. The debate instead produced
+BUY_AGGRESSIVELY.
+What is notable is not the directional call but the analytical structure that generated it. Over three rounds, the debate
+independently identified the yield curve’s transition from deep inversion to a nascent positive spread as a policy
+inflection signal — a distinction that required integrating Federal Reserve communications, unemployment data, and
+rate expectations simultaneously. It further constructed a multi-instrument hedging framework: VIX call options for
+volatility shock protection, KRE short positions for regional banking contagion exposure, and a three-tier monitoring
+system linking SRF usage, commercial paper spreads, high-yield bond spreads, and SOFR volatility to graduated
+position-reduction triggers. The system did not wait for external confirmation; it assembled the bullish thesis from
+components that were individually ambiguous but collectively coherent.
+The outcome is a matter of record: the S&P 500 surged the following session on November 24, 2025, driven by Federal
+Reserve President Williams’ public signal that a December rate cut remained on the table — precisely the policy
+inflection the debate had identified as the operative driver. The rally extended through the abbreviated holiday week.
+6.2.3
+CEG Consensus Illusion — March 2026
+The CEG case, drawn from live forward testing on March 16, 2026, documents a subtler failure mode than the GLD
+role-design blind spot: not an absence of the right agent, but the presence of three agents who had been rendered
+functionally indistinguishable by their shared compliance disposition. At the time of the decision, Constellation
+Energy (CEG) was trading at approximately $305, near its 50-day moving average, with a binary catalyst pending:
+15
+
+Apex Quant: A Multi-Agent Debate Framework
+TECHNICAL REPORT
+a company guidance update scheduled for March 31. The macro environment was one of elevated uncertainty —
+Fear & Greed at 22, VIX at 26.32, an active Iran conflict driving oil prices toward $120. The setup was analytically
+complex: a high-quality asset with genuine long-term catalysts (AI power demand, nuclear scarcity premium) trading at
+a demanding valuation (PE 40.83) ahead of a known event with symmetric risk. All three agents were instantiated on
+Qwen3.5-Plus. The initial round produced Action 65 from all three — Zealot, Reaper, and Fulcrum — with Reaper
+recommending TRIM_POSITION despite an Action score placing it firmly in the mildly bullish range. The structural
+contradiction was not self-corrected; it required Fulcrum to explicitly flag the inconsistency in Round 1 before Reaper
+acknowledged the role failure and revised its position. Even then, Reaper’s trajectory — 65, 55, 35, 55 — traced an arc
+of genuine engagement only after external pressure forced it. The debate reached a reasonable final output (Action 58,
+MARKET_ENTRY, STANDARD_SIZE) but the path was structurally compromised: the adversarial pressure the architecture
+was designed to generate was absent for the first two rounds, and the analytical depth visible in the GLD and NDX cases
+did not materialize. The contrast with the March 3 NDX debate is instructive. In that case, two DeepSeek agents and
+one Qwen-Max agent produced five rounds of sustained HIGH-intensity exchange, with Reaper holding at Action 15
+through the final round despite Fulcrum’s defection to the bullish camp. The dissent was substantive and remained on
+record. In the CEG case, three Qwen-Plus agents produced a debate that converged not because the evidence warranted
+convergence but because none of the agents was constitutionally disposed to resist it. This observation generalizes the
+finding reported in Section ??: the failure is not detectable from the output alone. The CEG debate produced a plausible,
+defensible recommendation. What it failed to produce was the adversarial scrutiny that would have stress-tested that
+recommendation against its weakest assumptions — the binary catalyst risk, the precedent implications of the China
+App Store commission cut, the valuation premium’s dependence on narrative continuity. These risks appear in the
+debate transcript only after Fulcrum forces the issue. A reader of the final report would have no indication that the
+analytical process had been compromised.
+Together these three cases illuminate a tension inherent in the system’s design. The GLD case shows that architectural
+role asymmetry can produce correct defensive postures while eliminating the capacity to act on them. The NDX case
+shows that the debate layer possesses analytical bandwidth that the output layer cannot fully express — that the system,
+left to its own reasoning, reaches further than its instructions allow it to go. The CEG case shows that neither of these
+properties matters if the agents instantiating the architecture are too compliant to use it. The system’s guarantees are
+conditional: on role design, on output structure, and on the willingness of at least one agent to sustain adversarial
+pressure when the evidence demands it.
+7
+Conclusion
+We have presented Apex Quant, a three-agent LLM framework for trading decisions on US equity markets, developed
+as a personal side project beginning in October 2025. The system’s core architecture—a constructive debate between
+Zealot, Reaper, and Fulcrum, each constitutionally constrained to a distinct investment philosophy—was not designed
+from first principles but evolved through a sequence of observed failures and targeted responses.
+The primary contributions of this work are architectural. A single LLM agent, regardless of prompt sophistication,
+cannot simultaneously maintain contradictory investment stances; this cognitive incompatibility necessitates structural
+separation of roles rather than prompt-level balancing. Debate stability in a binary system is fragile and hostage to
+rhetorical momentum; a three-party structure substantially raises the threshold for unilateral dominance. Explicit
+behavioral principles embedded at the constitutional level of agent prompts outperform implicit reliance on base model
+priors, which reflect the cognitive biases present in the financial text on which models are trained. And systematic bias
+toward one agent’s position can emerge not from prompt errors but from structural alignment between that agent’s
+mandate and the base model’s cautionary defaults—a failure mode that is not detectable through qualitative review of
+individual debate transcripts and that we identify as an open problem for future work.
+The case studies presented in Section 6 illustrate these properties in live market conditions. Across entry, trim, and exit
+decisions, the debate transcript functions simultaneously as decision mechanism and audit log: the specific arguments
+that moved specific agents by specific amounts are fully traceable. Three cases of particular interest — the GLD
+structural blind spot, the NDX contrarian entry, and the CEG consensus illusion — expose the system’s failure modes
+and latent capabilities from complementary angles, and point toward architectural directions the current system is not
+equipped to pursue. Two incidental findings suggest directions for future work. First, the agents exhibit analytical
+bandwidth that output format constraints suppress: the November 2025 NDX debate independently constructed a
+multi-instrument hedging framework, tiered exit triggers, and scenario-conditional position adjustments that the system’s
+simplified output layer could not express. Second, the CEG case demonstrates that homogeneous model ensembles can
+produce structurally compromised debates that are indistinguishable from valid ones at the output level — a failure mode
+with no internal audit signal. Both observations point toward a richer architecture than the one currently deployed: one
+16
+
+Apex Quant: A Multi-Agent Debate Framework
+TECHNICAL REPORT
+that permits fuller expression of the debate layer’s analytical depth, and that treats model configuration as a first-class
+design variable rather than an implementation detail.
+References
+Jason Wei, Xuezhi Wang, Dale Schuurmans, Maarten Bosma, Fei Xia, Ed Chi, Quoc V Le, Denny Zhou, et al.
+Chain-of-thought prompting elicits reasoning in large language models. Advances in Neural Information Processing
+Systems, 35:24824–24837, 2022.
+Mrinank Sharma, Meg Tong, Tomasz Korbak, et al. Towards understanding sycophancy in language models. arXiv
+preprint arXiv:2310.13548, 2023.
+Isabel O Gallegos, Ryan A Rossi, Joe Barrow, et al. Bias and fairness in large language models: A survey. Computational
+Linguistics, 50(3):1097–1179, 2024.
+Yijia Xiao, Edward Sun, Di Luo, and Wei Wang. TradingAgents: Multi-agents LLM financial trading framework. arXiv
+preprint arXiv:2412.20138, 2024.
+Alejandro Lopez-Lira and Yuehua Tang.
+Can ChatGPT forecast stock price movements?
+arXiv preprint
+arXiv:2304.07619, 2023.
+Yilun Du, Shuang Li, Antonio Torralba, et al. Improving factuality and reasoning in language models through multiagent
+debate. arXiv preprint arXiv:2305.14325, 2023.
+Tian Liang, Zhiwei He, Wenxiang Jiao, et al. Encouraging divergent thinking in large language models through
+multi-agent debate. arXiv preprint arXiv:2305.19118, 2023.
+Daniel Kahneman and Amos Tversky. Prospect theory: An analysis of decision under risk. Econometrica, 47(2):
+263–292, 1979.
+17
+
+Apex Quant: A Multi-Agent Debate Framework
+TECHNICAL REPORT
+A
+Input Data Package: Structure and Sample
+Each decision cycle ingests a structured input package assembled from multiple data sources. The package is divided
+into two parts: market-wide context shared across all symbols, and symbol-specific data. Below we describe the
+composition of each component and provide a representative sample drawn from the AMD analysis on March 20, 2026.
+A.1
+Data Sources
+Symbol price data and derived technical features are sourced from Interactive Brokers market data feeds and computed
+internally across four temporal resolutions: daily bars over a five-year window, hourly bars over two months, five-minute
+bars over seven days, and one-minute bars over two days. Company fundamentals and macroeconomic indicators
+are retrieved from Alpha Vantage. News items are sourced from Finnhub. Market sentiment is proxied by a publicly
+available fear-and-greed index supplemented by the CBOE Volatility Index (VIX).
+All data sources used are freely accessible tiers. No proprietary data feed or premium subscription is required to
+replicate the input construction.
+A.2
+Input Template
+The full input to each agent is assembled from the following fields:
+### Market-Wide Context
+- Macro and geopolitical news
+- Economic indicators
+- Market sentiment (fear-greed index, VIX)
+- S&P 500 technical summary
+- NASDAQ-100 technical summary
+### Symbol-Specific Data
+- Symbol identifier
+- Company profile
+- Technical features (multi-timeframe)
+- Fundamentals
+- Recent news
+ETF symbols omit the company profile and fundamentals fields. All other fields are shared across symbol types.
+A.3
+Sample: Quantitative Features (AMD, 2026-03-20)
+The technical feature block is the most data-dense component of the input. It is derived from IBKR bar data and
+structured into five subsections. A representative sample is shown below.
+Listing 1: Quantitative feature block (AMD, 2026-03-20T13:46 UTC). Truncated for brevity; pivot arrays shown in
+partial form.
+{
+"symbol ": "AMD",
+" market_data_timestamp_utc ": "20260320 T134600Z",
+" minute_level_features ": {
+"last_close ": 204.24 ,
+"last_wap ": 204.306 ,
+" intraday_vwap_dist_pct ":
+-0.24,
+" intraday_volume_ratio_vs_avg ": 0.9,
+" intraday_trend_vs_open ": 0.49 ,
+" price_change_pct_5m ":
+-0.4,
+"rsi_14_5min ": 49.28 ,
+"atr_14_5min ": 0.8438 ,
+" liquidity_score_vol_per_bar ": 3.44
+},
+" hourly_features ": {
+" ma_20_hourly_val ": 201.904 ,
+" ma_50_hourly_val ": 199.6314 ,
+18
+
+Apex Quant: A Multi-Agent Debate Framework
+TECHNICAL REPORT
+" ma_20_slope_pct_hourly ": 0.533 ,
+" rsi_14_hourly ": 60.45 ,
+" macd_hist_hourly ": 0.03,
+" atr_14_hourly ": 2.0288 ,
+" bb_pct_b_hourly ": 0.69,
+" volume_ratio_vs_avg_hourly ": 2.05 ,
+" price_structure_tactical ": {
+"description ": "Swing
+pivots (lookback =20, min_move =1.5%)",
+"pivots ": [
+{" date ": "2026 -02 -11 T14 :00Z", "price ": 219.65 , "type ": "High"},
+{" date ": "2026 -02 -17 T21 :00Z", "price ": 193.68 , "type ": "Low"},
+"... [25 pivots
+total] ..."
+]
+}
+},
+" MICRO_FLOW_ENGINE ": {
+"description ": "DP -compressed
+price
+flow (time , close , pct , vol_rel)",
+" flow_sequence ": [
+{" time ": "01 -20 09:00" , "close ": 223.00 , "pct":
+0.00 , "vol_rel ": 0.07} ,
+{" time ": "01 -20 13:00" , "close ": 226.76 , "pct":
+1.69 , "vol_rel ": 3.75} ,
+{" time ": "01 -21 15:00" , "close ": 250.53 , "pct":
+7.44 , "vol_rel ": 7.05} ,
+"...
+[~120
+nodes
+total] ..."
+]
+},
+" daily_features ": {
+" daily_change_percent ":
+-0.37,
+" ma_20_daily_val ": 200.0165 ,
+" ma_50_daily_val ": 213.8928 ,
+" ma_200_daily_val ": 192.89 ,
+" ma_cross_status ": "Bullish",
+"ma_alignment ": "Mixed",
+"rsi_14_daily ": 50.54 ,
+" macd_hist_daily ": 1.515 ,
+" atr_14_daily_percent ": 4.87,
+" bb_pct_b_daily ": 0.69,
+" bb_width_pct_daily ": 11.28 ,
+" volume_ratio_vs_avg_daily ": 0.12 ,
+"obv_slope_5d ": 1.04,
+" volatility_regime_daily ": "Normal",
+"recent_gaps ": "None"
+},
+" contextual_features ": {
+" market_session ": "Regular",
+" percent_from_52w_high_low ": 65.57 ,
+" nearest_support_resistance ": {" support ": 185.12 , "resistance ": 227.0} ,
+" max_drawdown_30d ":
+-11.34,
+" sharpe_ratio_30d ":
+-0.15,
+" relative_strength_vs_spy ": 0.809 ,
+"beta ": 3.129 ,
+" cross_timeframe_trend_alignment ": "Mixed",
+" cross_timeframe_momentum_score ": "Bullish",
+" price_structure_strategic ": {
+"description ": "Swing
+pivots (lookback =20, min_move =8.0%)",
+"pivots ": [
+{" date ": "2026 -02 -05" , "price ": 187.00 , "type ": "Low"},
+{" date ": "2026 -02 -24" , "price ": 227.00 , "type ": "High"},
+{" date ": "2026 -03 -09" , "price ": 185.12 , "type ": "Low"},
+"... [25 pivots total , spanning
+2024 -06 to present] ..."
+]
+}
+}
+}
+19
+
+Apex Quant: A Multi-Agent Debate Framework
+TECHNICAL REPORT
+The MICRO_FLOW_ENGINE sequence is a dynamic-programming compression of the full price history into its structurally significant turning points, retaining wave amplitude (pct) and relative volume (vol_rel) at each node. The
+price_structure_tactical and price_structure_strategic pivot arrays serve analogous purposes at hourly
+and daily granularity respectively, with different lookback and minimum-move thresholds.
+A.4
+Sample: Company Profile and Fundamentals
+Listing 2: Company profile and fundamental snapshot (AMD, 2026-03-20).
+{
+"symbol ": "AMD",
+"name ": "Advanced
+Micro
+Devices
+Inc",
+"sector ": "TECHNOLOGY",
+"industry ": " SEMICONDUCTORS ",
+"market_cap ": 325201756000 ,
+"pe_ratio ": 76.42 ,
+"peg_ratio ": 0.583 ,
+"eps": 2.61,
+"beta ": 2.022 ,
+"revenue_ttm ": 34639000000 ,
+" profit_margin ": 0.125 ,
+" return_on_equity_ttm ": 0.0708 ,
+" analyst_target_price ": 289.61 ,
+" fifty_two_week_high ": 267.08 ,
+" fifty_two_week_low ": 76.48
+}
+A.5
+Sample: Macroeconomic Indicators and Market Sentiment
+Listing 3: Macroeconomic indicators and sentiment snapshot (2026-03-20).
+{
+" federal_funds_rate ": {" value ": 3.64 , "date ": "2026 -02 -01" , "unit ": "%"} ,
+"cpi_monthly ":
+{" value ": 326.785 , "date ": "2026 -02 -01" , "unit ": "Index "},
+"unemployment ":
+{" value ": 4.4,
+"date ": "2026 -02 -01" , "unit ": "%"} ,
+" real_gdp_quarterly ": {" value ": 6125.904 , "date ": "2025 -10 -01" ,
+"unit ": "Billions
+USD"},
+" treasury_yield_10y ": {" value ": 4.13 , "date ": "2026 -02 -01" , "unit ": "%"} ,
+" treasury_yield_2y ":
+{" value ": 3.47 , "date ": "2026 -02 -01" , "unit ": "%"} ,
+" fear_greed_index ":
+{" value ": 16, "label ": "Extreme
+Fear",
+"one_week_ago ": 22, " one_month_ago ": 44},
+"vix":
+{" value ": 24.89 , " change_percent ": 3.45}
+}
+A.6
+Sample: News Items
+News items are retrieved from Finnhub and passed to agents as headline–summary pairs. Full article text is not accessed;
+agents reason exclusively from the metadata fields shown below.
+Listing 4: Representative news items (AMD, 2026-03-20). Two items shown; live inputs typically contain 10–20 items
+per symbol.
+[
+{
+"category ": "company",
+"datetime ": "2026 -03 -20 T13 :46:56Z",
+"headline ": "Why
+Celestica Is Up 8.2%
+After
+Teaming
+With AMD On
+Helios AI Networking
+Switches",
+"source ": "Yahoo
+Finance",
+"summary ": "AMD
+announced a collaboration
+with
+Celestica to develop
+scale -up networking
+switches
+for the Helios rack -scale AI
+platform , using
+Open
+Compute
+Project
+designs
+and Ultra
+20
+
+Apex Quant: A Multi-Agent Debate Framework
+TECHNICAL REPORT
+Accelerator
+Link over
+Ethernet to connect next -generation
+AMD
+Instinct
+MI450
+Series
+GPUs
+across
+large AI clusters ..."
+},
+{
+"category ": "company",
+"datetime ": "2026 -03 -20 T03 :47:39Z",
+"headline ": "Samsung 's $73B AI Bet With AMD And What It Means
+For
+Valuation",
+"source ": "Yahoo
+Finance",
+"summary ": "Samsung
+Electronics
+announced a capital
+expenditure
+plan
+exceeding
+$73
+billion
+for 2026 , focused on AI -related
+semiconductor
+capacity
+and R\&D, including a new
+partnership
+with AMD to supply
+HBM4 and DDR5
+memory for AMD 's future
+AI accelerators ..."
+}
+]
+21
+
+Apex Quant: A Multi-Agent Debate Framework
+TECHNICAL REPORT
+B
+System Interface Screenshots
+The following figures illustrate the operational system as deployed during the forward testing period documented in
+Section 6.
+Figure 6: Left: system dashboard showing a completed decision cycle.
+Right: representative excerpt from a
+Zealot/Reaper debate exchange.
+22
+
+Apex Quant: A Multi-Agent Debate Framework
+TECHNICAL REPORT
+Figure 7: Multi-resolution quantitative data inputs across three timeframes, illustrating the layered technical analysis
+feeding into each debate cycle.
+23

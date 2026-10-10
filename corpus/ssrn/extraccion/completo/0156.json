@@ -1,0 +1,126 @@
+{
+  "doc_id": 156,
+  "titulo": "High Frequency Trading and the risk monitoring of automated trading.",
+  "resumen_operativo": "El paper expone el panorama regulatorio (ESMA, CFTC) sobre el trading de alta frecuencia y analiza los desafíos tecnológicos para monitorear el riesgo en tiempo real. Aporta claridad sobre definiciones regulatorias, manipulación del mercado (spoofing, quote stuffing) y arquitecturas de latencia ultrabaja, ilustrando mecanismos de control de riesgos en exchanges.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "high-frequency trading",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Estrategias de trading electrónico caracterizadas por una muy alta rotación de capital y tiempos de retención extremadamente cortos.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "latency"},
+        {"tipo": "PARTE_DE", "objeto": "algorithmic trading"}
+      ],
+      "cita_textual": "High-frequency trading (HFT) describes the execution of electronic trading strategies involving extremely rapid capital turnover."
+    },
+    {
+      "nombre": "algorithmic trading",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Uso de programas informáticos para introducir órdenes donde el algoritmo decide aspectos como el tiempo, la cantidad y el precio, a menudo para minimizar el impacto en el precio.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "market impact"}
+      ],
+      "cita_textual": "algorithmic trading as the use of computer algorithms to execute human generated, pre-designated trading decisions and designed specifically to minimize price impact."
+    },
+    {
+      "nombre": "market making",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Función tradicional de provisión de liquidez que en la era HFT implica latencias del orden de milisegundos y terminar el día con posición neta nula.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "high-frequency trading"}
+      ],
+      "cita_textual": "HFT can be characterized as a modern market maker with a latency (inter-message time) upper bound of 1.67 millisecond and engaged in proprietary trading"
+    },
+    {
+      "nombre": "ping order",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Envío de órdenes pequeñas para explorar y determinar la cantidad de liquidez oculta, especialmente en plataformas alternativas o dark pools.",
+      "relaciones": [],
+      "cita_textual": "Entering small orders in order to ascertain the level of hidden orders and particularly used to assess what is resting on a dark platform."
+    },
+    {
+      "nombre": "quote stuffing",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Ingreso masivo de órdenes y cancelaciones para generar incertidumbre, ralentizar a otros participantes y camuflar la propia estrategia.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "latency"}
+      ],
+      "cita_textual": "Entering large numbers of orders and/or cancellations/updates to orders so as to create uncertainty for other participants, slowing down their process"
+    },
+    {
+      "nombre": "momentum ignition",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Ingreso de una serie de órdenes para iniciar o exacerbar una tendencia del precio, buscando que otros algoritmos la sigan.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "momentum"}
+      ],
+      "cita_textual": "Entry of orders or a series of orders intended to start or exacerbate a trend, and to encourage other participants to accelerate or extend the trend"
+    },
+    {
+      "nombre": "spoofing",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Colocación de múltiples órdenes lejos del mejor precio en un lado del libro con la intención de ejecutar en el otro lado, para luego cancelar las falsas.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "limit order book"}
+      ],
+      "cita_textual": "Submitting multiple orders often away from the touch on one side of the order book with the intention of executing a trade on the other side of the order book."
+    },
+    {
+      "nombre": "latency",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Retraso o tiempo de respuesta en la transmisión de datos, que en HFT debe ser minimizado utilizando tecnologías como la coubicación.",
+      "relaciones": [],
+      "cita_textual": "low-latency technology that is designed to minimize response times, including proximity and co-location services"
+    },
+    {
+      "nombre": "audit trail",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Registro detallado de los eventos del mercado y órdenes, usado por los reguladores para secuenciar actividades y monitorear disrupciones.",
+      "relaciones": [],
+      "cita_textual": "The audit trail is also a critical tool to enhancing regulators’ ability to reconstruct and properly sequence activities"
+    },
+    {
+      "nombre": "message queue",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Cola en el sistema de intercambio que procesa órdenes de manera secuencial, limitando la capacidad de los HFT para cancelar sus posiciones si la cola es muy larga.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "inventory risk"}
+      ],
+      "cita_textual": "the exchange may have a message queue containing additional orders that will be processed before the exchange system receives and processes the market-maker's quote cancellation request."
+    },
+    {
+      "nombre": "delta",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida de exposición agregada para monitorear el riesgo, calculada sumando los deltas de las posiciones u opciones transaccionadas.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "inventory risk"}
+      ],
+      "cita_textual": "calculating an equivalent stock position, i.e., a net delta (by, for example, summing delta values for all contracts traded by the market-maker"
+    },
+    {
+      "nombre": "gamma",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Tasa de cambio del parámetro delta respecto al subyacente. El gamma neto provee un estimado de la velocidad con que cambiará la exposición direccional.",
+      "relaciones": [
+        {"tipo": "PREDICE", "objeto": "delta"}
+      ],
+      "cita_textual": "Gamma is known to be the rate of change of the delta parameter with respect to the rate of change of the underlying security, such as the stock."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Una infraestructura dedicada (NYSE Technologies) alcanza latencias de procesamiento extremadamente bajas y estables, posibilitando respuestas en microsegundos.",
+      "mercado": "US equities",
+      "periodo": "2013",
+      "magnitud": "Latencia end-to-end de 70 microsegundos, inbound de ~50 microsegundos y outbound de ~21 microsegundos a 36,925 paquetes/seg.",
+      "condiciones": "Prueba de simulador utilizando hardware de baja latencia propietario de NYSE, sin incluir latencia de red WAN externa.",
+      "robustez": "media",
+      "cita_textual": "The total end-to-end latency introduced by the NYSE Technologies platform, including inter-process and inter-server communications, was approximately 70 microseconds (1/1000.000 sec)."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "Útil para la arquitectura del ecosistema HFT: los conceptos de message queue y las tácticas predatorias sirven para simular escenarios de estrés en el backtesting de estrategias intradía en ES."
+  }
+}

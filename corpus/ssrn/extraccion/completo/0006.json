@@ -1,0 +1,245 @@
+{
+  "doc_id": 6,
+  "titulo": "A Comprehensive Review of Statistical Methods in Quantitative Finance: From Classical Inference to Machine Learning Frontiers",
+  "resumen_operativo": "Es un survey pedagógico de nivel doctorado que recorre probabilidad, inferencia, series de tiempo financieras, GARCH, cointegración, modelos de espacio de estados, microestructura, portfolio/factor models, cálculo estocástico, EVT, Monte Carlo, estadística de alta dimensión y machine learning. No presenta experimentos ni backtests propios: es un mapa conceptual y de referencias bibliográficas útil para ubicar qué técnica corresponde a qué problema, no para extraer edges directamente aplicables. Su valor para un quant de order flow es como índice de métodos (Roll model, realized volatility, cointegración/pairs trading, FDR/MCS para multiple testing) más que como fuente de resultados verificables.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "GARCH",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Familia de modelos de volatilidad condicional que captura clustering de volatilidad y, en sus variantes asimétricas, el efecto apalancamiento en retornos financieros.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "volatility clustering"},
+        {"tipo": "USA", "objeto": "leverage effect"}
+      ],
+      "cita_textual": "asymmetric leverage effects (Engle, 1982; Nelson, 1991; Glosten and Runkle, 1993)"
+    },
+    {
+      "nombre": "leverage effect",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Regularidad empírica documentada por Black (1976): retornos negativos de acciones se asocian a incrementos de volatilidad subsiguiente mayores que retornos positivos de igual magnitud.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "GARCH"}
+      ],
+      "cita_textual": "Black (1976) first documented the leverage effect: negative equity returns are associated with larger subsequent volatility increases than positive returns of equal magnitude."
+    },
+    {
+      "nombre": "HAR model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo Heterogeneous Autoregressive de Corsi (2009) que captura memoria larga en volatilidad realizada mediante una cascada aditiva parsimoniosa de volatilidades sobre distintos horizontes.",
+      "relaciones": [
+        {"tipo": "PREDICE", "objeto": "realized volatility"}
+      ],
+      "cita_textual": "HAR (Heterogeneous Autoregressive) Model (Corsi, 2009) captures long memory in realized volatility through a parsimonious additive cascade of volatilities over different horizons"
+    },
+    {
+      "nombre": "cointegration",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Relación de equilibrio de largo plazo entre series no estacionarias cuya combinación lineal es estacionaria; base teórica de las estrategias de pairs trading vía el teorema de representación de Granger.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "pairs trading"},
+        {"tipo": "PARTE_DE", "objeto": "error correction model"}
+      ],
+      "cita_textual": "The Granger Representation Theorem (Engle and Granger, 1987) establishes that any cointegrated system admits a VECM representation, and conversely, any VECM generates cointegrated series."
+    },
+    {
+      "nombre": "pairs trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Arbitraje estadístico sobre un par cointegrado: se opera long-short cuando el spread (residuo de la relación cointegrante) se desvía k desviaciones estándar de su media y se cierra al revertir.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "cointegration"},
+        {"tipo": "APLICA_A", "objeto": "statistical arbitrage"}
+      ],
+      "cita_textual": "Enter a long-short position when |ut| exceeds k standard deviations (e.g., k = 2). Unwind when ut reverts to its mean."
+    },
+    {
+      "nombre": "error correction model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "VECM que descompone la dinámica de un sistema cointegrado en un término de equilibrio de largo plazo estacionario y una dinámica de corto plazo de ajuste transitorio.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "cointegration"}
+      ],
+      "cita_textual": "Long-run equilibrium: βTYt−1 are stationary error correction terms."
+    },
+    {
+      "nombre": "Kalman filter",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Algoritmo recursivo que calcula la media y covarianza condicionales óptimas del vector de estado no observado en modelos de espacio de estados lineales gaussianos, aplicable a spreads dinámicos y parámetros variables en el tiempo.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "state space model"}
+      ],
+      "cita_textual": "The Kalman filter (Kalman, 1960) delivers optimal recursive estimates of the unobserved state vector."
+    },
+    {
+      "nombre": "state space model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Representación unificada para una amplia clase de modelos de series de tiempo (ARIMA, componentes no observados, volatilidad estocástica, regresiones con parámetros variables en el tiempo).",
+      "relaciones": [],
+      "cita_textual": "State space representations provide a unified framework for modeling a vast array of time series models, including ARIMA, unobserved components, stochastic volatility, and time-varying parameter regressions."
+    },
+    {
+      "nombre": "bid-ask bounce",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Oscilación de precios de transacción entre bid y ask que induce autocorrelación negativa de primer orden en los retornos incluso en mercados eficientes; base del modelo de Roll.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Roll model"}
+      ],
+      "cita_textual": "Transaction prices oscillate between bid and ask quotes, inducing negative first-order autocorrelation in returns even in efficient markets."
+    },
+    {
+      "nombre": "Roll model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo de Roll (1984) que relaciona el bid-ask bounce con la autocovarianza de primer orden de los cambios de precio para estimar el spread efectivo implícito sin necesidad de datos de cotizaciones.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "bid-ask spread"},
+        {"tipo": "USA", "objeto": "bid-ask bounce"}
+      ],
+      "cita_textual": "Roll (1984) proposed a seminal model relating bid-ask bounce to return autocorrelation."
+    },
+    {
+      "nombre": "microstructure noise",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Fricciones transitorias (inventario, costos de procesamiento de órdenes, grilla discreta de precios) que contaminan el precio observado respecto del precio eficiente latente, afectando la consistencia de estimadores de volatilidad realizada.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "realized volatility"}
+      ],
+      "cita_textual": "microstructure noise for the consistency of realized volatility estimators"
+    },
+    {
+      "nombre": "realized volatility",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Estimador no paramétrico de la varianza integrada diaria construido como suma de retornos intradía al cuadrado; converge a la varianza integrada más el término de saltos cuando la frecuencia de muestreo aumenta, en ausencia de microstructure noise.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "integrated variance"},
+        {"tipo": "REQUIERE", "objeto": "tick data"}
+      ],
+      "cita_textual": "As M →∞, RV (M) t p−→IVt+ [jump term]. In the absence of jumps and microstructure noise, RV (M) t is a consistent estimator of IVt."
+    },
+    {
+      "nombre": "intraday seasonality",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Patrón diurno determinístico en forma de U de volatilidad, volumen y spreads: altos en la apertura y el cierre, más bajos a mediodía.",
+      "relaciones": [],
+      "cita_textual": "Diurnal (Intraday) Patterns: Volatility, volume, and spreads follow a deterministic U-shaped pattern: high at market open and close, lower mid-day."
+    },
+    {
+      "nombre": "random matrix theory denoising",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica de limpieza de autovalores (eigenvalue clipping) basada en la ley de Marčenko-Pastur para separar señal de ruido en el espectro de la matriz de covarianza muestral en alta dimensión, mejorando la estimación de riesgo en optimización de portafolios.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "sample covariance matrix"},
+        {"tipo": "MITIGA", "objeto": "estimation error"}
+      ],
+      "cita_textual": "RMT denoising dramatically improves the out-of-sample Sharpe ratio of mean-variance portfolios and enhances risk model accuracy (Bun, 2017)."
+    },
+    {
+      "nombre": "graphical LASSO",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Método que impone sparsity sobre la matriz de precisión (inversa de covarianza) maximizando la log-verosimilitud gaussiana penalizada con norma L1; los ceros corresponden a independencia condicional entre activos.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "covariance matrix estimation"}
+      ],
+      "cita_textual": "The Graphical LASSO (Friedman and Tibshirani, 2008; Yuan and Lin, 2007) estimates Θ by maximizing the ℓ1-penalized Gaussian log-likelihood"
+    },
+    {
+      "nombre": "false discovery rate",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Proporción esperada de rechazos falsos entre todos los rechazos en un problema de testeo múltiple; controlada mediante el procedimiento Benjamini-Hochberg, recomendado para evitar el problema del 'factor zoo' al evaluar anomalías de pricing.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "data snooping"},
+        {"tipo": "USA", "objeto": "multiple testing"}
+      ],
+      "cita_textual": "Harvey and Zhu (2016) advocate applying FDR control (with q = 0.05 or 0.10) to the evaluation of asset pricing anomalies, raising the bar for statistical significance and mitigating the \"factor zoo\" problem."
+    },
+    {
+      "nombre": "Model Confidence Set",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Procedimiento iterativo de eliminación de Hansen y Nason (2011) que identifica el conjunto de modelos que contiene al mejor modelo con un nivel de confianza prescrito, en lugar de seleccionar un único ganador, controlando el error familywise.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "block bootstrap"},
+        {"tipo": "APLICA_A", "objeto": "GARCH"}
+      ],
+      "cita_textual": "In volatility forecasting, Hansen and Lunde (2005) applied MCS to demonstrate that no single GARCH specification uniformly dominates."
+    },
+    {
+      "nombre": "Reality Check",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Test bootstrap de White (2000) para data snooping que evalúa si la regla de trading de mejor desempeño entre un universo de m candidatas supera a un benchmark, usando el máximo de performance excedente estandarizado.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "data snooping"},
+        {"tipo": "MEJORA_A", "objeto": "Superior Predictive Ability test"}
+      ],
+      "cita_textual": "White (2000) introduced the Reality Check for data snooping, a bootstrap-based test of the null hypothesis that the best-performing trading rule (among a universe of m candidate rules) does not outperform a benchmark."
+    },
+    {
+      "nombre": "Superior Predictive Ability test",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Refinamiento de Hansen (2005) del Reality Check que emplea un estadístico studentizado y un procedimiento bootstrap más potente, reduciendo el conservadurismo del test original.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "Reality Check"}
+      ],
+      "cita_textual": "Hansen (2005) refined the Reality Check with the Superior Predictive Ability (SPA) test, which employs a studentized test statistic and a more powerful bootstrap procedure, reducing the conservatism of the Reality Check."
+    },
+    {
+      "nombre": "walk-forward validation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Validación con ventana expandida o rodante que respeta estrictamente el orden temporal, garantizando evaluación genuinamente fuera de muestra, a diferencia de la validación cruzada k-fold estándar que es inválida para series de tiempo por dependencia serial.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "backtest overfitting"},
+        {"tipo": "SE_OPONE_A", "objeto": "k-fold cross-validation"}
+      ],
+      "cita_textual": "Standard k-fold cross-validation, which randomly partitions data, is invalid for time series due to serial dependence. Walk-forward validation (expanding or rolling window) strictly respects temporal ordering, ensuring that models are evaluated on genuinely out-of-sample data (Arnott and Markowitz, 2019)."
+    },
+    {
+      "nombre": "purging",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica de Lopez de Prado (2018) que remueve observaciones de entrenamiento cuyas ventanas de etiquetado se solapan con el set de test, combinada con embargoing (buffer temporal) para prevenir leakage por look-ahead bias.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "look-ahead bias"}
+      ],
+      "cita_textual": "Purging removes training observations whose label windows overlap with the test set, while embarging imposes a buffer period to prevent leakage."
+    },
+    {
+      "nombre": "backtest overfitting",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Riesgo dominante en modelado cuantitativo dado el bajo signal-to-noise ratio de los mercados (menos del 5% para retornos diarios de equity): un modelo que ajusta perfectamente datos históricos casi con seguridad falla fuera de muestra al confundir ruido con señal.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "walk-forward validation"}
+      ],
+      "cita_textual": "The low signal-to-noise ratio endemic to financial markets—typically estimated at less than five percent for daily equity returns (Campbell and MacKinlay, 1997)—renders overfitting the dominant risk in quantitative modeling."
+    },
+    {
+      "nombre": "data snooping",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Backtestear miles de estrategias o evaluar cientos de anomalías de pricing sin corrección de multiplicidad conduce a un exceso de falsos descubrimientos.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "false discovery rate"},
+        {"tipo": "CAUSA", "objeto": "multiple testing"}
+      ],
+      "cita_textual": "The backtesting of thousands of trading strategies or the evaluation of hundreds of asset pricing anomalies without appropriate multiplicity correction leads to a deluge of false discoveries (Lo and MacKinlay, 1990; White, 2000)."
+    },
+    {
+      "nombre": "multiple testing",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Necesidad de ajustes estadísticos (control de FDR, umbrales de t-estadístico elevados) para separar primas de riesgo genuinas de artefactos estadísticos al evaluar muchas señales/factores candidatos, dado el fenómeno del 'factor zoo'.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "false discovery rate"}
+      ],
+      "cita_textual": "multiple testing adjustments (e.g., controlling the False Discovery Rate) and higher statistical hurdles (e.g., t-statistic > 3.0) are necessary to separate genuine risk premia from"
+    },
+    {
+      "nombre": "volatility clustering",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Regularidad empírica universal de los retornos financieros (junto con leptokurtosis y asimetría negativa) documentada desde Mandelbrot (1963) y Fama (1965) hasta análisis de alta frecuencia contemporáneos.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "GARCH"}
+      ],
+      "cita_textual": "financial returns universally exhibit pronounced leptokurtosis (heavy tails), negative skewness (asymmetric tail risk), and volatility clustering"
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "Es un survey de referencia sobre métodos estadísticos sin backtests propios ni parámetros calibrados a ES futures; sirve como catálogo de técnicas (Roll model, MCS, FDR, walk-forward, purging) a aplicar en el pipeline VectorBT/quantlab, pero no aporta hallazgos empíricos directamente testeables."
+  }
+}

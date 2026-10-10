@@ -1,0 +1,101 @@
+{
+  "doc_id": 118,
+  "titulo": "A Simple Approach to Estimating Price Impact and its Components",
+  "resumen_operativo": "El paper aporta un método OLS robusto y rápido para descomponer el impacto en precio de una transacción en componentes permanentes y temporales, evitando las fallas del filtro de Kalman en datos reales de transacciones (tick data). Para un trader cuantitativo, esto revela empíricamente cómo los participantes de alta frecuencia (HFT) extraen rentabilidades sistemáticas tanto proveyendo como tomando liquidez, ofreciendo un framework práctico para modelar costos de transacción, calibrar slippage y analizar las dinámicas algorítmicas de adverse selection en backtesting.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "market impact",
+      "tipo": "concepto",
+      "definicion_en_contexto": "El efecto de una transacción sobre los precios de los activos, descompuesto estructuralmente en un componente permanente asociado al flujo de información y uno temporal asociado a rentas de liquidez y fricciones.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "transaction costs"}
+      ],
+      "cita_textual": "The price impact of a transaction is an important cost of trading securities, and the components of price impact are often regarded as helpful metrics for understanding how securities markets perform."
+    },
+    {
+      "nombre": "adverse selection",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "El riesgo de operar contra contrapartes más informadas, capturado por el componente permanente del impacto de las operaciones, que es mayor para los algoritmos HFT cuando actúan como creadores de mercado.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "market impact"}
+      ],
+      "cita_textual": "HFTs absorb orders that pose greater adverse selection risk than non-HFTs when trading as liquidity providers"
+    },
+    {
+      "nombre": "high-frequency trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Participantes del mercado de alta velocidad que logran rentabilidad no solo proveyendo liquidez, sino también al demandarla mediante impactos de precio temporales favorables, tras procesar información del flujo de órdenes.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "liquidity provision"},
+        {"tipo": "USA", "objeto": "liquidity taking"}
+      ],
+      "cita_textual": "HFTs actually earn profit on average by taking liquidity from orders that underprice adverse selection risk"
+    },
+    {
+      "nombre": "Kalman filter",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica estándar de estimación para espacios de estado que los autores demuestran ser inapropiada en datos reales de precios de transacciones debido a que se violan sus asunciones de normalidad.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "market impact"}
+      ],
+      "cita_textual": "The state space approach used in prior work fails with transaction price data due to violations of Normality assumptions underlying the Kalman filter"
+    },
+    {
+      "nombre": "liquidity taking",
+      "tipo": "concepto",
+      "definicion_en_contexto": "La ejecución de órdenes agresivas que consumen liquidez en el order book. El paper evidencia que, para los HFTs informados, estas operaciones suelen tener un impacto temporal negativo.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "liquidity provision"}
+      ],
+      "cita_textual": "Temporary price impact tends to be negative when the liquidity demander is an HFT, regardless of whether the liquidity provider is an HFT or not"
+    },
+    {
+      "nombre": "price discovery",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Proceso mediante el cual la nueva información se incorpora a los precios de cotización; el documento lo evalúa a través de cambios permanentes provocados por el flujo de transacciones de agentes informados.",
+      "relaciones": [],
+      "cita_textual": "the permanent component of price impact captures the severity of adverse selection and the contribution of trading to price discovery."
+    },
+    {
+      "nombre": "tick data",
+      "tipo": "dato",
+      "definicion_en_contexto": "Datos de mercado a nivel de transacción individual e incrementos de milisegundos, los cuales requieren métodos estadísticos robustos (OLS) frente a la falta de normalidad de sus distribuciones de precio.",
+      "relaciones": [],
+      "cita_textual": "The OLS approach is fast to execute on millisecond transactions data and performs well relative to a full-information GMM benchmark"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "La estimación multivariada en espacio de estados con filtro de Kalman falla catastróficamente al intentar separar los componentes temporales y permanentes del impacto usando precios reales de transacción por quiebres en la normalidad, mientras que un enfoque de regresión OLS resuelve el modelo.",
+      "mercado": "US equities",
+      "periodo": "2008-2009",
+      "magnitud": "100% de convergencia en OLS vs iteraciones con matrices singulares o límites de frontera de 0.99 en estado-espacio",
+      "condiciones": "Evaluando dinámicas de transacciones directas que no mitigan ruido estadístico a través de midquotes en Nasdaq",
+      "robustez": "alta",
+      "cita_textual": "The state space approach used in prior work fails with transaction price data due to violations of Normality assumptions underlying the Kalman filter; the OLS approach avoids these problems"
+    },
+    {
+      "afirmacion": "Las órdenes agresivas ejecutadas por firmas de HFT consiguen sistemáticamente impactos temporales negativos en el precio de transacción, implicando que logran una utilidad económica (compran por debajo y venden por encima del fair value).",
+      "mercado": "US equities",
+      "periodo": "2008-2009",
+      "magnitud": "Concesión o rebaja promedio de -2.27bp por cada $10,000 ejecutados",
+      "condiciones": "Comparando el efecto de órdenes a mercado provenientes de demandantes HFT ya sea contra creadores de mercado HFT o contra non-HFT",
+      "robustez": "alta",
+      "cita_textual": "Temporary price impact tends to be negative when the liquidity demander is an HFT, regardless of whether the liquidity provider is an HFT or not, meaning that HFTs actually earn profit on average from their liquidity demanding trades."
+    },
+    {
+      "afirmacion": "La rentabilidad transaccional de un trader algorítmico al tomar liquidez es intertemporalmente dependiente de los riesgos que asume previamente al proveer liquidez: su agresividad informada aumenta luego de haber absorbido flujo informativo como creador de mercado.",
+      "mercado": "US equities",
+      "periodo": "2008-2009",
+      "magnitud": "Fuerte evidencia y significancia estadística (coeficiente R2 de 0.53 a 0.60) entre altos kappas previos y psis futuros",
+      "condiciones": "Controlando la ventana temporal previa (Pre) y posterior (Post) a eventos de concentración de asimetría informativa como earnings announcements",
+      "robustez": "media",
+      "cita_textual": "periods of greater adverse selection absorbed by HFTs as liquidity providers are associated with greater profits from their liquidity demanding trades"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "alta",
+    "nota": "El método OLS puede integrarse directamente en simuladores de backtesting como VectorBT y Quantlab para desagregar empíricamente ticks del ES en componentes permanentes y transitorios, permitiendo modelar dinámicamente un spread o slippage realista en estrategias scalping/HFT."
+  }
+}

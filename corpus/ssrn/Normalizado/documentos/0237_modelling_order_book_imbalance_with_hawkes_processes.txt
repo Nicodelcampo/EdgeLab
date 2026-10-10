@@ -1,0 +1,968 @@
+Modelling Orderbook Imbalance with Multivariate Hawkes  
+ 
+ 
+ 
+Modelling Order Book Imbalance with Hawkes Processes 
+Israel Bergenstein 
+ 
+Abstract— This paper uses Hawkes processes to model cryptocurrency market microstructures. It specifically looks at order flow 
+imbalance. It captures whether the order book, at the next time step, is dominated by buying pressure or by selling pressure. Hawkes 
+processes are stochastic point processes that capture both self-excitations (a big bid arrival causing a surge in bid arrivals) and crossexciting effects such as surge in bid arrivals causing a cascading effect on ask arrivals. We use L2 order book data retrieved via Coinbase 
+web socket API, model the dynamics of order book using Hawkes processes and benchmark it against the existing models such as 
+Avellaneda–Stoikov that utilise Poisson processes. 
+Index Terms— Bitcoin, Cryptocurrencies, high frequency trading, market making, market microstructure, order flow imbalance 
+1 INTRODUCTION                                                                     
+HIS paper investigates order book flow dynamics and 
+asymmetries in the order book with respect to cryptocurrencies. Cryptocurrencies have seen a massive surge in investor interest, both retail and institutional investors. The current market cap of the cryptocurrency market is 3.6 trillion dollars with 313 billion dollars in volumes traded over the past 24 
+hours as of November 5, 2025. Bitcoin dominates the market 
+with over 2 trillion dollars in market capitalisation. Many proprietary trading firms have recently entered cryptocurrency 
+spaces, either as newly founded crypto-native proprietary trading firms or the established ones that have entered the space. 
+Cryptocurrency market making and high frequency trading 
+have seen an equally massive surge in popularity as financial 
+technology companies rush to build more advanced algorithms 
+to take advantage of market microstructures. 
+ 
+ 
+2 GOALS AND OBJECTIVES  
+In this study, we aim to look at modelling the L2 order book 
+cryptocurrency data for BTCUSD pair, retrieved via web socket 
+API, using multivariate Hawkes processes to see if we can outperform the existing models. We will compare the results of our 
+study to see which model performs better. We hypothesise that 
+multivariate Hawkes processes are better suited for modelling 
+order flow imbalance and will be able to capture self and cross 
+exciting effects in cryptocurrency order book because of market 
+dynamics better than existing models. This can help lead to 
+more robust market making strategies. 
+3  BACKGROUND 
+In this section we introduce and define mathematical underpinnings of Hawkes processes such as kernel function, conditional intensity function and compensator. We will also define 
+market micro-structures and provide explanations for common 
+microstructures that are of interest to market participants.  
+ 
+ 
+3.1 Efficient Market Hypothesis: 
+The Efficient Market Hypothesis is the fundamental principle in traditional and corporate finance. It posits that markets are, 
+by nature, free of arbitrage opportunities and if arbitrage were 
+available, it would have been immediately exploited by the market participants, leading to prices reflecting the market expectation with all the available information. Furthermore, it hypothesises that participants are not likely to beat the market ( have risk 
+adjusted returns in excess of the market return ) on a consistent 
+basis. However, many market participants such as hedge funds, 
+market makers, and traders believe that inefficiencies are present 
+in markets and can be exploited using sophisticated technologies, 
+advanced algorithms, and state-of-the-art trading infrastructure. 
+ 
+3.2 Market Microstructure and Order-book Imbalance 
+According to market participants, there are many arbitrage 
+opportunities available in the market. Uninformed yet educated 
+traders are classed into two categories: market takers and market 
+makers. The makers provide liquidity to market participants. 
+They are willing to place limit bid and limit ask orders that aren’t 
+necessarily executed straight away. They quote bids and asks and 
+consistently update their quotes to reflect market movements 
+and mitigate their exposure. They are there to provide a solution 
+when the market is in a standstill, such as when the best bid and 
+the best ask are far apart in the order book. In situations like this, 
+market makers provide bids and asks that meet the current best 
+bid (highest) and the current best ask (lowest) “midway”, hence 
+providing liquidity to the market while profiting the spread. 
+ 
+There are a number of microstructures and arbitrage opportunities that are often utilised by market participants. Some examples 
+include but are not limited to cross exchange arbitrage, statistical 
+arbitrage, triangular arbitrage, funding rate arbitrage, order book 
+imbalance, order flow imbalance,  and many more. In this paper, 
+we will focus on order flow imbalance. It captures whether buying pressure (changes in bids) or selling pressure (changes in 
+asks) dominate the order book at its top level with respect to the 
+next time step usually defined as dt. We will, however, first introduce and motivate some common microstructures.  
+ 
+3.3 A Primer on Market Microstructures  
+In this section we provide a brief primer to the most common market microstructures. 
+ 
+Order flow Imbalance: This signal looks at the changes in 
+bids quantity with respect to time versus the changes in asks 
+quantity with respect to time. If the difference between the 
+two is over a certain threshold ε, then it signals a potential buy 
+opportunity, whereas if the difference is below the negative of 
+that ε, it signals a sell. The signal decays very fast and must be 
+T 
+
+Modelling Orderbook Imbalance with Multivariate Hawkes  
+ 
+ 
+exploited with very efficient algorithms usually within 20-30 
+microseconds1. This often requires specialised hardware such 
+as FPGA where the core logic runs, collocated servers and 
+highly optimized C++ or Rust code.  
+ 
+ 
+ 
+Quote Intensity: This microstructure looks at the top N levels 
+of the order book and counts the number of updates for bids 
+and asks respectively. It then uses the following formula: 
+ 
+ 
+ 
+Where the difference between the quote updates is normalised 
+by their sum. We can then calculate the mean and the standard deviation of the quote intensity itself and then z-score it. If 
+the quote intensity is over a certain threshold epsilon or if the 
+z score is over a certain value, the signal indicates pressure 
+from buyers. On the contrary, it indicates a pressure from the 
+sellers.2 
+ 
+This microstructure signal also dissipates very fast in the 100s 
+of microseconds. So, it is important to place market orders to 
+hit the top level ahead of competition before the signal is captured by competitors. A typical set-up requires an end-to-end 
+pipeline latency of 30-50 microseconds to capture the alpha 
+generated by this signal.  
+ 
+Another version looks at the updates at the top level such as 
+how often participants update their quotes to remain on top of 
+the order book.  
+ 
+Volume Synchronised Probability of Informed Trading: This 
+particular microstructure is specifically important in cryptocurrencies markets since it looks at the probability that informed traders are in the market, so that one would simply 
+avoid trading in such times3. It does that by measuring bid-ask 
+volume imbalance on a number of fixed volume buckets.  
+ 
+The first equation below shows if the bids or the asks dominate the trade flow at bucket j whereas the second equation 
+looks at the rolling average of the imbalance over n buckets. It 
+simply looks at the recent history of volume and checks how 
+consistently imbalanced the trades have been.  
+ 
+ 
+ 
+ 
+ 
+If this value is high, it indicates a potential one-sided trading 
+This may suggest presence of toxic trading such as momentum 
+ 
+1 It is hard to define the exact half life, but the general consensus is that most microstructures decay within 100 
+microseconds. However, it doesn’t mean that they will be available for the entire 100 microseconds as competitors may 
+capture the alpha earlier leading to slippage.  
+2 There are other nuances so QI must be updated to see if updates are real liquidity or liquidity withdrawals.  It is useful to combine this signal with VPIN or similar metrics to detect toxicity in the market. 
+ignition, market manipulation, or simply it may indicate arrival of events leading to momentum due to recent news, announcements, etc. 
+ 
+A bucket is defined as a finite set of consecutive trades. For example, if we set the bucket size to be 100 BTC and we have the 
+following trades taking place:  
+ 
+Trade 1: Buy 20 BTC  
+Trade 2: Buy 22 BTC  
+Trade 3: Sell 18 BTC  
+Trade 4: Buy 40 BTC  
+ 
+At this point the bucket is full, and we calculate the imbalance, 
+which turns over to be 82%. We then repeat this process over a 
+rolling window4. If the moving average exceeds a certain level, 
+such as 80%, the bids are very aggressive, and there is a strong 
+likelihood of one-sided trading, something that requires more 
+investigation such as combining this signal with other microstructures to make a more informed decision.   
+ 
+Micro-price: This microstructure looks at the volume 
+weighted prices and checks if the current mid price exceeds 
+micro price plus a threshold, indicating a signal to short (ask 
+order). If, however, the average price falls below microprice 
+minus the threshold, it indicates a security that is undervalued 
+relative to order book pressure (as imbalance is on the bid 
+side), suggesting a buy order. Here is the math: 
+ 
+ 
+ 
+Where V is the quantity (volume) and p is the best price (bid 
+or ask). The mid price is calculated as sum of bids and asks 
+prices normalised by 2.  
+ 
+ 
+ 
+Where the prices look at the top of order-book prices and the 
+volumes also look at the volume at top of order-book.  
+ 
+This microstructure is also very latency sensitive, and it decays very fast, thereby requiring specialised hardware and 
+software stack to capture it within 30-50 microseconds.  
+ 
+Orderbook Imbalance: It looks at the snapshot of the orderbook at its top level and checks if bids or asks dominate. It is 
+simply defined as the difference of bids and asks quantities 
+normalised by their sums. If this difference is over a certain 
+threshold, it implies that bids dominate, signalling a potential 
+buy order. Else, if it is below the negative of that exact threshold, it implies that asks dominate, signalling a sell order. However, anywhere in between these thresholds, the signal may 
+not be reliable.  
+ 
+3 This signal on its own doesn’t necessarily indicate market toxicity and needs to be combined with other 
+signals to lead to a more informed decision. It may be that VPIN is high due to recent news leading to momentum spike.  
+ 
+
+Modelling Orderbook Imbalance with Multivariate Hawkes  
+ 
+ 
+ 
+ 
+ 
+ 
+This microstructure signal also tends to dissipate quickly 
+though not as fast as micro price and order flow imbalance 
+which are the most latency sensitive microstructures.  
+ 
+All these microstructures can be modelled with Hawkes. 
+However, for the purpose of this paper we look at Order Flow 
+Imbalance, which looks at the next time-step and capture 
+whether the pressure comes from bidders or sellers.  
+ 
+  
+3.4 Multivariate Hawkes processes  
+This section describes multivariate Hawkes processes. 
+Hawkes processes [1] are stochastic point processes that have 
+both self excitation and cross excitation properties. Hawkes 
+processes, unlike Markov chains, allow for past events to affect 
+future events [2] Multivariate Hawkes processes take this further and allow for mutual excitements of a number of point processes. They have been used by [3] to model intensity of midprice changes and trade arrivals and by [4] to model the cross 
+excitement of social media sentiment on cryptocurrency price 
+swings investigating if there is a cross exciting effect of social 
+media sentiment on cryptocurrency market returns. 
+4  A MATHEMATICAL PRIMER OF HAWKES PROCESSES 
+ 
+4.1 Conditional Intensity function  
+Point processes are defined as probabilistic models of events 
+that happen in a mathematical space and are oftentimes utilised to model event arrivals over space, over time or both [5]. 
+Conditional intensity function is used to characterise a point 
+process, also referred to as  “event arrival”. It is explained as 
+the small rate of expectations of event occurrences [6]. 
+Given a vector of m point processes: 
+ 
+  
+ 
+with conditional intensity function:  
+ 
+ 
+ 
+ 
+with λi(t) defined as: 
+  
+            (1) 
+ 
+  
+where μᵢ explains the baseline intensity of point process i and 
+.T is the transpose of the vector. We have: 
+ 
+  
+ 
+ 
+ if m=0.       
+ 
+ 
+ 
+ 
+ 
+(2) 
+ 
+  
+ 
+ 
+when m=1 
+  
+And for values of m>1,  
+ 
+ 
+ 
+Where dt  is simply (t – s).   
+  
+This implies that the probability that in the infinitesimal time 
+dt, the probability that m events of type i arrive is given by the 
+equations above. Where m = 1, this is defined by the actual intensity of the event multiplied by the change in time dt. This 
+simply implies that the conditional probability that a single 
+event arrives within time dt conditioned on the history of all 
+types of events is proportional to the intensity of the process 
+itself plus a bias term of o(dt) which tends to 0 on the limit. 
+  
+Most importantly, it defines that the probability of more than 
+a single event of the same type happening within an infinitesimal time dt, to be practically zero. It implies that two events of 
+the same type cannot happen at the same time. 
+ 
+ 
+ 
+4.2 Exponential Decay function and Kernels   
+In this subsection we introduce exponential decay function and the kernel function. Exponential decay function is defined as follows: 
+  
+                                                     (3) 
+ 
+where μ is the initial value at the initial time, r is the rate of decay and t is the time. 
+  
+This function is commonly used to describe events that 
+quickly dissipate after their arrivals. 
+  
+The kernel function defines the relationship between two variables in a complex and intertwined system. It is used here in 
+Hawkes processes to model the effect of one point process on 
+the other over the time variable. In other words, how the arrival of one point process impacts the intensity of the other. According to [2] one common choice for φᵢⱼ(.) is the exponential 
+decay function with the other common choice often considered for φᵢⱼ(.) as a power law function. The exponential decay 
+function is defined as: 
+  
+                                                (4) 
+  
+with αᵢⱼ being the scaling excitation hyperparameter and βᵢⱼ the 
+decay hyperparameter. 
+  
+The power law function is defined as: 
+  
+                                      
+(5) 
+  
+
+Modelling Orderbook Imbalance with Multivariate Hawkes  
+ 
+ 
+This kernel function requires both cᵢⱼ and βᵢⱼ to take values over 
+0 with the latter taking values over 1 allowing the excitation to 
+decay gradually and eventually fade away. 
+  
+The kernel function in (3) models the influence of past events 
+as a sudden and immediate burst in intensity which then decays exponentially, whereas the kernel function in (4) models 
+the decays in a much more controlled manner, reflecting what 
+happens in financial markets over time. 
+ 
+ 
+4.3 Compensator 
+Finally, the compensator is simply the sum of intensity 
+functions, conditioned on the history of all events, over time. 
+So, to calculate compensator, we integrate over the instantaneous rates of events at each time t shown below: 
+  
+                               (6) 
+  
+Where: 
+  
+    
+               
+              (7) 
+  
+And λᵢ(j) is defined as in (1) with φᵢⱼ(.) defined using (4) or (5).
+ 
+4.4 Poisson Model 
+The Poisson model is the mathematical model representing events that have very small probabilities but have huge 
+state spaces of outcomes. An example is a number of serious 
+car accidents happening in each time interval in a day. Such 
+events are very rare in such timeframe, yet they can happen 
+anywhere within the city. So, Poisson model can be seen as the 
+limit of Binomial distribution as n tends to infinity with very 
+small probability p, and such events can be represented by a 
+Poisson distribution. 
+  
+Proof: 
+  
+Let X ~ Binomial(n, p) where n tends to infinity and p is very 
+small and let lambda be a constant number: 
+ 
+λ = n · p  => p = λ/n 
+  
+Then we look at the limit of Binomial distribution as n → ∞. 
+  
+ 
+ 
+  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+  
+Where 
+ 
+ 
+  
+ 
+ 
+by combination rules for sequences and since nᵏ is a dominant 
+term and  
+ 
+ 
+  
+ 
+ since (λ/n) is a null sequence for constant term λ as n → ∞. Finally: 
+ 
+ 
+   
+ 
+by Taylor’s Rule. 
+  
+Hence, we get: 
+  
+             
+         
+              ☐ 
+  
+The rationale for utilising Poisson processes in AvellanedaStoikov model lies in the fact that Poisson processes are random, independent events that can happen concurrently and in 
+continuous time modelling the uncertainty involved with the 
+arrival of events (ask and bid) in the order book. 
+ 
+ 
+4.5 Expectation Maximisation (Maximum Likelihood) 
+Algorithm 
+In this subsection we introduce expectation maximization 
+algorithm, a mathematical model that aims to use multiple iterations to maximise its objective function. The maximum likelihood function is defined as:   
+  
+      
+       
+ 
+ 
+ 
+ 
+(8) 
+1
+
+Modelling Orderbook Imbalance with Multivariate Hawkes  
+ 
+ 
+  
+    We transform the likelihood function to the logarithmic loglikelihood function due to a number of reasons: 1. the computational efficiency of summation over successive multiplications. 2. Since logarithmic function is strictly monotonic, the 
+set of values that maximise the log-likelihood function would 
+also maximise the original function in (8). 3. as probabilities 
+take floating point values between 0 and 1, multiplying successive values in this range would lead to numerical instability 
+and underflow problems, leading to the system outputting 0 
+instead. 4. During backpropagation, not only will the optimiser suffer from vanishing gradients, but also product rule is 
+much more computationally expensive to calculate than summation. The derivative of the sum is simply the sum of the derivatives. 
+  
+Log transformation is shown below in (9). 
+  
+             
+(9) 
+ 
+  
+This is the log likelihood function formula for multivariate 
+Hawkes processes. This formula represents the likelihood of 
+observing a sequence of events given hyperparameters (baseline intensity μ, jump sizes α, and decays β). The algorithm 
+will iterate to find the best values for these hyperparameters 
+that would best fit the model. 
+  
+The optimiser iterates through every observed event of type k, 
+calculates its intensity λ at event arrival. For example, if the intensity is high at arrival, it implies the expectation was met 
+and this increases the probability. 
+  
+The compensator Λ(T) , as defined in (6) and (7) is simply the 
+total number of expected events all the way up until the time 
+of interest T. In other words, it is the Riemann integral of the 
+conditional intensity function λ over the time interval starting 
+with 0 and ending at time T: [0,T]. 
+  
+The first term is the sum of log-intensities at arrival of point 
+processes whereas the second term represents the Riemann integral of the conditional intensity function for all process dimensions. 
+5 ANALYSES OF EXISTING LITERATURE  
+ 
+Marco Avellaneda and Sasha Stoikov [7] have proposed a 
+seminal stochastic control approach for high-frequency market 
+making. They model arrival of buy and sell market orders as 
+independent Poisson processes whose intensities decline exponentially with the distance (depth) of the quoted spread. The 
+market maker chooses a bid and asks quotes to maximize expected utility of terminal wealth, penalized by inventory risk.  
+Luo 
+The model above is elegant and tractable, and its popularity 
+stems from closed-form approximations and analytic insight. 
+However, its key limitation is the Poisson assumption on arrivals — i.e. exogenous, memoryless, and independent.  
+Olivier Guéant [8] has pointed out that Avellaneda-Stoikov 
+(AS) model is difficult to apply in most stock markets for two 
+main reasons: (i) the discreteness of prices that is particularly 
+relevant for stocks with large tick sizes, and (ii) the model’s 
+omission of limit order books’ key features, such as the queuing 
+structure, order priorities, and volume dynamics. This paper 
+considers a modeling framework according to AvellanedaStoikov with general intensity functions, instead of the exponential intensity functions of most models, and demonstrates 
+that the four-variable HJB equation derived from various optimization criteria can be reduced to a tractable system of ordinary differential equations. It generalizes the Poisson intensity 
+framework, and offers some flexibility, though not necessarily 
+capturing clustering or excitation in arrivals. The models above 
+typically rely on Poisson or similarly memoryless/parametric 
+arrival assumptions that may mis-specify the endogenous, clustered nature of modern order flow. Guéant therefore provides 
+a flexible baseline control framework that is still rooted in intensity-based (often memoryless) arrival models. 
+Liu & Wang [10] build a tractable equilibrium model of a 
+dealer/market-maker in an OTC setting that explicitly embeds 
+asymmetric information, inventory risk, and the dealer’s market power and ability to shift trades among investors by optimally setting bid/ask price schedules. They derive closed-form 
+equilibria for prices, depths, traded volumes and inventories 
+and show that expected bid-ask spreads can fall with greater 
+information asymmetry and that spreads can be positively correlated with trading volume.  
+ 
+Many classical and generalized models mentioned above still 
+treat arrival intensities as exogenous or memoryless, or simple 
+functions of quote depth. However, they don’t capture self-excitation, such as orders begetting further orders, or cross-dependence between buy/sell or between assets. While some 
+Hawkes-based market-making models exist, their empirical 
+performance on real high-frequency / crypto market data is less 
+often studied. Therefore, we would like to piggyback on Poisson market-making models by replacing the arrival process 
+with Hawkes, then we will compare performance and risk. 
+ 
+Aggressive market orders are those that consume liquidity by 
+crossing the spread. These orders directly impact price movement and are central to price formation. Xu & Zhou [4] argue 
+that the arrival pattern of aggressive orders is therefore a useful 
+object of study. Empirical observations of order flow often 
+show fat tails inter-trade durations, autocorrelation in inter-arrival times, and clustering behavior. Xu & Zhou cite this as a 
+key motivation for applying Hawkes point process modeling 
+instead of memoryless Poisson processes.  
+ 
+They propose a bivariate marked Hawkes model to characterize aggressive market order arrivals. They calibrated the model 
+with two types of kernel function using order flow data of a 
+stock traded on Shenzhen Stock Exchange in 2003 and concluded that the model is well estimated when the kernel is a 
+smooth cut-off exponential function and the parameters satisfy 
+the stationary condition. 
+ 
+Luo, Rui, Vikram Krishnamurthy, and Erik Blasch [2] construct 
+a trivariate Hawkes process model where each process corresponds to block arrival, positive price jump, or negative price 
+jump respectively. They use a sum of exponential kernels to allow for multiple timescales of excitation. That helps capture 
+both short-term and longer-term feedback. By using QQ plots 
+
+Modelling Orderbook Imbalance with Multivariate Hawkes  
+ 
+ 
+constructed via the random time change theorem, they managed to show that the Hawkes model has much smaller deviations in slope than the Poisson models, both for block arrivals 
+and for price jump events. This implies that Hawkes model is a 
+better fit to the Blockchain dataset than the Poisson process 
+model. 
+ 
+In summary, Hawkes models, especially when marked and 
+multivariate, consistently outperform Poisson baselines in 
+modelling clustered order arrival data. They provide both a statistically superior description and mechanistic insight into the 
+endogeneity of order flow.  
+ 
+5.1 SUMMARY OF COMPETITOR ANALYSIS: 
+The Avellaneda–Stoikov (AS) model [7] continues to be employed as the benchmark for academic market-making research, primarily due to its tractability. However, the biggest 
+issue with this model is Poisson assumptions. It uses independent Poisson processes to model event arrivals dynamically. As a result, Avellaneda–Stoikov struggles to account for 
+and reproduce self excitations and cross excitations that exit in 
+real order flow dynamics   
+Guéant [8] extends [7] with the inclusion of a generalized intensity function. It also transforms the stochastic control problem into ordinary differential equations. These modifications 
+increase flexibility of the model. However, one of the main 
+problems, the exogenous assumption of event arrivals remains 
+under Guéant [8] dynamics. 
+Liu & Wang [10] went on further and introduced information 
+asymmetry into dealer market-making in a bid to link spreads 
+to information friction. However, they failed to explicitly 
+model the clustering of high-frequency order arrivals as they 
+mainly remained as equilibrium models. 
+Xu & Zhou [9] managed to directly apply Hawkes processes 
+and test them in aggressive market orders, under order spikes, 
+in Chinese equity markets. This proved that Hawkes processes 
+are better fit than Poisson processes via both fat-tailed inter-arrival times and clustering. 
+Luo et al. [2] extend the models to account for interlinked 
+events via inclusion of multivariate Hawkes with multiple kernels. They applied the models to blockchain events (Bitcoin 
+block arrivals and price jumps). Hawkes processes once again 
+showed superior statistical fit compared to Poisson. 
+ 
+6 PROBLEM STATEMENT 
+Empirical evidence suggests that cryptocurrency order flow 
+exhibits self-excitation. It is due to a significant event arrival 
+causing further event arrivals of similar nature. For example, a 
+large market order event can excite the network and significantly increase the likelihood of further buying/selling when it 
+arrives. Besides, it also exhibits clustering especially during 
+high volatility, and the cross excitation happens between different event types in crypto limit order book. This research aims to 
+investigate both existing Poisson Market Making models such 
+as Avellaneda-Stoikov as well as multivariate and univariate 
+Hawkes models. Then it will compare the performance of the 
+these models using their raw metrics and risk-adjusted metrics. 
+To be able to calculate overflow imbalance, we will need to record L2 data and reconstruct the orderbook for further analysis. 
+ 
+ 
+ 
+6.1 Data Retrieval and Processing Pipeline 
+The data retrieval has been done using python that 
+retrieves L2 order book data from Coinbase web-socket API. 
+Due to the computational costs and limits imposed by the 
+provider, we have limited retrieval to BTC-USD. The existing 
+code makes a connection request to the web-socket API and 
+subscribes to L2 order book. It retrieves data and processes 
+them in real-time. It then stores the data locally for further 
+analysis. Furthermore, it reconstructs the order book, models 
+the dynamics, performs Maximum Likelihood estimation to 
+tube hyperparameters, calculates order flow imbalance as a 
+market micro-structure of interest, places orders based off the 
+signals, and finally calculates and plots relevant financial 
+metrics.  
+ 
+6.2 Data Normalisation and Queue Logic for HFT 
+It is important that upon retrieving the order book L2 data 
+via a web socket client, the data is normalised using a stateless 
+normaliser module to be turned into an order book object that 
+is then processed inside a single producer single consumer lock 
+free queue with atomic updates. CPU pinning mechanism must 
+be put in place to pin the threads to specific CPU cores. This 
+helps to prevent the CPU from reassigning threads to other 
+cores leading to expensive cache reloads that can result in significant delays. Furthermore, memory must be pre-allocated to 
+prevent dynamic memory allocations, that can lead to expensive allocation operations and create bottlenecks on the hot 
+path. Strategy clients shall use single producer single consumer 
+queue, each using its own queue, and retrieve data from the 
+front of the queue via dequeuing it and running analytics on it. 
+Much of these processes require programming languages such 
+as C++ or Rust. In addition, back testing shall only happen on 
+the cold path, where the normalised exchange data is stored in 
+for archival. The hot path is only used for placing live orders.  
+ 
+6.3 Model 
+ 
+We have approached the task by investigating both univariate and multivariate Hawkes process as a method to 
+model order book dynamics and look for potential imbalance 
+as a microstructure. We have then compared the risk adjusted 
+metrics to those created as a result of employing existing Poisson based models such as Avellaneda-Stoikov. 
+The multivariate Hawkes process has two dimensions, one for 
+arrival of bids and one for that of asks with their intensity 
+functions defined as below: 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+         (10) 
+  
+ 
+          
+ 
+ 
+ 
+ 
+ 
+
+Modelling Orderbook Imbalance with Multivariate Hawkes  
+ 
+ 
+ 
+ 
+          
+ 
+ 
+ 
+ 
+            
+          (11) 
+  
+where λ_b(t) and λ_a(t) define conditional intensities of bids 
+and ask arrivals respectively and ϕ_ii is the kernel function 
+representing self excitation and ϕ_ij represents cross excitation. Here ϕ_ba indicates cross excitation of asks on bids and 
+ϕ_ab cross excitation of bids on asks. For the kernel function, 
+we have employed both exponential decay function (4), 
+aligned with what is used in academic research and for ease of 
+computation, as well as the power law function (5) to compare 
+the performance of the two. We hypothesise that, based on the 
+limitation of the sample data, the power law kernel wouldn’t 
+show an advantage over the exponential decay function.  
+  
+The parameters of the models are calibrated using maximum 
+likelihood estimation algorithm.  
+  
+Finally, order flow imbalance, f(x), as defined in section 3.3, is 
+calculated mathematically as follows for N levels: 
+  
+ 
+                                  (12) 
+  
+and for top-level imbalance we have: 
+                    
+         
+ 
+          (13) 
+  
+where q is the quantity and b and a are bids and asks in the order book respectively. 
+  
+     We have, in our previous draft version, employed univariate Hawkes processes and compared the results to multivariate Hawkes. In our current work, the multivariate has been 
+employed to compare against both univariate Hawkes and 
+Avellaneda-Stoikov market making models  
+ 
+ 
+6.4 Results 
+The results our earlier research had shown that single variate 
+Hawkes models are able to outperform existing Poisson based 
+models at least based on our sample data. We summarise the 
+findings of the results in the table and the graph below.  
+ 
+ 
+ 
+Metric 
+Hawkes 
+AS 
+Final PnL 
+$14.06 
+$15.94 
+Return (%) 
+0.01 
+0.02 
+Sharpe 
+0.45 
+0.23 
+Max DD 
+$18.22 
+$39.75 
+Max DD (%) 
+0.02 
+0.04 
+Fills 
+68 
+115 
+Fill Rate (%) 
+6.8 
+11.5 
+ 
+From these metrics we can see that Hawkes processes win due 
+to having lower drawdowns, leading to a higher Sharpe ratio. 
+We see that on purely raw metrics Avellaneda-Stoikov (AS) 
+wins since it offers twice more return compared to Hawkes, 
+however, this comes at a much higher drawdown expense. 
+Also, Hawkes have significantly lower fill rate. The high fill rate 
+in AS may be due to noise present in data and not due to signal 
+necessarily. However, more detailed analysis on more data and 
+under different market regimes needs to be conducted to have 
+a more informed conclusion. As we can see below that increasing fill rate probability will not impact the findings much. It is 
+further shown below that both univariate Hawkes and AS underperform relative to multivariate Hawkes. However, univariate Hawkes model still outperforms AS model.  
+7 MULTIVARIATE HAWKES 
+This section outlines the process of performing Multivariate 
+Hawkes on our data coupled with explaining the research findings.  
+ 
+ 
+ 
+7.1 Explanation of the Model 
+We have modelled the dynamics using using 4 variables. 1. 
+buy trade to capture the aggressive market buy orders hitting 
+the ask side of the order book. 2. Sell trade to conversely capture 
+the aggressive asks hitting the bids and walking the order book 
+down. 3. Limit bids to capture passive buy limit orders that are 
+placed on the order book and finally 4. Limit ask to account for 
+passive sale limit orders that are placed by sellers on the book. 
+We have utilized a 4 x 4 matrix to represent excitations correlation such as self-excitations and cross excitations between different point processes. 
+  
+Additionally, we have implemented two different Kernel functions to capture different properties and effects of events on the 
+order book dynamics. One is the exponential Kernel explained 
+in (3) and (4) and the other is the power law explained in (5). 
+ 
+7.2 Modelling Dynamics Using Multivariate Hawkes  
+ 
+Figure 1 Univariate Hawkes vs AS PnL 
+
+Modelling Orderbook Imbalance with Multivariate Hawkes  
+ 
+ 
+     We have conducted testing on BTC-USD L2 order book 
+data that has been retrieved via web-socket client and normalised via a stateless normaliser. The testing has been done on a 
+subset of almost 350,000 events of continuous trading, captured within a timeframe of 3 minutes, with 70% and 30% 
+splits, as outlined in section 7.3. The Multivariate Hawkes using an exponential kernel shows the best Sharpe ratio at 15% 
+followed by multivariate Hawkes using a power-law kernel at 
+5.5%. Both AS and univariate Hawkes model show negative 
+Sharpe ratios with AS significantly underperforming univariate Hawkes. The returns are also more impressive for Hawkes 
+with the number of trades being identical for all the three. It is 
+worth noting that these metrics have not been annualised. This 
+has been done to show the models’ performance on data it has 
+been tested on without artificially inflating any metrics.  
+ 
+The drawdown analysis shows that both univariate Hawkes 
+and AS are facing significant drawdowns, leading to much 
+higher risks and potentially much lower Kalmar ratios. Such 
+drawdowns, if persistent, are unsustainable over a long-term. 
+AS model shows a maximum drawdown of almost 25%, the 
+highest maximum drawdown of the four models. The multivariate Hawkes model seems to manage risk much better with 
+much lower inventory drawdowns.  
+ 
+ 
+It is worth mentioning that the tests have been conducted on 
+very high frequency low latency data within a short time window due to computational costs, API restrictions and little access to exchange L2 historical data. So, it is important these 
+tests are reconducted over a larger window of time and under 
+different regimes to arrive at more rigorous conclusions.  
+ 
+Furthermore, on raw trading profit and loss basis, multivariate 
+Hawkes also outperforms Avellaneda-Stoikov model. The fill 
+rates are over 60% for all models with Hawkes exponential 
+having the lowest fill rate of all due to potentially higher signal to noise ratio.  
+ 
+ 
+Figure 2: PnL comparison for the 4 models 
+ 
+ 
+Figure 3: Drawdown comparison 
+ 
+ 
+Figure 4: Inventory Evolution of the 4 Models 
+ 
+ 
+ 
+ 
+Figure 5: Calibrated Parameters based on EM Algorithm 
+ 
+ 
+Figure 6: Financial Metrics for the 4 models 
+ 
+Figure 7: QQ Plots  
+It is worth mentioning that on the self excitation parameter alpha,  univariate Hawkes model exhibits a high clustering with 
+alpha parameter at 0.897. The exponential multivariate 
+Hawkes shows 0.761 for buy (α₁₁ = 0.761) and 0.68 for sale (α₂₂ 
+
+Modelling Orderbook Imbalance with Multivariate Hawkes  
+ 
+ 
+= 0.68).  This implies an asymmetric microstructure where buy 
+orders dominate the order book. This makes sense in the period of study since cryptocurrencies market has been recovering recently after a massive correction.  
+ 
+The model using power law as its kernel, however, shows the 
+same value of 0.275 for both buy and sale events. This is due to 
+the signal decay that happens slower than with exponential 
+decay kernel. It indicates that the model shows same effect 
+spread over the time window studied. This reinforces our earlier findings that this model exhibits a higher signal to noise 
+ratio.  
+ 
+Interestingly, the model with exponential kernel fails to capture buy and sell cross excitation which is unrealistic. It implies the model may not be able to learn from the pattern in 
+between data and more testing needs to be done.  
+  
+7.3 STRATEGY  PREPARATION 
+We have implemented two identical market making strategies 
+using 
+both 
+multivariate 
+Hawkes 
+processes 
+and 
+Avellaneda-Stoikov. The hyperparameters of Hawkes μ, α, β 
+have been tuned using expectation maximization (EM) algorithm as done by [2]. The Hawkes models use adaptive bid and 
+ask quotes based on predicted directions. 
+  
+Regarding Avellaneda-Stoikov, its hyperparameter σ that represents volatility of the asset has been estimated from price evolution dynamics and price changes and the model adjusts bids 
+and asks dynamically to neutralise inventory risk. The metrics 
+have been discussed in section 7.2.  
+7.4 METHODOLOGY USED FOR FAIR COMPARISON   
+We have attempted to ensure that the comparison between 
+the two models were following similar logic and under similar 
+dynamics. This has been done in a bid to arrive at reasonable 
+conclusion regarding the two dynamics for Market Making 
+strategies. 
+  
+The main difference, however, is that the Hawkes multivariate 
+model utilises the intensity ratio formula shown below to dynamically adjust quotes based upon order flow imbalance it 
+predicts as a result of its training, whereas AS model utilises 
+inventory and volatility of the inventory as mechanisms to adjust quotes dynamically. The rationale for such choice lies in fair 
+comparison rather than differences in strategies, in which each 
+model’s capability in predicting order flow imbalance is the primary driver of quote adjustments. 
+7.5 LIMITATIONS   
+We have assumed that we stay on the top of order book and 
+that every market order hits our quote in both models with a 
+relatively high probability. Realistically, however, without access to L3 order book data, it would be very hard to tell deterministically where we are. It is also possible competitors can 
+beat us and fill the orders faster due to their technological infrastructure, FPGA programming and collocated servers. So, in reality the fill probability is likely much lower. 
+ 
+The lower fill probability could potentially lead to slippage in 
+which case the competitors may fill top of order book, which 
+includes the highest bid on the bid leg and the lowest ask on the 
+ask leg, ahead of us and with orders cascading down creating 
+slippage. This process can lead to our orders not getting filled 
+and if getting filled may not get filled at the desired quote due 
+to slippage. However, we have decided to relax this assumption 
+to look at fair comparison between the two models without concerns to competitive dynamics since these mathematical models 
+can theoretically be deployed by any high frequency trading 
+firm. Our focus here has been on quality, rather than quantity, 
+of predictions.  
+ 
+Furthermore, applying a fill probability will still lead to similar 
+conclusions on model performance despite having fewer trades 
+filled. In which case, both models would have most likely had 
+fewer absolute returns, whereas the financial metrics such as 
+Sharpe and Sortino ratios, Kalmar ratios would have stayed 
+more favourable to multivariate Hawkes compared to AS 
+model. In addition, due to limited data, a fill rate probability of 
+20% would have potentially resulted in no conclusions.  
+ 
+Finally, although it is important that such models run on significantly much more data, we believe that training these models 
+on too much data can lead to a number of problems. For example, presence of noise and nonstationarity can be quite complex 
+to handle. Due to the sheer volume of data, mathematical methods such as principal component analysis and variation inflation factor, which are used to remove highly correlated features 
+and keeping a smaller orthogonal features set (in case of 
+PCA),  can only add to the complexity of the model training. 
+Furthermore, training complex expectation maximisation algorithms on large data is computationally very expensive. It is in 
+the order of 
+.  
+ 
+Furthermore, the models work based on fresh set of data and 
+are designed for speed and precision in capturing alpha rather 
+than being trained on too much data. So, for these purposes, we 
+have decided to rely on inference based on a small subset of real 
+L2 normalised exchange data. 
+ 
+7.6 FOLLOW UP WORK 
+     Due to the limitations above, it is important that the study is 
+conducted on more data and under different market regimes. 
+As cryptocurrency markets are highly volatile with prices being 
+nonstationary, a walk forward back-test capturing different 
+market regimes coupled with differencing the quotes (bids and 
+asks) or even differencing the filled prices, where best bids and 
+asks are matched, would be an ideal next step. In our existing 
+work, we are already handling non-stationarity. Furthermore, 
+latency modelling, fill probability modelling with Monte Carlo 
+methods to check the models’ performance under different conditions can help with making a better inference. Finally, a more 
+advanced modelling such as a multi-agent reinforcement learning can help capture trading interactions, and adapt to them, 
+more dynamically.  
+
+Modelling Orderbook Imbalance with Multivariate Hawkes  
+ 
+ 
+8 CONCLUSION  
+In this study, we looked at modelling order flow imbalance 
+using multivariate and univariate Hawkes process on BTCUSD 
+L2 data retrieved via Coinbase web-socket API and compared 
+that to inventory management Avellaneda-Stoikov model. The 
+data has been retrieved live using a web-socket API client. Historical order book data aren’t provided by exchanges to individuals. In order to have access to historical L2 data, exchanges 
+require participants to have market maker status with the relevant exchange. However, we tested the hypothesis using live 
+trading data that was stored locally with mechanism utilised to 
+recreate the order book for testing purposes.  
+ 
+We have used identical rules and relaxed assumptions on probability of getting filled to compare the models on their raw 
+mathematical ability to capture alpha and produce risk adjusted returns. We observed that, based on our sample, Hawkes 
+processes with both exponential kernel and power law kernel 
+outperform Avellaneda-Stoikov Poisson based processes on 
+risk adjusted metrics with a higher signal to noise ratio. This is 
+mainly due to reasonable return coupled with lower drawdowns, which led to higher Sharpe ratio for Hawkes compared 
+to AS model. The metrics have not been annualised to avoid inflating them based on a very short time window. It is likely, 
+however, that the ratio could differ significantly as the models 
+are used to trade continuously. This is evident from the fact that 
+the univariate Hawkes study conducted earlier on a different 
+set showed better performance that the univariate study conducted most recently. Furthermore, as Multivariate Hawkes is 
+a directional alpha model, whereas Avellaneda-Stoikov is an inventory management model, it seems that the former is better 
+capable of capturing order book microstructures.  
+ 
+Finally, it seems that the type of Kernel used with multivariate 
+Hawkes model seems to impact the performance of the model 
+at least based on our sample. This makes sense since the 
+strength of the power law Kernel function as shown in (5)  lies 
+in its ability to keep excitations over an extended period of time 
+and gradually decaying them whereas the exponential decay 
+immediately starts the decay. The excitation signal instantly 
+fades away. This, on a very short-term horizon, would favour 
+the exponential kernel. This was the case with our sample live 
+L2 dataset. However, on a longer term, the difference can be 
+more noticeable.  
+ 
+These findings are interesting and call for more analysis on a 
+larger window of time and under different regimes. It is likely 
+that given their ability to capture the market dynamics, multivariate stochastic point processes are better suited to capture 
+the cryptocurrency microstructures and can be looked at as an 
+alternative to AS model by both market makers and market takers.  
+REFERENCES 
+1. 
+A. G. Hawkes, “Spectra of some self-exciting and mutually exciting point processes,” 
+Biometrika, vol. 58, no. 1, pp. 83–90, 1971. 
+2. 
+R. Luo, V. Krishnamurthy, and E. Blasch, “Hawkes Process Modeling of Block Arrivals in Bitcoin Blockchain,” arXiv:2203.16666 [cs.NI], 2022. 
+3. 
+C. G. Bowsher, “Modelling security market events in continuous time: Intensity based, 
+multivariate point process models,” Journal of Econometrics, vol. 141, no. 2, pp. 876–
+912, 2007. 
+4. 
+R. C. Phillips and D. Gorse, “Mutual excitation of cryptocurrency market returns and 
+social media topics,” in Proceedings of the 4th international conference on frontiers of 
+educational technologies, 2018, pp. 80–86. 
+5. 
+A. Verma, S. G. Jena, D. R. Isakov, K. Aoki, J. E. Toettcher, and B. E. Engelhardt, “A 
+self-exciting point process to study multicellular spatial signaling patterns,” Proceedings of the National Academy of Sciences, vol. 118, no. 32, 2021 
+6. 
+F. P. Schoenberg, “Introduction to point processes,” Wiley Encyclopedia of Operations Research and Management Science, 2010. 
+7. 
+Avellaneda, Marco, and Sasha Stoikov. “High-Frequency Trading in a Limit Order 
+Book.” Quantitative Finance, vol. 8, no. 3, 2008, pp. 217-224. Cornell University 
+ORIE, Feb. 2009, https://people.orie.cornell.edu/sfs33/LimitOrderBook.pdf 
+8. 
+Guéant, Olivier. “Optimal Market Making.” arXiv, 6 May 2016, arXiv:1605.01862. Ideals, https://ideas.repec.org/p/arx/papers/1605.01862.htmlLiu, Hong, and Yajun Wang. 
+“Market Making with Asymmetric Information and Inventory Risk.” March 2014, Washington University Olin, http://apps.olin.wustl.edu/faculty/liuh/papers/lw.pdf. 
+ 
+9. 
+Xu, Hai-Chuan, and Wei-Xing Zhou. “Modeling Aggressive Market Order Placements 
+with Hawkes Factor Models.” PLOS ONE, vol. 15, no. 1, 10 Jan. 2020, e0226667, 
+doi:10.1371/journal.pone.0226667. PMC, https://pmc.ncbi.nlm.nih.gov/articles/PMC6953867/. 
+10. 
+Liu, Hong, and Yajun Wang. “Market Making with Asymmetric Information and Inventory Risk.” March 2014, Washington University Olin, http://apps.olin.wustl.edu/faculty/liuh/papers/lw.pdf. 
+ 

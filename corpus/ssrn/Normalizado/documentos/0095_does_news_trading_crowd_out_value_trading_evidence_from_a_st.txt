@@ -1,0 +1,3070 @@
+Does News Trading Crowd Out Value Trading?
+Evidence from a Structural Estimation∗
+Albert J. Menkveld
+Ion Lucas Saru
+February 26, 2026
+Abstract
+Technology produces data streams at lower cost, which intensifies “news” trading.
+Does this trading on value changes crowd out trading on value levels, i.e., value
+trading? And, what is the net effect on liquidity and market efficiency? We propose a
+Kyle (1985)-type model to study these questions, both theoretically and empirically.
+The latter is possible, because closed-form solutions admit structural estimation.
+Implementing it on a 2013-2023 proprietary sample covering trades in the EURO
+STOXX 50 Index Futures reveals how liquidity, market efficiency, and the profit of
+both types of informed trading changed over time, and why.
+For Internet Appendix, please click: https://bit.ly/4rEIEcJ.
+∗Albert J. Menkveld, Vrije Universiteit Amsterdam, De Boelelaan 1105, 1081 HV Amsterdam, Netherlands,
+albertjmenkveld@gmail.com. Ion Lucas Saru, Vrije Universiteit Amsterdam, De Boelelaan 1105, 1081 HV
+Amsterdam, Netherlands, saru.ionlucas@gmail.com. We thank Terrence Hendershott and seminar participants
+at Utrecht School of Economics for their valuable feedback. We are grateful to Ji Li for research assistance
+and to the Deutsche Börse for all data support. Albert is grateful for financial support from the Dutch
+Research Council (NWO) for grant number 016.Vici.185.068.
+
+Does News Trading Crowd Out Value Trading?
+Evidence from a Structural Estimation
+Abstract
+Technology produces data streams at lower cost, which intensifies “news” trading.
+Does this trading on value changes crowd out trading on value levels, i.e., value
+trading? And, what is the net effect on liquidity and market efficiency? We propose a
+Kyle (1985)-type model to study these questions, both theoretically and empirically.
+The latter is possible, because closed-form solutions admit structural estimation.
+Implementing it on a 2013-2023 proprietary sample covering trades in the EURO
+STOXX 50 Index Futures reveals how liquidity, market efficiency, and the profit of
+both types of informed trading changed over time, and why.
+For Internet Appendix, please click: https://bit.ly/4rEIEcJ.
+
+1
+Introduction
+The information environment of modern financial markets is characterized by a fundamental
+dichotomy in how agents process signals. While traditional models of information asymmetry
+focus on value level information – private knowledge regarding the fundamental value of
+an asset – the rise of high-frequency trading has shifted focus toward “news traders” who
+specialize in value changes. These agents profit from a speed advantage that allows them
+to trade on news before the market can adjust. While the existing literature has analyzed
+these types in isolation, the equilibrium dynamics that emerges when both types coexist and
+compete remain largely unexplored. This paper proposes a model that incorporates both
+traditional value traders and news traders. The model is solved analytically and structurally
+estimated using proprietary trade data on EURO STOXX 50 Index Futures trading.
+The literature on value trading.
+The theoretical foundation for trading on value levels is
+rooted in the seminal work of Kyle (1985), where a value trader privately observes the value of
+an asset at the end of a trading period consisting of multiple rounds. He strategically trades
+on this information over time, fully cognizant of the information leaking to the rest of the
+market in each trade he engages in. The value trader could be thought of as privately knowing
+the full-information end-of-day price of an asset, and stealthily trades towards it. This type
+of model typically assumes that the private information relates to a static fundamental value,
+focusing on how prices gradually converge to this level. It abstracts from the rapid price
+adjustments triggered by the continuous arrival of public news that may be intercepted by
+faster participants.
+The literature on news trading.
+In contrast, a more recent literature focuses on traders
+with a speed advantage: high-frequency traders (HFTs).1 These traders should be thought of
+1Survey articles include Jones (2013), O’Hara (2015), and Menkveld (2016).
+1
+
+as machines that are extremely fast in processing information flows and acting on it. They,
+therefore, are modern news traders in the sense that they can quickly identify value changes,
+mostly ignorant of value levels. This literature is typically exclusively focused on news trading
+and ignores value trading. One exception is Foucault, Hombert and Roşu (2016) (FHR16)
+who focus on both value trading and news trading. They compare a model where a value
+trader cannot engage in news trading (slow model) to one where he can (fast model). The
+value trader is, therefore, either fast or slow relative to the dealer. When fast, the speculator
+observes a signal correlated with incoming news and trades on the anticipated price reaction,
+before the dealer can update his quotes.
+Synthesis and contribution.
+While FHR16 provides a powerful comparison of how a
+single agent’s behavior changes when he is given speed, it does not address the interaction
+between a (slow) value trader and a (fast) news trader operating in the same market. We
+believe such distinction makes sense if the objective is to model real-world markets. Some
+agents specialize in fundamental research to identify value levels, such as, for example,
+financial analysts or asset managers. Others specialize in quickly analyzing value changes,
+proprietary traders parsing the news, which is broadly defined as the continuous flow of
+value-relevant information (e.g., company news, order-book events, or social media posts).
+This paper bridges the two frameworks by developing and estimating a model where a
+level-informed value trader and a change-informed news trader coexist in equilibrium. The
+proposed model builds on FHR16, with the distinction that value trading and news trading
+are assigned to two distinct types. By explicitly modeling these two types separately, we move
+beyond fast vs. slow comparisons and, instead, analyze the strategic interaction between the
+two types of informed agents. More specifically, the model features a finite trading period
+where trading is continuous. Similar to Kyle (1985), at the start, the value trader has private
+information on the value level. During the period, this value changes continuously, with a
+2
+
+news trader observing these changes fast, but imperfectly. The value trader observes these
+changes slow, but perfectly. This setting is a straightforward extrapolation of FHR16 to our
+setting with the two different types of informed traders.
+The model turns out to be tractable and delivers a unique linear equilibrium that is
+used to both generate theoretical insights and structurally estimate the model parameters.
+Starting with the theoretical insights, we ask the following questions. First, to what extent
+does news trading crowd out value trading? Second, how does the presence of both types
+of informed traders affect the informational efficiency of the market? Finally, structural
+estimation enables us to study how the model parameters evolve for ten years of trading
+EURO STOXX 50 Index Futures. It, therefore, yields insight in the strength of these effects
+for an empirically relevant part of the parameter space.
+Results.
+The equilibrium expressions show that news trading does crowd out value trading.
+While this might not be all that surprising, the effect it has on market liquidity is nontrivial.
+One might say that information being moved from one type of informed trader to another
+should not affect liquidity, because the dealer continues to be experience adverse-selection
+cost on this information. This, however, is not true, because who trades on this information
+matters. News traders are unable to trade patiently on information across multiple rounds,
+simply because dealers soon observe the same news. Value traders, however, are under no such
+pressure and thus can create up to twice as high profits on the same information. Therefore,
+if news becomes more precise, then the information moving from the value trader to the news
+trader generates less profit. This makes the zero-profit dealer charge a lower price impact,
+because his adverse-selection cost is reduced. Market liquidity improves as a result.
+In striking contrast to the market liquidity result, news trading crowding out value trading
+does not affect market efficiency. More precisely, define informational inefficiency as the
+variance of the wedge between the dealer quote and the true value, which we will refer to
+3
+
+as “pricing error.” In equilibrium, the variance of this pricing error declines linearly towards
+zero at the end of the trading session. This result does not depend on how precise the news
+is throughout the day and, therefore, is invariant to the relative presence of both types of
+informed trading. In particular, for high levels of precision, the crowding out of value traders
+by news traders trading on more precise news does not affect informational efficiency.
+The equilibrium dynamics throughout the trading session can be represented by a Gaussian
+state space model and can, therefore, be estimated with maximum likelihood. The likelihood
+is computed using the Kalman filter. To take the model to the data, one needs multiple
+trading sessions with for each session, trade prices and aggregate net volumes througout the
+trading session, and net volume of the news trader. The identification of news trading makes
+standard off-the-shelf datasets, such as US TAQ data, unfit for estimation.
+The model is estimated based on a proprietary dataset made available by Deutsche
+Börse. It contains all trades in EURO STOXX 50 Index Futures from 2013 through 2023. A
+particularly attractive feature of this sample is that, for each trade, both sides to the trade are
+flagged as either agency or principal. Using this information, we interpret principal trading
+as news trading. The idea is that exchange members are close to the market and likely are
+the first to observe news to trade on it. Agency trades, on the other hand, are assumed to
+capture both value trading and noise trading. Each day in the sample is considered a trading
+session for which intraday trades prices and net volumes are observed. If one considers these
+interpretations reasonable, then the structural estimation yields the following insights. The
+estimation was done year by year to study the evolution of trading over the sample period.
+The model estimates yield the following results. First, in the 2010s, news became steadily
+more precise from revealing 35.3% of the value change in 2013, the start of the sample, to
+revealing 46.8% of it in 2018. Then it declined to 29.9% at the end of the sample in 2023.2
+2Dugast and Foucault (2025) offer an explanation for less precise news trading when showing that,
+endogenously, data abundance can lead to less intensive search for high-precision signals.
+4
+
+This pattern is one of the reasons for the market being most liquid in the middle of sample,
+and most illiquid towards the end of it. An additional reason is the estimated decline in noise
+trading in the course of the sample. The price impact of trading 1,000 lots, representing a
+value of approximately =C34.4 million, increases from a sample minimum of 0.55 bps in 2017
+to a sample maximum of 1.22 in 2022, an increase of 122%.
+Second, most of the information that is learned in a trading day, arrives throughout the
+day. The standard deviation of this part is about 23.26 basis points (bps). The standard
+deviation of the information value traders have at the start of the day is 1.29 bps.
+Third, the gross profit of value traders far exceeds the profit of news traders. This might
+be surprising at first, because value traders start the day with relatively little information.
+But, they learn the value changes throughout the day perfectly, whereas news traders only
+observe these changes with noise, i.e., the news, and can trade on them only for a brief period,
+because the news gets learned by the dealer immediately after the news trader traded on
+it. The average gross profit for news traders is =C670,000 per day, whereas it is =C1,700,000
+per day for value traders. Although the model does not feature trading fees, these fees are
+substantial, but do not turn gross profits into losses. They are about 18% of gross profit for
+news traders and about 4% for value traders.
+Related literature.
+In their seminal paper on stock return variance, French and Roll
+(1986) study why asset prices are more volatile during trading hours relative to nontrading
+hours. They argue that it could be public information that tends to arrive during trading
+hours, private information of investors who trade on it during these hours, or pricing errors.
+Using exchange holidays as an instrument in their analysis, they conclude that “private
+information is the principle factor behind high trading-time variances.” This spurred an
+enormous literature on informed trading in financial markets.
+Follow-up analysis reveals another striking stylized fact: The variance of open-to-open
+5
+
+(O-O) returns is significantly larger than the variance of close-to-close (C-C) returns. Amihud
+and Mendelson (1987) find a difference of 20% for Dow Jones stocks. Further analysis leads
+them to conclude that at the opening prices exhibit higher residual noise. Stoll and Whaley
+(1990) confirm these findings for a larger sample of NYSE stocks. The index returns in
+our sample exhibit a 2% higher variance in O-O vs. C-C returns. This suggests that while
+the effect is still there, it is weaker for index returns. Lu, Malliaris and Qin (2023) explain
+these findings by the cream-skimming risk of that fast (informed) arbitrageurs impose on
+liquidity suppliers in the morning, thus making liquidity demanders pay large (transitory)
+price pressure early in the trading session. Our model is, in the tradition of Kyle (1985),
+focused on endogenous information revelation. The information structure thus does not
+exogenously assume informed fast traders to be active in the morning. Importantly, the
+stylized facts of noisy opening prices and efficient closing prices are consistent with our
+equilibrium result that some information slowly enters prices by value traders slowly trading
+on it throughout the day.3
+Another literature that our study relates focuses on asset pricing. Recent evidence suggests
+that value trading is waning, which explains the general unease informationational efficiency.
+Barras, Scaillet and Wermers (2010, Fig. 4) show that the average alpha of US mutual funds
+declined from 1989 through 2006. Using more recent data, Antoniewicz et al. (2025, Fig. 2.5)
+show that for mutual funds and exchange traded funds (ETFs), the share of actively managed
+funds steadily declined from 81% in 2010 to 49% in 2024. Even the actively managed funds
+seems to become more “algorithmic.” Birru et al. (2024) show that recommendations by
+analysts who use Quants are more aware of well-known anomalies. In 2017, Thomas Jr (2017)
+3Section 3.6 contains model-free empirical analysis of our sample that delivers two more empirical facts
+to support this interpretation. First, the information share of noisy value trader net volume increases in
+the periodicity. It seems to be five to ten percentage points higher when the data is sampled at 15 minutes
+instead of 1 minute. Second, noisy value trader net volume is, on average, positively autocorrelated within
+15-minute intervals, whereas news trading is predominantly uncorrelated through time. (This is consistent
+with model-implied dynamics.)
+6
+
+reported that BlackRock laid out an ambitious plan to consolidate a large number of actively
+managed mutual funds with peers that rely more on algorithms and models to pick stocks.
+He further observes that since 2009, the performance of funds that claim to outsmart the
+market has suffered, making millions of investors abandon these expensive mutual funds
+for better-performing funds that track various indexes at a fraction of the cost. Finally, he
+mentions an explicit example of the news trader vs. value trader type of analysis: “These
+managers, many of whom have Ph.D.s, might buy (or sell) Walmart’s stock on the basis of
+a satellite feed that reveals how many cars are in its parking lots as opposed to an insight
+gleaned from the innards of the retailer’s balance sheet.”
+Glode and Ordoñez (2025) model how technological advancements could reduce welfare if
+resources are allocated away from surplus-creating activities, towards surplus-appropriating
+activities. They consider news trading by HFTs a potentially damaging surplus-appropriating
+activity. Weller (2018) is similarly concerned when documenting that algorithmic trading
+correlates positively with the size of price jumps on scheduled announcements.
+Larger
+jumps are interpreted as less of the announced information entered the price ahead of the
+announcement, thus making prices less efficient. While our model does endogenize the
+relative strength of both types of trading, price efficiency seems invariant to this composition
+of informed trading. We speculate that this the case because the model does not have a
+fixed (rental) cost of operating as an value trader or a news trader. If it feature such cost,
+then trivially, the value trader would disappear from the market if his profitability becomes
+negative. This would make prices less efficient as value trader information no longer enters
+market prices.
+7
+
+2
+Model
+This section presents the model and its unique linear equilibrium. The proofs of all the
+propositions are in Appendix A.
+2.1
+Model setting
+The model is a perturbation of FHR16 and is thus in the spirit of Kyle (1985). It consists of
+one representative dealer and three types of traders who are all risk neutral: a value trader,
+a news trader, and noise traders.
+Information structure.
+The fundamental value of the asset is a common value in the
+sense that all participants value it at this level. Time is continuous and time t runs from zero
+to one. The fundamental value evolves during this period as:
+v1 = v0 +
+Z 1
+0 dvt,
+(1)
+with
+dvt = σvdBv
+t ,
+(2)
+where Bv
+t is a Brownian motion and σv is positive and
+v0 ∼N (0, Σ0) ,
+(3)
+where Σ0 is non-negative.
+The value trader is the only one who observes this fundamental value vt at all times. The
+news trader, on the other hand, observes news, which is constructed as:
+dzt = dvt + det,
+(4)
+8
+
+with
+det = σedBe
+t ,
+(5)
+where Be
+t is a Brownian motion and σe is non-negative. The dealer observes this news, but
+only an instant after the news trader does.
+The way news is modeled admits an expression for how much of the value change is
+learned after news. The variance of the posterior mean of the value change, given the news is:
+Var (E (dvt|dzt)) = (Corr (dvt, dzt))2 σ2
+v =
+
+1 −
+1
+σ2v
+σ2e + 1
+
+σ2
+v,
+(6)
+where Corr (x, y) is the correlation between x and y. The factor scaling σ2
+v in (41) increases
+in the signal-to-noise ratio (SNR, i.e., σ2
+v/σ2
+e) of the news, which serves a sanity check.
+Trading.
+The market for the asset opens at time zero and runs continuously until time one.
+At each time point, all traders submit their liquidity demand schedule to the dealer who then
+sets a market price that makes him earn zero profit. Formally, the total liquidity demand is:
+dyt = dxN
+t + dxV
+t + dut,
+(7)
+where dxV
+t is the liquidity demand by the value trader and dxN
+t is the liquidity demand by
+the (fast) news trader, and dut is the exogenous (price-inelastic) demand of noise traders,
+where:
+dut = σudBu
+t ,
+(8)
+where Bu
+t is a Brownian motion and σu is positive. The three Brownian motions are mutually
+orthogonal.
+[Figure 1 about here.]
+9
+
+Figure 1 illustrates the timing of events in the model. This timing follows FHR16 and is
+somewhat nonstandard. Flow variables that pertain to an interval that runs from t to t + dt
+get the label t instead of t + dt. Importantly, the news trader gets his noisy signal on dvt an
+instant before the dealer in the sense that he can only trade on it once.
+The objective of both types of informed traders is to maximize profit. The objective of the
+dealer is to set prices that make him earn zero profit. Noise traders do not have an explicit
+objective.
+2.2
+Equilibrium
+The equilibrium concept in this relatively standard setting is straightforward. The dealer
+posts a linear price schedule for total liquidity demand that he commits to and makes him earn
+zero-profit. Given this price schedule, traders optimize and submit their liquidity demand.
+Then one needs to verify that the resulting liquidity demand does indeed result in zero profit
+for the dealer.
+The following proposition claims that a linear equilibrium exists and that it is unique.
+Linearity here refers to the price schedule posted by the dealer being affine in total liquidity
+demand.
+Proposition 1. (Unique linear equilibrium.) The model has a unique equilibrium of the
+form:
+dxN
+t = βNdzt,
+(Trade on news)
+(9)
+dxV
+t = βV
+t (vt −qt) dt,
+(Trade on fundamentals)
+(10)
+dqt = λdyt + µ (dzt −ρdyt) ,
+(Midquote)
+(11)
+pt+dt = qt + λdyt,
+(Trade price)
+(12)
+10
+
+with
+βN = √ga,
+(13)
+βV
+t =
+1
+1 −t × βV where βV = σu
+Σ0
+v
+u
+u
+tΣ0 +
+σ2
+v
+σ2v
+σ2e + 1
+,
+(14)
+λ =
+1
+2√ga (1 −b) ,
+(15)
+µ = 1
+2 (1 −b) (1 + g) ,
+(16)
+ρ =
+√g
+(1 + g) √a,
+(17)
+where
+a =
+σ2
+u
+σ2
+v + σ2
+e
+> 0,
+(Noise trading in net volume)
+(18)
+b =
+σ2
+e
+σ2
+v + σ2
+e
+≥0,
+(Noise in news)
+(19)
+c =
+Σ0
+σ2
+v + σ2
+e
+> 0,
+(Private information at start)
+(20)
+with
+g = G (x) = x −
+√
+x2 −1
+with
+x = 1 + b
+1 −b +
+2c
+(1 −b)2 ≥1.
+(21)
+where ∂G/∂x < 0, G (1) = 1, and limx→∞G (x) = 0. g decreases monotonically in b and c.
+Proposition 1 not only claims that a unique linear equilibrium exists, it also delivers
+analytic expressions for the various equilibrium objects. For example, it shows that liquidity
+demand by the two informed traders is linear in their private signal. (9) shows that the
+intensity with which the news trader trades on his signal is constant through time: βN.
+This is not true for the value trader, because (10) shows that the intensity with which he
+trades on his signal increases with time: βV /(1 −t). The intuition for this result is that
+the cost of trading more intensively now is that the dealer learns more about vt from total
+11
+
+flow and, therefore, his price quote moves more quickly towards vt thus erasing future profit
+opportunities for the value trader. This finding mirrors the strategic trading by the value
+trader first documented in Kyle (1985, Eqn. 4.10).
+Focusing on our overall objective to analyze whether news trading crowds out value
+trading, we study how the equilibrium changes when one reduces the level of noise in news:
+σ2
+e. This is the lever we pull, because more precise news intensifies news trading. The
+following corollary states this formally and signs the equilibrium response of value trading.
+Corollary 1. (Trade intensity and news precision.) If news becomes more precise,
+then
+• the news trader trades more intensively on his signal, i.e., ∂βN
+∂σ2e < 0.
+• the value trader trades less intensively on his signal or, i.e., ∂βV
+∂σ2e > 0.
+The result of Corollary 1 essentially finds that, indeed, news trading crowds out value
+trading. While the finding that both types of informed trading are substitutes might not be
+all that surprising, the more important question is how the substitution affects overall market
+quality. In the next two subsections, the following two quality measure of the equilibrium are
+studied: market efficiency and market liquidity. Market efficiency pertains to extent to which
+fundamental value is revealed and how quickly it gets revealed. Market liquidity measures
+the trading cost for uninformed traders, as they ultimately pay for illiquidity.
+2.2.1
+Market efficiency
+To analyze how the level of noise in news affects market efficiency, we follow FHR16 and
+define:
+Σt = E
+h
+(vt −qt)2|{yτ}τ≤t ∪{zτ}τ≤t
+i
+= Et
+h
+(vt −qt)2i
+,
+(22)
+where the expectation is taken conditional on the dealer’s information set It = {yτ}τ≤t ∪
+{zτ}τ≤t. Σt, therefore, measures the pricing error, which we defined as the wedge between
+12
+
+the true value vt and the dealer’s quote qt. The next proposition uses Σt to characterize how
+market efficiency evolves through time.
+Proposition 2. (Evolution of market efficiency.) Market inefficiency declines linearly
+in time with the price becoming fully revealing of the fundamental value at the end of trading:
+Σt = (1 −t) Σ0.
+(23)
+Proposition 2 states that the publicly quoted price, qt, steadily approaches the true value
+vt, and fully reveals it at the end of the trading session. Interestingly, the speed at which it
+reveals this private value is unaffected by any of the model parameters. This shows that, in
+equilibrium, news trading and value trading are perfect substitutes in the sense that a dealer’s
+ability to learn from informed trading by observing total liquidity demand is unaffected by
+its composition. In other words, market efficiency is invariant to the composition of informed
+trading. The level of noise in news, therefore, does not affect how much of the fundamental
+value is revealed through price quotes, nor the speed with which these quotes reflect this
+information.
+2.2.2
+Market liquidity
+In a Kyle (1985)-type model, the price impact coefficient (λ) charged by the dealer measures
+market illiquidity. This combined with the zero-profit condition for the dealer, makes that it
+measures the transfer from uninformed liquidity traders to informed traders. Therefore, in
+this type of model, the market illiquidity and the profit of informed traders are two sides of
+the same coin. To get insight into what drives illiquidity it is useful to compute the profit of
+both types of traders explicitly, which is what is done in the next proposition.
+Proposition 3. (Profit of news trader and value trader.) The expected profit of the
+informed traders in the model is:
+13
+
+πN =
+Z 1
+0
+
+βNσ2
+v −λ
+
+βN2 
+σ2
+v + σ2
+e
+
+dτ = 1
+2σu
+v
+u
+u
+u
+u
+u
+u
+t
+g
+
+1 −
+1
+σ2v
+σ2e + 1
+
+
+|
+{z
+}
+≤1
+σ2
+v,
+(Profit news trader)
+(24)
+πV =
+Z 1
+0
+
+βV
+τ Στ
+
+dτ = βV Σ0 = σu
+v
+u
+u
+u
+u
+u
+u
+t
+Σ0 +
+
+
+1
+σ2v
+σ2e + 1
+
+
+|
+{z
+}
+≤1
+σ2
+v.
+(Profit value trader)
+(25)
+Proposition 3 delivers equilibrium expressions for the profit of both types of informed
+traders. These expressions are analytic and, therefore, offer substantial insight. First, profit
+of the value trader declines in the SNR (i.e., in σ2
+v/σ2
+e). The reason is that a higher SNR
+makes the news trader and the dealer learn about and act upon value changes before the
+value trader can.
+Second, the profit of the value trader mirrors the expression in Kyle (1985, p. 1330). The
+only difference is that, in Kyle (1985), the value trader does not learn additional information
+through time, whereas, in our model, he does. The variance of what the value trader learns
+about vt throughout the day is exactly equal to what remains to be learned after observing
+the news flow. Using (41), one learns that this is equal to the second term in the square root
+of (25). The square root term, therefore, mirrors the expression in the original Kyle model,
+which is σu
+√Σ0.
+Third, the profit of the news trader increases in the SNR, because both factors in the
+square root factor of (24) increase in the SNR. The second factor simply reflects that more is
+learned about the value change because the variance of the posterior mean of dvt increases.
+This increase mirrors the decrease that the value trader experiences when SNR increases.
+14
+
+The reason that the first factor, g, increases in the SNR is that g declines in b, which, in turn,
+declines in the SNR. The additional multiplier reflects the simple fact that the value trader
+becoming relatively less informed reduces the externality this trader imposes on the news
+trader via the price impact function. In other words, both informed traders pay this overall
+price impact function and one of them becoming more informed thus raises this price impact
+for both.
+Fourth, the polar cases neatly illustrate that the patient value trader earns twice as much
+on his information than the single-shot news trader. Both informed traders trade continuously
+on their information, but the news trader can only do so in essentially one round, because
+right after this trade, the dealer learns the news and updates his quote immediately to reflect
+the news. To illustrate how this makes him earn less on his information, consider two polar
+cases:
+1. Consider the case of only a news trader. This is a special case of the model, because
+one can mute the value trader by removing all his private information: σ2
+e = Σ0 = 0. In
+this case, (24) shows that the profit of the news trader is equal to the single-auction
+profit in Kyle (1985, p. 1320): σuσv/2.4
+2. Consider the case of only a value trader, who is able to avoid a single-shot game, because
+the dealer only learns from aggregate liquidity demand, never observing the information
+of the value trader directly. This case is achieved by removing the information that
+arrives through time: σ2
+v = 0. In this case, (25) shows that the profit is σuσ0, which is
+equal to Kyle (1985, p. 1330).
+The return on information, therefore, is twice as high when one is able to trade on it across
+infinitely many periods, instead of just one period. This finding provides intuition for the
+4The single-auction case in Kyle (1985) features an informed trader who knows v, which is Gaussian with
+variance Σ0. This results in the reported profit of σu
+√Σ0/2 in the second to last line of Section 2 in Kyle
+(1985).
+15
+
+market liquidity result in the next corollary.
+Corollary 2. (Market liquidity and news precision.) Market illiquidity increases in
+the level of noise in news:
+∂λ
+∂σ2
+e
+> 0.
+(26)
+This result, combined with the zero-profit condition for the dealer, implies that the total profit
+of the informed traders increases if the news gets noisier. Decomposing this profit across the
+two types of informed traders yields the following monotonicity results:
+∂πN
+σ2
+e
+< 0, ∂πV
+σ2
+e
+> 0,
+∂
+
+πN + πV 
+σ2
+e
+> 0.
+(27)
+News getting noisier, therefore, raises the profit of the value trader and reduces the profit of
+the news trader. The former effect dominates the latter in magnitude, which is consistent
+with the decline in liquidity.
+Corollary 2 establishes the equilibrium relationship between market liquidity and news
+precision. The finding that market liquidity improves with more precise news is essentially
+the result of moving, at the margin, some information from the value trader to the news
+trader. The latter, however, can only trade on this information in one round, because the
+dealer observes the information right after. The results in Proposition 3 illustrate that this
+reduces the profit on this information, thus reducing adverse-selection cost for the zero-profit
+dealer who reduces price impact as result of it.
+3
+Empirics
+Let us convert the equilibrium dynamics to a state space form that approximates it. To
+discretize the dynamics, we will estimate the model where the time increments are small.
+16
+
+Economically, the time increments need to be picked such that news traders can trade on
+the news within the interval, and the dealer needs the full interval to parse the news. In our
+application, we approximate the dynamics implied by the model by picking “dt” to be one
+minute. This trades off a short enough periodicity to capture news trading, but not too short
+to keep the likelihood maximization numerically feasible.
+3.1
+State space model
+The equilibrium dynamics stated in Proposition 1 imply the following state space representation for news trader net volume, total flow, and the end-of-period transaction price. It is
+based on (7), (9), and (12). The observation equation is:
+
+
+
+
+dxN
+t
+(1 −t) pt+dt
+
+
+
+=
+
+
+
+
+0
+0
+βN
+λβV dt
+(1 −t) −λβV dt
+(1 −t) λβN
+
+
+
+
+
+
+
+
+
+
+
+
+vt
+qt
+dvt
+
+
+
+
+
+
+
+
++
++
+
+
+
+
+βN
+0
+(1 −t) λβN
+(1 −t) λ
+
+
+
+
+
+
+
+
+det
+dut
+
+
+
+
+(28)
+Note that the observation vector contains an entry (1 −t) pt+dt as opposed to pt+dt. The
+reason is that if we would keep the βV
+t coefficient as implied by (7), then this makes maximum
+likelihood (ML) estimation challenging, because it contains the factor: 1/(1 −t). This factor
+explodes towards the end of a trading day. To avoid numerical issues, we multiply the
+equation with (1 −t) to avoid division by small numbers.
+The state dynamics appear in the state equation, for which the equilibrium dynamics for
+17
+
+qt is taken from (11):
+
+
+
+
+
+
+
+
+vt+dt
+qt+dt
+dvt+dt
+
+
+
+
+
+
+
+
+=
+
+
+
+
+
+
+
+
+0
+µdxN
+t
+βN + (λ −µρ) dyt
+0
+
+
+
+
+
+
+
+
++
+
+
+
+
+
+
+
+
+1
+0
+1
+0
+1
+0
+0
+0
+0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+vt
+qt
+dvt
+
+
+
+
+
+
+
+
++
+
+
+
+
+
+
+
+
+0
+0
+1
+
+
+
+
+
+
+
+
+
+dvt+dt
+
+(29)
+The model can now be written into a standard state space format, which is typically denoted
+by:
+y∗
+t = Z∗
+t α∗
+t + dt + ε∗
+t,
+(30)
+α∗
+t+1 = T ∗
+t αt + ct + R∗
+tη∗
+t ,
+(31)
+where
+ε∗
+t ∼N (0, H∗
+t ) ,
+(32)
+η∗
+t ∼N (0, Q∗
+t) .
+(33)
+We add asterisks to distinguish this standard state space notation5 from the notation in our
+model.
+3.1.1
+Observation equation
+The observation equation objects implied by the model are:
+y∗
+t =
+
+
+
+
+dxN
+t
+(1 −t)
+
+pt+dt + eP
+t
+
+
+
+
+,
+Z∗
+t =
+
+
+
+
+0
+0
+βN
+λβV dt
+(1 −t) −λβV dt
+(1 −t) λβN
+
+
+
+,
+5See, e.g., the notation used in the python statsmodels state space, which we use to estimate the model.
+18
+
+d∗
+t =
+
+
+
+
+
+
+
+
+0
+0
+0
+
+
+
+
+
+
+
+
+,
+α∗
+t =
+
+
+
+
+
+
+
+
+vt
+qt
+dvt
+
+
+
+
+
+
+
+
+,
+H∗
+t =
+
+
+
+
+
+βN2 σ2
+e
+T
+(1 −t) λ
+
+βN2 σ2
+e
+T
+(1 −t) λ
+
+βN2 σ2
+e
+T
+(1 −t)2 λ2
+
+βN2 σ2
+e
+T + σ2
+u
+T
+
+
+
+
+.
+(34)
+3.1.2
+State equation
+The state equation objects implied by our model are:
+T ∗
+t =
+
+
+
+
+
+
+
+
+1
+0
+1
+0
+1
+0
+0
+0
+0
+
+
+
+
+
+
+
+
+,
+ct =
+
+
+
+
+
+
+
+
+0
+µdxN
+t
+βN + (λ −µρ) dyt
+0
+
+
+
+
+
+
+
+
+,
+R∗
+t =
+
+
+
+
+
+
+
+
+0
+0
+1
+
+
+
+
+
+
+
+
+,
+Q∗
+t =
+
+σ2
+v
+T
+
+.
+(35)
+To close the model, the initial distribution of the state needs to be specified:
+α∗
+0 ∼N
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+p0
+p0
+0
+
+
+
+
+
+
+
+
+,
+
+
+
+
+
+
+
+
+Σ0
+0
+0
+0
+0
+0
+0
+0
+σ2
+v
+T
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.
+(36)
+[Figure 2 about here.]
+Figure 2 illustrates the model by simulating a single trading day. The top plot illustrates how
+the midquote qt and the fundamental value vt evolve throughout the day. The gap between
+the two declines as the day passes.
+The middle plot illustrates how the news trader and the value trader trade. Net flow of
+the news trader seems stationary as he only responds to the latest news. The value trader,
+on the other hands, trades stealthily on his information at the start of the day, but become
+more aggressive towards the end of the day.
+19
+
+The bottom plot illustrates how the Kalman filter and smoother estimates of the fundamental value state. Both estimates are show along with a 95% confidence interval. The
+width initial confidence interval is about 40, which is approximately two times 1.96 the
+standard deviation of the beginning-of-day fundamental value draw (σ0 = 10). The confidence
+interval declines as the day progresses, because trade reveals information. Note how the
+filtered estimate converges towards fundamental value throughout the day. The smoothed
+estimate utilizes the trade information for the full trading day and, therefore, exhibits a
+tighter confidence interval. Finally, note that the filtered state emulates the best estimate of vt
+by the news trader, because he gets to see the oncoming noisy innovation in the fundamental
+value. Note that this estimate is a better one than the midquote qt, because the dealer only
+observes past news.
+3.2
+Estimation with maximum likelihood
+The model parameters are collected in ϑ:
+ϑ =
+
+σv
+σ0
+σe
+σu
+
+,
+(37)
+where σ0 = √Σ0 is the standard deviation of the fundamental value, not yet revealed in the
+opening price. This parameter vector is used to compute the model objects a, b, c, g, βN, βV
+t ,
+and λ. The parameter vector along with these model objects define the state space model.
+The Kalman filter is used to compute the likelihood of the sample, conditional on theta and
+the model objects. With all of this in place, the maximum likelihood estimation can now be
+implemented as:
+ˆϑML = argminϑ (−log L (ϑ)) ,
+(38)
+where L denotes the likelihood. It is standard to use log likelihood, because it is numerically
+more stable. The minus sign is added, because software packages typically only offer a
+20
+
+minimization routine. The only missing part is to provide a reasonable starting value for ϑ.
+3.3
+Initial values
+The price update implied by subtracting (12) for pt from (12) for pt+dt:
+pt+dt −pt = λdyt + dqt−dt −λdyt−dt.
+(39)
+Note that the notation from FHR16 is followed, which explains dqt−dt, because an increment
+from (t −dt) to t is indexed by (t −dt). Using (9) and (11), the price equation (12) is
+developed further into:
+pt+dt −pt = λdyt + µ
+βN dxN
+t−dt −µρdyt−dt.
+(40)
+This coefficient of the price equation (40) can be estimated with OLS, because all variables
+are observed. This equation is used to compute initial values for the parameters in the
+maximum likelihood (ML) estimation. Appendix B shows, in detail, how the OLS results are
+used obtain initial values for the model parameters in the ML optimization.
+3.4
+Data
+The model will be estimated for daily samples of trading in EURO STOXX 50 Index Futures
+(FESX). Each sample consists of trades, where each trade record contains:
+• The match price, which is the locked-in index value. It is multiplied by 10 to get to
+contract value, because each point change in the index corresponds to =C10.
+• Whether the buyer or the seller initiated the transaction and, therefore, was the liquidity
+demander in the trade. We refer to buyer as the agent who enters the long side of the
+futures contract. The seller enters the short side.
+21
+
+• Whether the buyer is an exchange member trading engages in a principal or an agency
+trade. A principal trade refers to a trade for his own account whereas an agency trade
+is a trade for a client.
+• Whether the seller engages in a principal or agency trade.
+We construct the sample to estimate the model as follows. For each day, we select the contract
+with the highest volume, often the nearest-to-maturity contract. Then, for each interval, we
+sign each trade size according to the initiating side. Buyer-initiated trades get a positive sign
+and seller initiated trades get a negative sign. We sum these signed trade sizes to obtain dyt
+for the interval. We assume that intermediaries are the news traders and, therefore, define xN
+t
+as the sum of all signed trade sizes where the initiator was an exchange member trading for
+his own account. Finally, we set pt+dt to be the last trade price in the interval. All variables
+are set to non-available if there is no trade in the interval. The Kalman filter used in the
+estimation allows for non-availables, which is one of the benefits of the approach.
+A trading day spans the time when most European equity markets open and close: 9:00
+until 17:30 Central European Time (CET). Figure IA.1 in the Internet Appendix illustrates
+that this period captures most trading volume in EURO STOXX 50 Index Futures. The figure
+further shows that volume in this period is U-shaped. This is the result of the information
+flow following a transaction clock instead of the wall clock (Ané and Geman, 2000). To run
+the analysis on a transaction clock, we create new timestamps as follows. We use the existing
+timestamps to sort all transactions on a particular a day, then replace these timestamps by
+new timestamps that are evenly spaced in the trading day. The aggregation to one-minute
+intervals thus aggregates across a constant number of transactions each day. Finally, to avoid
+idiosyncrasies associated with the opening and closing of the market, the first and last five
+minutes are removed before creating the new timestamps.
+[Table 1 about here.]
+22
+
+Table 1 presents various summary statistics for trading in EURO STOXX 50 Index
+Futures. This futures contract is one of the most actively traded ones, because it effectively
+is a standard vehicle for investors to manage their exposure to the European economy. On
+average, 1,229 contracts, also referred to as lots, are traded each minute. In pecuniary terms,
+this represents =C41 million per minute, because each index point change translates into =C10
+in contract value.
+The statistics on net volume yield the following insights. First, on average, net volume
+seems to be balanced through time. Its average is -0.53 lots, which, judged against its
+standard deviation (SD) of 531.31 lots, is negligible. Second, the same holds true for its two
+components: news-trader net volume and value-trader plus noise trader net volume. For
+ease of exposition, we refer to the latter as (noisy) value-trader net volume. Third, the two
+components of net volume are of similar magnitude as the SD of news-trader net volume is
+397.37 whereas it is 356.94 for noisy value-trader net volume. Fourth, one-minute returns are
+0.0 on average with an SD of 4.5.
+3.5
+Model estimation
+[Table 2 about here.]
+[Figure 3 about here.]
+Table 2 presents the yearly estimates of the four model parameters. The rows show the
+estimates for all years in the sample, with the final row showing the overall average. Figure 3
+plots the yearly estimates. Taken together, these results yield the following insights. First,
+they are all statistically significant at a 1% significance level.
+Second, the majority of the information that is discovered in a trading session, arrives
+during the session. The estimates show that the private value a value trader has at the start
+23
+
+of the session has an SD of 1.29 bps (σ0). The information that arrives during the day has
+an SD of 23.26 bps (σv).
+Third, the news that news traders and, belatedly dealers, observe carries substantial noise.
+The parameter estimates for σv and σe are, 23.26 and 33.42 basis points, respectively. They
+imply a variance of the posterior mean of value change, after observing the news of (see (41)):
+Var (E (dvt|dzt)) = 0.326 × σ2
+v.
+(41)
+The result is that 32.6% of the value change is learned by the news traders and dealer, which
+leaves 67.4% as private information to trade on for the value trader.
+Integrating (41) over the time interval from zero to one yields the variance learned through
+news for the full day. It is useful to compare this to the total information learned on the
+trading day, i.e., including the private information of the value trader at the start of trading.
+The ratio of the two yields a variance ratio of 32.5%. This ratio is only marginally lower
+than the within-trading-day ratio, because, as observed already, the vast majority of all
+information arrives during the trading period.
+Third, the parameter estimates are mostly rather stable through time. The only remarkable
+trend is that the relative level of noise in news gradually declines in the first half of the
+sample, bottoms out in the middle of it, and increases in the second half of the sample. This
+is also reflected in the variance ratios. For example, 35.3% of total information is learned
+from news at the start of this sample, which peaks at 46.8% in 2018, and declines to 29.9% at
+the end of the sample. The initial increase in variance ratios is consistent with technological
+progress in the sense that processing information becomes cheaper. The later decline is
+puzzling and worthy of further study. Perhaps the ever-increasing intensity of data arrival
+causes market participants to trade on less precise signals as in Dugast and Foucault (2025).
+The news turning noisier towards the end of the sample is one of the reasons for the market
+24
+
+being most illiquid towards the end of the sample. Another reason is the general decline in
+the level of noise trading in the course of the sample.
+[Figure 4 about here.]
+Table 2 also presents equilibrium quantities that yield insight into the pecuniary transfers
+across agents. The gross daily profit that the table implies for news traders is =C670,000 per
+day. The trading fees that they pay to obtain this profit amount to =C0.30 per contract traded.6
+The table shows that summing these fees across all contracts purchased by news traders
+amounts to =C120,000 per day. Therefore, net of these fees, news traders earn =C550,000 per
+day. As Eurex has 253 exchange members7, this implies a per-member average of =C550,000 /
+253 = =C2,174 per day. Across the years in the sample, the profit of news traders correlates
+with how much information arrives through news. Therefore, news traders earn most in the
+middle of the sample: In 2018, their daily profit is =C800,000 gross, and =C660,000 net of fees.
+The top plot in Figure 4 illustrates the trend in news trader profit.
+Value traders earn, on average, =C1,700,000 gross per day, which is almost three times as
+much as news trader earn. Their trading fees amount to =C60,000 per day and, therefore,
+net of these fees, they earn =C1,640,000. The fees are about a half of what news traders pay.
+Interestingly, these findings suggest that, per contract traded, value traders earn more than
+six times as much as news traders do. This is intuitive, because, in equilibrium, each contract
+traded earns contemporaneous profit, but also future profit, because the information the
+value trader trades on is only slowly revealed through time. The middle plot of Figure 2
+provides an illustration of this slow revelation. The middle plot of Figure 4 illustrates the
+trend in value trader profit.
+Finally, the profit of informed traders comes out of the pocket of the uninformed noise
+traders. The equilibrium object that captures this transfer is the price impact λ. Table 2
+6Rebates are not relevant here, because net volume considers only liquidity-taking trades.
+7On January 27, 2026, Eurex had 253 exchange-only participants (https://www.eurex.com/ex-en/
+trade/participant-lists/exchange-participants).
+25
+
+presents the model-implied price impacts and Figure 4 plots them. The average price impact
+is 0.82 basis points per 1000 lots.8 This impact increased over the years in the sample, from
+0.64 to 1.00 basis points per 1000 lots.
+3.6
+Model-free evidence of value trader and news trading
+This section serves as a reality check. It aims to show that, in a model-free and back-of-theenvelope type of way, the two types of net volume are indeed valid proxies for news trading
+and for value trading plus noise. Standard microstructure analysis is used to document the
+following. First, it shows that the information share of value trader net volume increases
+with periodicity. This is consistent with the intuition that value traders trade slowly on
+long-lived information, which is, therefore slowly revealed in prices. Second, value trader net
+volume tends to trend in the same direction throughout the trading day, whereas news trader
+net volume resembles white noise. The white noise pattern is consistent with news traders
+quickly trading on short-lived signals within a minute. The simulated trading day in Figure 2
+neatly illustrates this stark difference between the two types of net volume (middle plot).
+Information share by periodicity.
+The information share of both types of net volume is
+computed inspired by Hasbrouck (1991). In a nutshell, the analysis starts with estimating
+the following model with OLS:
+∆pt+1 = α + β1dxN
+t + β2
+
+dxV
+t + dut
+
++ εt,
+(42)
+8This price impact is extremely low when compared to Kyle lambda estimates from the equity literature.
+Collin-Dufresne and Fos (2015, Table III), for example, document a benchmark price impact of 20.1644×10−6
+per square root dollar traded. Buying 1000 lots each worth, on average, 3, 440 × =C10 = =C34, 400, would then
+command a price impact of 20.1644 × 10−6 × √1000 × =C34, 400 × 1.18 × 104 = 1, 285 basis points, assuming
+=C1 is worth $1.18.
+26
+
+where the time subscript is nonstandard in econometrics, but it is consistent with the timing
+of events in the model: The price change across the interval that contains net volumes
+indexed by t, is labeled as ∆pt+1 (see Figure 1). The two explanatory variables in (42) are
+the empirical proxies we use for news-trader net volume and (noisy) value trader net volume,
+respectively. Strictly speaking, the latter net volume proxies for value trader net volume
+plus noise-trader net volume. For ease of exposition, we refer to the latter as value trader
+net volume. The information share of this value trader net volume, for example, is then
+computed as:
+InformationShare
+
+dxV
+t + dut
+
+=
+var
+ˆβ2
+
+dxV
+t + dut
+
+var
+ˆβ1dxN
+t + ˆβ2 (dxV
+t + dut)
+,
+(43)
+where ˆβi indicate the OLS estimates of (42). This, however, only yields an upper bound of
+the information share, because any common component across the two types of net volume is
+implicitly fully assigned to value trader net volume. The lower bound is obtained using a
+standard Cholesky decomposition of the covariance matrix of the two types of net volume
+(Hasbrouck, 1995).9
+[Figure 5 about here.]
+Figure 5 shows that information share of the net volume of the two types is contingent on the
+periodicity of the analysis. At a one-minute periodicity, the information share of value trader
+net volume (i.e., aggressive agency trades) is in the range 30-35%. It increases monotonically
+in periodicity to 40-55% for a 15-minute periodicity analysis. This analysis suggests that,
+indeed, value trader net volume is more correlated with long-term price changes than with
+short-term price changes.
+9This analysis is meant to be an auxiliary back-of-the-envelope type of analysis. If this were a rigorous
+econometric analysis, then (42) would feature lagged net volume, recognize potential time-of-day effects,
+maybe use lagged value trader net volume as an instrument to identify the value trader net volume component
+of noisy value trader net volume, etc.
+27
+
+Continuations or reversals in net volume.
+The analysis on the relative strength
+of continuations and reversals in net volume is based on variance ratios. The 15-minute
+periodicity value trader variance ratio, for example, measures the variance of value trader net
+volume at two periodicities. The numerator consists of the variance of flow at a 15-minute
+periodicity, divided by 15. The denominator consists of the variance of one-minute flow. If
+net volume is white noise, the variance ratio is expected to be one. If, however, net-volume
+continuations (i.e., buy after buy, sell after sell) dominate reversals (i.e., buy after sell, sell
+after buy), then the variance ratio exceeds one. This is most easily seen by developing the
+variance of 15-minute flow in terms of one-minute increments as follows:
+var (dx1 + . . . + dx15) =
+X
+i
+var (dxi) +
+X
+i̸=j
+cov (dxi, dxj) .
+(44)
+The right-hand side of the equation reveals how 15-minute variance decomposes into two
+sums, one representing the variance of one-minute flow, the other a sum of continuations, i.e.,
+positive autocovariances, and reversals, i.e., negative autocovariances. If the second sum is
+positive, then continuations dominate reversals. If it is negative, reversals dominate. It is
+zero for serially uncorrelated net volume, i.e., white noise. It is for this reason that variance
+ratios provide a useful characterization of trading.
+[Figure 6 about here.]
+Figure 6 plots the variance ratios for both types of net volume for various periodicities of
+the numerator. The one-minute periodicity trivially yields a variance ratio of one, because the
+periodicities of the numerator and denominator coincide. For the news trader, the variance
+ratio drops by about 10 percent for the five-minute periodicity, which suggests that there is
+reversion for news traders within five minutes. One explanation could be that news traders
+quickly offloads his inventory within this time frame if these traders are sufficiently risk
+averse (Roşu, 2019). For higher periodicities, the variance ratio continues to drop but only
+28
+
+very mildly. Overall, the pattern for news trading is consistent with the conjecture that the
+information of news traders is short-lived.
+The variance ratio of (noisy) value trader net volume increases strongly in numerator
+periodicity, from the baseline value of one for the one-minute periodicity to more than two
+for the 15-minute periodicity. This is consistent with strategic trading by value traders
+who cautiously trade on their long-lived signal. This is consistent with continuations being
+a dominant feature of their net volume dynamics. The variance ratios continuing to rise
+with numerator periodicity is consistent with their trading being very strategically slow and
+stretching across tens of minutes.10
+4
+Conclusion
+The analysis of a model along with an estimation of its parameters shed light on the overarching
+question: Does news trading crowd out value trading? The theoretical results show that more
+precise news makes news traders trade more intensively on their signal, which, in turn, makes
+value traders trade less intensively on their signal. Thus, news trading does crowd out value
+trading. The results further show that this does not affect the speed at which information is
+revealed in the market, but it does affect market liquidity, which improves.
+Estimation of the model based on proprietary EURO STOXX 50 Index Futures trade
+data, yields several insights. First, both value trading and news trading are profitable, also
+net of trading fees. Value trading, however, is almost three times as profitable as news
+trading. Second, the level of precision in news fluctuates substantially in the sample. News
+reveals 35.3% of the value change at the start of the sample, which increases to 46.8% in the
+middle of it, and declines to 29.9% at the end of it. This decline along with a decline in noise
+10These variance ratios are hard to extend beyond the 15-minute numerator, because the number of
+observations becomes too low. In our sample, there are 8 × 4 = 32 complete 15-minute in a trading day,
+which starts at 9:05 and ends at 17:25.
+29
+
+trading explains the substantial decline in liquidity by more than 50% in the second half of
+the sample.
+One additional take-away from our analysis is information-share analysis is critically
+contingent on the periodicity of the analysis. The information that value traders trade is
+simply more visible at longer periodicities, whereas news-trader information is more visible
+at shorter periodicities. This should inform future empirical analysis of information shares.
+By design, our analysis focuses on the intensive margin of value trading. If there were
+a fixed (rental) cost to an value trader running his operation, then the results are likely to
+change. If value trader rents drop below this level, then he might leave the market and the
+private information he generated will no longer enter market prices. We leave this for future
+research.
+Appendix
+A
+Proofs
+Proof of Proposition 1 and 2
+We start by computing the optimal trading strategies of the news trader and the value trader.
+The strategies are defined linear in each informed trader’s observed signal. For the news
+trader: dxN
+τ = βN
+τ dzτ, τ ∈[0, 1), while for the value trader: dxV
+τ = βV
+τ (vτ −qτ)dτ, τ ∈[0, 1).
+These strategies are derived taking as given the dealer’s pricing rule: pτ+dτ = qτ + λτdyτ.
+The dealer’s quote evolves according to dqτ = λτdyτ + µτ(dzτ −ρτdyτ).
+For t ∈[0, 1), the news trader’s expected profit is
+πN
+t = Et
+Z 1
+t (v1 −pτ+dτ) dxN
+τ
+
+,
+(45)
+30
+
+where the expectation is conditional on the speculator’s information set J F
+t
+= {pτ}τ≤t ∪
+{zτ}τ≤t ∪dzt. We compute
+πN
+t = Et
+Z 1
+t (vτ+dτ −pτ+dτ) dxN
+τ
+
+= Et
+Z 1
+t ((vτ + dvτ) −(qτ + λτdyτ)) dxN
+τ
+
+(46)
+= Et
+Z 1
+t
+
+vτ −qτ + dvτ −λτ(dxV
+τ + dxN
+τ )
+
+dxN
+τ
+
+,
+where we use the law of iterated expectations and the fact that dxN
+τ is orthogonal to duτ.
+Now, using that dxN
+τ = βN
+τ dzτ, we get:
+πN
+t =
+Z 1
+t
+
+βN
+τ σ2
+v −λτ(βN
+τ )2σ2
+v −λτ(βN
+τ )2σ2
+e
+
+dτ.
+(47)
+As in Foucault, Hombert and Roşu (2016), we prove the existence of an equilibrium by
+first assuming that λτ is constant. Then, at the end of the proof, we show that for the
+equilibrium to exist, λτ must indeed be constant. From (47), we see that when λ ≤0, the
+news trader can make arbitrarily large expected profits by setting βN
+τ arbitrarily high. Thus,
+we need λ > 0.
+Taking the first order condition with respect to βN
+τ yields:
+βN
+τ =
+σ2
+v
+2λ(σ2
+v + σ2
+e).
+(48)
+The second-order condition −2λ(σ2
+v + σ2
+e) < 0 is satisfied whenever λ > 0.
+For the value trader, similarly, for t ∈[0, 1), the expected profit is computed as
+πV
+t = Et
+Z 1
+t
+
+vτ −qτ + dvτ −λτ(dxV
+τ + dxN
+τ )
+
+dxV
+τ
+
+,
+(49)
+where the expectation is conditional on the value trader’s information set J V
+t
+= {pτ}τ≤t ∪
+31
+
+{zτ}τ≤t∪{vτ}τ≤t. For any τ ≥t, we define Vt,τ = Et ((vτ −qτ)2). Since dxV
+τ = βV
+τ (vτ −qτ) dτ,
+πV
+t is computed as
+πV
+t =
+Z 1
+t βV
+τ Vt,τ dτ.
+(50)
+Omitting the subscript t in Vt,τ and defining
+Λτ = λτ −µτρτ,
+τ ∈[0, 1),
+(51)
+then dqτ = λτdyτ + µτ(dzτ −ρτdyτ) = µτdzτ + Λτdyτ, and Vτ evolves according to
+Vτ+dτ = Et
+
+(vτ+dτ −qτ+dτ)2
+= Et
+
+(vτ + dvτ −qτ −µτdzτ −Λτdyτ)2
+= Vτ +
+
+1 −µτ −ΛτβN
+τ
+2 σ2
+vdτ +
+
+µτ + ΛτβN
+τ
+2 σ2
+edτ
++ Λ2
+τσ2
+udτ −2ΛτβV
+τ Vτdτ.
+(52)
+This implies that Vτ satisfies the first-order linear ordinary differential equation (ODE) in
+τ ∈[t, 1):
+V ′
+τ = −2ΛτβV
+τ Vτ +
+
+1 −µτ −ΛτβN
+τ
+2 σ2
+v +
+
+µτ + ΛτβN
+τ
+2 σ2
+e + Λ2
+τσ2
+u,
+(53)
+which is equivalent to βV
+τ Vτ =
+−V ′
+τ+(1−µτ−ΛτβN
+τ )
+2σ2
+v+(µτ+ΛτβN
+τ )
+2σ2
+e+Λ2
+τσ2
+u
+2Λτ
+. We substitute this into
+(50) and integrate by parts to obtain:
+πV
+t = −V1
+2Λ1
++ Vt
+2Λt
++
+Z 1
+t Vτ( 1
+2Λτ
+)
+′dτ
++
+Z 1
+t
+
+
+
+
+1 −µτ −ΛτβN
+τ
+2 σ2
+v +
+
+µτ + ΛτβN
+τ
+2 σ2
+e + Λ2
+τσ2
+u
+2Λτ
+
+
+dτ.
+(54)
+Here, the choice variable βV
+τ is replaced by Vτ ≥0, τ > t.
+32
+
+Again, we prove the existence of an equilibrium by assuming that Λτ is constant. We
+show at the end of the proof that Λτ is indeed a constant. By the same argument as above,
+we see that
+Λ > 0.
+(55)
+Given that Λ1 = Λ > 0, to maximize (54), the following transversality condition must hold:
+V1 = 0.
+(56)
+Comparing (47) and (50) with the expressions derived in Foucault, Hombert and Roşu
+(2016), we observe that news trader’s expected profit depends only on instantaneous changes
+in the fundamental value and the noise in the news signal, whereas the value trader’s profit
+depends on the level of the fundamental value. From (48), the news trader’s optimal strategy
+is determined by the informativeness of his signal about these instantaneous changes, and we
+see that there is always positive news trading in equilibrium.
+Next, we turn to the derivation of the pricing rules based on the dealer’s zero-profit
+conditions. Recall the definition of Σt in 22 as Σt = Et ((vt −qt)2), where the expectation
+is taken conditional on the dealer’s information set It = {yτ}τ≤t ∪{zτ}τ≤t. The dealer
+receives the market order dyt = dxN
+t + dxV
+t + dut before observing the news. Here dut, the
+value trader’s order dxV
+t = βV
+t (vt −qt) dt, and the news trader’s order dxN
+t = βN
+t dzt are all
+orthogonal to It. The trading price thus takes the form pt+dt = qt + λt dyt, where
+λt = Covt(v1, dyt)
+Vart(dyt)
+=
+Covt
+
+v1, βV
+t (vt −qt) dt + βN
+t dzt + dut
+
+Var (βV
+t (vt −qt) dt + βN
+t dzt + dut)
+=
+βV
+t Σt + βN
+t σ2
+v
+(βN
+t )2(σ2
+v + σ2
+e) + σ2
+u
+.
+(57)
+33
+
+For quote updating, the dealer sets the quote equal to the trading price pt+dt immediately
+after the trade. Then, after observing the signal dzt, the dealer further updates the quote
+based on the unexpected component of the signal, as follows:
+qt+dt = pt+dt + µt (dzt −E(dzt | It, dyt)) , with
+E(dzt | It, dyt) = E(dzt | dyt) = ρtdyt,
+using the fact that dzt and dyt are orthogonal to It. We next compute ρt and µt:
+ρt = Cov(dzt, dyt)
+Var(dyt)
+=
+βN
+t (σ2
+v + σ2
+e)
+(βN
+t )2(σ2
+v + σ2
+e) + σ2
+u
+(58)
+and
+µt = Covt(v1, dzt −ρtdyt)
+Var(dzt −ρtdyt)
+=
+−ρtβV
+t Σt + (1 −ρtβN
+t )σ2
+v
+(1 −ρtβN
+t )2(σ2
+v + σ2
+e) + ρ2
+tσ2
+u
+.
+(59)
+This also yields qt+dt = pt+dt + µt(dzt −ρtdyt) = qt + λtdyt + µt(dzt −ρtdyt), which shows
+that dqt takes the form given in (11).
+Now we turn to the derivation of the equilibrium expression for the coefficients in terms
+of the model’s exogenous variables.
+We define the following variables:
+a =
+σ2
+u
+σ2
+v + σ2
+e
+> 0,
+b =
+σ2
+e
+σ2
+v + σ2
+e
+≥0,
+c =
+Σ0
+σ2
+v + σ2
+e
+> 0,
+(60)
+gt = (βN
+t )2
+a
+,
+˜λt = λtβN
+t ,
+˜ρt = ρtβN
+t ,
+˜Λt = ΛtβN
+t ,
+(61)
+ψt = βV
+t Σt −βN
+t σ2
+e
+σ2
+u
+βN
+t .
+(62)
+Note that these equations closely resemble those in the proof of Foucault, Hombert and Roşu
+(2016), except for an additional term involving σ2
+e. This term appears because, in our model,
+34
+
+the news trader observes the instantaneous change in the fundamental value plus noise, dzt,
+rather than dvt itself.
+For notation simplicity, we omit the subscript t. Then, using the definitions in (60) - (62),
+we rewrite equations (57) - (59) as:
+˜λ = ψ + g
+1 + g ,
+˜ρ =
+g
+1 + g,
+µ = 1 −ψ −(1 + g)b.
+(63)
+From the optimal βN
+t
+derived in (48), we also have ˜λ = 1
+2(1 −b). Equating this with the
+expression for ˜λ in (63) and solving for ψ gives:
+ψ = 1
+2(1 −b)(1 + g) −g.
+(64)
+Substituting (64) into (63), we obtain:
+˜λ = 1
+2(1 −b),
+˜ρ =
+g
+1 + g,
+µ = 1
+2(1 −b)(g + 1).
+(65)
+From equation (51), we have ˜Λ = ˜λ −µ˜ρ, which gives:
+˜Λ = 1
+2(1 −b)(1 −g).
+(66)
+From (48) and the fact that λ is constant, we note that βN is a positive constant. It
+follows that gt > 0 is also constant. Then, from (64)–(66), ˜ρ, µ, ψ, and ˜Λ are also constant.
+Equations (61) and (62) then imply that ρ, Λ, and βV
+t Σt are constant.
+Following the derivation of (53), we have that Σt = Et ((vt −qt)2) satisfies the first-order
+linear ODE:
+Σ′
+t = −2ΛtβV
+t Σt + (1 −µt −ΛtβN
+t )2σ2
+v + (µt + ΛtβN
+t )2σ2
+e + Λ2
+tσ2
+u.
+(67)
+35
+
+Given that Λt = Λ is constant, the transversality condition implies Σ1 = 0. Thus, we obtain:
+Σt = Σ0(1 −t),
+Σ′
+t = −Σ0,
+βV
+t =
+βV
+1 −t.
+(68)
+Moreover, (67) becomes
+−c = −2ψ˜Λ
+g
++ (µ + ˜Λ)2 + (1 −2µ)(1 −b) +
+˜Λ2
+g −2˜Λ.
+(69)
+Using this with equations (65)-(66), we get
+c = (b −1) (b(1 + g)2 −(1 −g)2)
+4g
+.
+(70)
+Next we define the function Fb(x) =
+(b−1)(b(1+x)2−(1−x)2)
+4x
+. Its derivative is computed
+as F ′
+b(x) =
+(b−1)2(x2−1)
+4x2
+.
+From (66), and since b ∈[0, 1), it follows that g < 1, hence
+g ∈(0, 1). The function Fb(x) is strictly decreasing on (0, 1), with limx↓0 Fb(x) = +∞and
+Fb(1) = b(b −1) ≤0 for b ∈[0, 1). It equals zero at x = 1−
+√
+b
+1+
+√
+b, which lies in the interval (0, 1]
+for b ∈[0, 1). Thus, there exists a unique g ∈
+
+0, 1−
+√
+b
+1+
+√
+b
+
+that solves Fb(g) = c. Applying the
+quadratic formula yields:
+g = 1 + b
+1 −b +
+2c
+(1 −b)2 −
+v
+u
+u
+t
+ 1 + b
+1 −b +
+2c
+(1 −b)2
+!2
+−1.
+(71)
+Note that the solution g = 1+b
+1−b +
+2c
+(1−b)2 +
+r
+1+b
+1−b +
+2c
+(1−b)2
+2 −1 is ruled out, since we require
+g ∈(0, 1).
+Define G(x) = x −
+√
+x2 −1, with derivative G′(x) = 1 −
+1
+q
+1−1
+x2
+. Since G′(x) < 0 for
+x ∈(1, ∞), we can write
+g = G(x∗),
+where
+x∗= 1 + b
+1 −b +
+2c
+(1 −b)2.
+36
+
+Here x∗> 1, and x∗decreases monotonically in both b and c. Consequently, g also decreases
+monotonically in b and c.
+Now, using (61) and (65), we can write
+βN = √ga,
+λ =
+1
+2√ga(1 −b),
+ρ =
+√g
+(1 + g)√a,
+µ = 1
+2(1 −b)(g + 1).
+(72)
+Furthermore, combining (62) and (68), we obtain
+βV
+t =
+1
+1 −tβV ,
+where
+βV =
+(1 −b)( 1
+g −1)
+2c
+√ga.
+(73)
+We further simplify βV using that
+
+1
+g −1
+ √g =
+
+1
+G(x∗) −1
+ q
+G (x∗), which simplifies to
+q
+2 (x∗−1). It then follows that
+βV =
+√a (1 −b)
+2c
+v
+u
+u
+t2
+ 1 + b
+1 −b +
+2c
+(1 −b)2 −1
+!
+=
+√a (1 −b)
+2c
+v
+u
+u
+t21 −b2 + 2c −(1 −2b + b2)
+(1 −b)2
+=
+=
+q
+a (b (1 −b) + c)
+c
+= σu
+Σ0
+v
+u
+u
+tΣ0 +
+σ2
+v
+σ2v
+σ2e + 1
+.
+(74)
+The final step is to prove that, in equilibrium, λτ and Λτ are indeed constant for τ ∈[0, 1).
+We have shown above that if λτ is constant, then Λτ is also constant. The converse holds
+trivially, and we omit the proof here. Thus, the two conditions are equivalent. Therefore, it
+suffices to show that Λτ is constant, which we do by verifying that
+
+1
+2Λτ
+′ = 0. First, consider
+
+1
+2Λτ
+′ > 0 for τ in a small interval I. In this case, the value trader can obtain an arbitrarily
+high expected profit by setting Vτ to be very large over the interval I, and zero elsewhere.
+This rules out an equilibrium. Second, consider
+
+1
+2Λτ
+′ < 0 for τ in a small interval I. We
+then have Στ = 0 for τ ∈I, as the value trader would choose Vτ = 0 over that interval.
+Hence, following equation (67), we reach the same conclusion that gτ satisfies equation (70),
+except that c is replaced by 0 for all τ ∈I. Given that the solution for g is unique, gτ is
+37
+
+constant on I. Therefore, Λτ must also be constant on I, which contradicts
+
+1
+2Λτ
+′ < 0. We
+thus conclude that Λτ is indeed constant, and consequently, λτ is also constant.
+Proof of Corollary 1
+Proof of ∂βN/∂σ2
+e < 0.
+The signing of partial derivative for news trader intensity follows
+immediately from inspecting the equilibrium expression for this intensity in (13).
+Proof of ∂βV /∂σ2
+e > 0.
+The signing of partial derivative for value trader intensity follows
+immediately from inspecting the equilibrium expression for this intensity in (14).
+Proof of Proposition 3
+Proof news trader profit.
+The proof of the news trader profit essentially plugs in the
+equilibrium expressions for βN
+τ and λτ, which are given in Proposition 1, into (47). The
+equilibrium expressions are:
+βN
+τ = √ga,
+(75)
+λ =
+1
+2√ga (1 −b) ,
+(76)
+thus yielding
+λβN 
+σ2
+v + σ2
+e
+
+= 1
+2σ2
+v.
+(77)
+Inserting this expression into (47) yields the desired result.
+Proof value trader profit.
+The proof for value trader profit is derived by plugging in
+the equilibrium expression for βV
+τ from Proposition 1 into (50). The remaining variable is
+defined just above (50):
+Vt,τ = Et
+
+(vτ −qτ)2
+.
+(78)
+38
+
+Using the law of iterated expectations, one gets:
+Vt,τ = EtEτ
+
+(vτ −qτ)2
+= EtΣτ = Σ0 (1 −τ) ,
+(79)
+since Στ is defined just above (22) as:
+Στ = Eτ
+
+(vτ −qτ)2
+.
+(80)
+Putting (68) and (79) together yields:
+βV
+τ Vt,τ =
+βV
+(1 −τ)Σ0 (1 −τ) = βV Σ0.
+(81)
+The integral that defines the value trader profit becomes a trivial one because the integrand
+is constant. Evaluating it yields the desired result.
+Proof of Corollary 2
+Proof of ∂λ/∂σ2
+e > 0.
+Define D = σ2
+v + σ2
+e and rewrite λ from (15) as:
+λ =
+1
+2√ga (1 −b) =
+σ2
+v
+2σu
+√Dg.
+(82)
+Signing ∂λ/∂σ2
+e > 0 thus requires signing Dg as this is the only part that contains σ2
+e.
+Rewriting the x used when defining g in (21) yields:
+x = 1 + b
+1 −b +
+2c
+(1 −b)2 = D
+ 2
+σ2
+v
++ 2Σ0
+σ4
+v
+!
+−1.
+(83)
+39
+
+Let K = 2/σ2
+v + 2Σ0/σ4
+v, then D = (x + 1) /K and
+gD = 1
+K (x + 1)
+
+x −
+√
+x2 −1
+
+.
+(84)
+Differentiating gD with respect to x yields:
+1
+K
+
+x −
+√
+x2 −1
+
+
+1 −
+s
+x + 1
+x −1
+
+,
+(85)
+which is weakly negative, because x ≥1 as can be seen from (83) given that b ≥0 and c > 0.
+And, given that gD is in the denominator of λ yields:
+∂λ
+∂σ2
+e
+> 0.
+(86)
+Proof of ∂πN/∂σ2
+e < 0.
+The signing of partial derivative for news trader profit follows
+immediately from inspecting the equilibrium expression for news trader profit in (24).
+Proof of ∂πV /∂σ2
+e > 0.
+The signing of partial derivative for value trader profit follows
+immediately from inspecting the equilibrium expression for value trader profit in (25).
+Proof of ∂
+
+πN + πV 
+/∂σ2
+e > 0.
+The zero-profit condition for the dealer implies that the
+total profit of the informed traders, i.e., πV + πN, must be equal to the total cost of trading
+for the noise traders. Because these noise traders are price inelastic, their total cost is
+proportional to λ. The early part of this proof shows that ∂λ/∂σ2
+e is strictly positive and,
+therefore, total trading cost for noise traders increases in σ2
+e. Keeping the dealer at zero profit
+therefore implies that total profit of the informed traders must increase in σ2
+e.
+40
+
+B
+Initial values parameters
+This appendix shows how the OLS estimation of (40) is used to find initial values for the ML
+estimation of the state space model.
+• The ratio of the coefficients of contemporaneous order flow yt, say ˆλ, and minus lagged
+order flow yt−dt, say ˆµρ, in (40) yields g as per (15), (16), and (17):
+ˆg = ˆµρ
+ˆλ
+.
+(87)
+• ˆg can be used to get an initial estimate of the variance of the noise in order flow by
+computing the variance of news trader net volume:
+var
+
+dxN
+=
+
+βN2 var (dzt) = ˆgˆσ2
+u.
+(88)
+Therefore:
+ˆσu =
+
+var
+
+dxN
+ˆg
+
+
+1
+2
+.
+(89)
+• The three equations that can be used to solve the remaining three parameters σv, σ0,
+and σe, are the following:
+1. Rewriting the price impact equation of (15) yields:
+σ2
+e =
+σ4
+v
+4gˆλ2ˆσ2
+u
+−σ2
+v.
+(90)
+2. The total amount of information is realized over the trading day and, therefore:
+σ2
+0 + σ2
+v = RealizedVariance,
+(91)
+41
+
+3. Finally, the most involved equation is the calculation of the variance of value trader
+order flow, which is observed because the variance of news trader net volume is
+observed and the variance of noise trader flow is initialized by (89). The three
+components are uncorrelated, which implies that their variance adds up to the
+variance of total net order flow. For technical reasons, we compute value trader
+net volume variance for the first half of the interval for T even and dt = 1/T:11
+T
+2
+X
+k=0
+var
+
+dxV
+t= k
+T
+
+≈
+T
+2
+X
+k=0
+ 
+1
+1 −k
+T
+!2 
+βV 2 Σ0
+ 
+1 −k
+T
+!  1
+T
+2
+≈ln (2)
+T
+ 
+σ2
+vσ2
+e
+(σ2
+v + σ2
+e) σ2
+0
++ 1
+!
+ˆσ2
+u,
+(92)
+because
+R 1/2
+0
+1/(1 −t) dt = ln (2).
+The system of three equations can be solved by rewriting (90) as
+σ2
+e
+σ2
+v + σ2
+e
+= 1 −4ˆgˆλ2ˆσ2
+u
+σ2
+v
+(93)
+and using the left-hand side to replace the same expression in (92). (91) is used to replace σ0
+in (92). The resulting expression only features σv:
+T
+2
+X
+k=0
+var
+
+dxV
+t= k
+T
+
+≈ln (2)
+T
+ 
+σ2
+v −4ˆgˆλ2ˆσ2
+u
+ 
+1
+RealizedVariance −σ2
+v
+!
++ 1
+!
+ˆσ2
+u.
+(94)
+Solving (94) yields:
+
+
+
+T
+2
+X
+k=0
+var
+
+dxV
+t= k
+T
+
+−ln (2)
+T
+ˆσ2
+u
+
+
+
+
+RealizedVariance −σ2
+v
+
+≈ln (2)
+T
+ˆσ2
+u
+
+σ2
+v −4ˆgˆλ2ˆσ2
+u
+
+⇔
+11One step in the calculation involves the integral
+R τ
+0 1/(1 −t) dt where the end time τ needs to be smaller
+than one to be finite. We choose it to be one half.
+42
+
+
+
+
+T
+2
+X
+k=0
+var
+
+dxV
+t= k
+T
+
+
+
+
+
+RealizedVariance −σ2
+v
+
+≈ln (2)
+T
+ˆσ2
+u
+
+RealizedVariance −4ˆgˆλ2ˆσ2
+u
+
+, (95)
+which can be solved to yield:
+ˆσv =
+
+
+
+RealizedVariance −
+ln(2)
+T ˆσ2
+u
+
+RealizedVariance −4ˆgˆλ2ˆσ2
+u
+
+P T
+2
+k=0 var
+
+dxV
+t= k
+T
+
+
+
+
+
+1
+2
+.
+(96)
+The initial value for the two remaining parameters are obtained by using (90) and (91),
+respectively:
+ˆσe =
+ 
+ˆσ4
+v
+4gˆλ2ˆσ2
+u
+−ˆσ2
+v
+! 1
+2
+,
+(97)
+and
+ˆσ0 =
+
+RealizedVariance −ˆσ2
+v
+ 1
+2 .
+(98)
+These four boxed expressions collectively serve as initial values for the ML estimation. The
+expressions themselves serve as consistent estimators, but they lack the asymptotic efficiency
+of ML estimators. This is why we prefer ML estimation in the application. We have studied
+the quality of the initial values by drawing samples from the model. The initial values
+calculated from these samples are reasonably close to the true parameter values.
+References
+Amihud, Y. and H. Mendelson (1987). Trading Mechanisms and Stock Returns: An Empirical
+Investigation. Journal of Finance 42, pp. 533–553.
+Ané, Thierry and Hélyette Geman (2000). Order Flow, Transaction Clock, and Normality of
+Asset Returns. Journal of Finance 55, pp. 2259–2284.
+43
+
+Antoniewicz, Shelly, Sarah Holden, Judy Steenstra and Shane Warner (2025). Fact Book:
+A Review of Trends and Activities in the Investment Company Industry. Manuscript.
+Investment Company Institute.
+Barras, Laurent, Olivier Scaillet and Russ Wermers (2010). False Discoveries in Mutual Fund
+Performance: Measuring Luck in Estimated Alphas. Journal of Finance 65, pp. 179–216.
+Birru, Justin, Sinan Gokkaya, Xi Liu and Stanimir Markov (2024). Quants and Market
+Anomalies. Journal of Accounting and Economics 78, pp. 1–27.
+Collin-Dufresne, Pierre and Vyacheslav Fos (2015). Do Prices Reveal the Presence of Informed
+Trading?: Journal of Finance 70, pp. 1555–1582.
+Dugast, Jérôme and Thierry Foucault (2025). Equilibrium Data Mining and Data Abundance.
+Journal of Finance 80, pp. 211–258.
+Foucault, Thierry, Johan Hombert and Ioanid Roşu (2016). News Trading and Speed. Journal
+of Finance 71, pp. 335–382.
+French, K. and Richard Roll (1986). Stock Return Variances, the Arrival of Information and
+the Reaction of Traders. Journal of Financial Economics 17, pp. 5–26.
+Glode, Vincent and Guillermo Ordoñez (2025). Technological Progress and Rent Seeking.
+Review of Financial Studies 38, pp. 1259–1289.
+Hasbrouck, Joel (1991). The Summary Informativeness of Stock Trades: An Econometric
+Analysis. Review of Financial Studies 4, pp. 571–595.
+— (1995). One Security, Many Markets: Determining the Contributions to Price Discovery.
+Journal of Finance 50, pp. 1175–1199.
+Jones, Charles M. (2013). What Do We Know About High-Frequency Trading? Manuscript.
+Columbia University.
+Kyle, Albert S. (1985). Continuous Auctions and Insider Trading. Econometrica 53, pp. 1315–
+1335.
+44
+
+Lu, Zhongjin, Steven Malliaris and Zhongling Qin (2023). Heterogeneous Liquidity Providers
+and Night-Minus-Day Return Predictability. Journal of Financial Economics 148, pp. 175–
+200.
+Menkveld, Albert J. (2016). The Economics of High-Frequency Trading: Taking Stock. Annual
+Review of Financial Economics 8, pp. 1–24.
+O’Hara, Maureen (2015). High Frequency Market Microstructure. Journal of Financial
+Economics 116, pp. 257–270.
+Roşu, Ioanid (2019). Fast and Slow Informed Trading. Journal of Financial Markets 43,
+pp. 1–30.
+Stoll, Hans R. and R.E. Whaley (1990). Stock Market Structure and Volatility. Review of
+Financial Studies 3, pp. 37–71.
+Thomas Jr, Landon (2017). At BlackRock, Machines Are Rising Over Managers to Pick
+Stocks. New York Times.
+Weller, Brian M. (2018). Does Algorithmic Trading Reduce Information Acquisition?: Review
+of Financial Studies 31, pp. 2184–2226.
+45
+
+Table 1: Summary statistics. This table presents summary statistics for trades in EURO
+STOXX 50 Index Futures. The sample runs from June 2013 through June 2023. News-trader
+net volume maps to xN in the model. Noisy value-trader net volume maps to dxV + du.
+The match price is the locked-in index value. It is multiplied by 10 to get to contract value,
+because each point change in the index corresponds to =C10.
+Variable
+Mean
+SD
+Q(0.25)
+Q(0.75)
+N
+Number of trades (/min)
+71
+43
+47
+83
+1, 283, 710
+Volume (lots/min)
+1, 229
+822
+661
+1, 587
+1, 283, 710
+Volume (=C/min)
+41, 392, 383
+26, 549, 554
+23, 111, 268
+53, 191, 595
+1, 283, 710
+Total net volume (lots/min)
+−0.53
+531.31
+−252.00
+252.00
+1, 283, 710
+News-trader net volume (lots/min)
+−0.29
+397.37
+−186.00
+186.00
+1, 283, 710
+Noisy value-trader net volume (lots/min)
+−0.24
+356.94
+−115.00
+117.00
+1, 283, 710
+Price (index value)
+3, 440
+397
+3, 144
+3, 647
+1, 283, 710
+Return (bps/min)
+0.0
+4.5
+−2.8
+2.8
+1, 281, 168
+46
+
+Table 2: Structural estimation results. This table presents the results of the structural estimation for each year in
+the sample, along with several equilibrium quantities, and unmodeled trading fees. The variance ratio of (dv|News) and
+dv measures how much of the information that arrives during trading hours is learned from news. The variance ratio of
+(dv|News) and v does the same, except for measuring it relative to all information that arrives on the day of trading,
+including the value trader’s private information at the start of trading.
+Year
+Parameter estimates
+Equilibrium quantities
+Other
+σ0
+σv
+σe
+σu
+σ2
+dv|News
+σ2
+dv
+σ2
+dv|News
+σ2v
+πN
+πV
+λ
+FeeN
+FeeV
+(bps/day)
+(lots/day)
+(%)
+(=Cmillion/day)
+(bps/1k
+lots)
+(=Cmillion/day)
+2013
+1.13
+(0.010)
+18.15
+(0.078)
+24.52
+(0.262)
+25, 819
+(196)
+35.4
+35.3
+0.38
+1.09
+0.64
+0.10
+0.06
+2014
+1.31
+(0.009)
+22.29
+(0.079)
+31.45
+(0.244)
+28, 190
+(164)
+33.4
+33.3
+0.57
+1.61
+0.72
+0.13
+0.07
+2015
+1.80
+(0.013)
+31.03
+(0.111)
+44.58
+(0.356)
+28, 323
+(170)
+32.6
+32.5
+0.93
+2.48
+1.00
+0.15
+0.08
+2016
+1.38
+(0.010)
+25.17
+(0.087)
+33.03
+(0.266)
+30, 246
+(178)
+36.7
+36.6
+0.69
+1.81
+0.75
+0.18
+0.07
+2017
+0.94
+(0.006)
+16.67
+(0.050)
+18.67
+(0.140)
+26, 611
+(135)
+44.4
+44.2
+0.68
+1.15
+0.55
+0.12
+0.05
+2018
+1.06
+(0.007)
+19.77
+(0.063)
+21.03
+(0.162)
+26, 296
+(135)
+46.9
+46.8
+0.80
+1.28
+0.65
+0.14
+0.06
+2019
+1.01
+(0.007)
+18.69
+(0.057)
+19.95
+(0.155)
+26, 051
+(134)
+46.7
+46.6
+0.77
+1.22
+0.62
+0.12
+0.05
+2020
+1.68
+(0.012)
+31.18
+(0.123)
+51.20
+(0.508)
+30, 325
+(245)
+27.0
+27.0
+0.73
+2.64
+0.95
+0.15
+0.06
+2021
+1.05
+(0.008)
+19.71
+(0.077)
+31.73
+(0.313)
+19, 191
+(154)
+27.8
+27.8
+0.46
+1.29
+0.95
+0.08
+0.04
+2022
+1.58
+(0.012)
+29.46
+(0.121)
+55.20
+(0.584)
+22, 790
+(207)
+22.2
+22.1
+0.55
+2.22
+1.22
+0.10
+0.05
+2023
+1.27
+(0.013)
+23.73
+(0.129)
+36.27
+(0.487)
+21, 893
+(239)
+30.0
+29.9
+0.76
+1.85
+1.00
+0.10
+0.05
+All
+1.29
+(0.003)
+23.26
+(0.028)
+33.42
+(0.105)
+25, 976
+(55)
+32.6
+32.5
+0.67
+1.70
+0.82
+0.12
+0.06
+47
+
+Value trader observes:  
+ 
+ 
+ 
+     d𝑣!"#! 
+ 
+ 
+ 
+ d𝑣! 
+News trader observes:  
+     d𝑧!"#! 
+ 
+ 
+ 
+     d𝑧!
+Dealer observes: 
+ 
+ 
+ 
+ 
+     d𝑧!"#! 
+ 
+ 
+ 
+   d𝑧!
+Net volume: 
+ 
+     d𝑦!"#! = d𝑥!"#!
+$
++ d𝑥!"#!
+%
++ d𝑢!"#! 
+     d𝑦! = d𝑥!
+$ + d𝑥!
+% + d𝑢! 
+Transaction price: 
+ 
+     d𝑝!"#! = 𝑞!"#! + 𝜆𝑦!"#! −𝑝!"#!  
+     d𝑝! = 𝑞! + 𝜆𝑦! −𝑝!
+Dealer valuation: 
+ 
+𝑞!"#! 
+ 
+ 
+ 𝑝! 
+ 𝑞! 
+ 
+ 
+ 𝑝!&#! 
+ 𝑞!&#! 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Trade
+Quote update
+Trade
+Quote update
+Figure 1: Timing of events. This figure illustrates the timing of events.
+48
+
+0
+2
+4
+6
+Fundamental value (vt)
+Midquote dealer (qt)
+0.1
+0.0
+0.1
+News-trader net volume (dxN)
+Value-trader net volume (dxV)
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+t
+2.5
+0.0
+2.5
+5.0
+7.5
+Fundamental value (vt)
+Filtered state vt|t
+Smoothed state vt|T
+A simulated trading day (
+v = 1.0,
+0 = 2.0,
+e = 1.0,
+u = 1.0)
+Figure 2: Simulated trading day. This plot illustrates equilibrium trading by simulating
+a single trading day. The top plot depicts the evolution of the quoted price and fundamental
+value. The middle plot illustrates trading by the news trader and the value trader. The
+bottom plot depicts the filtered and smoothed estimate of fundamental value throughout the
+trading day. The parameter values are mentioned in the title above the top plot.
+49
+
+0.0
+0.5
+1.0
+1.5
+Std. dev. value trader information 
+0 (bps/day)
+0
+10
+20
+30
+40
+50
+Std. dev. news 
+v (bps/day)
+Std. dev. noise in the news 
+e (bps/day)
+2013
+2014
+2015
+2016
+2017
+2018
+2019
+2020
+2021
+2022
+2023
+0
+10,000
+20,000
+30,000
+Std. dev. noise trader net volume 
+u (lots/day)
+Figure 3: Structural estimation results.
+This plot summarizes the results of the
+structural estimation using a state space model. The top plot show how much information
+the value trader has at the start of the day. He trades on this information strategically
+throughout the day. The middle plot characterizes news trading. It shows both how much
+news there is in aggregate throughout the trading day, and how noisy it is. The bottom plot
+shows how much noise trading there is in aggregate order flow.
+50
+
+0.0
+0.2
+0.4
+0.6
+0.8
+Gross profit news traders 
+N ( million/day)
+Trading fee ( million/day)
+0.0
+0.5
+1.0
+1.5
+2.0
+2.5
+Gross profit value traders 
+V ( million/day)
+Trading fee ( million/day)
+2013
+2014
+2015
+2016
+2017
+2018
+2019
+2020
+2021
+2022
+2023
+0.00
+0.25
+0.50
+0.75
+1.00
+1.25
+Price impact (bps/1K lots)
+Figure 4: Informational rents and price impact. This figure illustrates the transfers in
+the community of traders, implied by the estimated model. The top two plots show how the
+daily profit of the two types of informed traders evolves over time. The bottom plot graphs
+how much price impact is charged (in equilibrium) to pay for these informational rents.
+51
+
+1 min
+5 min
+10 min
+15 min
+0.0
+0.1
+0.2
+0.3
+0.4
+0.5
+0.6
+Information share noisy value-trader net volume, lower bound
+Information share noisy value-trader net volume, upper bound
+Figure 5: Information share by frequency. This figure plots the upper and lower
+bound of the information share of value trader net volume for EURO STOXX 50 Index
+Futures trading. value trader net volume is proxied for by agency trades. The legend
+adds the adjective “noisy,” because, in our interpretation, agency trades also includes noise
+trading. Information shares are computed based on Hasbrouck (1991). The vertical black
+lines represent 95% confidence intervals.
+52
+
+1 min
+5 min
+10 min
+15 min
+0.0
+0.5
+1.0
+1.5
+2.0
+Variance ratio news-trader net volume (denominator 1-min)
+Variance ratio noisy value-trader net volume (denominator 1-min)
+Figure 6: Variance ratio net volume. This figure plots the variance ratio of the net
+volume of the two types of informed trading at various periodicities. The numerator is the
+variance of net volume at the periodicity listed at the horizontal axis, divided by the number
+of minutes in the period. The denominator is the variance of net volume at the one-minute
+periodicity. News-trader net volume is proxied for by principal trades and value trader net
+volume by agency trades. The legend adds the adjective “noisy” to value trader volume,
+because, in our interpretation, agency trades also includes noise trading.
+53

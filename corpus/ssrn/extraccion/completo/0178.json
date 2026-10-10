@@ -1,0 +1,128 @@
+{
+  "doc_id": 178,
+  "titulo": "Trade Size, High Frequency Trading, and Co-Location Around the World",
+  "resumen_operativo": "El paper examina el impacto del algorithmic trading (AT) y high frequency trading (HFT) sobre el tamaño de las operaciones (trade size) en 24 bolsas internacionales, usando la fecha de introducción de servicios de co-location como proxy. Los resultados muestran que co-location no es un buen proxy para el inicio de AT/HFT: el HFT precede a la co-location en al menos 8 meses en la mayoría de los mercados. Las bolsas tienen entre un 27.6% y un 44.5% más de probabilidad de ofrecer co-location cuando el HFT está presente.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "High Frequency Trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Subconjunto del algorithmic trading caracterizado por entrada de órdenes en microsegundos, manteniendo posiciones miles de veces al día sin positions overnight y obteniendo beneficios pequeños pero consistentes. Representa más del 50% del volumen en EE.UU., 35-40% en UK y Canadá.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "algorithmic trading"},
+        {"tipo": "CAUSA", "objeto": "trade size reduction"}
+      ],
+      "cita_textual": "HFT, as the term suggests, involves rapidly trading in and out of positions thousands of times a day without holding positions at the end of the day, and realizing consistent, albeit small, profits on each trade."
+    },
+    {
+      "nombre": "Trade Size",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Número de acciones negociadas por transacción. Contiene información potencialmente importante sobre insider trading y price impact. Mercados con HFT experimentan reducciones pronunciadas en el trade size promedio.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "HFT presence"},
+        {"tipo": "PARTE_DE", "objeto": "market microstructure"}
+      ],
+      "cita_textual": "The number of shares traded (hereafter, trade size) potentially contains important information."
+    },
+    {
+      "nombre": "Co-location",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Servicio ofrecido por las bolsas que permite a traders ubicar físicamente sus servidores dentro de las instalaciones del exchange para reducir latencia. No es un buen proxy del inicio de HFT; más bien es una consecuencia de la demanda de HFT por mayor velocidad.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "high frequency trading"},
+        {"tipo": "SE_OPONE_A", "objeto": "HFT start date proxy"}
+      ],
+      "cita_textual": "Colocation services do not properly measure effective AT and HFT; rather, colocation services are the result of HFT."
+    },
+    {
+      "nombre": "Algorithmic Trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Uso de plataformas electrónicas para ingresar órdenes con un algoritmo, típicamente sin intervención humana, ejecutando instrucciones pre-programadas basadas en tiempo, precio y cantidad.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "AT"},
+        {"tipo": "USA", "objeto": "electronic trading"}
+      ],
+      "cita_textual": "AT refers to the use of electronic platforms for entering trading orders with an algorithm, typically without human intervention."
+    },
+    {
+      "nombre": "Market-Based Approach",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Metodología para identificar la presencia efectiva de HFT en un mercado basada en cambios observables en el trade size, en lugar de usar fechas de co-location como proxy.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "co-location proxy"},
+        {"tipo": "USA", "objeto": "trade size"}
+      ],
+      "cita_textual": "We test whether a 'market-base' approach to identify the effective time HFT in the market leads to the introduction of colocation services."
+    },
+    {
+      "nombre": "Order-to-Trade Ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Ratio de mensajes (órdenes, cancelaciones, modificaciones) a operaciones ejecutadas, usado como proxy de actividad HFT. Un OTT elevado indica alta actividad de high frequency trading.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "HFT activity"},
+        {"tipo": "EQUIVALE_A", "objeto": "OTT"}
+      ],
+      "cita_textual": "HFT encompasses thousands of trades in a second, and as such, trade size contains less information, yet still impact the underlying asset."
+    },
+    {
+      "nombre": "Market Microstructure",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Estudio de cómo los mecanismos de negociación (tipo de órdenes, latencia, estructura del mercado) afectan la formación de precios, liquidez y eficiencia. Los cambios en microstructure impactan el trade size.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "international exchanges"},
+        {"tipo": "CAUSA", "objeto": "trade size"}
+      ],
+      "cita_textual": "We seek to understand whether or not changes in market microstructure have an impact on the trade size, particularly with the rise of AT and HFT."
+    },
+    {
+      "nombre": "Informed Trading",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Insiders con información privada prefieren negociar cantidades mayores a un precio dado, generando mayor price impact. Pueden camuflarse mediante múltiples operaciones pequeñas.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "price impact"},
+        {"tipo": "USA", "objeto": "trade size"}
+      ],
+      "cita_textual": "Insiders who have private information will prefer to trade larger amounts of shares at any given price."
+    },
+    {
+      "nombre": "Price Impact",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Efecto que una operación tiene sobre el precio del activo subyacente. Trade sizes más grandes tienen price impact más pronunciado.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "trade size"},
+        {"tipo": "MIDE", "objeto": "market impact"}
+      ],
+      "cita_textual": "Larger trade size will have a more pronounced price impact on the underlying asset."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Co-location no es un buen proxy para el inicio de AT y HFT. Las reducciones pronunciadas en trade size ocurrieron al menos 8 meses antes de la introducción de servicios de co-location en la mayoría de las bolsas.",
+      "mercado": "24 bolsas internacionales",
+      "periodo": "Período alrededor de fechas de co-location en cada bolsa",
+      "magnitud": "Al menos 8 meses de anticipación del HFT respecto a la co-location",
+      "condiciones": "Muestra manual de fechas de co-location de múltiples bolsas",
+      "robustez": "alta",
+      "cita_textual": "Our empirical results show pronounced reductions in trade size that occurred long before the introduction of colocation services (we estimate it was at least 8 months across the exchanges in our sample)."
+    },
+    {
+      "afirmacion": "Un exchange tiene entre 27.6% y 44.5% más de probabilidad de ofrecer servicios de co-location cuando HFT está presente (resultados estadísticamente significativos al menos al 5%).",
+      "mercado": "Bolsas internacionales (24 exchanges)",
+      "periodo": "Muestra de 2,542-2,544 observaciones",
+      "magnitud": "27.6% (estimación conservadora) a 44.5% (estimación menos conservadora); Pseudo R2 0.0822-0.3303",
+      "condiciones": "Modelos probit controlando por variables macro, legales y de mercado",
+      "robustez": "alta",
+      "cita_textual": "In our most conservative estimate, an exchange is 27.6% more likely to offer colocation services when HFT is present. In our least conservative estimate, an exchange is 44.5% more likely."
+    },
+    {
+      "afirmacion": "No se encuentra evidencia consistente de que la introducción de co-location cause cambios significativos en el trade size, contradiciendo estudios previos que usan co-location como proxy de AT/HFT.",
+      "mercado": "24 bolsas internacionales",
+      "periodo": "Ventanas alrededor de fechas de co-location",
+      "magnitud": "Resultados mixtos, sin evidencia consistente",
+      "condiciones": "Análisis univariante y multivariante con controles",
+      "robustez": "alta",
+      "cita_textual": "We do not find consistent evidence in support of the view that colocation causes trade size changes."
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "El trade size y la presencia de HFT son fenómenos intradía por naturaleza; el estudio usa datos diarios pero las implicaciones son directamente aplicables a estrategias intradía."}
+}

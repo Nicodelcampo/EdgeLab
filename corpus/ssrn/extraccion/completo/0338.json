@@ -1,0 +1,89 @@
+{
+  "doc_id": 338,
+  "titulo": "The Impact of Open Market Operations on the Government Bond Market: Microstructure Evidence",
+  "resumen_operativo": "Examina el impacto de las operaciones de mercado abierto (OMOs) de la Fed sobre el mercado de bonos del gobierno de EE.UU. en el año 2000. Encuentra que los bid-ask spreads son mayores y la profundidad de mercado, volumen de trading y tamaño promedio de trade son menores en días con subastas repo de la Fed que en días sin operaciones. La volatilidad de retornos es significativamente mayor en días con solo OMOs overnight regulares que cuando se combinan operaciones de corto y largo plazo. Atribuye estos hallazgos a inventory risks y problemas de collateral reassignment de los primary dealers.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Defensive open market operations",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Operaciones de mercado abierto de la Fed para acomodar shocks temporales exógenos al nivel de reservas bancarias y mantener la fed funds rate en el target. Bajo el Fed Funds Targeting Procedure (desde 1994), estas operaciones son puramente defensivas y no contienen información sobre el curso futuro de tasas de interés.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "Dynamic open market operations"},
+        {"tipo": "PARTE_DE", "objeto": "Fed Funds Targeting Procedure"}
+      ],
+      "cita_textual": "Defensive operations fall under the authority of the Trading Desk at the New York Fed. On a daily basis, the Desk estimates exogenous shocks, formulates the scope of operations, and projects the impact of operations on the money market."
+    },
+    {
+      "nombre": "Repo auction imbalance",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Diferencia entre el volumen de bids enviados por primary dealers para refinanciamiento y el volumen aceptado por la Fed en la subasta repo. Indica el desbalance agregado en el libro de repos de los dealers tras la subasta. Asociado significativamente con mayor volatilidad de retornos de bonos a la hora de la Fed (9:30 am).",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "Dealer repo book imbalance"},
+        {"tipo": "CAUSA", "objeto": "Bond return volatility at Fed time"}
+      ],
+      "cita_textual": "The first variable is the difference between the volume of bids submitted for refinancing by dealers and the volume of bids satisfied by the Fed, which indicates the aggregate imbalance in the dealers' repo book after an auction."
+    },
+    {
+      "nombre": "Collateral reassignment problem",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Problema que enfrentan los primary dealers cuando los títulos ofrecidos como colateral en la subasta repo de la Fed no son aceptados y deben ser reasignados al mercado repo privado. Esto genera presión adicional sobre los precios de bonos y contribuye a la mayor volatilidad observada en días de OMOs.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Higher bond market volatility"},
+        {"tipo": "PARTE_DE", "objeto": "Primary dealer operations"}
+      ],
+      "cita_textual": "Securities submitted for refinancing that are not satisfied by the Fed are reassigned to the private repo market following the Fed's auctions."
+    },
+    {
+      "nombre": "Fed Funds Rate spread to repo rate",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Diferencia entre la fed funds rate efectiva en días de subasta y la tasa repo promedio ponderada establecida durante las subastas. Un spread mayor implica mayor incentivo para que dealers pujen por refinanciamiento barato de la Fed, aumentando la presión sobre el mercado de bonos.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "Refinancing incentive"},
+        {"tipo": "PARTE_DE", "objeto": "Repo auction outcomes"}
+      ],
+      "cita_textual": "The second variable is the spread between the effective fed funds rate on days when repo auctions are held and the weighted-average repo rate established during auctions. The larger the spread, the greater the incentive is for dealers to bid for refinancing."
+    },
+    {
+      "nombre": "Riding the yield curve strategy",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia de bond dealers donde toman una posición apalancada en un bono a n días, financiándola diariamente mediante repos overnight. Apuestan a que la ganancia de capital esperada (EHPR) excederá el costo esperado de refinanciamiento (EFC). La condición de no arbitraje es EHPR^n_0 = EFC^n_0.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Repo market"},
+        {"tipo": "REQUIERE", "objeto": "Expected Holding Period Return (EHPR)"}
+      ],
+      "cita_textual": "The bond dealer bets that, over the investment horizon of n days, the expected capital gain on a particular bond will exceed the expected costs of rolling over the short-term repo agreements. Practitioners call it 'riding the yield curve'."
+    },
+    {
+      "nombre": "Primary dealer inventory risk",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Riesgo asumido por los bond dealers al mantener inventarios de bonos para servir órdenes de clientes. Los spreads bid-ask no compensan completamente este riesgo (spreads de 0.21 a 0.52 de 32avos). Los dealers obtienen la mayoría de sus ganancias tomando posiciones riesgosas en los bonos, no del spread.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Dealer risk-taking behavior"},
+        {"tipo": "APLICA_A", "objeto": "Treasury bond market"}
+      ],
+      "cita_textual": "The bond dealers are market makers who have been tasked by the Fed to provide liquidity and continuity to the market. They hold bonds in their inventory in order to meet clients' orders... Empirical research by Fleming (2003) confirms that treasury bonds spreads are very narrow, ranging from 0.21 to 0.52 of 32s."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "En el año 2000, los bid-ask spreads del mercado de bonos del Tesoro son mayores, mientras que la profundidad de mercado (depth), volumen de trading y tamaño promedio de trade son menores en días con subastas repo de la Fed que en días sin tales operaciones.",
+      "mercado": "US Treasury bonds (notas a 2 y 5 años)",
+      "periodo": "Año 2000",
+      "magnitud": "Diferencias significativas en spreads, depth, volumen y trade size entre días con y sin OMOs (magnitudes exactas requieren lectura completa de tablas).",
+      "condiciones": "Fed Funds Targeting Procedure (post-1994); análisis intraday con intervalos de 30 minutos; hora oficial de la Fed: 9:30 am",
+      "robustez": "media",
+      "cita_textual": "Bond market bid-ask spreads are greater, while market depth, trading volume and average trade size are smaller on days when the Fed conducts repo auctions than on days without such operations."
+    },
+    {
+      "afirmacion": "La volatilidad de retornos de bonos es significativamente mayor en días en que la Fed implementa solo OMOs overnight regulares que en días sin operaciones. En contraste, cuando se combinan operaciones de corto y largo plazo (repos a 28 días), la volatilidad no es significativamente mayor.",
+      "mercado": "US Treasury notes (2 y 5 años)",
+      "periodo": "2000",
+      "magnitud": "Aumento significativo de volatilidad a las 9:30 am en días solo con OMOs cortos; sin aumento significativo en días con OMOs combinados corto+largo.",
+      "condiciones": "Subastas pay-your-bid entre primary dealers; Fed Funds Targeting Procedure; horario de análisis 9:30 am (Fed time)",
+      "robustez": "media",
+      "cita_textual": "Bond returns volatility is significantly higher on days the Fed implements only regular overnight open market operations than on days when both short- and long-term operations are undertaken."
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "Análisis intraday con intervalos de 30 minutos alrededor del Fed time (9:30 am); relevante para estrategias de trading en treasuries durante OMOs."}
+}

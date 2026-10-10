@@ -1,0 +1,81 @@
+{
+  "doc_id": 123,
+  "titulo": "Exogenous Factors in Statistical Arbitrage: A Novel AI-powered Approach",
+  "resumen_operativo": "Propone una metodología basada en técnicas no supervisadas (descomposición de valores propios / PCA) para incorporar factores exógenos altamente colineales en estrategias de arbitraje estadístico (pairs trading). Al transformar los factores exógenos correlacionados en 'eigenfactors' ortogonales, los autores superan las limitaciones de los modelos de regresión OLS frente a la multicolinealidad. El documento incluye una simulación teórica y un caso empírico aplicado a pares de futuros sobre índices bursátiles (E-mini S&P 500, NASDAQ 100, Mini Dow Jones) usando ETFs y yields de bonos del tesoro como variables externas.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "eigenfactors",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Variables auxiliares ortogonales derivadas de la descomposición de valores propios que se utilizan para superar los problemas de colinealidad en la estimación OLS.",
+      "relaciones": [
+        {
+          "tipo": "MITIGA",
+          "objeto": "collinearity"
+        },
+        {
+          "tipo": "PARTE_DE",
+          "objeto": "OLS regression"
+        }
+      ],
+      "cita_textual": "To overcome this problem, we propose to use auxiliary variables that are orthogonal to each other by construction. These variables are often referred to as eigenfactors..."
+    },
+    {
+      "nombre": "pairs trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia de mean-reverting (arbitraje estadístico) que capitaliza en ineficiencias o disparidades relativas consistentes entre dos activos.",
+      "relaciones": [
+        {
+          "tipo": "USA",
+          "objeto": "cointegration"
+        },
+        {
+          "tipo": "USA",
+          "objeto": "exogenous factors"
+        }
+      ],
+      "cita_textual": "This approach, as outlined by Vidyamurthy (2004) and Gatev et al. (2006), involves identifying a pair of assets that exhibit consistent and statistically significant relative value disparities."
+    },
+    {
+      "nombre": "exogenous factors",
+      "tipo": "dato",
+      "definicion_en_contexto": "Variables externas, como indicadores macroeconómicos y yields de bonos, que se introducen en modelos de pares para explicar ineficiencias de información y mejorar la estabilidad de la estrategia.",
+      "relaciones": [
+        {
+          "tipo": "MEJORA_A",
+          "objeto": "pairs trading"
+        }
+      ],
+      "cita_textual": "Specifically, we enhance the classic co-integration model developed by Vidyamurthy (2004) by introducing exogenous variables."
+    },
+    {
+      "nombre": "information asymmetry",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Desigualdad en la información disponible entre participantes del mercado, identificada en la literatura como la fuerza fundamental que origina las oportunidades de divergencia de precios explotadas en los modelos de pairs trading.",
+      "relaciones": [
+        {
+          "tipo": "CAUSA",
+          "objeto": "statistical arbitrage"
+        }
+      ],
+      "cita_textual": "Empirical studies consistently support the information asymmetry hypothesis as the primary driver of pairs trading models..."
+    },
+    {
+      "nombre": "collinearity",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Alta correlación entre variables independientes que impide que exista suficiente variabilidad matemática para calcular la matriz inversa en modelos OLS.",
+      "relaciones": [
+        {
+          "tipo": "CAUSA",
+          "objeto": "OLS failure"
+        }
+      ],
+      "cita_textual": "If {x} and {z} variables are highly correlated, however, there is not enough variability in the X and the necessary inverse of XTX may not exist, and β cannot be estimated."
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "La investigación empírica aplica explícitamente el arbitraje estadístico a futuros del E-mini S&P 500 (ES) y NASDAQ 100 utilizando factores macroeconómicos (tasas de interés y ETFs). Aunque el análisis se centra en datos diarios (se mencionan rezagos de 1 a 60 días), la técnica para extraer señales ortogonales (eigenfactors) a partir de variables colineales es metodológicamente relevante para modelos predictivos intradía de ES que combinen múltiples indicadores."
+  }
+}

@@ -1,0 +1,346 @@
+LLM-Augmented Quantitative Finance:
+A Rigorous Structural Framework for Market State Inference
+and Forecasting
+Yifan Guo
+December 17, 2025
+Abstract
+Traditional quantitative finance relies on structured numerical data and explicitly specified stochastic
+dynamics, often failing to incorporate unstructured information such as news, policy language, and market
+narratives. Large language models (LLMs) can extract semantic representations from text but, when used
+as end-to-end forecasters, typically lack probabilistic coherence, interpretability, and stability guarantees.
+This paper proposes a rigorous LLM-augmented framework in which LLMs operate as latent state
+inference engines rather than direct predictors. Textual information is mapped into a low-dimensional
+semantic state that conditions regime-switching and state-space dynamics governing returns and volatility. The design preserves probabilistic structure while enabling disciplined incorporation of narrative
+information unavailable to purely numerical models. We establish formal properties including validity of
+text-conditioned transition kernels, exact Bayesian filtering recursions, explicit Lipschitz stability with
+respect to semantic perturbations, and identifiability under a transparent normalization. The framework is
+suited to leakage-controlled empirical evaluation and reproducible out-of-sample forecasting.
+Keywords: Large Language Models; Market Narratives; Regime Switching; State-Space Models; Volatility
+Forecasting.
+JEL: C10, C22, C53, G10, G12.
+1
+Introduction
+Quantitative finance has historically relied on mathematically explicit models grounded in stochastic processes
+and econometric structure. These models are effective when relevant information is largely captured by
+historical prices, volumes, and macro series. In practice, however, major market repricings are frequently
+driven by narrative shifts: changes in policy guidance, evolving macroeconomic interpretation, and forwardlooking corporate language. Such information is embedded in unstructured text and is not fully represented
+by contemporaneous numerical features.
+Recent applications of large language models (LLMs) to finance often employ them as end-to-end predictors,
+mapping text directly to future returns, volatility, or prices. While such approaches may yield signals, they
+1
+
+typically compromise interpretability, probabilistic discipline, and stability under distribution shift. This
+paper adopts a structural alternative: the LLM should augment quantitative models by inferring a semantic
+state that influences, but does not replace, classical stochastic dynamics.
+Our contribution is structural rather than algorithmic. By separating semantic inference from probabilistic
+forecasting, the proposed framework clarifies the role of text in market dynamics and supports formal analysis
+of coherence, inference, stability, and identifiability that is not available in end-to-end LLM predictors. The
+resulting model admits exact Bayesian filtering and yields explicit sensitivity bounds that directly motivate
+regularization and evaluation design.
+2
+Framework Overview
+2.1
+Market as a Partially Observed System
+We model the market as a partially observed stochastic system. Let (Ω, F , P) be a probability space and let
+𝑡= 1, 2, . . . index decision times (e.g., trading days). We write
+𝑋𝑡+1 = 𝑓(𝑋𝑡, 𝑍𝑡, 𝜀𝑡+1),
+(1)
+𝑌𝑡= 𝑔(𝑋𝑡) + 𝜂𝑡,
+(2)
+where 𝑋𝑡is a latent market state, 𝑍𝑡is an information variable that includes unstructured text, and 𝑌𝑡denotes
+observed market quantities such as returns, realized volatility, or order-flow summaries. Noise terms (𝜀𝑡, 𝜂𝑡)
+are not required to be Gaussian for the conceptual framework.
+2.2
+LLM-Based Semantic State
+Let T𝑡denote the text corpus available at time 𝑡under a strict no-look-ahead timing convention. An LLM
+produces a semantic embedding
+𝑆𝑡= L𝜃(T𝑡) ∈R𝑑,
+(3)
+interpreted as a latent narrative state. The dimension 𝑑is taken to be moderate to support identification and
+generalization. Crucially, the LLM is not used as an end-to-end forecaster; instead, 𝑆𝑡enters the forecasting
+model only through a disciplined probabilistic channel.
+2
+
+Figure 1: LLM-augmented inference pipeline.
+3
+LLM-Augmented Regime-Switching Model
+3.1
+Latent Regime and Observation Model
+Let 𝑀𝑡∈{1, . . . , 𝐾} denote a latent regime variable. Conditional on 𝑀𝑡, observed returns (or another target
+variable) follow a regime-specific likelihood. For concreteness, we present a Gaussian return specification:
+𝑌𝑡| (𝑀𝑡= 𝑗) ∼N (𝜇𝑗, 𝜎2
+𝑗),
+𝑗= 1, . . . , 𝐾.
+(4)
+The inference results below extend to general dominated likelihoods 𝑝𝑗(𝑦) with mild regularity.
+3.2
+Text-Conditioned Transition Probabilities
+The regime transition probabilities are conditioned on the semantic state 𝑆𝑡:
+𝑃𝑖𝑗(𝑆𝑡) := P(𝑀𝑡+1 = 𝑗| 𝑀𝑡= 𝑖, 𝑆𝑡) =
+exp(𝐴𝑖𝑗+ 𝐵⊤
+𝑖𝑗𝑆𝑡)
+Í𝐾
+𝑘=1 exp(𝐴𝑖𝑘+ 𝐵⊤
+𝑖𝑘𝑆𝑡)
+,
+(5)
+where 𝐴𝑖𝑗∈R and 𝐵𝑖𝑗∈R𝑑. For fixed 𝑖, the log-odds of transitioning to regime 𝑗relative to another regime
+is affine in 𝑆𝑡, yielding an interpretable and differentiable channel through which text influences dynamics.
+Remark 1 (Interpretation). The role of 𝑆𝑡is to modulate regime dynamics rather than to replace the observation
+model. This design preserves probabilistic semantics: conditional on 𝑀𝑡, the distribution of 𝑌𝑡remains
+explicit, enabling likelihood-based inference, diagnostic checks, and sensitivity analysis.
+4
+Theoretical Properties
+4.1
+Validity of the Transition Kernel
+Proposition 1 (Kernel validity). For any 𝑆∈R𝑑, the matrix 𝑃(𝑆) = [𝑃𝑖𝑗(𝑆)]𝐾
+𝑖, 𝑗=1 defined by Equation (5) is
+a valid Markov transition matrix: it has strictly positive entries and each row sums to one.
+3
+
+Proof. Fix 𝑖∈{1, . . . , 𝐾} and 𝑆∈R𝑑. For each 𝑗, the numerator exp(𝐴𝑖𝑗+ 𝐵⊤
+𝑖𝑗𝑆) is strictly positive. The
+denominator is a finite sum of strictly positive terms, hence finite and strictly positive. Therefore 𝑃𝑖𝑗(𝑆) > 0
+for all 𝑗.
+Moreover,
+𝐾
+∑︁
+𝑗=1
+𝑃𝑖𝑗(𝑆) =
+𝐾
+∑︁
+𝑗=1
+exp(𝐴𝑖𝑗+ 𝐵⊤
+𝑖𝑗𝑆)
+Í𝐾
+𝑘=1 exp(𝐴𝑖𝑘+ 𝐵⊤
+𝑖𝑘𝑆)
+=
+Í𝐾
+𝑗=1 exp(𝐴𝑖𝑗+ 𝐵⊤
+𝑖𝑗𝑆)
+Í𝐾
+𝑘=1 exp(𝐴𝑖𝑘+ 𝐵⊤
+𝑖𝑘𝑆)
+= 1,
+which proves the claim.
+□
+4.2
+Exact Bayesian Filtering
+Define the posterior regime probability
+𝜋𝑡( 𝑗) = P(𝑀𝑡= 𝑗| 𝑌1:𝑡, 𝑆1:𝑡),
+𝑗= 1, . . . , 𝐾.
+Proposition 2 (Filtering recursion). Let 𝑝𝑗(𝑦) denote the conditional density (or pmf) of 𝑌𝑡given 𝑀𝑡= 𝑗.
+Then the filtering recursion is
+˜𝜋𝑡( 𝑗) = P(𝑀𝑡= 𝑗| 𝑌1:𝑡−1, 𝑆1:𝑡−1) =
+𝐾
+∑︁
+𝑖=1
+𝜋𝑡−1(𝑖) 𝑃𝑖𝑗(𝑆𝑡−1),
+(6)
+𝜋𝑡( 𝑗) = P(𝑀𝑡= 𝑗| 𝑌1:𝑡, 𝑆1:𝑡) =
+𝑝𝑗(𝑌𝑡) ˜𝜋𝑡( 𝑗)
+Í𝐾
+𝑘=1 𝑝𝑘(𝑌𝑡) ˜𝜋𝑡(𝑘)
+.
+(7)
+Proof. For the prediction step, apply the law of total probability:
+P(𝑀𝑡= 𝑗| 𝑌1:𝑡−1, 𝑆1:𝑡−1) =
+𝐾
+∑︁
+𝑖=1
+P(𝑀𝑡= 𝑗| 𝑀𝑡−1 = 𝑖,𝑌1:𝑡−1, 𝑆1:𝑡−1) P(𝑀𝑡−1 = 𝑖| 𝑌1:𝑡−1, 𝑆1:𝑡−1).
+Because 𝑆𝑡−1 is measurable with respect to (𝑌1:𝑡−1, 𝑆1:𝑡−1) and the regime process is Markov conditional on
+(𝑀𝑡−1, 𝑆𝑡−1),
+P(𝑀𝑡= 𝑗| 𝑀𝑡−1 = 𝑖,𝑌1:𝑡−1, 𝑆1:𝑡−1) = P(𝑀𝑡= 𝑗| 𝑀𝑡−1 = 𝑖, 𝑆𝑡−1) = 𝑃𝑖𝑗(𝑆𝑡−1),
+yielding Equation (6).
+For the update step, Bayes’ rule gives
+P(𝑀𝑡= 𝑗| 𝑌1:𝑡, 𝑆1:𝑡) =
+P(𝑌𝑡| 𝑀𝑡= 𝑗,𝑌1:𝑡−1, 𝑆1:𝑡) P(𝑀𝑡= 𝑗| 𝑌1:𝑡−1, 𝑆1:𝑡)
+Í𝐾
+𝑘=1 P(𝑌𝑡| 𝑀𝑡= 𝑘,𝑌1:𝑡−1, 𝑆1:𝑡) P(𝑀𝑡= 𝑘| 𝑌1:𝑡−1, 𝑆1:𝑡)
+.
+Under the observation model, 𝑌𝑡is conditionally independent of (𝑌1:𝑡−1, 𝑆1:𝑡) given 𝑀𝑡, hence P(𝑌𝑡| 𝑀𝑡=
+𝑗, ·) = 𝑝𝑗(𝑌𝑡). Also, P(𝑀𝑡= 𝑗| 𝑌1:𝑡−1, 𝑆1:𝑡) = P(𝑀𝑡= 𝑗| 𝑌1:𝑡−1, 𝑆1:𝑡−1) = ˜𝜋𝑡( 𝑗) since 𝑆𝑡affects only
+transitions to 𝑀𝑡+1. Substituting yields Equation (7).
+□
+4
+
+4.3
+Stability with Respect to Semantic Perturbations
+We quantify how sensitive transition probabilities are to perturbations in 𝑆. This is central when 𝑆𝑡is produced
+by a fixed extraction pipeline but may vary under small changes to text preprocessing.
+Proposition 3 (Lipschitz stability of softmax transitions). Assume
+𝐵𝑖𝑗
+
+2 ≤𝐿for all 𝑖, 𝑗. Then for any
+𝑆, 𝑆′ ∈R𝑑,
+|𝑃𝑖𝑗(𝑆) −𝑃𝑖𝑗(𝑆′)| ≤2𝐿∥𝑆−𝑆′∥2 .
+Proof. Fix 𝑖and define logits 𝑧𝑗(𝑆) = 𝐴𝑖𝑗+ 𝐵⊤
+𝑖𝑗𝑆and probabilities 𝑝𝑗(𝑆) = 𝑃𝑖𝑗(𝑆). The Jacobian of the
+softmax satisfies
+𝜕𝑝𝑗
+𝜕𝑧𝑘
+(𝑆) = 𝑝𝑗(𝑆) 1{ 𝑗= 𝑘} −𝑝𝑘(𝑆),
+hence by the chain rule,
+∇𝑆𝑝𝑗(𝑆) =
+𝐾
+∑︁
+𝑘=1
+𝜕𝑝𝑗
+𝜕𝑧𝑘
+(𝑆) ∇𝑆𝑧𝑘(𝑆) =
+𝐾
+∑︁
+𝑘=1
+𝑝𝑗(𝑆) 1{ 𝑗= 𝑘} −𝑝𝑘(𝑆) 𝐵𝑖𝑘= 𝑝𝑗(𝑆)
+ 
+𝐵𝑖𝑗−
+𝐾
+∑︁
+𝑘=1
+𝑝𝑘(𝑆)𝐵𝑖𝑘
+!
+.
+Therefore,
+∇𝑆𝑝𝑗(𝑆)
+
+2 ≤𝑝𝑗(𝑆)
+ 
+𝐵𝑖𝑗
+
+2 +
+𝐾
+∑︁
+𝑘=1
+𝑝𝑘(𝑆) ∥𝐵𝑖𝑘∥2
+!
+≤
+𝐵𝑖𝑗
+
+2 +
+𝐾
+∑︁
+𝑘=1
+𝑝𝑘(𝑆) ∥𝐵𝑖𝑘∥2
+≤𝐿+ 𝐿= 2𝐿.
+The constant 2𝐿arises from bounding both the direct term
+𝐵𝑖𝑗
+
+2 and the normalization term Í
+𝑘𝑝𝑘(𝑆) ∥𝐵𝑖𝑘∥2
+in the softmax gradient. By the mean value theorem in R𝑑, there exists 𝑆∗on the line segment between 𝑆and
+𝑆′ such that
+|𝑝𝑗(𝑆) −𝑝𝑗(𝑆′)| ≤
+∇𝑆𝑝𝑗(𝑆∗)
+
+2 ∥𝑆−𝑆′∥2 ≤2𝐿∥𝑆−𝑆′∥2 ,
+which proves the claim.
+□
+4.4
+Identifiability
+The multinomial-logit transition parameterization is not identifiable without a normalization, since adding the
+same constant to all logits in a row leaves probabilities unchanged.
+Definition 1 (Reference-regime normalization). Fix a reference regime 𝐾and impose 𝐴𝑖𝐾= 0 and 𝐵𝑖𝐾= 0
+for each 𝑖.
+Proposition 4 (Identifiability under normalization). Under Definition 1, the transition parameters are
+identifiable: if two parameter sets (𝐴, 𝐵) and (𝐴′, 𝐵′) generate the same transition probabilities 𝑃𝑖𝑗(𝑆) =
+𝑃′
+𝑖𝑗(𝑆) for all 𝑆in an open subset of R𝑑, then 𝐴𝑖𝑗= 𝐴′
+𝑖𝑗and 𝐵𝑖𝑗= 𝐵′
+𝑖𝑗for all 𝑖, 𝑗.
+5
+
+Proof. Fix 𝑖and consider log-odds relative to the reference regime 𝐾:
+log 𝑃𝑖𝑗(𝑆)
+𝑃𝑖𝐾(𝑆) = (𝐴𝑖𝑗−𝐴𝑖𝐾) + (𝐵𝑖𝑗−𝐵𝑖𝐾)⊤𝑆.
+Under Definition 1, this becomes log 𝑃𝑖𝑗(𝑆)
+𝑃𝑖𝐾(𝑆) = 𝐴𝑖𝑗+ 𝐵⊤
+𝑖𝑗𝑆. If 𝑃𝑖𝑗(𝑆) = 𝑃′
+𝑖𝑗(𝑆) holds on an open set, then the
+corresponding log-odds coincide on that open set:
+𝐴𝑖𝑗+ 𝐵⊤
+𝑖𝑗𝑆= 𝐴′
+𝑖𝑗+ 𝐵′
+𝑖𝑗
+⊤𝑆
+for all 𝑆in an open subset of R𝑑.
+Two affine functions that coincide on an open set must have identical constant and linear terms, hence
+𝐴𝑖𝑗= 𝐴′
+𝑖𝑗and 𝐵𝑖𝑗= 𝐵′
+𝑖𝑗. Since 𝑖and 𝑗were arbitrary, identifiability holds.
+□
+5
+Empirical Evaluation Protocol
+This section specifies a leakage-controlled evaluation protocol suitable for disciplined out-of-sample forecasting.
+The intent is not to prescribe a single dataset, but to make the information timing, training scheme, and
+comparison set precise and reproducible.
+5.1
+Information Timing and No-Look-Ahead
+Let 𝑡index trading days. The information set used to form predictions at time 𝑡consists only of: (i) numerical
+variables observable by a fixed cutoff time on day 𝑡(e.g., close-to-close returns, realized volatility computed
+from intraday data up to the close), and (ii) text documents in T𝑡released prior to the same cutoff time, verified
+by publication timestamps. Any delayed or revised texts (e.g., edited news articles) must be pinned to the
+earliest timestamp available to avoid inadvertent look-ahead.
+Semantic states 𝑆𝑡are generated by a frozen, versioned extraction procedure (fixed prompt template, fixed
+model version, deterministic decoding, and caching keyed by document identifier and timestamp). All
+preprocessing steps (deduplication, filtering, language detection, and any document selection rules) are
+similarly versioned.
+5.2
+Training Scheme and Forecasting Setup
+Forecasts are generated using a strictly chronological scheme (rolling or expanding window). At each
+evaluation origin 𝑡, the model parameters are estimated using data up to 𝑡−1, and the predictive distribution
+for 𝑌𝑡(or 𝑌𝑡+1, depending on the horizon definition) is produced conditional on the information set available at
+the origin. When hyperparameters are tuned, the tuning procedure must be nested within the training window
+(e.g., via an inner validation split) to avoid test contamination.
+6
+
+Figure 2: Illustrative out-of-sample performance summary.
+5.3
+Baselines and Fair Comparison
+Baselines are estimated under the same information timing: (i) numerical-only models such as HAR-RV
+and GARCH-family volatility models, (ii) regime-switching or state-space models without text conditioning
+(e.g., HMM/state-space with constant transition probabilities), and (iii) optional reduced-form text baselines
+(e.g., linear predictors using hand-engineered sentiment), if included. All baselines must use the same target
+definition, forecast horizon, and evaluation sample.
+5.4
+Metrics
+Evaluation should include point-forecast accuracy (e.g., MAE on realized volatility), proper scoring rules for
+density forecasts (e.g., negative log-likelihood and QLIKE for volatility forecasts), and directional metrics
+when relevant (e.g., hit rate). When reporting uncertainty, time-series dependence suggests using block
+bootstrap or HAC-style standard errors rather than i.i.d. assumptions.
+6
+Discussion
+The proposed framework integrates LLM-derived semantics into quantitative finance without sacrificing
+probabilistic structure. The key design choice is separation: semantic information affects forecasts only
+through the transition kernel of the latent regime process. This separation yields three practical benefits.
+First, interpretability improves. Changes in forecasts can be decomposed into (i) shifts in inferred regime
+probabilities driven by 𝑆𝑡and (ii) regime-specific likelihood contributions governed by 𝑝𝑗(·). Second,
+robustness analysis becomes concrete. The stability bound in Proposition 3 links semantic perturbations
+to bounded changes in transition probabilities, motivating norm control on 𝐵𝑖𝑗and careful selection of 𝑑.
+Third, evaluation becomes cleaner. Because 𝑆𝑡enters only through an explicit probabilistic channel, one can
+perform disciplined ablations (e.g., replace 𝑆𝑡with lagged numerical proxies, shuffle texts within the training
+window, or constrain 𝐵𝑖𝑗= 0) to isolate the incremental value of narrative information.
+A limitation is that the framework assumes the semantic extraction procedure produces a meaningful,
+reasonably stable representation for the relevant horizon. If the text stream is sparse or the semantic signal
+7
+
+is not aligned with the forecast target, the added channel may not improve performance. The framework
+nevertheless remains diagnostically useful: the learned 𝐵𝑖𝑗and the regime posterior trajectories quantify
+when and how the text channel influences forecasts.
+7
+Conclusion
+We presented a rigorous LLM-augmented framework for market state inference and forecasting. By using the
+LLM as a semantic-state inference module and embedding that state into a regime-switching probabilistic
+model, the approach captures narrative-driven dynamics while retaining statistical discipline. We established
+validity of the text-conditioned transition kernel, exact Bayesian filtering, explicit stability bounds with respect
+to semantic perturbations, and identifiability under a transparent normalization. The framework is designed to
+support leakage-controlled empirical evaluation and clear interpretability, providing a principled alternative
+to end-to-end LLM forecasters in quantitative finance.
+References
+[1] Hamilton, J. (1989). A new approach to the economic analysis of nonstationary time series. Econometrica.
+[2] Kim, C., Nelson, C. (1999). State-Space Models with Regime Switching. MIT Press.
+[3] Engle, R. (1982). Autoregressive conditional heteroskedasticity with estimates of the variance of United
+Kingdom inflation. Econometrica.
+[4] Bollerslev, T. (1986). Generalized autoregressive conditional heteroskedasticity. Journal of Econometrics.
+8

@@ -1,0 +1,205 @@
+{
+  "doc_id": 19,
+  "titulo": "A Practical Guide to Quantitative Volatility Trading",
+  "resumen_operativo": "Revisión teórica extensa (estilo libro de texto) de pricing de opciones, modelos de sonrisa de volatilidad, escalamiento multifractal de retornos, un modelo paramétrico arbitrage-free de superficie de volatilidad implícita (MixVol), gestión de riesgo (VaR) y productos de volatilidad (variance swaps, correlación implícita, dispersion trading). No presenta backtests propios con métricas de performance ni datos de mercado calibrados con resultados numéricos reportados; es fundamentalmente un compendio matemático-conceptual de utilidad como referencia de vocabulario y mecánica de productos de volatilidad, no como evidencia empírica accionable.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "multifractal scaling",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Comportamiento de escalamiento con múltiples exponentes (en vez de uno solo, como en procesos monofractales) que el paper atribuye a las series financieras, indicando correlaciones de largo alcance y cambios abruptos en la estructura fractal.",
+      "relaciones": [
+        {"tipo": "CONTRADICE_A", "objeto": "efficient market hypothesis"},
+        {"tipo": "CAUSA", "objeto": "volatility clustering"}
+      ],
+      "cita_textual": "Financial time series exhibit multifractal scaling behaviour indicating a complex behaviour with long-range time correlations manifested on different intrinsic time scales."
+    },
+    {
+      "nombre": "Hurst exponent",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Exponente característico que relaciona las autocorrelaciones de una serie con su comportamiento de escalamiento; el paper reporta que en series financieras es estocástico y cambia en el tiempo, con saltos abruptos asociados a crisis.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "long range dependence"},
+        {"tipo": "PARTE_DE", "objeto": "multifractal scaling"}
+      ],
+      "cita_textual": "The characteristic exponent, called the Hurst exponent, H, relates to the autocorrelations of the"
+    },
+    {
+      "nombre": "efficient market hypothesis",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Hipótesis que asume retornos independientes/aleatorios y normalmente distribuidos; el paper argumenta que la naturaleza multifractal de los mercados la contradice, junto con Black-Scholes y sus supuestos.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "multifractal scaling"}
+      ],
+      "cita_textual": "the multifractal nature of ﬁnancial markets contradict the EMH, and thus the Black-Scholes pricing model and its associated assumptions"
+    },
+    {
+      "nombre": "implied volatility surface",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Superficie no plana de volatilidades implícitas resultante de usar un modelo Black-Scholes distinto para cada par strike-madurez; su existencia empírica contradice el supuesto de volatilidad constante.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "no-arbitrage conditions"},
+        {"tipo": "USA", "objeto": "Black-Scholes framework"}
+      ],
+      "cita_textual": "market practice consists in using one BSmodel for every pair (K, T), leading to the generation of a non-ﬂat implied volatility (IV) surface"
+    },
+    {
+      "nombre": "no-arbitrage conditions",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Restricciones que debe satisfacer una superficie de precios de calls (o de volatilidad implícita) para no permitir arbitraje; el paper las usa para construir su modelo paramétrico de superficie (MixVol).",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "implied volatility surface"}
+      ],
+      "cita_textual": "Arbitrage-free conditions: The call price surface"
+    },
+    {
+      "nombre": "variance swap",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Contrato forward sobre la varianza realizada anualizada del activo subyacente; ofrece exposición a varianza sin necesidad de delta-hedging, a diferencia de comprar/vender opciones vanilla.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "quadratic variation"},
+        {"tipo": "APLICA_A", "objeto": "dispersion trading"},
+        {"tipo": "MEJORA_A", "objeto": "delta hedging"}
+      ],
+      "cita_textual": "It gives investors exposure to variance without directly exposing themselves to movements in the underlying since it does not require delta hedging"
+    },
+    {
+      "nombre": "quadratic variation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Límite al que converge la varianza realizada cuando el número de fechas de muestreo tiende a infinito para un proceso de salto-difusión; el paper lo usa para derivar la valuación teórica del variance swap.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "variance swap"}
+      ],
+      "cita_textual": "the price of the variance swap converge to the quadratic variation of the logarithm of the stock price denoted by Lt"
+    },
+    {
+      "nombre": "log contract",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Posición corta estática en un contrato logarítmico que permite replicar la varianza total del subyacente de forma independiente del modelo, mediante una combinación ponderada de opciones europeas, siempre que el precio siga una difusión.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "variance swap"}
+      ],
+      "cita_textual": "a static short position in a log-contract which can be replicated with a weighted combination of European options"
+    },
+    {
+      "nombre": "implied correlation",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Nivel de correlación que hay que introducir en un modelo (p.ej. fórmula de Kirk para spread options) para recuperar los precios de mercado; se interpreta como la expectativa del mercado de opciones sobre riesgo sistemático.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "systematic risk"},
+        {"tipo": "USA", "objeto": "dispersion trading"}
+      ],
+      "cita_textual": "the implied correlation (IC) as the level of correlation to input in that formula in order to recover market prices"
+    },
+    {
+      "nombre": "implied correlation skew",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Cuando la superficie de correlación implícita no es plana, indicando que las colas de la distribución conjunta de retornos no están bien capturadas por el marco lognormal multivariado.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "implied correlation"}
+      ],
+      "cita_textual": "practitioners call it the implied correlation skew (ICS), indicating that tail distributions are not properly captured in the multivariate lognormal framework"
+    },
+    {
+      "nombre": "dispersion trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia que toma una posición corta en volatilidad del índice contra posiciones largas en volatilidad de una canasta de sus componentes, aprovechando que la volatilidad del índice suele cotizar significativamente por debajo de la de sus constituyentes.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "implied correlation"},
+        {"tipo": "USA", "objeto": "variance swap"},
+        {"tipo": "SE_OPONE_A", "objeto": "correlation swap"}
+      ],
+      "cita_textual": "a short index volatility position is traded against a basket of long single stock volatility positions. Such a long dispersion trade is short implied correlation"
+    },
+    {
+      "nombre": "correlation swap",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Swap entre la correlación promedio pairwise realizada de todos los miembros de un índice y un monto fijo determinado en el origen, desarrollado porque el dispersion trading no es una apuesta pura de correlación.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "dispersion trading"}
+      ],
+      "cita_textual": "correlation swap developed as a swap between the average pairwise correlation of all members of an index and a ﬁxed amount determined at inception"
+    },
+    {
+      "nombre": "MixVol model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo paramétrico propio del paper para la superficie de volatilidad implícita, presentado como robusto, arbitrage-free en espacio y en tiempo, fácil de implementar y computacionalmente rápido, habilitando trading sistemático de volatilidad.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "no-arbitrage conditions"},
+        {"tipo": "APLICA_A", "objeto": "implied volatility surface"}
+      ],
+      "cita_textual": "We then present an arbitrage-free model of implied volatility surface, which is robust, easy to implement and computationally fast, enabling for systematic volatility trading."
+    },
+    {
+      "nombre": "Value at Risk",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Riesgo expresado en términos monetarios que indica cuánto dinero podría perder un portafolio en un intervalo definido con una probabilidad dada; el paper lo describe esencialmente como la volatilidad del portafolio en términos de dólares.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "portfolio risk"},
+        {"tipo": "USA", "objeto": "Black-Scholes framework"}
+      ],
+      "cita_textual": "VaR is the risk expressed in dollar terms showing what amount of money your portfolio could lose during a deﬁned interval with a given probability"
+    },
+    {
+      "nombre": "vega risk",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Riesgo asociado a cambios inesperados en la volatilidad implícita; el paper señala que la fórmula BS-vega es una aproximación útil pero teóricamente inconsistente bajo volatilidad estocástica.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Black-Scholes framework"}
+      ],
+      "cita_textual": "the vega risk is associated with unexpected changes in volatility and should be accounted for"
+    },
+    {
+      "nombre": "volga",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Segunda derivada del precio de la opción respecto de la volatilidad, medida de riesgo introducida por el paper para capturar la exposición al P&L a movimientos en la volatilidad de la volatilidad.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "volatility of volatility"}
+      ],
+      "cita_textual": "new measures of risk such as the Volga (second derivative of the price with respect to volatility)"
+    },
+    {
+      "nombre": "long range dependence",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Correlaciones persistentes en el tiempo detectadas de forma clara en retornos absolutos o cuadrados aunque no en retornos crudos (con signo), motivando modelos de memoria larga en volatilidad (FIGARCH, MMAR).",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "volatility clustering"},
+        {"tipo": "MITIGA", "objeto": "efficient market hypothesis"}
+      ],
+      "cita_textual": "long-range dependence (LRD) was subject to debate for raw (signed) returns, but was plainly visible in absolute returns, square returns, or any other measure of the extent of ﬂuctuations"
+    },
+    {
+      "nombre": "volatility clustering",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Fenómeno según el cual altos niveles de volatilidad tienden a ser seguidos de más alta volatilidad, y niveles bajos por más volatilidad baja; motiva los modelos GARCH.",
+      "relaciones": [
+        {"tipo": "PREDICE", "objeto": "future volatility"}
+      ],
+      "cita_textual": "high volatility levels are followed by more high volatility, while low volatility is followed by more low volatility"
+    },
+    {
+      "nombre": "local volatility model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Familia de modelos que asignan una función determinística de volatilidad dependiente del subyacente y el tiempo para reproducir la sonrisa implícita observada en el mercado.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "implied volatility surface"},
+        {"tipo": "REQUIERE", "objeto": "no-arbitrage conditions"}
+      ],
+      "cita_textual": "The local volatility model"
+    },
+    {
+      "nombre": "stable distribution",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Familia de distribuciones (generalización del teorema central del límite sin varianza finita) usada para modelar retornos con colas gruesas y persistencia, en contraposición al supuesto de normalidad de Bachelier/Fama.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "efficient market hypothesis"}
+      ],
+      "cita_textual": "Mandelbrot [1963] described the ﬁnancial market as a system with fat tails, stable distributions and persistence"
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "El paper es un tratado matemático de pricing/riesgo de opciones y productos de volatilidad (variance swaps, dispersion, superficies de vol implícita) sin evidencia empírica propia ni foco intradía en futuros; su valor para el ecosistema ES es conceptual (vocabulario de multifractalidad y de productos de volatilidad), no directamente testeable en backtesting de order flow/excursiones intradía."
+  }
+}

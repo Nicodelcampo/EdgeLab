@@ -1,0 +1,536 @@
+The Architecture of the First Second: 
+Microstructural Pulse Dislocation, Collapse Dynamics, and Event-Driven 
+Market Structure 
+Author:​
+ William R. McConnell​
+ Fairport, NY, USA​
+ Email: bill@healthyglasstinting.com 
+© 2025, Split-Pulse Trading™ / William R. McConnell. All rights reserved. 
+ 
+Abstract 
+This paper presents evidence that the first second after a scheduled economic announcement 
+or earnings release is not an unstructured spike in volatility, but a repeatable, segmented 
+process of price adjustment. Using one-second event data and broker-verified live trading 
+records in EUR/USD, NZD/USD, GBP/USD and selected equities, I document a newly observed 
+phenomenon, Microstructural Pulse Dislocation (MPD): a sequence of directional price 
+“pulses” that unfolds within the first second following information arrival. I further describe 
+Event-Driven Microstructure Collapse (EMC), the rapid evaporation and unstable reformation 
+of order-book depth that accompanies and amplifies these pulses. 
+Across multiple high-impact releases—including U.S. Nonfarm Payrolls (NFP), U.S. Consumer 
+Price Index (CPI), FOMC rate announcements, major currency events, and post-earnings 
+volatility waves—the same architecture appears: a dominant first pulse, segmented follow-on 
+pulses, and depth collapse that allows price to traverse large distances through a thinned book. 
+A simple pre-positioned, hedged structure applied to these events generated consistent 
+profitability before MPD and EMC were named or modeled, suggesting that the edge arises 
+from structural features rather than parameter tuning or privileged data. 
+The results challenge the assumption that the first second is too chaotic to analyze and instead 
+treat it as a distinct microstructural regime. This paper defines MPD and EMC, illustrates them 
+using six representative events, and argues that they form the foundation of a broader 
+event-microstructure domain in which the first second becomes an object of independent 
+scientific and practical interest. 
+Keywords: Market Microstructure; High-Frequency Trading; Price Discovery; Event Studies; 
+Algorithmic Liquidity; Ultra-Short-Term Behavior; Order-Book Dynamics; Liquidity Collapse; 
+Information Shock. 
+
+JEL Codes: G14; G17; C58; C63; C55; G12. 
+ 
+1. Introduction 
+Scheduled macroeconomic releases and corporate earnings announcements concentrate 
+information into predictable timestamps. For decades, financial economists and practitioners 
+have studied event-driven returns, volatility and liquidity, typically using horizons measured in 
+minutes, hours or days. Even high-frequency studies tend to focus on one-minute or five-minute 
+windows and on cumulative effects rather than on what happens at the exact instant when new 
+information arrives. 
+In that context, the first second after the event has been treated as either unobservable or 
+irreducibly noisy. The prevailing implicit view is that whatever happens in that interval belongs to 
+“the machines” and is dominated by latency races, proprietary feeds and microsecond 
+advantage, not by structure that can be modeled at human-visible resolution. 
+This paper takes the opposite view. Drawing on thousands of manually observed one-second 
+charts and a sequence of live, broker-verified trades executed through a retail terminal, I argue 
+that the first second is architectural. Prices do not simply jump; they move in a segmented 
+sequence of directional thrusts. Liquidity does not vaguely “dry up”; it collapses and reforms in a 
+patterned way. Algorithms do not react as a blur; they fire in layers, leaving a visible trace in the 
+microstructure. 
+I introduce two central concepts: 
+●​ Microstructural Pulse Dislocation (MPD):​
+ A segmented sequence of directional price pulses within the first second after a 
+scheduled information shock, reflecting the layered activation of news-reading, execution 
+and risk-management algorithms.​
+ 
+●​ Event-Driven Microstructure Collapse (EMC):​
+ A rapid, event-local collapse and reformation of top-of-book depth and spreads, through 
+which price can travel long distances with relatively little volume.​
+ 
+These phenomena were discovered empirically while trading only two event types—U.S. NFP 
+and U.S. CPI—during a six-month proof-of-concept period in 2024. A simple, symmetric 
+long-short hedge was opened before each release and closed via stops and targets during the 
+first seconds after the event. The trades produced consistent net profits before any formal 
+model existed. Only after the fact were one-second charts, depth behavior and event-by-event 
+sequences analyzed, revealing a stable architecture behind the results. 
+The contribution of this paper is threefold: 
+
+1.​ It documents that the first second after scheduled releases exhibits a repeatable pulse 
+structure (MPD) rather than pure randomness.​
+ 
+2.​ It characterizes the associated depth dynamics (EMC) and shows how they enable large 
+dislocations.​
+ 
+3.​ It connects these structures to real, broker-verified profits obtained with a simple, 
+non-optimized hedged strategy, demonstrating that the architecture is strong enough to 
+be monetized even without institutional infrastructure.​
+ 
+A companion project extends this work into a broader Pulse Atlas and a formal metric system 
+(the Split Archetype Signature, SAS, framework). Here, the focus is on the core discovery: what 
+the first second looks like, how it behaves across events, and why it matters. 
+ 
+2. Literature Context and the First-Second Gap 
+The event-study literature in finance has documented that macroeconomic announcements and 
+earnings releases produce jumps in prices and volatility, as well as post-event drifts and 
+adjustments. High-frequency extensions show that these effects are concentrated in short 
+intervals around the event, and microstructure studies describe how spreads, depth and order 
+submission respond to news and volatility. 
+However, even in high-frequency settings, the first second is usually treated as: 
+●​ a single, instantaneous jump, or​
+ 
+●​ a noisy transition region between pre- and post-event regimes.​
+ 
+Studies of order-book resiliency and “fleeting liquidity” show that limit orders tend to recede 
+before large shocks and then rebuild, but they typically aggregate behavior over longer windows 
+and do not attempt to resolve the internal structure of the immediate reaction. Research on 
+high-frequency trading and latency arbitrage emphasizes who reacts first and how information 
+propagates across venues and instruments, but not the shape of the first response once it 
+starts. 
+This leaves a clear gap: 
+●​ The timing of the event is well studied.​
+ 
+●​ The longer-horizon response is well studied.​
+ 
+
+●​ The internal geometry of the first second is largely unmodeled.​
+ 
+The present paper is an attempt to fill that gap by treating the first second as an object of 
+independent inquiry, using one-second resolution that is available even on retail platforms. 
+ 
+3. Definitions: MPD and EMC 
+3.1 Event Windows 
+Let t0t_0t0​ denote the scheduled announcement time of a macroeconomic release or earnings 
+report. Define three windows: 
+●​ First-second reaction window:​
+ W=[t0,t0+1 second]W = [t_0, t_0 + 1\text{ second}]W=[t0​,t0​+1 second]​
+ 
+●​ Pre-event baseline window:​
+ W−=[t0−300 seconds,t0)W^{-} = [t_0 - 300\text{ seconds}, t_0)W−=[t0​−300 seconds,t0​)​
+ 
+●​ Short post-event.2 Microstructural Pulse Dislocation (MPD) 
+Conceptual definition.​
+ MPD is a segmented sequence of price pulses within the first second after a scheduled 
+information shock. Instead of a single “big bar,” the market revalues the asset in steps, each 
+corresponding to a layer of algorithmic response. 
+Operationally, an event in instrument XXX exhibits MPD if: 
+1.​ The mid-price path over WWW can be partitioned into at least two contiguous 
+sub-intervals​
+ [τi,τi+1)[\tau_i, \tau_{i+1})[τi​,τi+1​), with​
+ t0=τ0<τ1<⋯<τn≤t0+1t_0 = \tau_0 < \tau_1 < \dots < \tau_n \le t_0 + 
+1t0​=τ0​<τ1​<⋯<τn​≤t0​+1,​
+ such that within each segment the price change is strongly directional.​
+ 
+2.​ The segments are separated by brief pauses, smaller counter-moves, or 
+micro-consolidations, producing a “staircase” or stepwise profile rather than a single 
+jump.​
+ 
+3.​ The net displacement over WWW is large relative to pre-event one-second volatility, 
+indicating a meaningful regime shift.​
+ 
+
+The first pulse (Pulse #1) is typically the cleanest and fastest: it reflects ultra-low-latency 
+news-reading and statistical-arbitrage systems reacting to the headline surprise. Subsequent 
+pulses reflect slower layers: risk systems, cross-asset models, and inventory rebalancing. 
+●​ window:​
+ W+=[t0+1 second,t0+10 seconds]W^{+} = [t_0 + 1\text{ second}, t_0 + 10\text{ 
+seconds}]W+=[t0​+1 second,t0​+10 seconds]​
+ 
+All MPD and EMC behavior is defined with respect to these windows. 
+33.3 Event-Driven Microstructure Collapse (EMC) 
+EMC captures what happens to the order book in and immediately after Pulse #1: 
+●​ Top-of-book depth on the dominant side (bid or ask) collapses to a fraction of its 
+pre-event value.​
+ 
+●​ Spreads widen sharply, often by several multiples of the baseline.​
+ 
+●​ Price traverses multiple price levels with relatively few trades, indicating a temporary 
+liquidity vacuum.​
+ 
+●​ Depth then reappears unevenly, often skewed toward the direction of the initial move.​
+a 
+Where full depth data are unavailable, EMC can still be inferred from: 
+●​ abnormally large one-second candles,​
+ 
+●​ gapping behavior,​
+ 
+●​ sharp, fast reversals during the first few seconds, and​
+ 
+●​ slippage patterns in executed trades.​
+ 
+MPD describes the shape of the price response. EMC describes the state of the order book 
+that makes such a response possible. 
+ 
+4. Data and Methodology 
+
+4.1 Discovery Protocol: NFP and CPI First 
+The initial discovery period was intentionally narrow. From May through Oct 2024, the focus was 
+on just two types of U.S. releases in EUR/USD: 
+●​ Nonfarm Payrolls (NFP)​
+ 
+●​ Consumer Price Index (CPI)​
+ 
+These were chosen because: 
+●​ they are among the most impactful recurring macro events;​
+ 
+●​ they occur at fixed, easily planned times; and​
+ 
+●​ they reliably generate high participation from algorithms and institutions.​
+ 
+During this period, other high-impact releases (e.g., central bank decisions, JOLTS, ISM, CAD 
+and NZD employment) were often observed but not always traded, due to time and capacity 
+constraints. 
+The logic was simple: if a structural pattern exists in event-driven microstructure, it should reveal 
+itself first in these “core” FX events. 
+4.2 Instruments and Platforms 
+The core analysis uses: 
+●​ FX pairs:​
+ EUR/USD (NFP, CPI, FOMC),​
+ GBP/USD (U.K. CPI),​
+ NZD/USD (macro release in August 2025).​
+ 
+●​ Equities:​
+ Selected large-cap earnings events (e.g., ADBE, ULTA, DOCU, ORCL) as cross-asset 
+confirmation.​
+ 
+Price and one-second bar data were obtained from a combination of retail broker feeds and 
+charting platforms used in live trading. Broker statements provide time-stamped entries, exits, 
+position sizes and P&L. 
+4.3 Hedged Event Strategy 
+
+The live trades that motivated this research used a simple symmetric hedge: 
+1.​ Pre-event positioning:​
+ Before t0t_0t0​, open equal-sized long and short positions in the target pair (e.g., 
+EUR/USD), creating a notional straddle.​
+ 
+2.​ Stops and targets:​
+ Place stops and take-profit levels such that a clean, one-directional Pulse #1 is 
+expected to:​
+ 
+○​ stop out one leg at a controlled loss, and​
+ 
+○​ push the other leg far enough to produce a larger gain.​
+ 
+3.​ No optimization:​
+ Parameters (position size, stop distance, target distance) were not exhaustively tuned 
+across events; the intent was to test whether any robust structure existed at all, not to 
+fine-tune a model.​
+ 
+The question is whether MPD and EMC are strong enough features of the event microstructure 
+that this naive, symmetric configuration can yield repeatable, broker-verified profits. 
+ 
+5. Empirical Evidence: Six Representative Events 
+This section presents six events that illustrate the MPD/EMC architecture across assets and 
+event types. For each, I provide a brief summary, then embed the relevant figure. 
+ 
+5.1 Nonfarm Payrolls: Stop-Run and True Pulse 
+Event: U.S. NFP (EUR/USD), August 2025​
+ Structure: Single account (no hedge), learning to distinguish pre-release stop-runs from the 
+true MPD pulse. 
+In the minutes leading up to the NFP release, EUR/USD trades in a relatively stable range. 
+Then, shortly before t0t_0t0​, the market produces a sharp, downward sweep. Many traders 
+(including earlier versions of myself) experience this as a “fake move” that takes out stops and 
+creates emotional confusion. 
+Structurally, however, this pre-release move lacks the hallmarks of MPD: 
+
+●​ it does not align exactly with the release timestamp,​
+ 
+●​ it lacks clean segmentation into pulses, and​
+ 
+●​ the order-book behavior is more consistent with a deliberate thin-book stop-run than with 
+true news digestion.​
+ 
+At t0t_0t0​, a powerful upward MPD Pulse #1 appears. Recognizing that the earlier down-move 
+was a stop-run rather than the real event, I traded the long side into the actual post-release 
+pulse and captured the main move. 
+ 
+ 
+This event is important historically because it shows: 
+●​ how exposure to earlier whipsaws in 2024 trained pattern recognition;​
+ 
+●​ how MPD structure can be used to avoid pre-release traps; and​
+ 
+●​ how even without a hedge, understanding the architecture can tilt decisions toward the 
+correct side of the move.​
+ 
+ 
+5.2 FOMC 14:00 — Pulse, Collapse and Rebound 
+
+Event: FOMC policy announcement, EUR/USD, 14:00:00 ET​
+ Structure: Classic MPD plus EMC. 
+At the exact timestamp of the FOMC announcement, the first one-second bar prints a large 
+downward candle, reflecting ultra-fast algos processing the headline policy text. This is MPD 
+Pulse #1: range expansion, clear direction and immediate repricing. 
+Immediately afterward, liquidity collapses. The next one-second bars show a steep overshoot 
+and then a violent reversal as the order book temporarily cannot support normal trading. Depth 
+vanishes and reappears at new levels, while spreads widen sharply—textbook EMC behavior. 
+A second, upward MPD pulse then forms as slower-tier algorithms digest forward guidance, 
+press conference hints, and cross-asset relationships. Price settles into a post-event equilibrium 
+several seconds later, once EMC resolves and depth returns. 
+ 
+ 
+For the hedged strategy, this pattern is ideal: one leg is taken out in the first thrust, and the 
+surviving leg rides the continuation through EMC into the new equilibrium zone. 
+ 
+5.3 GBP CPI — Pre-Release Whipsaw versus True MPD Pulse 
+Event: U.K. CPI release, GBP/USD, August 20, 2025​
+ Structure: Pre-release “flicker,” then a clean MPD pulse followed by EMC. 
+
+Immediately before the CPI timestamp, the chart shows a small, erratic red candle. This is not 
+part of the MPD sequence; it reflects thinning liquidity and spread widening as market-makers 
+pull and adjust quotes ahead of the data. It is a fragility signal, not a true pulse. 
+At t0t_0t0​, a large green one-second bar prints: the real MPD Pulse #1. The bar’s 
+geometry—long body, minimal wick, abrupt range expansion—signals that the market has just 
+repriced GBP/USD based on the actual CPI surprise. 
+The next second shows a downward red candle as EMC takes hold. Depth evaporates, spreads 
+widen, and price travels through a shallow book, producing a temporary vacuum effect. 
+Subsequent one-second bars alternate in color with reduced but still elevated range as different 
+subclasses of algorithms digest core versus headline inflation, revisions and cross-asset 
+linkages. 
+ 
+ 
+This event is a useful template for distinguishing: 
+●​ pre-event microstructure noise (small, unstructured flickers) from​
+ 
+●​ event-time structure (MPD Pulse #1 + EMC).​
+ 
+ 
+5.4 NZD Macro Event — Canonical MPD Architecture 
+
+Event: NZD macro release (e.g., employment or GDP), NZD/USD, August 2025​
+ Structure: Extremely clean MPD plus collapse cascade. 
+NZD/USD trades quietly in the seconds before the release. At t0t_0t0​, a near-vertical 
+one-second bar appears, launching the price into a new region in a single move. This bar is a 
+near-perfect MPD Pulse #1: strong, directional, with minimal counter-movement. 
+Immediately afterward, the chart shows a sequence of large red candles as EMC drives a 
+collapse cascade. Top-of-book depth evaporates, spreads widen, and price steps down through 
+thin liquidity, forming a stair-step descent. After several seconds, pulse amplitude decays and a 
+new equilibrium forms far from the pre-event level. 
+ 
+This event is valuable because it displays the entire architecture—equilibrium, Pulse #1, EMC 
+cascade, digestion, stabilization—in a relatively uncluttered way, making MPD and EMC visually 
+obvious even to non-specialists. 
+ 
+5.5 ULTA Earnings — Earnings-Side MPD and EMC 
+Event: ULTA earnings release​
+ Structure: Single-stock earnings with MPD Pulse #1 and EMC similar to FX. 
+At the earnings timestamp, ULTA prints a large one-second green candle as headline results hit 
+the feed and ultra-fast news algos respond. This is MPD Pulse #1: a directional, high-velocity 
+repricing. Immediately afterward, a sharp red one-second bar appears as the order book 
+
+collapses. Top-of-book depth disappears, quotes jump, and price slices through shallow 
+levels—a clear EMC episode. Subsequent pulses alternate direction as different earnings 
+components (guidance, margins, forward commentary) are digested by slower-tier algorithms 
+and human participants. 
+ 
+ 
+The important point is that the same MPD + EMC architecture documented in NFP, CPI and 
+FOMC events appears in a single-stock earnings context. The physics of the first second is 
+cross-asset. 
+ 
+5.6 Adobe / DocuSign / Oracle — Variants of Earnings and EMC 
+The broader earnings sample shows consistent patterns across different names: 
+●​ Adobe (ADBE) shows a strong MPD Pulse #1 followed by an EMC-driven overshoot 
+and a secondary pulse as guidance and forward commentary are integrated. 
+
+ 
+●​ DocuSign (DOCU) displays an explosive initial green candle followed by a collapse and 
+oscillating pulses, matching the hierarchical digestion sequence seen in macro events. 
+​
+ 
+●​ Oracle (ORCL) highlights repeated EMC cycles: depth collapses and reforms several 
+times, generating multiple opportunities for collapse-driven scalps rather than a single 
+dominant pulse. 
+
+​
+ 
+ 
+These cases reinforce the claim that MPD and EMC are not idiosyncratic to FX. They are 
+features of event-driven electronic markets more generally. 
+ 
+6. Profitability and Structural Edge 
+One reason this architecture deserves attention is that it has already produced real, 
+broker-verified profits under real-time conditions. 
+During the 2024 proof-of-concept period: 
+●​ A symmetric hedged structure was deployed before each of several major NFP and CPI 
+releases in EUR/USD.​
+ 
+●​ Each trade involved equal-sized long and short positions with symmetric stops and 
+targets.​
+ 
+●​ No sophisticated filtering, volatility scaling, or dynamic parameter tuning was used.​
+ 
+●​ The net result was a sequence of gains in which the winning leg of the straddle 
+consistently outweighed the losing leg.​
+ 
+
+The key is that: 
+●​ MPD Pulse #1 almost always moves far enough in one direction to remove one side of 
+the straddle; and​
+ 
+●​ EMC and subsequent pulses typically extend the move enough for the surviving leg to 
+reach profit targets under reasonable settings.​
+ 
+From a theoretical perspective, this is remarkable because: 
+●​ the strategy does not rely on predicting the direction of the surprise;​
+ 
+●​ it does not require proprietary data feeds or colocation; and​
+ 
+●​ it was discovered empirically before any formal model existed.​
+ 
+Even more conservative assumptions—such as capturing only a small fraction of the available 
+distance in each event—still imply a substantial compounding opportunity when multiplied 
+across dozens of events per month and across macro + earnings calendars. 
+The purpose of this paper is not to advertise a trading system, but to argue that a structural 
+edge exists at the level of microstructure architecture, not simply at the level of indicators or 
+parameters. 
+ 
+7. Toward a Pulse Atlas 
+The six events shown here represent only a subset of the observed universe. Extending the 
+analysis across many months and events reveals: 
+●​ a high incidence of MPD structures in NFP, CPI and central bank decisions;​
+ 
+●​ frequent EMC behavior in high-impact events with strong surprises;​
+ 
+●​ similar pulse patterns in earnings at predictable timestamps (e.g., 16:01, 16:05, 16:10, 
+16:15); and​
+ 
+●​ clusters of events that share recognizable “archetypes” of first-second behavior.​
+ 
+In the companion work, I describe a Pulse Atlas that groups events into archetypes such as: 
+
+●​ Single-Dominant Burst: One strong Pulse #1 with minimal follow-on pulses.​
+ 
+●​ Staircase Repricing: Multiple clear pulses, each forming a step.​
+ 
+●​ Vacuum Collapse: Extreme EMC with repeated collapse–rebuild cycles.​
+ 
+●​ Clustered Earnings Pulses: Multiple local MPD episodes at known post-close times.​
+ 
+●​ Contested Interpretation: Irregular pulses and unstable EMC, signaling poor conditions 
+for simple hedged extraction.​
+ 
+The Atlas shows that profitable opportunities are not randomly scattered but tend to concentrate 
+in certain archetypes with strong structural signatures, and that weak or chaotic regimes have 
+recognizable fingerprints as well. 
+ 
+8. Discussion and Implications 
+The findings of this paper suggest that the first second after a scheduled event is not the chaotic 
+blur it is often assumed to be. Instead, it is a structured environment governed by: 
+●​ the design of news-reading algorithms;​
+ 
+●​ pre-programmed risk systems and volatility controls;​
+ 
+●​ cross-asset reaction functions; and​
+ 
+●​ the microstructural physics of order-book collapse and reformation.​
+ 
+From a market design and microstructure standpoint, several implications follow: 
+1.​ New Object of Study.​
+ The first second after an event deserves to be treated as a distinct regime, with its own 
+models and metrics, rather than being averaged into longer windows.​
+ 
+2.​ Execution and Risk Management.​
+ Execution algorithms that recognize MPD and EMC regimes can adapt order types, 
+routing and participation rates accordingly, potentially improving slippage and reducing 
+adverse selection.​
+ 
+
+3.​ Market Power and Access.​
+ The fact that this architecture is visible at one-second resolution on a retail terminal 
+suggests that structural edge is not fully locked behind institutional speed and data 
+advantages. Speed matters, but so does recognizing the architecture that speed 
+operates within.​
+ 
+4.​ Scientific Opportunity.​
+ There is room for a new field—what I have called Event-Microstructure Science—that 
+studies how markets digest information under extreme time compression, using MPD 
+and EMC as core building blocks.​
+ 
+ 
+9. Research Origin and Cognitive Context 
+It is unusual for a retail trader, working outside institutional infrastructure, to identify, trade and 
+then formalize a new layer of market microstructure. In this case, the path to discovery was 
+shaped by an atypical cognitive context. 
+In 2012, I survived a severe accident that resulted in traumatic brain injury. Subsequent 
+evaluation by a major neurology department showed atypical neural reorganization and 
+unusually strong working-memory performance—at a level consistent with what is sometimes 
+described as acquired savant-like functioning in very specific domains. In practice, this meant 
+the ability to: 
+●​ sustain attention on dense, rapidly changing visual fields for long periods;​
+ 
+●​ retain and mentally replay detailed sequences of one-second price and volume behavior; 
+and​
+ 
+●​ notice patterns in how pulses, collapses and recoveries repeated across events and 
+instruments.​
+ 
+These cognitive changes did not make the markets easier; they made observation deeper. 
+MPD and EMC were not discovered by scanning a database with an existing model in mind, but 
+by watching the same type of event, at the same time of month, across many months, until the 
+architecture became unmistakable. 
+This context is not mentioned to claim uniqueness or to assert that others cannot study or 
+extend this work. Rather, it is offered as an honest explanation of how such a discovery could 
+emerge from outside traditional institutional settings and as a reminder that the origin of a 
+framework can matter for how it is interpreted and developed. 
+
+ 
+10. Conclusion 
+This paper has argued that the first second after scheduled economic releases and earnings 
+announcements is governed by a repeatable architecture, not by pure chaos. The two central 
+components of this architecture are: 
+●​ Microstructural Pulse Dislocation (MPD):​
+ segmented, directional price pulses within the first second; and​
+ 
+●​ Event-Driven Microstructure Collapse (EMC):​
+ rapid depth evaporation and asymmetric reformation that enable large price moves 
+through thinned books.​
+ 
+Using six representative events from FX and equities, and broker-verified trading records from 
+2024–2025, I have shown that: 
+●​ MPD and EMC appear consistently across NFP, CPI, FOMC, NZD, GBP CPI and 
+earnings events;​
+ 
+●​ a simple, symmetric hedged strategy implemented in real time, with no optimization and 
+no privileged feeds, produced repeatable net profits by exploiting this architecture; and​
+ 
+●​ the structure is visible at one-second resolution, making it accessible to scientific study 
+even without microsecond data.​
+ 
+The aim is not to claim that MPD and EMC are the final word on event microstructure. On the 
+contrary, they are proposed as first-order constructs in a new domain—event-microstructure 
+science—that will require further measurement, modeling and testing. But they are enough to 
+establish that the first second is not an inscrutable blur; it is a structured environment with its 
+own physics, its own risks and its own opportunities. 
+For institutions, funds and researchers, the implication is straightforward: there is real 
+informational and economic content in the architecture of the first second. For those interested 
+in collaborating, extending or challenging these findings, this paper and its charts are an 
+invitation to do so. 
+The architecture is visible.​
+ The definitions are now on record.​
+ What happens next will depend on who chooses to look more closely. 
+ 
+
+Author Bio 
+William R. McConnell is an independent market microstructure researcher and founder of 
+Split-Pulse Trading™, based in Fairport, New York. After surviving a severe accident in 2012, he 
+was later found to have unusually strong working-memory performance associated with 
+observable neural reorganization. He applied this capacity to the systematic observation of 
+one-second price behavior around scheduled economic releases and earnings events, leading 
+to the identification of Microstructural Pulse Dislocation (MPD) and Event-Driven Microstructure 
+Collapse (EMC). His work focuses on event-driven market structure, risk and execution, with an 
+emphasis on transparent, broker-verified empirical evidence. 
+ 

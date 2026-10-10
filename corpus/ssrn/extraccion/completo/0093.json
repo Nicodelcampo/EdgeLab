@@ -1,0 +1,126 @@
+{
+  "doc_id": 93,
+  "titulo": "Do Macroeconomic Fundamentals Still Drive Currency Price Determination? Evidence from Market Microstructure",
+  "resumen_operativo": "El paper demuestra mediante modelos de ecuaciones estructurales que los fundamentos macroeconómicos (inflación, condiciones económicas) tienen escaso poder explicativo sobre las divisas a nivel semanal entre 2010-2020. En cambio, las políticas monetarias y la actividad de traders (institucionales vs. no institucionales) dominan la formación de precios, lo que indica a los quants que deben priorizar los datos de flujos y el posicionamiento institucional por sobre la macroeconomía tradicional.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "trader heterogeneity",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Diferencias en información, aversión al riesgo y restricciones de capital entre distintos tipos de participantes que generan impactos asimétricos en el precio.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "price discovery"}
+      ],
+      "cita_textual": "Trader heterogeneity emerges as a dominant pricing channel in JPY, GBP, and AUD, providing the first cross-currency evidence that institutional and non-institutional positions affect prices asymmetrically."
+    },
+    {
+      "nombre": "institutional trading",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Actividad de administradores de activos y fondos apalancados que procesan la información de manera rápida y manejan inventarios sujetos a restricciones de balance.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "non-institutional trading"},
+        {"tipo": "PREDICE", "objeto": "price discovery"}
+      ],
+      "cita_textual": "Institutional captures inventory pressure, risk-bearing capacity, and information processing by asset managers and leveraged-money traders."
+    },
+    {
+      "nombre": "non-institutional trading",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Flujos más lentos correspondientes a actores comerciales y retail, frecuentemente asociados a demandas de cobertura o trades impulsados por el sentimiento de mercado.",
+      "relaciones": [
+        {"tipo": "PREDICE", "objeto": "price discovery"}
+      ],
+      "cita_textual": "Non-Institutional captures slower-moving positioning associated with commercial and retail participation, including hedging demand and sentiment-based behaviour."
+    },
+    {
+      "nombre": "volatility skewness",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida de la asimetría proyectada en los retornos capturada a partir de opciones; refleja las expectativas adelantadas de los traders de opciones.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "risk reversal"}
+      ],
+      "cita_textual": "The composite price construct combines spot exchange rates with risk reversals (volatility skewness), capturing both realised movements and forward-looking asymmetry derived from options markets."
+    },
+    {
+      "nombre": "risk reversal",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Instrumento del mercado de opciones utilizado para medir la asimetría y el sesgo de las expectativas direccionales respecto a una divisa.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "volatility skewness"}
+      ],
+      "cita_textual": "Risk reversals are included because they reflect option traders’ expectations of price asymmetry."
+    },
+    {
+      "nombre": "macroeconomic fundamental",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Indicadores tradicionales como inflación o producción industrial, cuya capacidad para explicar variaciones de tipo de cambio en horizontes cortos ha disminuido.",
+      "relaciones": [],
+      "cita_textual": "Inflation differentials have negligible explanatory power for FX pricing in the 2010–2020 sample, while broader economic conditions contribute selectively"
+    },
+    {
+      "nombre": "structural equation modeling",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Metodología multivariada para medir el impacto de variables latentes interconectadas (como la economía o los flujos) sobre el mercado.",
+      "relaciones": [],
+      "cita_textual": "PLS-SEM allows the explanatory power of multiple interconnected factors to be assessed within a single framework."
+    },
+    {
+      "nombre": "monetary policy",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Condiciones de política y liquidez, particularmente las tasas de interés y expectativas, que actúan como propulsores primordiales del FX.",
+      "relaciones": [
+        {"tipo": "PREDICE", "objeto": "price discovery"}
+      ],
+      "cita_textual": "Monetary policy transmission operates primarily through policy rates rather than money supply, and is among the strongest pricing channels"
+    },
+    {
+      "nombre": "inventory risk",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Presión sobre los intermediarios y market makers para reajustar precios ante desequilibrios sostenidos y por sus propias restricciones de capital.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "price discovery"}
+      ],
+      "cita_textual": "Institutional traders adjust positions based on balance-sheet constraints and risk-management considerations"
+    },
+    {
+      "nombre": "implied volatility",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Métrica extraída de las opciones que actúa como el principal vector que transmite el impacto de las sorpresas macro a las cotizaciones.",
+      "relaciones": [],
+      "cita_textual": "This underscores option-implied volatility as the primary transmission channel of shocks."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Los fundamentos macroeconómicos clásicos (inflación, actividad económica) explican muy poco la varianza de precios del FX a escala semanal, siendo superados ampliamente por las condiciones de política monetaria y variables de microestructura.",
+      "mercado": "FX (EUR, JPY, GBP, CAD, AUD, NZD)",
+      "periodo": "2010-2020",
+      "magnitud": "Valores f2 negligibles (0.001-0.046) para inflación",
+      "condiciones": "Muestra semanal, estimación in-sample con datos de Bloomberg",
+      "robustez": "media",
+      "cita_textual": "Inflation differentials have negligible explanatory power for FX pricing in the 2010–2020 sample, while broader economic conditions contribute selectively and with smaller magnitudes than monetary and microstructure channels."
+    },
+    {
+      "afirmacion": "La segmentación del order flow muestra que las posiciones de los inversores institucionales y no institucionales tienen impactos predictivos asimétricos y fuertes en pares específicos.",
+      "mercado": "FX (especialmente JPY, GBP, AUD)",
+      "periodo": "2010-2020",
+      "magnitud": "Efectos f2 altos (0.230-0.426) para los factores de heterogeneidad",
+      "condiciones": "Datos CFTC/FFAJ de posiciones (martes) sobre rendimientos (viernes)",
+      "robustez": "media",
+      "cita_textual": "Trader heterogeneity emerges as a dominant pricing channel in JPY, GBP, and AUD, providing the first cross-currency evidence that institutional and non-institutional positions affect prices asymmetrically."
+    },
+    {
+      "afirmacion": "La política monetaria influye en las tasas de cambio a través del nivel de la tasa de interés base más que por la oferta de dinero.",
+      "mercado": "FX (EUR, JPY, GBP, CAD)",
+      "periodo": "2010-2020",
+      "magnitud": "Altos pesos formativos en el factor Monetario y significancia fuerte del canal completo",
+      "condiciones": "Muestra semanal de agregados monetarios y tasas EONIA/TONAR, etc.",
+      "robustez": "media",
+      "cita_textual": "Monetary policy transmission operates primarily through policy rates rather than money supply, and is among the strongest pricing channels in EUR, JPY, GBP, and CAD."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "Aunque las conclusiones de que el flujo domina sobre la macro aplican, el modelo predice cambios semanales y usa posiciones de la CFTC; no se puede operar intradiariamente."
+  }
+}

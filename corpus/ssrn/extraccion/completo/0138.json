@@ -1,0 +1,148 @@
+{
+ "doc_id": 138,
+ "titulo": "Self-Improving Alpha Mining for Quantitative Trading via Multi-Agent Large Language Models with Knowledge Base Accumulation",
+ "resumen_operativo": "El paper propone un framework automatizado basado en agentes LLM (WriterAgent, JudgeAgent, BacktestEngine, ReviewerAgent) organizados en dos loops (interno para refinar código y externo para backtesting y acumulación de conocimiento). La novedad principal radica en integrar las 101 Formulaic Alphas de WorldQuant y el registro de alphas descubiertos previamente como un 'prior' estructurado (vía RAG) para guiar la síntesis de código. El sistema es evaluado en el mercado accionario de Vietnam (450 acciones con datos OHLCV diarios), demostrando una convergencia más rápida y estrategias de mayor calidad (IC medio de 0.04 y Sharpe de 2.41) frente a pipelines de generación libre sin conocimiento estructurado.",
+ "calidad_paper": "alta",
+ "conceptos": [
+  {
+   "nombre": "Self-Improving Alpha Mining Framework",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Framework automatizado que aprovecha LLMs para generar, refinar y evaluar señales alpha de trading mediante un esquema multi-agente y una arquitectura de loops anidados.",
+   "relaciones": [
+    {
+     "tipo": "USA",
+     "objeto": "Multi-Agent System"
+    },
+    {
+     "tipo": "USA",
+     "objeto": "Nested Loop Architecture"
+    }
+   ],
+   "cita_textual": "This paper proposes an automated framework that leverages large language models (LLMs) to systematically generate, refine, and evaluate trading alpha strategies through a multi-agent pipeline... organized in a nested-loop architecture."
+  },
+  {
+   "nombre": "Multi-Agent System",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Diseño con cuatro agentes especializados (WriterAgent, JudgeAgent, ReviewerAgent, BacktestEngine) que asumen distintos roles para generar código, evaluarlo, backtestearlo y proveer feedback sin intervención humana.",
+   "relaciones": [
+    {
+     "tipo": "PARTE_DE",
+     "objeto": "Self-Improving Alpha Mining Framework"
+    }
+   ],
+   "cita_textual": "Four specialized agents (Writer, Judge, Reviewer, Evaluator) collaboratively generate, validate, and improve candidate alphas without human intervention."
+  },
+  {
+   "nombre": "WorldQuant 101 Formulaic Alphas",
+   "tipo": "dato",
+   "definicion_en_contexto": "Biblioteca de 101 fórmulas matemáticas usadas empíricamente como patrones estructurados. Se codifican como registros recuperables para acotar el espacio de búsqueda del WriterAgent.",
+   "relaciones": [
+    {
+     "tipo": "USA",
+     "objeto": "Knowledge Base Retrieval"
+    }
+   ],
+   "cita_textual": "We integrate the WorldQuant 101 Formulaic Alphas as a generation foundation, grounding LLM synthesis in proven mathematical patterns and substantially narrowing the search space"
+  },
+  {
+   "nombre": "Inner Refinement Loop",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Bucle interno de refinamiento que itera entre el WriterAgent (generación) y el JudgeAgent (evaluación de sintaxis, lógica y look-ahead bias) para obtener código de alta calidad.",
+   "relaciones": [
+    {
+     "tipo": "USA",
+     "objeto": "JudgeAgent"
+    },
+    {
+     "tipo": "USA",
+     "objeto": "WriterAgent"
+    }
+   ],
+   "cita_textual": "The inner loop refines candidate alpha code through iterative collaboration between WriterAgent and JudgeAgent, ensuring that only high-quality candidates are backtested."
+  },
+  {
+   "nombre": "Outer Feedback Loop",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Bucle externo que evalúa las fórmulas refinadas a través de datos históricos (backtesting) y, de superar un umbral de calidad, las almacena en la base de conocimiento principal.",
+   "relaciones": [
+    {
+     "tipo": "USA",
+     "objeto": "BacktestEngine"
+    }
+   ],
+   "cita_textual": "For each trading idea, run the inner loop to obtain refined code, backtest on historical data, analyze results, and conditionally accumulate successful alphas to the knowledge base."
+  },
+  {
+   "nombre": "Knowledge Base Retrieval",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Mecanismo que obtiene los ejemplos más similares de estrategias previas exitosas y patrones de 101 Alphas basándose en similitud coseno (usando un modelo de embeddings), para inyectarlos en el prompt del LLM.",
+   "relaciones": [
+    {
+     "tipo": "PARTE_DE",
+     "objeto": "Inner Refinement Loop"
+    }
+   ],
+   "cita_textual": "At each inner-loop iteration, the WriterAgent queries both sources to retrieve relevant examples and proven formulaic patterns, ensuring that generation is anchored in both empirical discoveries and established mathematical operators."
+  },
+  {
+   "nombre": "Information Coefficient (IC)",
+   "tipo": "metrica",
+   "definicion_en_contexto": "Medida utilizada para evaluar la calidad del factor; computada como la correlación de rangos de Spearman entre la señal de alpha diaria y los retornos a futuro.",
+   "relaciones": [
+    {
+     "tipo": "MIDE",
+     "objeto": "alpha ranking strength"
+    }
+   ],
+   "cita_textual": "The Information Coefficient (IC) measures the rank correlation between generated alpha signals and realized forward returns, with higher values indicating stronger factor quality."
+  },
+  {
+   "nombre": "Sharpe Ratio of IC",
+   "tipo": "metrica",
+   "definicion_en_contexto": "Medida que indica la consistencia del IC en el tiempo, penalizando factores con varianza alta del IC.",
+   "relaciones": [
+    {
+     "tipo": "MIDE",
+     "objeto": "risk-adjusted consistency"
+    }
+   ],
+   "cita_textual": "The Sharpe ratio of IC is the annualized IC information ratio, measuring the consistency of the IC signal over time and penalizing strategies with high IC variance"
+  },
+  {
+   "nombre": "Signal Normalization",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Etapa defensiva donde la señal generada es recortada (clipping) al rango de [-5, 5] para prevenir que observaciones extremas dominen las métricas.",
+   "relaciones": [
+    {
+     "tipo": "PARTE_DE",
+     "objeto": "Alpha Code Interface"
+    }
+   ],
+   "cita_textual": "The clipping operation constrains signal magnitudes to the range [-5, 5]... This ensures all generated code is executable, produces the required signal matrix output, prevents extreme outliers from dominating backtest metrics"
+  },
+  {
+   "nombre": "Look-ahead Bias",
+   "tipo": "concepto",
+   "definicion_en_contexto": "Falla metodológica donde se usa información que no estaba disponible en el momento de evaluación, penalizada activamente por el JudgeAgent.",
+   "relaciones": [
+    {
+     "tipo": "MITIGA",
+     "objeto": "JudgeAgent"
+    }
+   ],
+   "cita_textual": "Look-ahead bias is prevented by ensuring signals computed on day d strictly use data available up to day d, with forward returns evaluated at d + 5 or later."
+  }
+ ],
+ "hallazgos": [
+  {
+   "descripcion": "El framework basado en conocimiento y loops de validación genera iterativamente alphas financieros de alta robustez (IC ≈ 0.04 y Sharpe ratio ≈ 2.41) en un tiempo promedio menor a 2 minutos por idea, demostrando eficiencia comparable o superior al desarrollo manual."
+  },
+  {
+   "descripcion": "El uso explícito de un knowledge base como contexto guiador (retrieval de 101 Alphas) acelera significativamente la tasa de convergencia del código, reduciendo el promedio de iteraciones necesarias (3.8 a 2.1) y aumentando la validez del código en un 19% frente a estrategias baseline de LLMs puros."
+  }
+ ],
+ "aplicabilidad_es_intradia": {
+  "nivel": "baja",
+  "nota": "El marco metodológico para síntesis de alphas asistida por LLM multi-agente es transferible conceptualmente, pero los experimentos se validaron con datos de precios/volumen diarios (OHLCV) en la bolsa de Vietnam para horizontes de retornos a 5 días (swing-trading / mediano plazo), sin evaluar su efectividad sobre dinámicas de microestructura o ruido inherente al trading algorítmico intradía de muy alta frecuencia."
+ }
+}

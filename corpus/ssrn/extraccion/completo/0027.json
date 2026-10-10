@@ -1,0 +1,228 @@
+{
+  "doc_id": 27,
+  "titulo": "A Stochastic Partial Differential Equation Model for Limit Order Book Dynamics",
+  "resumen_operativo": "Propone un modelo SPDE analíticamente tratable para la densidad del libro de órdenes, con representación de dimensión finita vía procesos de difusión Markov de bajo orden. Deriva relaciones cerradas entre parámetros del order flow (tasas de cancelación, difusión, arribo) y cantidades observables (forma del libro, volumen, profundidad, volatilidad del precio), y calibra el modelo con datos LOBSTER de NASDAQ (INTC, MSFT, QQQ, SPY). Útil para un quant que quiera un estimador de volatilidad intradía basado en profundidad del libro o para entender la relación mecánica entre order flow imbalance y movimiento de precio.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "limit order book",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Estado del mercado resumido por la función de volumen V(t,p) de órdenes pendientes de ejecución en cada nivel de precio p; convención de signos negativos para compra y positivos para venta.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "market microstructure noise"},
+        {"tipo": "USA", "objeto": "queue position"}
+      ],
+      "cita_textual": "the state of the limit order book is summarized by the volume V (t, p) of orders awaiting execution at price levels p on a grid with mesh size given by the minimum price increment or tick size"
+    },
+    {
+      "nombre": "stochastic partial differential equation model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Ecuación en derivadas parciales estocástica con ruido multiplicativo que describe la evolución de la densidad centrada del libro de órdenes u_t(x), combinando términos de convección, difusión y cancelación proporcional.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "limit order book"},
+        {"tipo": "MEJORA_A", "objeto": "queueing system model"},
+        {"tipo": "APLICA_A", "objeto": "market making"}
+      ],
+      "cita_textual": "We propose an analytically tractable class of models for the dynamics of a limit order book, described as the solution of a stochastic partial differential equation (SPDE) with multiplicative noise"
+    },
+    {
+      "nombre": "queueing system model",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Enfoque alternativo que modela la dinámica del libro como sistema de colas (point process), preservando la naturaleza discreta pero computacionalmente costoso a alta frecuencia.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "stochastic partial differential equation model"}
+      ],
+      "cita_textual": "These models preserve the discrete nature of the dynamics at high frequencies but can become computationally challenging as one tries to incorporate realistic dynamics"
+    },
+    {
+      "nombre": "finite dimensional realization",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Representación de un proceso de dimensión infinita u_t mediante un proceso Markov de baja dimensión Z_t y un mapa φ, que hace el modelo computacionalmente tratable para estimación y simulación.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "stochastic partial differential equation model"},
+        {"tipo": "MITIGA", "objeto": "backtest overfitting"}
+      ],
+      "cita_textual": "A process u = (ut)t≥0 taking values in an (infinite-dimensional) function space E is said to admit a finite dimensional realization of dimension d ∈N if there exists an Rd-valued stochastic process Z"
+    },
+    {
+      "nombre": "order flow imbalance",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Diferencia neta entre el flujo de órdenes de compra y venta en el tope del libro; determina el movimiento del precio bid/ask según una relación lineal empíricamente verificada.",
+      "relaciones": [
+        {"tipo": "PREDICE", "objeto": "short-term returns"},
+        {"tipo": "CAUSA", "objeto": "midpoint reversion"},
+        {"tipo": "USA", "objeto": "queue position"}
+      ],
+      "cita_textual": "Price changes during a time interval [t, t+∆t] are triggered through the interaction of the net order ﬂow, or order ﬂow imbalance (OFI) and the outstanding limit orders at the top of the order book"
+    },
+    {
+      "nombre": "market depth",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Volumen de órdenes límite en el tope del libro (bid o ask), aproximado por δ²/2 ∇u(0±); su tasa de cambio relativa determina la dinámica del midprice.",
+      "relaciones": [
+        {"tipo": "PREDICE", "objeto": "mid-price"},
+        {"tipo": "MIDE", "objeto": "limit order book"}
+      ],
+      "cita_textual": "These quantities represent the depth at the top of the book; we will refer to them as ‘market depth’"
+    },
+    {
+      "nombre": "mid-price",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Promedio del bid y ask; en el modelo su dinámica queda determinada enteramente por el order flow en el tope del libro y la profundidad alrededor del midprice, con un coeficiente de impacto θ.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "market depth"},
+        {"tipo": "EQUIVALE_A", "objeto": "midpoint reversion"}
+      ],
+      "cita_textual": "We observe that price dynamics is entirely determined by the order ﬂow at the top of the book and the depth of the limit order book around the mid-price"
+    },
+    {
+      "nombre": "market impact",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Coeficiente θ que relaciona el desequilibrio del order flow con la magnitud del cambio de precio; único vestigio de la microestructura tras cancelarse el tick size en la derivación.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "order flow imbalance"},
+        {"tipo": "MIDE", "objeto": "mid-price"}
+      ],
+      "cita_textual": "The only trace of the microstructure is the impact coeﬃcient θ which relates the order ﬂow imbalance to the magnitude of the price change, and whose amplitude may vary across assets"
+    },
+    {
+      "nombre": "Bachelier model",
+      "tipo": "concepto",
+      "definicion_en_contexto": "El modelo de dos factores implica que la dinámica del precio corresponde a un movimiento Browniano aritmético (Bachelier), con drift dependiente de las tasas relativas de crecimiento de la profundidad bid/ask y volatilidad determinada por la correlación bid-ask.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "mid-price"}
+      ],
+      "cita_textual": "The implied price dynamics thus corresponds to the Bachelier model"
+    },
+    {
+      "nombre": "order book profile",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Perfil promedio del libro de órdenes dado, salvo constante, por las autofunciones principales de forma exponencial-seno; su máximo se ubica a pocos ticks del midprice para acciones líquidas de tick grande.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "limit order book"},
+        {"tipo": "USA", "objeto": "tick size"}
+      ],
+      "cita_textual": "Typically, the order book proﬁle for liquid large–tick securities a few ticks from the mid price"
+    },
+    {
+      "nombre": "mean-reverting order book depth",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Regularidad empírica de que el volumen y tamaño de cola del libro exhiben reversión a la media en escalas intermedias (horas, día) en lugar de tendencia, motivando la especificación del modelo de la Sección 4.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "midpoint reversion"},
+        {"tipo": "USA", "objeto": "Ornstein-Uhlenbeck process"}
+      ],
+      "cita_textual": "consistent with the observation that intraday dynamics of order book volume and queue size over intermediate time scales (hours, day) typically exhibit mean reversion rather than a trend"
+    },
+    {
+      "nombre": "reciprocal gamma diffusion",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Forma en que se reescribe la dinámica del volumen bid/ask (V^a_t, V^b_t) para la estimación de parámetros; distribución estacionaria Inverse Gamma con cola tipo Pareto.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "mean-reverting order book depth"},
+        {"tipo": "USA", "objeto": "Ornstein-Uhlenbeck process"}
+      ],
+      "cita_textual": "Let us rewrite the dynamics of V a t and V b t in the form of reciprocal Gamma diﬀusions"
+    },
+    {
+      "nombre": "martingale estimation function",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Método de estimación (Bibby-Sørensen) usado para obtener los parámetros de autocorrelación ν_a, ν_b a partir de series temporales discretas de volumen bid/ask.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "reciprocal gamma diffusion"}
+      ],
+      "cita_textual": "we use a martingale estimation function (Bibby and Sørensen, 1995) for the autocorrelation parameters ν⋆, ⋆∈{a, b}"
+    },
+    {
+      "nombre": "intraday volatility estimator",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Estimador de la volatilidad del precio derivado de parámetros del order flow (σ_a, σ_b, ϱ_a,b, θ) vía la relación σ_S = θ√(σ_b²+σ_a²−2σ_bσ_aϱ_a,b), comparado con volatilidad realizada del precio directo.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "mid-price"},
+        {"tipo": "USA", "objeto": "market impact"}
+      ],
+      "cita_textual": "There are various estimators for intraday price volatility in this model, which allows to test the model"
+    },
+    {
+      "nombre": "LOBSTER database",
+      "tipo": "dato",
+      "definicion_en_contexto": "Base de datos de libros de órdenes de alta frecuencia para acciones y ETFs de NASDAQ, usada para calibrar y estimar los parámetros del modelo en INTC, MSFT, QQQ y SPY.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "queue position"}
+      ],
+      "cita_textual": "We use time series of order books for NASDAQ stocks and ETFs, from the LOBSTER database"
+    },
+    {
+      "nombre": "bid-ask order flow correlation",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Correlación negativa observada empíricamente entre los flujos de orden de compra y venta (ϱ_a,b), generada por market makers, que reduce la volatilidad del precio en el modelo.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "intraday volatility estimator"},
+        {"tipo": "CAUSA", "objeto": "midpoint reversion"}
+      ],
+      "cita_textual": "We observe negative values of correlation ϱa,b across bid and ask order ﬂows which is consistent with observations in (Carmona and Webster, 2013)"
+    },
+    {
+      "nombre": "tick size",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Incremento mínimo de precio en la grilla del libro de órdenes; para acciones de tick grande el perfil del libro se concentra a pocos ticks del midprice, lo que motiva escalados no lineales del modelo.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "limit order book"},
+        {"tipo": "USA", "objeto": "order book profile"}
+      ],
+      "cita_textual": "sb(V ) = 42.15, sa(V ) = 42.16 and the bid-ask spread is equal in this case to the tick size, which is 1 cent"
+    },
+    {
+      "nombre": "high-frequency trading",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Componente del order flow generado por HFT que opera bajo estrictas restricciones de inventario, cuya contribución neta al volumen del libro es cero en promedio en el largo plazo pero fluctúa a alta frecuencia; se modela como ruido multiplicativo.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "stochastic partial differential equation model"},
+        {"tipo": "APLICA_A", "objeto": "market making"}
+      ],
+      "cita_textual": "these features may be modeled as a multiplicative noise term of the form σbut(x)dW b for buy orders (x < 0) and σaut(x)dW a for sell orders (x > 0)"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "El modelo de un solo factor (autofunción principal) reproduce razonablemente bien el perfil promedio del libro de órdenes de QQQ (primeros 20 niveles) en NASDAQ.",
+      "mercado": "US equities/ETFs (QQQ, NASDAQ)",
+      "periodo": "17 noviembre 2016",
+      "magnitud": "no se reportan errores numéricos de ajuste, solo ajuste visual (Figura 4)",
+      "condiciones": "ajuste in-sample de un solo día, sin backtest de trading ni costos",
+      "robustez": "baja",
+      "cita_textual": "The one-factor model based on the principal eigenfunction yields a reasonable approximation for the average order book profile"
+    },
+    {
+      "afirmacion": "La reversión a la media de la profundidad de mercado ocurre en escalas de tiempo del orden de segundos para ETFs líquidos (QQQ, SPY) y de alrededor de 10 segundos para acciones de tick grande (MSFT, INTC), según la tasa estimada ν.",
+      "mercado": "US equities/ETFs (INTC, MSFT, QQQ, SPY, NASDAQ)",
+      "periodo": "15-17 noviembre 2016",
+      "magnitud": "ν_b, ν_a estimados por segundo: QQQ ~1.3-2.5, SPY ~1.3-1.9, MSFT ~0.24-0.52, INTC ~0.08-0.16 (Tabla 1)",
+      "condiciones": "estimación in-sample con datos de 3 días, intervalos de 10-50ms, sin validación OOS ni costos de transacción",
+      "robustez": "media",
+      "cita_textual": "the model predicts mean reversion of market depths on the scale of 1/ν which corresponds to seconds for the ETFs QQQ and SPY and around 10 seconds for large tick stocks such as MSFT and INTC"
+    },
+    {
+      "afirmacion": "La correlación entre el order flow de compra y venta (ϱ_a,b) es sistemáticamente negativa en los cuatro tickers analizados, consistente con la actividad de market makers.",
+      "mercado": "US equities/ETFs (INTC, MSFT, QQQ, SPY, NASDAQ)",
+      "periodo": "15-17 noviembre 2016",
+      "magnitud": "ϱ_a,b entre -0.019 y -0.224 según ticker/día (Tabla 1)",
+      "condiciones": "muestra de 3 días, sin test estadístico formal de significancia reportado en el texto principal",
+      "robustez": "media",
+      "cita_textual": "We observe negative values of correlation ϱa,b across bid and ask order ﬂows which is consistent with observations in (Carmona and Webster, 2013)"
+    },
+    {
+      "afirmacion": "Los estimadores de volatilidad intradía basados en el modelo (RV y RCG, derivados de la dinámica de profundidad bid/ask) son del mismo orden de magnitud y siguen de cerca a la volatilidad realizada del precio calculada directamente, para INTC, MSFT, SPY y QQQ.",
+      "mercado": "US equities/ETFs (INTC, MSFT, QQQ, SPY, NASDAQ)",
+      "periodo": "17 noviembre 2016",
+      "magnitud": "comparación gráfica (Figura 9) en ventanas de 30 minutos, valores de σ_S entre ~0.1% y ~1.4% por segundo según ticker; sin métrica numérica de error (RMSE, correlación) reportada",
+      "condiciones": "comparación cualitativa in-sample de un día, sin backtest de estrategia ni costos de transacción",
+      "robustez": "baja",
+      "cita_textual": "we observe that the model-based estimators are of the same order and closely track the intraday realized price volatility, which shows that the model captures correctly the qualitative relation between order ﬂow and volatility"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "El estimador de volatilidad intradía basado en profundidad bid/ask (RV/RCG) y la relación mecánica order flow imbalance → mid-price podrían testearse sobre el order flow del ES, pero el paper solo valida cualitativamente en equities/ETFs, sin backtest de estrategia, costos ni validación OOS."
+  }
+}

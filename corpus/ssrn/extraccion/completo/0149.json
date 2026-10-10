@@ -1,0 +1,113 @@
+{
+  "doc_id": 149,
+  "titulo": "High Frequency Trading: The Technological Puzzle",
+  "resumen_operativo": "Tesis de maestría en Derecho (University of Zurich, 2015) que revisa el marco legal y regulatorio de HFT en Suiza y Europa. Cubre definiciones de HFT, estrategias y algoritmos (market making, arbitraje estadístico, front running), efectos sobre liquidez y volatilidad, regulación bajo MiFID II y FMIA suiza, y manipulación de mercado (spoofing, insider dealing, front running, dark pools). Es un trabajo descriptivo/legal sin análisis empírico ni datos cuantitativos. Útil como referencia regulatoria y taxonomía de estrategias de HFT, pero no contiene hallazgos cuantitativos ni backtests.",
+  "calidad_paper": "baja",
+  "conceptos": [
+    {
+      "nombre": "high-frequency trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Trading de alta frecuencia definido por: (1) uso de infraestructura tecnológica avanzada para minimizar latencia, (2) algoritmos de generación, ruteo y ejecución de órdenes, (3) colocation/proximity hosting, (4) altos ratios de cancelación/modificación, (5) posiciones intradía sin overnight. La tesis discute definiciones legales bajo MiFID II.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "latency"},
+        {"tipo": "USA", "objeto": "market making"}
+      ],
+      "cita_textual": "High frequency trading: the use of sophisticated technological infrastructure and computer algorithms to trade securities at extremely high speed"
+    },
+    {
+      "nombre": "latency",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Tiempo de transmisión y procesamiento de datos entre el mercado y el servidor del trader. HFT firms invierten fuertemente en reducir latencia mediante colocation, fiber optics, microwave signals y hardware especializado (FPGA).",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "high-frequency trading"},
+        {"tipo": "CAUSA", "objeto": "adverse selection"}
+      ],
+      "cita_textual": "Latency: the time delay between the moment a trading signal is generated and the moment an order reaches the exchange"
+    },
+    {
+      "nombre": "spoofing",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Práctica de manipulación de mercado donde se colocan órdenes no genuinas con intención de cancelarlas antes de ejecución para crear una impresión falsa de oferta/demanda y mover el precio. Discutido en detalle bajo MiFID II y MAR.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "market manipulation"},
+        {"tipo": "CAUSA", "objeto": "bid-ask spread"}
+      ],
+      "cita_textual": "Spoofing: placing orders with the intention of cancelling them before execution to create a false impression of supply or demand"
+    },
+    {
+      "nombre": "insider trading",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Trading basado en información privilegiada no pública. La tesis discute la dificultad de detectar insider trading en entornos de HFT debido a la velocidad y opacidad de las operaciones algorítmicas.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "market manipulation"},
+        {"tipo": "CAUSA", "objeto": "information asymmetry"}
+      ],
+      "cita_textual": "Insider dealing: the use of non-public information for trading purposes"
+    },
+    {
+      "nombre": "front running",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Práctica donde un intermediario ejecuta órdenes por cuenta propia antes de ejecutar las de sus clientes, aprovechando el conocimiento anticipado del flujo de órdenes. La tesis lo discute en el contexto de dark pools y HFT.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "market manipulation"},
+        {"tipo": "CAUSA", "objeto": "adverse selection"}
+      ],
+      "cita_textual": "Front running: trading ahead of client orders based on knowledge of the pending order flow"
+    },
+    {
+      "nombre": "market making",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia de provisión de liquidez mediante cotizaciones simultáneas de compra y venta, usada por HFTs. La tesis discute si los HFTs son genuine market makers o liquidity takers oportunistas.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "high-frequency trading"},
+        {"tipo": "APLICA_A", "objeto": "liquidity provision"}
+      ],
+      "cita_textual": "Market making strategies are among the most common HFT strategies"
+    },
+    {
+      "nombre": "market manipulation",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Manipulación de mercado cubierta bajo MAR (Market Abuse Regulation) europea. Incluye spoofing, quote stuffing, layering, momentum ignition y otras prácticas potenciadas por la velocidad del HFT.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "high-frequency trading"},
+        {"tipo": "USA", "objeto": "spoofing"}
+      ],
+      "cita_textual": "Market manipulations and HFT: regulations under MiFID II and MAR"
+    },
+    {
+      "nombre": "MiFID II",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Directiva europea de mercados financieros (Markets in Financial Instruments Directive II) que introduce requisitos específicos para HFT: autorización de firms, obligaciones de market making, circuit breakers, tick size regime, y registro de órdenes.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "high-frequency trading"},
+        {"tipo": "MITIGA", "objeto": "market manipulation"}
+      ],
+      "cita_textual": "MiFID II: Tackling Challenges of High Frequency Trading through MiFID II"
+    },
+    {
+      "nombre": "Dark pools",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Venues de trading alternativos sin transparencia pre-trade donde las órdenes no se muestran públicamente. La tesis discute su regulación bajo MiFID II y los riesgos de front running y manipulación en dark pools.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "market microstructure"},
+        {"tipo": "CAUSA", "objeto": "information asymmetry"}
+      ],
+      "cita_textual": "Dark pools: alternative trading venues with no pre-trade transparency"
+    },
+    {
+      "nombre": "liquidity provision",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Provisión de liquidez por HFTs: la tesis discute el debate sobre si los HFTs mejoran o dañan la liquidez, presentando evidencia mixta de la literatura. Bajo MiFID II, ciertos HFTs están obligados a proveer liquidez continua.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "market making"},
+        {"tipo": "CAUSA", "objeto": "bid-ask spread"}
+      ],
+      "cita_textual": "Liquidity: the ability to trade quickly without significantly affecting the price"
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "Tesis legal/regulatoria sin contenido cuantitativo. La taxonomía de estrategias HFT y el resumen de riesgos (spoofing, front running, dark pools) pueden ser útiles como contexto para entender el landscape regulatorio, pero no ofrece herramientas de trading aplicables al ecosistema de ES."
+  }
+}

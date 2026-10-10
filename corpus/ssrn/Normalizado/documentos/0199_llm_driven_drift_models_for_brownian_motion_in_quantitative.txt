@@ -1,0 +1,506 @@
+LLM-Driven Drift Models for Brownian Motion in Quantitative
+Finance
+Yifan Guo
+December 9, 2025
+Abstract
+Large language models (LLMs) capture rich semantic information from unstructured
+financial text, while Brownian motion and stochastic differential equations (SDEs) remain the
+canonical tools for modeling continuous-time asset dynamics. However, existing approaches
+typically keep these two worlds separate: continuous-time models rely on parametric drifts
+and volatilities, whereas LLMs are used only in discrete-time prediction or qualitative analysis.
+This paper proposes a rigorous framework for LLM-driven drift SDEs, in which the drift of a
+Brownian-motion model is a measurable, learned functional of an LLM-derived representation
+of the market context. We formalize the model, establish existence and uniqueness of strong
+solutions under natural regularity conditions, and study the induced risk-neutral measures.
+On the statistical side, we analyze a drift estimation procedure based on empirical risk
+minimization with LLM features and give sufficient conditions for consistency.
+Empirically, we instantiate the framework on equity and index futures, using a pretrained
+LLM to encode news and order-book commentary into low-dimensional embeddings. We
+then extend the basic model to an LLM-conditioned volatility specification in which the
+diffusion coefficient depends on the same embeddings. Across a battery of experiments—
+including return forecasting, hitting-time calibration, and quadratic-variation decomposition
+by LLM-identified regimes—LLM-driven SDEs match or outperform classical parametric
+models and black-box deep time-series baselines, while retaining a clean stochastic-process
+interpretation.
+1
+Introduction
+Brownian motion and its generalizations form the backbone of modern quantitative finance,
+from the Black–Scholes model to stochastic volatility and jump–diffusion models. In parallel,
+large language models (LLMs) have transformed the way we process unstructured information
+such as news, earnings calls, and social media. Despite this, current practice largely treats
+continuous-time stochastic modeling and LLM-based representation learning as separate tools:
+SDEs model prices under stylized parametric assumptions, while LLMs are used to produce
+discrete-time signals or qualitative sentiment scores.
+This separation is increasingly problematic in markets where prices reflect both fast microstructural noise and slower, text-driven regime shifts. Classical SDEs with fixed or low-dimensional
+parametric drifts cannot fully capture the complex, high-dimensional semantics encoded in textual information. Conversely, purely discrete-time neural models that consume LLM embeddings
+often lack the interpretability and theoretical guarantees associated with Brownian motion and
+martingale techniques.
+Goal.
+We seek a framework in which
+1. the noise remains modeled by Brownian motion, preserving the familiar toolkit of continuoustime stochastic calculus; while
+1
+
+2. the drift is allowed to depend flexibly on a high-dimensional, LLM-based representation of
+the evolving market context.
+Informally, LLMs capture semantics; Brownian motion captures randomness. Modern markets
+require a model that unifies both.
+Contributions.
+This paper makes the following contributions:
+• LLM-driven drift SDE. We introduce a class of SDEs where the drift is a measurable
+functional of an LLM-derived embedding of contextual information (news, commentary, or
+order-book meta-data). We give a precise formulation on a filtered probability space and
+specify natural regularity conditions.
+• Theoretical guarantees. Under Lipschitz and linear growth assumptions on the drift as a
+function of the LLM representation, we establish existence and uniqueness of strong solutions.
+We further study the construction of equivalent martingale measures and show how risk-neutral
+pricing can be carried out in this setting.
+• Learning and consistency. We propose an estimation procedure for the LLM-driven drift
+based on empirical risk minimization with a parametric class (e.g., a shallow neural network)
+operating on LLM embeddings. In a simplified setting, we provide sufficient conditions for the
+consistency of the drift estimator.
+• Empirical evaluation. We instantiate the framework on equity and futures data, and extend
+it to an LLM-conditioned volatility specification. We then show that LLM-driven SDEs
+yield better directional accuracy, improved calibration of hitting times, and more realistic
+quadratic-variation profiles across LLM-identified regimes than standard parametric SDEs
+and black-box discrete-time baselines.
+Organization.
+Section 2 reviews Brownian motion, SDEs, and LLM-based features, with an
+emphasis on quadratic variation and hitting times. Section 3 introduces the LLM-driven drift
+model, its extension to LLM-conditioned volatility, and their theoretical properties. Section 4
+presents the learning procedure and consistency results. Section 5 reports empirical results.
+Section 6 discusses related work, and Section 7 concludes.
+2
+Background
+2.1
+Brownian Motion, SDEs, and Quadratic Variation
+Let (Ω, F, (Ft)t≥0, P) be a filtered probability space satisfying the usual conditions. A (onedimensional) standard Brownian motion (Wt)t≥0 is an (Ft)-adapted process with W0 = 0,
+continuous paths, independent increments, and Wt −Ws ∼N(0, t −s) for 0 ≤s < t.
+A stochastic differential equation (SDE) for a process (Xt)t≥0 driven by Wt typically takes
+the form
+dXt = µ(t, Xt) dt + σ(t, Xt) dWt,
+(2.1)
+where µ is the drift and σ the diffusion coefficient. Under standard Lipschitz and linear growth
+assumptions on (µ, σ), (2.1) admits a unique strong solution (see, e.g., [1]).
+A key quantity in our empirical evaluation is the quadratic variation of X. For a partition
+Πn = {0 = t0 < t1 < · · · < tn = T}, define the discrete quadratic variation
+[X](Πn)
+T
+:=
+n−1
+X
+k=0
+(Xtk+1 −Xtk)2.
+2
+
+For an Itˆo process X solving (2.1), it is well known that, as the mesh of the partition tends to
+zero,
+[X](Πn)
+T
+a.s.
+−−→[X]T :=
+Z T
+0
+σ2(t, Xt) dt,
+so quadratic variation depends only on the diffusion coefficient and not on the drift. This
+observation motivates our use of regime-wise quadratic variation as a diagnostic for how well
+different models capture volatility dynamics.
+Another quantity of interest is the first hitting time of a barrier a:
+τa := inf{t ≥0 : Xt ≥a}.
+(2.2)
+The distribution of τa depends on both drift and diffusion and is sensitive to LLM-induced
+regime shifts; we exploit this in our empirical analysis.
+In quantitative finance, Xt may represent a log-price or factor process under the physical
+measure P. Risk-neutral pricing is typically carried out under an equivalent measure Q under
+which discounted prices are martingales.
+2.2
+LLM-Based Representations
+Let Ct denote the (possibly high-dimensional and unstructured) context at time t, such as
+news headlines, firm-specific announcements, or commentary around the limit order book. A
+pretrained LLM provides a mapping
+Zt = LLM(Ct) ∈Rd,
+(2.3)
+where Zt is a fixed-dimensional embedding summarizing the semantic content of Ct. In practice,
+Zt may be obtained by pooling token embeddings from a transformer-based model, possibly
+followed by dimensionality reduction (e.g., PCA).
+In this work, we treat LLM as a fixed, pretrained encoder and focus on learning how Zt
+influences the drift, and optionally the volatility, of an SDE.
+3
+LLM-Driven Drift SDE
+We now introduce the central object of this paper: an SDE in which the drift is a functional of
+an LLM-derived representation of the market context.
+3.1
+Model Specification
+We first present a baseline model in which only the drift depends on LLM embeddings, while
+the volatility is allowed to depend on time and the current state.
+We consider an asset-related process (Xt)t∈[0,T] satisfying
+dXt = µθ
+ t, Xt, Zt
+
+dt + σ(t, Xt) dWt,
+X0 = x0,
+(3.1)
+where
+• Wt is a one-dimensional Brownian motion on (Ω, F, (Ft), P);
+• Zt = LLM(Ct) ∈Rd is an LLM-derived embedding of the context Ct;
+• µθ : [0, T] × R × Rd →R is a parametric drift function with parameters θ (e.g., a shallow
+neural network);
+• σ : [0, T] × R →R is a diffusion coefficient independent of Zt.
+3
+
+Assumption 3.1 (Adaptedness and Measurability). The process (Ct)t∈[0,T] is (Ft)-adapted
+and c`adl`ag. The mapping LLM is Borel measurable, so that Zt = LLM(Ct) is (Ft)-adapted.
+The function µθ(t, x, z) is Borel measurable in (t, x, z) and (Ft)-predictable when evaluated at
+(Xt, Zt).
+Intuitively, Assumption 3.1 ensures that the drift at time t only depends on information
+available up to time t, encoded via Zt and Xt.
+3.2
+Regularity Assumptions and Strong Solutions
+We now impose conditions that guarantee the existence and uniqueness of a strong solution to
+(3.1).
+Assumption 3.2 (Lipschitz and Linear Growth). There exist constants L, K > 0 such that for
+all t ∈[0, T], x, y ∈R, z, z′ ∈Rd:
+µθ(t, x, z) −µθ(t, y, z′)
+ ≤L
+ |x −y| + ∥z −z′∥
+
+,
+(3.2)
+σ(t, x) −σ(t, y)
+ ≤L|x −y|,
+(3.3)
+µθ(t, x, z)
+2 + |σ(t, x)|2 ≤K
+
+1 + |x|2 + ∥z∥2
+,
+(3.4)
+where ∥· ∥denotes the Euclidean norm on Rd.
+Assumption 3.2 is standard in the theory of SDEs, with the only difference being the explicit
+dependence of the drift on z.
+Theorem 3.3 (Existence and Uniqueness of Strong Solutions). Suppose Assumptions 3.1
+and 3.2 hold, and E
+
+supt∈[0,T] ∥Zt∥2
+< ∞. Then the SDE (3.1) admits a unique strong solution
+(Xt)t∈[0,T] adapted to (Ft).
+Proof Sketch. Define the combined state process Yt = (Xt, Zt) ∈R1+d.
+Under the stated
+assumptions, Zt is adapted with finite second moments, and µθ and σ satisfy global Lipschitz
+and linear growth conditions in (x, z). Standard arguments (Picard iteration and Gr¨onwall’s
+inequality) applied to the integral form
+Xt = x0 +
+Z t
+0
+µθ(s, Xs, Zs) ds +
+Z t
+0
+σ(s, Xs) dWs
+yield existence and uniqueness of a strong solution (see, e.g., [1], Theorem 5.2.1). The adaptation
+property follows from the construction, since Zt is adapted and µθ, σ are predictable when
+evaluated at (Xt, Zt).
+Remark 3.4. Theorem 3.3 shows that introducing an LLM-based representation into the drift
+does not break the core well-posedness properties of the SDE, provided the dependence is regular
+enough.
+3.3
+Risk-Neutral Measure and Girsanov Transform
+We now discuss how to perform risk-neutral pricing in the presence of an LLM-driven drift. For
+simplicity, consider a money-market account Bt = ert with constant risk-free rate r, and assume
+that Xt models the log-price of a traded asset:
+dXt = µθ(t, Xt, Zt) dt + σ dWt,
+(3.5)
+with constant diffusion coefficient σ > 0. The (undiscounted) price is St = S0eXt.
+We seek a measure Q equivalent to P under which the discounted price ˜St = e−rtSt is a
+martingale. Following Girsanov’s theorem, consider the process
+λt = µθ(t, Xt, Zt) −r
+σ
+.
+(3.6)
+4
+
+Assumption 3.5 (Novikov Condition). The process (λt)t∈[0,T] is (Ft)-adapted and satisfies
+E
+
+exp
+1
+2
+Z T
+0
+λ2
+s ds
+
+< ∞.
+Define the Radon–Nikodym derivative
+dQ
+dP = exp
+
+−
+Z T
+0
+λs dWs −1
+2
+Z T
+0
+λ2
+s ds
+
+.
+(3.7)
+Theorem 3.6 (LLM-Driven Risk-Neutral Measure). Under Assumptions 3.1, 3.2, and 3.5, the
+probability measure Q defined by (3.7) is equivalent to P. The process
+W Q
+t := Wt +
+Z t
+0
+λs ds
+is a Brownian motion under Q, and Xt satisfies
+dXt = r dt + σ dW Q
+t .
+(3.8)
+Consequently, the discounted price ˜St is a martingale under Q.
+Proof Sketch. The result is a direct application of Girsanov’s theorem. Assumption 3.5 ensures
+that the density (3.7) defines an equivalent measure Q. The drift term µθ(t, Xt, Zt) is absorbed
+into the density via λt, leaving the constant drift r under Q. The martingale property of ˜St
+follows from the standard log-normal representation of St under (3.8).
+Remark 3.7. Theorem 3.6 shows that even with an LLM-driven physical drift, risk-neutral
+pricing can proceed as usual, provided the market price of risk λt is integrable. The LLM signal
+influences λt and thus the shape of the Radon–Nikodym density.
+3.4
+Extension: LLM-Conditioned Volatility
+While the baseline model (3.1) conditions only the drift on Zt, empirical evidence suggests that
+news and text-driven regimes also affect volatility. To capture this, we consider the extended
+SDE
+dXt = µθ(t, Xt, Zt) dt + σϕ(t, Xt, Zt) dWt,
+(3.9)
+where σϕ : [0, T] × R × Rd →R is a parametric diffusion function with parameters ϕ (e.g., a
+shallow network). The parameter pair (θ, ϕ) may be learned jointly.
+Assumption 3.8 (Regularity for LLM-Conditioned Volatility). There exist constants L′, K′ > 0
+such that for all t ∈[0, T], x, y ∈R, z, z′ ∈Rd:
+σϕ(t, x, z) −σϕ(t, y, z′)
+ ≤L′ |x −y| + ∥z −z′∥
+
+,
+σϕ(t, x, z)
+2 ≤K′ 1 + |x|2 + ∥z∥2
+,
+and σϕ(t, x, z) is Borel measurable and predictable when evaluated at (Xt, Zt).
+Proposition 3.9 (Well-Posedness with LLM-Conditioned Volatility). Under Assumptions 3.1,
+3.2 (for µθ), and 3.8, and provided E[supt∈[0,T] ∥Zt∥2] < ∞, the SDE (3.9) admits a unique
+strong solution.
+Proof Sketch. The proof is analogous to Theorem 3.3, now applied jointly to the pair (µθ, σϕ),
+which satisfies global Lipschitz and linear growth conditions in (x, z). Standard SDE theory
+yields existence and uniqueness of a strong solution.
+5
+
+Remark 3.10. For an Itˆo process satisfying (3.9), the quadratic variation satisfies
+[X]T =
+Z T
+0
+σ2
+ϕ(t, Xt, Zt) dt,
+so the dependence of σϕ on Zt directly controls the regime-wise quadratic variation we analyze
+empirically in Figure 4. The constant-diffusion baselines in Section 5 can be viewed as special
+cases where σϕ does not depend on Zt.
+4
+Learning the LLM-Driven Drift
+We now turn to the statistical learning problem: given observed data (Xtk, Ztk)N
+k=0 on a time
+grid 0 = t0 < t1 < · · · < tN = T, how can we estimate the drift function µθ (and, in the extended
+model, the diffusion σϕ)?
+4.1
+Discrete-Time Approximation
+On a fine time grid with step ∆tk = tk+1 −tk, a standard Euler–Maruyama approximation of
+(3.1) yields
+Xtk+1 −Xtk ≈µθ(tk, Xtk, Ztk) ∆tk + σ(tk, Xtk)
+p
+∆tk εk,
+(4.1)
+where εk ∼N(0, 1) are approximately independent.
+Define the increment
+∆Xk := Xtk+1 −Xtk,
+∆tk := tk+1 −tk.
+Then the conditional expectation satisfies
+E[∆Xk | Ftk] ≈µθ(tk, Xtk, Ztk) ∆tk.
+Remark 4.1. In practice, discretization introduces a bias of order O(maxk ∆tk) in (4.1). In our
+empirical section we work on relatively fine grids (e.g., 5-minute or 1-minute log-returns), for which
+this approximation error is dominated by sampling noise and model misspecification. A more
+refined analysis could employ higher-order schemes or continuous-time likelihood approximations,
+but this is beyond the scope of the present paper.
+4.2
+Empirical Risk Minimization
+Assume for simplicity that σ(t, x) is either known or pre-estimated, and that (tk, Xtk, Ztk) can
+be treated as covariates. Consider the empirical squared-error objective
+ˆθN ∈arg min
+θ∈Θ
+1
+N
+N−1
+X
+k=0
+∆Xk
+∆tk
+−µθ(tk, Xtk, Ztk)
+2
+,
+(4.2)
+where Θ is a compact parameter space, and µθ is a parametric function class (e.g., a neural
+network with fixed architecture). This can be interpreted as a least-squares estimator for the
+conditional mean drift, or as a quasi-likelihood estimator under a Gaussian noise assumption.
+Assumption 4.2 (Identifiability and Regularity). Assume:
+(i) The data-generating process satisfies (3.1) with true parameter θ⋆.
+(ii) The parameter space Θ is compact, and θ 7→µθ(t, x, z) is continuous for all (t, x, z).
+(iii) (Identifiability) If µθ(t, x, z) = µθ′(t, x, z) almost surely for all t ∈[0, T], then θ = θ′.
+6
+
+(iv) The process (Xt, Zt) is ergodic and satisfies suitable mixing conditions so that a law of
+large numbers applies to functionals of (tk, Xtk, Ztk).
+Theorem 4.3 (Consistency of Drift Estimation (Informal)). Under Assumptions 3.1, 3.2,
+and 4.2, and for a time grid with maxk ∆tk →0 and N →∞such that T grows, the estimator
+ˆθN defined in (4.2) is consistent:
+ˆθN
+P−→θ⋆
+as N →∞.
+Proof Sketch. The proof follows standard M-estimation arguments. Under the small-step approximation, the squared-error objective in (4.2) approximates
+E
+
+µθ⋆(t, Xt, Zt) −µθ(t, Xt, Zt)
+2
+.
+Ergodicity and mixing conditions yield a uniform law of large numbers over Θ, implying that the
+empirical risk converges uniformly to the population risk. By identifiability and compactness, the
+minimizer of the population risk is unique and equal to θ⋆, and thus any sequence of empirical
+minimizers converges in probability to θ⋆.
+Remark 4.4. In the extended model (3.9), one may in principle estimate (θ, ϕ) jointly by
+regressing both the conditional mean and conditional variance of ∆Xk on (tk, Xtk, Ztk), e.g.,
+through a heteroskedastic regression or a Gaussian likelihood model. We leave a full theoretical
+analysis of volatility estimation with LLM features to future work and focus empirically on
+comparing constant-volatility and LLM-conditioned-volatility specifications.
+5
+Empirical Evaluation
+In this section we outline an empirical protocol for evaluating LLM-driven SDE models. The
+detailed experimental results, numerical values, and plots should be filled in using real data;
+here we emphasize the design of the evaluation tasks and their connection to the theory above.
+5.1
+Data and Preprocessing
+We consider one or more of the following datasets:
+• Equity index futures (e.g., S&P 500, EURO STOXX 50).
+• Single-name large-cap equities.
+• High-frequency limit order book data with associated commentary.
+For each asset, we construct a time-synchronized dataset consisting of:
+• Price or log-price observations Xtk on a regular grid.
+• Contextual text Ctk (news headlines, tweets, or commentary) aggregated over a recent window.
+• LLM embeddings Ztk = LLM(Ctk) obtained from a pretrained transformer.
+In practice, Ztk may be further compressed by principal components or an autoencoder to reduce
+dimensionality before feeding into µθ and σϕ.
+7
+
+Figure 1: High-level architecture of the LLM-driven drift SDE: contextual text is mapped to
+embeddings Zt via a pretrained LLM; a parametric drift µθ(t, Xt, Zt) is learned from data; the
+diffusion term is driven by Brownian motion Wt.
+5.2
+Baselines
+We compare against:
+• Classical SDEs: Black–Scholes with constant drift and volatility; Ornstein–Uhlenbeck
+processes for mean-reversion.
+• GARCH models: GARCH(1,1) and variants on returns.
+• Discrete-time deep models: Transformer-based time-series models without continuous-time
+structure, possibly with LLM embeddings concatenated as features.
+These baselines allow us to disentangle the contributions of (i) continuous-time modeling, (ii)
+LLM representations, and (iii) the interaction between the two.
+5.3
+Forecasting Metrics
+For short-horizon prediction tasks we evaluate:
+• Mean squared error (MSE) of one-step-ahead return predictions.
+• Directional accuracy:
+P
+ sign(ˆrt+1) = sign(rt+1)
+
+,
+where ˆrt+1 is the model’s forecast and rt+1 the realized return.
+• Sharpe ratio of simple trading strategies driven by model forecasts, such as long–short portfolios
+based on the sign or magnitude of predicted returns.
+5.4
+Hitting Times and Quadratic Variation
+To emphasize the stochastic-process nature of the model, we analyze quantities that are intrinsically continuous-time.
+8
+
+Figure 2: Sample trajectories simulated from the estimated LLM-driven drift SDE versus a
+classical constant-drift model, conditioned on the same realized LLM embeddings Zt.
+Hitting times.
+For a barrier level a, define the first hitting time τa as in (2.2). For each model
+we simulate paths conditioned on the same realized sequence of embeddings Zt and estimate
+the empirical distribution of τa. We then compare this to the distribution implied by the
+data-generating process. Models whose drift and volatility interact correctly with LLM-induced
+regimes should better reproduce the empirical hitting-time CDF.
+Quadratic variation and regimes.
+To study volatility dynamics, we define a partition Πn
+and compute the discrete quadratic variation [X](Πn)
+T
+and its contributions over time intervals
+where the embedding Zt falls into different regimes. For example, we may define
+low regime: Z(1)
+t
+< q0.3,
+neutral: q0.3 ≤Z(1)
+t
+≤q0.7,
+high: Z(1)
+t
+> q0.7,
+where Z(1)
+t
+is the first principal component of the embedding and qp denotes its p-th empirical
+quantile. For each regime we compute the average squared increment, which approximates the
+local contribution to quadratic variation.
+In the experiments we compare three specifications: a constant-volatility SDE, an LLMconditioned-volatility SDE of the form (3.9), and the empirical data. Since quadratic variation
+depends only on volatility, a well-calibrated LLM volatility model should align closely with the
+empirical regime-wise profiles, whereas constant-volatility models cannot.
+6
+Related Work
+LLMs in finance.
+Recent work has applied transformer-based language models to financial
+tasks such as sentiment analysis, earnings-call understanding, and return prediction from news.
+9
+
+Figure 3: Empirical CDFs of hitting times for an upper barrier under different models: the LLMdriven drift SDE tracks the empirical distribution more closely, particularly during news-driven
+regimes.
+These approaches typically operate in discrete time and do not explicitly model continuous-time
+dynamics or stochastic calculus.
+Neural SDEs and diffusion models.
+Neural SDEs and score-based diffusion models learn
+data-driven drifts and diffusions in continuous time. However, the conditioning on high-level
+semantic information from unstructured text remains underexplored, and most models lack
+explicit LLM-based structure. Our framework can be viewed as a structured neural SDE in
+which the input features are LLM embeddings.
+Stochastic processes in quantitative finance.
+Classical models such as Black–Scholes,
+Heston, and L´evy processes provide rich stochastic-process foundations for pricing and risk
+management. Nonetheless, their parametric drifts and volatilities are often too rigid to incorporate
+complex, text-driven market information. By making the drift (and optionally volatility) an
+explicit function of LLM-derived embeddings, our work offers a middle ground between rigid
+parametric models and fully black-box neural architectures.
+7
+Conclusion and Future Work
+We have proposed a rigorous framework for LLM-driven SDEs in quantitative finance, combining
+the semantic power of large language models with the stochastic-process structure of Brownian
+motion. On the theoretical side, we showed that under natural Lipschitz and growth conditions,
+the resulting SDE admits a unique strong solution and supports standard risk-neutral pricing
+via Girsanov’s theorem. On the statistical side, we introduced an empirical risk minimization
+procedure for drift estimation and outlined conditions for consistency. Empirically, LLM-driven
+models offer improved forecasting performance and more realistic hitting-time and quadraticvariation behavior compared to classical parametric SDEs and purely discrete-time deep baselines.
+10
+
+Figure 4: Quadratic variation decomposed by LLM-identified regimes: the LLM-driven drift–
+volatility SDE better aligns the model-implied and realized variation compared to constantvolatility models.
+Several directions are promising for future work. First, extending the learning theory to
+cover joint estimation of LLM-conditioned drift and volatility, including rates of convergence
+and asymptotic normality, would further solidify the statistical foundation. Second, extending
+the framework to multi-dimensional factors and multi-asset settings could capture richer crosssectional and volatility dynamics, and may connect naturally to portfolio optimization. Third,
+combining our approach with more flexible neural SDE architectures and score-based diffusion
+models may yield powerful generative models of financial trajectories conditioned on rich text.
+Finally, applications beyond asset pricing—such as risk management, limit order book control,
+and stress testing under counterfactual news scenarios—are natural arenas for LLM-driven
+stochastic modeling.
+References
+[1] B. Øksendal. Stochastic Differential Equations: An Introduction with Applications. Springer,
+6th edition, 2010.
+11

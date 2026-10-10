@@ -1,0 +1,176 @@
+{
+  "doc_id": 46,
+  "titulo": "Algorithmic Trading of Portfolios",
+  "resumen_operativo": "El paper extiende el framework de ejecución óptima tipo Almgren-Chriss de un solo activo a una cartera de valores correlacionados, usando un modelo de impacto lineal, un modelo de riesgo multi-factor y programación cuadrática para resolver el trade-off impacto-riesgo. Propone además un método heurístico para calibrar el parámetro de aversión al riesgo comparando la frontera eficiente contra estrategias VWAP de finalización anticipada, y un algoritmo para decidir qué valores de la cartera conviene enrutar a block trading (dark pools) sin deteriorar la estructura de riesgo. Es puramente teórico/analítico: no hay backtest, datos de mercado ni validación empírica.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "Almgren-Chriss framework",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Framework de media-varianza para ejecución óptima que minimiza una combinación de costo esperado (impacto de mercado) y varianza del costo (riesgo), aquí extendido de un solo activo a una cartera.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "optimal execution"},
+        {"tipo": "MIDE", "objeto": "market impact"},
+        {"tipo": "APLICA_A", "objeto": "market making"}
+      ],
+      "cita_textual": "Following the famed mean-variance framework [1, 2], we aim to minimize the objective function"
+    },
+    {
+      "nombre": "optimal execution",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Problema de encontrar el cronograma de trading que minimiza una función objetivo que combina impacto de mercado esperado y varianza del costo, sujeto a completar la orden en un horizonte dado.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "quadratic programming"},
+        {"tipo": "REQUIERE", "objeto": "market impact"}
+      ],
+      "cita_textual": "A trading algorithm attempts to optimize performance measured against a benchmark."
+    },
+    {
+      "nombre": "arrival price",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Benchmark de ejecución contra el cual se mide el desempeño del algoritmo; el objetivo es minimizar la desviación del costo de trading respecto del precio de llegada.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "market impact"}
+      ],
+      "cita_textual": "Here we are concerned with the arrival price benchmark."
+    },
+    {
+      "nombre": "market impact",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Componente del costo de trading modelado como proporcional a la velocidad de trading (impacto lineal y temporal); trading rápido reduce el riesgo de mercado pero aumenta el impacto.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "market risk"},
+        {"tipo": "CAUSA", "objeto": "trading cost"}
+      ],
+      "cita_textual": "With fast trading, market risk is small but the algorithm itself may move the market considerably, hence causing big market impact."
+    },
+    {
+      "nombre": "risk aversion parameter",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Parámetro lambda que controla el balance entre impacto esperado y varianza del costo en la función objetivo; también llamado nivel de urgencia. En cartera, no puede ser un único valor universal sin distorsionar los cronogramas óptimos de activos no correlacionados.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "VWAP"},
+        {"tipo": "USA", "objeto": "efficient frontier"}
+      ],
+      "cita_textual": "This parameter is called risk aversion level or urgency level."
+    },
+    {
+      "nombre": "efficient frontier",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Curva en el espacio costo esperado vs. varianza del costo que separa estrategias factibles de infactibles; las estrategias óptimas parametrizadas por lambda trazan esta curva y se usa para calibrar el parámetro de aversión al riesgo comparándola con la familia de estrategias VWAP de finalización anticipada.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "market impact"},
+        {"tipo": "MEJORA_A", "objeto": "VWAP"}
+      ],
+      "cita_textual": "In the two-dimensional space of expected cost vs variance of cost, an efﬁcient frontier divides the space into feasible and infeasible regions"
+    },
+    {
+      "nombre": "VWAP",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia límite de la solución óptima cuando la aversión al riesgo es cero (lambda=0); se usa también en su variante 'early-end' (finalización anticipada) como referencia heurística para calibrar lambda, siendo subóptima frente a la frontera eficiente salvo en sus puntos extremos.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "early-end VWAP strategy"},
+        {"tipo": "USA", "objeto": "risk aversion parameter"}
+      ],
+      "cita_textual": "In the limit of zero risk aversion (λ = 0), the optimal strategy reduces to a VWAP strategy"
+    },
+    {
+      "nombre": "early-end VWAP strategy",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Variante de VWAP que finaliza en un tiempo w anterior al horizonte total U; se usa como intermediario para mapear la tasa de trading R a un valor equivalente de lambda, aunque es subóptima respecto a la frontera eficiente excepto en los extremos w=U y w=0.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "efficient frontier"}
+      ],
+      "cita_textual": "In between these two points, however, the early-end VWAP strategy is sub-optimal as illustrated in Figure 1."
+    },
+    {
+      "nombre": "multi-factor risk model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Descomposición de la matriz de covarianza entre valores de la cartera en exposiciones a factores comunes más una varianza idiosincrática, usada para desacoplar las variables de optimización y estabilizar numéricamente la programación cuadrática cuando aumenta el número de valores.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "quadratic programming"},
+        {"tipo": "MITIGA", "objeto": "numerical instability"}
+      ],
+      "cita_textual": "We further assume a factor model in which the covariance matrix can be decomposed"
+    },
+    {
+      "nombre": "quadratic programming",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica de optimización numérica usada para resolver el problema de trading de cartera, dado que la función objetivo es cuadrática y las restricciones (monotonicidad) son lineales; el problema se vuelve numéricamente inestable al crecer el número de valores sin la reformulación factorial.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "multi-factor risk model"}
+      ],
+      "cita_textual": "With a quadratic objective function and linear constraints, this problem can be solved by quadratic programming."
+    },
+    {
+      "nombre": "numerical instability",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Problema práctico de la optimización de cartera sin reformulación factorial: al aumentar el número de valores, los términos cruzados densamente poblados por la matriz de covarianza vuelven inestable la programación cuadrática.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "multi-factor risk model"}
+      ],
+      "cita_textual": "this problem often becomes numerically unstable as the number of securities increases"
+    },
+    {
+      "nombre": "monotonicity constraint",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Restricción que impone que la cantidad remanente por operar disminuya monótonamente en el tiempo; en trading de un solo activo surge naturalmente de la solución óptima, pero en cartera debe imponerse explícitamente porque vender inicialmente una orden de compra podría reducir el riesgo total.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "quadratic programming"}
+      ],
+      "cita_textual": "Non-monotonic trading schedules are not allowed in most practical applications, and we must impose the constraint explicitly."
+    },
+    {
+      "nombre": "block trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Oportunidad de ejecutar una parte de la orden sin impacto de mercado (fuera del cronograma); en trading de un solo activo siempre es beneficioso, pero en cartera solo conviene selectivamente según la contribución marginal del valor a la función objetivo, dependiendo de sus correlaciones con el resto de la cartera.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "marginal contribution"},
+        {"tipo": "APLICA_A", "objeto": "dark pool"}
+      ],
+      "cita_textual": "For portfolio trading, however, block ﬁlls are not always favorable."
+    },
+    {
+      "nombre": "marginal contribution",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Cantidad en que se reduciría la función objetivo si se removiera un valor de la cartera; se usa para rankear valores como candidatos a block trading, y su cálculo incorpora el costo esperado propio y las covarianzas con el resto de valores (según estén o no ya seleccionados para block trading).",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "block trading"}
+      ],
+      "cita_textual": "The marginal contribution ∆Ωi is deﬁned to be the amount that will be reduced if we remove the security i from the portfolio"
+    },
+    {
+      "nombre": "dark pool",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Venue de cruce (junto con crossing venues) al que se enruta la cantidad remanente de un valor cuando su contribución marginal a la función objetivo es positiva, para perseguir fills en bloque de forma oportunista.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "block trading"}
+      ],
+      "cita_textual": "we route all of its remaining quantity to dark pools and crossing venues to pursue blocks"
+    },
+    {
+      "nombre": "urgency level",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Sinónimo del parámetro de aversión al riesgo lambda; representa qué tan agresivamente se busca completar la orden. El paper muestra que usar un único nivel de urgencia para toda la cartera distorsiona los cronogramas óptimos individuales incluso entre valores no correlacionados, lo que motiva modificar la función objetivo con un lambda_i específico por valor.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "risk aversion parameter"}
+      ],
+      "cita_textual": "Even with completely uncorrelated securities, the mere act of putting them in a portfolio may distort their optimal schedules drastically."
+    },
+    {
+      "nombre": "trading cost",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Diferencia entre el valor total de ejecución y el valor de referencia (precio de llegada por cantidad); se descompone en un término de impacto esperado y un término de varianza (riesgo) que la función objetivo combina linealmente vía lambda.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "market impact"},
+        {"tipo": "PARTE_DE", "objeto": "arrival price"}
+      ],
+      "cita_textual": "We deﬁne the trading cost C = Z U 0 ˆs(u)v(u)du −XS"
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "El framework es de ejecución de carteras multi-activo con modelo de impacto lineal y factorial, poco directamente aplicable a un ecosistema centrado en ES intradía single-instrument, aunque la lógica de calibrar risk aversion vs VWAP y el criterio de block trading podrían inspirar heurísticas de sizing/urgencia de entrada."
+  }
+}

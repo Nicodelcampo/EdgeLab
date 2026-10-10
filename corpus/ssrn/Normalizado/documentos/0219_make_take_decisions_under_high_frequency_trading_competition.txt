@@ -1,0 +1,2195 @@
+1 
+ 
+Make-take decisions under  
+high-frequency trading competition 
+ 
+ 
+Alejandro Bernales*  
+ 
+ 
+ 
+ 
+ 
+Abstract 
+ 
+ 
+The make-take preferences of investors depend on high-frequency trading (HFT) competition, 
+under which HFT firms endogenously acquire speed and informational advantages. In the case 
+where there are many HFT firms in the market, they compete more through limit orders; 
+meanwhile, in the case with few HFT firms, they compete more through market orders that "pickoff" limit orders coming from the big crowd of slow traders. In the former (latter) case, additional 
+HFT competition improves (damage) liquidity. In both cases, HFT competition improves 
+informational efficiency and reduces microstructure noise. Finally, I use the model to analyze 
+potential regulations under HFT competition.  
+ 
+ 
+ 
+Keywords: make-take decisions; high-frequency trading competition; limit order market; market 
+quality; welfare. 
+JEL classification: C63, C73, G11, G14. 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                 
+* Alejandro Bernales is at the Universidad de Chile (Center of Applied Economics and Center of Finance, DII) 
+and Banque de France (Research Department), email: abernales@dii.uchile.cl, phone/fax: +56 2 29784912. I 
+am indebted to Ron Goettler, Christine Parlour, and Uday Rajan for kindly providing the C code for their 
+papers (Goettler et al., 2005 and 2009) for use as a starting point for the model proposed in the current study. 
+An earlier version of this work was circulated under the title “Algorithmic and high frequency trading in 
+dynamic limit order markets." I am grateful to an anonymous referee and participants in the seminars and 
+sessions at the Toulouse School of Economics, Collège de France, the Commodity Futures Trading 
+Commission, Schulich School of Business, the 9th Annual Central Bank Workshop on the Microstructure of 
+Financial Markets (ECB), the European Economic Association (Gothenburg), the Financial Management 
+Association (Chicago), and Recent Advances in Algo and HF Trading (UCL-Math Department). I would also 
+like to thank colleagues and all researchers who have provided invaluable comments during the research 
+process. I am grateful to Joseph Daoud for his research assistance. Alejandro Bernales acknowledges financial 
+support from Fondecyt project #1190162, and the Institute for Research in Market Imperfections and Public 
+Policy (ICM IS130002, Ministerio de Economía de Chile).  
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+2 
+ 
+Make-take decisions under  
+high-frequency trading competition 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Abstract 
+ 
+ 
+The make-take preferences of investors depend on high-frequency trading (HFT) competition, 
+under which HFT firms endogenously acquire speed and informational advantages. In the case 
+where there are many HFT firms in the market, they compete more through limit orders; 
+meanwhile, in the case with few HFT firms, they compete more through market orders that "pickoff" limit orders coming from the big crowd of slow traders. In the former (latter) case, additional 
+HFT competition improves (damage) liquidity. In both cases, HFT competition improves 
+informational efficiency and reduces microstructure noise. Finally, I use the model to analyze 
+potential regulations under HFT competition.  
+ 
+ 
+ 
+Keywords: make-take decisions; high-frequency trading competition; limit order market; market 
+quality; welfare. 
+JEL classification: C63, C73, G11, G14. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+1 
+ 
+1  
+Introduction 
+Competition is a part of any industry and is intrinsically related to technological 
+transformation, which is essential for market performance, allocation of capital, and 
+welfare. Competition and technological changes are observed in all economic sectors, and 
+financial markets are no exception. For instance, financial markets have undergone a major 
+technological transformation during the past decade, from human-led transactions to highfrequency trading (HFT), in which sophisticated computers quickly process information, 
+and algorithms automatically submit and modify orders utilizing superfast connections to 
+the exchanges. Nowadays, several trading companies use HFT technology, which has 
+generated a new form of competition: HFT firms have to compete with each other, and they 
+also have to compete with "traditional" slow investors.  
+ 
+The exchanges in which we can find competition among HFT firms are fully, or at 
+least partially, organized as limit order markets (e.g., BATS U.S. stock exchange, NYSE, 
+NASDAQ, London Stock Exchange, NYSE Euronext, and BATS Chi-X Europe).1 In a limit 
+order market, HFT firms can compete in at least two dimensions. They can compete by 
+submitting limit orders (they may act as liquidity providers by following a market-making 
+strategy), thereby capturing the "immediacy cost" paid by other agents who want to trade 
+as soon as possible through market orders. They can also compete to capture profits by 
+submitting market orders (i.e., they may act as liquidity takers). For example, HFT firms 
+can search for unexecuted limit orders waiting in the limit order book, which are 
+susceptible to being "picked off" when the fundamental value of the asset moves against 
+                                                 
+1 In fact, 85% of the leading stock exchanges around the world are now entirely electronic limit order markets 
+with no floor trading (Jain, 2005). 
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+2 
+ 
+them unexpectedly. Thus, HFT firms can exploit their trading skills by submitting market 
+orders, which pick off other agents’ limit orders that are in unfavorable positions 
+(especially those submitted by "traditional" slow traders).  
+ 
+In this paper, I examine the effect on market quality of make-take decisions under 
+HFT competition. This analysis is important for two main reasons. Firstly, one might expect 
+such competition to be associated with an improvement in market quality, because HFT 
+firms may reduce market frictions related to both the analysis of information and the 
+reaction times to changes in market conditions. However, the empirical evidence of the 
+effect on market quality of HFT competition is mixed. For instance, Brogaard and Garriott 
+(2018) report that HFT competition induces improvements in market liquidity measures. 
+Conversely, Breckenfelder (2013) shows empirical evidence of a deterioration in liquidity 
+after new HFT firms enter the market.  
+ 
+Secondly, HFT competition in which traders can endogenously decide to compete 
+through limit orders and market orders has not been theoretically examined. In general, in 
+previous theoretical models analyzing HFT competition, it has been assumed that agents 
+(i.e., fast and slow traders) can only compete using market orders (e.g., Biais et al., 2015; 
+Foucault et al., 2016; Rosu, 2016; Huang and Yueshen, 2017) or can only compete using 
+limit orders (e.g., Bongaerts and Achter, 2016; Ait-Sahalia and Sağlam, 2017). Meanwhile, 
+in the case of those theoretical models in which HFT firms can submit both limit and 
+market orders (see, e.g., Hoffmann, 2014), there is no competition since there is only one 
+agent per period in the market.  
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+3 
+ 
+ 
+Thus, in this paper I want to answer the following questions: When is additional 
+HFT competition good or bad for market quality? How does the competition of HFT firms 
+interact with the competition of traditional slow investors? Does HFT competition over 
+liquidity provision have the same impact on market quality as HFT competition over 
+liquidity taking? Can the level of HFT competition affect the preferences of HFT firms and 
+slow traders regarding being liquidity providers or liquidity takers? Is it possible to 
+implement policy measures for HFT to improve market welfare under a competitive 
+environment? 
+ 
+I contribute to the literature by presenting a dynamic equilibrium model in 
+continuous time for a limit order market in which there are endogenous trading decisions 
+under a competitive landscape. The model is a stochastic sequential game, in which there is 
+a financial asset with a fundamental value,   , that stochastically evolves over time. There 
+are two types of agents: fast traders and slow traders (also called HFT firms and less skilled 
+traditional investors, respectively), who compete for liquidity provision and liquidity 
+demand (i.e., they can submit either limit orders or market orders). 
+Agents arrive in the market stochastically, and have to decide whether to be fast 
+traders at a cost  . Fast traders have an informational advantage and a trading speed 
+advantage in relation to slow traders. In terms of the informational advantage, fast traders 
+can observe    contemporaneously, while slow traders observe the fundamental value of 
+the asset with a time lag (i.e., at any instant  , slow traders only know      ).2 Nevertheless, 
+                                                 
+2 This assumption is supported by previous empirical studies on HFT, which show that fast traders are better 
+informed than other market participants (see Hendershott and Riordan, 2010; Brogaard, 2010; Kirilenko et 
+al., 2011; Brogaard et al., 2014). In addition, similar assumptions have already been used in HFT theoretical 
+models by Biais et al. (2015), Foucault et al. (2016), and Roşu (2016). 
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+4 
+ 
+despite the fact that slow traders can observe the fundamental value of the asset with a 
+time lag   , I allow them to capture and learn the information revealed by fast traders 
+through their trading strategies. The learning process followed by slow traders helps them 
+to make more precise estimations of the contemporaneous fundamental value of the asset, 
+and thus to make better trading decisions. 
+In terms of the trading speed advantage, traders can re-enter the market multiple 
+times to revise previous trading strategies. However, agents cannot instantaneously modify 
+trading decisions (i) because limited cognition prevents them from monitoring the market 
+continuously (see, e.g., Biais et al., 2012) and/or (ii) due to random latency that is observed 
+when multiple agents submit messages to the exchange simultaneously, which can take 
+different amounts of time to arrive at the exchange's server (see, e.g., Yueshen, 2014). Thus, 
+trading plans are "sticky." Nevertheless, HFT firms have the possibility of evaluating 
+market changes and modifying previous trading strategies much faster than slow traders.  
+The model provides new results, which explain why the empirical literature has 
+produced mixed findings on the impact HFT competition has on market quality. Overall, the 
+findings include the following: 
+I find that the bid-ask spread has a humped shape as a function of HFT competition. 
+Thus, the bid-ask spread increases (decreases) with additional HFT competition when 
+there are few (many) HFT firms. This is because, when the market participation of HFT 
+firms is low, they exhibit "predatory" behavior by competing more through market orders, 
+which pick off limit orders coming from the big crowd of traditional slow agents in the 
+market, instead of utilizing their advantage for liquidity provision. This induces a reduction 
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+5 
+ 
+in market depth and an increase in the bid-ask spread. Moreover, in this scenario, slow 
+traders are the main ones responsible for liquidity provision, submitting unaggressive limit 
+orders to reduce their risk of being picked off, which increases the bid-ask spread even 
+more. In this environment, additional HFT competition reduces liquidity, as in 
+Breckenfelder (2013).  
+Conversely, I show that, when there are many HFT firms, they compete more in 
+terms of liquidity provision. HFT firms compete more by using limit orders, since there is 
+no large market participation of slow traders whose unexecuted limit orders can be picked 
+off. This is reinforced by the fact that slow traders can learn from the information revealed 
+by HFT firms in their trading strategies (especially when there are many HFT firms in the 
+market). The learning process followed by slow traders makes it even more difficult for 
+HFT firms to find limit orders in unfavorable positions to be 'picked off'. In this case, 
+additional HFT competition improves liquidity, as in Brogaard and Garriott (2018).  
+I also show that fast traders have higher profits than slow traders, but the difference 
+in the gross expected payoff between agent types is reduced when there are more fast 
+traders in the market. This means that the gross expected payoff is reduced more for fast 
+traders than for slow traders when the amount of fast traders increases. This is because 
+slow traders can "free ride" on the improvements in informational efficiency and 
+reductions in market frictions, since there are more fast traders in the market. In terms of 
+improvements in informational efficiency, when there are more fast traders who act on 
+their informational advantage, prices become more informative. Thus, slow traders can 
+learn simply by observing the information revealed, which reduces the informational 
+advantage that fast traders have over slow traders, as in Grossman and Stiglitz (1980). For 
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+6 
+ 
+instance, I show that the mean of the absolute value of the belief error of slow traders 
+(about the fundamental value of the asset) is reduced when there are more fast traders in 
+the market.3 Furthermore, as more HFT firms are part of the market, there are more agents 
+with the trading speed advantage, which reduces market frictions in the system. For 
+example, I show that the mean of the absolute value of microstructure noise is reduced 
+when there are more HFT firms in the market. Thus, slow traders can also free ride on this 
+improvement in market quality. 
+Agents maximize their utility in the model, which allows to examine equilibrium 
+investment in HFT technology (i.e., the proportion of fast traders in the market is 
+endogenously determined) and to perform a welfare analysis. I analyze equilibrium 
+investment in the case where fast traders have both an informational advantage and a 
+trading speed advantage. Afterwards, I independently analyze information acquisition and 
+speed acquisition. I show that there is a synergy between the informational advantage and 
+the trading speed advantage. This means that, if an HFT firm only has the informational 
+(trading speed) skill, it is valuable for this HFT firm to additionally acquire the trading 
+speed (informational) advantage. This is expected, since HFT firms can use either of these 
+advantages more efficiently when they also have the other one. Moreover, I show that, if a 
+fast trader only has either the informational or the trading speed technology, her 
+willingness to pay for the other skill is reduced as the proportion of fast traders increases. 
+This is because the trading opportunities that fast traders have, in terms of extracting 
+                                                 
+3 Following Goettler et al. (2009), the belief error of slow traders is defined as their expected value of    given 
+market conditions at time  ,      , which incorporates the learning process followed by slow traders, minus 
+the current value of   . 
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+7 
+ 
+benefits from slow traders, decrease as more fast traders enter the market, due to the freeriding behavior of slow traders explained above.  
+Finally, I show that there is overinvestment in HFT technology, as there are 
+incentives to be a fast trader even in scenarios in which fast trading is socially wasteful. 
+Thus, I examine three potential policy responses designed to move the equilibrium 
+investment closer to the socially optimal level: a Pigovian tax, a cancellation fee and a 
+latency constraint. I show that all policy measures improve social welfare but reduce 
+market quality. Despite the Pigovian tax providing better outcomes than the other policy 
+measures analyzed, its implementation faces the problem that it is difficult to clearly 
+identify agents with HFT technology. While the identification of fast traders with a trading 
+"speed" advantage is relatively easy, as their trading ratio is directly observable by a 
+regulator, it is much more complex to identify those who have an "informational" 
+advantage. In addition, the calibrations of the optimal Pigovian tax and the optimal 
+cancellation fee are difficult since they should be asset-specific. Instead, a latency 
+constraint, in which there is a "fair" trading speed for all market participants, has the 
+strength that the value of this speed is constant over time and across assets. 4  
+The paper is methodologically associated with the state-of-the-art microstructure 
+theoretical studies for limit order markets developed by Goettler et al. (2005, 2009), who 
+introduce dynamic models in which investors have to make asynchronous trading 
+decisions, depending on their information set. Their models represent a step forward in 
+                                                 
+4 A fair trading speed can be estimated by using the reaction times of human beings to receiving new 
+information. See Kosinski (2012) for an overview of the literature on the reaction times of human beings. 
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+8 
+ 
+terms of realism in relation to previous multi-period models of limit order markets.5 Even 
+though there is a methodological connection between this paper and the microstructure 
+studies conducted by Goettler et al. (2005, 2009), the focus of my research differs in that I 
+explore make-take preferences under HFT competition; thus, my objective is to answer a 
+different set of questions. In addition, and in contrast to Goettler et al. (2005, 2009), I 
+consider a more developed model that includes traders with different trading speeds, and I 
+independently analyze information acquisition and speed acquisition. Moreover, I use the 
+model to perform a policy analysis and evaluate the implementation of regulations aimed 
+at reducing potential welfare damage induced by HFT technology. 
+ 
+The paper is organized as follows. In Section 2, I present a literature review. I 
+introduce the model in Section 3 and describe the equilibrium investment in HFT 
+technology in Section 4. Section 5 shows the empirical implications of HFT technology on 
+market quality measures. In Section 6, I analyze social welfare and potential policy 
+interventions. Finally, I conclude in Section 7. 
+ 
+2 
+Literature review  
+ 
+This paper joins a rapidly growing empirical and theoretical literature on HFT in 
+financial markets. In terms of the empirical literature, this paper is particularly related to 
+studies in which the effect of HFT competition is examined, although these studies report 
+mixed findings. For instance, Brogaard and Garriott (2018) examine the effect on market 
+                                                 
+5 Early work on multi-period equilibrium models for limit order markets imposed some restrictive 
+assumptions in order to make the models analytically tractable (see Parlour, 1998; Foucault, 1999; Foucault 
+et al., 2005; Roşu, 2009). 
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+9 
+ 
+quality when new HFT firms participate in an alternative trading system in Canada. They 
+show that bid-ask spreads are reduced after entries of new HFT firms, suggesting that HFT 
+competition improves market quality. Conversely, Breckenfelder (2013) finds the opposite 
+result based on data from the Stockholm Stock Exchange; he shows that liquidity is 
+damaged after new HFT firms enter the market. My study contributes to the literature by 
+providing an explanation of these opposing empirical results, since I show that additional 
+HFT competition can induce either an increase or a reduction in liquidity, depending on the 
+market participation of HFT firms. 
+ 
+The paper is related to Boehmer et al. (2018), who analyze competition among HFT 
+firms that use different trading strategies. They present evidence, based on regulatory data 
+from Canada, suggesting that HFT competition in market making improves informational 
+efficiency by reducing the price impact of trades. Moreover, they show that there are three 
+categories in which HFT firms compete: liquidity provision (mainly involving limit orders), 
+short-horizon directional speculation (involving market orders), and cross-venue 
+arbitrage. My modeling setup does not reflect the third category since I do not consider 
+multiple exchanges, but agents in my model do have to endogenously decide between limit 
+and market orders, the first two categories identified by Boehmer et al. (2018). 
+ 
+This paper also provides some explanation for the mixed findings in the empirical 
+literature regarding the make-take preferences of HFT firms. For instance, Hagströmer and 
+Norden (2013), Malinova et al. (2013) ,and Menkveld (2013) show that HFT firms mainly 
+prefer to use limit orders, based on Swedish, Canadian, and Dutch stocks, respectively. 
+Chaboud et al. (2013) show mixed results based on three different FX pairs. They show that 
+HFT firms prefer to provide liquidity in the pairs EUR/USD and JPY/USD, while preferring 
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+10 
+ 
+to consume liquidity in the pair JPY/EUR. In addition, Hendershott et al. (2014) document 
+that HFTs prefer to submit market orders, based on a sample of NASDAQ stocks. In this 
+paper, I show the conditions under which HFT firms prefer liquidity provision and liquidity 
+taking, and how these preferences affect market quality.  
+ 
+The paper is also connected to theoretical studies on HFT. However, these studies 
+have not examined make-take decisions under HFT competition. This is mainly due to the 
+fact that previous studies either do not consider competition or do not allow agents to 
+select limit and market orders endogenously. For instance, Hoffmann (2014) presents a 
+model in which agents can endogenously decide to submit market or limit orders. 
+However, in his modeling setup there is no competition since there is only one agent per 
+period in the market. In other models that analyze the effect of HFT competition on market 
+quality, agents can only compete using market orders (e.g., Biais, 2015; Foucault et al., 
+2016; Rosu, 2016) or only using limit orders (e.g., Bongaerts and Achter, 2016; Ait-Sahalia 
+and Sağlam, 2017). In contrast to these theoretical studies, I present a model in which 
+agents can endogenously decide between submitting limit orders and market orders under 
+an HFT competition landscape.  
+ 
+The closest theoretical study to my paper is that of Menkveld and Zoican (2017), 
+who present a model to analyze the effect of the speed of exchanges on market quality. 
+They show that a faster exchange could either reduce or increase the bid-ask spread, 
+depending on the news-per-liquidity-trader ratio. Although they focus their attention on 
+the speed of exchanges rather than HFT competition, they present a model in which HFT 
+firms can submit market and limit orders. However, in their model, slow traders can only 
+submit market orders; thus, there is no adverse selection acting on the liquidity provision 
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+11 
+ 
+by traditional slow investors, which in my model is one of the main drivers of HFT firms’ 
+preferences for either liquidity provision or liquidity taking. In addition, they do not 
+analyze equilibrium investment in HFT technology, and they do not explore potential policy 
+measures designed to move the equilibrium investment closer to the socially optimal level. 
+ 
+The paper also contributes to the literature in which speed acquisition is examined 
+alongside information acquisition. For instance, Bongaerts and Van Achter (2015) find that 
+an increase in the trading speed advantage of HFT firms benefits liquidity. However, if HFT 
+firms also have an informational advantage, then liquidity may be reduced, due to an 
+increased adverse selection risk. Huang and Yueshen (2017) show that the information 
+acquisition from HFT firms increases price informativeness. Nevertheless, if HFT firms also 
+have a trading speed advantage, this may reduce price informativeness in the long term 
+due to a temporal fragmentation. My model provides different results. For instance, I show 
+that, in the case of many HFT firms having both an informational and a trading speed 
+advantage, an increase in HFT competition improves liquidity. In addition, I show that 
+global informational efficiency increases when there are more firms with informational and 
+trading speed skills.  
+ 
+The results in my paper are probably different to those of Bongaerts and Van Achter 
+(2015) and Huang and Yueshen (2017), since my model reflects a limit order market where 
+agents can submit market or limit orders. For instance, as I explained before, in my setup, 
+HFT firms can choose endogenously to be liquidity providers or liquidity takers. However, 
+in Bongaerts and Van Achter (2015), HFT firms can only submit limit orders, and in Huang 
+and Yueshen (2017), they can only submit market orders. Moreover, Huang and Yueshen 
+(2017) show that price informativeness can be improved (reduced) due to a temporal 
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+12 
+ 
+fragmentation in the long (short) term. In contrast to this study, I evaluate the global 
+informational efficiency, including the short-term and long-term informativeness of the 
+price and the information revealed by HFT firms in the shape of the limit order book, which 
+is learned by the uninformed slow traders in the market.  
+ 
+Finally, the paper is related to the empirical and theoretical literature that explores 
+regulations on HFT, which reports findings that are consistent with my theoretical results. 
+For instance, in terms of the empirical studies of regulations on HFT, Malinova et al. (2018) 
+find a decrease in liquidity after the introduction of a cancellation fee in the Toronto Stock 
+Exchange. Colliard and Hoffmann (2017), and references therein, show that a financial 
+transaction tax implemented in 2012 in France reduced the trading volume, which 
+negatively affected market liquidity, where HFT firms ere the trader type most affected. In 
+terms of theoretical papers, Ait-Sahalia and Sağlam (2016) show that policies aimed at 
+regulating HFT (e.g., transaction taxes, latency constraints, and cancellation fees) are 
+ineffective at inducing liquidity provision by HFT firms, which would be beneficial for 
+market quality. Biais (2015) analyzes a Pigovian tax, a "slow-friendly" market and an "onlyfast" market. Similarly to us, they argue that calibrating the optimal tax is difficult and 
+should be asset-specific. In addition, they show that the only-fast market dominates the 
+slow-friendly one, in which a tax and its redistribution among traders enables them to 
+share the social gains of HFT technology.  
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+13 
+ 
+3 
+The model  
+3.1  
+Market characteristics 
+I consider a dynamic continuous-time model in a limit order market with a single 
+financial asset. The model is an asynchronous dynamic trading game, in which there are 
+two types of risk-neutral traders: fast traders (i.e., HFT firms) and slow traders (i.e., less 
+skilled 'traditional' traders). Let         be a trader indicator, where     if an agent is a 
+fast trader and     if an agent is a slow trader.  
+Traders can submit limit orders and market orders. A limit order is a commitment 
+made by an agent at time t to trade the asset in the future at a pre-specified price  , while a 
+market order is a request to trade immediately at the best price available (i.e., at the bid or 
+ask price depending on the direction of the order). A limit order is always executed through 
+the submission of a market order. 
+The limit order book    is described by a discrete set of prices, denoted as         
+ 
+, 
+where         and   is a finite number. The tick size,  , is the distance between any two 
+consecutive prices. In   , there is a backlog of unexecuted limit orders (submitted 
+previously),   
+ , which is associated with each price   . A positive (negative) number in   
+  
+denotes buy (sell) limit orders in the book, and represents the depth at price   . Therefore, 
+the bid price is                
+    , while the ask price is                
+    , and 
+if the order book is empty on the bid side or on the ask side,          or        , 
+respectively. 
+The limit order book respects the time and price priorities for the execution of limit 
+orders. Buy (sell) orders at higher (lower) prices are executed first, and limit orders 
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+14 
+ 
+submitted earlier have priority in the queue over others of the same price. In addition, 
+when a trader submits an order, the order price identifies whether the order is a market 
+order or a limit order. This means that an order to buy (sell) at a price above (below) the 
+ask (bid) price is executed immediately at the ask (bid) price; this order is thus a market 
+order.  
+The fundamental value of the asset,   , evolves over time, with innovations 
+following a Poisson process with parameter   . When an innovation takes place, the 
+fundamental value increases or decreases by    ticks, both with equal probability 0.5. 
+Similarly to Biais et al. (2015), Foucault et al. (2016), and Roşu (2016), I assume that fast 
+traders can process new information faster than slow traders. Thus, I assume that fast 
+traders know the current fundamental value of the asset at time  , while slow traders only 
+know the fundamental value with a lag    (i.e., fast traders have an informational 
+advantage). Consequently, the agent's current beliefs concerning the fundamental value of 
+the asset,   
+ , depend on the agent's type,  . In the case of a fast trader,   
+  is equal to the 
+contemporaneous fundamental value of the asset (i.e.,   
+    ). In the case of a slow trader, 
+she only knows the fundamental value of the asset with a lag    (i.e.,   
+       ).  
+Despite the fact that slow traders can observe the fundamental value of the asset 
+with a time lag   , in the model I allow them to capture and learn the information revealed 
+by the fast traders’ market activity. The learning process followed by slow traders helps 
+them to make more precise estimations of the contemporaneous fundamental value of the 
+asset, and thus to make better trading decisions. Thus, the cognitive capacities of slow 
+traders, combined with the presence of fast traders in the market (who submit informative 
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+15 
+ 
+and competitive orders), induces a reduction in the errors in the slow traders’ beliefs in 
+relation to   . 
+Traders can revise their unexecuted limit orders multiple times. However, due to 
+limited cognition or a random latency, agents cannot modify their previous limit orders 
+immediately after a change in market conditions; thus, trading decisions are "sticky". 
+Nevertheless, fast traders have more tools and resources with which to evaluate possible 
+cancellations, and they can make modifications faster than slow agents (i.e., fast traders 
+have a trading speed advantage). Therefore, fast traders re-enter the market following a 
+Poisson process at rate   
+   to revise unexecuted limit orders, while slow traders re-enter 
+according to a Poisson process at rate   
+  , where   
+     
+  .  
+ 
+Agents make decisions strategically to maximize profits and to avoid being picked 
+off. For instance, an agent   can be picked off when she has a limit order in the buy side at 
+the bid price,   , and the fundamental value of the asset,   , decreases to a level below the 
+bid price (i.e.,      ). In this scenario, a quick agent   can submit a market order to sell 
+immediately at price   , so as to pick off the limit buy order of agent  . Thus, agent   makes 
+an instantaneous profit equal to         thanks to the transaction, while agent   loses 
+       . A similar example can be explained using the cost of being picked off when the 
+fundamental value of the asset is above the price of a limit sell order.  
+Therefore, the main activity in the limit order book should be around the 
+fundamental value of the asset, because agents do not want to be picked off in relation to 
+their unexecuted limit orders waiting in the book. In fact, I should observe in general that 
+limit buy orders have prices below   , while limit sell orders have prices above   . If that 
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+16 
+ 
+were not the case, a quick agent could pick off limit buy (sell) orders above (below)   , as 
+explained in the previous paragraph. Thus, limit orders in the wrong positions should 
+disappear promptly from the market.  
+I use this feature of limit order markets, and I always put the center of the book at 
+the level of the agent's current beliefs concerning the fundamental value of the asset,   
+ . 
+Hence, given that the limit order book is represented by a discrete set of prices         
+ 
+, I 
+put the center of the book    equal to   
+ . For instance, imagine the scenario in which the 
+discrete level of the fundamental value today is   
+ , but it changes to the value   
+  after a 
+period  . Suppose that   
+    
+    , where   is an integer that can be positive or 
+negative. In this scenario, I move the book by m ticks to center the book again at the 
+discrete level of the current fundamental value   
+ . Hence, by moving the center of the 
+book, I modify the limit orders in the book to take into account the new relative difference 
+with respect to   
+ .6 Thus, the prices of all orders are always relative to the current beliefs 
+regarding the fundamental value of the asset, which makes traders think about relative 
+prices (it is important to realize that the   
+  do not necessarily coincide with the bid-ask 
+midpoint, since   
+  can be above or below the quotes, depending on the market condition). 
+This market feature allows to reduce the dimensionality of the state space enormously.  
+ 
+Traders have to pay a cancellation fee       when they cancel an unexecuted limit 
+order. In the case of a re-entry, a trader can leave the order unchanged, which has the 
+                                                 
+6 It is important to note that slow traders and fast traders observe the book differently given their 
+informational differences. Fast traders observe the book as centered on   , while slow traders observe the 
+book as centered on      . However, all transactions (by slow traders and fast traders) are finally considered 
+using the right prices (i.e., in a book centered on   ), since slow traders will realize what the correct state of 
+the book is after   . 
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+17 
+ 
+benefit of allowing her to retain her priority in the queue.7 The negative side of leaving an 
+order in the book is that the asset value could move in a direction that affects future 
+payoffs. For instance, as explained before, in the scenario of a reduction in the asset value, 
+some limit buy orders could be priced too high, and a quick trader could profit from the 
+difference. This possibility represents an implicit transaction cost of being picked off when 
+prices change unexpectedly against limit orders that have been submitted. Conversely, 
+when the asset value increases, a limit buy order features the risk of not resulting in a 
+trade. To take into account this risk, I include a cost of delaying, reflected in a discount rate 
+  , which considers the cost of not executing immediately. This delaying cost does not 
+represent the time value of money; instead    reflects opportunity costs and the cost of 
+monitoring the market until a limit order is executed. Thus, the payoffs of order executions 
+are discounted back to the trader's arrival time at rate   , where       .  
+ 
+Each trader has an intrinsic private value from trading the asset,  , which is known 
+by them before they make any trading decision. The value of   is drawn from the discrete 
+vector  ={  ,   , ...,   } using a discrete distribution,   , where   is a finite integer. The 
+private value is idiosyncratic and constant for each trader. The private value arises from 
+differences in terms of the intrinsic benefits of trading, such as tax exposure, wealth shocks, 
+hedging needs, or differences in investment horizons, among other things.  
+ 
+Agents (fast traders and slow traders) arrive in the market following a Poisson 
+process at rate  . Each agent has to decide whether to be a fast or a slow trader, 
+immediately after arriving and before knowing her private value, and this cannot be 
+                                                 
+7 It is important to point out that the order priority could have changed, depending on the shape of the book, 
+which should be taken into account in the decision to cancel and re-submit an unexecuted limit order. 
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+18 
+ 
+changed later in the game. This decision determines the proportion of fast traders,  , in the 
+market. An agent can be a fast trader at a cost  , which includes the costs of programmers, 
+information providers, computers, and collocation, amongst other costs related to HFT 
+technology.  
+ 
+Each agent can trade one share and has to make three main trading decisions: (i) to 
+submit an order or to wait until the market conditions change; (ii) to buy or to sell the 
+asset; and (iii) to choose the price at which she will submit the order, which implies 
+whether she will submit a market order or a limit order, depending on whether the price is 
+inside or outside the bid-ask spread.8  
+ 
+As was previously mentioned, traders can re-enter the market and modify their 
+previously unexecuted limit orders. Therefore, they have to make additional trading 
+decisions after re-entering: (i) whether to cancel an unexecuted limit order or retain the 
+order without changes; (ii) if they decide to cancel the order, whether to submit a new 
+order immediately or wait for different market conditions in the future; and (iii) if they 
+decide to submit a new order after a cancellation, they must also decide on the type of the 
+new order and its price. Therefore, agents have to take the possibility of re-entry into 
+account in their utility maximization problem. Once a trader submits a limit order, she 
+remains part of the trading game by revising her order until it is executed; however, the 
+trader exits the market permanently after the execution of her order.  
+ 
+ 
+ 
+                                                 
+8 I could include additional shares per agent in the trading decision. However, I assume one share per agent to 
+make the model computationally tractable.  
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+19 
+ 
+3.2  
+The trader’s dynamic maximization problem 
+ 
+Suppose that a trader arrives at the trading game and observes state   of the market, 
+in which she knows her private value,  . For convenience, let the entry time be equal to 
+zero. The state that a given trader observes includes: (i) the contemporaneous limit order 
+book   that is a consequence of agents' previous trading activity; and (ii) the status of her 
+previous action, if she has already submitted a limit order to the market, which includes the 
+submission price, the priority in the book given that price, and the type of order (sell or 
+buy). The fundamental value of the asset    is not directly one of the variables that identify 
+a state, given that the limit order book   is centered on   .  
+ 
+Let      be the set of possible actions that a trader can take given the state   (e.g., to 
+wait until market conditions change, to buy or to sell the asset, or to decide on the 
+submission price, among others). Let           be the probability that an order is executed 
+at time   given that the trader takes action           when facing state  . It is important to 
+notice that      incorporates all possible future states and strategic actions adopted by 
+other traders until  . If the decision    is the submission of a market order, then 
+            , while           will be lower when the trader decides to submit a limit order 
+with a price far away from the fundamental value. In addition, let       be the density 
+function of    at time h that is described by the Poisson process followed by the 
+fundamental value. The density function      depends on   because it takes into account 
+the trader’s current belief regarding the fundamental value of the asset. Therefore, the 
+expected value of an order, gross of the cost of having HFT technology, executed prior to reentry at time   , is: 
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+20 
+ 
+             
+                    
+ 
+  
+  
+ 
+                         
+(1)
+Here,             is the instantaneous payoff of the order, where    is the submission 
+price, which is part of decision   ;    is also a component of decision    and reflects whether 
+the trader decides to submit a buy order (    ), submit a sell order (     ) or submit 
+nothing (    ). This payoff is transformed into a present value at rate     which is the cost 
+of delaying defined in Section 3.1.  
+ 
+Let      be the probability distribution of the re-entry time, which is exogenous and 
+follows an exponential distribution at rate   
+   or   
+   depending on whether the agent is a 
+fast or a slow trader, respectively. In addition, let                be the probability that 
+state     takes place at time    given the previous state   and action   , which also includes 
+all potential states and strategic decisions followed by other traders until   . Therefore, the 
+value to an agent of arriving at state   gross of the cost of having HFT technology,     , is 
+given by the Bellman equation of the trader’s optimization problem: 
+        
+                           
+                                     
+     
+ 
+ 
+ 
+        (2)
+where   is the set of possible states. The first term is defined in equation (1), while the 
+second term reflects the subsequent payoff in the case of re-entries. In the case of re-entry, 
+traders pay a cancellation fee       when they cancel an unexecuted limit order; thus 
+        if the optimal decision of an agent in state     is a cancellation and         in any 
+other case.  
+ 
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+21 
+ 
+3.3 
+The model parameterization 
+I assume the following plausible parameter values for the model setup of the base 
+case. I assume that the distribution of the private value is discrete, with support 
+              measured in ticks, and with a cumulative distribution function 
+                          , which is the same for HFT firms and slow traders. The 
+distribution values are based on the findings of Hollifield et al. (2006) regarding the private 
+values of agents calculated for stocks on the Vancouver Stock Exchange, which were also 
+used by Goettler et al. (2009). In addition, given that the subgroup of algorithmic traders, 
+called "pure" high-frequency traders, may not have private valuations (since they often 
+carry small inventories), I also analyze the case in which fast traders only have a private 
+value equal to zero; these unreported results are consistent with the findings reported in 
+the main body of the paper.  
+I assume that traders arrive on average every 40 milliseconds. Although the current 
+trading speed in some markets is at the level of microseconds rather than milliseconds, I 
+select this arrival rate for computational tractability. This rate of arrivals is consistent with 
+the timescales of some of the first papers regarding HFT technology. For instance, Cont 
+(2011) works with a millisecond scale when analyzing the impact of fast traders on market 
+quality.  
+Limited cognition, due to the fact that traders are engaged in other tasks, may affect 
+the speed of modification of previous trading decisions. In the model, I assume that slow 
+traders can re-enter the market to modify limit orders on average every 600 milliseconds 
+(  
+         ). This is consistent with the literature on human behavior in relation to 
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+22 
+ 
+reaction times. The reaction times of human beings are around 200 milliseconds for a 
+single stimulus, increasing to 700 milliseconds for six stimuli (see Kosinski, 2012). Fast 
+traders have more tools and resources for evaluating and monitoring their orders in the 
+book than slow traders. Thus, I assume that HFT firms re-enter the market five times as fast 
+as slow traders (i.e.,   
+         ). This reflects the fact that even fast traders cannot 
+monitor the market continuously, because there are processing times even when using this 
+technology. The assumption that fast traders are only five times as fast as slow traders may 
+be unrealistic given the current trading speed in the markets. However, the theoretical 
+model aims mainly to reflect the relative trading speed difference, and its potential impact 
+on market quality and stability, rather than to reproduce the exact current speed difference 
+that we can observe in the market, which would be computationally intractable. 
+Nevertheless, I changed the relative speed difference between slow and fast agents in 
+unreported tests and the results reflect the robustness of the model to changes in the 
+trading speed advantage of HFT firms. 
+I assume that the fundamental value of the asset,   , experiences innovations every 
+320 milliseconds (i.e.,          ), according to which the fundamental value increases or 
+decreases by one tick (i.e.,     ), with equal probability 0.5. For instance, if we assume 
+that the stock price is $450 with tick size $0.05, we obtain an annual volatility of 0.529 
+when           and     . This value is consistent with Zhang (2010), who reports a 
+daily volatility for U.S. stock returns of 0.033 (i.e., an annual volatility of 0.524). I assume 
+that the delaying cost,   , is reflected in a continuous discount rate equal to 0.03 for all 
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+23 
+ 
+agents.9 In unreported analyses, I experiment with different values for   , and the results 
+are qualitatively equivalent to those presented in the following sections.  
+Fast traders also have a further informational advantage, since they can observe the 
+contemporaneous level of the fundamental value of the asset, while slow traders can only 
+observe it with a time lag. I assume this time lag,   , to be equal to 800 milliseconds. In 
+unreported tests, I examine the robustness of the model to different values of   ; the 
+results are congruent with the results presented here.  
+I obtain the model equilibrium and reproduce a historical limit order book with a 
+cancellation fee for traders equal to zero; thus, the results shown in Sections 4 and 5 are 
+obtained assuming        . However, I also include a cancellation cost in the model, with 
+the objective of evaluating potential HFT regulations, as shown in Section 6.  
+ 
+4 
+Equilibrium investment in HFT technology 
+I endogenize the equilibrium investment in HFT technology, in the same spirit as 
+Biais et al. (2015). Thus, I first analyze the gross expected payoff of slow traders (STs) and 
+fast traders (FTs) when the investment cost of having HFT technology is zero. Then, I 
+analyze differences in the gross expected payoffs of STs and FTs to determine investment 
+decisions. In order to explain the main intuitions, I start by explaining the equilibrium 
+investment in the case where FTs have both an informational advantage and a trading 
+speed advantage. Afterwards, I independently analyze information acquisition and speed 
+acquisition.  
+                                                 
+9 Foucault et al. (2005) use a similar delaying cost, which they call an "impatience" rate.  
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+24 
+ 
+4.1 
+Equilibrium  
+The intuition behind the equilibrium is that a trader chooses an optimal action by 
+maximizing her expected discounted utility as described in equation (2), conditional on the 
+state   observed in the economy. Hence, optimal decisions are state-dependent. Moreover, 
+the decision process is Markovian, since the market condition reflected in the observed 
+state is a consequence of the history of events and previous states that define the game.  
+I focus on stationary and symmetric equilibrium, in the sense of Doraszelski and 
+Pakes (2007), in which the optimal trading decision of a given type of trader is the same 
+regardless of whether they are facing a given state in the present or in the future (i.e., 
+optimal decisions are time-independent). The game is also a Bayesian game, since each 
+trader knows her private intrinsic value  , which is unknown to other traders. Thus, the 
+solution concept is a Markov-perfect Bayesian equilibrium (see Maskin and Tirole, 2001). 
+Given the set of possible states   with a transition process characterized by transition 
+probabilities     , and where agents know the rules of the trading game, in the equilibrium, 
+two conditions must hold: each trader type solves equation (2) for any    , and the 
+equilibrium beliefs are consistent for each state over time.  
+The state   is defined by the two-tuple (the limit order book  , status of previous 
+action). The limit order book   is described by a discrete price set, which is centered on the 
+discrete level of the agent's belief about the fundamental value of the asset   . The status of 
+previous action, in the case that an agent re-enters the market due to an unexecuted limit 
+order, comes from a discrete set of possible actions given the market conditions. In 
+addition, the intrinsic private value of trading the asset, α, is drawn from a discrete 
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+25 
+ 
+distribution   , and the trader indicator   can take two possible values (    or    , 
+indicating a fast or a slow trader, respectively). Moreover, each new action    is taken from 
+    , which is a discrete and finite set of potential decisions or actions given the state  . 
+Therefore, the action space is finite and the state space is countable, and thus the model 
+game has a Markov-perfect equilibrium (see Rieder, 1979).10 
+I solve the model using a numerical method due to the analytical intractability of the 
+trading game given the large dimensionality of the state space. I obtain a stationary 
+Markov-perfect equilibrium using the algorithm introduced by Pakes and McGuire (2001), 
+which solves dynamic models with a large state space by reaching the equilibrium only on 
+the recurring state class.  
+The intuition behind Pakes and McGuire’s (2001) algorithm is that we can initially 
+see the trading game as a learning process, in which traders learn how to behave in each 
+state. Thus, traders follow a learning-by-doing mechanism, by playing the game until 
+equilibrium is reached. In this learning-by-doing process, the trading game starts with each 
+type of trader having initial beliefs about the expected payoffs of different actions given the 
+state  . Afterwards, traders update their beliefs dynamically by playing the game when they 
+observe the realized payoffs from their actions. Equilibrium is reached when the expected 
+payoff and the optimal trading decision of each trader type in a given state,   , are exactly 
+the same as the expected payoff and decision that would occur if a similar trader were to 
+observe    in the future (i.e., there is no longer anything to learn).  
+                                                 
+10 Although I do not prove uniqueness, I check whether the equilibrium is computationally unique. For each 
+parameter setup, I use different initial values at the beginning of the algorithm, with the objective of being 
+sure that I am obtaining the same computational equilibrium.  
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+26 
+ 
+Once I obtain equilibrium after making traders play the game for at least two billion 
+trading events, I fix the traders’ beliefs and simulate a further 500 million events. These last 
+500 million simulated events allow to evaluate the behavior of the different agents without 
+the effects of the learning process described in the previous paragraph that came from 
+Pakes and McGuire’s (2001) algorithm. Consequently, all the results presented in this paper 
+are obtained from the last 500 million simulated events. Additional explanations of the 
+convergence criteria used to obtain the model equilibrium and the learning capacity of STs 
+regarding the information revealed by FTs can be found in Goettler et al. (2009), who 
+develop a similar model but without high-frequency traders, and also employs Pakes and 
+McGuire’s (2001) algorithm.  
+ 
+4.2 
+Expected payoffs  
+In equilibrium, as explained previously, agents make decisions with the objective of 
+maximizing their expected payoffs (i.e., by solving equation (2)). Let        and        be 
+the gross expected payoffs (i.e., gross of the cost of having HFT technology) of STs and FTs, 
+respectively, which depend on the proportion of FTs in the market,  . I present, in the lefthand side of Figure 1,        and        for different values of  .  
+[Insert Figure 1 here] 
+Observation 1. (i) Fast traders have higher gross expected payoffs than slow traders.  
+(ii) The gross expected payoffs for both agent types are reduced when there are more 
+fast traders in the market. 
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+27 
+ 
+Figure 1 shows that FTs have a higher gross expected payoff than STs. This result is 
+expected, as FTs economically exploit their informational and trading speed advantages to 
+the detriment of STs' trading profits by using limit and market orders. In terms of limit 
+orders, FTs have more trading skills than STs in providing liquidity to the market. FTs may 
+want to capture through limit orders the "immediacy cost" (implicit in the bid-ask spread) 
+paid by agents who want to trade as soon as possible through market orders. FTs can use 
+HFT technology for liquidity provision, since they observe the contemporaneous level of 
+the fundamental value and they are quick at modifying unexecuted limit orders. For 
+instance, FTs can react promptly and modify their unexecuted limit orders when they are 
+not in optimal positions in the limit order book. Thus, FTs compete at liquidity provision 
+against STs (who may also want to provide liquidity to the market), which is to the 
+detriment of STs as they do not have the trading skills of HFT firms.  
+In terms of market orders, FTs also have more of the skills required for submitting 
+this type of order than STs. FTs can use their trading features to compete at demanding 
+liquidity with the objective of obtaining a better price in their market orders. FTs can 
+obtain better prices because they know the fundamental value of the asset and can wait 
+and quickly submit a market order so as to get a better deal (i.e., they can reduce the 
+immediacy cost paid on their market orders). This induces indirect damages to impatient 
+STs, who also want to consume liquidity through market orders. This is because "good" 
+deals for market orders are quickly detected and used by FTs, leaving market orders with 
+higher immediacy costs to STs.  
+Moreover, FTs can use their trading features to make extra profits by submitting 
+market orders that pick off unexecuted limit orders in unfavorable positions (in particular 
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+28 
+ 
+those submitted by STs). This is because limit orders have an associated risk of being 
+picked off when the fundamental value of the asset moves against them, which can be 
+detected easily by agents using HFT technology. For example, when the fundamental value 
+of the asset decreases, some limit orders on the buy side could end up being priced too 
+high, and a FT will be able to make a profit from the difference.  
+The left-hand side of Figure 1 also shows that there is a reduction in the expected 
+payoffs for both agent types when there are more FTs in the market. On the one hand, as 
+explained above, STs suffer from the presence of FTs in either market or limit orders, and 
+this effect is intensified as the proportion of FTs increases. Thus,        is reduced as   
+goes up. On the other hand, FTs will see the expected payoffs they obtain fall when their 
+proportion in the market increases, since there will be more agents with similar trading 
+features (informational and trading speed advantages) competing under the same 
+conditions. Thus, when HFT competition increases, it becomes more difficult for FTs to 
+extract benefits from STs. 
+ 
+4.3 
+Equilibrium investment in HFT technology 
+As in Biais et al. (2015), I examine differences between the gross expected payoffs of 
+FTs and STs,              , to determine the proportion of FTs in the market,  , given 
+that agents have to pay   to have HFT technology. The right-hand side of Figure 1 shows 
+how               changes for different values of     
+The analysis of               is important for equilibrium investment in HFT 
+technology, because an agent is better off investing in this technology if and only if 
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+29 
+ 
+               , where          is the net expected profit of FTs (i.e., net of the 
+cost paid to have HFT technology). Equivalently, an agent would be an FT if and only if the 
+difference between the gross expected payoffs of FTs and STs is higher than the cost of 
+being an FT (i.e.,                ).  
+Let    be the equilibrium investment in HFT technology, when the cost of having 
+HFT technology is  . In terms of the endogenous acquisition equilibrium on the right-hand 
+side of Figure 1, all agents prefer not to invest in HFT technology,         , in the case 
+where         . Conversely, all agents prefer to be FTs,           , in the case where 
+       .  
+An interior equilibrium investment in HFT technology is obtained when STs and FTs 
+have the same net expected profit, which can be written as: 
+                   
+(3)
+For instance, in Figure 1, on the right-hand side,           when         and 
+          when        , at points A and B, respectively. In fact, this is a unique 
+equilibrium, since the value of               is a continuous and decreasing function in 
+ .  
+Observation 2. The difference between the gross expected payoffs of fast and slow 
+traders becomes lower, when the number of fast traders in the market increases. 
+The right-hand side of Figure 1 shows that the difference between the gross 
+expected payoffs of FTs and STs decreases when there are more FTs in the market. This 
+means that        is reduced more than        as   increases, which is consistent with 
+Grossman and Stiglitz (1980). The intuition behind this result is simple. When there are 
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+30 
+ 
+more FTs in the market, STs can free ride on the improvements in informational efficiency 
+and reductions in market frictions. Firstly, as more FTs are in the market, prices become 
+more informative, since a larger proportion of FTs are acting optimally on their 
+informational advantage. Thus, STs can learn just by observing market conditions (prices 
+and the shape of the book), with the objective of reducing their belief error regarding the 
+fundamental value of the asset. In fact, I will show in the following section (Figure 3) that 
+the mean of the absolute value of the belief error of STs about the fundamental value of the 
+asset is reduced when the proportion of FTs increases. Therefore, the relative 
+informational advantage of FTs in relation to STs goes down as   increases.  
+Secondly, as more FTs are in the market, there are more traders with a trading 
+speed advantage, which reduces market frictions in the system. For instance, I show in the 
+following subsection that the mean of the absolute value of microstructure noise decreases 
+when the number of FTs in the market increases. Thus, STs can also free ride on this 
+improvement in market quality. 
+ 
+4.4 
+Pure information acquisition and pure trading speed acquisition 
+ 
+I now analyze equilibrium investment when HFT technology only involves either an 
+informational advantage or a trading speed advantage. The left-hand side of Figure 2 
+presents the case when FTs have only an informational advantage (solid gray line). This 
+figure shows the differences between the gross expected payoffs of FTs and STs, 
+             . In this case, I assume that FTs can observe the contemporaneous level of 
+the fundamental value, while STs only know the fundamental value with a lag    (i.e., 
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+31 
+ 
+       for FTs and        for STs). However, I assume that both agents are slow in reentering and modifying unexecuted limit orders (i.e.,          for STs and also 
+         for FTs). In this figure, as a benchmark, I also report the case when FTs have 
+both informational and trading speed advantages (solid black line). 
+[Insert Figure 2 here] 
+ 
+The right-hand side of Figure 2 shows the case when FTs only have a trading speed 
+advantage (solid gray line). In this figure, as in the one on the left-hand side, I present 
+              for different values of  . In this case, I assume that FTs are faster than STs 
+in re-entering and modifying unexecuted limit orders (i.e.,           for FTs and 
+         for STs), but there are no informational advantages for FTs (i.e.,        for FTs 
+and        for STs). I also present, as a benchmark, the case when FTs have both 
+informational and trading speed advantages (solid black line). 
+ 
+Similarly to Figure 1, Figure 2 shows that               is reduced as   
+increases, when there is only either speed acquisition or information acquisition. This can 
+be explained through the same arguments as used for the same patterns observed in the 
+case where FTs had both informational and trading speed advantages, in Figure 1. On the 
+one hand, in the case with only the informational advantage, as more agents acquire HFT 
+technology, prices become more informative, making it easier for STs to free ride by 
+learning from the information revealed by FTs in their trading strategies. On the other 
+hand, in the case with only the trading speed advantage, when there are more agents with 
+HFT technology, market frictions are reduced. Hence, STs can free ride on this 
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+32 
+ 
+improvement in market quality. Therefore, in both cases (left- and right-hand sides of 
+Figure 2), the relative advantage of FTs compared to STs decreases as   rises.  
+Observation 3. (i) In the case that a fast trader only has an informational (a trading 
+speed) advantage, it is valuable for the fast trader to additionally acquire a trading 
+speed (an informational) advantage. 
+(ii) In the case that a fast trader only has either an informational or a trading speed 
+advantage, her willingness to pay for the other skill is reduced as the proportion of fast 
+traders increases. 
+ 
+Figure 2 also shows that there is a synergy between the informational and trading 
+speed skills. This means that, if an FT has only an informational (a trading speed) 
+advantage, it is valuable for her to additionally acquire the trading speed (informational) 
+skill. This is expected, since FTs can use either of these advantages more efficiently when 
+they also have the other one. For instance, the left-hand side of Figure 2 shows that, for 
+        , the cost that FTs pay to have only the informational technology is 0.198, but 
+they are willing to pay an additional 0.037 to have the fast trading technology as well (i.e., 
+  
+     is                  ). Similarly, the right-hand side of Figure 2 reports that, for 
+        , the cost that FTs pay to have only the trading speed is 0.073, but they are 
+willing to pay an additional 0.162 to have the informational advantage as well (i.e.,   
+     is 
+                 ).  
+ 
+Moreover, Figure 2 also shows that, if an FT only has either the informational or the 
+trading speed technology, her willingness to pay for the other technology decreases as   
+goes up. For instance,   
+     is 0.037 for          and   
+     is 0.030 for          on the 
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+33 
+ 
+left-hand side of the figure, while   
+     is 0.162 for          and   
+     is 0.127 for 
+         on the right-hand side of the figure. This means that, as the number of agents 
+with only the informational (trading speed) technology increases, it becomes less valuable 
+for them to additionally acquire the trading speed (informational) technology. This is 
+because the possibilities that FTs have to extract benefits from STs decrease as the number 
+of FTs in the market increases, since STs can free ride on market quality improvements, as 
+previously explained.  
+ 
+5 
+Empirical implications 
+5.1 
+The effect of HFT competition on microstructure noise and market 
+ 
+informativeness 
+ 
+The microstructure features of financial markets may induce some frictions that 
+make the transaction price,   , depart from the fundamental value of the asset,   . Thus, the 
+transaction price can be decomposed into two components: the fundamental value of the 
+asset    plus a microstructure noise   , such that         .11 In a frictionless world, 
+microstructure noise should be zero; however,    can be an important component of prices 
+in real markets.  
+ 
+An important friction that affects financial markets is the reaction speed of agents, 
+in modifying trading decisions when market conditions change. For instance, a trader may 
+have additional information about the asset, but this information will be worthless if she 
+cannot quickly use it in the market. Thus, HFT technology can mitigate frictions related to 
+                                                 
+11 See Hasbrouck (2002) for a discussion on microstructure noise.  
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+34 
+ 
+reaction times, since this technology improves agents’ trading speed through superfast 
+connections to the exchanges.  
+Observation 4. (i) The mean of the absolute value of microstructure noise is reduced 
+as the number of fast traders competing in the market increases. 
+(ii) HFT competition increases informational efficiency. 
+ 
+I show that the HFT competition improves market quality in terms of a reduction in 
+microstructure noise. The left-hand side of Figure 3 shows the mean of the absolute value 
+of microstructure noise for different levels of HFT competition. This confirms the 
+arguments, explained above, in relation to HFT competition reducing market frictions, 
+which is reflected in a drop in the mean of the absolute value of microstructure noise.12 
+[Insert Figure 3 here] 
+ 
+An additional friction in financial markets is the limited cognition of market 
+participants. Currently, a large amount of information has to be analyzed by agents in order 
+for them to make optimal trading decisions. However, investors have cognition limits 
+because, for instance, they could be busy completing other tasks. The existence of traders 
+with HFT technology may mitigate the cognitive limits of human beings, as computers can 
+rapidly analyze and process large amounts of information. 
+ 
+In terms of the improvements in the informational efficiency due to HFT technology, 
+I show in Figure 3, on the right-hand side, that the mean of the absolute value of the belief 
+error of STs is reduced as   goes up. Following Goettler et al. (2009), the belief error of STs 
+is defined as the expected value of    for an ST given market conditions at time  ,         , 
+                                                 
+12 Furthermore, in an unreported analysis, I also find that the mean of the absolute value of microstructure 
+noise is reduced even when FTs only have either an informational advantage or a trading speed advantage.  
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+35 
+ 
+minus the current value of    (i.e.,            ). This figure shows that the mean of the 
+absolute value of the STs’ belief error decreases when there is more HFT competition. This 
+is because STs are eager to capture and learn from any information disclosed in trades by 
+FTs, with the objective of improving the accuracy of their estimations of the fundamental 
+value. They do so to make better trading decisions and to decrease the adverse selection 
+they face when there are FTs in the market.13  
+ 
+The results shown in Figure 3 are supported by previous empirical studies, which 
+present evidence that algorithmic traders can submit orders in the same direction as price 
+movements due to the advantage they have in analyzing information (e.g., Kirilenko et al., 
+2017). Hendershott and Riordan (2010) and Brogaard et al. (2014) also show that FTs play 
+a beneficial role in price discovery, as they trade in the direction of permanent price 
+movements, and in the reverse direction to transitory pricing errors. Brogaard (2010) finds 
+that FTs add more to price discovery than traditional market participants.14 In addition, 
+Boehmer et al. (2018) present evidence that HFT competition in liquidity provision 
+improves informational efficiency by reducing the price impact of trades. 
+ 
+                                                 
+13 The reduction in the mean of the absolute value of the belief error of the STs as   increases is only observed 
+when FTs have an informational advantage (i.e., either when FTs have an informational and a trading speed 
+advantages, or when they just have an informational advantage). By construction, in the case where there is 
+only the trading speed advantage, FTs cannot reveal additional information that can be learned by STs.  
+14 Reductions in microstructure noise can also be related to reductions in transaction price volatility, as 
+reported in the empirical analysis of Hasbrouck and Saar (2012), because          and hence 
+microstructure noise is an important component of the realized volatility obtained from market-traded 
+prices. 
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+36 
+ 
+5.2 
+The effect of HFT competition on the bid-ask spread and market depth 
+ 
+The effect of HFT technology on liquidity depends on which agent type (i.e., FTs or 
+STs) is more willing to provide liquidity to the market. In the case that FTs compete more 
+using their trading skills for liquidity provision than for liquidity taking, market liquidity 
+should improve. In this case, an FT has to compete with other FTs who want to provide 
+liquidity, by using their trading skills, which can make the liquidity provision more 
+efficient.  
+ 
+Conversely, in the case that FTs compete more in liquidity taking than in liquidity 
+provision, market liquidity should be reduced. In this case, STs will have more control over 
+liquidity provision, which could increase the bid-ask spread. This is because limit orders 
+from STs are exposed to the risk of being picked off by market orders submitted by FTs. 
+Thus, STs should submit less aggressive limit orders in response to the adverse selection 
+their limit orders face.  
+Observation 5. (i) Fast traders exhibit predatory behavior when there is low HFT 
+competition, by competing more through market orders that pick off limit orders 
+coming from the big crowd of traditional slow agents in the market. 
+(ii) Conversely, when there are many HFT firms, they compete more in terms of 
+liquidity provision. 
+(iii) Consequently, market liquidity has a humped shape as a function of HFT 
+competition. 
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+37 
+ 
+The left-hand side of Figure 4 presents the bid-ask spread and the depth at the ask 
+price for different values of HFT competition.15 This figure shows that, in the case where 
+there are few HFT firms in the market (i.e., for low values of  ), additional HFT competition 
+generates liquidity damages in terms of an increase in the bid-ask spread and a reduction 
+in market depth. For instance, the bid-ask spread has a positive slope between the values of 
+        and         . Nevertheless, additional HFT competition improves market 
+liquidity when there are more HFT firms in the market (i.e., when         ). For 
+instance, for values of   greater than or equal to 38.40%, additional HFT competition 
+reduces the bid-ask spread to a level lower than that when there are no FTs in the market 
+(i.e.,        ). 
+[Insert Figure 4 here] 
+ 
+This result can be explained by the behavior of agents as the proportion of FTs in 
+the market increases, which affects the preferences of FTs for providing (or consuming) 
+liquidity. As explained in Subsection 4.2, FTs can use HFT technology in their limit orders, 
+or in their market orders, to the detriment of STs. On the one hand, FTs can use their skills 
+in limit orders to obtain benefits from liquidity provision by capturing the immediacy cost 
+paid on market orders submitted by other traders. This is because FTs can react quickly 
+and modify their unexecuted limit orders whenever they are not in an optimal position in 
+the limit order book. On the other hand, FTs can also use their trading skills to submit 
+market orders, for example making profits by submitting predatory market orders that 
+pick off other agents’ unexecuted limit orders (in particular those of STs).  
+                                                 
+15 I only report depth at the ask price since the model is symmetric across the two sides of the book. 
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+38 
+ 
+ 
+The right-hand side of Figure 4 reports the percentage of executions made through 
+limit orders by slow traders and the probability of observing a submission through an 
+aggressive limit sell order, as a function of HFT competition. This figure shows that, in the 
+case that there are few HFT firms, they compete more by engaging in predatory behavior 
+through market orders. For instance, this figure shows that 51.12% (48.88%) of the STs 
+perform transactions through limit (market) orders when         . This implies that, 
+when         , 44.63% (55.37%) of the FTs perform transactions through limit 
+(market) orders. FTs compete more through market orders to pick off limit orders coming 
+from the large crowd of STs, instead of using HFT technology to provide liquidity. The 
+predatory behavior of FTs when   is low induces a reduction in market liquidity.  
+ 
+Moreover, in this scenario, STs are the main agents responsible for providing 
+liquidity. As explained above, the liquidity provision coming from STs increases the bid-ask 
+spread, since they submit unaggressive limit orders to reduce their picking-off risk. For 
+example, the right-hand side of Figure 4 shows that the probability of observing a 
+submission through an aggressive limit order is at its lowest level when there are few HFT 
+firms. This result is consistent with Breckenfelder (2013), who provides empirical evidence 
+of a liquidity reduction after an increase in HFT competition.  
+ 
+The behavior of FTs is different when there are many of them in the market. In this 
+case, it is more difficult for FTs to find limit orders submitted by STs in incorrect positions 
+that can be picked off. Thus, FTs change their trading preferences when   goes up, 
+competing more through limit orders than market orders. This is reinforced by the fact that 
+STs can learn from the information revealed by FTs in their trading strategies, especially 
+when there are many FTs in the market. The learning process followed by STs makes it 
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+39 
+ 
+even more difficult for FTs to observe limit orders in incorrect positions that can be picked 
+off. For example, Figure 4 shows that 43.33% (56.67%) of the STs perform transactions 
+through limit (market) orders when         . This means that, when         , 
+51.67% (48.33%) of the FTs perform transactions through limit (market) orders. In this 
+scenario, a FT has to compete with other FTs (who also have informational and trading 
+speed advantages) to provide liquidity, which makes the FTs submit more aggressive limit 
+orders (due to competition) so as to obtain the immediacy cost paid on market orders. For 
+instance, we can observe on the right-hand side of Figure 4 that the probability of 
+submitting an aggressive limit order is at its largest when there are many HFT firms in the 
+market.16 
+ 
+The improvement in liquidity due to HFT competition under high levels of   is 
+consistent with Brogaard and Garriott (2018), who report that HFT competition induces an 
+increase in market liquidity. Moreover, this result is congruent with the findings presented 
+in other empirical studies, in which HFT technologies are associated with reductions in the 
+bid-ask spread. For instance, Hasbrouck and Saar (2012), Hendershott et al. (2012), and 
+Riordan and Storkenmaier (2012) report evidence that FTs reduce market spreads.  
+ 
+6 
+Social optimum and policy intervention 
+ 
+Social welfare is given by: 
+                               
+(4)
+                                                 
+16 In unreported analysis, I find similar patterns to those presented in Figure 4 when FTs only have either an 
+informational advantage or a trading speed advantage. In this analysis, I find that additional HFT competition 
+decreases (increases) market liquidity when there are few (many) HFT firms in the market.  
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+40 
+ 
+Thus, social welfare depends on the cost of having HFT technology,  , and the level of HFT 
+competition,  . Figure 5 presents the social welfare across different values of   and using 
+three levels of  . In addition, let     be the proportion of FTs that maximizes social 
+welfare.  
+[Insert Figure 5 here] 
+ 
+Figure 5 shows that the shape of the social welfare, as a function of the level of the 
+HFT competition, changes depending on the amount agents have to pay to acquire HFT 
+technology,  . On the one hand, in the case that there is no cost of acquiring HFT 
+technology (i.e.,    ), the social welfare has a humped shape as a function of  . In this 
+case, the maximum social welfare is reached when the proportion of FTs in the market is 
+72.20% (i.e.,           ). On the other hand, in the case that         or        , 
+the social welfare describes a decreasing curve as a function of the level of the HFT 
+competition. Thus, if         or        , the maximum social welfare is reached when 
+there are no FTs in the market (i.e.,          ). 
+ 
+Most importantly, when we compare Figure 1 to Figure 5, we observe that there is 
+overinvestment in HFT technology. This means that the equilibrium investment in HFT 
+technology (see equation (3)), in terms of the proportion of FTs in the market,   , which is 
+larger than the proportion of FTs that maximizes social welfare,    . For instance, if there 
+is no cost to being an FT (i.e.,    ), Figure 1 shows that all agents acquire HFT technology 
+(i.e.,           ). However, as explained in the previous paragraph, the proportion of 
+FTs that maximizes social welfare,    , is        when    . In addition, Figure 1 
+reports that the equilibrium investment levels are           and           for 
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+41 
+ 
+        and        , respectively. Nevertheless, if         or        , the 
+maximum social welfare is observed when there are no HFT firms in the market, thus 
+         . The reason    is larger than     is that FTs do not consider, when choosing 
+their equilibrium investment, the negative externality they generate for STs. 
+Observation 6. There is overinvestment in HFT technology, as there are incentives to 
+be a fast trader even in scenarios in which being one is socially wasteful. 
+ 
+Consequently, the model shows that there are incentives to being an FT even in 
+scenarios in which it is socially wasteful to be one. Thus, I analyze some potential policy 
+measures designed to move the equilibrium investment closer to the socially optimal level. 
+In fact, policy makers have already been analyzing the potential implementation of 
+regulations aimed at controlling the market activity of HFT firms. For instance, on 
+September 22, 2010, the SEC Chairman, Mary Schapiro, said that "...high frequency trading 
+firms have a tremendous capacity to affect the stability and integrity of the equity markets. 
+Currently, however, high frequency trading firms are subject to very little in the way of 
+obligations, either to protect that stability by promoting reasonable price continuity in 
+tough times, or to refrain from exacerbating price volatility." However, some regulators and 
+exchanges have argued that potential measures for controlling HFT activity may induce 
+more damages than benefits. For example, in 2011, the London Stock Exchange stated, 
+referring to cancellation fees, that “Any measure that increases transaction costs will 
+reduce liquidity in markets, increasing the cost of capital for companies, and may also 
+exacerbate volatility." 
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+42 
+ 
+ 
+In particular, I analyze three policy responses: a Pigovian tax, a cancellation fee, and 
+a latency constraint. The outcomes of these potential policy interventions are reported in 
+Table 1. In this table, I use as a benchmark a model setup without regulation, where 
+         . 
+[Insert Table 1 here] 
+Observation 7. The use of either a Pigovian tax, a cancellation fee or a latency 
+constraint will improve social welfare but reduce market quality. 
+ 
+In terms of the Pigovian tax, I assume there is a social planner who imposes a tax on 
+FTs with the purpose of moving the equilibrium investment to the socially optimal level of 
+fast trading. Let T be the Pigovian tax. Thus, the total cost that FTs face when they have HFT 
+technology is    . Therefore, if the social planner knows that the socially optimal level of 
+fast trading is    , the Pigovian tax should be: 
+                       
+(5)
+Equation (5) is obtained from the fact that the "social" equilibrium investment in HFT 
+technology is reached when STs and FTs have the same net expected profit:          
+              . Thus, after applying the Pigovian tax, the "social" equilibrium level of 
+the proportion of FTs in the market,    , coincides with the "private" equilibrium level of 
+the proportion of FTs in the market,   . Then, the Pigovian tax can be redistributed among 
+agents to share the welfare improvements associated with HFT technology. 
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+43 
+ 
+ 
+In Table 1, the Pigovian tax is 0.121, which generates an improvement in social 
+welfare of 0.095 (i.e., 3.763-3.668=0.095) relative to the case without regulation.17 It is 
+important to note that an improvement in social welfare does not necessarily generate an 
+improvement in market quality measures. In fact, we observe that, when the Pigovian tax is 
+applied, the bid-ask spread and the means of the absolute values of both the microstructure 
+noise and the belief error of the STs all increase, while the depth at the ask price decreases.  
+ 
+It is important to note that the implementation of a Pigovian tax faces two important 
+problems. Firstly, although the identification of FTs with a trading speed advantage is 
+relatively easy, as their trading ratio is directly observable (and they have to pay for 
+collocation services in exchanges), it is much more difficult to identify agents who have an 
+informational advantage. Thus, the social planner would face problems over whom to 
+impose the Pigovian tax on. 
+ 
+Secondly, the Pigovian tax is equal to the net negative externality that FTs generate 
+on STs when the socially optimal level of fast trading is reached, which is difficult to 
+calibrate. This is because the optimal Pigovian tax should be asset-specific and evolve over 
+time. For instance, I show in the Appendix that the negative externality of FTs on STs 
+                                                 
+17 The value assumed for the Pigovian tax in Table 1 is of the same order of magnitude as the financial 
+transaction tax (FTT) implemented in 2012 in France. In 2012, the French government imposed an FTT of 20 
+basis points (bps) on stock purchases. However, this tax is payable on daily net position changes; thus 
+intraday trading is exempted. This tax exemption on intraday trading is very relevant, since HFT firms carry a 
+low level of their volume overnight, which implies that a small amount of the transactions of HFT firms would 
+be affected. For instance, Kirilenko et al. (2017) use such a criterion to classify a trader as an HFT firm, in 
+which a trader has to carry less than 5% of its daily volume overnight to be classified as a firm with HFT 
+technology. Therefore, if we consider that the price of a stock is €15, on average an HFT firm would pay 
+€0.0015 (i.e., €15*20bps*0.05=€0.0015) per share due to this FTT in France. Moreover, the French 
+government also introduced a tax of 1 bp on the notional amount of modified or canceled messages of HFT 
+firms that exceed an order-to-trade ratio of 5:1. This second tax is similar to the cancellation fee that I also 
+analyze in Table 1. Thus, if we also consider that the price of a stock is €15 and an HFT firm exceeds the 
+established trade ratio, this firm would pay €0.0015 (i.e., €15*1bp=€0.0015) as a result of this tax. Therefore, 
+if we consider that the tick size of the stock is €0.01, then the Pigovian tax of 0.121 ticks used in this study is 
+equal to €0.00121 per share, which is similar to the values paid by HFT firms under these French taxes.  
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+44 
+ 
+increases with the volatility of the fundamental value of the asset, which should vary for 
+different securities. Also, the volatility of the fundamental value of an asset should change 
+over time in real markets, meaning that the optimal value of the Pigovian tax should not be 
+constant over time, even for the same asset.  
+ 
+In terms of the second policy intervention, which is related to a cancellation fee, I 
+assume that traders pay a fee of 0.1 ticks when they cancel a limit order (i.e.,           in 
+equation (2)).18 To make the evaluation of the welfare level comparable with the 
+unregulated result, I redistribute the money obtained from the cancellation fee among 
+agents.  
+ 
+I show in Table 1 that a cancellation fee marginally improves social welfare by 0.007 
+(i.e., 3.675-3.668=0.007) in relation to the case without any policy measures. In addition, 
+and similar to the Pigovian tax, a cancellation fee has negative impacts on market quality 
+(i.e., the bid-ask spread, and the means of the absolute values of both the microstructure 
+noise and the STs’ belief error go up, while the depth at the ask price goes down). This is 
+because a cancellation fee represents an additional market friction that unfavorably affects 
+market performance, as it is costly to modify unexecuted limit orders.19  
+                                                 
+18 The value assumed for the cancellation cost is consistent with the value imposed in NYSE Euronext, in 
+which, above an order-trade ratio of 100:1, a €0.10 fee is applied to cancellations. Suppose that a trader in 
+NYSE Euronext submits and cancels 100 consecutive orders and, immediately after that, she submits and 
+cancels another one. The cancellation fee for the 101st cancellation can be shared with the previous 
+uncharged cancellations to distribute the cost, which makes a cancellation cost per order of €0.001 (i.e., 
+€0.10/101= €0.001). The cancellation cost per order of €0.001 represents a lower bound since, after the 
+101st cancellation, additional cancellation costs (from unexecuted limit orders) will be divided by the first 
+100 uncharged cancellations plus the new charged cancellations. Therefore, if we assume that the tick size is 
+€0.01, the cancellation fee of 0.1 ticks (€0.01*0.1 = €0.001) is similar to what we can currently observe in the 
+market. 
+19 In an unreported analysis, I run the case in which the cancellation fee is applied only to FTs. In this 
+unreported analysis, I find that the welfare increases by       (i.e., the welfare in this case is 3.679) in 
+relation to the case without regulation. In addition, market quality is still damaged even when the 
+cancellation fee is only applied to FTs. However, this case would be difficult to implement, because it is 
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+45 
+ 
+ 
+Despite the improvements in welfare, the decision about the right level of the 
+cancellation fee is also complex, as with the calibration of the optimal Pigovian tax. A small 
+cancellation fee may have no impact on market welfare. More importantly, an incorrect 
+level of cancellation fee could induce severe liquidity problems by moving the equilibrium 
+level of the proportion of FTs in the market,   , to a value that may induce more damages 
+than benefits. As explained above, for instance in the case where          , we can 
+observe an important worsening of market liquidity measures (see Figure 4). 
+ 
+In terms of the third policy response analyzed in this study, several exchanges have 
+proposed regulations to reduce the speed advantage of FTs by imposing latency constraints 
+on agents. Some of these regulations include minimum resting times for orders before they 
+can be modified, or speed bumps to delay orders. Thus, I next evaluate the implementation 
+of a latency constraint using this modeling approach.  
+ 
+I impose a latency constraint by changing the average re-entry speed of FTs. Thus, I 
+impose that the average re-entry time for FTs increases from 120 milliseconds to 600 
+milliseconds, which is the same as the average re-entry time of STs. Table 1 shows that the 
+latency constraint increases social welfare by 0.011 (i.e., 3.679-3.668=0.011) compared to 
+the case without regulation. Similarly to the policy measures analyzed previously, though, 
+Table 1 shows that the latency constraint has a negative effect on market quality.  
+ 
+Nevertheless, latency constraints have important advantages over the other 
+potential regulations analyzed. A latency constraint does not need to deal with the complex 
+calibration of an optimal Pigovian tax or optimal cancellation fee. Instead, a latency 
+                                                                                                                                                             
+complex to identify who has HFT technology (specifically an informational advantage), as mentioned for the 
+case of the Pigovian tax.  
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+46 
+ 
+constraint, where there is a fair trading speed for all agents (i.e., which is fair for STs), can 
+be estimated using reaction times of human beings. Thus, a fair trading speed can be 
+obtained by observing the trading activity of traditional slow investors. This an important 
+point since human beings’ reaction times are independent of the asset and do not change 
+over time.  
+ 
+7 
+Conclusions 
+In this paper, I analyze HFT competition when traders can endogenously decide to 
+compete through limit orders and market orders. I present a dynamic equilibrium model in 
+continuous time for a limit order market, in which there are endogenous make-take 
+decisions in an HFT competitive landscape. I show that the bid-ask spread has a humped 
+shape as a function of HFT competition, induced by changes in HFT firms’ preferences for 
+liquidity demand and liquidity provision. On the one hand, in the case where there are few 
+HFT firms in the market, they exhibit predatory behavior by competing more through 
+market orders, which pick off limit orders coming from the big crowd of slow less skilled 
+agents in the market. In this case, additional HFT competition reduces liquidity. On the 
+other hand, in the case where there are many HFT firms in the market, they compete more 
+in liquidity provision; in this environment, additional HFT competition improves liquidity.  
+I show that the difference in the gross expected payoffs of FTs and STs is reduced as 
+the number of FTs in the market increases. This is because, when there are more FTs, STs 
+can free ride on the improvements in informational efficiency and reductions in market 
+frictions. In fact, I show that HFT competition increases informational efficiency and 
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+47 
+ 
+reduces microstructure noise. In addition, I show that there is a synergy between the 
+informational advantage and the trading speed advantage. This is expected since FTs can 
+use either of these advantages more efficiently when they also have the other trading skill. 
+Furthermore, I show that there is overinvestment in HFT technology. Thus, I examine three 
+potential policy responses designed to move the equilibrium investment closer to the 
+socially optimal level. I show that all policy measures improve social welfare but reduce 
+market quality. 
+The model presented in this paper is intuitive. However, other interesting issues 
+remain to be addressed. For instance, the study of the effect of informational and trading 
+speed advantages on the correlations between different assets, the study of the impact of 
+HFT on multiple markets, and an analysis of HFT competition when dark pools are present 
+have been left for future research. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+48 
+ 
+Appendix: The impact of volatility changes on HFT equilibrium investment, the bidask spread, and microstructure noise 
+In this Appendix, I examine the impact of volatility on the HFT equilibrium 
+investment, the bid-ask spread, and microstructure noise. The left-hand side of Figure A1 
+reports the difference between the gross expected payoffs of FTs and STs as a function of 
+the volatility of the fundamental value of the asset. This figure shows that the relative 
+benefit of being an FT in relation to an ST increases when the volatility of the asset 
+increases. Thus, FTs are willing to pay a higher cost to have HFT technology, as the 
+volatility of the asset rises. This result sheds some light on the behavior of FTs across 
+assets. For instance, if we assume that the cost of having HFT technology is constant, FTs 
+will prefer to trade in an asset with higher volatility since they will gain a greater benefit 
+relative to STs by doing so.  
+[Insert Figure A1 here] 
+The right-hand side of Figure A1 presents the bid-ask spread and the mean of the 
+absolute value of the microstructure noise, again as a function of the volatility of the 
+fundamental value of the asset. This figure shows that the bid-ask spread increases as the 
+volatility increases, which is consistent with Biais et al. (2015). Moreover, this figure shows 
+that there is a volatility multiplier effect, as in Goettler (2009), in which the limit order 
+market generates an increase in the mean of the absolute value of the microstructure noise 
+as the volatility of the fundamental value rises.  
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+49 
+ 
+References 
+Ait-Sahalia, Y., and M. Sağlam. 2016. High Frequency Market Making: Implications for 
+Liquidity. Working Paper, Princeton University.  
+Ait-Sahalia, Y., and M. Sağlam. 2017. High Frequency Market Making: Optima Quoting. 
+Working Paper, Princeton University.  
+Alvarez, F, L. Guiso, and F. Lippi, 2012, Durable consumption and asset management with 
+transaction and observation costs, American Economic Review 102, 2272-2300.  
+Alvarez, F., F Lippi, and L. Paciello, 2011, Optimal price setting with observation and menu 
+costs, Quarterly Journal of Economics 126, 1909-1960. 
+Biais, B., T. Foucault, and S. Moinas, 2015, Equilibrium high frequency trading, Journal of 
+Financial Economics 115, 292-313.  
+Biais, B., J. Hombert, and Pierre-Olivier Weill, 2012, Pricing and liquidity with sticky trading 
+plans. Working paper, TSE, HEC, UCLA. 
+Boehmer, E., Li, D., & Saar, G., 2018, The Competitive Landscape of High-Frequency Trading 
+Firms, Review of Financial Studies 31, 2227-2276. 
+Bongaerts, D.G.J., and M.V. Achter, 2016, High-Frequency Trading and Market Stability, 
+Working paper Erasmus University 
+Breckenfelder, J. H. 2013. Competition between high-frequency traders, and market quality. 
+Working Paper, Stockholm School of Economics. 
+Brogaard, J.A., 2010, High frequency trading and its impact on market quality, working 
+paper Northwestern University. 
+Brogaard, J., Hendershott, T., & Riordan, R. (2014). High-frequency trading and price 
+discovery. The Review of Financial Studies, 27(8), 2267-2306.  
+Brogaard, J., and C. Garriott. 2018. High-frequency trading competition. Working Paper, 
+University of Washington and Bank of Canada. 
+Budish, E. B., P. Cramton, and J. Shim (2013), The High-Frequency Trading Arms Race: 
+Frequent Batch Auctions as a Market Design Response, Working paper University of 
+Chicago. 
+Chaboud, A. P., Chiquoine, B., Hjalmarsson, E., & Vega, C., 2014,. Rise of the machines: 
+Algorithmic trading in the foreign exchange market. The Journal of Finance, 69(5), 
+2045-2084. 
+Colliard, J. E., & Hoffmann, P. (2017). Financial transaction taxes, market composition, and 
+liquidity. The Journal of Finance 72, 2685-2716. 
+Cont, R., 2011. Statistical modeling of high frequency ﬁnancial data: facts, models and 
+challenges. IEEE Signal Processing 28 (5), 16–25. 
+Egginton, J., B. F. VanNess, and R. A. VanNess, 2012, Quote stuffing, Working paper, 
+University of Mississippi. 
+Foucault, T., 1999, Order Flow Composition and Trading Costs in a Dynamic Limit Order 
+Market, Journal of Financial Markets 2, 99–134. 
+Foucault, T., J. Hombert, and I. Roşu. 2016. News trading and speed. Journal of Finance 
+71:335–82. 
+Foucault, T., O. Kadan and E. Kandel, 2005, The Limit Order Book as a Market for Liquidity, 
+Review of Financial Studies 18, 1171–1217. 
+Friederich, S. and Payne, R. 2015. Order-to-trade ratios and market liquidity. Journal of 
+Banking & Finance 50, 214-223. 
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+50 
+ 
+Goettler, R., C. Parlour, and U. Rajan, 2005, Equilibrium in a Dynamic Limit Order Market, 
+Journal of Finance 60, 2149-2192. 
+Goettler, R., C. Parlour, and U. Rajan, 2009, Informed traders and limit order markets, 
+Journal of Financial Economics 93, 67-87. 
+Government Office for Science, 2012, Foresight: The Future of Computer Trading in 
+Financial Markets (2012) Final Project Report, London.  
+Grossman, S. and J. Stiglitz, 1980. , "On the Impossibility of Informationally Efficient 
+Markets", American Economic Review, 70, 393-408. 
+Hagstro mer, B., Norden, L., 2013, The diversity of high-frequency traders. Journal of 
+Financial Markets16, 741–770. 
+Hasbrouck, J. and G. Saar, 2012, Low-latency trading, working paper, AFA 2012 Chicago 
+Meetings Paper. 
+Hendershott, T., and R. Riordan, 2010, Algorithmic trading and information, working paper 
+UC Berkeley. 
+Hendershott, T., C. Jones and A. Menkveld, 2012, Does Algorithmic trading improve 
+liquidity, Journal of Finance 66, 1-33. 
+Brogaard, J., Hendershott, T., & Riordan, R., 2014, High-frequency trading and price 
+discovery. The Review of Financial Studies, 27(8), 2267-2306. 
+Hoffmann, P., 2014, A dynamic limit order market with fast and slow traders, Journal of 
+Financial Economics 113, 156-169. 
+Hollifield, B., Miller, R., Sandås, P., Slive, J., 2006. Estimating the gains from trade in limit 
+order markets. Journal of Finance 61, 2753–2804. 
+Huang, S., & Yueshen, B. Z. (2017). Speed Acquisition, working paper INSEAD. 
+Ifrach, B. and Weintraub, G.Y., 2016. A framework for dynamic oligopoly in concentrated 
+industries. Review of Economic Studies 84, 1106-1150.  
+Jain, P. K., 2005, Financial Market Design and the Equity Premium: Electronic versus Floor 
+Trading, Journal of Finance 60, 2955-2985. 
+Jovanovic, B., and A. Menkveld. (2012). “Middlemen in Limit-Order Markets.” Working 
+Paper, New York University and VU University of Amsterdam. 
+Jovanovic, B., R.W. Rosenthal, 1988, Anonymous sequential games, Journal of Mathematical 
+Economics 17, 77–87. 
+Kirilenko, A., A.S. Kyle, M. Samadi, and T. Tuzun, 2017, The Flash Crash: High‐Frequency 
+Trading in an Electronic Market, Journal of Finance, 72: 967-998 
+Kosinski, R. J., 2012, A literature review on reaction time, Working paper, Clemson 
+University. 
+Krusell, P., A. A. Smith, Jr., 1998, Income and wealth heterogeneity in the macroeconomy. 
+Journal of Political Economy 106(5) 867–896. 
+London Stock Exchange, 2011, LSEG Public Comment to IOSCO’s Consultation Report: 
+Regulatory Issues Raised by the Impact of Technological Changes on Market Integrity 
+and Efficiency (CR02/11, July 2011). 
+Lynch, A. W., 1996, Decision frequency and synchronization across agents: Implications for 
+aggregate consumption and equity return, Journal of Finance 51, 1479-1497. 
+Mankiw G., and R. Reis, 2002, Sticky information versus sticky prices: a proposal to replace 
+the new Keynesian phillips curve, Quarterly Journal of Economics 4, 1295-1328. 
+Malinova, K., A. Park, and R. Riordan, 2018, Do Retail Traders Suffer from High Frequency 
+Traders?, Working Paper University of Toronto. 
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+51 
+ 
+Maskin, 
+E., 
+Tirole 
+,J.,2001.MarkovperfectequilibriumI:observable 
+actions. 
+JournalofEconomicTheory100,191–219. 
+Menkveld, A., 2013. High-frequency trading and the new-market makers. Journal of 
+Financial Markets16, 712–740. 
+Menkveld, A. J., and M. A. Zoican. 2017. Need for speed? Exchange latency and liquidity. 
+Review of Financial Studies 30:1188–228. 
+NYSE Euronext, 2012, Trading Fee Guide for NYSE Euronext European Cash Market 
+Members. Trading fee guide for European equities, NYSE Euronext. 
+Pakes, A., and P. McGuire, 2001, Stochastic algorithms, symmetric Markov perfect 
+equilibrium, and the ‘curse’ of dimensionality, Econometrica 69, 1261–1281. 
+Parlour, C., 1998, Price Dynamics in Limit Order Markets, Review of Financial Studies 11, 
+789–816. 
+Rieder, U., 1979, Equilibrium plans for non-zero-sum Markov games, in Otto Moeschlin and 
+Diethard Pallaschke, eds.: Game Theory and Related Topics (North Holland 
+Publishers,Amsterdam), pp. 91–101. 
+Reis, R., 2006a, Inattentive producers, Review of Economic Studies 3, 793-821. 
+Reis, R., 2006b, Inattentive consumers. Journal of Monetary Economics 8, 1761-1800. 
+Riordan, Ryan, and Andreas Storkenmaier, 2012, Latency, liquidity, and price discovery, 
+Journal of Financial Markets 15, 416-437. 
+Roşu, I., 2009, A Dynamic Model of the Limit Order Book, Review of Financial Studies 22, 
+4601-4641. 
+Roşu, I. 2016. Fast and slow informed trading. Working Paper, HEC Paris. 
+SEC, 2010, Concept release on equity market structure, Release No. 34-61358, File No. S702-10. 
+Yueshen, B. Z., 2014, Queuing Uncertainty, working paper, Yale University. 
+Zhang, Frank, 2010, The effect of high-frequency trading on stock volatility and price 
+discovery, working paper, Tinbergen Institute. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+52 
+ 
+ 
+Figure 1. Gross expected payoffs of agents and equilibrium investment in HFT technology. The lefthand side of this figure shows the gross expected payoffs of fast traders (FTs) and slow traders (STs) as a 
+function of HFT competition. The right-hand side presents the equilibrium investment in HFT technology, 
+also as a function of HFT competition. The gross expected payoffs are expressed in ticks. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+3.60
+3.70
+3.80
+3.90
+4.00
+4.10
+0%
+20%
+40%
+60%
+80%
+100%
+Expected payoff 
+Level of fast trading (β)
+STs 
+FTs 
+0.00
+0.05
+0.10
+0.15
+0.20
+0.25
+0.30
+0.35
+0%
+20%
+40%
+60%
+80%
+100%
+Difference between the gross 
+expected payoffs of FTs and STs 
+Level of fast trading (β)
+B
+A
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+53 
+ 
+ 
+Figure 2. Equilibrium investment in HFT technology with pure information acquisition and pure 
+trading speed acquisition. This figure shows equilibrium investment when I isolate either information 
+acquisition or trading speed acquisition (solid gray line), as a function of HFT competition. The left-hand side 
+presents the equilibrium investment in HFT technology in the case where HFT technology only involves the 
+informational advantage (i.e., information acquisition); the right-hand side shows the equilibrium investment 
+in the case where HFT technology only includes the trading speed advantage (i.e., trading speed acquisition). 
+In both cases, the equilibrium investment in HFT technology when FTs have both the informational and the 
+trading speed advantage is reported (solid black line). The difference between the gross expected payoffs of 
+FTs and STs is expressed in ticks. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+0.00
+0.05
+0.10
+0.15
+0.20
+0.25
+0.30
+0.35
+0%
+20%
+40%
+60%
+80%
+100%
+Difference between the gross 
+expected payoffs of FTs and STs 
+Level of  fast trading (β)
+STs: ∆t = 0.8; λr = 1/0.6
+FTs: ∆t = 0.0; λr = 1/0.12 
+STs: ∆t = 0.8; λr = 1/0.6
+FTs: ∆t = 0.0; λr = 1/0.6
+A
+B
+C
+D
+0.00
+0.05
+0.10
+0.15
+0.20
+0.25
+0.30
+0.35
+0%
+20%
+40%
+60%
+80%
+100%
+Difference between the gross 
+expected payoffs of FTs and STs 
+Level of fast trading (β)
+STs: ∆t = 0.8; λr = 1/0.6
+FTs: ∆t = 0.0; λr = 1/0.12 
+STs: ∆t = 0.8; λr = 1/0.6
+FTs: ∆t = 0.8; λr = 1/0.12 
+A
+B
+E
+F
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+54 
+ 
+ 
+Figure 3. The effect of HFT competition on microstructure noise and market informativeness. The lefthand side of this figure shows the mean of the absolute value of microstructure noise as a function of HFT 
+competition. The right-hand side presents the mean of the absolute value of the belief error of slow traders 
+about the fundamental value of the asset, also as a function of HFT competition. Microstructure noise and 
+belief error are expressed in ticks. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+0.00
+0.20
+0.40
+0.60
+0.80
+1.00
+1.20
+1.40
+0%
+20%
+40%
+60%
+80%
+100%
+Mean |vt - pt|
+Level of fast trading (β)
+Mean of the absolute 
+value of 
+microstructure noise: 
+Mean |vt - pt|
+0.00
+0.20
+0.40
+0.60
+0.80
+1.00
+1.20
+1.40
+0%
+20%
+40%
+60%
+80%
+100%
+Mean |E(vt|st) - vt| of STs
+Level of fast trading (β)
+Mean of the absolute 
+value of the belief 
+error of STs: 
+Mean |E(vt|st) - vt|
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+55 
+ 
+ 
+Figure 4. The effect of HFT competition on market liquidity. The left-hand side of this figure shows the 
+bid-ask spread and market depth as a function of HFT competition. The right-hand side presents the 
+percentage of executions made through limit orders by slow traders and the probability of observing a 
+submission through an aggressive limit sell order, also as a function of HFT competition. The probability of 
+observing a submission through an aggressive limit sell order is calculated as the number of submissions at 
+the ask (or at a lower price), divided by all limit order submissions on the sell side. I only report depth at the 
+ask price and the probability of observing a submission through an aggressive limit order on the sell side, 
+since the model is symmetric across the two sides of the book. The bid-ask spread is expressed in ticks. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+0.00
+0.50
+1.00
+1.50
+2.00
+2.50
+3.00
+0.00
+0.50
+1.00
+1.50
+2.00
+2.50
+0%
+20%
+40%
+60%
+80%
+100%
+Depth (# orders)
+Bid-ask spread
+Level of fast trading (β)
+Bid-ask spread
+Depth at the ask price
+0%
+5%
+10%
+15%
+20%
+25%
+30%
+35%
+40%
+45%
+36%
+38%
+40%
+42%
+44%
+46%
+48%
+50%
+52%
+54%
+0%
+20%
+40%
+60%
+80%
+100%
+Prob. of an aggress. limit order
+% of limit ord. 'executed'  for STs
+Level of fast trading (β)
+% of executions through 
+limit orders  for slow 
+traders
+Prob. of observing a 
+submission through an 
+aggressive limit sell order
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+56 
+ 
+ 
+Figure 5. The effect of HFT competition on welfare. This figure shows the level of social welfare as a 
+function of HFT competition, and using three levels of the cost of having HFT technology ( ). Social welfare is 
+calculated using equation (4) and is expressed in ticks. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+3.35
+3.40
+3.45
+3.50
+3.55
+3.60
+3.65
+3.70
+3.75
+3.80
+0%
+20%
+40%
+60%
+80%
+100%
+Welfare
+Level of  fast trading (β)
+Cost to be a FT (K): 0.000
+Cost to be a FT (K): 0.166
+Cost to be a FT (K): 0.350
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+57 
+ 
+ 
+Figure A1. The effect of volatility on equilibrium investment in HFT technology, the bid-ask spread 
+and microstructure noise. The left-hand side of this figure shows the difference between the gross expected 
+payoffs of fast traders (FTs) and slow traders (STs) as a function of the volatility of the fundamental value of 
+the asset. The right-hand side of this figure presents the bid-ask spread and the mean of the absolute value of 
+microstructure noise, also as a function of the volatility of the fundamental value of the asset. The different 
+levels of volatility are obtained by modifying the parameter   , which controls the time between innovations 
+in the fundamental value of the asset. Afterwards, the volatility of the fundamental value of the asset is 
+calculated by assuming that the stock price is $450, with tick size $0.05. In both plots, I assume that    
+    . The difference between the gross expected payoffs of FTs and STs, the bid-ask spread, and the 
+microstructure noise are expressed in ticks. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+0.00
+0.05
+0.10
+0.15
+0.20
+0.25
+0%
+20%
+40%
+60%
+Difference between the gross 
+expected payoffs of FTs and STs 
+Level of volatility
+0.00
+0.20
+0.40
+0.60
+0.80
+1.00
+0.00
+0.50
+1.00
+1.50
+2.00
+2.50
+0%
+20%
+40%
+60%
+Mean |vt - pt|
+Bid-ask spread
+Level of volatility
+Bid-ask spread
+Mean of the absolute value of 
+icrostructure noise: Mean |vt - pt|
+Electronic copy available at: https://ssrn.com/abstract=3336257
+
+58 
+ 
+Table 1. The effects on social welfare and market performance of potential policy interventions. This 
+table reports welfare and market quality measures (used in Figures 3-5) to evaluate the impact of three 
+potential policy responses: a Pigovian tax, a cancellation fee, and a latency constraint. The first column 
+presents a benchmark setup where there is no regulation (with        ).  
+ 
+Tax for FTs
+Cancellation fee 
+Latency constraint
+Welfare
+3.668
+3.763
+3.675
+3.679
+Cost to be fast trader
+0.166
+0.166
+0.148
+0.136
+Tax
+0.000
+0.121
+0.000
+0.000
+Bid-ask spread
+1.444
+1.667
+1.464
+1.485
+N. of limit orders at the ask
+2.223
+1.944
+2.159
+1.632
+% of limit orders 'executed' for slow traders
+0.465
+0.500
+0.457
+0.477
+Prob. of submitting an agressive limit order 
+0.414
+0.357
+0.365
+0.391
+Mean |v t - p t|
+0.515
+1.326
+0.532
+0.582
+Mean |E(v t|s t) - v t|
+0.503
+1.328
+0.522
+0.571
+Potential regulation under HFT competition
+No regulation
+Electronic copy available at: https://ssrn.com/abstract=3336257

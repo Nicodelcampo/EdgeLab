@@ -1,0 +1,197 @@
+{
+  "doc_id": 122,
+  "titulo": "Hedge Ratio Estimation and Risk-Return Dissociation in Pairs Trading: Kalman Filtering under Structural Instability",
+  "resumen_operativo": "Evalúa rigurosamente si la estimación dinámica del hedge ratio vía Kalman filter mejora el perfil riesgo-retorno del pairs trading frente al OLS estático, usando walk-forward cross-validation (14 folds) sobre 50 acciones del S&P 500 en el período de alta inestabilidad estructural 2020-2024. Hallazgo central: el Kalman filter reduce el máximo drawdown en 71% (-0.31% vs -1.07% fold-mean MaxDD) pero degrada el Sharpe (-2.08 vs -0.16) por mayor turnover (+54% más trades) que amplifica el costo de transacción (28 bps round-trip). Adicionalmente, un filtro HMM de 2 estados sobre features del spread reduce el MaxDD otro 30%. La disociación riesgo-retorno es el aporte principal: Kalman debe verse como overlay de risk management, no como generador de alpha neto.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "pairs trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia de statistical arbitrage que explota desviaciones transitorias del co-movimiento de largo plazo entre dos acciones cointegradas. El paper estudia cómo el método de estimación del hedge ratio afecta el perfil riesgo-retorno, no si la estrategia es rentable en agregado.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "cointegration"},
+        {"tipo": "REQUIERE", "objeto": "hedge ratio"}
+      ],
+      "cita_textual": "the ratio of their price sensitivities (the hedge ratio) determines the directional exposure of a pairs trading position"
+    },
+    {
+      "nombre": "Kalman filter",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Filtro de Kalman aplicado a la estimación online del hedge ratio βt como estado latente que evoluciona como random walk. El hiperparámetro δ controla la velocidad de adaptación. El paper muestra que, en el período 2020-2024, produce spreads con un término de contaminación no estacionario (β̂ - βt)·log(Bt) que degrada la calidad de los z-scores de entrada.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "state space model"},
+        {"tipo": "MEJORA_A", "objeto": "cointegration"}
+      ],
+      "cita_textual": "βt as a latent state evolving as a random walk with process noise Q = δ/(1−δ), updated sequentially using the observation log At = βt · log Bt + εt"
+    },
+    {
+      "nombre": "cointegration",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Relación de cointegración entre pares de acciones testeada con double screen (Engle-Granger p<0.05 + Johansen trace >95% critical value) para reducir falsos positivos. Solo pares con half-life de mean reversion entre 5 y 60 días son seleccionados.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "pairs trading"},
+        {"tipo": "USA", "objeto": "Ornstein-Uhlenbeck process"}
+      ],
+      "cita_textual": "A pair passes only if both the Engle–Granger p-value is below 0.05 and the Johansen trace statistic exceeds the 95% critical value"
+    },
+    {
+      "nombre": "hidden Markov model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "HMM de dos estados Gaussianos con features pair-specific (spread volatility, autocorrelación, rolling ADF p-value) para identificar regímenes 'calm' y 'turbulent'. En régimen turbulento se suprimen nuevas entradas, reduciendo drawdown sin sacrificar retorno.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "regime switching"},
+        {"tipo": "APLICA_A", "objeto": "pairs trading"}
+      ],
+      "cita_textual": "a two-state Hidden Markov Model fitted on pair-specific spread features can identify such turbulent regimes and suppress new entries, reducing drawdown without necessarily sacrificing return"
+    },
+    {
+      "nombre": "walk-forward validation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Validación out-of-sample con 14 folds de rolling-window expanding train: 252 días train, 126 días OOS, step 63 días. Pair selection, hedge ratio estimation y HMM training se realizan exclusivamente en cada training window. BCa bootstrap CIs y Wilcoxon signed-rank tests proveen inferencia formal.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "backtest overfitting"},
+        {"tipo": "USA", "objeto": "pairs trading"}
+      ],
+      "cita_textual": "A walk-forward cross-validation design with 14 rolling out-of-sample folds prevents in-sample overfitting"
+    },
+    {
+      "nombre": "maximum drawdown",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Métrica primaria para H2. Kalman reduce fold-mean MaxDD en 71% vs OLS (-0.31% vs -1.07%). HMM conditioning reduce otro 30% adicional (a -0.22%). La reducción de drawdown no es explicable por menores holding periods (Branch D lo confirma).",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "pairs trading"},
+        {"tipo": "USA", "objeto": "Kalman filter"}
+      ],
+      "cita_textual": "Kalman reduces fold-mean maximum drawdown by 71% relative to OLS (−0.31% vs. −1.07%), a dissociation of return from risk that is the paper's central empirical finding"
+    },
+    {
+      "nombre": "transaction costs",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Costos modelados como 5 bps por leg por dirección (spread+commission) + 2 bps slippage, para un round-trip efectivo de 28 bps. Son el factor que convierte alpha bruto positivo en Sharpe neto negativo: Kalman tiene 54% más trades que OLS (932 vs 607).",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Sharpe ratio"},
+        {"tipo": "APLICA_A", "objeto": "pairs trading"}
+      ],
+      "cita_textual": "28-bps round-trip transaction costs consume gross alpha at the 2.3-day average holding periods generated by the Kalman branches"
+    },
+    {
+      "nombre": "Sharpe ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Sharpe ratio anualizado calculado con BCa bootstrap 95% CI. Fold-mean Sharpe: OLS = -0.157, Kalman = -2.080, Kalman+HMM = -1.671. El breakeven de costos para que Kalman compita con OLS se estima en 6-7 bps one-way.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "pairs trading"},
+        {"tipo": "MIDE", "objeto": "risk-adjusted return"}
+      ],
+      "cita_textual": "all seven branches produce negative net-of-cost fold-mean Sharpe ratios, confirming that 28-bps round-trip transaction costs consume gross alpha"
+    },
+    {
+      "nombre": "Ornstein-Uhlenbeck process",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Proceso de reversión a la media usado para modelar el spread: dεt = -κεt dt + σ dWt. El half-life τ½ = log(2)/κ se usa como filtro de selección de pares (5-60 días).",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "cointegration"},
+        {"tipo": "PARTE_DE", "objeto": "pairs trading"}
+      ],
+      "cita_textual": "The spread residual εt is modelled as an OU process dεt = −κεt dt + σ dWt, and the half-life of mean reversion is estimated as τ1/2 = log 2/κ"
+    },
+    {
+      "nombre": "backtest overfitting",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Riesgo mitigado mediante walk-forward validation estricta, BCa bootstrap CIs, y tests de Wilcoxon con corrección por overlap de folds. El paper también aborda survivorship bias (≤3% Sharpe inflation estimado) y false discovery rate en la selección de pares (~17-30% de pares potencialmente espurios).",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "walk-forward validation"}
+      ],
+      "cita_textual": "To prevent in-sample overfitting, we employ a standard walk-forward cross-validation design"
+    },
+    {
+      "nombre": "Baum-Welch algorithm",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Algoritmo EM usado para entrenar el HMM de dos estados con covarianza diagonal sobre los features del spread en cada ventana de entrenamiento.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "hidden Markov model"}
+      ],
+      "cita_textual": "A two-state Gaussian HMM with diagonal covariance is fitted on the training-window feature matrix using the Baum–Welch EM algorithm"
+    },
+    {
+      "nombre": "Viterbi algorithm",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Algoritmo de decoding usado para inferir la secuencia más probable de estados calm/turbulent durante el período OOS. El paper usa Viterbi global (batch) en vez de online filtering, introduciendo un look-ahead limitado dentro de la ventana OOS.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "hidden Markov model"}
+      ],
+      "cita_textual": "the Viterbi algorithm is run on the complete OOS feature sequence to decode the most likely state path for the full OOS window"
+    },
+    {
+      "nombre": "state space model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Formulación estado-espacio del Kalman filter para pairs trading: ecuación de observación log At = βt·log Bt + εt, ecuación de estado βt = βt-1 + ηt. El estado βt y su varianza posterior Pt se actualizan secuencialmente.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Kalman filter"},
+        {"tipo": "APLICA_A", "objeto": "pairs trading"}
+      ],
+      "cita_textual": "Branch B models βt as a latent state in the scalar state-space system"
+    },
+    {
+      "nombre": "regime switching",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Cambio de régimen detectado por el HMM usando features del spread (volatilidad, autocorrelación, ADF p-value). El régimen turbulento corresponde a períodos donde la relación de equilibrio está suspendida, consistente con distress de microestructura o rotación sectorial transitoria.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "hidden Markov model"},
+        {"tipo": "APLICA_A", "objeto": "pairs trading"}
+      ],
+      "cita_textual": "turbulent regimes correspond to periods in which the equilibrium relationship is temporarily suspended, consistent with microstructure distress or transient sector rotation"
+    },
+    {
+      "nombre": "statistical arbitrage",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Marco general que engloba el pairs trading. El paper referencia a Gatev et al. (2006) que documentan retornos anuales de ~11% (1962-2002) y Avellaneda y Lee (2010) con Sharpe >1.0 pre-2008, destacando que estos resultados usan hedge ratios estáticos.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "pairs trading"},
+        {"tipo": "USA", "objeto": "cointegration"}
+      ],
+      "cita_textual": "Gatev et al. (2006) document that a distance-based relative-value strategy earns mean annual excess returns of approximately 11%"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "El Kalman filter reduce el fold-mean maximum drawdown en 71% respecto a OLS estático (-0.31% vs -1.07%) pero degrada el Sharpe ratio de -0.157 a -2.080 debido a un 54% más de turnover (932 vs 607 trades) que amplifica el costo de transacción de 28 bps round-trip.",
+      "mercado": "S&P 500 equities (50 large-cap stocks, 8 sectores GICS)",
+      "periodo": "2020-2024 (1,258 trading days, 14 OOS folds)",
+      "magnitud": "Fold-mean MaxDD: OLS -1.07%, Kalman -0.31% (reducción 71%); Fold-mean Sharpe: OLS -0.157, Kalman -2.080; Trades: OLS 607, Kalman 932; Win rate: OLS 53.0%, Kalman 46.7%; Avg hold: OLS 9.6d, Kalman 2.3d; Wilcoxon W=7, p=0.002 (OLS dominante en 12/14 folds)",
+      "condiciones": "Walk-forward con 14 folds OOS; costos 28 bps round-trip; 10 pares por fold seleccionados por double cointegration screen; z-score entry ±2.0, exit ±1.0",
+      "robustez": "alta",
+      "cita_textual": "Static OLS achieves a fold-mean Sharpe of −0.157 versus −2.080 for Kalman (OLS dominant in 12 of 14 folds)... Kalman reduces fold-mean maximum drawdown by 71% relative to OLS (−0.31% vs. −1.07%)"
+    },
+    {
+      "afirmacion": "El filtro HMM de dos estados sobre features del spread reduce el fold-mean MaxDD en 30% adicional respecto a Kalman solo (de -0.31% a -0.22%, Wilcoxon p<0.001), y reduce el número de trades en 45% (de 932 a 508) al suprimir entradas en régimen turbulento.",
+      "mercado": "S&P 500 equities",
+      "periodo": "2020-2024",
+      "magnitud": "Fold-mean MaxDD: Kalman+HMM -0.22% vs Kalman -0.31% (reducción 30%); Trades: 508 vs 932 (-45%); Fold-mean Sharpe: Kalman+HMM -1.671 vs Kalman -2.080",
+      "condiciones": "HMM entrenado con Baum-Welch EM sobre features pair-specific (spread volatility, autocorrelation, ADF p-value); Viterbi global decoding sobre OOS completo",
+      "robustez": "alta",
+      "cita_textual": "HMM conditioning further reduces fold-mean MaxDD by 30% (to −0.22%, Wilcoxon p < 0.001) while cutting trade frequency by 45%"
+    },
+    {
+      "afirmacion": "La ventaja de drawdown del Kalman no es explicable por menores holding periods: un OLS con cap de 3 días (Branch D, igualando el holding promedio de Kalman) empeora el MaxDD a -1.24% (peor que OLS estándar a -1.07%), sugiriendo que la reducción de drawdown proviene de adaptación genuina del hedge ratio, no de acortar posiciones.",
+      "mercado": "S&P 500 equities",
+      "periodo": "2020-2024",
+      "magnitud": "Fold-mean MaxDD: Branch D (OLS 3d cap) -1.24% vs OLS estándar -1.07% vs Kalman -0.31%; 81.5% de exits forzados por time-limit en Branch D generan 3.5x turnover estándar",
+      "condiciones": "Branch D: OLS con max holding 3 días; resto de parámetros idénticos a Branch A; mecanismo de salida cambia simultáneamente con holding period",
+      "robustez": "media",
+      "cita_textual": "A 3-day OLS holding cap worsens fold-mean MaxDD to −1.24% (worse than standard OLS at −1.07%). This result is consistent with a structural explanation: Kalman's 71% drawdown advantage cannot be explained by shorter holding periods alone"
+    },
+    {
+      "afirmacion": "El Kalman spread sufre un 'signal quality paradox': la contaminación por β-drift (εKalman = εOLS + (β̂-βt)·log Bt) introduce un término no estacionario que degrada la win rate de signal-exit a 52.7% (vs 85.3% OLS). Un posterior variance entry gate (Branch F) repara parcialmente la señal subiendo la win rate a 54.8% y el Sharpe a -1.38.",
+      "mercado": "S&P 500 equities",
+      "periodo": "2020-2024",
+      "magnitud": "Win rate (signal exits): OLS 85.3%, Kalman 52.7%, Kalman+Variance gate (Branch F) 54.8%; Sharpe: Kalman -2.080 → Branch F -1.38",
+      "condiciones": "Branch F: zentry = 2.0 + α·Pt/P̄₂₀ con α=0.5; entrada más exigente cuando la incertidumbre del Kalman es alta",
+      "robustez": "media",
+      "cita_textual": "the Kalman spread decomposes as εKalman = εOLS + (β̂−βt) log Bt, where the contamination term renders the standard z-score non-stationary under active hedge ratio drift"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "El paper opera con datos diarios, pero el framework de Kalman filter para hedge ratio dinámico y HMM para filtrado de regímenes es directamente trasladable a pairs trading intradía en ES futures con datos de mayor frecuencia. La disociación riesgo-retorno y el signal quality paradox son hallazgos relevantes para cualquier implementación con costos de transacción significativos."
+  }
+}

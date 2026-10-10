@@ -1,0 +1,169 @@
+{
+  "doc_id": 275,
+  "titulo": "Demystifying Pairs Trading: The Role of Volatility and Correlation",
+  "resumen_operativo": "Descompone el algoritmo de pairs trading revelando que la seleccion tradicional SSD selecciona implicitamente pares con baja volatilidad y alta correlacion, lo cual no maximiza la rentabilidad. En el S&P 1500 (1990-2014), modificar el algoritmo para pares con alta volatilidad y correlacion eleva el retorno mensual ajustado por riesgo de 37pb a 76pb. La volatilidad del par domina el retorno por trade, la correlacion afecta la frecuencia de trading.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "SSD (Sum of Squared Differences)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Metrica de distancia tradicional de Gatev que mide la suma de diferencias cuadradas entre precios normalizados durante 12 meses de formacion.",
+      "relaciones": [
+        {
+          "tipo": "USA",
+          "objeto": "Pair Selection"
+        },
+        {
+          "tipo": "SE_OPONE_A",
+          "objeto": "Volatility-Correlation Selection"
+        }
+      ],
+      "cita_textual": "Distance Measure (SSD) = sum(PA,t - PB,t)^2"
+    },
+    {
+      "nombre": "Return per Trade Decomposition",
+      "tipo": "metodo",
+      "definicion_en_contexto": "El retorno por trade exitoso = 2sigma_hist + overshooting; sigma_hist depende positivamente de la volatilidad de cada accion y negativamente de su correlacion.",
+      "relaciones": [
+        {
+          "tipo": "REQUIERE",
+          "objeto": "Volatility"
+        },
+        {
+          "tipo": "REQUIERE",
+          "objeto": "Correlation"
+        }
+      ],
+      "cita_textual": "Return per natural trade = 2sigma_hist + overshooting"
+    },
+    {
+      "nombre": "Trading Frequency",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Numero de trades en el periodo de trading; aumenta con volatilidad creciente y correlacion decreciente entre periodo de identificacion y trading.",
+      "relaciones": [
+        {
+          "tipo": "CAUSA",
+          "objeto": "Total Return"
+        }
+      ],
+      "cita_textual": "the number of natural trades is increased by low stock volatility and high pair correlation during the identification period, coupled with higher volatility and lower correlation during the trading period"
+    },
+    {
+      "nombre": "Volatility-Correlation Quintile Analysis",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Analisis de 25 portafolios double-sorted por quintiles de volatilidad y correlacion para aislar sus efectos sobre el retorno del par.",
+      "relaciones": [
+        {
+          "tipo": "MEJORA_A",
+          "objeto": "SSD (Sum of Squared Differences)"
+        }
+      ],
+      "cita_textual": "we construct 25 pair groups from the intersection of the five pair volatility and five pair correlation quintile groups"
+    },
+    {
+      "nombre": "Bid-Ask Bounce",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Sesgo alcista en retornos al usar precios de cierre en lugar de bid/ask reales; mitigado usando precios bid/ask exactos.",
+      "relaciones": [
+        {
+          "tipo": "MITIGA",
+          "objeto": "Realistic Trading Simulation"
+        }
+      ],
+      "cita_textual": "we trade with the exact last bid or last ask price"
+    },
+    {
+      "nombre": "Volatility Mean-Reversion",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Volatilidad de pares con baja (alta) volatilidad tiende a aumentar (disminuir) entre periodo de identificacion y trading.",
+      "relaciones": [
+        {
+          "tipo": "CAUSA",
+          "objeto": "Trading Frequency"
+        }
+      ],
+      "cita_textual": "volatility increases are more likely for pairs with currently low pair volatility"
+    },
+    {
+      "nombre": "Correlation Mean-Reversion",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Pares con alta (baja) correlacion tienden a experimentar disminuciones (aumentos) de correlacion entre periodos.",
+      "relaciones": [
+        {
+          "tipo": "CAUSA",
+          "objeto": "Trading Frequency"
+        }
+      ],
+      "cita_textual": "correlation decreases are more likely for pairs with a currently high correlation"
+    },
+    {
+      "nombre": "Overshooting Trade",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Trade cerrado con perdida cuando el spread excede 4sigma_hist; la perdida potencial es simetrica a la ganancia de un trade natural.",
+      "relaciones": [
+        {
+          "tipo": "MITIGA",
+          "objeto": "Stop-Loss"
+        }
+      ],
+      "cita_textual": "overshooting trades, which are closed if the price spread exceeds 4sigma_hist, always generate a negative return"
+    },
+    {
+      "nombre": "Opening Probability",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Probabilidad de que el spread exceda 2sigma_hist; 4.55% sin cambio de volatilidad, hasta 31.73% si volatilidad se duplica.",
+      "relaciones": [
+        {
+          "tipo": "CAUSA",
+          "objeto": "Trading Frequency"
+        }
+      ],
+      "cita_textual": "the opening probability could increase from 4.55% to 31.73% if the volatility doubles"
+    },
+    {
+      "nombre": "Limits of Arbitrage",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Fricciones de mercado que pueden erosionar la rentabilidad; se verifica robustez incluyendo bid-ask spread real y controles de liquidez.",
+      "relaciones": [
+        {
+          "tipo": "MITIGA",
+          "objeto": "Robustness Checks"
+        }
+      ],
+      "cita_textual": "The findings are robust to liquidity issues, bid-ask spread, and limits of arbitrage"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "SSD explica hasta 88% de su variacion por volatilidad y correlacion del par; 67% de pares SSD caen en Corr_Q5/Vola_Q1.",
+      "mercado": "S&P 1500 constituents",
+      "periodo": "1990-2014",
+      "magnitud": "R2=0.88; 67% de pares SSD en Corr_Q5/Vola_Q1",
+      "condiciones": "Regresion de SSD sobre pair volatility y correlation",
+      "robustez": "alta",
+      "cita_textual": "Pair volatility and correlation explain 88% of SSD total variation"
+    },
+    {
+      "afirmacion": "Modificaciones simples al algoritmo elevan retorno mensual ajustado por riesgo de 37pb a 76pb (1990-2014).",
+      "mercado": "S&P 1500 US equities",
+      "periodo": "1990-2014",
+      "magnitud": "De 37bp a 76bp mensual ajustado por riesgo",
+      "condiciones": "Modificacion: priorizar pares high-volatility/high-correlation en lugar de SSD",
+      "robustez": "alta",
+      "cita_textual": "small algorithm modifications raise the average risk-adjusted monthly return from 37bp to 76bp"
+    },
+    {
+      "afirmacion": "Pares de alta volatilidad y baja correlacion generan $0.73 por trade vs solo $0.14 en pares de baja volatilidad y alta correlacion.",
+      "mercado": "S&P 1500",
+      "periodo": "1990-2014",
+      "magnitud": "$0.7256 (Vola_Q5/Corr_Q1) vs $0.1441 (Vola_Q1/Corr_Q5)",
+      "condiciones": "Natural trades convergentes; double-sorted quintile portfolios",
+      "robustez": "alta",
+      "cita_textual": "the return per trade for natural trades rises for higher pair volatility levels"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "Datos diarios; el analisis volatilidad/correlacion podria extenderse a intradia pero requiere recalibracion completa."
+  }
+}

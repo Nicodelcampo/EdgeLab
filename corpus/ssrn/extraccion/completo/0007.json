@@ -1,0 +1,260 @@
+{
+  "doc_id": 7,
+  "titulo": "On the Persistence of Cointegration in Pairs Trading",
+  "resumen_operativo": "Estudio empírico sobre más de 860.000 pares de acciones del S&P 500 (2002-2012) que muestra que la cointegración detectada en un período de formación NO predice cointegración en el período de trading siguiente, cuestionando el supuesto central de las estrategias de pairs trading basadas en cointegración. Compara el poder estadístico de varios tests de raíz unitaria (ADF, PP, Johansen, PGFF, BVR, etc.) y muestra que ADF tiene bajo poder, mientras PP y PGFF son mejores. Alerta sobre alta tasa de falsos positivos por data mining al buscar pares cointegrados sobre grandes universos.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "pairs trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia market-neutral que compra el activo más barato y vende en corto el más caro de un par de precios que suelen moverse juntos, cerrando cuando el spread revierte.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "cointegration"},
+        {"tipo": "REQUIERE", "objeto": "mean reversion"}
+      ],
+      "cita_textual": "Pairs trading is a market neutral strategy for profiting from short-term divergences in securities prices."
+    },
+    {
+      "nombre": "cointegration",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Relación estadística entre dos series de precios integradas cuyo residuo (spread) es estacionario, usada como base teórica del pairs trading.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Engle-Granger procedure"},
+        {"tipo": "MIDE", "objeto": "mean reversion"},
+        {"tipo": "USA", "objeto": "Dickey-Fuller test"}
+      ],
+      "cita_textual": "Cointegration [1] offers a statistical framework that seems well-suited to pairs trading."
+    },
+    {
+      "nombre": "Engle-Granger procedure",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Procedimiento de dos pasos: primero regresión OLS entre logs de precios para obtener el residuo, luego test de raíz unitaria sobre el residuo para determinar si hay reversión a la media (coeficiente rho).",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "cointegration"},
+        {"tipo": "USA", "objeto": "Dickey-Fuller test"}
+      ],
+      "cita_textual": "Engle and Granger gave a two-step procedure for determining whether or not two series are cointegrated and for identifying the cointegrating relations."
+    },
+    {
+      "nombre": "coefficient of mean reversion",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Parámetro rho de la regresión AR(1) sobre el residuo de cointegración; valores cercanos a 1 indican persistencia tipo random walk, valores menores indican reversión a la media.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "mean reversion"},
+        {"tipo": "PARTE_DE", "objeto": "Engle-Granger procedure"}
+      ],
+      "cita_textual": "The value of 𝜌 that is fitted in the above equation will normally be between zero and one. This is called the coefficient of mean reversion."
+    },
+    {
+      "nombre": "backtest overfitting",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "El paper sostiene que muchos estudios previos de pairs trading asumen implícitamente que la cointegración detectada en el período de formación implicará cointegración en el período de trading, hipótesis fuerte y no verificada que puede generar resultados espurios.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "data snooping"},
+        {"tipo": "MITIGA", "objeto": "walk-forward validation"}
+      ],
+      "cita_textual": "A number of published papers seem to implicitly assume that satisfaction of ℋ! implies satisfaction of ℋ! or even ℋ!. However, this assumption may not be justified."
+    },
+    {
+      "nombre": "data snooping",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Riesgo de que al buscar pares cointegrados sobre un universo grande (data mining) se generen muchos falsos positivos que no reflejan una relación real, ya que la tasa de detección es cercana a la esperada bajo la hipótesis nula.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "false discovery rate"},
+        {"tipo": "MITIGA", "objeto": "false discovery rate"}
+      ],
+      "cita_textual": "Any pairs trading strategy that makes use of data mining to identify cointegrated pairs is likely to generate large numbers of false positives."
+    },
+    {
+      "nombre": "false discovery rate",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Proporción de pares identificados como cointegrados que en realidad son falsos positivos, relevante dado el gran número de tests realizados sobre cientos de miles de pares.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "data snooping"}
+      ],
+      "cita_textual": "The locfdr package of [27] and the fdrtool package of [28] were used to try to determine a cutoff based upon false discovery rates"
+    },
+    {
+      "nombre": "Dickey-Fuller test",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Test de raíz unitaria (ADF) usado tradicionalmente para determinar si el residuo de la regresión de cointegración es estacionario; el paper muestra que tiene bajo poder estadístico frente a otras alternativas.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "cointegration"},
+        {"tipo": "SE_OPONE_A", "objeto": "Phillips-Perron test"}
+      ],
+      "cita_textual": "researchers realized relatively quickly that the (augmented) Dickey-Fuller test lacks power, which is to say that it often fails to reject the null hypothesis when the null hypothesis is false"
+    },
+    {
+      "nombre": "Phillips-Perron test",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Test de raíz unitaria alternativo al ADF que en las simulaciones del paper mostró el mejor desempeño global en potencia estadística para detectar cointegración.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "Dickey-Fuller test"},
+        {"tipo": "USA", "objeto": "cointegration"}
+      ],
+      "cita_textual": "Perhaps the best overall performance was given by the Phillips-Perron test (PP)."
+    },
+    {
+      "nombre": "PGFF test",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Weighted symmetric estimator (Pantula-Gonzalez-Farias-Fuller) de raíz unitaria que, junto con PP, mostró la mayor área de poder óptimo entre los tests comparados y fue el único que mostró evidencia (débil) de persistencia de cointegración.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "Dickey-Fuller test"},
+        {"tipo": "USA", "objeto": "cointegration"}
+      ],
+      "cita_textual": "the most tantalizing results were obtained with the PGFF test at 𝑝= 0.05"
+    },
+    {
+      "nombre": "unit root test power",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Capacidad de un test de raíz unitaria para rechazar correctamente la hipótesis nula (random walk) cuando el proceso realmente revierte a la media; el paper muestra que depende del tamaño muestral n y del ratio de varianzas entre residuo e innovaciones.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "cointegration"},
+        {"tipo": "REQUIERE", "objeto": "variance ratio"}
+      ],
+      "cita_textual": "The power of each test was calculated as a function of the length 𝑛 of the sequence and the coefficient of mean reversion 𝜌."
+    },
+    {
+      "nombre": "variance ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Cociente entre la varianza de los residuos (o innovaciones) del modelo de cointegración; el paper encuentra que afecta qué test de raíz unitaria resulta óptimo en cada caso.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "unit root test power"}
+      ],
+      "cita_textual": "if these variances are allowed to vary with respect to each other, then it can affect the power the unit root test"
+    },
+    {
+      "nombre": "survivorship bias",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Sesgo reconocido por el autor porque el dataset solo incluye valores que sobrevivieron hasta agosto de 2013 y que eran componentes del S&P 500 en esa fecha.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "backtest overfitting"}
+      ],
+      "cita_textual": "there is the issue of survivorship bias. The study only included securities that survived through August 13, 2013 and which were included as components of the S&P 500."
+    },
+    {
+      "nombre": "volatility clustering",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Fenómeno de agrupamiento de volatilidad que el paper vincula empíricamente con la tasa de detección de cointegración: años de alta volatilidad (ej. crisis financiera) muestran más pares aparentemente cointegrados.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "cointegration"}
+      ],
+      "cita_textual": "securities prices exhibit volatility clustering, and previous authors have reported that this can bias the results of a cointegration test"
+    },
+    {
+      "nombre": "in-sample parameter estimation",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Usar datos del propio período de trading para estimar los parámetros alpha, beta y rho de la relación de cointegración produce un panorama demasiado optimista, ya que un algoritmo real no tendría esos datos disponibles.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "backtest overfitting"},
+        {"tipo": "SE_OPONE_A", "objeto": "walk-forward validation"}
+      ],
+      "cita_textual": "That is because the test for cointegration in the trading period was performed by estimating the parameters 𝛼 and 𝛽 from the prices that occurred in this period."
+    },
+    {
+      "nombre": "half-life of mean reversion",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Tiempo estimado que tarda un proceso de reversión a la media en recorrer la mitad de una desviación desde su nivel de equilibrio, derivado del coeficiente rho.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "mean reversion"}
+      ],
+      "cita_textual": "The half-life of a process with a mean-reversion coefficient of 0.914 is 7.7 days."
+    },
+    {
+      "nombre": "mean reversion",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Tendencia de un spread o serie de precios a regresar hacia su nivel promedio histórico, propiedad que las estrategias de pairs trading buscan explotar.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "momentum"}
+      ],
+      "cita_textual": "the pair is cointegrated and may be considered for trading"
+    },
+    {
+      "nombre": "cointegration persistence",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Hipótesis central testeada por el paper: si un par está cointegrado en un período de formación, ¿es más probable que siga estándolo en el siguiente período? El paper concluye que la evidencia no la sustenta.",
+      "relaciones": [
+        {"tipo": "CONTRADICE_A", "objeto": "pairs trading"}
+      ],
+      "cita_textual": "The evidence does not support the hypothesis that cointegration is a persistent property."
+    },
+    {
+      "nombre": "Hurst exponent",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida no paramétrica de dependencia de largo plazo usada como test alternativo de raíz unitaria; en el estudio resultó inferior al ADF.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "mean reversion"}
+      ],
+      "cita_textual": "Breitung's variance ratio (BVR) seemed to outperform the Hurst exponent as implemented by the R function aggvarFit(), however both of these tests were inferior to ADF."
+    },
+    {
+      "nombre": "Johansen cointegration test",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Test multivariado de cointegración (eigenvalue y trace) aplicado directamente sobre el vector de series, alternativa al enfoque de dos pasos de Engle-Granger.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "cointegration"}
+      ],
+      "cita_textual": "For the Johansen tests, the cointegration test was performed directly on the pair of random cointegrated vectors."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "De los pares de acciones del S&P 500 identificados como cointegrados (test ADF, p=0.05) en 2002, solo una fracción mínima siguió cointegrada en 2003, similar a lo esperado por azar puro.",
+      "mercado": "US equities (S&P 500)",
+      "periodo": "2002-2003",
+      "magnitud": "649 pares cointegrados en 2002 (5.17% de 12,561); de 507 pares con ambas series integradas en 2003, solo 22 (4.34%) seguían cointegrados, vs 5% esperado por azar",
+      "condiciones": "estimación in-sample de parámetros en el período de trading, sin costos de transacción, ADF con p=0.05",
+      "robustez": "media",
+      "cita_textual": "Of the 649 pairs that were identified as being cointegrated in 2002, there were 507 pairs for which both securities were identified as being integrated in 2003. Of these, only 22 (or 4.34%) were identified as cointegrated."
+    },
+    {
+      "afirmacion": "Sobre más de 860.000 pares analizados entre 2002 y 2011 usando el test ADF, la probabilidad de seguir cointegrado un año después no difiere significativamente de la probabilidad incondicional en la mayoría de los años, indicando ausencia de persistencia predictiva.",
+      "mercado": "US equities (S&P 500)",
+      "periodo": "2002-2012",
+      "magnitud": "en 6 de 10 años el test chi-cuadrado no rechazó la hipótesis nula de independencia; R2 de la regresión de rho año-siguiente sobre rho año-actual por debajo de 1% en 9 de 10 años",
+      "condiciones": "estimación out-of-sample de la relación de cointegración en el año siguiente pero usando parámetros re-estimados in-sample en cada período; ADF test, sin costos de transacción",
+      "robustez": "media",
+      "cita_textual": "there appears to be little evidence in favor of the hypothesis that being cointegrated in a given year is predictive of being cointegrated in the following year, at least when the augmented Dickey-Fuller test is used"
+    },
+    {
+      "afirmacion": "Usando el test Phillips-Perron en lugar de ADF, la evidencia de persistencia de cointegración también es débil, aunque la probabilidad condicional promedio fue algo mayor que la incondicional.",
+      "mercado": "US equities (S&P 500)",
+      "periodo": "2002-2012",
+      "magnitud": "probabilidad condicional promedio 4.48% vs incondicional 4.11%; diferencia significativa solo en 3 de 10 años",
+      "condiciones": "test PP, p=0.05, estimación in-sample de parámetros en ambos períodos",
+      "robustez": "media",
+      "cita_textual": "The evidence for persistence of cointegration seems at best to be weak."
+    },
+    {
+      "afirmacion": "Con el test PGFF se encontró la evidencia más fuerte (aunque modesta) de persistencia: la probabilidad condicional de cointegración superó a la incondicional en 8 de 10 años de forma estadísticamente significativa, lo que implicaría una mejora marginal de edge (7.2% vs 6.0% de tasa de cointegración) para un inversor que filtre pares por PGFF.",
+      "mercado": "US equities (S&P 500)",
+      "periodo": "2002-2012",
+      "magnitud": "tasa de cointegración condicional promedio 7.2% vs incondicional 6.0%; significativo en 8/10 años",
+      "condiciones": "test PGFF, p=0.05; el propio autor advierte que podría deberse a data mining y no lo toma como resultado concluyente",
+      "robustez": "baja",
+      "cita_textual": "Assume for the moment that this is not just the result of data mining, and consider a hypothetical investor who chooses 100 pairs in which to invest."
+    },
+    {
+      "afirmacion": "La curva de longevidad de pares reales identificados como cointegrados (usando bootstrap de innovaciones bias-corregidas) es casi idéntica a la de pares de random walks simulados, y muy distinta de la de pares genuinamente cointegrados simulados, lo que indica que la cointegración no es siquiera un fenómeno de corto plazo persistente.",
+      "mercado": "US equities (S&P 500)",
+      "periodo": "2002-2012 (muestras de 1,000 pares por año, 10,000 pares de comparación simulados)",
+      "magnitud": "curva de longevidad de datos reales prácticamente igual a la del dataset Random Walk simulado (10,000 simulaciones)",
+      "condiciones": "test de Z-score mensual sobre innovaciones con corrección de sesgo para rho, umbral |Z|>2.5 para declarar 'muerte' del par",
+      "robustez": "media",
+      "cita_textual": "The longevity curve for the actual series is nearly identical to that of the Random Walk data set."
+    },
+    {
+      "afirmacion": "La tasa de cointegración detectada por año está fuertemente correlacionada con la volatilidad promedio de las acciones ese año (mayor en la crisis financiera), sugiriendo que los tests de cointegración pueden estar sesgados por efectos GARCH/heterocedasticidad más que reflejar relaciones económicas reales.",
+      "mercado": "US equities (S&P 500)",
+      "periodo": "2002-2011",
+      "magnitud": "R2 ajustado de 0.75 en la regresión lineal de tasa de cointegración (PP) sobre volatilidad promedio anual",
+      "condiciones": "test PP, análisis de correlación agregada por año, no controla causalidad",
+      "robustez": "media",
+      "cita_textual": "a linear regression of the cointegration rates on the average volatilities yields an adjusted 𝑅! value of 0.75"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "El paper trabaja con datos diarios de equities y cointegración de mediano/largo plazo (anual), por lo que no aplica directamente a ES intradía, pero su advertencia metodológica central —no confiar en cointegración in-sample como predictor estable, y cuantificar tasas de falsos positivos al minar señales sobre grandes universos— es directamente relevante para cualquier minería de zonas/reglas con Optuna en el ecosistema ES."
+  }
+}

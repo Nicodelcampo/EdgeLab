@@ -1,0 +1,114 @@
+{
+ "doc_id": 114,
+ "titulo": "Electronic Limit Order Book and Order Submission Choice Around Macroeconomic News",
+ "resumen_operativo": "El paper analiza la dinámica del libro de órdenes limitadas visible (spreads, profundidad) y el comportamiento de envío de órdenes en el Island ECN para el ETF QQQ (Nasdaq-100) alrededor de anuncios macroeconómicos (8:30 a.m. y 10:00 a.m.). Concluye que la calidad del mercado (medida por spreads y profundidad) se deteriora durante los anuncios, y que los traders adoptan estrategias más agresivas (más órdenes a mercado y límite en el inside, menos cancelaciones). Destaca también la alta proporción de órdenes ocultas en este ECN. Útil para entender la microestructura de un ECN puro y el comportamiento de los participantes ante shocks informacionales públicos.",
+ "calidad_paper": "media",
+ "conceptos": [
+  {
+   "nombre": "displayed limit order book",
+   "tipo": "dato",
+   "definicion_en_contexto": "La porción visible del libro de órdenes electrónicas que muestra las cotizaciones públicas a los participantes del mercado, excluyendo las órdenes ocultas.",
+   "relaciones": [
+    {
+     "tipo": "PARTE_DE",
+     "objeto": "Island ECN"
+    },
+    {
+     "tipo": "USA",
+     "objeto": "quoted spread"
+    }
+   ],
+   "cita_textual": "the displayed order book is what traders actually see when they make their order submission decisions."
+  },
+  {
+   "nombre": "quoted spread",
+   "tipo": "metrica",
+   "definicion_en_contexto": "Diferencia entre el mejor precio de compra (bid) y venta (ask) visible en el libro de órdenes, utilizado como una medida del deterioro de liquidez.",
+   "relaciones": [
+    {
+     "tipo": "MIDE",
+     "objeto": "market quality"
+    }
+   ],
+   "cita_textual": "Spreads widen within one minute before the 10:00 a.m. announcements and within three minutes before the 8:30 a.m. announcements"
+  },
+  {
+   "nombre": "displayed depth",
+   "tipo": "metrica",
+   "definicion_en_contexto": "Volumen acumulado visible de acciones en el libro de órdenes medido en tres niveles: en el mejor bid/ask, a un centavo de los mejores precios, y en el resto del libro.",
+   "relaciones": [
+    {
+     "tipo": "MIDE",
+     "objeto": "market quality"
+    }
+   ],
+   "cita_textual": "We measure the cumulative displayed depth in the limit order book at three levels: at the quotes... within one cent away from the quotes, and in the rest of the limit order book."
+  },
+  {
+   "nombre": "order aggressiveness",
+   "tipo": "metrica",
+   "definicion_en_contexto": "Clasificación de las estrategias de envío de órdenes según su inmediatez de ejecución: desde la más agresiva (órdenes de mercado) hasta la menos agresiva (cancelaciones de órdenes limitadas).",
+   "relaciones": [
+    {
+     "tipo": "MIDE",
+     "objeto": "trader behavior"
+    }
+   ],
+   "cita_textual": "we follow a classification of order submission strategy by aggressiveness... The most aggressive orders are market orders."
+  },
+  {
+   "nombre": "hidden order",
+   "tipo": "concepto",
+   "definicion_en_contexto": "Órdenes limitadas no mostradas en el libro público, que pierden prioridad temporal frente a las visibles, pero eliminan el riesgo de exposición prematura ante alta asimetría de información y pueden capturar rebates.",
+   "relaciones": [
+    {
+     "tipo": "SE_OPONE_A",
+     "objeto": "displayed limit order book"
+    }
+   ],
+   "cita_textual": "traders had the option of submitting “non-displayed” limit orders that were not visible to the other participants and were not shown in the limit order book."
+  }
+ ],
+ "hallazgos": [
+  {
+   "afirmacion": "Los spreads visibles aumentan significativamente desde minutos antes hasta minutos después de los anuncios macroeconómicos (tanto a las 8:30 a.m. como a las 10:00 a.m.), indicando un deterioro de la liquidez.",
+   "mercado": "US equities (Island ECN, QQQ)",
+   "periodo": "2002",
+   "magnitud": "De ~3 a ~6 centavos a las 8:30 a.m.; de 1.6 a 2.5 centavos a las 10:00 a.m.",
+   "condiciones": "Comparación minuto a minuto de spreads promedio time-weighted entre días con anuncios vs días sin anuncios",
+   "robustez": "media",
+   "cita_textual": "Announcement day spreads are significantly larger than the spreads on non-announcement days from one minute before to three and four minutes after the 8:30 a.m. and 10:00 a.m. respectively."
+  },
+  {
+   "afirmacion": "La profundidad visible (depth) disminuye considerablemente antes de los anuncios de las 10:00 a.m., especialmente en los niveles alejados del inside, pero no muestra cambios tan dramáticos en los anuncios de las 8:30 a.m.",
+   "mercado": "US equities (Island ECN, QQQ)",
+   "periodo": "2002",
+   "magnitud": "Disminución significativa de profundidad a un centavo de las cotizaciones y más lejos durante 10:00 a.m.",
+   "condiciones": "Análisis descriptivo y test de medianas para diferentes tramos del libro de órdenes limitadas",
+   "robustez": "media",
+   "cita_textual": "Depth decreases considerably within four minutes before 10:00 a.m. announcements and rises to the original levels within ten minutes after the announcements. The changes in depth level around 8:30 a.m. announcements are not as dramatic"
+  },
+  {
+   "afirmacion": "Los traders incrementan la agresividad de sus órdenes antes y durante el anuncio: reducen las cancelaciones y aumentan la proporción de órdenes a mercado y limitadas dentro del spread.",
+   "mercado": "US equities (Island ECN, QQQ)",
+   "periodo": "2002",
+   "magnitud": "El pico de agresividad ocurre en el primer minuto tras el anuncio; probabilidad de cancelación cae 10-12%.",
+   "condiciones": "Regresión probit ordenada del tipo de orden sobre variables dummy de tiempo y variables de control (spread, volatilidad)",
+   "robustez": "media",
+   "cita_textual": "traders cancel fewer orders and increase order submission aggressiveness by submitting more market orders and aggressively priced limit orders."
+  },
+  {
+   "afirmacion": "La reacción del mercado a los anuncios macroeconómicos difiere por sesión de trading: a las 8:30 a.m. (pre-market) el impacto es dominado por expansión del spread, mientras que a las 10:00 a.m. (regular hours) se combina con reducción de profundidad visible.",
+   "mercado": "US equities (Island ECN, QQQ)",
+   "periodo": "2002",
+   "magnitud": "Rechazo de hipótesis de similitud en la dinámica de profundidad y agresividad; aceptación para spreads",
+   "condiciones": "Comparación estadística entre ambas franjas horarias con distintos niveles de actividad global",
+   "robustez": "media",
+   "cita_textual": "The spreads increase more dramatically during macroeconomic announcements made during the pre-market hours, but the depth dynamics is more pronounced during the news released during market hours."
+  }
+ ],
+ "aplicabilidad_es_intradia": {
+  "nivel": "media",
+  "nota": "El paper ilustra cómo responde el libro de órdenes (spread y depth) y la agresividad del order flow ante shocks macroeconómicos preagendados. Dado que los futuros de S&P (ES) sufren shocks informacionales exactamente en esos mismos horarios (8:30 y 10:00 EST), el comportamiento reportado de secado de liquidez y pico de órdenes a mercado puede considerarse un análogo valioso para el mercado de ES, útil para ajustar algoritmos de market making o modelos de impacto de mercado intradía."
+ }
+}

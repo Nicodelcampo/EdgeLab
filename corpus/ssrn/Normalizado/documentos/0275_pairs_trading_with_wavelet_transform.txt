@@ -1,0 +1,1859 @@
+ Electronic copy available at: https://ssrn.com/abstract=2774063 
+1 
+ 
+Demystifying pairs trading: The role of 
+volatility and correlation 
+ 
+ 
+Stephanie Riedinger is a finance research associate at the Catholic University of EichstaettIngolstadt in Bavaria, Germany 
+ 
+Auf der Schanz 49, 85049 Ingolstadt, Bavaria, Germany 
+Phone: 0049/841/937/21926 
+Stephanie.Riedinger@ku.de 
+ 
+ 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2774063
+
+ Electronic copy available at: https://ssrn.com/abstract=2774063 
+2 
+ 
+Demystifying pairs trading: The role of volatility and correlation 
+ 
+Abstract 
+This paper explains why the profitability of the popular trading strategy “pairs trading”, as 
+introduced by Gatev, Goetzmann, and Rouwenhorst (2006), varies across markets, industries, 
+macroeconomic circumstances, and firm characteristics. The authors disentangle how the 
+strategy’s two input parameters, volatility and correlation, influence the rule-based pair 
+selection, the trading algorithm, and the total return. They find that the traditionally applied 
+pair selection fails to identify the most profitable pairs. In the US market, small algorithm 
+modifications raise the average risk-adjusted monthly return from 37bp to 76bp between 1990 
+and 2014. The authors’ findings emphasize the importance to acquire a profound 
+understanding of the technical interrelation when using a technical, rule-based trading 
+strategy. The findings are robust to liquidity issues, bid-ask spread, and limits of arbitrage. 
+ 
+Keywords: Pairs trading, hedge fund, algorithm, volatility, limits of arbitrage 
+JEL Classification: G11, G12, G14, G17 
+Electronic copy available at: https://ssrn.com/abstract=2774063
+
+ Electronic copy available at: https://ssrn.com/abstract=2774063 
+1 
+ 
+1 
+Introduction 
+In times of low interest rates, trading strategies which promise a high risk-adjusted return are of 
+particular interest. One of the most prominent trading strategies among practitioners and in the 
+academic world is pairs trading, a relative-value arbitrage strategy that was first introduced in 
+literature by Gatev et al. (2006). Several academic studies identify a number of factors and conditions 
+which increase the strategy’s profitability. However, until now little is known about the channel that 
+translates these factors into higher pairs trading returns. We extend the current literature about pairs 
+trading by explaining the concrete mechanism behind the technical algorithm. Our insights help to 
+better understand the influence of external factors on the profitability of pairs trading. Furthermore, 
+our results encourage to critically evaluate the chosen procedure to select pairs for trading. 
+We start with the question: What is pairs trading? In an efficient market, two assets that receive an 
+identical payoff in each state of the world must have the same current price as arbitrage opportunities 
+arise otherwise. As markets are not perfectly efficient, pairs trading exploits these temporary price 
+differences. In the first step, the strategy identifies stock pairs with an almost identical price pattern as 
+close economic substitutes during a twelve-month identification period. For this purpose, Gatev et al. 
+(2006) compute the sum of daily squared price differences (SSD) between all possible stock pair 
+combinations. The 20 pairs with the lowest SSD are eligible for trading in a subsequent six-months 
+trading period.1 A new trade is initialized as soon as the price spread2 between both stocks exceeds two 
+standard deviations, as measured during the identification period (2σ-trading rule). The underlying 
+argument of pairs trading is that price deviations of two close economic substitutes are temporary and 
+dissolve in the near future. The worse performing ‘loser’ stock is, hence, the one which is temporary 
+underpriced, whereas the better performing ‘winner’ stock is overpriced. To exploit mispricing, Gatev 
+et al. (2006) initiate a one-unit long position in the loser stock and a one-unit short position in the 
+                                                 
+1 We refer to this portfolio as the SSD-portfolio in the following. 
+2 All prices are normalized to one at the beginning of the identification period and at the beginning of the trading 
+period. 
+Electronic copy available at: https://ssrn.com/abstract=2774063
+
+2 
+ 
+winner stock. Both positions will revert and earn an arbitrage premium if the price deviation is indeed 
+only temporary. The positions are closed as soon as both normalized prices fully converge. 
+Pairs trading is a technical, rule-based investment strategy. As such, its return is a product of the 
+interaction between different input parameters and arbitrarily set rules and thresholds. Figure 1 
+disentangles the technical interdependencies of the rule-based pair selection (SSD measure) and the 
+trading algorithm (2σ-trading rule) with the strategy’s return generating components, return per trade 
+and trading frequency. 
+[Exhibit 1] 
+The 2σ-trading rule directly determines the return per trade, while the SSD Selection Criterion 
+determines the levels of pair volatility and the correlation of selected pairs. These levels, in turn, 
+influence the return per trade and the trading frequency, which are the strategy’s main return 
+components. 
+We derive three research propositions from financial and stochastic literature which we confirm 
+empirically: First, pair correlation and pair volatility explain up to 88% of SSD’s variation and vice 
+versa. We conclude that traditionally selected pairs with the lowest SSD consist of highly correlated 
+stocks with little volatility. Second, the 2σ-trading rule induces the following relationship: Highly 
+volatile (less volatile) pairs and negatively (positively) correlated pairs increase (decrease) the return 
+per trade. Third, low pair volatility and high pair correlation during the identification period, coupled 
+with higher volatility and lower correlation during the trading period, increase the number of trades. 
+More trades in turn increase the total return. Pair volatility increases are more likely for pairs with 
+currently low pair volatility due to mean-reverting volatility. Likewise, correlation declines are more 
+likely for highly correlated pairs. Overall, pairs with high pair volatility and high correlation are the 
+most profitable ones. As the SSD selects pairs with low pair volatility, it fails to exploit the full return 
+potential. This insight is of high relevance for interested practitioners, who wish to implement profit 
+increasing modifications.  
+Electronic copy available at: https://ssrn.com/abstract=2774063
+
+3 
+ 
+Our analysis, how pair volatility and correlation affect the return, complements the literature on pairs 
+trading by bridging the gap between previous empirical findings and the mechanism of the technical 
+trading algorithm. Varying market conditions and factors across individual stocks, industries, and 
+countries determine the levels of volatility and correlation among stocks which affect the profitability 
+of pairs trading. For instance, Gatev et al.  (2006) find that certain industry portfolios outperform 
+others. Do and Faff (2010) discover a superior return in times of market distress between January 
+2000-December 2002 and July 2007-June 2009. Jacobs and Weber (2015) observe varying returns 
+across different countries. These variations over time, across markets, and industries are often 
+explained with different levels of market efficiency3, the number of eligible pairs, and limited 
+investor’s attention4. Without doubt, less efficient markets or industries and investor’s inattention 
+allow more mispricing opportunities, which in turn increase the strategy’s return. Yet, we demonstrate 
+that at least part of the additional return originates from the interaction of the algorithm with higher 
+market volatility and correlation levels over time, across countries, and across industries.  
+The remaining parts of the paper are organized as follows. Section 2 introduces our data set and 
+methodology. In Section 3, we derive three research propositions about the technical drivers of pairs 
+trading. Section 4 challenges the classical pairs selection measure SSD. Afterwards, Section 5 
+empirically explores the influence of pair volatility and correlation on the return per trade and the 
+trading frequency. Section 6 takes a closer look on the total returns in calendar time. Finally, Section 7 
+addresses robustness issues before Section 8 concludes. 
+2 
+Methodology and data selection 
+The following Section 2.1 introduces our data selection. We closely follow Gatev et al.’s (2006) 
+distance approach to implement pairs trading. Section 2.2 describes the traditional algorithm in detail, 
+before Section 2.3 introduces our modified test design. 
+                                                 
+3Do and Faff (2010). 
+4Jacobs and Weber (2015). 
+Electronic copy available at: https://ssrn.com/abstract=2774063
+
+4 
+ 
+2.1 Data selection 
+We obtain all historical index constituents of the S&P 1500 between January 1990 and December 
+2014 from the Compustat Monthly Updates - Index Constituents file and merge the data via the 
+WRDS CCM merged database link with daily closing, bid closing, and ask closing prices from CRSP. 
+We exclude stocks for a specific trading period if any of the three: bid, ask, or closing price is 
+unavailable on more than one day during the previous identification period. After this preselection, 
+approximately 1900 stocks on average are eligible for trading each month, forming around 1.8 million 
+possible pair combinations. We obtain risk factors from Kenneth French’s and Lubos Pastor’s 
+homepage. 
+2.2 How pairs trading works 
+Following Gatev et al. (2006), a pairs trading period in our paper consists of two periods – first, a 12month identification period and a subsequent 6-month trading period. At the beginning of the 
+identification period, all prices are normalized to one. During the consecutive twelve months, we 
+compute three key figures for each possible pair combination AB in the stock universe: the total pair 
+volatility σAB = σA + σB, the pair correlation ρA,B, and the traditional selection measure, the sum of 
+squared differences of normalized prices (SSD). Gatev et al. (2006) compute the SSD as sum of the 
+squared deviations between the normalized price movements of two stocks over the identification 
+period: 
+Distance Measure (SSD) = ∑
+(PA,t-PB,t)
+2
+T
+t=1
+   
+(1) 
+where t is the day index during the identification period, and PA,t is the normalized price of stock A (or 
+B) at day t. At the end of the identification period, the authors form a portfolio, consisting of the 20 
+pairs with the lowest SSD, which is traded during the next trading period. 
+To avoid an in-sample bias, the trading period starts on the first day after the identification period. 
+Again, all prices are normalized to one. At the end of each day, the trading algorithm checks for each 
+pair, included in the trading portfolio, whether to open a new trade or close a currently open trade. If 
+Electronic copy available at: https://ssrn.com/abstract=2774063
+
+5 
+ 
+the normalized prices of a pair diverge by more than two historic standard deviations 2σhist, as 
+calculated during the identification period, we initialize the self-financing trade as follows: We sell 
+one monetary unit of the better performing ‘winner’ stock and simultaneously buy one monetary unit 
+of the less successful ‘loser’ stock. As soon as the two prices completely converge, we neutralize both 
+positions. Thereafter, a pair might open and close several times during the trading period. If prices do 
+not fully converge until the end of the trading period, all open positions are closed. Furthermore, trades 
+are also closed if the price spread exceeds 4σhist (overshooting trade) or one stock is delisted on any 
+day while the trade is active (delisted trade). A new pairs trading period starts every month, thus, six 
+portfolios are traded simultaneously at each point in time.5 
+Gatev et al. (2006) and follow-up papers implement a one-day-waiting strategy to consider a potential 
+upward bias in returns caused by the bid-ask bounce.6 After the initial trading signal, they wait for one 
+day until they trade. We forgo to approximate the bid-ask-spread and trade with the exact last bid or 
+last ask price. At trade initialization, we buy the long position at the ask price and sell the short 
+position at the bid price. We neutralize the long position at the bid price and the short position at the 
+ask price. Similarly, we use these latter prices for the daily evaluation. Additional computations, like 
+the average volatility or correlation, are executed with closing prices. 
+We closely follow Gatev et al.’s approach to calculate the monthly returns for each portfolio (calendar 
+time return). Furthermore, we also compute the return per trade, which we define as payoff of a pair’s 
+round-trip. We refer to the internet appendix7 for further information on the return calculation and 
+numerical examples. The interested practitioner can find more information in Vidyamurthy’s (2004) 
+implementation book.  
+                                                 
+5 Because of the overlapping trading periods, one portfolio starts to trade in each month. At that time, the second 
+portfolio is already active two months, the third one for three months and so on. 
+6 In an upward trend, the closing price most likely represents the ask price. As pairs trading sells the increasing 
+“winner stock”, an investor receives only the lower bid price. Likewise, the closing price of a decreasing stock is 
+more likely to be the bid price, which must be purchased at the higher ask price. Hence, using closing prices 
+might overestimate the real return. 
+7 The internet appendix is attached at the end of this document. 
+Electronic copy available at: https://ssrn.com/abstract=2774063
+
+6 
+ 
+2.3 Modified test design 
+To systematically investigate the influence of volatility and correlation, we analyze pairs trading 
+returns separately for different pair volatility and correlation levels. We modify the classical pair 
+selection algorithm as follows: First, we calculate the pair correlation ρA,B and pair volatility 
+(𝜎𝑉𝑂𝐿,𝐴+ 𝜎𝑉𝑂𝐿,𝐵), a proxy for the combined volatility, during the twelve month identification period. 
+Second, we define five pair correlation and five pair volatility quintiles and classify pairs accordingly. 
+Quintile Corr_Q1 (Corr_Q5) includes the pairs with the lowest (highest) pair correlation, quintile 
+VOL_Q1 (VOL_Q5) includes the pairs with the lowest (highest) level of pair VOL. Third, we 
+construct 25 pair groups from the intersection of the five pair volatility and five pair correlation 
+quintile groups. For example, Corr_Q1/VOL_Q1 includes the pairs, whose pair correlation and pair 
+volatility are among the lowest 20% compared to all other pair combinations. The quintile and group 
+affiliations of a pair are updated every identification period. Fourth, we randomly pick 20 pairs out of 
+each group and include them into one of our 25 pair volatility and pair correlation double sorted 
+portfolios. These pairs remain in the trading portfolio during the subsequent six-month trading period 
+and are eligible for trading. Finally, we compute the average monthly pairs trading returns and 
+compare the performance of portfolios of stocks with different pair volatility levels. We form the 25 
+portfolios based on five total pair volatility quintiles. To eliminate a selection bias while we pick 20 
+stocks out of each group, we repeat the random pair selection ten times and average the returns. 
+Exhibit 2 reports the mean pair correlation and pair volatility per quintile during the identification 
+period. For instance, the median pair correlation of all Corr_Q5 pairs (highest pair correlation quintile) 
+is 0.8026. 
+[Insert Exhibit 2] 
+The median pair correlation ranges from -0.4885 (Corr_Q1) to 0.8024 (Corr_Q5). The average pair 
+volatility ranges from 0.0134 (Vola_Q1) to 0.1892 (Vola_Q5). 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2774063
+
+7 
+ 
+3 
+Disentangling the pairs trading algorithm 
+This section analyzes the role of pair volatility and correlation on the technical trading algorithm in 
+theory. Our insights are crucial to understand the concrete mechanism that translate pair volatility and 
+correlation into higher or lower pairs trading returns. Furthermore, they provide a solid foundation to 
+critically evaluate the influence of pairs trading’s arbitrarily set trading rules. We start with a brief 
+overview of related empirical findings in Section 3.1. Afterwards in Section 3.2, we derive why we 
+expect that pairs, which are picked by the traditional selection criterion SSD, include stocks with low 
+pair volatility and high correlation levels. These levels, in turn, influence the return per trade and the 
+trading frequency. We explain how the two drivers, pair volatility and correlation, influence the return 
+per trade in Section 3.3 and the trading frequency in Section 3.4. 
+3.1 Previous findings in literature 
+Our research is motivated by previous papers that indirectly examine the influence of pair volatility 
+and correlation. In this section, we summarize the most important related findings. First, out of fifty 
+pairs with the lowest distance measure (SSD), Do and Faff (2010) select the twenty pairs with the 
+highest number of price crossings during the identification period and observe a higher profitability for 
+these pairs. The authors argue that multiple divergences and convergences of a pair within the 
+identification period, predict more trading opportunities. We, therefore, analyze which level of pair 
+volatility and correlation maximize the trading frequency. Moreover, Do and Faff (2010) find an 
+increased profitability during times of market distress from January 2000-December 2002 and July 
+2007-June 2009. Both bear market phases were accompanied by high market volatility. Hence, we 
+suspect that high volatility increases the return. Second, the success of pairs trading was explored in 
+many countries, for instance Andrade et al. (2005), Perlin (2009) and Bolgün et al. (2010) among 
+others. Most notable, Jacobs and Weber (2015) provide a broad overview for 34 countries worldwide. 
+They observe that less developed markets usually realize a higher return. These markets are normally 
+less liquid, and hence possess higher market volatility. Third, Engelberg et al. (2009) provide a 
+Electronic copy available at: https://ssrn.com/abstract=2774063
+
+8 
+ 
+number of in-depth analyses about the drivers of opening, horizon and divergence risks. Among other 
+findings, they demonstrate the positive influence of idiosyncratic volatility on the opening probability 
+and a negative impact of idiosyncratic volatility on the time till convergence and also on the 
+divergence probability. Similarly, Jacobs and Weber (2015) examine the influence of idiosyncratic 
+volatility as proxy for limits to arbitrage and find a positive influence of volatility on the total return. 
+Finally, Huck (2015) investigates the effect of total market volatility over time. He initializes positions 
+if the VIX is categorized into a certain regime, additionally to the traditional opening signal. However, 
+the return is only significant at times of an increasing or high 3-month moving average VIX.  
+3.2 The SSD selection criterion 
+We now take a closer look on the distance measure (SSD), and its implicit selection of pairs with low 
+pair volatility and high correlation. A broad stream of literature applies the SSD to identify close 
+economic substitutes during the identification period. These pairs are eligible for trading in the 
+subsequent trading period. The SSD computes the sum of squared differences of the normalized prices 
+Pi,t of two stocks i = A, B  at time t and selects the 20 pairs with the lowest SSD: 
+Distance Measure (SSD)          = ∑
+(PA,t-PB,t)
+2 =
+T
+t=1
+ 
+(2)  
+   
+= ∑
+(PA,t
+2 + PB,t
+2 −2ρA,B)
+T
+t=1
+                                                             (3) 
+where ρA,B is the Pearson correlation coefficient of the standardized price time series.8 From the 
+mathematical term in (3) we see that maximizing the correlation coefficient equals minimizing the 
+SSD (Krauss (2016)). Based thereupon, we conclude that the SSD typically selects highly correlated 
+pairs.  
+Furthermore, we argue that low stock volatility is also crucial to minimize the SSD. Formula (3) 
+reveals that high stock prices for PA,t or PB,t increase the SSD. Both prices are normalized to one in t = 
+                                                 
+8 The Pearson correlation coefficient equals: 𝜌𝐴,𝐵=
+1
+𝑡−1 ∑
+(
+𝑃𝐴,𝑡−𝑃𝐴̅̅̅̅
+𝑠𝑃𝐴
+) (
+𝑃𝐵,𝑡−𝑃𝐵̅̅̅̅
+𝑠𝑃𝐵
+)
+𝑇
+𝑡=1
+, where 𝑃𝑖,𝑡=
+𝑃𝑖,𝑡−𝑃𝑖̅
+𝑠𝑃𝑖
+ are the 
+daily z-transformed normalized prices. 
+Electronic copy available at: https://ssrn.com/abstract=2774063
+
+9 
+ 
+0. Thus, high values for PA,t and PB,t only arise if stock volatility is high. Whether the minimizing 
+influence of correlation on the SSD or the increasing effect of stock volatility dominates, depends on 
+the magnitude of both factors. Formula (2) provides a good intuition. Let’s consider three stocks A, B, 
+and C, whose prices PA, PB, and Pc are all normalized to one in t = 0. The returns of stock A and C are 
+uncorrelated (ρA,C = 0), and the returns of both stocks are independently and normally distributed with 
+the same standard deviation . Hence, the confidence intervals for the price realizations of PA and PC 
+are identical with: [1 −𝓏1−𝛼
+2
+𝜎
+√𝑛, 1 + 𝓏1−𝛼
+2
+𝜎
+√𝑛]. The return of stock B is perfectly correlated with the 
+return of stock A (ρA,B = 1). However, a △ change in the return of stock A translates into a 4△ change 
+of stock B’s return.9 In consequence, stock B’s standard deviation is higher, and so is the confidence 
+interval of PB. The daily price difference between PA and PB might therefore be higher than the price 
+difference between PA and PC, although ρA,B = 1 and ρA,C = 0. For example, in t = 1, Stock A rises 
+from PA,0 = 1 to PA,1 = 1.01. Hence, Stock B rises from PB,0 = 1 to PB,1 = 1.04. The price difference 
+between stock A and B is: |PA,1-PB,1| = 0.04. Stock C is uncorrelated with stock A and does not move at 
+all, PC,0 = PC,1 = 1. The price difference between stock A and C is therefore: |PA,1-PC,1| = 0.01. If we 
+cumulate all daily squared price differences as in formula (2), we come to the following conclusion: 
+The SSD for two uncorrelated stocks (A and C) can be smaller than the SSD of two highly correlated 
+stocks (A and B) if the highly correlated pair includes at least one highly volatile stock. Altogether, we 
+expect a negative relation between the SSD and correlation, and a positive one between SSD and pair 
+volatility. 
+Research proposition 1: Pairs with high correlation and low pair volatility are associated with a low 
+SSD.  
+A validation of research proposition one implies that applying the SSD results in trading with highly 
+correlated pairs that exhibit little volatility. It is, however, unclear, whether this pair volatility and 
+                                                 
+9 For instance, if PA raises from $1 to $1.01, PB raises from $1 to $1.04.  
+Electronic copy available at: https://ssrn.com/abstract=2774063
+
+10 
+ 
+correlation combination is beneficial for the return per trade and the trading frequency. 
+3.3 Return per trade 
+This section progresses with a closer look on the influence of pair volatility and correlation on the 
+return per trade. During the trading period, we initialize positions as soon as the stock pair’s price 
+difference exceeds two historic standard deviations 2hist, as calculated during the identification 
+period. The return is continuously earned while the pair is ‘open’, until stock prices fully converge. At 
+that point in time, we neutralize positions. We distinguish four different closing types. First, trades that 
+fully converge during the trading period are denoted as ‘natural trades’ (closing type 1). Second, pairs 
+which are not converged until the last day of the trading period are forcefully closed and categorized 
+as ‘incomplete trades’ (closing type 2). Third, as we trade with highly volatile stocks, investors might 
+be concerned about the asymmetric return profile10 of pairs trading. Therefore, we close a pair if the 
+price difference exceeds 4hist on any day while a trade is open like Engelberg et al.’s (2009) 10-daymaximum strategy. Hence, the return potential is symmetric within the range of -2ơ and +2ơ. These 
+trades are categorized as ‘overshooting trades’ (closing type 3). Affected pairs are blocked for the rest 
+of the trading period.11 Finally, ‘delisted trades’ are trades that automatically close if one stock is 
+delisted (closing type 4).  
+We conjecture that a pair always earns a positive return if prices fully converge (natural trade).12 The 
+return per trade equals the stock price difference at the time of the opening. Positions are initialized as 
+soon as prices diverge by more than 2hist. Thus, the return of a natural trade equals 2hist plus an 
+overshooting component. The overshooting component occurs if the price difference exceeds the 2ơhist 
+                                                 
+10 The positive return per trade is limited to 2ơ, while pairs that further diverge might generate an infinite loss. 
+11 Otherwise, a new trade would open on the next day, as the price spread is still above 2ơhist because prices are 
+not set back to one during the trading period. We also assume that a price spread of 4ơhist indicates a permanent 
+price spread and thus refrain from further trading with these pairs. 
+12 A possible unprofitable price development of one stock is always overcompensated by the return of the other 
+stock that overcomes the previous price difference. For instance, if the stock price of the short position is rising, 
+the return of the long position will overcompensate the negative return of the short position as otherwise stock 
+prices would not fully converge. 
+Electronic copy available at: https://ssrn.com/abstract=2774063
+
+11 
+ 
+threshold during the day and prices further diverge until closing prices are set. We derive: 
+Return per natural trade = 2σhist+ overshooting. Accordingly, the return per natural trade is higher if 
+the historical standard deviation is higher. 
+Pairs trading can be understood as a portfolio which consists of stock A (long) and stock B (short). 
+The pair’s historic standard deviation can easily be computed in this case. A simple mathematic 
+transformation reveals the relationship between trade return, volatility of stock A and B, and the pair’s 
+correlation coefficient pAB: 
+Return per natural trade = 2√σA
+2 +σB
+2 - 2ρABσAσB + overshooting, 
+(4) 
+The formula validates our conjecture that the return of a successful trade is always positive. The 
+overshooting component is always positive as otherwise the total price difference would not exceed 
+2ơhist. As stock A is unequal to stock B, we conclude that (σA-σB)
+2>0. Hence, the influence of 
+volatility on the return per trade is always positive or zero, as σA
+2 +σB
+2 ≥ 2ρABσAσB with ρAB∈[-1,1]. 
+Based upon this inequality, we argue that a higher volatility level of stock A or stock B (or both) 
+increases the historic standard deviation, and thus the return per trade. On the contrary, higher pair 
+correlation decreases 2ơhist. Neglecting the overshooting component, the first differentiation of the 
+function regarding the historical correlation coefficient equals: 
+   
+∂f(σA,σB,ρAB)
+∂ρAB
+= - 
+2σAσB
+√σA
+2 + σB
+2 - 2ρABσAσB
+,                                                                                                                              (5) 
+The first differentiation is always negative, as the numerator and the denominator are positive. The 
+return should therefore increase with declining historical correlation. We conclude that more volatile 
+stocks and a negative or low stock correlation raise the return per trade. In contrast, overshooting 
+trades, which are closed if the price spread exceeds 4ơhist, always generate a negative return. Recall 
+that positions are initialized at a price spread of 2ơhist and are closed at 4ơhist. The potential loss is 
+limited to 2ơhist, and therefore symmetric to the return potential of natural trades. The effect of pair 
+volatility and correlation on overshooting trades is reverse to natural trades. Hence, low pair volatility 
+Electronic copy available at: https://ssrn.com/abstract=2774063
+
+12 
+ 
+and high correlation reduce the downside risk.  
+Incomplete and delisted trades neither fully converge nor diverge by more than 4ơhist. These trades 
+earn a positive return if prices converge and generate a loss if prices diverge. In conclusion, the link 
+depends upon the direction of the stock’s movement. 
+Research proposition 2: Highly volatile pairs and negatively correlated pairs increase the return per 
+trade of converging trades. In contrast, low volatility and high correlation reduce the downside risk of 
+diverging trades. 
+3.4 Trading frequency 
+We now turn to the second return dimension, the trading frequency, and argue that a high trading 
+frequency is beneficial for the strategy’s total return. The trading frequency is defined as number of 
+trades of all pairs within a portfolio over one trading period. Obviously, more trades with positive 
+returns are beneficial, whereas many trades with a negative return are harmful. A pair can generate 
+several natural trades within one trading period. Earning the price spread several times during one 
+trading period successively increases the total return. In contrast, incomplete trades, overshooting 
+trades, and delisted trades are always the last trade within a trading period.13 As unprofitable trades are 
+limited to one, increasing the trading frequency only raises the number of natural trades, the closing 
+type which always yields a positive return. 
+The trading frequency is determined by the probability to open a pair and the time till convergence. 
+The probability to generate loss-making overshooting trades is linked to the probability of further price 
+divergence while a pair is open. Engelberg et al. (2009) explore the influence of various variables on 
+the former probabilities including average mean idiosyncratic volatility. The authors observe a positive 
+influence of idiosyncratic volatility on the opening probability, a negative influence on the time till 
+                                                 
+13 A pair cannot open after an incomplete trade as the incomplete trade is closed on the last day of the trading 
+period. Pairs are blocked for further trades after an overshooting trade, as otherwise pairs are opened and closed 
+daily, while the price spread exceeds 4ơhist. Likewise, a pair can obviously not open after the delisting of one 
+included stock. 
+Electronic copy available at: https://ssrn.com/abstract=2774063
+
+13 
+ 
+convergence, and on the probability of further price divergence. 
+We concentrate on the probability of a pair opening and argue that a pair volatility increase or a 
+correlation decrease between the identification and the trading period raises the opening probability. 
+Let Xt be a normally distributed random variable,14 which describes the price spread, the difference 
+between the normalized prices of stock A and B, on day t. The left graph of Figure 3 displays the 
+density function of Xt during the identification period (DensityID_Period) with Xt~N, 0, σhist. Pairs 
+trading expects both stocks to strictly co-move, such that the expected value μ of the price spread Xt is 
+zero. The distribution of Xt is symmetric because it is equally likely that stock A outperforms stock B 
+as it is that stock B outperforms stock A. Following the traditional pairs trading algorithm, the 
+threshold to open a trade is 2ơhist. More precisely, a pair is opened if Xt falls either below μ-2ơhist or 
+exceeds μ+2ơhist.  
+[Insert Exhibit 3] 
+The dashed area in the left figure between μ-2ơhist and μ+2ơhist represents the density to not exceed the 
+thresholds. We derive from the density function that this probability is 95.45%.  
+Hence, the probability to open a new trade is 4.55% if the volatility does not change between the 
+identification and the trading period. However, the opening probability changes dramatically if Xt’s 
+volatility increases to ơtrade at the beginning of the trading period. However, the former thresholds of μ 
++/- 2ơhist, based on the volatility during the identification period ơhist, are still active. The probability of 
+Xt to exceed the trigger points, illustrated by the grey area in the right figure, is significantly higher 
+than before with Xt~N, 0, σtrade. In an extreme case the opening probability could increase from 
+4.55% to 31.73%15 if the volatility doubles (ơtrade = 2ơhist) between the identification and the trading 
+period. On the contrary, a drop in the volatility of Xt (ơtrade < ơhist) reduces the probability to open a 
+                                                 
+14 This is a simplified assumption to demonstrate the idea. Xt is rather a function of Xt-1, the return of stock A, 
+and the return of stock B. 
+15 The probability of a realization within the +/-2ơ area around  decreases from 95.45% to 68.27% for a 
+realization within the +/-ơ threshold. 
+Electronic copy available at: https://ssrn.com/abstract=2774063
+
+14 
+ 
+new trade. 
+We now turn to the drivers of Xt’s volatility. The volatility of the price spread Xt (ơhist and ơTrade) is 
+positively influenced by the stock volatilities σA and σB. Furthermore, Xt’s volatility is negatively 
+affected by ρA,B, the correlation of stock A and B.16 We conjecture that an increase of stock volatility 
+σA or σB, or a decrease of pair correlation ρA,B between the identification and trading period increases 
+the volatility of Xt. The increase of Xt’s volatility, in turn, raises the chance to open a new trade, and 
+hence raises the trading frequency. In contrast, a decrease of stock volatility or a correlation increase 
+reduces the trading frequency. Therefore, selecting promising pairs is also a matter of correctly 
+forecasting volatility and correlation changes.  
+Volatility clustering over time implies that a period of low or high volatility is usually followed by a 
+more medium volatility level. Most volatility forecasting models, therefore, assume that volatility 
+follows a mean-reverting process (e.g., Ornstein-Uhlenbeck (1930) process in Stein and Stein (1991) 
+in Heston’s model (1993), and in ARCH/GARCH models (Engle (1982), Bollerslev (1986))).17 If 
+volatility reverts to its mean, the volatility of Vola_Q1 pairs (lowest pair volatility) should only be 
+temporarily low. We expect more volatility increases for Vola_Q1 pairs, and hence, more trades by 
+these pairs. In contrast, the volatility of Vola_Q5 pairs is more likely to decrease which would 
+generate less trades. We argue similarly for correlation and expect to observe more correlation 
+decreases for pairs within the highest correlation quintile compared to pairs within the lowest 
+correlation quintile.  
+Research proposition 3: The number of natural trades is increased by low stock volatility and high 
+pair correlation during the identification period, coupled with higher volatility and lower correlation 
+during the trading period. Pair volatility increases are more likely for pairs with currently low pair 
+volatility, while correlation decreases are more likely for pairs with a currently high correlation. 
+                                                 
+16 We derive these results from the following mathematical transformation: V(X) = V(PA −PB) = V(PA) +
+ V(PB) −2Cov(PA, PB) = V(PA) + V(PB) −2ρA,B√V(PA)√V(PB). 
+17 Andersen et al. (2006) provide a comprehensive overview of models and literature on volatility forecasting. 
+Electronic copy available at: https://ssrn.com/abstract=2774063
+
+15 
+ 
+4 
+A critical review of the SSD selection method 
+What are the implications of applying the traditional pair selection criterion (SSD)? This section 
+investigates the extent to which pair volatility and correlation influence the SSD as proclaimed in 
+research proposition one. A significant influence of both factors implies that the use of the SSD equals 
+selecting pairs with a specific pair volatility-correlation combination. This specific combination, in 
+turn, may influence the trading behavior as proposed in research proposition two and three, and hence, 
+impacts the total return potential. 
+The classical distance measure SSD is introduced by Gatev et al. (2006) and applied by several other 
+authors. The appeal to use the SSD is its simplicity and the possibility to automatize the process. The 
+SSD calculates the sum of the squared deviations between the normalized price movements of two 
+stocks. The 20 pairs with the lowest SSD are selected for trading in the subsequent trading period. 
+Research proposition one conjectures that low pair volatility and high correlation minimize the SSD. 
+We regress the SSD on pair volatility and correlation to investigate the explanation power of both 
+factors. Our sample includes all possible pair combinations across all identification periods. We use 
+period and pair clustered standard errors. The results are displayed in Exhibit 4, Panel A. 
+[Insert Exhibit 4] 
+Pair volatility and correlation explain 88% of the SSD’s total variation which confirms a strong 
+influence of both factors. As expected, the SSD is positively correlated with pair volatility and 
+negatively correlated with pair correlation. The formal definition of the SSD veils whether the effect of 
+pair correlation or the volatility effect dominates. The standardized regression coefficients suggest that 
+low pair volatility dominates the effect of high correlation. To check the robustness of our results, we 
+repeat the regression individually with our ten data sets. The results confirm the previous results 
+separately for each set. We conclude that the traditional selection algorithm picks pairs with low pair 
+volatility and high correlation. As an additional test, we examine into which of our volatility and 
+correlation double-sorted quintiles the 20 pairs with the lowest SSD are classified. Almost 67% of all 
+Electronic copy available at: https://ssrn.com/abstract=2774063
+
+16 
+ 
+SSD selected pairs are classified into Corr_Q5/Vola_Q1, the portfolio with the lowest pair volatility 
+and highest correlation. The remaining pairs are all allocated to one of the other Corr_Q5 or Vola_Q1 
+portfolios. We conclude that either their pair volatility is very low or their correlation is high. 
+Furthermore, the SSD portfolio allows a direct comparison with selected fellow studies. We exclude 
+papers that apply major modifications, conceal raw returns, or one-day-waiting returns. Do and Faff 
+(2010) detect a declining trend in pairs trading returns over time. Therefore, we consider the covered 
+period when comparing returns. Furthermore, minor adaptions of the original algorithm might cause 
+small differences, like the preselection of pairs as in Papadakis and Wysocki (2007). Exhibit 4, Panel 
+B summarizes the monthly U.S. returns for similar stock universes. Our return of 37bp is consistent 
+with the 37bp return in Do and Faff (2010) for 1989-2002 and 24bp for 2003-2009, as well as the 36bp 
+in Papadakis and Wysocki (2007) for 1994-2006. These results indicate that our computation and the 
+bid-ask price approach are reliable. 
+Altogether, our findings confirm research proposition one. When applying the traditional SSD 
+measure, investors unconsciously commit to trade with highly correlated pairs and low pair volatility. 
+The next section examines the consequences of trading with this specific pair selection for the 
+strategy’s profitability. 
+5 
+The effect of volatility and correlation on the return per trade and the trading frequency 
+This section investigates the isolated effect of pair volatility and correlation on the trading algorithm. 
+The previous section revealed that the traditional selection procedure picks pairs with low pair 
+volatility and high correlation. Therefore, we do not restrict our analysis to SSD-selected pairs as we 
+are also interested in the effect of high pair volatility and low correlation. We study the trading 
+behavior of the 25 portfolios, which are double sorted on pair volatility and correlation.  Afterwards, 
+we investigate the effect of pair volatility and correlation on the return per trade, which is defined as 
+average single round-trip of a pair. Afterwards in Section 5.2, we analyze the influence on the trading 
+frequency. 
+Electronic copy available at: https://ssrn.com/abstract=2774063
+
+17 
+ 
+5.1 Return per trade 
+Research proposition two predicts a positive (negative) influence of high pair volatility (correlation) 
+on the return per trade for profitable natural trades and vice versa for overshooting trades. The 
+influence on the return per trade of incomplete and delisted trades depends on whether stock prices 
+converge or diverge. Like natural trades, high pair volatility and low correlation are beneficial for 
+converging prices, whereas low volatility and high correlation are preferable for diverging prices. 
+Exhibit 5 compares the return per trade for each volatility-correlation double sorted portfolio 
+separately for each closing type in panel A to D. Panel A reports that the average return per natural 
+trade of a Vola_Q1/Corr_Q5 pair (lowest pair volatility and highest correlation quintiles) is $0.14 for a 
+$1 commitment in the long and the short position. The average return per natural trade ranges between 
+$0.1441 for Vola_Q1/Corr_Q5 pairs and $0.7256 for Vola_Q5/Corr_Q1 pairs. As conjectured in 
+research assumption two, the return per trade for natural trades rises for higher pair volatility levels 
+(within each correlation quintile) and decreases for higher correlation (within each volatility quintile). 
+Although incomplete trades are forcefully closed on the last day, Panel B reports an average positive 
+return per trade. Similar as for natural trades, higher pair volatility and lower correlation significantly 
+enhance the profitability of incomplete successful trades. The return ranges between $0.0118 for 
+Vola_Q1/Corr_Q5 and $0.0338 for Vola_Q5/Corr_Q1. Panel C shows that higher pair volatility and 
+lower correlation increase the loss per trade for overshooting trades. The return per trade ranges 
+between -$0.4668 for Vola_Q5/Corr_Q1, and -$0.1125 for Vola_Q1/Corr_Q5. As expected, the link 
+between volatility, correlation and return of overshooting trades is reverse to natural trades. Panel D 
+reports that the return of delisted trades is on average negative for highly volatile and weakly 
+correlated pairs. Yet, the return is increasing and positive for less volatile and highly correlated pairs. 
+The average return per trade ranges between -$0.1322 for Vola_Q5/Corr_Q1 and $0.0190 for 
+Vola_Q2/Corr_4. However, the return of 8 out of 25 portfolios is insignificant, indicating that there is 
+no clear volatility and correlation effect for delisted trades. 
+Electronic copy available at: https://ssrn.com/abstract=2774063
+
+18 
+ 
+[Insert Exhibit 5] 
+Altogether, our findings support research proposition 2. As expected, high pair volatility and low 
+correlation levels increase the return of converging pairs, but also increase the loss of diverging pairs. 
+We learn that the volatility and correlation levels during the identification period determine the 
+average return level per trade. Hence, pairs in more volatile markets or in times of general higher 
+market volatility should earn more per trade. Furthermore, our findings imply that the SSD’s 
+preselection of highly correlated pairs with low volatility is disadvantageous as less correlated pairs 
+with higher volatility earn more per trade. 
+5.2 Trading frequency 
+After examining the return per trade in the previous section, we now turn to the second return building 
+block, the trading frequency. This section explores the link between pair volatility, correlation, and 
+trading frequency to evaluate research proposition three. We argue that raising the trading frequency 
+means earning the return per trade multiple times during one trading period. Recall that a high trading 
+frequency increases only the number of profitable, Closing Type 1 trades (natural trades). Closing 
+Type 2, 3 and 4 are always the last trades within a specific trading period. Hence, the number of these 
+potentially loss-making trades is unaffected by a higher trading frequency. 
+The first analysis investigates the influence of pair volatility and correlation on the probability of a 
+level shift. A level shift means that the pair volatility or correlation of a pair changes between the 
+identification period and the trading period. The price spread Xt is defined as the difference between 
+the two normalized stock prices of the pair on day t and determines whether a new trade is initialized. 
+The opening probability is higher if the volatility of Xt is low during the identification period and high 
+during the trading period. As derived in research proposition three, we conjecture that volatility 
+increases and correlation decreases raise the volatility of Xt, which, in turn, raise the desired opening 
+probability. We expect to observe more volatility decreases for pairs with high pair volatility 
+(Vola_Q5 quintile) and less volatility decreases for pairs with little volatility (Vola_Q1 quintile). 
+Electronic copy available at: https://ssrn.com/abstract=2774063
+
+19 
+ 
+Likewise, we argue that correlation increases are more likely for low correlated pairs (Corr_Q1) and 
+less likely for originally strongly correlated pairs (Corr_Q5). 
+We first compute the average pair volatility and the correlation coefficient of each pair during the 
+identification period and separately for the subsequent trading period. Based thereupon, we generate 
+two dummies for each pair: The volatility dummy (correlation dummy) indicates whether the pair 
+volatility increases (correlation decreases) between the identification and the trading period (D = 1) or 
+not (D = 0). We determine the volatility and the correlation dummy for each trade. Afterwards, we 
+calculate the average percentage of trades which are generated by pairs with a desired volatility 
+increase or a correlation decrease separately for each volatility-correlation double sorted portfolio. 
+Exhibit 6, Panel A reports the results for pair volatility increases. 61.08% of all trades in portfolio 
+Corr_Q1/Vola_Q1 are generated by pairs with a volatility increase. Consistent with mean-reverting 
+volatility (Engle and Patton (2001)), volatility increases are more likely for low pair volatility levels 
+(Vola_Q1) across all correlation quintiles. Furthermore, pair volatility increases are more likely for 
+reversely correlated pairs (Corr_Q1 quintile). Overall, Panel A suggests that desired volatility 
+increases are most frequently generated by pairs with a low pair volatility and low correlation.   
+[Insert Exhibit 6] 
+Furthermore, we conjecture that correlation decreases between the identification and the trading period 
+raise the trading frequency. Similar as in Panel A, Panel B shows the percentage of trades by pairs 
+with a correlation decrease. For instance, 23.68% of all trades in portfolio Corr_Q1/ Vola_Q1 are 
+generated by pairs whose correlation level decreased. Panel B indicates that desired correlation 
+decreases are most often generated by pairs with high volatility and high correlation. 
+Altogether, our research reveals that high pair volatility and high correlation are positive for the 
+correlation-decrease-effect, but harmful for the volatility-increase-effect. To answer whether the 
+aggregated influence on the trading frequency is positive or negative, we count the total number of 
+trades over all periods for each portfolio in Panel C. The exhibit uncovers that high pair volatility 
+Electronic copy available at: https://ssrn.com/abstract=2774063
+
+20 
+ 
+portfolios generate less trades than low pair volatility portfolios. Hence, the influence of low pair 
+volatility in the volatility-increase-effect dominates the influence of high pair volatility in the 
+correlation-decrease-effect. Moreover, high correlation portfolios produce significantly more trades 
+than low correlation portfolios. The effect of high correlation in the correlation-decrease-effect is thus 
+stronger than the effect of low correlation in the volatility-increase-effect. Overall, low pair volatility 
+and high correlation raise the total number of trades.  
+Two major results emerge from the previous two sections. First, the SSD, which selects pairs with low 
+pair volatility and high correlation, is a convenient selection measure to increase the trading frequency. 
+However, it fails to identify the best pair selection to maximize the overall return. Second and even 
+more important, high volatility reduces the number of trades, and hence, the total return.  
+6 
+Pairs Trading Return in calendar time 
+Our previous results are antithetic so far. High pair volatility and negative correlation increase the 
+return per trade on the one hand (Section 5.1), but reduce the trading frequency on the other hand 
+(Section 5.2). Unfortunately, we cannot derive which effect dominates from the trading algorithm. 
+However, only the aggregated effect is important for an investor. This section takes a closer look at the 
+monthly pairs trading returns. The monthly return represents the payoff to an investor, and it considers 
+the aggregated effect of pair volatility and correlation on the return per trade and the trading 
+frequency. It provides not only the possibility to compute a risk-adjusted return, but also allows us to 
+compare the monthly return of a traditionally formed SSD portfolio and portfolios with alternating 
+volatility-correlation combinations. Additionally, the results help us to ultimately judge whether the 
+SSD is superior in selecting profitable pairs.  
+The analysis of the monthly returns between January 1991 and December 2014 uncovers whether the 
+positive effect of high pair volatility and low correlation on the return per trade, or the negative effect 
+on the trading frequency dominates. Exhibit 7, Panel A reports the average monthly return for each 
+volatility-correlation double sorted portfolio between January 1991 and December 2014. All returns 
+Electronic copy available at: https://ssrn.com/abstract=2774063
+
+21 
+ 
+are positive, significant and range between 19bp to 234bp. For instance, portfolio Vola_Q1/Corr_Q5 
+(low pair volatility/high correlation) yields an average monthly return of 47bp. The most striking result 
+to emerge from Panel A is the successive increase in monthly returns for higher volatility levels from 
+Vola_Q1 to Vola_Q4 in correlation quintiles Corr_Q2 to Corr_Q5. The return increase is particularly 
+stronger in higher correlation levels. 
+[Insert Exhibit 7] 
+The return differences between Corr_Q5 and Corr_Q1 portfolios are insignificant in three out of five 
+cases, indicating equally high portfolio returns. Furthermore, 21 out of 25 volatility-correlation double 
+sorted portfolios outperform the SSD portfolio with a monthly return of 37bp. Even the direct peer 
+portfolio Vola_Q1/Corr_Q5 with low pair volatility and high correlation earns 10bp more. We 
+speculate that the superior performance of the Vola_Q1/Corr_Q5 portfolio results from randomly 
+selecting twenty out of approximately 72000 pairs within the particular quintile intersection group. 
+These selected pairs exhibit an average level of correlation and volatility within the volatilitycorrelation double sorted group. In contrast, the pairs of the SSD portfolio observe the absolutely 
+lowest pair volatility and the highest correlation. We conclude that even slightly higher volatility and 
+lower correlation levels increase the pairs trading return. 
+To account for well-established return patterns, we regress monthly returns on a six factor model, 
+including Fama and French’s three factor model, a momentum factor and a short-term-reversal factor. 
+All data is obtained from Kenneth French’s website. As our sample includes stocks with different 
+liquidity levels, we further extend our factor model with Pastor and Stambaughs’ (2003) liquidity 
+factor. Panel B reports the alphas of the regression for each volatility-correlation double sorted 
+portfolio. Like fellow papers, we use Newey-West Standard errors with lag 6. The results confirm our 
+previous findings. All alphas are positive and almost always significant. Again, high pair volatility and 
+strong correlation increase alpha.  
+Altogether, the results suggest that pairs with high pair volatility and high correlation maximize the 
+Electronic copy available at: https://ssrn.com/abstract=2774063
+
+22 
+ 
+return. We conclude that the positive pair volatility effect on the return per trade and the positive effect 
+of strong correlation on the trading frequency dominate. This implicates that the SSD, which selects 
+pairs with low pair volatility, is suboptimal to identify the most profitable pairs. The monthly return of 
+the traditionally selected portfolio with 37bp is considerably lower than the risk adjusted return of 
+most alternatively formed volatility-correlation double sorted portfolios. 
+7 
+Robustness 
+Trading strategies which successfully exploit anomalies always raise several robustness questions. We 
+first address limits of arbitrage in Section 7.1, before we test our results in a cross-sectional FamaMacBeth (1973) test setting in Section 7.2. 
+7.1 Limits of arbitrage 
+One obvious question is whether pairs trading returns resist trading costs. Do and Faff (2012) dedicate 
+a full paper to the question and find that pairs trading returns are decreasing but still significant and 
+positive after controlling for commission, market impact, and short selling constraints. Their result is 
+consistent with Gatev et al. (2006) who also find significant returns after controlling for transaction 
+costs. However, our highly volatile pairs might demand higher trading costs. We address the most 
+crucial issue, the bid-ask bounce, by directly trading with bid and ask prices, which is more accurate 
+than the traditional one-day-waiting procedure. As our alphas are positive and significant, we conclude 
+that transaction costs are not an impediment, especially not for large institutional traders.  
+Furthermore, an investor must be able to hold the position until the pair converges. While the trade is 
+open, investors might be confronted with margin calls if the short stock further diverges. 
+Subsequently, some arbitrageurs must liquidate their positions to meet the required additional capital 
+commitment (Shleifer and Vishny (1997)). Recalls are more likely when prices are falling. When 
+prices start to converge in pairs trading, the shorted stock of a pair is expected to fall and is hence 
+more likely to be recalled. However, D’Avolio (2002) observes a low recall rate of around 2% per 
+month. Furthermore, pairs traders can still earn a profit if the price already converged until the stock 
+Electronic copy available at: https://ssrn.com/abstract=2774063
+
+23 
+ 
+was recalled. Similar as in Exhibit 6 Panel C, we examine the volatility and correlation effect on the 
+trading frequency of overshooting trades. Our unreported results indicate that high pair volatility and 
+low correlation reduce the number of overshooting trades, and hence, divergence risk. This finding is 
+consistent with Engelberg et al. (2009) who find that high idiosyncratic volatility decreases the 
+divergence probability. 
+In addition, we address the previously mentioned arbitrage problems by replicating our analyses with 
+stocks that are included at the time in the S&P 100 or the NASDAQ 100. To consider possible 
+liquidity declines, we exclude stocks if they lose their index membership. This test setting challenges 
+the robustness of our findings in an almost limits of arbitrage free setting as all stocks are liquid, easyto-short, cheap to trade, and highly efficient due to high analyst coverage. Exhibit 8, Panel A (B) 
+shows the results for the S&P 100 (NASDAQ 100)18.  
+[Insert Exhibit 8] 
+All returns are smaller compared to previous returns. Thus, part of the previous returns can be 
+explained with short selling constraints, a liquidity premium, and efficiency issues. However, all 
+returns are still positive and significant. The NASDAQ 100 portfolios outperform the corresponding 
+S&P 100 portfolios. This result is consistent with our previous results as NASDAQ 100 stocks are 
+more volatile than S&P 100 stocks.  
+7.2 Short Selling Constraints 
+The next question is whether it is difficult to short stocks for pairs trading. Stambaugh et al. (2015) 
+argue that return asymmetry of long-short strategies might originate from short selling constraints of 
+overpriced stocks compared to easily exploitable underpriced stocks. In this case, the isolated short leg 
+return exceeds the long leg return. Alternatively, Gatev et al. (2006) ponder that long leg profits might 
+represent a compensation for an unrealized bankrupt. In this alternative case, the long leg contributes 
+more to the total return than the short leg. To shed further light on this topic, we separately compute 
+                                                 
+18 Bid and ask prices are reported starting in Jan 1995. 
+Electronic copy available at: https://ssrn.com/abstract=2774063
+
+24 
+ 
+the isolated return generated by the short and the long leg, similar to Gatev et al. (2006), and determine 
+the following contribution ratio: 
+ 𝐶𝑜𝑛𝑡𝑟𝑖𝑏𝑢𝑡𝑖𝑜𝑛 𝑅𝑎𝑡𝑖𝑜= 
+𝐿𝑜𝑛𝑔 𝑙𝑒𝑔 𝑟𝑒𝑡𝑢𝑟𝑛 𝑝𝑒𝑟 𝑡𝑟𝑎𝑑𝑒
+𝑇𝑜𝑡𝑎𝑙 𝑟𝑒𝑡𝑢𝑟𝑛 𝑝𝑒𝑟 𝑡𝑟𝑎𝑑𝑒 
+   (6) 
+[Insert Exhibit 9] 
+Exhibit 9 reports the median percentage contribution ratio of the long leg to the total return. The 
+percentage is below 50% in 24 out of 25 portfolios, indicating a higher contribution of the short leg. 
+The long legs of Vola_Q5/Corr_Q1&2 portfolios contribute relatively little with a share of 31.64%-
+32.60%. As the return asymmetry is especially pronounced for highly volatile stocks, the short leg 
+contribution might originate from practically not exploitable mispricing. However, D’Avolio (2002) 
+finds that only 16% of all stocks included in the monthly CRSP file can eventually not be shorted. 
+91% of all stocks, including almost all S&P 500 constituents, cost less than 1% to borrow, and their 
+value-weighted average fee is approximately 17%. The remaining 9% of stocks, which are called 
+“special stocks”, have an average fee of 4.5% per annum. Less than 1% of the special stocks demand 
+negative rebate rates and charge a fee of up to 50%. Not surprisingly, smaller stocks demand higher 
+fees. However, these special stocks account for less than 1% of the market by value. We assume that 
+the probability of “special stocks” in our dataset is relatively low for two reasons. First, our stock 
+universe is restricted to current or former members of the S&P 1500. These stocks cover around 90% 
+of the total market capitalization and should be under regular investor’s attention (Wurgler and 
+Zhuravskaya (2002)). Second, our stock universe is restricted to stocks with a listed bid and ask price. 
+These restrictions secure the liquidity and tradability of our stocks. Even if shorting is impossible, a 
+modified pairs trading strategy could invest only in the ‘loser’ stock (long position) and use the 
+‘winner’ stock as a trading signal without physically selling the stock. Alternatively, investors could 
+include only stocks which they already hold in their portfolios. 
+7.3 Fama-MacBeth regression 
+In addition to our analyses based on portfolio sorts, we conduct a Fama-MacBeth (1973) regression to 
+Electronic copy available at: https://ssrn.com/abstract=2774063
+
+25 
+ 
+investigate the role of pair volatility and correlation in the cross-section. We regress pair volatility and 
+correlation on the return per trade. This model allows us to evaluate how the technical drivers 
+influence the return per trade (research proposition two) in the cross-section. We use standardized 
+coefficients for pair volatility and correlation and apply Newey-West (1987) standard errors with lag 
+six. We control for the duration of a trade because these trades usually possess a wider price spread at 
+the opening. Furthermore, a pair can open multiple times during one trading period. The returns of 
+these trades are similar because the opening signal, which determines the return per trade, is always 
+identical in these cases. Therefore, we only consider the first trade of each pair within a trading period. 
+Both coefficients are significant at a 1% significance level. A one standard deviation increase of pair 
+volatility raises the trade return by 13 cents, whereas a one standard deviation increase in correlation 
+decreases the trade return by 7.5 cents. The result adds further evidence to research proposition two. 
+For further robustness, we repeat the analysis and choose one random trade of each pair within a 
+trading period. We also repeat the analysis with non-overlapping trading periods. The results in both 
+additional tests remain robust. 
+8 
+Conclusion 
+We complement the literature on pairs trading by demonstrating that pair volatility and correlation are 
+the main drivers which influence the two return building blocks of pairs trading: The return per trade 
+and the trading frequency. High pair volatility and low correlation are beneficial for the return per 
+trade, but negative for the trading frequency. 
+The key learning point for active pairs traders is that choosing stocks of one specific industry, one 
+country, or applying a certain selection procedure like the SSD results in a preselection of eligible 
+pairs for trading. This preselection of pairs determines a given pair volatility and correlation 
+combination. The selection of pair volatility and correlation levels, in turn, affects the total return via 
+the return per trade and the trading frequency. Hence, smart investors should optimize the pair 
+volatility-correlation level of their stock selection to maximize their returns.  
+Electronic copy available at: https://ssrn.com/abstract=2774063
+
+XXVI 
+ 
+References 
+Andrade, S., V. di Pietro, and M. Seasholes “Understanding the profitability of pairs trading.” Working 
+paper, UC Berkeley Haas School and Northwestern University, 2005. 
+Bolgün, K., E. Kurun, and S. Güven “Dynamic pairs trading strategy for the companies listed in the 
+Istanbul stock exchange.” International Review of Applied Financial Issues and Economics, Vol. 2 (2010), 
+pp. 37-57. 
+Bollerslev, T. “Generalized autoregressive conditional heteroskedasticity.” Journal of Econometrics, Vol. 
+31 (1986), pp. 307-327. 
+D'Avolio, G. “The market for borrowing stock.” Journal of Financial Economics, Vol. 66 (2002), pp. 271306. 
+Do, B. and R. Faff “Does simple pairs trading still work?” Financial Analysts Journal, Vol. 66 (2010), pp. 
+83–95.  
+- -. “Are pairs trading profits robust to trading costs?” Journal of Financial Research, Vol. 35 (2012), pp. 
+261–287. 
+Engelberg, J., P. Gao, and R. Jagannathan “An anatomy of pairs trading: The role of idiosyncratic news, 
+common information and liquidity.” Working Paper, University of North Carolina, University of Notre 
+Dame, Northwestern University, 2009. 
+Engle, R. “Autoregressive conditional heteroscedasticity with estimates of the variance of United Kingdom 
+inflation.” Econometrica, Vol. 50 (1982), pp. 987-1007. 
+Engle, R. and A. Patton “What good is a volatility model?” Quantitative Finance, Vol. 1 (2001), pp. 237245. 
+Fama, E. and J. MacBeth “Risk return, and equilibrium: Empirical tests.” Journal of Political Economy, 
+Vol. 71 (1973), pp. 607–636. 
+Gatev, E., W.N. Goetzmann, and K.G. Rouwenhorst “Pairs trading: Performance of a relative-value 
+arbitrage rule.” Review of Financial Studies, Vol. 19 (2006), pp. 797–827. 
+Heston, S. “A closed-form solution for options with stochastic volatility with applications to bond and 
+currency options.” Review of Financial Studies, Vol. 6 (1993), pp. 327-343. 
+Huck, N. “Pairs trading: Does volatility timing matter?” Applied Economics, Vol. 47 (2015), pp. 62396256. 
+Electronic copy available at: https://ssrn.com/abstract=2774063
+
+XXVII 
+ 
+Jacobs, H. and M. Weber “On the determinants of pairs trading profitability.” Journal of Financial Markets, 
+Vol. 23 (2015), pp. 75-97. 
+Krauss, C. “Statistical arbitrage pairs trading strategies: Review and outlook.” Journal of economic 
+surveys, forthcoming. 
+Newey, W.K. and K.D. West “A simple positive-definite heteroscedasticity and autocorrelation consistent 
+covariance matrix.” Econometrica, Vol. 55 (1987), pp. 703-708. 
+Ornstein, L. and G. Uhlenbeck “On the theory of brownian motion.” Physical Review, Vol. 36 (1930), pp. 
+823–841. 
+Papadakis, G. and P. Wysocki “Pairs trading and accounting information.” Working Paper, MIT Sloan 
+School of Management, 2007. 
+Pastor, L. and R. Stambaugh “Liquidity risk and expected stock returns.” Journal of Political Economy, 
+Vol. 111 (2003), pp. 642-685. 
+Perlin, M. “Evaluation of pairs-trading strategy at the Brazilian financial market.” Journal of Derivatives & 
+Hedge Funds, Vol. 15 (2009), pp. 122-136. 
+Stein, E. and J. Stein “Stock price distributions with stochastic volatility: An analytic approach.” Review of 
+Financial Studies, Vol. 4 (1991), pp. 727-752. 
+Shleifer, A. and R. Vishny “The limits of arbitrage.” Journal of Finance, Vol. 52 (1997), pp. 35-55. 
+Stambaugh, R., J. Yu, and Y. Yuan “Arbitrage asymmetry and the idiosyncratic volatility puzzle.” The 
+Journal of Finance, Vol. 70 (2015), pp. 1903-1948. 
+Vidyamurthy, G. “Pairs trading: Quantitative methods and analysis.” John Wiley & Sons, Hoboken, 2004. 
+Wurgler, J. and E. Zhurayskaya “Does arbitrage flatten demand curves for stocks?” Journal of Business, 
+Vol. 75 (2002), pp. 583-608. 
+Electronic copy available at: https://ssrn.com/abstract=2774063
+
+XXVIII 
+ 
+Appendix 
+ 
+Exhibit 1: The interdependences of the technical decision rules and the return of pairs trading 
+ 
+ 
+Exhibit 1 illustrates the interdependencies of pairs trading. The rule-based trading algorithm influences the pair selection and the maximum return per 
+trade. The pair selection determines the correlation and the pair volatility level. These levels, in turn, influence the return per trade and the trading 
+frequency. The strategy’s total return is a function of the return per trade and the trading frequency. 
+Electronic copy available at: https://ssrn.com/abstract=2774063
+
+I 
+ 
+Exhibit 2: Correlation and volatility levels over quintiles 
+ 
+  
+Corr_Q1 
+Corr_Q2 
+Corr_Q3 
+Corr_Q4 
+Corr_Q5 
+Correlation 
+-0.4885 
+-0.0471 
+0.2973 
+0.5738 
+0.8026 
+  
+  
+  
+  
+  
+  
+  
+VOL_Q1 
+VOL_Q2 
+VOL_Q3 
+VOL_Q4 
+VOL_Q5 
+Pair Volatility 
+ 
+0.0134 
+0.0269 
+0.0434 
+0.0727 
+0.1892 
+ 
+ 
+Exhibit 2 reports the median correlation, the median pair volatility, and the median pair volatility per 
+quintile for all selected pairs during all identification periods between January 1990 and June 2014. Pair 
+volatility is defined as sum of stock A’s and B’s volatility. 
+ 
+Exhibit 3: Distribution of the price spread Xt during the identification and the trading period 
+ 
+ 
+ 
+Exhibit 3 shows the probability density function of Xt during the identification period (DensityID_Period) and 
+during the trading period (DensityTrade_Period). Xt is the spread between two normalized prices of a pair on 
+day t. 2hist is calculated as two times the standard deviation of Xt during the identification period. Pairs 
+trading initiates a new trade if Xt is smaller than - or bigger than + during the trading period. The 
+figure on the right-hand side displays the probability density function of Xt if the volatility increases 
+between the identification and the trading period. The probability density function DensityTrade_Period is now 
+flatter and with fatter tails compared to DensityID_Period. The trading signal of 2hist, however, remains 
+unchanged. Hence, the fatter tails increase the chance to initiate a new trade. 
+Electronic copy available at: https://ssrn.com/abstract=2774063
+
+II 
+ 
+Exhibit 4: Classical selection criterion (SSD) 
+ 
+Panel A: Decomposition of the SSD distance measure 
+Variables 
+Pair Volatility (std) 
+Correlation (std) 
+Constant 
+  
+  
+  
+  
+  
+  
+Coefficient 
+604.2384*** 
+-27.8919*** 
+81.6122*** 
+  
+p_val 
+(0.000) 
+(0.000) 
+(0.000) 
+  
+  
+  
+  
+  
+  
+Observations 
+1,440,000 
+  
+  
+  
+R-squared 
+0.88 
+  
+  
+  
+*** p<0.01, ** p<0.05, * p<0.1 
+  
+  
+  
+ 
+Panel B: Comparison with fellow studies 
+  
+this study 
+  Gatev et al. 
+(2006) 
+  Do and Faff (2010) 
+  
+Do and 
+Faff 
+(2012) 
+  Papadakis and Wysocki (2007) 
+  
+  
+    
+    
+    
+  
+    
+    
+  
+  
+Period 
+1990/2014   07/1963-12/2002 
+  1962–
+1988 
+  1989–
+2002 
+2003–
+2009 
+  19632009 
+  19812006 
+19811993 
+19942006 
+ExReturn 0.0037 
+  0.0090 
+  0.0086 
+  0.0037 
+0.0024 
+  0.0085 
+  0.0062 
+0.0087 
+0.0036 
+t_val 
+(11.03) 
+  (9.29) 
+  (8.51) 
+  (2.99) 
+(2.73) 
+  (9.72) 
+  (5.47) 
+(6.81) 
+(4.05) 
+ 
+Exhibit 4, Panel A displays the results of a panel regression of the SSD distance measure on the standardized pair volatility and the standardized 
+correlation coefficient. We control for pair fixed and time fixed effects. Standard errors are clustered at the pair level and p-values (p_val) are reported 
+in parentheses and adjusted for heteroscedasticity and clustered by pair combination. ***, **, * denote significance at the 1%, 5%, and 10% level, 
+respectively. Panel B benchmarks the monthly excess returns of the SSD portfolio with the returns of fellow papers. T-values (t_val) are reported in 
+parentheses. 
+Electronic copy available at: https://ssrn.com/abstract=2774063
+
+III 
+ 
+Exhibit 5: Return per trade 
+ 
+Panel A: Natural Trades (Type 1) - Mean return per trade 
+  
+  Corr_Q1 
+Corr_Q2 
+Corr_Q3 
+Corr_Q4 
+Corr_Q5 
+Vola_Q1 
+  0.3022*** 
+0.2482*** 
+0.2180*** 
+0.1841*** 
+0.1441*** 
+Vola_Q2 
+  0.4269*** 
+0.3658*** 
+0.3236*** 
+0.2666*** 
+0.1979*** 
+Vola_Q3 
+  0.5207*** 
+0.4584*** 
+0.4004*** 
+0.3274*** 
+0.2442*** 
+Vola_Q4 
+  0.5912*** 
+0.5592*** 
+0.4847*** 
+0.4042*** 
+0.3027*** 
+Vola_Q5 
+  0.7256*** 
+0.6580*** 
+0.6103*** 
+0.5376*** 
+0.3861*** 
+*** p<0.01, ** p<0.05, * p<0.1 
+  
+  
+  
+Panel B: Incomplete Trades (Type 2) - Mean return per trade 
+  
+  Corr_Q1 
+Corr_Q2 
+Corr_Q3 
+Corr_Q4 
+Corr_Q5 
+Vola_Q1 
+  0.0173*** 
+0.0167*** 
+0.0141*** 
+0.0156*** 
+0.0118*** 
+Vola_Q2 
+  0.0195*** 
+0.0182*** 
+0.0186*** 
+0.0175*** 
+0.0154*** 
+Vola_Q3 
+  0.0241*** 
+0.0187*** 
+0.0191*** 
+0.0212*** 
+0.0180*** 
+Vola_Q4 
+  0.0265*** 
+0.0242*** 
+0.0218*** 
+0.0208*** 
+0.0208*** 
+Vola_Q5 
+  0.0338*** 
+0.0323*** 
+0.0295*** 
+0.0294*** 
+0.0274*** 
+ 
+Panel C: Overshooting Trades (Type 3) - Mean return per trade 
+  
+  Corr_Q1 
+Corr_Q2 
+Corr_Q3 
+Corr_Q4 
+Corr_Q5 
+Vola_Q1 
+  -0.2343*** 
+-0.1998*** 
+-0.1705*** 
+-0.1448*** 
+-0.1125*** 
+Vola_Q2 
+  -0.3098*** 
+-0.2733*** 
+-0.2398*** 
+-0.2015*** 
+-0.1529*** 
+Vola_Q3 
+  -0.3554*** 
+-0.3232*** 
+-0.2834*** 
+-0.2452*** 
+-0.1846*** 
+Vola_Q4 
+  -0.3904*** 
+-0.3563*** 
+-0.3310*** 
+-0.2866*** 
+-0.2211*** 
+Vola_Q5 
+  -0.4668*** 
+-0.4137*** 
+-0.3808*** 
+-0.3463*** 
+-0.2664*** 
+ 
+Panel D: Delisted Trades (Type 4) - Mean return per trade 
+  
+  Corr_Q1 
+Corr_Q2 
+Corr_Q3 
+Corr_Q4 
+Corr_Q5 
+Vola_Q1 
+  0.0095* 
+0.0134*** 
+0.0138*** 
+0.0153*** 
+0.0145*** 
+Vola_Q2 
+  0.0008 
+0.0126** 
+0.0174*** 
+0.0190*** 
+0.0151*** 
+Vola_Q3 
+  -0.0175 
+-0.0048 
+-0.0016 
+0.0162*** 
+0.0167*** 
+Vola_Q4 
+  -0.1107*** 
+-0.0395*** 
+-0.0095 
+-0.0107 
+0.0088 
+Vola_Q5 
+  -0.1322*** 
+-0.1110*** 
+-0.0169 
+-0.0766*** 
+-0.0550*** 
+ 
+Exhibit 5 shows the average return per trade for double sorted portfolios on pair volatility and correlation 
+Electronic copy available at: https://ssrn.com/abstract=2774063
+
+IV 
+ 
+between January 1991 and December 2014. Panel A displays the average return per trade for natural trades, 
+which close after the full convergence of both stocks within the trading period. Panel B displays the average 
+return per trade for incomplete trades, which are forcefully closed on the last day of the trading period. 
+Panel C displays the average return per trade for overshooting trades, which are closed if prices diverge by 
+more than 4hist. Panel D displays the average return per trade for delisted trades, which are closed if one 
+stock is delisted while the pair is open. The trade universe includes all trades by pairs over time. Statistical 
+significance at the 10%, 5%, and 1% level is indicated by *, **, and ***, respectively. 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2774063
+
+V 
+ 
+Exhibit 6: Level shifts and frequency 
+ 
+Panel A: Average % of pairs that experience a volatility increase 
+  
+  Corr_Q1 
+Corr_Q2 
+Corr_Q3 
+Corr_Q4 
+Corr_Q5 
+  
+    
+  
+  
+  
+  
+Vola_Q1 
+  61.08% 
+60.69% 
+55.25% 
+46.78% 
+33.06% 
+Vola_Q2 
+  53.12% 
+49.41% 
+43.60% 
+36.43% 
+25.05% 
+Vola_Q3 
+  46.81% 
+42.58% 
+36.24% 
+30.08% 
+20.47% 
+Vola_Q4 
+  42.17% 
+35.73% 
+29.66% 
+24.21% 
+16.43% 
+Vola_Q5 
+  36.09% 
+28.48% 
+22.02% 
+18.74% 
+12.11% 
+*** p<0.01, ** p<0.05, * p<0.1 
+  
+  
+  
+  
+Panel B: Average % of pairs that experience a correlation decrease 
+  
+  Corr_Q1 
+Corr_Q2 
+Corr_Q3 
+Corr_Q4 
+Corr_Q5 
+  
+    
+  
+  
+  
+  
+Vola_Q1 
+  23.68% 
+41.61% 
+57.26% 
+71.59% 
+85.53% 
+Vola_Q2 
+  24.83% 
+45.33% 
+61.61% 
+75.30% 
+88.65% 
+Vola_Q3 
+  25.47% 
+48.20% 
+64.09% 
+77.33% 
+90.47% 
+Vola_Q4 
+  26.58% 
+51.43% 
+66.87% 
+79.51% 
+92.52% 
+Vola_Q5 
+  26.68% 
+53.04% 
+69.39% 
+81.44% 
+93.78% 
+ 
+Panel C: Total number of trades 
+  
+  Corr_Q1 
+Corr_Q2 
+Corr_Q3 
+Corr_Q4 
+Corr_Q5 
+  
+    
+  
+  
+  
+  
+Vola_Q1 
+  29238 
+39390 
+46821 
+53662 
+61083 
+Vola_Q2 
+  22933 
+31443 
+38007 
+45015 
+53477 
+Vola_Q3 
+  18814 
+25949 
+32051 
+38480 
+47633 
+Vola_Q4 
+  14378 
+19762 
+24873 
+30808 
+40435 
+Vola_Q5 
+  7576 
+10955 
+13740 
+17306 
+25206 
+ 
+Exhibit 6, Panel A (B) shows the percentage of pairs with a volatility increase (correlation decrease) 
+between the identification and the trading period within the 25 double sorted portfolios. The percentage 
+reveals that a volatility increase or a correlation decrease, which are both beneficial for the total return, are 
+more likely for some portfolios than for others. The analysis includes all trades of the 57.600 pairs (20 pairs 
+per portfolio*10 sets*288 identification periods) during January 1991 and December 2014. Panel C reports 
+the total number of trades for each of the 25 portfolios over all trading periods.  
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2774063
+
+VI 
+ 
+Exhibit 7: Average monthly trading return 
+ 
+Panel A: Pairs trading profitability in calendar time 
+ 
+ 
+ 
+Panel B: Alphas of each correlation and pair volatility quintile portfolio 
+ 
+ 
+Exhibit 7, Panel A reports the average monthly raw returns of each double sorted trading portfolio on pair 
+volatility and correlation between January 1991 and December 2014. Panel B displays the alpha from a 
+time-series regression of the one-month pairs trading returns on a six-factor model, including Fama and 
+French’s (1993) three factor model, a momentum factor, a short-term reversal factor, and Pastor and 
+Stambaugh’s (2003) liquidity factor. We use Newey-West (1987) standard errors with lag six. Statistical 
+significance at the 10%, 5%, and 1% level is indicated by *, **, and ***, respectively. 
+ 
+ 
+ 
+ 
+Corr_Q1
+Corr_Q2
+Corr_Q3
+Corr_Q4
+Corr_Q5
+Q5-Q1
+Q5-Q2
+Vola_Q1
+.0046***
+.0037***
+.0040***
+.0051***
+.0047***
+0.0000
+0.0010***
+Vola_Q2
+.0049***
+.0035***
+.0046***
+.0052***
+.0050***
+0.0000
+0.0015**
+Vola_Q3
+.0033***
+.0038***
+.0058***
+.0057***
+.0065***
+0.0033*** 0.0027***
+Vola_Q4
+.0044***
+.0058***
+.0062***
+.0065***
+.0076***
+0.0032**
+0.0018
+Vola_Q5
+.0019*
+.0043***
+.0046***
+.0056***
+.0234*
+0.0215
+0.0191
+Q4–Q1
+-0.0002
+0.0021*
+.0023**
+.0014*
+.0030***
+*** p<0.01, ** p<0.05, * p<0.1
+Corr_Q1
+Corr_Q2
+Corr_Q3
+Corr_Q4
+Corr_Q5
+Q5-Q1
+Q5-Q2
+Vola_Q1
+.0046***
+.0036***
+.0039***
+.0052***
+.0047***
+0.0011
+0.0001**
+Vola_Q2
+.0047***
+.0031***
+.0045***
+.0052***
+.0048***
+0.0017
+0.0001***
+Vola_Q3
+.0028**
+.0037***
+.0059***
+.0056***
+.0066***
+0.0029*** 0.0038***
+Vola_Q4
+.0040*
+.0059***
+.0066***
+.0068***
+.0076***
+0.0017**
+0.0036
+Vola_Q5
+0.0018
+.0047***
+.0053*
+.0057***
+0.0209
+0.0162
+0.0191
+Q4-Q1
+-0.0006
+0.0023
+0.0028**
+0.0016*
+0.0029***
+*** p<0.01, ** p<0.05, * p<0.1
+Electronic copy available at: https://ssrn.com/abstract=2774063
+
+VII 
+ 
+Exhibit 8: Pairs trading in highly liquid markets 
+ 
+Panel A: Average monthly returns of the S&P 100 (Jan 1990-Dec 2014) 
+  
+  Corr_Q1 
+Corr_Q2 
+Corr_Q3 
+Corr_Q4 
+Corr_Q5 
+  Q5-Q1 
+  
+    
+  
+  
+  
+  
+    
+Vola_Q1 
+  0.0038*** 
+0.0030*** 
+0.0025*** 
+0.0025*** 
+0.0019*** 
+  -0.0019** 
+Vola_Q2 
+  0.0055*** 
+0.0040*** 
+0.0040*** 
+0.0028*** 
+0.0031*** 
+  -0.0024** 
+Vola_Q3 
+  0.0037** 
+0.0049*** 
+0.0036*** 
+0.0039*** 
+0.0030*** 
+  -0.0007 
+Vola_Q4 
+  0.0035** 
+0.0039*** 
+0.0046*** 
+0.0048*** 
+0.0042*** 
+  0.0007 
+Vola_Q5 
+  0.0023 
+0.0025* 
+0.0027** 
+0.0033*** 
+0.0034*** 
+  0.0011 
+  
+    
+  
+  
+  
+  
+    
+Q5-Q1 
+  -0.0015 
+-0.0005 
+0.0002 
+0.0008 
+0.0015** 
+    
+Q4-Q1 
+  -0.0003 
+0.0009 
+0.0021* 
+0.0023** 
+0.0023*** 
+    
+*** p<0.01, ** p<0.05, * p<0.01 
+  
+  
+  
+    
+Panel B: Average Monthly returns of the NASDAQ 100 (Jan 1995-Dec 2014) 
+  
+  Corr_Q1 
+Corr_Q2 
+Corr_Q3 
+Corr_Q4 
+Corr_Q5 
+  Q5-Q1 
+  
+    
+  
+  
+  
+  
+    
+Vola_Q1 
+  0.0032** 
+0.0046*** 
+0.0051*** 
+0.0045*** 
+0.0020*** 
+  -0.0012 
+Vola_Q2 
+  0.0022 
+0.0048*** 
+0.0055*** 
+0.0046*** 
+0.0057*** 
+  0.0035 
+Vola_Q3 
+  0.0024 
+0.0065** 
+0.0065*** 
+0.0055*** 
+0.0072*** 
+  0.0047 
+Vola_Q4 
+  0.0026* 
+0.0076*** 
+0.0112*** 
+0.0066*** 
+0.0067*** 
+  0.0041** 
+Vola_Q5 
+  0.0070** 
+0.0142 
+0.0108* 
+0.0063*** 
+0.0074*** 
+  0.0004 
+  
+    
+  
+  
+  
+  
+    
+Q5-Q1 
+  0.0038 
+0.0096 
+0.0057 
+0.0018 
+0.0055*** 
+    
+Q4-Q1 
+  -0.0006 
+0.0030 
+0.0061** 
+0.0021 
+0.0048*** 
+    
+*** p<0.01, ** p<0.05, * p<0.01 
+ 
+Exhibit 8, Panel A reports the average monthly raw returns for each double sorted trading portfolio on 
+volatility and correlation between January 1991 and December 2014. The sample includes only the, at that 
+time, current members of the S&P 100. For each quintile level, Q5-Q1 (Q5-Q2) reports the monthly return 
+of a strategy that invests in the Q5 portfolio and sells the corresponding Q1 (Q2) portfolio. Likewise, Panel 
+B displays the average monthly returns of NASDAQ 100 members between January 1995 and December 
+2014. Statistical significance at the 10%, 5%, and 1% level is indicated by *, **, and ***, respectively. 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2774063
+
+VIII 
+ 
+Exhibit 9: Median percentage contribution of the long leg to the total return 
+  
+Corr_Q1 
+Corr_Q2 
+Corr_Q3 
+Corr_Q4 
+Corr_Q5 
+  
+  
+  
+  
+  
+  
+Vola_Q1 
+51.29% 
+50.07% 
+49.96% 
+49.45% 
+49.80% 
+Vola_Q2 
+49.01% 
+48.91% 
+48.15% 
+48.66% 
+49.21% 
+Vola_Q3 
+47.69% 
+45.75% 
+46.59% 
+46.85% 
+48.03% 
+Vola_Q4 
+41.87% 
+41.36% 
+43.05% 
+43.97% 
+46.21% 
+Vola_Q5 
+31.64% 
+32.60% 
+35.17% 
+36.45% 
+42.12% 
+ 
+Exhibit 9 investigates the contribution of the short and the long leg separately and displays the median 
+percentage contribution of the long leg to the total return between January 1991 and December 2014. A 
+contribution rate above 0% but below 50% indicates that the long leg contributes to the total return, but less 
+than the short leg. 
+Electronic copy available at: https://ssrn.com/abstract=2774063
+
+IX 
+ 
+  
+Internet Appendix 
+for 
+Idiosyncratic risk, costly arbitrage, and asymmetry: Evidence from pairs trading 
+ 
+ 
+ 
+This document includes supplementary material to the paper. Section 1 describes the calculation of the 
+return per trade, and Section 2 explains the return in calendar time for pairs trading. 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2774063
+
+X 
+ 
+1 
+Return calculation 
+We define the return per trade as payoff of a pair’s round-trip. A pairs trader earns a positive return if the 
+underlying price of the short position declines or the long position rises. Consider the following example: 
+The historical standard deviation of a pair’s price spread is σhist = 0.05. Thus, we open the pair as soon as 
+the difference |PA - PB| between the normalized price of stock A (PA) and the normalized price of stock B 
+(PB) exceeds 0.1 (= 2σhist). For instance, PA,0 = 1 and PB,0 = 1 in t = 0, and PA,1 = 1.05 and PB,1 = 0.95 in t = 
+1. Thus, we open the trade in t = 1. We initiate a short position in the ‘winner’ stock A with a capital 
+commitment of CA,1 = -$1 and a long position in the ‘loser’ stock B with a capital commitment of CB,1 = 
++$1. In t = 2, the normalized prices of stock A and B fully converge to one: PA,2 = 1 (decreased by -4.76%) 
+and PB,2 = 1 (increased by 5.26%). The capital commitments are: CA,2 = −$1 ∗(1 + ( −0.0476)) =
+−0.9524, and CB,2 = +$1 ∗(1 + 0.0526) = $1.0526. As both normalized prices of stock A and B fully 
+converge, we close the trade and receive a payoff of: (CA,2 −CA,1) + (CB,2 −CB,1) = $0.05 + $0.05 =
+$0.10. The return of $0.10 represents the return per trade. 
+2 
+Calendar time return calculation 
+Furthermore, we also calculate the monthly return in calendar time. We closely follow Gatev et al. (2006) 
+return calculation: All positions are daily marked-to-market. We calculate the return 𝑟𝑖,𝑡, which is the return 
+of stock i realizes between day t - 1 and t for all stocks in our portfolio. The stock weight wi,t can be 
+interpreted as capital investment in stock i at day t-1 or as buy-and-hold strategy which reinvests daily 
+returns until day t-1. At the opening day t = 1, the stock weight wi,t is defined as follows: 
+wi,1 = I = {
+1  for a long position
+−1 for a short position
+0  if the pair is closed
+  
+(A1) 
+At the following days t >1, the stock weights wi,t are calculated as the product of the previous days’ capital 
+investment:  
+Electronic copy available at: https://ssrn.com/abstract=2774063
+
+XI 
+ 
+wt,i = I ∗wt−1,i ∗(1 + rt−1,i) = I ∗(1 + rt−1,i) … (1 + r1,i) = I ∗∏
+(1 + rt−1,i)
+t−1
+t=1
+ 
+(A2) 
+The pairs trader’s payoff of stock i on day t equals the weight (or capital investment in t-1) wi,t multiplied 
+with the stock return ri,t between t-1 and t: 
+Payofft,i = wt,i ∗rt,i 
+(A3) 
+For instance, the stock commitment in stock A in t = t - 1 is $1.25 (long position) and stock A increases 
+from $20 in t = t – 1 to $21 in t = t (5% increase). Hence, the stock commitment in A in t is +$1.25 ∗
+(1 + 0.05) = $1.3125. The payoff is: $1.3125 −$1.25 = $1.25 ∗0.05 = $0.0625.19 
+The daily return of a pair P which includes stocks 𝑖∈𝑃, equals: 
+rP,t =
+∑
+wt,i∗rt,i
+i∈P
+∑
+|wt,i|
+i∈P
+=
+∑
+payofft,i
+i∈P
+∑
+|wt,i|
+i∈P
+ 
+(A4) 
+The daily pair return can be understood as sum of the daily payoffs divided by the total pair capital 
+commitment.20 The daily returns are cumulated to monthly returns afterwards. Following Gatev et al. 
+(2006) and Do and Faff (2010), we report the return on committed capital. The measure scales the 
+portfolios payoff by the number of actively traded pairs.21  
+Six portfolios, each starting in a subsequent month, are traded simultaneously at any time. As stock prices 
+are likely to diverge further from their normalized prices over time, pairs are more likely to open late 
+during the trading period. Therefore, we average the monthly returns of the six simultaneously traded 
+portfolios. Figure A1 illustrates this process. 
+[Insert Figure A1] 
+                                                 
+19 Another example for a short position: The stock commitment in stock B in t = t - 1 is -$2 (short position) and stock 
+B decreases from $40 to $37.6 (6% decrease). Hence, the stock commitment in B in t is: −$2 ∗(1 + (−0.06)) =
+−$1.88. The payoff is: −$1.88 −(−$2) = −$2 ∗−0.06 = $0.12. 
+20 The pair return of our example pair P1, including stock A and B, equals:  r1,t =
+$1.25∗0.05+(−$2∗−0.06)
+|$1.25|+|−$2|
+=
+$0.0625+$0.12
+|$1.25|+|−$2| =
+$0.1812
+$3.25 = $0.0562. 
+21 Inactive pairs are neglected, as they do not require a capital commitment and can hence be invested in a risk-free 
+asset. 
+Electronic copy available at: https://ssrn.com/abstract=2774063
+
+XII 
+ 
+Gatev et al. (2006) interpret the return of pairs trading as payoffs to a proprietary trading desk where 
+different traders manage six pairs trading portfolios, whose identification and trading periods are each 
+staggered by one month. Alternatively, the return can be interpreted as average return of an active pair 
+across all open pairs within the same portfolio and across six portfolios, which trade simultaneously but 
+start in consecutive months. We refer to Gatev et al. (2006) for further details on the return calculation. 
+The calendar time return might considerably differ from the return per trade for three reasons. First, the 
+monthly return reflects the combined effect of trading frequency and return per trade. Second, we scale the 
+monthly return to the number of included active pairs in the portfolio. Third, a trade might be open for 
+several months. Therefore, the pair earns only a fraction of the return per trade within one month. 
+Electronic copy available at: https://ssrn.com/abstract=2774063

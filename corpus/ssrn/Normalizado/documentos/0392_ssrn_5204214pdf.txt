@@ -1,0 +1,1745 @@
+1
+1
+Title 
+2
+Differential Snow Accumulation in Warm Edges Versus Cold Edges of Forest Gaps, and its Potential 
+3
+Implications for Tree Growth in a Sierra Nevada Conifer Forest
+4
+Authors 
+5
+Aidan Manninga 1, Adam Csankb, Scott Allenc, Adrian Harpoldd
+6
+Author Affiliations
+7
+a Graduate Program of Hydrologic Sciences, University of Nevada, Reno, NV, 89557, USA. 
+8
+b Department of Geography, University of Nevada, Reno, NV, 89557, USA. acsank@unr.edu
+9
+c  Department of Natural Resources & Environmental Science, University of Nevada, Reno, NV, 
+10
+89557, USA. scottallen@unr.edu
+11
+d Department of Natural Resources & Environmental Science, University of Nevada, Reno, NV, 
+12
+89557, USA. aharpold@unr.edu
+13
+Correspondence to:
+14
+Aidan Manning (orcid.org/0000-0001-8316-2969), aidan@nmwild.org, (303) 551-5347
+15
+Acknowledgments
+16
+The authors acknowledge and thank the individuals and organizations that created the publicly 
+17
+available datasets used in this work. This work was funded by the National Science Foundation 
+18
+(NSF EAR #2012310) for the Critical Zone Collaborative Research Network Cluster to A. A. Harpold. 
+19
+Aidan Manning was supported by supplemental NSF INTERN funding to NSF EAR #2012310.1
+1  Permanent address for Aidan Manning is Rivers and Waters Program, New Mexico Wilderness Alliance, 
+6000 Uptown Blvd NE #350, Albuquerque, NM, 87110, USA. aidan@nmwild.org
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5204214
+Preprint not peer reviewed
+
+2
+20
+Abstract
+21
+Forest canopy gaps affect the timing and amount of snowmelt, because canopies act as key controls 
+22
+over snowpack dynamics. Overlying canopy can decrease snowpack by intercepting snowfall, but it 
+23
+can also reduce ablation rates via shading. Changes in forest structure and canopy gaps may 
+24
+therefore affect the amount, timing, and duration of snowmelt and potentially forest response to 
+25
+water limitations. We test how the higher energy-input edges of gaps (‘warm edges’) differ from the 
+26
+lower energy-input edges of gaps (‘cool edges’) with respect to snow depth, snowmelt timing, and 
+27
+tree growth in a snow-dominated forest in the Western US. We use multiple dates of LiDAR-based 
+28
+measurement to assess springtime snow depths in warm and cool gap edges in Sagehen Creek 
+29
+Basin, CA. Then we use paired tree sampling and ring width chronologies to ascertain moisture 
+30
+sensitivity of trees adjacent to warm and cool edges. Pre-ablation snow depths in cool gap edges 
+31
+exceeded those in warm gap edges by 9% to 18%, with effect size depending on elevation and 
+32
+aspect. Snowpack also persisted longer in cool edges than in warm edges. Growth variations in 
+33
+warm-edge-adjacent trees were more correlated with interannual variations in snow depth those of 
+34
+cool edge trees, although neither had strong correlations. These findings suggest that forest 
+35
+structures that maximize cool edge area may benefit snow depth and persistence, and may lead to 
+36
+cool-edge trees being less sensitive to interannual hydroclimatic variability than warm edge trees, 
+37
+despite this effect being small relative to other controls over growth.  
+38
+Key Words
+39
+Forest-snow interactions, canopy gaps, remote sensing, tree rings
+40
+Highlights
+41
+
+Spring snow depth was greater in shaded cool gap edges versus sunny warm gap edges.
+42
+
+Snow depth in cool gap edges was depleted later than snow depth in warm gap edges.
+43
+
+Differences in snow depth between edge types varied across elevations and aspects.
+44
+
+Overall, sampled trees’ growth was minimally sensitive to annual snowpack.
+45
+
+Annual tree growth was slightly more sensitive to snowpack on warm vs cool edges.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5204214
+Preprint not peer reviewed
+
+3
+46
+1. Introduction
+47
+Forest canopies are primary controls on snowpack mass and energy dynamics (Varhola et al. 2010), 
+48
+and consequently affecting the timing and magnitude of soil water recharge and stream discharge 
+49
+(Barnett et al. 2005; Goeking and Tarboton 2020). Understanding those controls is important 
+50
+because forests, mountainous terrain, and snow-dominated climates are often collocated in the 
+51
+Western US and those regions tend to disproportionately supply the region’s drinking water (Li et 
+52
+al. 2017; Liu et al. 2021). In those regions, snowmelt is also a key water resource to trees (Trujillo et 
+53
+al. 2012; Tague and Peng 2013; Knowles et al. 2018; Martin et al. 2018). Much research has focused 
+54
+on understanding how forest disturbances – natural, or induced for management objectives – and 
+55
+their effects on stand and canopy structure can directly alter water use by forests (Bréda et al. 
+56
+1995). However, indirect effects of forest disturbances can also influence snowpack dynamics and 
+57
+thus also the provisioning of water to trees and streams (Biederman et al. 2014; Frank et al. 2019; 
+58
+Goeking and Tarboton 2020; Knighton et al. 2020). Small-scale forest-disturbance effects on 
+59
+snowpack dynamics are particularly underexplored, despite management activities often 
+60
+disturbing canopies at 1-to-10-m2 scales, such as occurs with creating canopy gaps. This study 
+61
+investigates the effects of canopy gaps on micro-scale snowpack variations to better understand 
+62
+controls over microenvironments and water resources in forests.  
+63
+Canopy structures are changing in the Western US due to forest disturbances (Weed et al. 2013; 
+64
+Allen et al. 2015; Westerling 2016; Young et al. 2017a) and silvicultural treatments (Churchill et al. 
+65
+2013; Prichard et al. 2021; Stephens et al. 2021). Anthropogenetic impacts, especially warming 
+66
+temperatures and aridification, are driving larger and more severe natural disturbances including 
+67
+fire (Pechony and Shindell 2010; Westerling 2016), insect outbreaks (Weed et al. 2013; Hart et al. 
+68
+2014; Kolb et al. 2016), and drought mortality (Allen et al. 2015; Millar and Stephenson 2015; 
+69
+Young et al. 2017b). Severe disturbances often replace stands, especially when forests are dense 
+70
+and homogeneous due to historical forest management practices (Hagmann et al. 2021; Restaino et 
+71
+al. 2019; Young et al. 2017). However, moderate disturbances can also create patchy mosaics with 
+72
+gaps, which can enhance resilience by facilitating increased species and age diversity (Lydersen et 
+73
+al. 2013; Curtis et al. 2017; Stephens et al. 2021). Gap creation is also a management tool to 
+74
+artificially gain those desired effects and others, such as fire-risk mitigation (Prichard et al. 2021) 
+75
+and wildlife habitat (North et al. 2009; Przepióra et al. 2020). The effects of forest gaps are often 
+76
+discussed in terms of dichotomous conditions represented by ‘in-gap’ versus ‘under-canopy’ 
+77
+positions (Muscolo et al. 2014). However, within-gap heterogeneity is also noteworthy because 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5204214
+Preprint not peer reviewed
+
+4
+78
+gaps foster unique microclimates in zones of high or low net radiation that occur on gap edges 
+79
+(Lawler and Link 2011; De Frenne et al. 2021; Hoffrén et al. 2022).
+80
+The effects of gaps and heterogeneity within gaps on solar radiation can significantly affect 
+81
+snowpack dynamics. Cool gap edges (i.e., north facing in the northern hemisphere) are more shaded 
+82
+and receive less longwave radiation from adjacent trees than warm gap edges (i.e., south facing in 
+83
+the northern hemisphere; (Lawler and Link 2011; Musselman et al. 2015; Musselman and Pomeroy 
+84
+2017), leading to cool gap edges showing slower snowpack ablation (the combination of melt and 
+85
+sublimation) (Currier and Lundquist 2018; Lawler and Link 2011; Mazzotti et al. 2020; Moeser et 
+86
+al. 2020). Snow scour and deposition by wind can also create substantial differences in snow depth 
+87
+between leeward and windward gap edges, though wind-related snow depth heterogeneity can 
+88
+occur on scales that range from 0.5 to 12 times the length of North-South radiation effects (Brandle 
+89
+and Finch 1991; Hiemstra et al. 2006; Currier and Lundquist 2018). Recent observational and 
+90
+modeling studies suggest the potential for consistent spatial patterns in snowpack across forest 
+91
+gaps in temperate conifer forests (Currier and Lundquist 2018; Moeser et al. 2020). Despite this 
+92
+progress in process-level understanding of gap effects on snow, the high spatial resolution required 
+93
+to measure within-gap variations in snow depth (Broxton et al. 2021) typically involves sacrificing 
+94
+temporal resolution (Harpold et al. 2014), and thus the temporal evolution of within-gap snow 
+95
+heterogeneity is not commonly systematically studied or censused across whole watersheds. 
+96
+Given the potential influences of gaps position on snow depths, we posit that those depth 
+97
+differences would likely involve longer persistence of snow on cool edges and thus snowmelt 
+98
+recharging soil moisture later into the growing season in cool edges. Because snowmelt is a primary 
+99
+source of water in these forests, shallower snow and earlier snowmelt can imply decreased 
+100
+moisture availability to trees in mid- and late- growing season (Harpold, 2016). That reduced 
+101
+availability can translate to water limitations and reduced functional capacity of  trees (Cooper et al. 
+102
+2020), which in unsurprising because tree productivity being water-limited is common throughout 
+103
+the western US (Restaino et al. 2016). The prevalence of water scarcity limiting tree growth is 
+104
+especially likely in the Central Sierra Nevada where little rain falls in summer and trees presumably 
+105
+(Bales et al. 2011) rely on storages that recharge from spring snowmelt. Thus, deeper and late106
+melting snow on cool gap edges is expected to create more favorable growing conditions and less 
+107
+drought sensitivity compared to the micro-environment experienced by trees on warm edges. 
+108
+Tree rings reflecting inter-annual growth variations are a tool to test sensitivity to variations in 
+109
+moisture inputs. Dendroclimatology largely relies on moisture scarcity limiting growth, yielding 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5204214
+Preprint not peer reviewed
+
+5
+110
+positive correlations and predictive relationships between ring widths and precipitation or other 
+111
+proxies for moisture availability (Fritts 2001). Various pieces of evidence in disturbed systems 
+112
+suggest that trees with ring widths that more strongly correlate with drought proxies (like 
+113
+precipitation, growing season temperatures, and moisture deficit) are more vulnerable to drought 
+114
+(Ogle et al. 2000; Csank et al. 2016; Keen et al. 2022). For example, pinyon pines in Northern 
+115
+Arizona killed by drought showed ring-width variations that more strongly covaried with Palmer 
+116
+Drought Severity Index (PDSI) than did those of pinyons that survived the drought (Ogle et al. 
+117
+2000). Or for another example, trees killed by bark beetle in South-Central Alaska showed ring 
+118
+widths to be more sensitive to variations in climate than did those that survived and that 
+119
+vulnerability to beetles was associated with drought stress (Csank et al. 2016). This prior research 
+120
+suggests that warm-edge trees may show stronger correlations between ring widths and drought 
+121
+proxies (such as PDSI or snow depths) than do trees adjacent to cool edges if snow persists longer 
+122
+in cool edges and thereby mitigates water deficits experienced by trees for more of the growing 
+123
+season.  
+124
+This study quantifies the effect of gap edges on snow depth during the ablation season and explores 
+125
+how this effect may feedback into tree growth, in a small, snow dominated watershed in the Central 
+126
+Sierra Nevada. We use seasonal and annual tree ring widths and unique, high resolution, 
+127
+multitemporal snow observations to test the following hypotheses:
+128
+1.
+Snow is consistently deeper on cool edges than warm edges across varied elevation and 
+129
+aspect. 
+130
+2.
+Snow depth differences across gaps evolve over the ablation season with timing that is 
+131
+dependent on elevation and aspect.
+132
+3.
+Trees on cool gap edges are less sensitive to annual variations in moisture availability than 
+133
+warm edge trees. 
+134
+2. Methods
+135
+2.1 Study Site
+136
+Our study domain is an approximately 71 km2 area centered on Sagehen Creek Basin (SCB), a small 
+137
+headwaters catchment in the Central Sierra Nevada mountains, about 12 km north of Truckee, CA. 
+138
+Elevations in the study domain range from 1900 to 2710 meters above sea level (masl), and the 
+139
+climate is characterized by cool, snowy winters and warm, dry summers. The study domain 
+140
+includes two Snow Telemetry (SNOTEL) sites: site 539 at 2127 masl, and site 541 at 2541 masl. 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5204214
+Preprint not peer reviewed
+
+6
+141
+Mean annual temperature and precipitation (1991-2020) are 5.4°C and 798 mm respectively at the 
+142
+lower elevation SNOTEL site and 5.0°C and 1227 mm at the higher elevation site. A majority of 
+143
+precipitation falls as snow in SCB, and at the higher elevation SNOTEL site the mean annual peak 
+144
+snow water equivalent (SWE) is 1186 mm or 97% of mean annual precipitation. 
+145
+SCB and surrounding areas are dominated by mixed conifer forest composed of white fir (Abies 
+146
+concolor) and lodgepole and Jeffrey pine (Pinus contorta and P. jeffryi) at lower elevations, and red 
+147
+fir (A. magnifica), lodgepole pine, and smaller numbers of mountain hemlock (Tsuga mertensiana), 
+148
+white pine (P. monticola), and incense cedar (Calocedrus decurrens) at higher elevations. Aspen 
+149
+(Populus tremuloides) forests and wet and dry meadow ecosystem types are also present. In much 
+150
+of the study domain, widespread logging in the late 1800s followed by fire exclusion through the 
+151
+1900s resulted in dense forests with limited structural heterogeneity. In the forest types present, 
+152
+these are traits associated with larger, more intense fires, suppressed ecosystem function, and 
+153
+lower resilience to future disturbance (Stevens-Rumann et al. 2013; Charnley et al. 2017; Prichard 
+154
+et al. 2021; Stephens et al. 2021). In recent decades, the forest management in the Sagehen 
+155
+Experimental Forest, including the Sagehen Fuels Reduction Project, have aimed to enhance forest 
+156
+structural heterogeneity within SCB using prescribed burns and thinning (USDA Forest Service 
+157
+2013). 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5204214
+Preprint not peer reviewed
+
+7
+158
+159
+Fig 1 Location (top left) and map (top right) of the study area. Red line indicates the study area boundary, green points 
+160
+show locations of natural forest gaps (with number IDs) used for tree coring, yellow points show locations of two 
+161
+examples of recent human-made gaps and blue stars indicates the locations of SNOTEL sites. Bottom: examples of gaps 
+162
+created since 2014 as part of forest management in SCB (1 and 2), and sampled established gaps (6 and 13) that have 
+163
+existed since 1998 or earlier. Orange points shows sampled tree locations in gaps 6 and 13 
+164
+2.2 Characterizing Forest Structure
+165
+We characterized forest structure metrics and features using LiDAR data collected by the National 
+166
+Center for Airborne Laser Mapping (NCALM) in 2014 (Guo 2014). LiDAR is an active remote 
+167
+sensing technique in which light pulses are emitted from an aircraft. Return time and intensity of 
+168
+each pulse measures distance to the surface of the ground, canopy, snow, or other object between 
+169
+the aircraft and the ground. Canopy height was determined at 1 meter (1-m) resolution for the 
+170
+study domain using LiDAR-derived models of ground elevation and upper canopy surface (Piske et 
+171
+al. 2022).
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5204214
+Preprint not peer reviewed
+
+8
+172
+Our analysis delimits the study domain into areas of canopy and gaps at a 1-m resolution. Pixels 
+173
+containing canopy heights ≥3 m above the ground are classified as canopy, and all other pixels are 
+174
+classified as gaps, excluding very small canopy openings of <9 m2 total area and a 1-m buffer 
+175
+around canopy areas to minimize uncertainty associated with low canopy fringe density. We use a 3 
+176
+m minimum canopy height because shorter vegetation is often buried by snow in winter and other 
+177
+work has used this cutoff to effectively classify the effects of canopy on snow in SCB (Piske et al. 
+178
+2022). In addition, non-canopy pixels within 2 m of the canopy (including gap and buffer pixels) 
+179
+were classified as “fringe” pixels, which represent outlying branches and lower portions of tree 
+180
+canopies that most directly influence snow energy balance through longwave emission (Musselman 
+181
+and Pomeroy 2017).
+182
+Within gaps, we define edges as areas within De meters from the canopy edge, as shown in Eq 1.
+183
+Eq 1
+De = htm / tan (Angs)
+184
+Where htm is a local mean (moving 10 m window) tree height and Angs is the daytime mean sun 
+185
+elevation on the vernal equinox. We apply a rayshading function (Morgan-Wall 2021) to a digital 
+186
+surface model (DSM, includes terrain and canopy) of surface heights in the study domain in hourly 
+187
+timesteps for the date of the vernal equinox. For each timestep, rayshading returns the intensity of 
+188
+sunlight “proportional to the dot product of the [sun] direction and the surface normal at that 
+189
+point”, and does not account for diffuse shortwave radiation (Morgan-Wall 2021). Sunlight 
+190
+intensities are then averaged across all daytime timesteps. The daily mean intensity of sunlight for a 
+191
+given 1-m pixel on the equinox is defined by the value Lumf. To define portions of edges that are 
+192
+generally sunny or shady throughout the day, we create a cutoff value for Lumf defined as Lumct = 
+193
+0.35. We determined the value of Lumct such that the exterior boundaries of gaps in flat areas were 
+194
+approximately equally classified as sunny or shady. Critically, the optimal value of Lumct will vary 
+195
+strongly by location, particularly by latitude. Additionally, if these methods are used to explore gap 
+196
+edge effects on snow for locations with very late or early snowmelt, it may be more effective to use 
+197
+an earlier or later date to establish Angs and Lumf.  
+198
+Our methods result in edge widths of approximately 1.6 times canopy heights. Currier and 
+199
+Lundquist (2018) used a range of values to define edge widths (0.5, 1, 2, and 3 times canopy height) 
+200
+to explore edge effects on snow throughout the Western US, and found that in Tuolumne, CA edge 
+201
+widths of 2 times canopy height were most useful for identifying differences in snow depths 
+202
+between north facing and south facing gap edges. However, edges widths of 0.5 to 1 times canopy 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5204214
+Preprint not peer reviewed
+
+9
+203
+height were most effective at other sites more distant from our own in WA, CO, and NM (Currier 
+204
+and Lundquist 2018). 
+205
+Cool edges were defined as shaded edge pixels (Lumf ≤ Lumct), and warm edges were defined as 
+206
+sunny edge pixels (Lumf > Lumct) within 5 m of sunny canopy fringes (also Lumf > Lumct). Because 
+207
+gap areas far from continuous canopy are usually entirely sunny, proximity to sunny fringes is 
+208
+necessary to differentiate the energy environments of warm edges versus open gap areas.
+209
+2.3 Classifying Terrain 
+210
+To assess how the gap effects vary across the diverse terrain of the study domain, tree and snow 
+211
+data are grouped into terrain types. We use Slope-Northness Index (SNI = cos(aspect) * slope) as a 
+212
+simple representation of the effects of topography on energy loading, reflecting the degree to which 
+213
+something is steep and north facing, ranging from -1 (vertical south facing) to 1 (vertical north 
+214
+facing). The SNI for north facing and south facing 45-degree slopes are 0.785 and -0.785 
+215
+respectively, and flat surfaces and west or east facing slopes have an SNI of 0. SNI and elevation 
+216
+variables were derived from a 1-m digital elevation model (DEM) from 2014 snow-off LiDAR data 
+217
+(Guo 2014; Hijmans et al. 2023). 1-m resolution SNI and elevation were aggregated to 100-m 
+218
+resolution (100-m by 100-m grid cells), and 100-m data were scaled and centered before being 
+219
+divided into four categories using a K means clustering algorithm. The number of clusters (4) was 
+220
+chosen using the common “elbow method”, which resulted in clusters that generally represent high 
+221
+elevation north facing (high NF), high elevation south facing (high SF), low elevation north facing 
+222
+(low NF), and low elevation south facing (low SF) terrain types. Other numbers of clusters were 
+223
+also tested but provided less common-sense organization of terrain types.  
+224
+2.4 Measuring Snow Depth
+225
+Snow depth for the study domain was derived from LiDAR data for four dates spanning 2008-2016. 
+226
+Snow surface elevations from snow-on LiDAR flights (occurring on February 10th 2008, March 26th 
+227
+2016, April 17th 2016, and May 18th 2016) were differenced from ground elevations from snow-free 
+228
+LiDAR flights (occurring in summer 2014) to determine the height of the snow surface above the 
+229
+ground. Data from flights in 2008 and 2014 were collected by NCALM (Dozier and Painter 2004; 
+230
+Huntington 2008; Guo 2014), and 2016 flight data were collected by the Airborne Snow 
+231
+Observatory. For each flight, point clouds were vertically cross referenced and filtered for 
+232
+vegetation interference (see Piske et al. 2022 for details on LiDAR data processing). 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5204214
+Preprint not peer reviewed
+
+10
+233
+Snow depth differences between edge types and among terrain types are summarized at a 100-m 
+234
+resolution. For the whole study domain, we create a 100-m raster of the across-gap snow depth 
+235
+difference by differencing the mean of 1-m resolution snow depth within warm edges from the 
+236
+mean of cool edge snow depth. This is repeated for all snow depth measurement dates. For each 
+237
+100-m grid cell, we then determine the date and value of the maximum observed across-gap snow 
+238
+depth difference, and each grid cell is assigned to a terrain type, as defined in section 2.3.
+239
+2.4 Tree Ring Sampling and Measurement
+240
+Tree ring data were obtained using a paired tree sampling design, with each pair containing one 
+241
+tree adjacent to a cool gap edge and one tree adjacent to a warm gap edge. Paired trees were within 
+242
+30-110 m of each other, were the same species, had similar trunk diameter at breast height (no 
+243
+greater than 20% difference in DBH), and had similar levels of competition. Competition was 
+244
+categorically estimated (low, medium, and high) based on the cumulative DBH of living tree trunks 
+245
+within 7 m of the sampled tree’s trunk. Cores were collected from 37 pairs of trees including 9 pairs 
+246
+of lodgepole pines, 9 pairs of Jeffrey pines, and 19 pairs of fir trees (mixed red and white firs).
+247
+Whenever possible, cores were collected from the gap-facing side of each tree, resulting in coring 
+248
+aspects ranging from NE-NW for cool side trees and SE-SW for warm side trees. Cores were 
+249
+collected using a 5 mm diameter increment borer, then mounted and sanded until cell walls were 
+250
+clearly visible. The width of whole rings (WR) and annual earlywood (EW) and latewood (LW) were 
+251
+measured using MeasureJ2X software (Voortech Consulting). Rings were cross dated visually 
+252
+(Stokes and Smiley 1968), then confirmed using the dplR package for R (Bunn 2008). For each core, 
+253
+WR, EW, and LW width were detrended and normalized to width indices using “Friedman’s Super 
+254
+Smoother”, a high frequency variable span smoother (Friedman 1984) in the dplR package to 
+255
+eliminate the biological growth signal in ring width and highlight high frequency (annual) variation 
+256
+in moisture availability (Fritts 2001; Bunn 2008).
+257
+We measure correlation between ring width indices and climate variables for the years 2000 – 
+258
+2020, because the presence of gaps cannot be confirmed for earlier years. The existence of gaps 
+259
+selected for tree sampling are confirmed using 2007 LiDAR data and 1998 – 1999 satellite imagery. 
+260
+Additionally, 2020 – 2022 were dry years with some drought mortality in SCB. Several of our 
+261
+sampled trees showed signs of growth restriction in 2021 followed by zero growth or death in 
+262
+2022, so rings from 2021 and 2022 are not used for any trees in our analysis.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5204214
+Preprint not peer reviewed
+
+11
+263
+2.6 Moisture Availability Data
+264
+Annual variation in moisture availability is represented in our analysis by two primary variables, 
+265
+snow water equivalent on April 1st (1 Apr SWE) and climatic water deficit (CWD), and two 
+266
+secondary variables, annual precipitation (P) and annual mean of daily maximum temperatures 
+267
+(Tmax). 1 Apr SWE is an operationally important value for water management (Lynn et al. 2020). It 
+268
+is generally representative of annual peak SWE (Musselman et al. 2021) and a useful proxy for 
+269
+gauging the quantity and timing of moisture influx from snowmelt (Harpold et al. 2017; Mote et al. 
+270
+2018; Siirila-Woodburn et al. 2021). P and Tmax are less specific indicators of moisture availability, 
+271
+but are regularly used and measured variables that provide important climate context. Annual P, 
+272
+Tmax, and 1 Apr SWE data are from the Independence Camp snow telemetry site (SNOTEL 539), 
+273
+which sits in the northern portion of our study area at 2128 masl, between the mean (2163 masl) 
+274
+and median (2010 masl) elevations of sampled trees. 
+275
+CWD is calculated as potential evapotranspiration minus actual evapotranspiration, so greater 
+276
+values of CWD indicate lower moisture availability relative to evaporative demand. It is particularly 
+277
+effective for predicting forest moisture stress and mortality related to water limitation (Bigler et al. 
+278
+2007; Lutz et al. 2010; Restaino et al. 2016). CWD data were sampled at the location of SNOTEL 539 
+279
+from the gridded dataset TerraClimate (Abatzoglou et al. 2018). Monthly CWD values are summed 
+280
+for each water year. For the location and years observed, CWD is always zero November – April, so 
+281
+CWD effectively captures moisture availability during the summer growing season, while 1 Apr 
+282
+SWE represents moisture supplied by winter and spring snowpack dynamics.
+283
+2.7 Analysis of Gap Effects
+284
+We use two approaches to estimate gap edge effect on tree ring width response to variations in 
+285
+moisture availability: a dendrochronology approach, and a paired tree approach. For the 
+286
+dendrochronology approach, we separated all sampled trees by warm or cool edge, then created 
+287
+WR, EW, and LW width index chronologies. Initial mean chronologies were created by averaging 
+288
+ring width indices for each year across all trees (separately for each edge type). We then find the 
+289
+correlation of each tree’s annual ring width indices to the mean chronology and removing the least 
+290
+correlated trees to a threshold of minimum r = 0.7. Ring width indices were averaged again cross 
+291
+remaining trees to create a final mean chronology. We confirmed that sample size was sufficient for 
+292
+each chronology for the express population signal (EPS) to exceed 0.85 (Fritts 2001). For each ring 
+293
+width index and climate variable, we found the Pearson’s correlation coefficient (r) for the final 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5204214
+Preprint not peer reviewed
+
+12
+294
+mean chronology ring width index and the climate variable using a linear regression model, from 
+295
+which slope, p value, and correlation coefficient standard error (SE) were also derived.
+296
+In the paired tree approach, we use r to represent response of each individual tree to variations in 
+297
+moisture availability. For the years 2000 - 2020 in each tree, we find the correlation between each 
+298
+ring width index and climate variable. Because trees in SCB are generally not at the dry extreme of 
+299
+their range we do not expect them to be strongly moisture limited (Fritts 2001). Therefore, we do 
+300
+not use a significance cutoff for these correlation values. The SE and slope for each correlation were 
+301
+also recorded. We test whether warm edge trees have higher correlation of ring width indices to 
+302
+primary climate variables (1 Apr SWE and CWD) than cool edge trees using pairwise single-tail t303
+tests. 
+304
+3. Results
+305
+3.1 Gap Effects on Snow Depth
+306
+Despite considerable spatial and temporal variation, snow depth was greater on cool edges than 
+307
+warm edges in 77% of 100m grid cells during the 2016 ablation period (March – May), and 97% of 
+308
+grid cells saw deeper snow in cool edges versus warm edges for at least one measurement date in 
+309
+2016 (Fig. 2a). For all terrain types, differences between mean snow depth in cool and warm edges 
+310
+were lowest in February, before the ablation period (Fig. 2b). In more steeply south facing and low 
+311
+elevation areas, differences between snow depth in cool and warm edges peaked earlier (March or 
+312
+April) than in more steeply north facing and high elevation areas (April or May) (Fig. 2b). 
+313
+Relative to pre-ablation (February 2008) snow depth, the maximum (among dates) differences 
+314
+between snow depth on warm versus cool edges were smallest for low elevation south facing grid 
+315
+cells,  (mean = 9.0%, sd = 10%), intermediate for low elevation north facing (mean = 11%, sd = 
+316
+12%) and high elevation south facing grid cells (mean = 18%, sd = 23%), and greatest for high 
+317
+elevation north facing cells (mean = 18%, sd = 12%) (Fig. 2a). 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5204214
+Preprint not peer reviewed
+
+13
+318
+319
+Fig 2 a) Distribution of maximum (among measurement dates) difference in snow depth (cool - warm edge 
+320
+difference as a percent of pre-ablation February 2008 snow depths) in areas categorized as high elevation 
+321
+north facing (High_NF), high elevation south facing (High_SF), low elevation north facing (Low_NF), and low 
+322
+elevation south facing (Low_SF) terrain types. Black diamonds show mean values and letters indicate 
+323
+significant differences (p < 0.01). b) Timeseries showing the median of relative snow depth differences for 
+324
+each terrain type over 4 LiDAR flight dates. Error bars show standard error
+325
+Snow depth depleted more rapidly in warm edges than cool edges. On the April and May 2016 
+326
+measurement dates, mean snow depths in warm edges were less than 1 cm in 17% and 57% 
+327
+(respectively) of the study area (Fig. 3). For the same dates, mean snow depth in cool edge areas 
+328
+were less than 1 cm in 7% and 36% of the study area (Fig. 3). This pattern was insensitive to 
+329
+variation in cutoff values between 0.1 and 10 cm. Standard errors for all values displayed were 
+330
+<2%.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5204214
+Preprint not peer reviewed
+
+14
+331
+332
+Fig 3 Percent of SCB in which mean snow depths in warm (orange) or cool (blue) areas were less than 1 cm 
+333
+on each snow depth measurement date. Warm edge and cool edge snow depths are separately averaged in 
+334
+100 m by 100 m grid cells, such that each cell has a value for warm and cool edge snow depth
+335
+3.2 Gap Effects on Tree Response to Climate
+336
+Among all paired sample trees in SCB, rWR and rEW to 1 Apr SWE were highly variable and of mixed 
+337
+significance (Table 1, Supp. Fig. 2), but greater overall for warm edge trees (rWR = 0.26,  rEW = 0.20) 
+338
+than cool edge trees (rWR = 0.15,  rEW = 0.10) in a pairwise comparison (Table 1). Correlations to 
+339
+CWD across all ring width indices were weaker, but had steeper mean slopes than correlations to 1 
+340
+Apr SWE (Table 1). 
+341
+Table 1 Statistics for the correlations of all sampled trees to 1 Apr SWE and CWD. Slopes are for linear 
+342
+regression model from which correlations are calculated, and they are in units ring width index (0 to 1, 
+343
+unitless) per meter. T- and p-values are for single-tailed pairwise t-tests for higher (1 Apr SWE) or lower 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5204214
+Preprint not peer reviewed
+
+15
+344
+(CWD) correlations in warm vs cool edge trees. Bolded r values indicate significant difference between warm 
+345
+and cool edges, as indicated by bolded p-values
+WR
+EW
+LW
+Edge
+Cool
+Warm
+Cool
+Warm
+Cool
+Warm
+Mean of 
+Slopes
+0.11
+0.18
+0.07
+0.16
+0.29
+0.27
+SE for Mean of 
+Slopes
+0.03
+0.03
+0.03
+0.03
+0.06
+0.05
+Mean of r 
+values
+0.15
+0.26
+0.10
+0.20
+0.24
+0.26
+Mean of r SE
+0.17
+0.17
+0.18
+0.18
+0.28
+0.28
+Warm r > Cool 
+r t-value
+2.04
+1.77
+0.55
+1 Apr 
+SWE
+Warm r > Cool 
+r p-value
+0.02
+0.04
+0.29
+Mean of Slopes
+-0.30
+-0.48
+-0.10
+-0.40
+-0.80
+-0.71
+SE for Mean of 
+Slopes
+0.10
+0.09
+0.08
+0.10
+0.20
+0.15
+Mean of r 
+values
+-0.10
+-0.16
+-0.04
+-0.13
+-0.18
+-0.19
+Mean of r SE
+0.17
+0.17
+0.18
+0.18
+0.29
+0.29
+Warm r > Cool 
+r t-value
+1.32
+1.42
+0.75
+CWD
+Warm r > Cool 
+r p-value
+0.09
+0.08
+0.23
+346
+347
+In addition to the analysis across all paired sample trees, we used a subset of trees within each edge 
+348
+type to build chronologies of ring width indices. Estimated correlations of ring width chronologies 
+349
+with climate variables were of mixed significance (p < 0.1) for both cool and warm edge 
+350
+chronologies (Fig. 4).  In the warm-edge chronology, correlations of whole ring width index to 1 Apr 
+351
+SWE (rWR = 0.45, SE = 0.12, p = 0.04) and latewood width index to 1 Apr SWE (rLW = 0.56, SE = 0.18, 
+352
+p = 0.008) and P (rLW = 0.44, SE = 0.20, p = 0.04) were positive (Fig. 4). Warm edge rLW to Tmax was 
+353
+negative (rLW = -0.44, SE = 0.20, p = 0.05). In the cool-edge chronology, latewood width index was 
+354
+positively correlated with 1 Apr SWE (rLW = 0.57, SE = 0.19, p = 0.007) and P (rLW = 0.59, SE = 0.19, p 
+355
+= 0.004), and negatively correlated with Tmax (rLW = -0.40, SE = 0.22, p = 0.07). Though statistical 
+356
+significance of correlations were mixed, and differences between warm edges and cool edges were 
+357
+non-significant (p > 0.1) for any single correlation comparison (Fig. 4), RWR and REW for 1 Apr SWE 
+358
+and P were generally greater for the warm edge chronology than the cool edge chronology, with the 
+359
+inverse response to CWD and Tmax. 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5204214
+Preprint not peer reviewed
+
+16
+360
+361
+Fig 4 Correlation coefficients of a) whole ring, b) earlywood, and c) latewood chronologies to annual climate 
+362
+observations. Error bars show the 90% confidence interval on each correlation coefficient. Where 
+363
+correlations are significant (p < 0.1), numbers indicate the slope of the relationship in units of ring width 
+364
+index (0 to 1, unitless) per meter for 1AprSWE and P, or per degrees C for Tmax. CWD is in units of meters
+365
+4. Discussion
+366
+In SCB, gaps in forest canopy create cool and warm edge environments that influence snowpack 
+367
+throughout the snow ablation period. As hypothesized, we found that snow was consistently deeper 
+368
+on cool edges versus warm edges of gaps during the snow ablation period in March-May 2016 (Fig. 
+369
+2). At their seasonal maximum, snow depth differences across gaps ranged from 9% of pre-ablation 
+370
+depths on low steeply south facing slopes to 18% of pre-ablation depths on high steeply north 
+371
+facing slopes. Snow depth differences and absolute snow depths were greatest at high elevations 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5204214
+Preprint not peer reviewed
+
+17
+372
+and on steeply north facing slopes, which is consistent with standing knowledge on snow 
+373
+distributions across terrain (Elder et al. 1991; Tennant et al. 2017). 
+374
+In February, before the onset of widespread ablation, differences between cool and warm edge 
+375
+snow depth varied relatively evenly about 0. This is as expected because excluding wind effects, 
+376
+snow accumulation is largely even across gaps because the largest effect on snow accumulation at a 
+377
+sub-100 m scale is canopy interception (Gray and McKay 1981; Hedstrom and Pomeroy 1998; 
+378
+Pomeroy et al. 2002; Varhola et al. 2010). After ablation onset in March, differences in snow depth 
+379
+across gaps increased, consistent with evidence that snow on warm gap edges melts and sublimates 
+380
+faster than snow on cool gap edges (Broxton et al. 2015; Mazzotti et al. 2020; Musselman and 
+381
+Pomeroy 2017). Snow depth differences then decreased as snow ablation progressed and snow 
+382
+depth approached zero, as seen in low elevation areas for the latest (May 18th) measurement date 
+383
+(Fig. 2b). Snow depth differences in higher or more north facing terrain types peaked later than in 
+384
+lower or more south facing terrain types (Fig. 2b). Throughout the study area, snow ablated more 
+385
+rapidly in warm edges than cool edges. By May 2016, snow depths were depleted to less than 1 cm 
+386
+in 57% of warm edges, but only 36% of cool edges in the study area (Fig. 3). Reduced snow 
+387
+persistence and higher ablation rates are likely to influence magnitude and timing of streamflow 
+388
+(Clow 2010), soil moisture (Harpold et al. 2015), and growing season (Knowles et al. 2018) in the 
+389
+Western US. 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5204214
+Preprint not peer reviewed
+
+18
+390
+391
+Fig 5 Top) Fractional cover by cool edge as a function of mean gap radius in 100-m grid cells (points) in SCB. 
+392
+Letters (a) and (b) approximate the radii of example gaps illustrated in bottom panel. Bottom) In gaps with 
+393
+small radii relative to tree height (a) the fraction of area covered by cool edges (blue striped bars) is high and 
+394
+fractional cover by warm edges (orange striped bar) and open areas is low, because tree shadow length 
+395
+exceeds gap diameter. South facing gap edges in these small gaps cannot be defined as warm, as edges and 
+396
+adjacent canopy are shaded, reducing shortwave (yellow arrows) and longwave (red arrows) radiation; 
+397
+however, trees themselves on south-facing gap edges may still receive higher energy loads than those on 
+398
+north-facing gap edges. In gaps with large radii relative to canopy height (b), shadows cast by trees on the 
+399
+south side of gaps do not reach the opposing edges. In these gaps, south facing warm edges receive more 
+400
+shortwave radiation than cool edge and under-canopy areas, and more longwave radiation than open areas. 
+401
+No snow is shown under the forests because greater interception tends to result in below-canopy snowpacks 
+402
+having less depth and disappearing before the in-gap snow. 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5204214
+Preprint not peer reviewed
+
+19
+403
+Our finding of deeper, more persistent snow on cool gaps edges versus warm gap edges supports 
+404
+model- and observation-based studies showing decreasing snow depth (Mazzotti et al. 2019; 
+405
+Moeser et al. 2015) and snow ablation rates (Musselman et al. 2015; Musselman and Pomeroy 
+406
+2017) as gap size increases. Under our definition, larger gaps have smaller fractional coverage by 
+407
+cool edges relative to warm edges (Fig. 5). Additionally, the patterns of snow depth we observe on 
+408
+warm and cool edges are consistent in direction, but smaller in magnitude than those of Currier and 
+409
+Lundquist (2018), who found 11-38% differences in snow depths for sites in throughout the 
+410
+Western US. We define cool and warm edge environments differently than Currier and Lundquist 
+411
+(2018), who assign edge types exclusively based on pixel distance from the nearest north facing or 
+412
+south facing canopy surface, with experimental cutoffs at 0.5, 1, 2, and 3 times local canopy height. 
+413
+Our method assigns edge type to a given pixel based on its distance to nearest canopy, mean direct 
+414
+sunlight intensity, and distance from more intensely sunlit canopy fringes. While this approach 
+415
+aims to better acknowledge the radiative factors that drive snow ablation (Musselman et al. 2015; 
+416
+Musselman and Pomeroy 2017) it relies on somewhat arbitrary cutoff values, including the 
+417
+reference date for illumination and fraction of hours illuminated. Future comparison of 
+418
+methodologies for defining edge types would benefit any management efforts to optimize snow419
+related benefits of forest treatments, particularly those that create or expand forest gaps. 
+420
+We found that forest gaps had smaller, less consistent effects on tree response to variations in 
+421
+annual climate compared to their effects on snow depth. In general, whole ring and earlywood 
+422
+width index chronologies from warm edge trees was more positively correlated with 1 Apr SWE 
+423
+and precipitation, and more negatively correlated with CWD and maximum temperatures than 
+424
+those of cool edge trees (Fig. 3). If these correlations are representative of true relationships 
+425
+between climate and growth, they would indicate that warm edge trees were more sensitive to 
+426
+variations in moisture than cool edge trees. However, most of these correlations lacked statistical 
+427
+significance at the 90% confidence level. Similarly, analysis of all sampled warm-cool tree pairs 
+428
+suggests that on average, warm edge trees are more positively correlated with 1 Apr SWE than cool 
+429
+edge trees. However, standard errors of correlation coefficients were high, limiting our confidence 
+430
+in the size of the observed gap effect. 
+431
+With a few exceptions, even warm edge trees sampled in SCB displayed relatively low moisture 
+432
+sensitivities compared to highly drought sensitive trees observed throughout the Western US 
+433
+(Williams et al. 2013). This is somewhat expected because SCB is not especially arid relative to the 
+434
+typical ranges of our sampled tree species, and our tree sampling design prioritized intra-pair 
+435
+consistency and inter-pair diversity over indicators of drought stress. In identifying gaps for 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5204214
+Preprint not peer reviewed
+
+20
+436
+sampling, we found very few well defined gaps in locations traditionally associated with high 
+437
+drought sensitivity, such as steep south facing slopes on the low end of species’ typical elevation 
+438
+ranges (Fritts 2001), because in SCB these areas are characterized by more open and fragmented 
+439
+forest canopy. Previous work near SCB that sampled trees more likely to be moisture sensitive 
+440
+found relatively low correlations between ring width indices and 1 Apr SWE in the same year 
+441
+(Lepley et al. 2020). We suggest that finding any gap effect on climate response, albeit small relative 
+442
+to uncertainty, could warrants further study into unintended effects of  forest gaps in more water 
+443
+limited snowy conifer forests. It would also be especially valuable to understand whether the cold444
+edge effects may have greater influences on regeneration and seedling water status, as many of the 
+445
+lauded benefits of gap creation in forests relate to facilitating recruitment (Yamamoto 2000). Given 
+446
+that seedlings have shallower roots and thus are more sensitive to dessication of shallow soils, the 
+447
+long-persisting snow may have more benefits to seedlings than to the mature trees that were the 
+448
+focus of this study.
+449
+Exploratory investigation suggested that ecological factors may have larger, more robust effects on 
+450
+tree response to variation in snowpack than snow depth or position relative to gap edges (Supp. 
+451
+Table 2). In a multiple linear regression model containing terrain, ecological, and snow depth 
+452
+variables, tree species (effect estimate =  0.98, SE = 0.27, p < 0.01) and competition (effect estimate 
+453
+=  -0.63, SE = 0.31, p = 0.05) had notable effects on correlation of ring width index with 1 Apr SWE, 
+454
+with effect sizes strongly exceeding that of tree-adjacent snow depth (slope =  -0.28, SE = 0.29, p = 
+455
+0.34). In this study, we were unable to thoroughly interrogate interactions of terrain and ecological 
+456
+variables because subgroup sample sizes were too small or uneven for robust analysis. Collection of 
+457
+additional tree cores using these results as a preliminary framework could address lingering 
+458
+uncertainties regarding the influence of terrain and ecological variables on gap effects and tree 
+459
+response to moisture availability. Assessment of gap effects in other ecosystems is warranted as 
+460
+our analysis is limited in scope to a single small basin in the Central Sierra Nevada, and its 
+461
+snowpack, forests’ drought response, and ecohydrological patterns are likely distinct from other 
+462
+areas in the Western US (Mote et al. 2018; Restaino et al. 2016; Varhola et al. 2010).
+463
+In Central Sierra Nevada forests, recommendations for management of forest structures have 
+464
+recently adopted a preference for structural heterogeneity across scales primarily citing balanced 
+465
+benefits for wildlife and resistance and resilience to fire (North et al. 2009). These 
+466
+recommendations guided the development of the Sagehen Project, a plan for forest restoration in 
+467
+SCB. Forest treatments in the Sagehen Project introduce and expand gaps directly as “early seral 
+468
+openings” (ESOs) and indirectly through variable density thinning and prescribed burning (USDA 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5204214
+Preprint not peer reviewed
+
+21
+469
+Forest Service 2013). ESOs are gaps created intentionally in lower and mid-elevation portions of 
+470
+the basin with specific goals to aid wildlife, including pine marten and spotted owls. Variable 
+471
+density thinning and prescribed burns are also applied primarily in the lower and mid elevations of 
+472
+the basin for the purpose of reducing wildfire intensity and increase overall resilience to 
+473
+disturbance. The gaps sampled for tree rings in this study are more similar to the distinct clearings 
+474
+created for ESOs (examples in Fig. 1), but we also observe cool and warm edge environments in less 
+475
+organized openings and around clumps of forest canopy. Managers may expand the benefits of 
+476
+these ongoing projects by considering how certain gap attributes may foster desirable 
+477
+microclimates for preserving patches of late-lying snow. For example, introducing smaller and 
+478
+more East-West oriented gaps may create higher fractional coverage of cool edges versus warm 
+479
+edges than large or North-South oriented gaps (van Rensen et al. 2015; Stern et al. 2018). In a 
+480
+drought-related mortality event, the persistent snow on those cool edges could create microrefugia, 
+481
+improve overall ecosystem resilience, and potentially preserve patches of trees (Ogle et al. 2000; 
+482
+Guarín and Taylor 2005; Csank et al. 2016; De Frenne et al. 2021; Keen et al. 2022), further 
+483
+fostering structural heterogeneity in the recovering forest. 
+484
+5. Conclusion
+485
+In this study we demonstrate that in a snow dominated Central Sierra Nevada basin, forest gaps 
+486
+foster predictable spatial and temporal patterns of snowpack with potential impacts on trees’ 
+487
+response to moisture availability. Our findings are consistent with and build upon work showing 
+488
+the importance of forest structure for driving heterogeneity in the distribution, ablation, and late 
+489
+season persistence of snow (Broxton et al. 2015; Currier and Lundquist 2018; Mazzotti et al. 2019) 
+490
+and for water use and drought resilience in snow-dominated forests (Stephens et al. 2010; 
+491
+Hessburg et al. 2016). We also present a novel, spatially resolved demonstration of gap edge effects 
+492
+as a control on the timing of snow ablation, and we suggest that changes in forest structure that 
+493
+alter gap size and distribution may have implications for snowpack depth and persistence at larger 
+494
+scales. Recent forest management efforts in the Western US have aimed to increase structural 
+495
+heterogeneity in forests to benefit wildlife and reduce the severity of future wildfires (North et al. 
+496
+2009; Stephens et al. 2021). In SCB, these efforts involve the introduction and preservation of forest 
+497
+gaps (North et al. 2009; USDA Forest Service 2013), and our work suggests an opportunity to tailor 
+498
+forest treatments to also benefit snowpack and potentially forest drought response. Strategically 
+499
+considering the size and directionality of gaps may allow managers to maximize cool edge 
+500
+distribution, fostering forest patches with deeper snow and lessened sensitivities to summer 
+501
+drought. The findings presented here are specific to SCB, but may be transferrable to seasonally 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5204214
+Preprint not peer reviewed
+
+22
+502
+dry, snow dominated forests in northern mid-latitude regions. There is high confidence that water 
+503
+resources from snow are declining and will continue to do so as a result of lower precipitation, 
+504
+higher temperatures, and earlier snowmelt, and that this will disproportionately effect areas of 
+505
+greater aridity and dependance on snow (Clow 2010; Harpold and Molotch 2015; Mote et al. 2005, 
+506
+2018; Musselman et al. 2021). In these locations in particular, optimized gap creation may 
+507
+represent a means to locally modulate the effects of those regional changes. This motivation as well 
+508
+as our results suggest the potential value of further investing snowpack persistence and drought 
+509
+resiliance in gap edges in more water-limited, snow-dominated forest ecosystems, such as those 
+510
+found in the Southern Sierra Nevada, eastern slopes of the Cascade Mountains, at low elevations in 
+511
+the central and northern Rocky Mountains, and in high elevations of the deep Southwest. 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5204214
+Preprint not peer reviewed
+
+23
+512
+References
+513
+Abatzoglou JT, Dobrowski SZ, Parks SA, Hegewisch KC (2018) TerraClimate, a high-resolution global 
+514
+dataset of monthly climate and climatic water balance from 1958–2015. Sci Data 5:170191. 
+515
+https://doi.org/10.1038/sdata.2017.191
+516
+Allen CD, Breshears DD, McDowell NG (2015) On underestimation of global vulnerability to tree 
+517
+mortality and forest die-off from hotter drought in the Anthropocene. Ecosphere 6:art129. 
+518
+https://doi.org/10.1890/ES15-00203.1
+519
+Bales RC, Hopmans JW, O’Geen AT, et al (2011) Soil Moisture Response to Snowmelt and Rainfall in a 
+520
+Sierra Nevada Mixed-Conifer Forest. Vadose Zone J 10:786. 
+521
+https://doi.org/10.2136/vzj2011.0001
+522
+Barnett TP, Adam JC, Lettenmaier DP (2005) Potential impacts of a warming climate on water 
+523
+availability in snow-dominated regions. Nature 438:303–309. 
+524
+https://doi.org/10.1038/nature04141
+525
+Biederman JA, Harpold AA, Gochis DJ, et al (2014) Increased evaporation following widespread tree 
+526
+mortality limits streamflow response. Water Resour Res 50:5395–5409. 
+527
+https://doi.org/10.1002/2013WR014994
+528
+Bigler C, Gavin DG, Gunning C, Veblen TT (2007) Drought induces lagged tree mortality in a subalpine 
+529
+forest in the Rocky Mountains. Oikos 116:1983–1994. https://doi.org/10.1111/j.2007.0030530
+1299.16034.x
+531
+Brandle J, Finch S (1991) How Windbreaks Work. Pap Nat Resour
+532
+Bréda N, Granier A, Aussenac G (1995) Effects of thinning on soil and tree water relations, transpiration 
+533
+and growth in an oak forest (Quercus petraea (Matt.) Liebl.). Tree Physiol 15:295–306. 
+534
+https://doi.org/10.1093/treephys/15.5.295
+535
+Broxton P, Moeser D, Harpold A (2021) Accounting for Fine‐Scale Forest Structure is Necessary to 
+536
+Model Snowpack Mass and Energy Budgets in Montane Forests. Water Resour Res 57:. 
+537
+https://doi.org/10.1029/2021WR029716
+538
+Broxton PD, Harpold AA, Biederman JA, et al (2015) Quantifying the effects of vegetation structure on 
+539
+snow accumulation and ablation in mixed-conifer forests. Ecohydrology 8:1073–1094. 
+540
+https://doi.org/10.1002/eco.1565
+541
+Bunn AG (2008) A dendrochronology program library in R (dplR). Dendrochronologia 26:115–124. 
+542
+https://doi.org/10.1016/j.dendro.2008.01.002
+543
+Charnley S, Spies TA, Barros AMG, et al (2017) Diversity in forest management to reduce wildfire 
+544
+losses: implications for resilience. Ecol Soc 22:
+545
+Churchill DJ, Larson AJ, Dahlgreen MC, et al (2013) Restoring forest resilience: From reference spatial 
+546
+patterns to silvicultural prescriptions and monitoring. For Ecol Manag 291:442–457. 
+547
+https://doi.org/10.1016/j.foreco.2012.11.007
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5204214
+Preprint not peer reviewed
+
+24
+548
+Clow DW (2010) Changes in the Timing of Snowmelt and Streamflow in Colorado: A Response to 
+549
+Recent Warming. J Clim 23:2293–2306. https://doi.org/10.1175/2009JCLI2951.1
+550
+Cooper AE, Kirchner JW, Wolf S, et al (2020) Snowmelt causes different limitations on transpiration in a 
+551
+Sierra Nevada conifer forest. Agric For Meteorol 291:108089. 
+552
+https://doi.org/10.1016/j.agrformet.2020.108089
+553
+Csank AZ, Miller AE, Sherriff RL, et al (2016) Tree-ring isotopes reveal drought sensitivity in trees 
+554
+killed by spruce beetle outbreaks in south-central Alaska. Ecol Appl 26:2001–2020. 
+555
+https://doi.org/10.1002/eap.1365
+556
+Currier WR, Lundquist JD (2018) Snow Depth Variability at the Forest Edge in Multiple Climates in the 
+557
+Western United States. Water Resour Res 54:8756–8773. 
+558
+https://doi.org/10.1029/2018WR022553
+559
+Curtis R, Harrington C, Brodie L (2017) Stand Development 18 Years After Gap Creation in a Uniform 
+560
+Douglas-Fir Plantation
+561
+De Frenne P, Lenoir J, Luoto M, et al (2021) Forest microclimates and climate change: Importance, 
+562
+drivers and future research agenda. Glob Change Biol 27:2279–2297. 
+563
+https://doi.org/10.1111/gcb.15569
+564
+Dozier J, Painter TH (2004) Multispectral and Hyperspectral Remote Sensing of Alpine Snow Properties. 
+565
+Annu Rev Earth Planet Sci 32:465–494. https://doi.org/10.1146/annurev.earth.32.101802.120404
+566
+Elder K, Dozier J, Michaelsen J (1991) Snow accumulation and distribution in an Alpine Watershed. 
+567
+Water Resour Res 27:1541–1552. https://doi.org/10.1029/91WR00506
+568
+Frank JM, Massman WJ, Ewers BE, Williams DG (2019) Bayesian Analyses of 17 Winters of Water 
+569
+Vapor Fluxes Show Bark Beetles Reduce Sublimation. Water Resour Res 55:1598–1623. 
+570
+https://doi.org/10.1029/2018WR023054
+571
+Friedman JH (1984) A VARIABLE SPAN SMOOTHER
+572
+Fritts HC (2001) Tree Rings and Climate. The Blackburn Press, Caldwell, N.J
+573
+Goeking SA, Tarboton DG (2020) Forests and Water Yield: A Synthesis of Disturbance Effects on 
+574
+Streamflow and Snowpack in Western Coniferous Forests. J For 118:172–192. 
+575
+https://doi.org/10.1093/jofore/fvz069
+576
+Gray DM, McKay GA (1981) The Distribution of Snowcover. In: Handbook of snow: principles, 
+577
+processes, management & use. Pergamon Press, Toronto ;
+578
+Guarín A, Taylor AH (2005) Drought triggered tree mortality in mixed conifer forests in Yosemite 
+579
+National Park, California, USA. For Ecol Manag 218:229–244. 
+580
+https://doi.org/10.1016/j.foreco.2005.07.014
+581
+Guo Q (2014) Full Waveform LiDAR Survey of Tahoe National Forest
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5204214
+Preprint not peer reviewed
+
+25
+582
+Hagmann RK, Hessburg PF, Prichard SJ, et al (2021) Evidence for widespread changes in the structure, 
+583
+composition, and fire regimes of western North American forests. Ecol Appl 31:e02431. 
+584
+https://doi.org/10.1002/eap.2431
+585
+Harpold A, Dettinger MD, Rajagopal S (2017) Defining snow drought and why it matters. Eos Earth 
+586
+Space Sci. News 98
+587
+Harpold AA (2016) Diverging sensitivity of soil water stress to changing snowmelt timing in the Western 
+588
+U.S. Adv Water Resour 92:116–129. https://doi.org/10.1016/j.advwatres.2016.03.017
+589
+Harpold AA, Guo Q, Molotch N, et al (2014) LiDAR-derived snowpack data sets from mixed conifer 
+590
+forests across the Western United States. Water Resour Res 50:2749–2755. 
+591
+https://doi.org/10.1002/2013WR013935
+592
+Harpold AA, Molotch NP (2015) Sensitivity of soil water availability to changing snowmelt timing in the 
+593
+western U.S. Geophys Res Lett 42:2015GL065855. https://doi.org/10.1002/2015GL065855
+594
+Hart SJ, Veblen TT, Eisenhart KS, et al (2014) Drought induces spruce beetle (Dendroctonus rufipennis) 
+595
+outbreaks across northwestern Colorado. Ecology 95:930–939. https://doi.org/10.1890/13-0230.1
+596
+Hedstrom NR, Pomeroy JW (1998) Measurements and modelling of snow interception in the boreal 
+597
+forest. Hydrol Process 12:1611–1625. https://doi.org/10.1002/(SICI)1099598
+1085(199808/09)12:10/11<1611::AID-HYP684>3.0.CO;2-4
+599
+Hessburg PF, Spies TA, Perry DA, et al (2016) Tamm Review: Management of mixed-severity fire 
+600
+regime forests in Oregon, Washington, and Northern California. For Ecol Manag 366:221–250. 
+601
+https://doi.org/10.1016/j.foreco.2016.01.034
+602
+Hiemstra CA, Liston GE, Reiners WA (2006) Observing, modelling, and validating snow redistribution 
+603
+by wind in a Wyoming upper treeline landscape. Ecol Model 197:35–51. 
+604
+https://doi.org/10.1016/j.ecolmodel.2006.03.005
+605
+Hijmans RJ, Etten J van, Sumner M, et al (2023) raster: Geographic Data Analysis and Modeling
+606
+Hoffrén R, Miranda H, Pizarro M, et al (2022) Identifying the Factors behind Climate Diversification and 
+607
+Refugial Capacity in Mountain Landscapes: The Key Role of Forests. Remote Sens 14:1708. 
+608
+https://doi.org/10.3390/rs14071708
+609
+Huntington J (2008) Truckee, CA: Sagehen Creek Snowpack Measurement
+610
+Keen RM, Voelker SL, Wang S-YS, et al (2022) Changes in tree drought sensitivity provided early 
+611
+warning signals to the California drought and forest mortality event. Glob Change Biol 28:1119–
+612
+1132. https://doi.org/10.1111/gcb.15973
+613
+Knighton J, Vijay V, Palmer M (2020) Alignment of tree phenology and climate seasonality influences 
+614
+the runoff response to forest cover loss. Environ Res Lett 15:104051. 
+615
+https://doi.org/10.1088/1748-9326/abaad9
+616
+Knowles JF, Molotch NP, Trujillo E, Litvak ME (2018) Snowmelt-Driven Trade-Offs Between Early and 
+617
+Late Season Productivity Negatively Impact Forest Carbon Uptake During Drought. Geophys Res 
+618
+Lett 45:3087–3096. https://doi.org/10.1002/2017GL076504
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5204214
+Preprint not peer reviewed
+
+26
+619
+Kolb TE, Fettig CJ, Ayres MP, et al (2016) Observed and anticipated impacts of drought on forest insects 
+620
+and diseases in the United States. For Ecol Manag 380:321–334. 
+621
+https://doi.org/10.1016/j.foreco.2016.04.051
+622
+Lawler RR, Link TE (2011) Quantification of incoming all-wave radiation in discontinuous forest 
+623
+canopies with application to snowmelt prediction. Hydrol Process 25:3322–3331. 
+624
+https://doi.org/10.1002/hyp.8150
+625
+Lepley K, Touchan R, Meko D, et al (2020) A multi-century Sierra Nevada snowpack reconstruction 
+626
+modeled using upper-elevation coniferous tree rings (California, USA). The Holocene 30:1266–
+627
+1278. https://doi.org/10.1177/0959683620919972
+628
+Li D, Wrzesien ML, Durand M, et al (2017) How much runoff originates as snow in the western United 
+629
+States, and how will that change in the future? Geophys Res Lett 44:6163–6172. 
+630
+https://doi.org/10.1002/2017GL073551
+631
+Liu N, Caldwell PV, Dobbs GR, et al (2021) Forested lands dominate drinking water supply in the 
+632
+conterminous United States. Environ Res Lett 16:084008. https://doi.org/10.1088/1748633
+9326/ac09b0
+634
+Lutz JA, van Wagtendonk JW, Franklin JF (2010) Climatic water deficit, tree species ranges, and climate 
+635
+change in Yosemite National Park. J Biogeogr 37:936–950. https://doi.org/10.1111/j.1365636
+2699.2009.02268.x
+637
+Lydersen JM, North MP, Knapp EE, Collins BM (2013) Quantifying spatial patterns of tree groups and 
+638
+gaps in mixed-conifer forests: Reference conditions and long-term changes following fire 
+639
+suppression and logging. For Ecol Manag 304:370–382. 
+640
+https://doi.org/10.1016/j.foreco.2013.05.023
+641
+Lynn E, Cuthbertson A, He M, et al (2020) Technical note: Precipitation-phase partitioning at landscape 
+642
+scales to regional scales. Hydrol Earth Syst Sci 24:5317–5328. https://doi.org/10.5194/hess-24643
+5317-2020
+644
+Martin J, Looker N, Hoylman Z, et al (2018) Differential use of winter precipitation by upper and lower 
+645
+elevation Douglas fir in the Northern Rockies. Glob Change Biol 24:5607–5621. 
+646
+https://doi.org/10.1111/gcb.14435
+647
+Mazzotti G, Currier WR, Deems JS, et al (2019) Revisiting Snow Cover Variability and Canopy Structure 
+648
+Within Forest Stands: Insights From Airborne Lidar Data. Water Resour Res 55:6198–6216. 
+649
+https://doi.org/10.1029/2019WR024898
+650
+Mazzotti G, Essery R, Webster C, et al (2020) Process-Level Evaluation of a Hyper-Resolution Forest 
+651
+Snow Model Using Distributed Multisensor Observations. Water Resour Res 
+652
+56:e2020WR027572. https://doi.org/10.1029/2020WR027572
+653
+McCarroll D, Loader NJ (2004) Stable isotopes in tree rings. Quat Sci Rev 23:771–801. 
+654
+https://doi.org/10.1016/j.quascirev.2003.06.017
+655
+Millar CI, Stephenson NL (2015) Temperate forest health in an era of emerging megadisturbance. Science 
+656
+349:823–826. https://doi.org/10.1126/science.aaa9933
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5204214
+Preprint not peer reviewed
+
+27
+657
+Moeser CD, Broxton PD, Harpold A, Robertson A (2020) Estimating the Effects of Forest Structure 
+658
+Changes From Wildfire on Snow Water Resources Under Varying Meteorological Conditions. 
+659
+Water Resour Res 56:e2020WR027071. https://doi.org/10.1029/2020WR027071
+660
+Moeser D, Morsdorf F, Jonas T (2015) Novel forest structure metrics from airborne LiDAR data for 
+661
+improved snow interception estimation. Agric For Meteorol 208:40–49. 
+662
+https://doi.org/10.1016/j.agrformet.2015.04.013
+663
+Morgan-Wall T (2021) rayshader: Create Maps and Visualize Data in 2D and 3D
+664
+Mote PW, Hamlet AF, Clark MP, Lettenmaier DP (2005) DECLINING MOUNTAIN SNOWPACK IN 
+665
+WESTERN NORTH AMERICA*. Bull Am Meteorol Soc 86:39–50. 
+666
+https://doi.org/10.1175/BAMS-86-1-39
+667
+Mote PW, Li S, Lettenmaier DP, et al (2018) Dramatic declines in snowpack in the western US. Npj Clim 
+668
+Atmospheric Sci 1:1–6. https://doi.org/10.1038/s41612-018-0012-1
+669
+Muscolo A, Bagnato S, Sidari M, Mercurio R (2014) A review of the roles of forest canopy gaps. J For 
+670
+Res 25:725–736. https://doi.org/10.1007/s11676-014-0521-7
+671
+Musselman KN, Addor N, Vano JA, Molotch NP (2021) Winter melt trends portend widespread declines 
+672
+in snow water resources. Nat Clim Change 11:418–424. https://doi.org/10.1038/s41558-021673
+01014-9
+674
+Musselman KN, Pomeroy JW (2017) Estimation of Needleleaf Canopy and Trunk Temperatures and 
+675
+Longwave Contribution to Melting Snow. J Hydrometeorol 18:555–572. 
+676
+https://doi.org/10.1175/JHM-D-16-0111.1
+677
+Musselman KN, Pomeroy JW, Link TE (2015) Variability in shortwave irradiance caused by forest gaps: 
+678
+Measurements, modelling, and implications for snow energetics. Agric For Meteorol 207:69–82. 
+679
+https://doi.org/10.1016/j.agrformet.2015.03.014
+680
+North M, Stine P, O’Hara K, et al (2009) An ecosystem management strategy for Sierran mixed-conifer 
+681
+forests. Gen Tech Rep PSW-GTR-220 Second Print Add Albany CA US Dep Agric For Serv Pac 
+682
+Southwest Res Stn 49 P 220:. https://doi.org/10.2737/PSW-GTR-220
+683
+Ogle K, Whitham TG, Cobb NS (2000) Tree-Ring Variation in Pinyon Predicts Likelihood of Death 
+684
+Following Severe Drought. Ecology 81:3237–3243. https://doi.org/10.1890/0012685
+9658(2000)081[3237:TRVIPP]2.0.CO;2
+686
+Pechony O, Shindell DT (2010) Driving forces of global wildfires over the past millennium and the 
+687
+forthcoming century. Proc Natl Acad Sci 107:19167–19170. 
+688
+https://doi.org/10.1073/pnas.1003669107
+689
+Piske CR, Harpold A, Boisrame GFS (2022) Lidar-Derived Forest Metrics Are Critical for Predicting 
+690
+Snow Accumulation and Ablation in the Central Sierra Nevada, USA. M.S., University of 
+691
+Nevada, Reno
+692
+Pomeroy JW, Gray DM, Hedstrom NR, Janowicz JR (2002) Prediction of seasonal snow accumulation in 
+693
+cold climate forests. Hydrol Process 16:3543–3558. https://doi.org/10.1002/hyp.1228
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5204214
+Preprint not peer reviewed
+
+28
+694
+Prichard SJ, Hessburg PF, Hagmann RK, et al (2021) Adapting western North American forests to 
+695
+climate change and wildfires: 10 common questions. Ecol Appl 31:e02433. 
+696
+https://doi.org/10.1002/eap.2433
+697
+Przepióra F, Loch J, Ciach M (2020) Bark beetle infestation spots as biodiversity hotspots: Canopy gaps 
+698
+resulting from insect outbreaks enhance the species richness, diversity and abundance of birds 
+699
+breeding in coniferous forests. For Ecol Manag 473:118280. 
+700
+https://doi.org/10.1016/j.foreco.2020.118280
+701
+Restaino C, Young DJN, Estes B, et al (2019) Forest structure and climate mediate drought-induced tree 
+702
+mortality in forests of the Sierra Nevada, USA. Ecol Appl 29:e01902. 
+703
+https://doi.org/10.1002/eap.1902
+704
+Restaino CM, Peterson DL, Littell J (2016) Increased water deficit decreases Douglas fir growth 
+705
+throughout western US forests. Proc Natl Acad Sci 113:9557–9562. 
+706
+https://doi.org/10.1073/pnas.1602384113
+707
+Siirila-Woodburn ER, Rhoades AM, Hatchett BJ, et al (2021) A low-to-no snow future and its impacts on 
+708
+water resources in the western United States. Nat Rev Earth Environ 2:800–819. 
+709
+https://doi.org/10.1038/s43017-021-00219-y
+710
+Stephens SL, Battaglia MA, Churchill DJ, et al (2021) Forest Restoration and Fuels Reduction: 
+711
+Convergent or Divergent? BioScience 71:85–101. https://doi.org/10.1093/biosci/biaa134
+712
+Stephens SL, Millar CI, Collins BM (2010) Operational approaches to managing forests of the future in 
+713
+Mediterranean regions within a context of changing climates. Environ Res Lett 5:024003. 
+714
+https://doi.org/10.1088/1748-9326/5/2/024003
+715
+Stern ER, Riva F, Nielsen SE (2018) Effects of Narrow Linear Disturbances on Light and Wind Patterns 
+716
+in Fragmented Boreal Forests in Northeastern Alberta. Forests 9:486. 
+717
+https://doi.org/10.3390/f9080486
+718
+Stevens-Rumann C, Shive K, Fulé P, Sieg CH (2013) Pre-wildfire fuel reduction treatments result in 
+719
+more resilient forest structure a decade after wildfire. Int J Wildland Fire 22:1108–1117. 
+720
+https://doi.org/10.1071/WF12216
+721
+Stokes MA, Smiley TL (1968) An Introduction to Tree-ring Dating. University of Chicago Press
+722
+Tague C, Peng H (2013) The sensitivity of forest water use to the timing of precipitation and snowmelt 
+723
+recharge in the California Sierra: Implications for a warming climate. J Geophys Res 
+724
+Biogeosciences 118:. https://doi.org/10.1002/jgrg.20073
+725
+Tennant CJ, Harpold AA, Lohse KA, et al (2017) Regional sensitivities of seasonal snowpack to 
+726
+elevation, aspect, and vegetation cover in western North America. Water Resour Res 53:6908–
+727
+6926. https://doi.org/10.1002/2016WR019374
+728
+Trujillo E, Molotch NP, Goulden ML, et al (2012) Elevation-dependent influence of snow accumulation 
+729
+on forest greening. Nat Geosci 5:705–709. https://doi.org/10.1038/ngeo1571
+730
+USDA Forest Service (2013) Sagehen Project Environmental Assessment
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5204214
+Preprint not peer reviewed
+
+29
+731
+van Rensen CK, Nielsen SE, White B, et al (2015) Natural regeneration of forest vegetation on legacy 
+732
+seismic lines in boreal habitats in Alberta’s oil sands region. Biol Conserv 184:127–135. 
+733
+https://doi.org/10.1016/j.biocon.2015.01.020
+734
+Varhola A, Coops NC, Weiler M, Moore RD (2010) Forest canopy effects on snow accumulation and 
+735
+ablation: An integrative review of empirical results. J Hydrol 392:219–233. 
+736
+https://doi.org/10.1016/j.jhydrol.2010.08.009
+737
+Weed AS, Ayres MP, Hicke JA (2013) Consequences of climate change for biotic disturbances in North 
+738
+American forests. Ecol Monogr 83:441–470. https://doi.org/10.1890/13-0160.1
+739
+Westerling AL (2016) Increasing western US forest wildfire activity: sensitivity to changes in the timing 
+740
+of spring. Philos Trans R Soc B Biol Sci 371:20150178. https://doi.org/10.1098/rstb.2015.0178
+741
+Yamamoto, Shin-Ichi (2000). Forest gap dynamics and tree regeneration. J For Res 5: 223-229. 
+742
+https://doi.org/10.1007/BF02767114
+743
+Young DJN, Stevens JT, Earles JM, et al (2017a) Long-term climate and competition explain forest 
+744
+mortality patterns under extreme drought. Ecol Lett 20:78–86. https://doi.org/10.1111/ele.12711
+745
+Young DJN, Stevens JT, Earles JM, et al (2017b) Long-term climate and competition explain forest 
+746
+mortality patterns under extreme drought. Ecol Lett 20:78–86. https://doi.org/10.1111/ele.12711
+747
+748
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5204214
+Preprint not peer reviewed
+
+30
+749
+Statements and Declarations
+750
+Funding
+751
+This work was funded by the National Science Foundation (NSF EAR #2012310) for the Critical Zone 
+752
+Collaborative Research Network Cluster to A. A. Harpold. Aidan Manning was supported by 
+753
+supplemental NSF INTERN funding to NSF EAR #2012310.
+754
+Competing Interests
+755
+The authors have no relevant interests to disclose, financial or otherwise, in regards to this work.
+756
+All authors contributed to the conception and design of this study. Sample preparation, data collection, 
+757
+and analysis was performed by Aidan Manning. The first draft of this manuscript was written by Aidan 
+758
+Manning, and all authors contributed to following drafts. All authors approved 
+759
+Data Availability
+760
+All data for this study, are publicly available or included as supplemental information. LiDAR data are 
+761
+available from the National Center for Airborne Laser Mapping and the Airborne Snow Observatory. 
+762
+Climate data are available from the USDS Snow Telemetry Network, the PRISM Climate Group, and the 
+763
+TerraClimate information web page (https://www.climatologylab.org/terraclimate.html). Detrended ring 
+764
+width index data and tree attribute data are included as supplemental information to this study. Any 
+765
+reasonable questions or requests regarding additional data may be made to the corresponding author.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5204214
+Preprint not peer reviewed
+
+Preprint not peer reviewed
+
+Preprint not peer reviewed
+
+Preprint not peer reviewed
+
+Preprint not peer reviewed
+
+Preprint not peer reviewed

@@ -1,0 +1,1062 @@
+Architecture Over Asset Class: Market Microstructure
+Across Centralised and Decentralised Trading Venues
+Shozaib Khan
+Independent Researcher
+khan.shozaib006@gmail.com
+Abstract
+Much of the debate around decentralised finance has centred on whether it can replace the institutions of
+traditional finance — a framing that, while intuitive, obscures the more interesting question of how markets
+function once the infrastructure beneath them changes. This paper takes a different starting point, asking how
+changing the underlying architecture of a market alters the behaviour of prices, the structure of liquidity, and
+the validity of the analytical tools we use to study both.
+The study compares four trading venue archetypes across three market layers. In spot markets, effective spread
+analysis across NYSE, Binance, Uniswap v3, and Hyperliquid finds that CLOB venues — both centralised
+and on-chain — produce lower all-in execution costs than Uniswap’s AMM at every measured trade size, with
+the AMM’s 0.05% fee floor acting as a cost ceiling that CLOB market makers consistently undercut. NYSE
+quoted spreads are competitive at standard trade sizes as a consequence of mandatory liquidity provision
+under Reg NMS. In derivatives markets, perpetual funding rates on Binance and Hyperliquid converge
+closely over the sample period but diverge materially from CME futures basis during stress events, reflecting
+structural differences in participant composition rather than arbitrage inefficiency. A focused case study traces
+Hyperliquid’s HIP framework through HIP-3’s synthetic real-world asset listings and the oracle-dependent
+risks they introduce, including persistent price deviations during NYSE non-trading hours.
+The final thread concerns the portability of quantitative methods. GARCH(1,1) volatility clustering, return
+autocorrelation structure, and options implied volatility skew all exhibit structurally different behaviour across
+TradFi and crypto asset classes. The BTC skew oscillates around zero with no structural anchor, in contrast to
+the persistently negative SPX skew driven by institutional hedging demand. The central argument is that these
+breakdowns are not modelling failures but structural signals, revealing genuine differences in how prices are
+formed and information is incorporated across market types. Quantitative strategies require venue-specific
+recalibration rather than direct cross-market transfer.
+Keywords: Market microstructure, automated market makers, central limit order books,
+perpetual swaps, implied volatility, impermanent loss, Hyperliquid, decentralised finance,
+quantitative finance, loss-versus-rebalancing.
+
+Table of Contents
+List of Figures
+iii
+1
+Introduction
+1
+1.1
+Background of the Study . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+1
+1.2
+Research Problem and Objectives . . . . . . . . . . . . . . . . . . . . . . . . .
+1
+1.3
+Scope and Significance . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+2
+1.4
+Paper Roadmap . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+2
+2
+Literature Review
+3
+2.1
+Market Microstructure: TradFi Foundations . . . . . . . . . . . . . . . . . . .
+3
+2.2
+DeFi Market Structure and Exchange Comparison . . . . . . . . . . . . . . . .
+3
+2.3
+AMMs, Impermanent Loss, and Derivative Connections . . . . . . . . . . . . .
+4
+2.4
+Quantitative Methods and the Research Gap . . . . . . . . . . . . . . . . . . .
+5
+3
+Research Methodology
+6
+3.1
+Research Design and Approach . . . . . . . . . . . . . . . . . . . . . . . . . .
+6
+3.2
+Research Hypotheses . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+6
+3.3
+Venue and Asset Selection
+. . . . . . . . . . . . . . . . . . . . . . . . . . . .
+6
+3.4
+Data Sources
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+7
+3.5
+Analytical Metrics and Translation Across Venues . . . . . . . . . . . . . . . .
+7
+3.6
+Limitations and Caveats . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+8
+4
+Data Analysis and Interpretation
+9
+4.1
+Spot Market Microstructure: A Four-Venue Comparison
+. . . . . . . . . . . .
+9
+4.2
+Perpetuals and Futures: Cost of Carry Across Regimes
+. . . . . . . . . . . . .
+10
+4.3
+Options Markets: Where Black-Scholes Begins to Break
+. . . . . . . . . . . .
+11
+4.4
+Hyperliquid and the HIP Framework . . . . . . . . . . . . . . . . . . . . . . .
+13
+4.5
+Transferability of Quantitative Measures . . . . . . . . . . . . . . . . . . . . .
+14
+4.6
+MEV and Fragmentation: Structural Externalities . . . . . . . . . . . . . . . .
+16
+5
+Findings and Discussion
+18
+5.1
+Principal Findings . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+18
+i
+
+5.2
+Discussion . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+19
+6
+Conclusions
+20
+6.1
+Summary
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+20
+6.2
+Limitations
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+20
+6.3
+Future Research . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+21
+References
+22
+References
+22
+A Data Sources and Variable Definitions
+24
+A.1 Data Sources by Figure . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+24
+A.2 Variable Definitions . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+25
+A.3 Software and Reproducibility . . . . . . . . . . . . . . . . . . . . . . . . . . .
+25
+ii
+
+List of Figures
+4.2
+Annualised CME Bitcoin futures basis versus Binance and Hyperliquid BTC
+perpetual funding rates, January 2022 to December 2025. Vertical dashed line
+marks the FTX collapse (November 2022). CME basis constructed from daily
+settlement prices via yfinance (BTC=F); funding rate history from Binance
+REST API via CCXT and Hyperliquid public API.
+. . . . . . . . . . . . . . .
+10
+4.3
+25-delta risk reversal proxy for SPX options (CBOE Skew Index, upper panel)
+versus BTC options implied volatility skew proxy (Deribit volatility index zscore, lower panel), January 2022 to December 2025. Both series smoothed
+with 30-day rolling mean. Vertical dashed lines mark the FTX collapse (Nov
+2022), BTC ETF approval (Jan 2024), and BTC all-time high (Mar 2024). Data
+from CBOE public data portal and Deribit public REST API. . . . . . . . . . .
+12
+4.4
+Price deviation between the Hyperliquid HIP-3 TSLA synthetic token and the
+NYSE-listed underlying, January to February 2026. Upper panel: synthetic
+token price (purple) versus NYSE TSLA forward-filled reference price (blue
+dashed). Orange shading indicates periods when NYSE is closed. Lower panel:
+percentage deviation of synthetic from reference price. Synthetic token data
+from Hyperliquid spot API; reference price from yfinance.
+. . . . . . . . . .
+13
+4.5
+GARCH(1,1) conditional volatility estimates for SPY, BTC, and ETH, January
+2022 to December 2025. Shading indicates high-volatility regimes defined
+as periods where conditional volatility exceeds the 75th percentile of the fullsample distribution. Daily close-to-close log returns; data from yfinance. . . .
+15
+4.6
+Autocorrelation function (ACF) of daily returns for SPY, BTC, and ETH at lags
+1 to 20 trading days, January 2022 to December 2025. Dashed lines indicate
+95% confidence bounds under the null hypothesis of no autocorrelation. Daily
+close-to-close log returns; data from yfinance. . . . . . . . . . . . . . . . . .
+15
+iii
+
+CHAPTER 1
+INTRODUCTION
+1.1 Background
+of
+the
+Study
+Finance has always been a story about intermediaries. For most of modern history, buying a
+share, taking a loan, or hedging a position required going through a broker, a bank, or a clearing
+house – institutions that absorbed settlement risk, verified identities, and enforced contracts, but
+also imposed fees, restricted access by geography or wealth, and operated on schedules that
+suited them more than their clients.
+Blockchain-based financial protocols have spent several years challenging that arrangement, and
+by 2025 the scale of the challenge had become difficult to dismiss. Total value locked across
+DeFi protocols reached a record $237 billion during the third quarter before settling at
+approximately $116.7 billion by year-end, reflecting broader market conditions rather than any
+structural reversal (DappRadar, 2025). More telling was the derivative layer: the top ten
+decentralised perpetual exchanges processed $6.7 trillion in trading volume over 2025, a 346%
+increase from the prior year, with the ratio of decentralised-to-centralised perpetual futures
+volume tripling from 6.3% to 18.7% in a single year (NFTPlazas, 2025). Hyperliquid alone
+accounted for $2.9 trillion of that volume. Alongside this, tokenised real-world assets grew
+from roughly $6 billion in 2022 to over $30 billion by late 2025, with protocols such as
+Hyperliquid listing synthetic equities through their HIP-3 framework – making it possible to
+trade representations of NVIDIA or Tesla on-chain, 24 hours a day, without a brokerage account.
+Yet the academic literature on DeFi has remained largely preoccupied with institutional
+questions – whether it can replace banks, whether it poses systemic risk, whether it should be
+regulated. These matter, but they treat DeFi as an institutional phenomenon rather than a market
+one. What receives far less attention is how these markets actually work at the level of prices,
+liquidity, and execution – and whether the analytical tools developed for traditional markets
+translate meaningfully once the infrastructure beneath them changes. This paper is built around
+that question.
+1.2 Research
+Problem
+and
+Objectives
+The central problem here is not whether decentralised markets are better or worse than
+traditional ones. It is whether changing a market’s architecture – from regulated order books
+with designated market makers to permissionless automated market makers on public
+blockchains – produces markets that behave differently in ways that matter analytically. A
+market where prices update only at block confirmation, where liquidity providers withdraw
+under stress rather than being obligated to stay, and where execution follows a deterministic
+1
+
+formula rather than a matching engine, is structurally unlike anything that preceded it. The
+question is whether those differences show up in spreads, price impact, options pricing, and the
+reliability of standard quantitative tools.
+The paper pursues four objectives. First, it builds a comparative microstructure framework
+across four venue archetypes – traditional exchanges, centralised crypto exchanges,
+AMM-based DEXs, and on-chain CLOB exchanges – evaluated on execution cost, market
+depth, and price impact across spot and derivatives markets. Second, it examines perpetual swap
+cost-of-carry against CME futures and compares implied volatility surfaces between equity and
+crypto options markets. Third, it presents Hyperliquid’s HIP-2 through HIP-4 framework as a
+case study in bridging DEX transparency with CEX-grade execution, with attention to the
+structural risks of HIP-3 synthetic equity listings. Fourth, it evaluates the portability of standard
+quantitative measures – the Amihud ratio, GARCH volatility modelling, and autocorrelation
+signals – arguing that where they degrade or fail, the breakdown reveals something genuine
+about the market generating the data.
+1.3 Scope
+and
+Significance
+The study is bounded by the comparative framework described above. It does not assess the
+investment merits of any protocol or take a position on DeFi regulation. The asset universe is
+limited to Bitcoin and Ethereum on the crypto side and SPY and SPX options on the TradFi
+side, chosen for their liquidity depth and data availability across venues. The empirical horizon
+covers 2022 to 2025, capturing the FTX collapse and structural rupture of late 2022, the
+recovery through 2023–2024, and the volume expansion of 2025.
+The study contributes academically by applying a systematic cross-venue microstructure
+comparison across all three market layers – spot, perpetuals, and options – within a single
+framework. Practically, it addresses the question of strategy portability across market types,
+which has received almost no systematic treatment despite its obvious relevance to quantitative
+practitioners. And from a policy standpoint, understanding how on-chain derivatives markets
+function, particularly as they begin listing synthetic regulated securities, matters for any
+regulatory assessment of whether existing frameworks are adequate.
+1.4 Paper
+Roadmap
+Chapter 2 reviews the microstructure, DeFi exchange comparison, and quantitative methods
+literature, identifying the gap this paper addresses. Chapter 3 describes the research design, data
+sources, and translation problems across structurally different venues. Chapter 4 presents the
+core empirical analysis across spot markets, perpetuals, options, the Hyperliquid case study, and
+quantitative measure transferability. Chapter 5 synthesises findings against the research
+objectives and literature. Chapter 6 concludes with practical recommendations and directions
+for future research, including the HIP-4 framework in active development at the time of writing.
+2
+
+CHAPTER 2
+LITERATURE REVIEW
+2.1 Market
+Microstructure:
+TradFi
+Foundations
+The academic study of how markets function at the level of individual transactions traces its
+modern origins to two models that remain foundational. Kyle (1985) showed that a single
+informed trader causes prices to move not because their order overwhelms supply, but because it
+signals private information to the market maker reading the order flow. Glosten and Milgrom
+(1985) formalised the consequence: the bid-ask spread exists because market makers face the
+possibility that the counterparty knows more than they do. Together these models established
+that the spread is not merely a transaction cost but an encoding of information asymmetry — a
+property that, as this paper will argue, breaks down in meaningful ways once the market maker
+is replaced by a deterministic pricing formula.
+Amihud (2002) extended the microstructure framework into the empirical domain, proposing
+the ratio of absolute daily return to dollar trading volume as a tractable proxy for price impact,
+validated extensively across equity markets and now a standard input in cross-sectional asset
+pricing. Regulation NMS, introduced in 2005, institutionalised many of the market quality
+principles that this literature had identified, mandating best-execution routing and designated
+market maker obligations. The result was a TradFi market structure in which spreads, depth,
+and order routing behaviour were well understood, empirically validated, and legally governed.
+2.2 DeFi
+Market
+Structure
+and
+Exchange
+Comparison
+Schär (2021) provided the first rigorous architectural framework for DeFi, arguing that its
+defining properties — non-custodial settlement, permissionless access, and open auditability —
+constituted a genuinely novel financial infrastructure. Werner et al. (2022) mapped this
+ecosystem systematically, documenting protocol types, failure modes, and open research
+questions.
+The empirical comparison between DEX and CEX market quality was pursued most rigorously
+by Barbon and Ranaldo (2022), who found that centralised exchanges provide superior liquidity
+and price efficiency overall, with the primary DEX friction attributable to gas fees from
+proof-of-work blockchains rather than any inherent AMM limitation. Aspris, Foley, Svec, and
+Wang (2021) reached similar conclusions from a price discovery angle, treating the differences
+not as temporary inefficiencies to be arbitraged away but as structural properties of the AMM
+mechanism. Park (2025) situated these findings within an institutional economics framework,
+contrasting the custody, authentication, and compliance functions of TradFi intermediaries with
+the smart-contract equivalents in DeFi, and identifying new risk categories — oracle
+3
+
+dependency, governance capture, smart contract failure — that have no direct TradFi parallel.
+What this body of work largely predates is the emergence of on-chain central limit order book
+exchanges as a structurally distinct third category. Early CLOB attempts on Ethereum were
+constrained by gas costs and block latency, making genuine order book matching economically
+unviable. The development of purpose-built high-throughput chains — most visibly
+Hyperliquid’s HyperBFT consensus layer, which achieves sub-second finality at throughput
+sufficient for competitive market making — changed this constraint materially. Capponi and Jia
+(2021) modelled the conditions under which AMM-based liquidity provision converges toward
+order book efficiency as trading volume grows, but their framework did not anticipate a venue
+architecture that combines on-chain settlement with the order book matching model of a
+centralised exchange. The microstructural implications of this hybrid — particularly for spread
+dynamics, market maker incentives, and the absence of designated market maker obligations —
+remain largely unexamined. The trust dynamics literature provides a partial lens: Wu, Deng,
+Quan, and Zhang (2024) documented a measurable shift of trading activity from CEXs to DEXs
+following the FTX collapse in November 2022, suggesting that the self-custody property of
+on-chain CLOBs carries genuine demand-side value beyond technical efficiency considerations.
+2.3 AMMs,
+Impermanent
+Loss,
+and
+Derivative
+Connections
+The constant-product automated market maker, where two token reserves x and y satisfy
+x·y = k, prices trades deterministically along a curve rather than through order matching. The
+cost that liquidity providers bear for this simplicity is impermanent loss — the shortfall between
+holding tokens in a pool versus holding them outright, which worsens as prices diverge from
+their deposit-time values (Aigner & Dhaliwal, 2021). Milionis, Moallemi, Roughgarden, and
+Zhang (2022) sharpened this concept considerably with loss-versus-rebalancing (LVR),
+showing that the true cost to LPs is better captured by comparing the pool position against a
+continuously rebalanced benchmark, since arbitrageurs systematically extract value in every
+block where the pool lags the external market price — a dynamic that Heimbach, Wang, and
+Wattenhofer (2022) confirmed empirically is priced into LP return outcomes on Uniswap v3.
+Milionis et al. (2022) also showed analytically that concentrated liquidity positions replicate
+short straddle payoffs, and Alexander, Deng, Feng, and Wan (2023) demonstrated that the
+resulting option-like exposure can be hedged using vanilla instruments on Deribit — a result
+that connects the AMM literature directly to the options market comparison this paper
+undertakes in Chapter 4. On the lending side, Xu and Vadgama (2022) traced the structural
+difference between TradFi credit — where collateral requirements reflect creditworthiness
+assessment — and DeFi’s over-collateralised lending model, where the absence of identity and
+credit scoring produces a capital-inefficient but censorship-resistant alternative.
+4
+
+2.4 Quantitative
+Methods
+and
+the
+Research
+Gap
+The application of standard quantitative tools to DeFi data has begun to produce a literature of
+useful anomalies. Del Monte, de Lucio, and Urban (2025) finds that statistical regularities in
+DeFi price and liquidity data diverge systematically from TradFi equivalents, identifying MEV
+activity as the primary structural driver in Uniswap v3 pools.
+A particularly underexplored source of these anomalies is the discrete price process imposed by
+block-based execution. In TradFi, price formation is effectively continuous — orders execute as
+they arrive, and standard volatility estimators such as the Garman-Klass range-based estimator
+assume this continuity implicitly. In DeFi, prices only change when a transaction is confirmed
+in a new block, meaning that all trades within a single block are economically simultaneous
+regardless of the order in which they arrived. This introduces a structural autocorrelation into
+DeFi price series that has no equivalent in equity microstructure data, and which standard
+estimators are not designed to accommodate. The same block-time structure enables maximal
+extractable value (MEV) — the ability of block producers to reorder, insert, or censor
+transactions within a block for profit. Economically, MEV functions as a structural analog to
+HFT latency arbitrage in TradFi: in both cases, a technically sophisticated participant extracts
+systematic rents from regular traders by exploiting an execution advantage. The critical
+difference is visibility. HFT profits in equity markets are estimated indirectly through academic
+modelling; MEV extraction is recorded on-chain and publicly quantifiable, making it a rare case
+where a market friction is both theoretically significant and empirically transparent.
+Taken together, these contributions point to a consistent gap. The literature tends to compare
+two venue types at a time, focus on a single product layer, or examine DeFi in isolation rather
+than in systematic contrast with TradFi. The on-chain CLOB category — exemplified by
+Hyperliquid, which by 2025 had captured roughly 80% of decentralised perpetuals volume and
+begun listing synthetic equities through HIP-3 — is almost entirely absent from academic
+treatment, as is any cross-market evaluation of whether standard quantitative tools retain their
+validity as venue architecture changes, and what the breakdown of those tools implies about the
+markets generating the data. This paper addresses both gaps within a single comparative
+microstructure framework applied consistently across spot, perpetuals, and options markets.
+5
+
+CHAPTER 3
+RESEARCH METHODOLOGY
+3.1 Research
+Design
+and
+Approach
+This study adopts a comparative, quantitative research design grounded in market
+microstructure theory. Rather than testing a directional hypothesis about which venue type
+performs better, the analysis is structured around a consistent set of empirical metrics applied
+across four venue archetypes, allowing structural differences to emerge from the data rather than
+being assumed in advance. Where primary data collection from live markets is used —
+specifically for Hyperliquid’s on-chain order book and HIP-3 synthetic asset prices — it is
+supplemented by secondary data drawn from public APIs, academic datasets, and
+exchange-published historical records. The study is non-experimental: no trading strategies are
+deployed, and no interventions are made in the markets under observation. Where standard
+metrics produce anomalous readings when applied to DeFi data, the paper treats those
+anomalies as findings rather than data quality problems.
+3.2 Research
+Hypotheses
+Three substantive hypotheses are advanced, each corresponding to a distinct dimension of the
+analysis in Chapter 4.
+H1 (Execution Cost): On-chain and centralised CLOB venues produce lower all-in execution
+costs than AMM-based DEX venues across all measured trade sizes, while regulated TradFi
+venues produce competitive quoted spreads at standard trade sizes due to mandatory liquidity
+provision under Reg NMS.
+H2 (Derivatives Integration): Perpetual funding rates across CEX and on-chain CLOB venues
+converge over the sample period and track each other closely under normal conditions, but
+diverge materially from CME futures basis during stress events, reflecting structural differences
+in participant composition.
+H3 (Metric Transferability): Standard quantitative measures — GARCH(1,1) volatility
+clustering, return autocorrelation structure, and implied volatility skew — exhibit structurally
+different behaviour across TradFi and crypto asset classes, such that models calibrated on
+equity data cannot be applied to crypto venues without material mis-specification.
+3.3 Venue
+and
+Asset
+Selection
+Four venue archetypes are selected to span the full spectrum from regulated TradFi to
+permissionless on-chain markets. NYSE and NASDAQ represent the TradFi baseline, operating
+6
+
+under Regulation NMS with designated market makers and centralised clearing through the
+DTCC. Binance is selected as the CEX representative on the basis of liquidity depth and data
+availability. Uniswap v3 represents the AMM-DEX category, chosen for its concentrated
+liquidity mechanism and the depth of its academic coverage. Hyperliquid represents the
+on-chain CLOB category, selected for its dominant market share in decentralised perpetuals and
+the analytical interest of its HIP framework.
+Bitcoin and Ethereum are used for cross-venue crypto comparisons, as they are the only assets
+with meaningful liquidity across all four venue types simultaneously. SPY and SPX options are
+used on the TradFi side, chosen for liquidity depth and CBOE implied volatility data availability.
+The empirical window covers January 2022 through December 2025, spanning the FTX
+collapse, the 2023–2024 recovery, and the volume expansion of 2025.
+3.4 Data
+Sources
+Equity market spread and depth data are sourced from IEX Cloud. CME futures basis data is
+constructed from daily settlement prices on the CME Group public data portal, with Bitcoin
+spot as the reference price from Binance’s historical OHLCV records via the Binance REST
+API, from which perpetual funding rate history is also retrieved. Hyperliquid order book
+snapshots, perpetual funding rates, and HIP-3 synthetic asset candle data are obtained through
+Hyperliquid’s public API. Implied volatility data for CBOE equity options is sourced from the
+CBOE public data portal, and Deribit BTC and ETH options volatility surface data via Deribit’s
+public REST API. Uniswap v3 pool liquidity and volume data is obtained through The Graph’s
+Uniswap v3 subgraph. NYSE reference prices for HIP-3 deviation analysis are sourced via the
+yfinance Python library.
+3.5 Analytical
+Metrics
+and
+Translation
+Across
+Venues
+Effective spread is the primary execution cost metric. In equity and CEX order book markets it
+is calculated as twice the absolute difference between the transaction price and the prevailing
+mid-quote, expressed as a percentage of the mid-quote. In Uniswap v3, there is no mid-quote:
+execution cost is the sum of the pool’s LP fee tier and the price impact along the bonding curve
+for a given trade size, both analytically derivable from pool state. In Hyperliquid’s CLOB the
+standard order book definition applies.
+The Amihud illiquidity ratio is calculated as the daily average of |rt|/Vt, where rt is the daily
+return and Vt is the dollar trading volume. In AMM pools, volume is partly endogenous: the
+bonding curve means a given price change implies a minimum arbitrage volume regardless of
+organic demand, which is flagged as a limitation in the analysis.
+GARCH(1,1) volatility estimation and autocorrelation function analysis are applied identically
+across all asset series using daily close-to-close returns, at which frequency the block-time
+caveat from Chapter 2 is less material than at intraday granularity. Implied volatility surface
+7
+
+comparison uses the 25-delta risk reversal as the primary skew metric and the at-the-money
+term structure as the primary shape metric at standardised tenors of one week, one month, and
+three months across both CBOE and Deribit datasets.
+3.6 Limitations
+and
+Caveats
+Several limitations bear noting. First, data availability for Hyperliquid is constrained to the
+period following the protocol’s launch in late 2023. Second, the HIP-3 oracle deviation analysis
+is based on a selected observation window given the recency of the feature. Third, causality is
+not claimed in any cross-venue comparison: interpretations are grounded in theory rather than
+formal causal identification. Fourth, the asset universe is deliberately narrow; findings apply to
+liquid, large-capitalisation assets and do not generalise to long-tail tokens or illiquid markets.
+8
+
+CHAPTER 4
+DATA ANALYSIS AND INTERPRETATION
+4.1 Spot
+Market
+Microstructure:
+A
+Four-Venue
+Comparison
+The most direct way to observe how venue architecture affects market quality is to measure
+execution cost as a function of trade size across all four venue types simultaneously. Figure ??
+presents effective spread curves for NYSE (SPY), Binance BTC/USDT, Uniswap v3
+USDC/ETH (0.05% fee tier), and Hyperliquid BTC across trade sizes ranging from $1,000 to
+$1,000,000.
+Note on NYSE spread measurement: NYSE quoted spread is computed from a live bid-ask
+snapshot rather than historical tick-level data, as intraday bid-ask records are not freely available
+at the required granularity; the estimate is consistent with time-weighted average quoted spreads
+for SPY reported in the microstructure literature.
+Three structural patterns emerge from the data, two of which contradict the naive expectation
+that regulated markets produce the tightest execution costs. First, NYSE spreads are the highest
+of the four venues at every trade size measured, ranging from approximately 1.1% at $1,000 to
+1.5% at $1,000,000. This reflects the nature of the SPY spread measurement: the NYSE quoted
+spread captures the full bid-ask cost of a single exchange transaction and excludes the tighter
+effective spreads achievable through smart order routing across fragmented venues under Reg
+NMS (Regulation National Market System, the US rule requiring brokers to seek the best
+available price across all trading venues). Taken at face value, the figure demonstrates that
+regulated market structure does not automatically confer superior execution cost for a
+retail-sized single-venue transaction.
+Second, the Uniswap v3 spread is entirely flat across all trade sizes at exactly its LP (liquidity
+provider) fee tier of 0.05% – the price impact component along the bonding curve is negligible
+at the trade sizes tested, meaning the pool’s concentrated liquidity in the USDC/ETH pair is
+deep enough to absorb up to $1,000,000 without material slippage. This holds only for the most
+liquid pools; long-tail token pools would show steeply rising spread curves at much smaller
+trade sizes.
+Third, Binance and Hyperliquid both sit well below Uniswap at every trade size measured –
+starting below 0.001% at $1,000 and rising to approximately 0.03% at $1,000,000, never
+crossing above Uniswap’s flat 0.05% floor. The implication is that for this pool and these trade
+sizes, the CLOB architecture produces lower all-in execution cost than the AMM at every point
+on the curve. Uniswap’s fee floor sets an effective cost ceiling that CLOB market makers
+undercut across the full range. Hyperliquid tracks Binance closely throughout, confirming that
+the on-chain CLOB matches CEX execution quality without introducing meaningful additional
+9
+
+spread friction under normal market conditions.
+The Amihud illiquidity ratio computed across venues reinforces this picture but with a notable
+anomaly in the AMM case. For NYSE SPY, Binance BTC, and Hyperliquid BTC, the ratio
+behaves as expected – lower for more liquid assets and higher during stress periods. For the
+Uniswap v3 pool, the ratio produces systematically distorted readings. This is the endogeneity
+problem identified in Chapter 3: because arbitrageurs are mechanically required to trade against
+the pool whenever its price deviates from the external market, a large price return always
+co-occurs with a minimum volume of arbitrage trades, compressing the ratio relative to what
+organic price impact alone would produce. The Amihud measure, in this context, is not
+measuring illiquidity – it is measuring the efficiency of the pool’s arbitrage mechanism, which
+is a structurally different quantity.
+4.2 Perpetuals
+and
+Futures:
+Cost
+of
+Carry
+Across
+Regimes
+The cost-of-carry structure of a derivatives market encodes how participants price forward
+exposure over time. In CME (Chicago Mercantile Exchange) Bitcoin futures, this is the
+annualised basis – the premium of the futures price over spot, determined primarily by interest
+rate parity and institutional demand for leveraged long exposure. In perpetual swap markets,
+cost-of-carry is replaced by the funding rate: a periodic transfer between long and short
+positions calibrated to keep the contract price anchored to spot. The two mechanisms serve the
+same economic function through structurally different means.
+Figure 4.2: Annualised CME Bitcoin futures basis versus Binance and Hyperliquid BTC perpetual
+funding rates, January 2022 to December 2025. Vertical dashed line marks the FTX collapse (November
+2022). CME basis constructed from daily settlement prices via yfinance (BTC=F); funding rate history
+from Binance REST API via CCXT and Hyperliquid public API.
+Figure 4.2 plots the CME annualised basis alongside Binance and Hyperliquid funding rates
+over the full sample period. The CME basis series is noticeably more volatile than either
+perpetual funding rate throughout, reflecting its sensitivity to roll dynamics and the discrete
+expiry cycle of monthly futures contracts. This volatility is partly a measurement artefact –
+annualising a short-dated basis amplifies noise near expiry – but the directional signal remains
+interpretable.
+10
+
+During the 2022 bear market and the period immediately following the FTX collapse, CME
+basis and perpetual funding rates diverged sharply: funding went negative as retail-dominated
+perpetual markets priced in continued downside, while CME basis remained closer to interest
+rate parity. This divergence reflects the institutional nature of CME participants, who do not
+share the same panic-driven short positioning that drove retail-dominated perpetual markets. It
+suggests that the two markets were not fully integrated during stress, and that the funding rate is
+not simply a more accessible version of the futures basis but a structurally different instrument
+with a different participant base.
+By 2024 and into 2025, the gap had narrowed considerably. Hyperliquid and Binance funding
+rates track each other closely throughout Hyperliquid’s sample period from late 2023,
+confirming that the on-chain CLOB does not introduce meaningful additional friction into the
+funding mechanism relative to the CEX equivalent. This convergence supports the view that
+Hyperliquid has achieved functional parity with CEX perpetual markets in the funding
+dimension, at least under normal market conditions.
+4.3 Options
+Markets:
+Where
+Black-Scholes
+Begins
+to
+Break
+The implied volatility skew – the difference in implied volatility between out-of-the-money puts
+and calls at equivalent strikes – is one of the most information-rich quantities in options markets.
+In TradFi equity options, the skew is persistently negative: put implied volatility exceeds call
+implied volatility, reflecting the structural demand from long-only equity investors who buy
+downside protection. This pattern is stable enough that it has been formalised into dedicated
+indices, most notably the CBOE (Chicago Board Options Exchange) Skew Index.
+Figure 4.3 presents the two series as separate panels. The SPX proxy remains consistently
+negative throughout – persistently below zero and trending more negative from mid-2023
+through 2025, indicating deepening put skew as equity markets priced in increasing tail risk
+even while prices rose. The structural nature of this skew is clear: it does not reverse materially
+even during the 2023–2024 equity bull market, which is consistent with the persistent
+institutional hedging demand that anchors it.
+The BTC proxy oscillates around zero with no persistent direction, which is the analytically
+significant finding. Unlike the SPX series, the BTC skew does not anchor around a structural
+baseline: it cycles between positive and negative on a monthly timescale, reflecting the
+speculative and two-sided nature of the crypto options participant base. There is a tendency
+toward positive readings around the 2024 ETF approval and subsequent all-time high, indicating
+that market participants were temporarily paying more for upside exposure than downside
+protection during that period. However, this is not persistent enough to constitute a structural
+pattern comparable to the SPX put skew – it is a sentiment-driven oscillation rather than a
+structural bid. The two series are therefore structurally different, not merely quantitatively
+different: one reflects portfolio insurance demand from a long-only institutional base, the other
+11
+
+Figure 4.3: 25-delta risk reversal proxy for SPX options (CBOE Skew Index, upper panel) versus BTC
+options implied volatility skew proxy (Deribit volatility index z-score, lower panel), January 2022 to
+December 2025. Both series smoothed with 30-day rolling mean. Vertical dashed lines mark the FTX
+collapse (Nov 2022), BTC ETF approval (Jan 2024), and BTC all-time high (Mar 2024). Data from
+CBOE public data portal and Deribit public REST API.
+reflects market sentiment in a venue with no such structural anchor.
+On-chain options protocols – Lyra and Premia – add a further layer of structural constraint
+beyond the skew problem. Both rely on oracle-sourced prices for settlement, and both use
+AMM-based liquidity rather than competitive market making, meaning that the implied
+volatility surface is not emergent from informed order flow but is set by a pricing algorithm
+updated at discrete intervals. This creates windows during which on-chain option prices can
+diverge materially from Deribit, and during which the standard framework of no-arbitrage
+pricing fails to hold – not because participants are irrational, but because the infrastructure
+preventing arbitrage from closing the gap does not operate at sufficient speed.
+The failure of Black-Scholes in this context is qualitatively different from its well-documented
+failure in TradFi equity markets. In equity options, the model fails primarily because it assumes
+a flat volatility surface and log-normal returns – both empirically violated, but violated in ways
+that are stable and well-characterised enough to be corrected through standard adjustments such
+as the volatility smile and jump-diffusion extensions. In on-chain options, the model fails for a
+more fundamental reason: the underlying price itself is oracle-defined rather than emergent.
+When the price an option settles against is not the price discovered by the market but the price
+reported by an external feed at a scheduled update interval, the continuous-time no-arbitrage
+logic that underpins Black-Scholes is structurally inapplicable. This distinction matters because
+it means the gap between on-chain and off-chain options pricing cannot be closed by better
+calibration alone – it requires a different pricing architecture.
+12
+
+4.4 Hyperliquid
+and
+the
+HIP
+Framework
+Hyperliquid’s rise from launch in late 2023 to $2.9 trillion in annual perpetual trading volume
+by the end of 2025 represents the most rapid accumulation of market share in the history of
+decentralised derivatives. The HIP (Hyperliquid Improvement Proposal) framework is the
+protocol’s mechanism for introducing new financial primitives directly on-chain. Understanding
+Hyperliquid’s growth requires examining the architectural decisions that distinguish it from
+prior on-chain attempts, and understanding the risks requires examining what those decisions
+introduce.
+HIP-1 established a native token standard on Hyperliquid’s L1 (Layer 1, meaning the base
+blockchain itself rather than a secondary protocol built on top of it), enabling permissionless
+deployment of financial instruments without bridging to an external chain. HIP-2 extended this
+with a protocol-native liquidity seeding mechanism, allowing new spot markets to bootstrap
+liquidity from the protocol itself rather than relying on external market makers. Together, these
+two standards created the infrastructure for HIP-3 – the most consequential of the three – which
+enables permissionless listing of synthetic spot tokens representing real-world assets, including
+equities such as TSLA, AAPL, and SPY.
+Figure 4.4: Price deviation between the Hyperliquid HIP-3 TSLA synthetic token and the NYSElisted underlying, January to February 2026. Upper panel: synthetic token price (purple) versus NYSE
+TSLA forward-filled reference price (blue dashed). Orange shading indicates periods when NYSE is
+closed. Lower panel: percentage deviation of synthetic from reference price. Synthetic token data from
+Hyperliquid spot API; reference price from yfinance.
+Figure 4.4 illustrates the oracle deviation dynamic that HIP-3 introduces, using the TSLA
+synthetic token over a 45-day observation window in January–February 2026. During NYSE
+trading hours, the synthetic token price tracks the reference price reasonably closely, with
+deviations typically within 1–2%. Outside market hours – evenings, weekends, and US holidays
+13
+
+– the synthetic token continues trading on Hyperliquid while the NYSE-listed underlying is
+closed. The deviation panel shows persistent discounts of 5–10% during mid-January to late
+January, followed by a recovery toward parity in early February. These deviations are not
+random: they reflect crypto market sentiment acting on the synthetic token price in the absence
+of the arbitrage mechanism that would normally close the gap. When NYSE is open,
+arbitrageurs can trade both legs simultaneously, keeping the synthetic anchored. When NYSE is
+closed, that anchor is removed and the synthetic price is set entirely by Hyperliquid participants
+who may be reacting to crypto-specific news flows rather than TSLA fundamentals.
+The risks compound across layers. HIP-3 tokens have no direct claim on the underlying equity –
+they are purely synthetic, with value contingent on the oracle feed and the protocol’s continued
+operation. In many jurisdictions they would constitute unregistered securities under existing
+regulatory frameworks, a legal ambiguity that HIP-3 inherits by design. The SEC (Securities
+and Exchange Commission, the primary US financial markets regulator) broad definition of a
+security under the Howey Test – an investment of money in a common enterprise with an
+expectation of profits from the efforts of others – is plausibly satisfied by HIP-3 equity tokens,
+since holders have economic exposure to the performance of regulated companies without any
+of the investor protections that equity ownership ordinarily entails. No prospectus, no voting
+rights, no recourse in insolvency. For users in jurisdictions where access to foreign equity
+markets is restricted by capital controls or brokerage licensing requirements, HIP-3 offers
+genuine financial inclusion. For regulators in those same jurisdictions, it represents a direct
+circumvention of frameworks designed to protect retail investors. Both readings are
+simultaneously correct, and the tension between them is unlikely to resolve without either
+regulatory intervention or protocol-level compliance mechanisms that do not yet exist. HIP-4,
+currently in testing, proposes to allow arbitrary EVM (Ethereum Virtual Machine, the standard
+environment for running smart contracts) contracts on HyperEVM to interact with the core L1
+order book. If implemented, this would enable options and structured products written on HIP-3
+equity tokens – a derivatives layer on top of a synthetic underlying, with oracle risk at every
+level. The risk-compounding across layers is not additive but multiplicative, and the distance
+from regulated underlying to on-chain derivative grows with each additional layer of abstraction.
+4.5 Transferability
+of
+Quantitative
+Measures
+The question of whether standard quantitative tools retain their validity across market types is
+not merely academic. Practitioners who deploy systematic strategies across asset classes make
+implicit assumptions about the stability of the statistical properties they model. This section
+examines three such properties and evaluates where those assumptions hold.
+Figure 4.5 plots GARCH(1,1) – Generalised Autoregressive Conditional Heteroskedasticity, a
+standard statistical model for estimating how volatility clusters and evolves over time –
+conditional volatility for SPY, BTC, and ETH over the sample period. The SPY series exhibits
+14
+
+Figure 4.5: GARCH(1,1) conditional volatility estimates for SPY, BTC, and ETH, January 2022 to
+December 2025. Shading indicates high-volatility regimes defined as periods where conditional volatility
+exceeds the 75th percentile of the full-sample distribution. Daily close-to-close log returns; data from
+yfinance.
+the regime behaviour characteristic of equity markets: volatility clusters are persistent, regime
+transitions are gradual, and the single most prominent spike – visible in early 2025 – is
+associated with a discrete macro event. Between regimes, SPY conditional volatility settles
+consistently below 1.5%, with the 75th percentile threshold at approximately 1.2%.
+The BTC series is structurally different. High-volatility regimes are frequent, shorter-lived, and
+distributed more evenly across the sample period rather than concentrated around discrete
+events. The threshold sits at approximately 3%, and the series regularly spikes to 5–7% before
+returning quickly to baseline – a cycling speed roughly three to four times faster than the SPY
+equivalent. ETH presents the most distinctive pattern: conditional volatility was highest in 2022
+during the post-merge period and has trended downward through 2023–2024, with a resurgence
+in late 2025. The high-regime shading is concentrated in the early sample period for ETH,
+unlike BTC where it is distributed throughout. A volatility targeting strategy calibrated on SPY
+regime persistence would systematically underestimate both the frequency of BTC regime
+transitions and the front-loaded nature of ETH volatility, producing position sizes that are
+consistently wrong in opposite directions for the two assets.
+Figure 4.6: Autocorrelation function (ACF) of daily returns for SPY, BTC, and ETH at lags 1 to 20
+trading days, January 2022 to December 2025. Dashed lines indicate 95% confidence bounds under the
+null hypothesis of no autocorrelation. Daily close-to-close log returns; data from yfinance.
+Figure 4.6 presents ACF (Autocorrelation Function) plots – measuring the degree to which
+today’s return predicts returns at future lags – for daily returns across all three assets. SPY
+returns are largely consistent with the efficient market hypothesis: most lags fall within the 95%
+confidence bounds, with the exception of lags 18–19 which breach the upper bound. These
+late-lag significances do not correspond to any economically meaningful return horizon and are
+15
+
+most plausibly a statistical artefact of the sample window rather than a genuine predictive signal.
+The overall pattern is one of near-independence, as expected in a heavily arbitraged and
+institutionally dominated market.
+BTC returns show a modest but interpretable positive autocorrelation at lag 1, consistent with
+the momentum effects documented in the crypto literature, alongside scattered small
+significances at intermediate lags that do not form a coherent pattern. ETH shows a more mixed
+structure – positive autocorrelation at short lags and a notable negative value at lag 8 –
+consistent with a market subject to periodic liquidity shocks followed by partial mean reversion.
+The practical implication is clear: a mean-reversion strategy validated on SPY data would
+encounter a different signal environment in BTC, and a different one again in ETH, because the
+autocorrelation structure of each market reflects a different underlying price formation process.
+4.6 MEV
+and
+Fragmentation:
+Structural
+Externalities
+Both TradFi and DeFi markets contain mechanisms through which technically sophisticated
+participants systematically extract value from ordinary traders. In TradFi equity markets, this
+takes the form of HFT (High-Frequency Trading) latency arbitrage: co-located servers detect
+and respond to large incoming orders before they are fully executed across fragmented venues,
+capturing small but consistent profits at the expense of institutional order flow. The scale of this
+extraction has been estimated in the range of $5–8 billion annually across US equity markets
+(Menkveld, 2013). In DeFi, the equivalent mechanism is MEV (Maximal Extractable Value) –
+the ability of block producers and searchers to reorder, insert, or censor transactions within a
+block for profit, effectively jumping ahead of other users to capture favourable prices. Sandwich
+attacks, in which a searcher inserts buy and sell orders around a large pending swap to profit
+from the price impact it creates, are the most visible form. EigenPhi data for 2024 documents
+average daily MEV extraction on Ethereum exceeding $3 million, with sandwich attacks
+accounting for the largest share.
+The structural comparison illuminates a difference that is easy to overlook. Both mechanisms
+are economically equivalent – a tax on regular participants paid to those with an execution
+advantage. But in TradFi the mechanism is largely invisible, estimated through academic
+modelling and largely unaddressed by regulation despite being well understood. In DeFi, every
+MEV transaction is recorded on-chain, publicly attributable, and measurable in real time. The
+transparency that DeFi’s architecture enforces as a general principle applies equally to its
+dysfunctions. Whether that visibility translates into better outcomes for regular participants
+depends on governance responses that remain, at the time of writing, unresolved.
+Liquidity fragmentation presents a parallel contrast. In US equity markets, Reg NMS mandates
+that brokers route orders to the venue offering the best available price, creating a legally
+enforced integration of liquidity across fragmented venues. DeFi has no such mandate: the
+same asset routinely trades at different prices on Uniswap, Curve, and Hyperliquid
+16
+
+simultaneously, with no obligation on any party to route to the best price. DEX aggregators
+such as 1inch perform a functionally similar role – routing across venues to minimise execution
+cost – but as a profit-motivated service rather than a regulatory obligation. The party who bears
+the fragmentation cost in each system is different: in TradFi it is the broker who bears the
+routing obligation; in DeFi it is the trader who must know to use an aggregator.
+17
+
+CHAPTER 5
+FINDINGS AND DISCUSSION
+5.1 Principal
+Findings
+The analysis in Chapter 4 produces five findings that collectively answer the research question:
+how do market microstructure properties differ across TradFi, CEX, AMM-DEX, and on-chain
+CLOB venues, and do standard quantitative tools remain valid across them?
+Finding 1: Regulation does not automatically confer execution quality advantage. NYSE
+spreads for SPY are the highest of the four venues at every trade size, exceeding both CEX and
+on-chain CLOB venues by two orders of magnitude at retail trade sizes. This is not a failure of
+the regulatory framework – Reg NMS is designed to ensure best execution across fragmented
+venues, not to minimise single-venue spread – but it does challenge the assumption that TradFi
+infrastructure is uniformly superior on execution cost grounds. For a retail investor executing a
+single transaction on a single venue, a Binance or Hyperliquid account offers materially lower
+transaction costs than the NYSE equivalent.
+Finding 2: AMM and CLOB architectures occupy different cost regimes that do not simply
+converge. Uniswap v3’s concentrated liquidity mechanism produces a flat spread profile
+determined entirely by the LP fee tier, while CLOB venues produce near-zero spreads at small
+sizes that rise with trade size. Neither architecture dominates unconditionally: the AMM’s fee
+floor is a ceiling that CLOBs undercut at retail sizes but approach at institutional sizes. The
+practical implication is that optimal venue selection depends on trade size and cannot be
+determined by architecture alone.
+Finding 3: The on-chain CLOB achieves functional parity with CEX across all measured
+dimensions. Hyperliquid’s spread profile, funding rate behaviour, and volatility properties track
+Binance closely throughout the sample period. This is a significant finding because prior
+literature treated on-chain execution as structurally inferior to CEX execution on latency and
+depth grounds. The data suggests that, at least for liquid assets and standard trade sizes, the
+infrastructure gap has closed.
+Finding 4: Standard quantitative tools require structural adjustment before cross-venue
+application. The Amihud ratio is not a valid illiquidity measure for AMM pools due to the
+endogeneity of arbitrage volume. GARCH-based volatility targeting calibrated on equity regime
+persistence will systematically misprice crypto risk due to the higher frequency and different
+distribution of volatility regimes. ACF-based mean-reversion signals validated on SPY will
+encounter a structurally different autocorrelation environment in BTC and ETH. In each case,
+the issue is not that the tool is wrong – it is that the tool embeds assumptions about market
+structure that do not hold uniformly across venue types.
+18
+
+Finding 5: HIP-3 synthetic equity tokens introduce a qualitatively new category of oracle risk
+with regulatory implications that existing frameworks are not designed to handle. The TSLA
+deviation analysis demonstrates that the synthetic token price is structurally unanchored during
+NYSE-closed hours, with observed deviations of 5–10% over multi-day windows. This is not a
+temporary inefficiency that arbitrage will eliminate – it is a permanent structural feature of any
+instrument that trades continuously against an underlying that does not. The regulatory question
+is similarly structural: HIP-3 tokens are neither securities nor derivatives in any existing legal
+category, and the Howey Test analysis in Chapter 4 suggests that this gap is a design choice
+rather than an oversight.
+5.2 Discussion
+These findings have implications that extend beyond the specific venues and assets examined.
+The most significant is that the traditional mapping between regulation and market quality is
+breaking down at the execution level. Regulated venues remain superior on investor protection,
+systemic risk management, and legal recourse – dimensions this paper does not measure. But on
+the dimensions that directly affect trading cost and price discovery efficiency, the gap between
+regulated and unregulated venues has narrowed to the point where it can no longer be assumed
+without measurement.
+The convergence of Hyperliquid and Binance suggests that the DeFi-CeFi (decentralised
+finance–centralised finance) distinction, while architecturally real, may be less meaningful to a
+trader than the CLOB-AMM distinction. Two venues can share an order book architecture and
+produce near-identical execution statistics while differing fundamentally on custody model and
+failure mode – and the analytical tools appropriate for each are different.
+The HIP-3 finding raises a broader question about the direction of DeFi development. The
+original promise of decentralised finance was disintermediation: removing rent-extracting
+middlemen between savers and borrowers, buyers and sellers. HIP-3 does something different –
+it recreates exposure to regulated assets inside an unregulated wrapper, preserving returns while
+stripping the protections regulation attaches to them. Whether this constitutes genuine financial
+innovation or regulatory arbitrage depends on the observer’s prior, but the data makes the
+mechanism precise: the synthetic’s price is anchored to the underlying only when arbitrage is
+mechanically possible, and free to diverge whenever it is not.
+The quantitative tools finding points toward a practical agenda. The problem is not that
+researchers and practitioners use the wrong models – it is that they use correct models with
+incorrect domain assumptions. GARCH is a valid volatility model; the issue is calibrating its
+persistence parameter on equity data and applying it to crypto. The Amihud ratio is a valid
+illiquidity measure; the issue is applying it to a market where volume is partly mechanically
+generated rather than organic. Developing domain-adjusted versions of standard tools – rather
+than replacing them entirely – is a more tractable research programme.
+19
+
+CHAPTER 6
+CONCLUSIONS
+6.1 Summary
+This paper set out to examine whether DeFi markets have matured to the point where they can
+be evaluated on the same microstructure terms as their TradFi counterparts, and whether the
+quantitative tools developed for traditional markets transfer cleanly across the divide. The
+answer to both questions is qualified: yes, with important structural caveats that have practical
+consequences for traders, researchers, and regulators alike.
+Across four venue types – NYSE, Binance CEX, Uniswap v3 AMM, and Hyperliquid on-chain
+CLOB – the data reveals that execution cost is not correlated with regulatory status in the
+direction most observers would expect. The most regulated venue is the most expensive at every
+trade size. The least regulated – an on-chain order book with no central operator – matches the
+CEX on spread, funding rate behaviour, and volatility properties. This does not mean regulation
+is irrelevant; it means that the costs regulation imposes on execution quality are real and
+measurable, and that the protections it provides operate on dimensions this paper does not
+capture: legal recourse, custody safety, and systemic risk containment.
+The AMM-CLOB comparison produces a more nuanced finding. Neither architecture
+dominates unconditionally. AMMs provide a predictable, size-invariant fee structure that traders
+can model precisely; CLOBs provide near-zero retail spreads that rise with size. The choice
+between them is a function of trade size and whether the trader values cost predictability over
+cost minimisation.
+The HIP framework analysis identifies a new category of financial instrument that sits outside
+existing regulatory definitions and introduces structural risks – oracle dependency, after-hours
+price dislocation, and layered synthetic exposure – that are not adequately captured by
+frameworks developed for either traditional derivatives or earlier DeFi primitives.
+6.2 Limitations
+Several limitations constrain the generalisability of these findings. First, the microstructure data
+is a snapshot: order book depth and spread measurements reflect a single point in time and may
+not represent average conditions across the full sample period. Second, the HIP-3 analysis is
+limited to a single asset (TSLA) over a 45-day window, which is insufficient to characterise the
+full distribution of oracle deviations across different market conditions. Third, the paper does
+not measure the investor protection dimensions of regulation – recourse mechanisms, disclosure
+requirements, and systemic oversight – which may justify execution cost differences that spread
+data alone cannot explain.
+20
+
+6.3 Future
+Research
+Three directions follow directly from the findings. First, a longitudinal spread study across
+multiple assets and time periods would determine whether Hyperliquid’s execution parity with
+Binance is persistent or a feature of current market structure. Second, a systematic analysis of
+HIP-3 oracle deviations across multiple assets and conditions – particularly around corporate
+events such as earnings releases, which occur outside NYSE hours – would quantify the tail risk
+that the TSLA window analysis suggests is material. Third, developing domain-adjusted
+versions of the Amihud ratio and GARCH models that account for structural properties of
+AMM and on-chain CLOB markets would produce more reliable tools for the growing
+community of researchers and practitioners working across venue types.
+The broader implication is that the boundary between TradFi and DeFi is becoming a productive
+object of study rather than a dividing line between two separate literatures. The markets are
+converging faster than the analytical frameworks used to study them, and closing that gap is
+both tractable and overdue.
+21
+
+REFERENCES
+Aigner, A. A., & Dhaliwal, G. (2021). UNISWAP: Impermanent loss and risk profile of a
+liquidity provider (Tech. Rep. No. 2106.14404). arXiv. (arXiv preprint)
+Alexander, C., Deng, J., Feng, J., & Wan, H.
+(2023).
+Net buying pressure and the information in Bitcoin option trades. Journal of Financial Markets, 63, 100764. doi:
+doi:10.1016/j.finmar.2022.100764
+Amihud, Y. (2002). Illiquidity and stock returns: Cross-section and time-series effects. Journal
+of Financial Markets, 5(1), 31–56. doi: doi:10.1016/S1386-4181(01)00024-6
+Aspris, A., Foley, S., Svec, J., & Wang, L. (2021). Decentralized exchanges: The “wild west”
+of cryptocurrency trading. International Review of Financial Analysis, 77, 101845. doi:
+doi:10.1016/j.irfa.2021.101845
+Barbon, A., & Ranaldo, A. (2022). On the quality of cryptocurrency markets: Centralized
+versus decentralized exchanges (Tech. Rep. No. 2112.07386). arXiv. (arXiv preprint)
+Capponi, A., & Jia, R. (2021). The adoption of blockchain-based decentralized exchanges (Tech.
+Rep. No. 2112.06810). arXiv. (arXiv preprint)
+DappRadar. (2025). Defi industry report 2025. https://dappradar.com. (Accessed March
+2026)
+Del Monte, G., de Lucio, J., & Urban, J. (2025). Current understanding of impermanent loss
+risk in automated market makers. Blockchain: Research and Applications. (In press)
+Glosten, L. R., & Milgrom, P. R. (1985). Bid, ask and transaction prices in a specialist market
+with heterogeneously informed traders. Journal of Financial Economics, 14(1), 71–100.
+doi: doi:10.1016/0304-405X(85)90044-3
+Heimbach, L., Wang, Y., & Wattenhofer, R. (2022). Behavior of liquidity providers in decentralized exchanges (Tech. Rep. No. 2105.13822). arXiv. (arXiv preprint)
+Kyle, A. S. (1985). Continuous auctions and insider trading. Econometrica, 53(6), 1315–1335.
+doi: doi:10.2307/1913210
+Milionis, J., Moallemi, C. C., Roughgarden, T., & Zhang, A. L. (2022). Automated market
+making and loss-versus-rebalancing (Tech. Rep. No. 2208.06046). arXiv. (arXiv preprint)
+NFTPlazas. (2025). Decentralised perpetuals volume report 2025. https://nftplazas.com.
+(Accessed March 2026)
+Park, A. (2025). Conceptualizing decentralized finance. Journal of Financial Regulation.
+(Advance access)
+Schär, F.
+(2021).
+Decentralized finance: On blockchain- and smart contract-based financial markets. Federal Reserve Bank of St. Louis Review, 103(2), 153–174. doi:
+doi:10.20955/r.103.153-74
+Werner, S. M., Perez, D., Gudgeon, L., Klages-Mundt, A., Harz, D., & Knottenbelt, W. J. (2022).
+22
+
+SoK: Decentralized finance (DeFi). In Proceedings of the 4th acm conference on advances
+in financial technologies. doi: doi:10.1145/3558535.3559780
+Wu, X., Deng, W., Quan, Y., & Zhang, L. (2024). Trust dynamics and market behavior in
+cryptocurrency: A comparative study of centralized and decentralized exchanges (Tech.
+Rep. No. 2404.17227). arXiv. (arXiv preprint)
+Xu, J., & Vadgama, N. (2022). From banks to DeFi: The evolution of the lending market. In
+Enabling the internet of value. Springer. doi: doi:10.1007/978-3-031-18679-0
+23
+
+APPENDIX A
+DATA SOURCES AND VARIABLE DEFINITIONS
+A.1 Data
+Sources
+by
+Figure
+Figure 1 – Four-Venue Effective Spread. NYSE SPY bid-ask spread data is sourced from
+yfinance using daily OHLCV (Open, High, Low, Close, Volume) records; the effective spread
+is approximated as the daily high-low range divided by the closing mid-price. Binance
+BTC/USDT order book snapshots are collected via the Binance REST API through the CCXT
+library at ten trade-size increments between $1,000 and $1,000,000. Uniswap v3 USDC/ETH
+pool data is retrieved from the Alchemy Ethereum RPC endpoint using direct calls to the pool
+contract; the effective spread equals the 0.05% LP fee tier, as price impact is negligible at these
+trade sizes for this pool. Hyperliquid BTC order book data is sourced from the Hyperliquid
+public REST API. All snapshots were collected in March 2026.
+Figure 2 – CME Basis vs Perpetual Funding Rates. CME Bitcoin futures prices are sourced
+from yfinance using the BTC=F ticker (front-month contract). The annualised basis is
+computed as Basis = [(F/S)−1]×(365/DTE), where F is the futures price, S is the spot price
+from Binance, and DTE is days to expiry. Binance perpetual funding rates are sourced via the
+Binance REST API (/fapi/v1/fundingRate endpoint). Hyperliquid funding rates are
+sourced from the Hyperliquid public API (/info endpoint, fundingHistory method). Sample
+period: January 2022 to December 2025.
+Figure 3 – IV Skew Proxies. The SPX skew proxy uses the CBOE Skew Index, downloaded
+from the CBOE public data portal. The BTC skew proxy is constructed from the Deribit
+Volatility Index (DVOL) using a z-score normalisation over a 90-day rolling window. Both
+series are smoothed with a 30-day rolling mean. Vertical event markers are placed at: FTX
+collapse (11 November 2022), spot Bitcoin ETF approval (10 January 2024), and BTC all-time
+high (14 March 2024).
+Figure 4 – HIP-3 Oracle Deviation (TSLA). Synthetic TSLA token price data is sourced from
+the Hyperliquid spot candlestick API using market identifier @264 at one-hour resolution.
+NYSE reference prices are sourced from yfinance using the TSLA ticker at one-hour resolution
+and forward-filled during market-closed periods. Timestamps are rounded to the nearest hour to
+align the two series. NYSE closed periods are identified by checking that the timestamp falls
+within 13:30–20:00 UTC on a weekday that is not a US public holiday. The observation
+window is 6 January to 20 February 2026, beginning seven days after the token’s listing date of
+30 December 2025.
+Figures 5 & 6 – GARCH Volatility and ACF. Daily close-to-close log returns are computed as
+rt = ln(Pt/Pt−1)×100 for SPY, BTC-USD, and ETH-USD using yfinance price data. The
+24
+
+GARCH(1,1) model is estimated using the arch Python package with a normal error
+distribution. High-volatility regimes are defined as periods where conditional volatility exceeds
+the 75th percentile of the full-sample distribution. ACF values at lags 1–20 are computed using
+statsmodels.tsa.stattools.acf with the FFT method; 95% confidence bounds are
+calculated as ±1.96/√n, where n is the number of observations. Sample period: January 2022
+to December 2025.
+A.2 Variable
+Definitions
+Effective spread The cost of a round-trip transaction expressed as a percentage of trade value,
+measured as twice the distance between the transaction price and the prevailing mid-quote.
+Amihud illiquidity ratio The daily ratio of absolute return to dollar volume: ILLIQt = |rt|/Vt,
+where rt is the daily return and Vt is daily dollar volume. A higher value indicates lower
+liquidity.
+Annualised CME basis The annualised premium of the CME front-month Bitcoin futures
+price over the Binance spot price: [(F/S)−1]×(365/DTE).
+Perpetual funding rate A periodic payment (typically every 8 hours) between long and short
+positions in a perpetual swap contract, calibrated to keep the contract price close to the
+underlying spot price. A positive rate means longs pay shorts; a negative rate means shorts
+pay longs.
+25-delta risk reversal The implied volatility of a 25-delta call option minus the implied volatility of a 25-delta put option at the same expiry. A negative value indicates that put options
+are more expensive than calls (downside skew); a positive value indicates the reverse.
+Oracle deviation The percentage difference between a synthetic token’s market price on Hyperliquid and the reference price of its underlying asset: δt = (Psynth
+t
+/Pref
+t
+−1)×100.
+Conditional volatility (GARCH) The time-varying volatility estimate produced by a GARCH(1,1)
+model: σ2
+t = ω +αε2
+t−1 +βσ2
+t−1, where ω is the long-run variance, α captures the ARCH
+effect (sensitivity to recent shocks), and β captures persistence.
+Autocorrelation at lag k The correlation between rt and rt−k, measuring the degree to which
+past returns predict future returns at horizon k.
+A.3 Software
+and
+Reproducibility
+All data collection, processing, and figure generation was performed in Python 3.11. Key
+libraries used are: yfinance (market data retrieval), ccxt (Binance API interface), requests
+(Hyperliquid and Deribit API calls), arch (GARCH estimation), statsmodels (ACF
+computation), pandas and numpy (data processing), and matplotlib (figure generation). All
+figures were generated from live API data and are reproducible given equivalent API access at
+the time of data collection. The Hyperliquid TSLA synthetic token (@264) was settled and
+delisted in March 2026; historical candlestick data remains available via the Hyperliquid archive
+25
+
+endpoint.
+26

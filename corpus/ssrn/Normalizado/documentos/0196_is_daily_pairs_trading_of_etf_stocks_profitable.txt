@@ -1,0 +1,3679 @@
+Pairs Trading with Costly Short-Selling ∗
+Jing Xu †
+Peiquan Yang ‡
+Abstract
+We study an optimal pairs trading model with costly short-selling. When the investor has
+logarithm utility function, we derive the solution in closed form, which shows that: the
+optimal allocation functions are piece-wise linear in the pair’s relative price; stock borrowing
+fees asymmetrically reduce the optimal size of the long/short position; and for risk-hedging
+purpose, it can be optimal to short sell even when the stock borrowing fees outweigh the
+expected return earned from short selling. When the investor has power utility function, we
+propose analytical allocation functions adopting which only causes a small utility loss. When
+the investor is constrained from borrowing funds, the margin requirement for short selling
+can signiﬁcantly aﬀect the trading strategy. Empirically, we demonstrate the importance of
+incorporating short selling costs when trading pairs in China’s stock market and verify the
+model-implied relation between short selling costs and proﬁtability of pairs trading.
+Keywords: portfolio choice; pairs trading; risky arbitrage; short selling cost.
+JEL Classiﬁcation: C32, G11, G12.
+∗We thank the Editor, an anonymous Associate Editor, and two anonymous reviewers for providing
+valuable comments which help to improve this manuscript substantially. All errors are our own.
+†Jing Xu (Corresponding Author), School of Finance, Renmin University of China, 59 Zhongguancun
+Street, Beijing, China 100872, Email: jing.xu@ruc.edu.cn. Declarations of interest: none.
+‡Peiquan Yang, School of Finance, Renmin University of China, 59 Zhongguancun Street, Beijing, China
+100872, Email: yangpeiquan@ruc.edu.cn. Declarations of interest: none.
+
+1
+Introduction
+As a popular statistical arbitrage method, pairs trading aims to exploit relative mispricing
+of two highly correlated assets.
+When the prices of two such assets exhibit temporary
+divergence, an arbitrageur can simultaneously take a long position on the undervalued asset
+and a short position on the overvalued one, speculating on future convergence of their prices.
+Although optimal pairs trading has been extensively studied in the literature, existing models
+often neglect the costs incurred by short selling in pairs trading. This assumption may not
+be consequential in stock markets where the costs of short selling are relatively low (e.g.,
+the US stock market); it is, however, inappropriate for markets where short selling is highly
+costly (e.g., the China’s stock market).1
+In fact, by studying trading performance in 34
+international stock markets, Jacobs and Weber (2015) show that short selling costs are an
+important driver of pairs trading performance, highlighting the necessity of incorporating
+short selling costs in the context of optimal pairs trading. This study ﬁlls the above gap by
+examining the impact of various aspects of short selling costs, including stock borrowing fees
+and margin requirement, on optimal pairs trading. Moreover, by performing an empirical
+analysis in China’s mainland stock market, we empirically demonstrate the importance of
+optimally incorporating short selling costs in pairs trading and verify the model’s main
+implications.
+Speciﬁcally, we study an optimal portfolio choice problem of an investor who dynamically allocates wealth between a risk-free asset (bond) and two risky assets (stocks). After
+de-trending, each stock has an extra positive (or negative) expected return when it is undervalued (or overvalued) relative to the other one, and the diﬀerence in their de-trended
+1In China’s mainland stock market, the stock borrowing fees rate can be as high as 10% annually (see,
+e.g., Chang et al. (2014)). In addition, according to the regulation rules of the Shanghai Stock Exchange,
+borrowing stocks for short selling requires the investor to put in margins no less than 50% of the market
+value of the borrowed stocks.
+1
+
+log-prices (“relative price” hereafter) is reverting towards a long-run mean of zero, implying
+a tendency of convergence of the de-trended prices. Diﬀerent from prior studies, we assume
+short selling any of these two stocks is costly, requiring the investor to maintain suﬃcient
+margins and pay stock borrowing fees. Consistent with the practice in China’s stock market,
+we assume constant stock borrowing fees rate for both stocks. The investor’s objective is
+to maximize her expected constant relative risk aversion (CRRA) utility derived from the
+wealth level at a ﬁnite horizon.2
+In the absence of short selling costs, similar to Liu and Timmermann (2013), the optimal
+stock allocations are linear functions of the relative price. In the presence of short selling
+costs and when the investor’s utility function is of logarithm type, we derive the optimal
+allocations in closed form.
+The optimal allocations are piecewise linear functions of the
+relative price. Speciﬁcally, when one stock is only slightly overpriced relative to the other, it
+is optimal to take a long position (instead of a short position) on the overvalued stock to earn
+its positive instantaneous risk premium. When the degree of overpricing becomes greater
+but is still below a critical threshold, it is optimal to take a null position on the overvalued
+stock as this avoids incurring the short selling costs. When the degree of overpricing becomes
+suﬃciently large, it is optimal to short sell the overvalued stock because its expected return
+becomes suﬃciently negative.
+In our model, short selling is driven by two incentives: (i) to capitalize on the negative
+expected return of the overpriced stock (speculation) and (ii) to hedge the risk of holding
+the undervalued stock (risk hedging). This fact has two major implications. First, it can
+be optimal to short sell the overpriced stock even when the stock borrowing fees outweigh
+2Similar to Liu and Timmermann (2013), we have also examined models with some alternative features,
+such as random investment horizon or non-recursive arbitrage opportunities. In these cases, the impact of
+costly short-selling on the optimal allocation rule is similar to that in our baseline model. We omit these
+results to save space, but they are available upon request.
+2
+
+the expected return earned from short selling. The intuition behind this result is as follows.
+When a stock is deeply undervalued, the investor takes a long position with a large size on
+this stock to speculate on its high expected return, generating a large risk exposure and
+creating a strong demand for hedging the risk. In such a case, if the stock borrowing fees
+only marginally outweigh the expected return earned from short selling the overvalued stock,
+the demand for hedging risk can dominate and make it optimal to short sell. Second, the
+short stock borrowing costs simultaneously but asymmetrically reduce the optimal size of
+the long and of the short position. The impact on the short position is due to the lower
+after-fee return earned from short selling. The reduction in the short position’s size reduces
+the investor’s risk exposure, weakening her risk-hedging demand and leading to a smaller
+optimal size of the long position. Because the expected return earned from the long position
+is not aﬀected by the stock borrowing fees, the impact on the long position is smaller in
+magnitude.
+When the investor’s utility function is of power type, closed-form solution is no longer
+available. We ﬁrst demonstrate numerically that the optimal allocation functions in this
+case share many similarities with those in the logarithm utility function case. For example,
+the optimal allocation functions are close to be piecewise linear in the relative price; and
+it is optimal to short sell only when the degree of overpricing exceeds a threshold level.
+Unlike those in the logarithm utility function case, however, the optimal allocation functions
+and threshold levels in the power utility function case are time-dependent. Based on these
+observations, we analytically derive a near-optimal allocation rule and we show that adopting
+it only causes a fairly small utility loss for the investor.
+In China’s stock market, borrowing stock for short selling is subject to high margin
+requirement (see footnote 1).
+To study the impact of such high margin requirement on
+optimal pairs trading, we add a constraint on the investor’s ability to borrow funds. With
+3
+
+this additional constraint, the margin requirement can have a signiﬁcant impact on the
+optimal stock allocations. For instance, when one stock is deeply overpriced, if this stock’s
+expected return is suﬃciently negative, then it is optimal to take a large short position
+on this stock; in this case, the investor may need to reduce the size of her long position
+on the undervalued stock so that she has suﬃcient funds to maintain the margin required
+for short selling. With the no-fund-borrowing constraint, we decompose the total costs of
+short selling into two components: the direct stock borrowing fees payment and the liquidity
+constraint cost of maintaining margins; and we show that the second cost component can
+also be signiﬁcant.
+To make a direct comparison with Liu and Timmermann (2013), which study optimal
+convergence trade without short selling costs, we further examine an extension of the baseline
+model. In the extended model, we allow the investor to trade in a market portfolio, which
+is costly to short sell, and assume the paired stocks are priced according to the CAPM
+conditional on zero relative price level. With zero stock borrowing fee, we replicate Liu and
+Timmermann (2013)’s result that the optimal allocations to the paired stocks have opposite
+signs near the zero relative price level when the two stocks’ prices are mutually convergent.
+With positive stock borrowing fees, the investor changes the short positions to null positions
+near the zero relative price level since the abnormal returns earned from short selling are too
+low compared to the stock borrowing fees. Thus, diﬀerent from those in the baseline model,
+the optimal allocations to the paired stocks in this extension do not have the same sign near
+zero relative price level. Moreover, we show that stock borrowing costs can reduce the size
+of the position on the market portfolio even when it is a long position. This is because stock
+borrowing costs reduce wealth allocations to the paired stocks, leading to smaller systematic
+risk exposure to hedge by trading the market portfolio.
+Lastly, we perform an empirical analysis in China’s mainland stock market and the
+4
+
+objective is twofold. First, we demonstrate the importance of optimally incorporating stock
+borrowing costs for pairs trading in China’s stock market. For this objective, we investigate
+the empirical performance of the optimal trading strategy and of the cost-naive trading
+strategy which is obtained under the zero stock borrowing fee assumption, respectively.
+Second, we verify our model’s major implication that the higher the stock borrowing fees, the
+higher the value of adopting the optimal trading strategy. For this objective, we exploit the
+time-series variations in the stock borrowing fees rate quoted by a major Chinese securities
+company, namely Huafu Securities. During the testing period, Huafu Securities’ quote of the
+stock borrowing fees rate experiences one single signiﬁcant change on 16 March 2015, when
+it drops from 10.6% to 8.35%. Such variation enables us to demonstrate our main points in
+the clearest manner.
+By examining the performance of trading the top 15 pairs formed using the shortable
+Chinese stocks, we show that the cost-naive strategy substantially underperforms the optimal
+strategy in terms of risk-adjusted returns. When adopting the cost-naive strategy, the investor trades on the relative mispricing too aggressively, leading to excessive stock borrowing
+fees payment and resulting in considerably lower Sharpe ratios. Speciﬁcally, when trading
+in an initially equal-weighted portfolio of the sample pairs, the Sharpe ratio achieved by the
+optimal strategy is 0.3 higher than that achieved by the cost-naive strategy during the full
+testing period. In addition, the performance advantage of the optimal strategy is larger during the subperiod with higher stock borrowing fees. For example, for the above-mentioned
+pairs portfolio, the improvement in the Sharpe ratio equals 0.27 (0.21 resp.) during the
+high-fees (low-fees resp.) subperiod. These results are consistent with our model’s main
+implications.
+The rest of this paper unfolds as follows. In the next section, we brieﬂy review prior
+researches pertinent to our study. In Section 3, we present our modeling framework. In
+5
+
+Section 4, we analyze the primary outcomes of our model. In Section 5, we perform an
+empirical analysis in China’s stock market to verify the main implications of our model. In
+Section 6, we conclude. All proofs and technical details are relegated to the appendix.
+2
+Literature Review
+There is a large body of literature on optimal pairs trading.
+Generally speaking, pairs
+trading models can be classiﬁed into two categories: the spread-based approach and the
+cointegration-based approach.3
+The spread-based approach directly models the spread between the prices of two or more
+target stocks and designs trading strategies accordingly. The development of this approach is
+mainly reﬂected by the ever-growing sophistication of the spread modeling, starting from the
+simple mean-reverting Ornstein–Uhlenbeck (OU) process model (e.g., Elliott et al. (2005)
+and Zeng and Lee (2014)) to more complicated models such as the regime-switching model
+(Bai and Wu (2018)), the L´evy OU process model (Wu et al. (2020)), the general state space
+model (Zhang (2021)), and the fractional OU process model (Xiang et al. (2022)). G¨onc¨u
+and Akyildirim (2016) study the application of the spread-based approach to pairs trading
+in the commodity markets.
+Diﬀerent from the spread-based approach, the cointegration-based approach models the
+price of each stock separately, but permitting a cointegration relation between diﬀerent stocks’ prices.4 This approach allows the researchers to cast optimal pairs trading problems
+in the classic portfolio choice framework (see, e.g., Tourin and Yan (2013) and Liu and Tim3Some researchers have recently explored the possibility of applying machine learning techniques in pairs
+trading. For instance, Flori and Regoli (2021) use the long/short-term memory networks to reveal pairs
+trading opportunities; Han et al. (2023) examine the use of unsupervised learning technique in pairs trading.
+4It is worth mentioning that Huck and Afawubo (2015) argue for the superiority of the cointegration-based
+approach in pairs trading.
+6
+
+mermann (2013)). The recent advances of the cointegration-based approach include optimal
+pairs trading with parameter uncertainty (Chiu and Wong (2018)), partial cointegration (Clegg and Krauss (2018)), or delayed cointegration (Yan et al. (2022)). Lintilhac and Tourin
+(2017) apply the cointegration-based method to optimal pairs trading in the Bitcoin markets.
+Since short selling costs are only incurred by the short leg, we need to model the long and
+the short leg in pairs trading separately. Thus, the cointegration-based approach becomes
+the ideal choice for our purpose.
+Our study is closely related to the studies of optimal pairs trading with market frictions,
+such as transaction costs (e.g., Song and Zhang (2013) and Lei and Xu (2015)) or price
+impact (Cartea et al. (2019)). An important diﬀerence between these studies and ours is
+that transaction costs or price impact are incurred only at the time of trading, while the
+stock borrowing fees are charged continuously when the stocks are borrowed for short selling
+(D’avolio (2002)). Our study is also related to the studies of optimal arbitrage strategies,
+including Brennan and Schwartz (1990) which study optimal arbitrage with index futures
+by modeling the spread between two similar futures’ prices as a Brownian bridge process;
+Dai et al. (2011) which extend Brennan and Schwartz (1990) by allowing the arbitrageur to
+directly reverse positions at a lower cost; and Liu and Longstaﬀ(2004) which examine the
+impact of collateral requirement on optimal arbitrage trading.
+The empirical performance of pairs trading strategies has been examined in many ﬁnancial markets, including the US stock market (Gatev et al. (2006), Schultz and Shive (2010),
+Rinne and Suominen (2017), and Chen et al. (2019)), the US REITs market (Mori and
+Ziobrowski (2011)), the international commodities markets (Fernandez-Perez et al. (2020)),
+and the international stock markets (Jacobs and Weber (2015)). Our empirical analysis
+contributes to this ﬁeld of study by demonstrating the importance of optimally controlling
+short selling costs when conducting pairs trading in China’s stock market.
+7
+
+3
+The Model
+Our purpose is to study the impact of costly short-selling on optimal pairs trading. Hence,
+our model needs to capture some important stylized facts about short selling in markets with
+high short selling costs. We choose China’s mainland stock market as the main playing ﬁeld
+for two reasons. First, it has become the second largest stock market in the world; thus,
+studying optimal trading strategies in this market is economically meaningful. Second, short
+selling in China’s stock market is subject to high costs, making it particularly important to
+optimally reduce short selling costs to enhance the proﬁtability of pairs trading.5
+3.1
+Costs of Short Selling Stocks in China
+We begin with discussing some stylized facts about short selling in China’s mainland stock
+market.6 In this market, short selling becomes feasible only after the launch of the pilot
+program in March 2010, when qualiﬁed investors are allowed to short sell the stocks included
+in the list of Designated Securities Eligible for Short Selling (“the list” for short). Afterwards,
+the list is expanded gradually over time. Qualiﬁed investors can short sell stocks using the
+stock borrowing service provided by securities companies, which charge stock borrowing fees.
+A unique feature of the stock borrowing fees rate in China’s stock market is that diﬀerent
+securities companies may quote diﬀerent rates; but for a given securities company, the rate
+typically does not vary across shortable stocks. This is very diﬀerent from the US market
+where stock borrowing fees exhibit signiﬁcant cross-stock variations (D’avolio (2002)).
+5By comparison, the costs of short selling stocks are much lower in some developed ﬁnancial markets such
+as the US or Japan market (see, e.g., D’avolio (2002) and Husz´ar and Prado (2019)).
+6The data used in this subsection is obtained from the Wind database. For a more detailed description
+of the institutional background of short selling in China’s stock market, the interested readers are referred
+to Chang et al. (2014).
+8
+
+(a) Number of Stock Borrowing Service Providers
+(b) Stock Borrowing Fee Rate
+Figure 1: Stock Borrowing Business and Costs in China
+Subﬁgure (a) shows the number of securities companies whose stock borrowing fees rates are available in the Wind database against time. Subﬁgure (b) shows the time series of the average stock
+borrowing fee rate across diﬀerent securities companies together with the one-standard-deviation
+interval around the average.
+Since the launch of the pilot program, some securities companies began to oﬀer stock
+borrowing service to their clients.
+As is shown in Figure 1(a), the number of securities
+companies whose stock borrowing fees rates are available in the Wind database increases
+from 6 in April 2010 to 95 in November 2023.7 In Figure 1(b), we plot the time series of
+the stock borrowing fees rate averaged across diﬀerent securities companies. Together with
+it, we also show the one-standard-deviation range (across securities companies) around the
+average. As can be seen, the variations of the stock borrowing fees rate are small in both
+time series and cross section. Speciﬁcally, over the same period, the time-series mean of
+the average stock borrowing fees rate equals 9.986%, with a time-series standard deviation
+of 0.259%. These statistics indicate a fairly stable (and high) stock borrowing fees rate in
+China’s mainland stock market.
+In addition to the stock borrowing fees, short selling stocks in China’s market is subject
+7Meanwhile, the number of shortable stocks increases from 90 in April 2010 to 1875 in November 2023.
+9
+
+to high margin requirement.
+According to the regulation rule of the Shanghai Security
+Exchange (SSE) in 2023, borrowing stocks for short selling typically requires the investor to
+keep a minimum margin that amounts to 50% of the market value of the borrowed stocks.8
+All the proceeds generated by short selling, together with the margin, are put as collateral.
+3.2
+Model
+In this subsection, we present our modeling framework.
+Assets
+We work with a ﬁltered complete probability space (Ω, F, {Ft}t∈[0,T], P), on which
+a three-dimensional standard Brownian motion process (Z0t, Z1t, Z2t) is deﬁned. We consider
+an investor who can trade in three assets. The ﬁrst asset is a risk-free money market account
+(bond) which grows at a constant rate of r, and the second and the third assets (stocks) are
+risky. We assume these two stocks have the following return dynamics:
+dP1t
+P1t
+= (µ −δ1xt)dt + σdZ0t + b1dZ1t,
+(1)
+dP2t
+P2t
+= (µ + δ2xt)dt + σdZ0t + b2dZ2t,
+(2)
+where dZ0t represents the common risk factor, dZit is stock i’s idiosyncratic risk factor for
+i = 1, 2, δ1 and δ2 are nonnegative constants with δ1 + δ2 > 0,9 and
+xt = ln P1t −ln P2t −1
+2(b2
+2 −b2
+1)t
+(3)
+8See http://www.sse.com.cn/lawandrules/sselawsrules/trade/specific/margin/c/c_20230216_
+5716370.shtml.
+9In Liu and Timmermann (2013), the constraint on δ1 and δ2 is δ1 + δ2 > 0. Liu and Timmermann
+(2013) show that if δ1 and δ2 have opposite sign, it can be optimal to simultaneously take long or short
+positions on both stocks even when they are both deeply mispriced. We use the case with optimal long-short
+position to convey our main intuition as this is a more representative case in practice. Also note that Liu and
+Timmermann (2013) assume the two stocks have identical volatilities, while we allow them to have diﬀerent
+volatilities.
+10
+
+is the de-trended relative price of the two stocks. Note that de-trending is necessary because
+we allow the two stocks to have diﬀerent return volatilities.
+Applying the Itˆo’s lemma yields the following dynamics of xt:
+dxt = −(δ1 + δ2)xtdt + b1dZ1t −b2dZ2t,
+(4)
+which implies that the process xt is reverting toward a long-run mean of zero. We assume
+that µ ≥r so that on average both stocks carry nonnegative risk premia. In what follows,
+we term −δ1xt (δ2xt resp.) the excess expected return of stock 1 (stock 2 resp.).
+Costly Short-Selling
+Typically, pairs trading involves taking a long position on the undervalued asset and a short position on the overvalued one.
+To sell short a stock, the
+investor needs to ﬁrst borrow it through brokers and put collateral; brokers charge stock
+borrowing fees, which are typically a fraction of the market value of the borrowed stocks,
+throughout the period of borrowing. Let Wt be the investor’s total wealth process, φ1t and
+φ2t be the time-t fraction of wealth allocated to stock 1 and 2 respectively, and ηi be the
+margin ratio required for borrowing stock i (i.e., the investor needs to maintain a minimum
+total collateral–borrowed stock ratio of 1 + ηi).10 For a real number a, we conventionally
+deﬁne a+ = max{a, 0} and a−= max{−a, 0}. To obtain a dynamic budget constraint, we
+decompose the investor’s total wealth as follows:
+Wt =
+2
+X
+i=1
+φitWt +
+ 
+2
+X
+i=1
+(1 + ηi)φ−
+it
+!
+Wt +
+ 
+1 −
+2
+X
+i=1
+φ+
+it −
+2
+X
+i=1
+ηiφ−
+it
+!
+Wt,
+(5)
+10ηi usually takes a value of 2% in US stock market (D’avolio (2002) and Cohen et al. (2007)), 5% in Hong
+Kong’s stock market, and 50% in China’s mainland stock market as of 2023.
+11
+
+where P2
+i=1 φitWt is the market value of the stock positions;
+ P2
+i=1(1 + ηi)φ−
+it
+
+Wt is the
+value of the collateral required for maintaining short positions; and
+ 
+1 −
+2
+X
+i=1
+φ+
+it −
+2
+X
+i=1
+ηiφ−
+it
+!
+Wt
+(6)
+is the value of the bond position.
+When φit < 0, the investor is selling short stock i with a market value of φ−
+itWt. Based on
+the discussions in Section 3.1, we assume constant stock borrowing fees rates. Speciﬁcally, if
+the time-t annualized fee rate for borrowing stock i is κi, the investor pays a stock borrowing
+fee of κiφ−
+itWtdt over the period [t, t + dt].
+Assuming the investor uses cash deposit as
+collateral, which is common in practice, her budget constraint is
+dWt
+Wt
+=
+2
+X
+i=1
+φit
+dPit
+Pit
++ r
+ 
+1 −
+2
+X
+i=1
+φ+
+it −
+2
+X
+i=1
+ηiφ−
+it
+!
+dt +
+2
+X
+i=1
+(r(1 + ηi)φ−
+it −κiφ−
+it)dt
+=rdt + φ1t
+ −δ1xt + µ −r + κ11φ1t<0
+
+dt + φ2t
+ δ2xt + µ −r + κ21φ2t<0
+
+dt
++
+2
+X
+i=1
+φit(σdZ0t + bidZit).
+(7)
+The Investor’s Problem and Solution Method
+An asset allocation strategy (φ1, φ2) =
+{(φ1t, φ2t) : t ≥0} is admissible if the resultant wealth process satisﬁes Wt ≥0 for all t ≥0.
+The investor’s problem is to maximize her expected constant relative risk aversion (CRRA)
+utility derived from the wealth level at a ﬁnite horizon T, that is,
+max
+(φ1,φ2) E[Uγ(WT)],
+(8)
+12
+
+by choosing the optimal asset allocation strategy among all admissible ones, where
+Uγ(W) =
+
+
+
+
+
+
+
+1
+1−γW 1−γ,
+if γ > 0 and γ̸ = 1,
+ln W,
+if γ = 1.
+(9)
+Deﬁne the investor’s indirect utility function as
+J(W, x, t) =
+max
+{(φ1s,φ2s):s≥t} E [Uγ(WT)|Wt = w, xt = x] .
+(10)
+Then, J(W, x, t) must satisfy the following Hamilton–Jacobi–Bellman (HJB) equation:
+max
+φ1,φ2
+
+Jt −(δ1 + δ2)xJx + 1
+2(b2
+1 + b2
+2)Jxx + (b2
+1φ1 −b2
+2φ2)WJxW
++
+
+r + φ1
+ −δ1x + µ −r + κ11φ1<0
+
++ φ2
+ δ2x + µ −r + κ21φ2<0
+
+WJW
++ 1
+2
+ (φ1 + φ2)2σ2 + φ2
+1b2
+1 + φ2
+2b2
+2
+
+W 2JWW
+
+= 0
+(11)
+on the domain Ω0 = {(W, x, t) ∈(0, ∞) × (−∞, ∞) × [0, T]}. The condition at time t = T is
+J(W, x, T) = Uγ(W).
+(12)
+The homogeneity of the problem implies that
+J(W, x, t) =
+
+
+
+
+
+
+
+1
+1−γW 1−γe(1−γ)f(x,t),
+if γ > 0 and γ̸ = 1,
+ln W + f(x, t),
+if γ = 1
+(13)
+for a bivariate function f(x, t) deﬁned on the domain Ω1 = {(x, t) ∈(−∞, ∞) × [0, T]}.11
+11It is easy to see that f(x, t) is the investor’s total certainty equivalent rate of return, over the period
+[t, T] and conditional on xt = x, earned from optimal investment.
+13
+
+Straightforward calculations reveal that for all γ > 0 (including the special case with γ = 1),
+the function f(x, t) satisﬁes the following equation on Ω1:
+max
+φ1,φ2
+
+ft −(δ1 + δ2)xfx + 1
+2(b2
+1 + b2
+2)(fxx + (1 −γ)f 2
+x) + (b2
+1φ1 −b2
+2φ2)(1 −γ)fx
++ r + φ1
+ −δ1x + µ −r + κ11φ1<0
+
++ φ2
+ δ2x + µ −r + κ21φ2<0
+
+−1
+2γ
+ (φ1 + φ2)2σ2 + φ2
+1b2
+1 + φ2
+2b2
+2
+
+= 0,
+(14)
+with the terminal condition at time t = T
+f(x, T) = 0.
+(15)
+Given the solution function f(x, t), the optimal allocation functions are
+(φ∗
+1(x, t), φ∗
+2(x, t)) = arg max
+φ1,φ2
+ b2
+1φ1 −b2
+2φ2
+
+(1 −γ)ϕx(x, t) −1
+2γ
+ (φ1 + φ2)2σ2 + φ2
+1b2
+1 + φ2
+2b2
+2
+
++ φ1
+ −δ1x + µ −r + κ11φ1<0
+
++ φ2
+ δ2x + µ −r + κ21φ2<0
+	
+.
+(16)
+4
+Model Implications
+In this section, we analyze the model’s primary implications.
+4.1
+Pair Selection and Parameter Estimates
+We use the historical daily returns of a pair of stocks traded in China’s mainland market
+to calibrate the stock-related parameters. To select the pair, we carry out the following
+procedures.
+First, we identify stocks that are shortable during the period from 29 July
+2010 to 31 October 2023. Next, following Gatev et al. (2006), we construct a total return
+14
+
+index for each of these stocks, incorporating dividend distributions and share splits. Then,
+we determine the pairwise distance of these stocks by calculating the Euclidean distance
+between the time series of their total return indexes. We ﬁnd that the stock of China CITIC
+Bank Co., Ltd. and the stock of Bank of Communications Co., Ltd. have the minimum
+distance. Accordingly, we pair them together to calibrate model parameters.
+To deal with diﬀerential nominal price levels of the two stocks, we estimate a matching
+ratio k so that we can regard k shares of the China CITIC Bank as stock 1 and 1 share of the
+Bank of Communications as stock 2 in the model. The optimal matching ratio k together with
+other stock-related parameters are estimated using the quasi-maximum likelihood estimation
+(QMLE) method detailed in Appendix A.1. Using this approach, we obtain the following
+parameter values: the unconditional expected return is µ = 0.075; the common return
+volatility is σ = 0.222; the idiosyncratic return volatilities are b1 = 0.185 and b2 = 0.060;
+the price correction speeds are δ1 = 1.702 and δ2 = 0.792; and the optimal matching ratio is
+k = 0.817. Figure 2 depicts the price processes of the matched sample pair, which exhibit a
+tendency of comovement.
+We estimate the risk-free rate using the time-series average of the inter-bank lending rate
+and obtain r = 0.038. According to the margin requirement for short selling imposed by SSE,
+we set the margin ratios to η1 = η2 = 50%.12 We estimate the stock borrowing fees rates
+using the time-series mean of the average stock borrowing fees across diﬀerent securities
+companies and obtain κ1 = κ2 = 9.986%. Furthermore, we set the investor’s horizon to
+T = 1 year. Table 1 summarizes these default parameter values.
+12η1 and η2 can have an impact on the solution by constraining the feasible choices of φ1t and φ2t when
+the investor is restricted from borrowing funds. We present an analysis of this case in Section 4.3.
+15
+
+Figure 2: Price Processes of the Matched Sample Pair
+This ﬁgure shows the price processes of the sample pair with a matching ratio of 0.817:1 (i.e., 0.817
+shares of the China CITIC Bank vs. 1 share of the Bank of Communications).
+Table 1: Default Parameter Values
+This table summarizes the default parameter values used in our numerical analysis. The stock
+return-related parameters are estimated to match the daily returns of the China CITIC Bank and
+of the Bank of Communications over the period from 29 July 2010 to 31 October 2023; the risk-free
+rate is estimated using the time-series average of the inter-bank lending rate over the same period;
+and the stock borrowing fees rates are estimated using the time-series mean of the average stock
+borrowing fees across diﬀerent securities companies.
+Parameter
+Symbol
+Default Value
+Risk-free rate
+r
+0.038
+Expected stock return
+µ
+0.075
+Common return volatility
+σ
+0.222
+Idiosyncratic return volatility
+b1
+0.185
+b2
+0.060
+Price-correction speed
+δ1
+1.702
+δ2
+0.792
+Margin ratio for short selling
+η1 = η2
+50%
+Stock-borrowing fee rate
+κ1 = κ2
+9.986%
+Stock matching ratio
+k
+0.817
+Investment horizon (years)
+T
+1
+16
+
+4.2
+Optimal Pairs Trading Rule
+In this subsection, we examine the optimal pairs trading rule in our model.
+4.2.1
+No-Short-Selling-Costs Case
+As a benchmark, we begin with the case without the short selling costs. Using an approach
+similar to Liu and Timmermann (2013), we can obtain the following optimal allocation rule
+(the derivation is provided in Appendix A.2):
+φ∗
+1t =1 −γ
+γ
+(2A(t)xt + B(t)) + −((σ2 + b2
+2)δ1 + σ2δ2)xt + b2
+2(µ −r)
+γ((σ2 + b2
+1)(σ2 + b2
+2) −σ4)
+,
+(17)
+φ∗
+2t = −1 −γ
+γ
+(2A(t)xt + B(t)) + ((σ2 + b2
+1)δ2 + σ2δ1)xt + b2
+1(µ −r)
+γ((σ2 + b2
+1)(σ2 + b2
+2) −σ4)
+,
+(18)
+where the time-dependent functions A(t) and B(t) are given by (61) and (62) in Appendix
+A.2. Equation (17) and (18) indicate that in the absence of short selling costs, the optimal
+allocations φ∗
+1t and φ∗
+2t are both linear in the relative price xt.
+Remark: In our baseline model, if both stocks carry positive unconditional risk premia
+(i.e., µ > r), then the optimal stock allocations can be both positive when the relative price
+xt is near zero.13 This diﬀers from the result obtained by Liu and Timmermann (2013), which
+show that when δ1, δ2 > 0, the optimal allocations have opposite signs near the zero relative
+price point. The reason for this discrepancy is as follows. Liu and Timmermann (2013)
+assume that the investor can trade in a market portfolio in addition to the pair of stocks,
+and that the paired stocks are priced according to the CAPM conditional on zero relative
+price; as a result, in Liu and Timmermann (2013), the investor’s optimal exposures to the
+paired stocks are purely driven by their abnormal returns in excess of CAPM, which have
+opposite signs when δ1, δ2 > 0, leading to allocations with opposite signs. By comparison, in
+13This can be clearly seen from (17) and (18) by setting γ = 1 and xt = 0.
+17
+
+our baseline model, we do not include the market portfolio in the investment opportunity set;
+as a result, the optimal exposures to the paired stocks are also aﬀected by their unconditional
+risk premium µ −r which is positive, leading to positive allocations to both stocks near the
+zero relative price point. In Section 4.4, we consider a model which directly extends Liu
+and Timmermann (2013) to incorporate the stock borrowing fees for all assets (including the
+market portfolio). We show that the results derived from such a model exhibit no disparities
+with Liu and Timmermann (2013).
+4.2.2
+Short-Selling-Costs Case: Logarithm Utility
+Intuitively, with ﬁxed stock borrowing fees rates, the proﬁtability of short selling the overvalued stock should be dominated by the stock borrowing costs for a range of the relative
+price xt.14 This implies that the optimal allocations should exhibit piecewise patterns. To
+verify this intuition, we ﬁrst consider the case with stock borrowing costs and logarithm
+utility function (i.e., γ = 1). In this case, equation (16) reads
+(φ∗
+1(x, t), φ∗
+2(x, t)) = arg max
+φ1,φ2
+
+φ1
+ −δ1x + µ −r + κ11φ1<0
+
++ φ2
+ δ2x + µ −r + κ21φ2<0
+
+−1
+2
+ (φ1 + φ2)2σ2 + φ2
+1b2
+1 + φ2
+2b2
+2
+	
+.
+(19)
+By maximizing the piecewise quadratic function on the right hand side of (19), we obtain
+the following solution:
+Proposition 1: (Solution with Logarithm Utility) When Uγ(W) = ln W, the optimal allo14For stock 1, this means xt is positive but below an upper threshold level; and for stock 2, this means xt
+is negative but above a lower threshold level.
+18
+
+cations are:
+φ∗
+1t =
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+−((σ2 + b2
+2)δ1 + σ2δ2)xt + b2
+2(µ −r) −σ2κ2
+(σ2 + b2
+1)(σ2 + b2
+2) −σ4
+≥0,
+xt < X1,
+−δ1xt + µ −r
+σ2 + b2
+1
+≥0,
+X1 ≤xt ≤X2,
+−((σ2 + b2
+2)δ1 + σ2δ2)xt + b2
+2(µ −r)
+(σ2 + b2
+1)(σ2 + b2
+2) −σ4
+≥0,
+X2 < xt < X3,
+0,
+X3 ≤xt ≤X4,
+−((σ2 + b2
+2)δ1 + σ2δ2)xt + b2
+2(µ −r) + (σ2 + b2
+2)κ1
+(σ2 + b2
+1)(σ2 + b2
+2) −σ4
+≤0,
+xt > X4;
+(20)
+and
+φ∗
+2t =
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+((σ2 + b2
+1)δ2 + σ2δ1)xt + b2
+1(µ −r) + (σ2 + b2
+1)κ2
+(σ2 + b2
+1)(σ2 + b2
+2) −σ4
+≤0,
+xt < X1,
+0,
+X1 ≤xt ≤X2,
+((σ2 + b2
+1)δ2 + σ2δ1)xt + b2
+1(µ −r)
+(σ2 + b2
+1)(σ2 + b2
+2) −σ4
+≥0,
+X2 < xt < X3,
+δ2xt + µ −r
+σ2 + b2
+2
+≥0,
+X3 ≤xt ≤X4,
+((σ2 + b2
+1)δ2 + σ2δ1)xt + b2
+1(µ −r) −σ2κ1
+(σ2 + b2
+1)(σ2 + b2
+2) −σ4
+≥0,
+xt > X4;
+(21)
+respectively, where the threshold values are given by
+X1 = −b2
+1(µ −r) −(σ2 + b2
+1)κ2
+σ2δ1 + (σ2 + b2
+1)δ2
+≤0,
+(22)
+X2 =
+−b2
+1(µ −r)
+σ2δ1 + (σ2 + b2
+1)δ2
+≤0,
+(23)
+X3 =
+b2
+2(µ −r)
+σ2δ2 + (σ2 + b2
+2)δ1
+≥0,
+(24)
+X4 = b2
+2(µ −r) + (σ2 + b2
+2)κ1
+σ2δ2 + (σ2 + b2
+2)δ1
+≥0.
+(25)
+Proof. See Appendix A.3.
+19
+
+Figure 3: Optimal Allocation Rule: Logarithm Utility Case
+This ﬁgure shows the optimal allocation functions of an investor with logarithm utility function (i.e.,
+γ = 1), with or without the stock borrowing costs. Default parameter values: µ = 0.075, σ = 0.222,
+b1 = 0.185, b2 = 0.060, δ1 = 1.702, δ2 = 0.792, r = 0.038, η1 = η2 = 50%, κ1 = κ2 = 9.986%, and
+T = 1.
+20
+
+Figure 3 plots the optimal allocation functions φ∗
+1 and φ∗
+2 obtained in three diﬀerent cases
+(explained shortly). For comparison purpose, we also show the optimal allocation functions
+in the absence of stock borrowing fees (i.e., κ1 = κ2 = 0). In general, the optimal allocation
+to stock 2 has the following features: when stock 2 is slightly overpriced relative to stock
+1 (with X2 < xt < 0), it is optimal to take a long position on stock 2 to earn its positive
+instantaneous risk premium; when the degree of overpricing becomes greater but is still below
+a critical value (with X1 ≤xt ≤X2), it is optimal to take a null position on stock 2 as this
+avoids paying the stock borrowing fees; when the degree of overpricing becomes suﬃciently
+large (with xt < X1), it is optimal to take a short position on stock 2. Therefore, compared
+with the no-short-selling-costs case, the investor facing short selling costs should take a null
+position on the overvalued stock over a range of relative mispricing. In addition, over each
+interval, the optimal allocation to stock 2 is linear in xt. The optimal allocation to stock 1
+can be similarly analyzed.
+In Panel A of Figure 3, we intentionally make stock 2 symmetric to stock 1 by setting
+b2 = b1 = 0.185 and δ2 = δ1 = 1.702. In this case, the threshold points X1 and X4, as well as
+X2 and X3, are symmetric to zero. In Panel B, we decrease the value of δ2 to its calibrated
+value of 0.792. In this case, stock 2’s expected return decreases slower as the value of xt
+decreases, which generates the following two patterns. First, it is optimal to unwind long
+position on stock 2 at a more negative value of xt, leading to a change in the value of the
+threshold X2 from -0.0056 to -0.0084. Second, a more negative value of xt is required for
+making short selling stock 2 worthwhile, leading to a change in the value of the threshold
+X1 from -0.0425 to -0.0640. In Panel C, we further decrease the value of b2 to its calibrated
+value of 0.0602. Such a change has no impact on the value of X1 and X2, but it leads to
+more aggressive positions (can either be long or be short, depending on the value of xt) on
+stock 2 due to reduced risk.
+21
+
+Separating Speculation and Risk-Hedging Component
+Similar to other multi-asset
+portfolio choice models, our model implies that the optimal portfolio contains a part that
+reveals the incentive to capitalize on the stocks’ expected returns (the speculation component) and a part that reveals the incentive to reduce portfolio risk by building oﬀsetting
+risk exposures (the risk-hedging component); and the risk-hedging component vanishes if
+the two stocks’ returns are uncorrelated. Thus, we deﬁne the speculation component as the
+optimal allocation obtained with setting a zero return correlation for the two stocks while
+keeping each stock’s total return variance unchanged.15 Applying Proposition 1 under such
+reparameterizations yields the following expressions:
+φs
+1t =
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+−δ1xt + µ −r
+σ2 + b2
+1
+,
+xt < Xs
+3,
+0,
+Xs
+3 ≤xt ≤Xs
+4,
+−δ1xt + µ −r + κ1
+σ2 + b2
+1
+,
+xt > Xs
+4
+(26)
+and
+φs
+2t =
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+δ2xt + µ −r + κ2
+σ2 + b2
+2
+,
+xt < Xs
+1,
+0,
+Xs
+1 ≤xt ≤Xs
+2,
+δ2xt + µ −r
+σ2 + b2
+2
+,
+xt > Xs
+2,
+(27)
+respectively, where
+Xs
+1 = −(µ −r) −κ2
+δ2
+, Xs
+2 = −(µ −r)
+δ2
+, Xs
+3 = µ −r
+δ1
+, Xs
+4 = µ −r + κ1
+δ1
+.
+(28)
+15Note that according to the return dynamics (1) and (2), σ2 + b2
+i is the total return variance of stock i
+and ρ :=
+σ2
+√
+σ2+b2
+1
+√
+σ2+b2
+2 is the return correlation. In order to set the return correlation to zero while keeping
+the total return variance of each stock unchanged, we can ﬁrst set the value of σ to 0 (eliminate correlation)
+and then change b2
+i to b2
+i + σ2 in notation (recover return variance).
+22
+
+Figure 4: Decomposition of the Optimal Allocation: Stock 2
+This ﬁgure shows the speculation (φs
+2) and the risk-hedging (φh
+2) allocation component for stock 2
+together with the optimal allocation functions for the two stocks (φ∗
+1 and φ∗
+2). Default parameter
+values: µ = 0.075, σ = 0.222, b1 = 0.185, b2 = 0.060, δ1 = 1.702, δ2 = 0.792, r = 0.038,
+η1 = η2 = 50%, κ1 = κ2 = 9.986%, and T = 1.
+The risk-hedging component is naturally deﬁned as the remaining part of the optimal allocation, that is, φh
+it = φ∗
+it −φs
+it for i = 1, 2.
+Figure 4 shows the speculation and the risk-hedging component for stock 2 together with
+the optimal allocation functions for the two stocks. Panel A shows the results obtained
+when the two stocks are symmetric with b2 = b1 = 0.185 and δ2 = δ1 = 1.702; and Panel
+B shows the results obtained when we decrease the value of δ2 to 0.792. As can be seen,
+such a decrease leads to a reduction in the size of both components. Since the speculation
+component is directly aﬀected by stock 2’s expected return–relative price sensitivity, which
+decreases as the value of δ2 decreases, the impact is greater for the speculation component.
+Panel C shows the results obtained when we further decrease the value of b2 to 0.0602. Such
+23
+
+Figure 5: Decomposition of the Optimal Allocation: Stock 1
+This ﬁgure shows the speculation (φs
+1) and the risk-hedging (φh
+1) allocation component for stock 1
+together with the optimal allocation functions for the two stocks (φ∗
+1 and φ∗
+2). Default parameter
+values: µ = 0.075, σ = 0.222, b1 = 0.185, b2 = 0.060, δ1 = 1.702, δ2 = 0.792, r = 0.038,
+η1 = η2 = 50%, κ1 = κ2 = 9.986%, and T = 1.
+a decrease leads to an increase in the size of both components. This is because on the one
+hand, a decrease in b2 reduces stock 2’s return volatility, which strengthens the investor’s
+incentive to capitalize on its expected return; on the other, a decrease in b2 also leads to an
+increase in the return correlation, which ampliﬁes the magnitude of the risk-hedging eﬀect.
+Figure 5 shows how the changes in the value of δ2 and b2 aﬀect the two allocation
+components for stock 1. The results indicate that such changes do not aﬀect the speculation
+component, which is solely driven by stock 1’s characteristics; nevertheless, they do aﬀect
+the risk-hedging component. In particular, a decrease in δ2 leads to a reduction in the size
+of the risk-hedging component for stock 1 because it implies less aggressive trading in stock
+2 and thus less risk to hedge against. The eﬀect of decreasing b2 is exactly the opposite.
+24
+
+The above analyses can help to explain why a decrease in δ2 leads to a reduction in the
+size of the risk-hedging component for stock 2 (see Figure 4). As we explained before, a
+decrease in δ2 ﬁrst leads to a reduction in the size of the speculation component for stock
+2, which in turn leads to a reduction in the size of the risk-hedging component for stock 1;
+this implies a smaller exposure to stock 1, which eventually leads to a reduction in the size
+of the risk-hedging component for stock 2.
+Hedging-induced Short Selling
+One implication of the presence of the risk-hedging
+component is that it can be optimal to short sell the overvalued stock even if the short
+selling costs exceed the expected return earned from short selling. Note that by short selling
+stock 2, the investor earns an expected return of −δ2xt −µ −κ2 on the short position and
+a risk-free rate of r on the proceeds generated from short selling; thus, the excess expected
+return earned from short selling compared to no short selling is −δ2xt −µ −κ2 + r. When
+xt ≤Xs
+2, the excess expected return earned from holding stock 2 (i.e., µ + δ2xt −r) is
+nonpositive; when xt ≥Xs
+1, the excess expected return earned from short selling stock 2
+(i.e., −δ2xt −µ −κ2 + r) is also nonpositive. As a result, the speculation component is null
+when Xs
+1 ≤xt ≤Xs
+2. However, it can be clearly observed in all panels of Figure 4 that a
+negative risk-hedging component exists when Xs
+1 < xt < X1. The reason is that in this case
+the investor takes a large long position on stock 1, which is undervalued, and it is optimal
+to short sell stock 2 to hedge the risk associated with this position.
+Asymmetric Impact on the Long/Short Position
+Another implication of Proposition
+1 is that the stock borrowing fees simultaneously aﬀect the optimal size of the long and of
+the short position with a greater impact on the short position. For example, when xt < X1,
+the stock borrowing fees reduce the optimal size of the short position (measured as a fraction
+of the total wealth) by (σ2 + b2
+1)κ2/(σ2(b2
+1 + b2
+2) + b2
+1b2
+2); and they reduce the optimal size of
+25
+
+the long position by σ2κ2/(σ2(b2
+1 + b2
+2) + b2
+1b2
+2), which is smaller in magnitude. The intuition
+is as follows. The impact on the short position is due to the lower after-fee expected return
+earned from short selling. The reduction in the size of the short position reduces the investor’s
+risk exposure, weakening her risk-hedging demand and leading to a smaller long position.
+Because the expected return on the long position is not aﬀected by the stock borrowing fees,
+the reduction in the long position’s optimal size is smaller in magnitude.
+4.2.3
+Short-Selling-Costs Case: Power Utility
+In this subsection, we consider the case with power utility function (i.e., γ > 0 and γ̸ = 1).
+In this case, closed-form solution is no longer available. We ﬁrst numerically analyze the
+qualitative features of the optimal allocation rule. Then, we propose an analytical allocation
+rule, which turns out to be a good approximation of the optimal allocation rule.
+Figure 6 plots the optimal allocation functions of an investor with a risk aversion coeﬃcient of γ = 3. Panel A shows the results at the initial time t = 0 and compare them with
+those obtained in the logarithm utility case. As can be seen, the structure of the optimal
+allocation functions in the power utility case is qualitatively similar to that in the logarithm
+utility case. For example, they appear to be piecewise linear in the relative price xt; it is
+optimal to take either a long or a null position on the overvalued stock when the degree of
+overpricing is not large enough. Interestingly, the comparison reveals that a more risk-averse
+investor may start short selling with a lower degree of overpricing. The intuition behind this
+result is that a more risk-averse investor exhibits a stronger demand for hedging the risk of
+holding the undervalued stock, which motivates her to short sell the overvalued stock earlier.
+Proposition 1 indicates that the optimal allocation functions in the logarithm utility case
+are time invariant. However, this is not true in the power utility case. Panel B of Figure 6
+shows the optimal allocation functions at three diﬀerent time points with γ = 3. As can be
+26
+
+-0.1
+-0.05
+0
+0.05
+0.1
+-4
+-3
+-2
+-1
+0
+1
+2
+3
+4
+5
+6
+-0.1
+-0.05
+0
+0.05
+0.1
+-2.5
+-2
+-1.5
+-1
+-0.5
+0
+0.5
+1
+1.5
+2
+2.5
+3
+Figure 6: Optimal Allocation Rule: Power Utility Case
+This ﬁgure shows the optimal allocation functions of an investor with power utility function. Panel
+A shows a comparison of the results at the initial time t = 0 in the power utility case and in the
+logarithm utility case, respectively. Panel B shows the optimal allocations in the power utility
+case (with γ = 3) at three diﬀerent time points. Default parameter values: µ = 0.075, σ = 0.222,
+b1 = 0.185, b2 = 0.060, δ1 = 1.702, δ2 = 0.792, r = 0.038, η1 = η2 = 50%, κ1 = κ2 = 9.986%, and
+T = 1.
+27
+
+seen, both the threshold values and the sizes of the positions are time varying.
+A Near-Optimal Allocation Rule
+Although assuming zero stock borrowing fees yields
+analytical investment policies, adopting these policies in the presence of stock borrowing
+fees can be costly. Figure 7 shows the investor’s utility loss resulting from neglecting the
+presence of stock borrowing fees.16 For example, with an annual stock borrowing fees rate of
+10%, ignoring its presence can result in a 10% loss in the annual certainty equivalent return
+(ACER) when the investment horizon is 1 year; and the loss increases with an extension of
+the investment horizon. In what follows, we term the optimal allocation rule derived under
+the zero stock borrowing fees assumption the cost-naive rule.
+Motivated by the structure of the optimal allocation functions in the model, we can
+propose analytical allocation functions to approximate the optimal ones as follows. First,
+we postulate that there exist four time-dependent threshold values, denoted as {Xi(t) : 1 ≤
+i ≤4}, such that the approximate allocation functions satisfy the following sign conditions:
+˜φ1(x, t) > 0, ˜φ2(x, t) < 0,
+if x < X1(t),
+˜φ1(x, t) > 0, ˜φ2(x, t) = 0,
+if X1(t) < x < X2(t),
+˜φ1(x, t) > 0, ˜φ2(x, t) > 0,
+if X2(t) < x < X3(t),
+˜φ1(x, t) = 0, ˜φ2(x, t) > 0,
+if X3(t) < x < X4(t),
+˜φ1(x, t) < 0, ˜φ2(x, t) > 0,
+if x > X4(t).
+(29)
+16This utility loss is calculated as follows.
+First, we calculate ∆(x0) = (f(x0, 0) −g(x0, 0))/T as the
+investor’s loss in the annual certainty equivalent return conditional on the initial relative price x0, where
+g(x0, 0) is the investor’s scaled indirect utility function associated with the cost-naive rule. Then, we use the
+stationary distribution of xt, which is normal, to average over x0 and yield the unconditional loss ∆.
+28
+
+Figure 7: Utility Loss from Neglecting Stock Borrowing Fees
+This ﬁgure plots the investor’s average utility loss resulting from neglecting the stock borrowing
+fees against the fees rate κ1 = κ2 = κ. Parameter values: γ = 3, µ = 0.075, σ = 0.222, b1 = 0.185,
+b2 = 0.060, δ1 = 1.702, δ2 = 0.792, r = 0.038, and η1 = η2 = 50%.
+29
+
+Next, we construct the following piecewise quadratic function
+˜f(x, t) =
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+A1(t)x2 + B1(t)x + C1(t),
+if x < X1(t),
+A2(t)x2 + B2(t)x + C2(t),
+if X1(t) < x < X2(t),
+A3(t)x2 + B3(t)x + C3(t),
+if X2(t) < x < X3(t),
+A4(t)x2 + B4(t)x + C4(t),
+if X3(t) < x < X4(t),
+A5(t)x2 + B5(t)x + C5(t),
+if x > X4(t)
+(30)
+and enforce it to satisfy equation (14) on each interval (Xi(t), Xi+1(t)) for 0 ≤i ≤4.17 With
+some calculations detailed in Appendix A.4, we yield the following allocation rule: (i) when
+xt < X1(t),
+˜φ1t =1 −γ
+γ
+(2A1(t)xt + B1(t)) + −((σ2 + b2
+2)δ1 + σ2δ2)xt + b2
+2(µ −r) −σ2κ2
+γ((σ2 + b2
+1)(σ2 + b2
+2) −σ4)
+,
+˜φ2t =γ −1
+γ
+(2A1(t)xt + B1(t)) + ((σ2 + b2
+1)δ2 + σ2δ1)xt + b2
+1(µ −r) + (σ2 + b2
+1)κ2
+γ((σ2 + b2
+1)(σ2 + b2
+2) −σ4)
+;
+(ii) when X1(t) ≤xt < X2(t),
+˜φ1t = b2
+1(1 −γ)(2A2(t)xt + B2(t)) −δ1xt + µ −r
+γ(σ2 + b2
+1)
+,
+˜φ2t = 0;
+(iii) when X2(t) ≤xt < X3(t),
+˜φ1t =1 −γ
+γ
+(2A3(t)xt + B3(t)) + −((σ2 + b2
+2)δ1 + σ2δ2)xt + b2
+2(µ −r)
+γ((σ2 + b2
+1)(σ2 + b2
+2) −σ4)
+,
+˜φ2t =γ −1
+γ
+(2A3(t)xt + B3(t)) + ((σ2 + b2
+1)δ2 + σ2δ1)xt + b2
+1(µ −r)
+γ((σ2 + b2
+1)(σ2 + b2
+2) −σ4)
+;
+17This is equivalent to approximating the partial derivative fx(x, t) in (16) with a piecewise linear function.
+Here, we deﬁne X0(t) = −∞and X5(t) = ∞.
+30
+
+(iv) when X3(t) ≤xt < X4(t),
+˜φ1t = 0,
+˜φ2t = −b2
+2(1 −γ)(2A4(t)xt + B4(t)) + δ2xt + µ −r
+γ(σ2 + b2
+2)
+;
+and (v) when xt ≥X4(t),
+˜φ1t =1 −γ
+γ
+(2A5(t)xt + B5(t)) + −((σ2 + b2
+2)δ1 + σ2δ2)xt + b2
+2(µ −r) + (σ2 + b2
+2)κ1
+γ((σ2 + b2
+1)(σ2 + b2
+2) −σ4)
+,
+˜φ2t =γ −1
+γ
+(2A5(t)xt + B5(t)) + ((σ2 + b2
+1)δ2 + σ2δ1)xt + b2
+1(µ −r) −σ2κ1
+γ((σ2 + b2
+1)(σ2 + b2
+2) −σ4)
+;
+where the time-dependent functions {Xi(t) : 1 ≤i ≤4} and {(Ai(t), Bi(t)) : 1 ≤i ≤5} are
+presented in Appendix A.4.
+Clearly, the proposed allocations are piecewise linear in the relative price xt. In addition,
+it is not diﬃcult to verify that they coincide with the optimal ones when γ = 1 (i.e., with
+logarithm utility). In Figure 8, we plot the allocation functions (˜φ1, ˜φ2) together with the
+optimal ones (φ∗
+1, φ∗
+2) at three diﬀerent time points. As can be seen, the proposed allocation
+functions approximate the optimal ones reasonably well, especially when the time-to-horizon
+is short. In what follows, we term the proposed allocation rule the near-optimal allocation
+rule.
+To better assess the quality of approximation, we calculate the investor’s loss in the
+ACER resulting from adopting the near-optimal rule and show the results in Figure 9. As
+can be seen, adopting the near-optimal rule results in much smaller losses for the investor
+than adopting the cost-naive rule. For example, when the annual stock borrowing fees rate
+is 10% and the investment horizon is 1 year, the loss from adopting the near-optimal rule is
+about 0.35% per annum; by comparison, it is about 10% if the investor adopts the cost-naive
+rule (Figure 7). If we extend the investment horizon to 5 years, the loss from adopting the
+31
+
+-0.2
+0
+0.2
+-6
+-4
+-2
+0
+2
+4
+6
+8
+-0.2
+0
+0.2
+-6
+-4
+-2
+0
+2
+4
+6
+8
+-0.2
+0
+0.2
+-4
+-3
+-2
+-1
+0
+1
+2
+3
+4
+5
+Figure 8: Optimal and Near-Optimal Allocation Functions
+This ﬁgure shows the optimal and the near-optimal allocation functions at t = 0, 0.5 and 0.95,
+respectively. Parameter values: γ = 3, µ = 0.075, σ = 0.222, b1 = 0.185, b2 = 0.060, δ1 = 1.702,
+δ2 = 0.792, r = 0.038, η1 = η2 = 50%, κ1 = κ2 = 9.986%, and T = 1.
+32
+
+Figure 9: Utility Loss from Adopting the Near-Optimal Allocation Rule
+This ﬁgure shows the investor’s utility loss resulting from adopting the near-optimal allocation rule
+against the stock borrowing fees rate κ1 = κ2 = κ. Parameter values: γ = 3, µ = 0.075, σ = 0.222,
+b1 = 0.185, b2 = 0.060, δ1 = 1.702, δ2 = 0.792, r = 0.038, and η1 = η2 = 50%.
+near-optimal rule is about 2% annually; by comparison, the loss from adopting the cost-naive
+rule is as large as 15% annually.
+Table 2 reports the investor’s loss resulting from adopting either the cost-naive rule or
+the near-optimal rule for various alternative parameter values. Overall, these results indicate
+the performance advantage of the near-optimal rule over the cost-naive rule for a large range
+of parameter values.
+4.3
+Funding Constraint and Cost of Margin Requirement
+According to the regulation rules implemented in China’s stock market in 2023, short sellers
+are required to maintain margins no less than 50% of the market value of the borrowed stocks.
+If the investor is restricted from borrowing funds, such margin requirement can consume a
+33
+
+Table 2: Utility Loss from Adopting the Cost-Naive or Near-Optimal Rule
+This table reports the investor’s loss in the annual certainty equivalent rate of return, in percentage
+(%), resulting from adopting either the cost-naive rule or the near-optimal rule. Parameter values
+in the default case: γ = 3, µ = 0.075, σ = 0.222, b1 = 0.185, b2 = 0.060, δ1 = 1.702, δ2 = 0.792,
+r = 0.038, η1 = η2 = 50%, κ1 = κ2 = 9.986%, and T = 1.
+Panel A: T = 1
+Panel B: T = 5
+Cost-Naive Rule
+Near-Optimal Rule
+Cost-Naive Rule
+Near-Optimal Rule
+Default
+9.92
+0.36
+14.92
+1.99
+γ = 1
+13.68
+0.00
+13.68
+0.00
+γ = 5
+8.46
+0.46
+24.17
+3.53
+r −0.02
+9.80
+0.35
+14.78
+1.93
+r + 0.02
+10.05
+0.38
+15.06
+2.05
+µ −0.02
+10.05
+0.38
+15.06
+2.05
+µ + 0.02
+9.80
+0.35
+14.78
+1.93
+σ × 0.5
+12.26
+0.31
+18.69
+1.73
+σ × 2
+9.09
+0.39
+13.79
+2.15
+b1 × 0.5
+26.20
+0.48
+45.23
+2.40
+b1 × 2
+4.13
+0.23
+5.77
+1.15
+δ1 × 0.5
+8.44
+0.12
+14.78
+1.32
+δ1 × 2
+11.84
+1.06
+15.05
+2.90
+b2 × 0.5
+10.98
+0.39
+16.63
+2.11
+b2 × 2
+7.37
+0.29
+10.88
+1.66
+δ2 × 0.5
+8.96
+0.20
+14.20
+1.53
+δ2 × 2
+11.52
+0.79
+15.90
+2.79
+κ1, κ2 × 0.5
+2.59
+0.16
+3.67
+0.90
+κ1, κ2 × 2
+36.35
+0.41
+66.82
+1.96
+34
+
+signiﬁcant portion of her liquidity and thus can be costly. In this subsection, we quantify
+the cost of the margin requirement in the context of pairs trading.
+According to (6), a strict no-fund-borrowing constraint can be characterized by
+1 −
+2
+X
+i=1
+φ+
+it −
+2
+X
+i=1
+ηiφ−
+it ≥0.
+(31)
+We numerically solve the model with this additional constraint and show the optimal allocation functions in Figure 10. Panel A (B resp.) shows the results obtained with γ = 1
+(γ = 3 resp.). In each panel, we indicate the bindingness of (31) with two threshold values
+Xl and Xu: (31) binds when the relative price xt is either below Xl or above Xu. As can be
+seen, with logarithm utility, the investor appears to be myopic with respect to the no-fundborrowing constraint; that is, the constraint does not aﬀect her optimal allocations until it
+binds. By comparison, with power utility, the investor begins to reduce position sizes even
+when the constraint has not been binding yet.
+Interestingly, Figure 10 shows that in the presence of the no-fund-borrowing constraint,
+when stock 1 is deeply overpriced (e.g., xt > Xu), the optimal allocation to stock 2 can be
+decreasing in xt despite the fact that stock 2’s expected return is increasing in xt. This can
+be explained as follows. Under the baseline calibration, the value of δ1 is much larger than
+the value of δ2 (1.702 vs 0.792), which implies that as xt increases, stock 1’s expected return
+decreases much faster than stock 2’s expected return increases. In such a case, increasing
+the short position on stock 1 is more proﬁtable; and the investor should allocate less funds
+to stock 2 so that she can put in more margins to maintain larger short position on stock 1.
+Because a higher margin ratio, characterized by a larger value of ηi, makes the constraint
+(31) easier to bind, it reduces the investor’s welfare from trading pairs. In the presence of the
+no-fund-borrowing constraint, the total short selling costs incurred by the investor contain
+35
+
+-0.1
+-0.05
+0
+0.05
+0.1
+-3
+-2
+-1
+0
+1
+2
+3
+-0.1
+-0.05
+0
+0.05
+0.1
+-4
+-3
+-2
+-1
+0
+1
+2
+3
+4
+5
+6
+Figure 10: Optimal Allocation Functions with No-Fund-Borrowing Constraint
+This ﬁgure shows the investor’s optimal allocation functions, when she is subject to the no-fundborrowing constraint (31), for two values of her risk aversion coeﬃcient. In each subﬁgure, we
+indicate the bindingness of (31) with two threshold values Xl and Xu: (31) binds when the relative
+price xt is either below Xl or above Xu. For comparison, we also show with dashed lines the optimal
+allocation functions without the constraint (31). Default parameter values: µ = 0.075, σ = 0.222,
+b1 = 0.185, b2 = 0.060, δ1 = 1.702, δ2 = 0.792, r = 0.038, η1 = η2 = 50%, κ1 = κ2 = 9.986%, and
+T = 1.
+36
+
+two components: the direct stock borrowing fees payment and the liquidity constraint cost
+of maintaining margins. Formally, let Jcons(W, x, t; κ1, κ2, η1, η2) be the value function solved
+with the constraint (31), where we put in (κ1, κ2, η1, η2) to highlight the dependence of the
+value function on the short selling-related parameters. Then, the total short selling cost,
+denoted as ∆, is solved from
+Jcons(W0, x0, 0; κ1, κ2, η1, η2) = Jcons(e−∆×TW0, x0, 0; 0, 0, 0, 0);
+(32)
+the stock borrowing fees component, denoted as ∆SBF, is solved from
+Jcons(W0, x0, 0; κ1, κ2, η1, η2) = Jcons(e−∆SBF ×TW0, x0, 0; 0, 0, η1, η2);
+(33)
+and the liquidity constraint cost component, denoted as ∆LCC, is calculated as follows:
+∆LCC = ∆−∆SBF.
+(34)
+Remark: Combined with transformation (13), it can be seen that ∆is the reduction
+in the investor’s annual certainty equivalent rate of return due to incurring the short selling
+cost. ∆SBF (∆LCC resp.) is the part of ∆attributed to paying the stock borrowing fees
+(being subject to the liquidity constraint resp.).
+Table 3 reports the magnitude of these two cost components obtained under the baseline
+calibration.18 As can be seen, although the liquidity constraint cost component is smaller in
+magnitude than the stock borrowing fees component, it can still be signiﬁcant. For instance,
+with logarithm utility, the liquidity constraint cost can be as large as 1.89% annually. As
+18Note that the cost measures deﬁned in (32)–(34) depend on the initial relative price x0. When generating
+the results reported in Table 3, we integrate these cost measures over the stationary distribution of xt to
+obtain a single number.
+37
+
+Table 3: Decomposition of the Total Short Selling Cost
+This table reports the investor’s loss in the ACER due to the direct stock borrowing fees payment
+(Panel A) and the liquidity constraint cost of maintaining margins (Panel B), respectively. Default
+parameter values: µ = 0.075, σ = 0.222, b1 = 0.185, b2 = 0.060, δ1 = 1.702, δ2 = 0.792, r = 0.038,
+η1 = η2 = 50%, κ1 = κ2 = 9.986%, and T = 1.
+Panel A: Stock Borrowing Fees
+Panel B: Liquidity Constraint Cost
+γ = 1
+0.0796
+0.0189
+γ = 3
+0.0680
+0.0179
+γ = 5
+0.0628
+0.0159
+the investor’s risk aversion level increases, the liquidity constraint cost decreases because the
+investor allocates less wealth to the pairs so that the no-fund-borrowing constraint becomes
+less likely to bind.
+4.4
+Optimal Trading with a Market Portfolio
+In this subsection, we present the results obtained from an extension of our baseline model,
+in which we add a market portfolio to the investment opportunity set. Following Liu and
+Timmermann (2013), we assume the paired stocks are priced according to the CAPM conditional on zero relative price. Moreover, we assume that short selling the market portfolio
+is also costly.19 In such a model, the investor’s optimal allocations to the paired stocks are
+driven by a tradeoﬀbetween earning their abnormal returns due to relative mispricing and
+reducing the stock borrowing fees payment.
+Figure 11 shows the investor’s time-0 optimal allocations to the paired stocks (Panel
+A) and to the market portfolio (Panel B), respectively. Panel A shows that with zero stock
+borrowing fee, we replicate Liu and Timmermann (2013)’s results that the optimal allocations
+to the paired stocks have opposite signs near the zero relative price level given δ1, δ2 > 0. In
+the presence of stock borrowing fees, the investor changes the short positions to ﬂat positions
+19In China’s stock market, investors can take short positions on the market by short selling index ETFs.
+To save space, we leave the details of this model to Appendix A.5.
+38
+
+-0.1
+-0.05
+0
+0.05
+0.1
+-2
+-1.5
+-1
+-0.5
+0
+0.5
+1
+1.5
+2
+-0.1
+-0.05
+0
+0.05
+0.1
+-4
+-3
+-2
+-1
+0
+1
+2
+3
+4
+Figure 11: Optimal Allocation Functions with a Market Portfolio
+This ﬁgure shows the investor’s time-0 optimal allocations to the paired stocks (Panel A) and to
+the market portfolio (Panel B), respectively. We show the results obtained in the case either with
+or without stock borrowing costs. Parameter values: r = 0.038, µm = 0.05, σm = 0.2, β = 0.738,
+˜σ = 0.166, b1 = 0.185, b2 = 0.060, δ1 = 1.702, δ2 = 0.792, γ = 3, and T = 1.
+39
+
+near the zero relative price level as the abnormal returns earned from short selling are too
+low compared to the stock borrowing fees. Thus, diﬀerent from those in our baseline model,
+the investor’s optimal allocations to the paired stocks in this model do not have the same
+sign near the zero relative price level. Panel B shows that the short selling costs can reduce
+the size of the position on the market portfolio, even when it is a long position. This is
+because short selling costs make it optimal to take smaller positions on the paired stocks,
+which leads to smaller systematic risk exposure to hedge by trading the market portfolio.
+5
+An Empirical Analysis in China’s Stock Market
+In this section, we apply our model to optimal pairs trading in China’s mainland stock
+market. Similar to Liu and Timmermann (2013), our analysis is in sample.
+5.1
+Data
+As we mentioned in Section 3.1, short selling is allowed in China’s mainland stock market
+only after the initiation of the pilot program in early 2010. Our sample period starts from
+29 July 2010, when a relatively large number of stocks become shortable, and ends at 31
+October 2023. First, we identify the stocks that are shortable throughout the entire period.
+Then, for these stocks, we calculate their pairwise distance using the method explained in
+Section 4.1, and we take the 15 pairs with the minimum distance as the sample pairs. We
+provide the information about the constructed pairs in Table 4.20 For each pair of stocks,
+we use the QMLE method to estimate the parameters appearing in (1) and (2).
+20Note that the same stock may simultaneously appear in several diﬀerent pairs.
+40
+
+Table 4: Pairs Information
+This table presents relevant information about the top 15 pairs used in our analysis.
+Stock 1 in the Pair
+Stock 2 in the Pair
+Matching Ratio
+China CITIC Bank Co., Ltd
+Bank of Communications Co., Ltd.
+0.817:1
+Agricultural Bank of China Ltd
+Industrial and Commercial Bank of China Ltd
+1.530:1
+Daqin Railway Co., Ltd.
+Bank of Communications Co., Ltd.
+0.692:1
+Yunnan Copper Co., Ltd.
+Zhongjin Gold Co., Ltd
+0.713:1
+Yunnan Copper Co., Ltd.
+Jiangxi Copper Co., Ltd.
+1.395:1
+China CITIC Bank Co., Ltd
+Daqin Railway Co., Ltd.
+1.182:1
+China CITIC Bank Co., Ltd
+Bank of Beijing Co., Ltd.
+0.844:1
+Jiangxi Copper Co. Ltd.
+Zhongjin Gold Co., Ltd
+0.512:1
+Hua Xia Bank Co., Ltd
+Bank of Beijing Co., Ltd.
+0.703:1
+Tongling Nonferrous Metals Group Co., Ltd.
+Yunnan Tin Co., Ltd.
+6.949:1
+Shenzhen Zhongjin Lingnan Nonfemet Co., Ltd.
+HBIS Company Ltd
+0.387:1
+Agricultural Bank of China Ltd
+China Construction Bank Co., Ltd.
+1.953:1
+Shanxi Coking Coal Energy Group Co.,Ltd.
+Aluminum Corporation of China Ltd
+0.763:1
+Bank of Beijing Co., Ltd.
+Bank of Communications Co., Ltd.
+0.981:1
+Financial Street Holdings Co., Ltd.
+Bank of Beijing Co., Ltd.
+0.490:1
+5.2
+Objective and Testing Strategy
+The main objective of our empirical analysis is twofold. First, we demonstrate the importance
+of optimally incorporating stock borrowing costs for pairs trading in China’s stock market.
+For this objective, we investigate the empirical performance of the optimal trading strategy
+and of the cost-naive trading strategy which is obtained under the zero stock borrowing fee
+assumption, respectively. Second, we verify our model’s main implication that the higher
+the short selling costs, the more important to adopt the optimal trading strategy. For this
+objective, we exploit the time-series variations in the stock borrowing fees rate quoted by
+a major Chinese securities company, namely Huafu Securities. We consider this securities
+company for the following two reasons. First, Huafu Securities’ quote is available from 13 July
+2012 to present, leaving us with a relatively long testing period. Second, Huafu Securities’
+quote experiences one single signiﬁcant drop during the testing period.21 In particular, the
+quoted stock borrowing fees rate is 10.6% during the period from 13 July 2012 to 15 March
+21By comparison, the quotes of some other securities companies typical exhibit multiple small changes
+during the sample period, making it harder to cleanly demonstrate our main points.
+41
+
+2015 (subperiod 1), and it decreases to 8.35% during the period from 16 March 2015 to 31
+October 2023 (subperiod 2). Such variation enables us to demonstrate our main points in
+the clearest manner.
+Suppose that an investor with a relative risk aversion coeﬃcient of 5 trades the 15 pairs
+using the stock borrowing service provided by Huafu Securities.22 We investigate her trading performance in the full testing period, as well as in subperiod 1 and in subperiod 2
+respectively.23 The positions are rebalanced on a daily basis.
+5.3
+Trading Results
+In this subsection, we report the results obtained from the empirical analysis.
+Panel A of Table 5 reports the annualized excess returns earned from trading in the sample
+pairs. The results indicate that even with the high stock borrowing fees, pairs trading can
+still be proﬁtable. For example, as is shown in the last row of Panel A, during the full period,
+an initially equal-weighted portfolio of the sample pairs earns an annualized excess return of
+24.67% (25.68% resp.) if the investor adopts the optimal (cost-naive resp.) strategy.
+On average, the cost-naive strategy appears to generate higher returns than the optimal
+strategy does. This is not quite surprising, because adopting the cost-naive strategy implies
+greater risk taking (see, e.g., Figure 3).
+To adjust for risk, we calculate the annualized
+Sharpe ratios achieved by the two strategies and report them in Panel B of Table 5. As can
+be seen, the optimal strategy consistently achieves higher Sharpe ratio than the cost-naive
+strategy does, and the improvement is signiﬁcant. For instance, the ﬁrst three columns in
+22We set a high risk aversion level to avoid aggressive trading positions which may cause insolvency with
+discretely observed stock prices.
+23The trading strategies for the two subperiods are obtained as follows. We solve for the trading strategies
+for subperiod 1 by setting 13 July 2012 as the initial time t = 0 and 31 October 2023 as the terminal time
+T, given the stock borrowing fees rate applicable in subperiod 1. On 17 March 2015, as the stock borrowing
+fees rate decreases, the investor solves for the respective trading strategies by resetting 17 March 2015 as
+the new initial time t = 0 and using the updated stock borrowing fees rate.
+42
+
+Table 5: Pairs Trading Performance
+This table presents the annualized excess returns (Panel A) and Sharpe ratios (Panel B) earned
+from trading in the top 15 pairs. We report the results obtained for the optimal trading strategy
+(Optimal) and for the cost-naive trading strategy that neglects the presence of short selling costs
+(Cost-naive), respectively. When generating these results, we assume the investor has a relative
+risk aversion coeﬃcient of 5 and borrows stocks for short selling through Huafu Securities, which
+charges stock borrowing fees at a rate of 10.6% during subperiod 1 (13 July 2012 – 15 March 2015)
+and 8.35% during subperiod 2 (16 March 2015 – 31 October 2023), respectively.
+Exhibit 1: Entire Period
+Exhibit 2: Subperiod 1
+Exhibit 3: Subperiod 2
+Optimal
+Cost-naive
+Diﬀerence
+Optimal
+Cost-naive
+Diﬀerence
+Optimal
+Cost-naive
+Diﬀerence
+A: Excess Return
+1.
+34.75%
+43.43%
+-8.68%
+55.13%
+60.08%
+-4.96%
+28.49%
+38.32%
+-9.83%
+2.
+8.95%
+6.79%
+2.16%
+10.01%
+9.06%
+0.95%
+8.62%
+6.09%
+2.53%
+3.
+42.39%
+51.89%
+-9.50%
+89.56%
+90.21%
+-0.66%
+27.89%
+40.11%
+-12.22%
+4.
+35.82%
+41.09%
+-5.27%
+2.99%
+6.49%
+-3.51%
+45.91%
+51.73%
+-5.82%
+5.
+22.05%
+24.75%
+-2.70%
+6.27%
+14.26%
+-8.00%
+26.91%
+27.98%
+-1.07%
+6.
+44.94%
+53.00%
+-8.05%
+88.74%
+103.12%
+-14.38%
+31.48%
+37.59%
+-6.11%
+7.
+14.22%
+17.58%
+-3.36%
+23.49%
+26.63%
+-3.14%
+11.38%
+14.80%
+-3.43%
+8.
+14.49%
+17.55%
+-3.06%
+6.21%
+8.81%
+-2.60%
+17.03%
+20.24%
+-3.20%
+9.
+18.29%
+20.35%
+-2.06%
+25.67%
+26.07%
+-0.40%
+16.02%
+18.59%
+-2.57%
+10.
+54.58%
+62.16%
+-7.59%
+44.60%
+51.03%
+-6.42%
+57.64%
+65.59%
+-7.94%
+11.
+52.37%
+59.76%
+-7.39%
+32.97%
+41.18%
+-8.20%
+58.33%
+65.47%
+-7.14%
+12.
+8.04%
+4.51%
+3.53%
+14.34%
+6.73%
+7.61%
+6.11%
+3.83%
+2.28%
+13.
+6.03%
+6.85%
+-0.82%
+-1.18%
+-5.52%
+4.34%
+8.25%
+10.65%
+-2.40%
+14.
+4.65%
+7.67%
+-3.02%
+9.42%
+20.73%
+-11.31%
+3.18%
+3.65%
+-0.47%
+15.
+46.02%
+53.19%
+-7.18%
+50.45%
+58.15%
+-7.70%
+44.65%
+51.67%
+-7.02%
+Portfolio
+24.67%
+25.68%
+-1.01%
+26.50%
+23.29%
+3.21%
+20.71%
+21.90%
+-1.18%
+B: Sharpe Ratio
+1.
+0.673
+0.598
+0.075
+0.585
+0.465
+0.120
+1.034
+0.911
+0.123
+2.
+0.566
+0.207
+0.359
+0.540
+0.281
+0.259
+0.580
+0.185
+0.395
+3.*
+0.722
+0.689
+0.034
+0.872
+0.691
+0.181
+0.786
+0.860
+-0.074
+4.
+0.601
+0.596
+0.005
+0.131
+0.225
+-0.094
+0.686
+0.670
+0.016
+5.
+0.260
+0.241
+0.019
+0.737
+0.775
+-0.038
+0.278
+0.239
+0.039
+6.*
+0.991
+0.916
+0.075
+1.377
+1.269
+0.108
+0.838
+0.776
+0.061
+7.*
+0.518
+0.401
+0.117
+0.956
+0.575
+0.381
+0.402
+0.344
+0.058
+8.
+0.454
+0.424
+0.030
+0.425
+0.400
+0.025
+0.479
+0.443
+0.036
+9.*
+0.503
+0.339
+0.163
+0.709
+0.381
+0.328
+0.440
+0.325
+0.114
+10.*
+0.694
+0.687
+0.007
+0.819
+0.788
+0.031
+0.681
+0.676
+0.005
+11.*
+0.776
+0.761
+0.014
+1.180
+1.096
+0.084
+0.771
+0.750
+0.021
+12.*
+0.602
+0.139
+0.464
+0.950
+0.194
+0.756
+0.478
+0.120
+0.358
+13.*
+0.289
+0.240
+0.049
+-0.147
+-0.350
+0.204
+0.352
+0.339
+0.013
+14.*
+0.340
+0.286
+0.055
+1.528
+1.191
+0.337
+0.209
+0.125
+0.084
+15.*
+1.027
+0.932
+0.095
+1.355
+1.119
+0.236
+0.952
+0.882
+0.070
+Portfolio
+1.386
+1.086
+0.300
+1.691
+1.421
+0.270
+1.356
+1.145
+0.211
+43
+
+the last row of Panel B show that during the full period, an initially equal-weighted portfolio
+consisting of the sample pairs achieves an additional Sharpe ratio of 0.3 if the investor adopts
+the optimal strategy rather than the cost-naive strategy. The performance advantage of the
+optimal strategy exists for all the sample pairs.
+Moreover, a comparison between the results reported in Exhibits 2 and 3 of Panel B
+indicates that the optimal strategy tends to outperform the cost-naive strategy more during
+subperiod 1 when the stock borrowing fees rate is higher. For example, the portfolio-level
+Sharpe ratio achieved by the optimal strategy is 0.27 (0.21 resp.) higher than that achieved
+by the cost-naive strategy during subperiod 1 (subperiod 2 resp.); and this pattern emerges
+at the pair level for 10 out of the 15 pairs (the cases indicated with asterisk). This indicates
+a positive relation between the performance advantage of the optimal trading strategy and
+the magnitude of short selling costs, consistent with our model’s main implication.
+Intuitively, by adopting the cost-naive strategy, the investor will incur excessive stock
+borrowing costs, which can drag down the performance. To verify this intuition, we calculate
+the investor’s average daily stock borrowing costs–wealth ratio and report the results in Table
+6. This ratio is uniformly greater when adopting the cost-naive strategy than when adopting
+the optimal strategy. Moreover, as is shown in Exhibits 2 and 3, the gap in the realized
+short selling costs is wider during subperiod 1 when the stock borrowing fees rate is higher.
+6
+Conclusion
+We investigate optimal pairs trading in the presence of short selling costs. When the investor’s utility function is of the logarithm type, we derive the optimal asset allocations
+in closed form, which are piecewise linear functions of the relative price of the paired assets. When the investor’s utility function is of the power type, closed-form solution is no
+44
+
+Table 6: Stock Borrowing Costs
+This table presents the average daily stock borrowing fees–wealth ratio incurred by the investor
+when trading in the top 15 pairs. We report the results obtained for the optimal trading strategy
+(Optimal) and for the cost-naive trading strategy that neglects short selling costs (Cost-naive),
+respectively. When generating these results, we assume the investor has a relative risk aversion
+coeﬃcient of 5 and borrows stocks for short selling through Huafu Securities, which charges stock
+borrowing fees at a rate of 10.6% during subperiod 1 (13 July 2012 – 15 March 2015) and 8.35%
+during subperiod 2 (16 March 2015 – 31 October 2023), respectively.
+Exhibit 1: Entire Period
+Exhibit 2: Subperiod 1
+Exhibit 3: Subperiod 2
+Optimal
+Cost-naive
+Diﬀerence
+Optimal
+Cost-naive
+Diﬀerence
+Optimal
+Cost-naive
+Diﬀerence
+1.
+0.036
+0.070
+-0.034
+0.074
+0.137
+-0.063
+0.024
+0.049
+-0.025
+2.
+0.010
+0.077
+-0.067
+0.006
+0.083
+-0.077
+0.011
+0.075
+-0.064
+3.
+0.037
+0.062
+-0.025
+0.071
+0.112
+-0.042
+0.026
+0.047
+-0.021
+4.
+0.023
+0.032
+-0.009
+0.023
+0.036
+-0.012
+0.023
+0.031
+-0.008
+5.
+0.016
+0.034
+-0.018
+0.011
+0.035
+-0.024
+0.018
+0.034
+-0.016
+6.
+0.027
+0.044
+-0.017
+0.038
+0.064
+-0.027
+0.024
+0.038
+-0.014
+7.
+0.019
+0.045
+-0.026
+0.011
+0.043
+-0.032
+0.022
+0.045
+-0.023
+8.
+0.016
+0.026
+-0.010
+0.011
+0.025
+-0.014
+0.017
+0.026
+-0.009
+9.
+0.029
+0.076
+-0.046
+0.044
+0.112
+-0.067
+0.025
+0.064
+-0.040
+10.
+0.032
+0.043
+-0.011
+0.032
+0.046
+-0.014
+0.032
+0.042
+-0.010
+11.
+0.033
+0.044
+-0.011
+0.021
+0.034
+-0.013
+0.037
+0.047
+-0.010
+12.
+0.008
+0.071
+-0.063
+0.002
+0.107
+-0.105
+0.009
+0.060
+-0.051
+13.
+0.009
+0.017
+-0.009
+0.006
+0.018
+-0.013
+0.010
+0.017
+-0.007
+14.
+0.010
+0.038
+-0.028
+0.000
+0.028
+-0.028
+0.013
+0.041
+-0.028
+15.
+0.029
+0.046
+-0.016
+0.031
+0.057
+-0.025
+0.029
+0.042
+-0.013
+Portfolio
+0.025
+0.043
+-0.019
+0.024
+0.055
+-0.031
+0.023
+0.041
+-0.017
+45
+
+longer available; nevertheless, we analytically propose a near-optimal allocation rule, adopting which only leads to a small utility loss. We show that the stock borrowing costs simultaneously reduce the optimal size of the long and of the short leg, with a greater impact on
+the short leg. The investor’s risk-hedging incentive may lead to short selling even when the
+expected return earned from short selling is lower than the stock borrowing costs. When
+the investor is constrained from borrowing funds, the margin requirement for short selling
+can also signiﬁcantly aﬀect the investor’s optimal trading strategy and welfare. Lastly, by
+performing an empirical analysis in China’s stock market where short selling is subject to
+high costs, we demonstrate the performance advantage of the optimal trading strategy and
+verify the main predictions of the model.
+Declaration of interest
+None.
+Funding
+Jing Xu gratefully acknowledges ﬁnancial support from National Natural Science Foundation
+of China (grant number 71801216).
+46
+
+References
+Bai, Y. and L. Wu (2018). Analytic value function for optimal regime-switching pairs trading
+rules. Quantitative Finance 18(4), 637–654.
+Brennan, M. J. and E. S. Schwartz (1990). Arbitrage in stock index futures. The Journal of
+Business 63(1), S7–S31.
+Cartea, ´A., L. Gan, and S. Jaimungal (2019). Trading co-integrated assets with price impact.
+Mathematical Finance 29(2), 542–567.
+Chang, E. C., Y. Luo, and J. Ren (2014). Short-selling, margin-trading, and price eﬃciency:
+Evidence from the chinese market. Journal of Banking & Finance 48, 411–424.
+Chen, H. J., S. J. Chen, Z. Chen, and F. Li (2019). Empirical investigation of an equity
+pairs trading strategy. Management Science 65, 370–389.
+Chiu, M. C. and H. Y. Wong (2018). Robust dynamic pairs trading with cointegration.
+Operations Research Letters 46(2), 225–232.
+Clegg, M. and C. Krauss (2018). Pairs trading with partial cointegration. Quantitative
+Finance 18(1), 121–138.
+Cohen, L., K. B. Diether, and C. J. Malloy (2007). Supply and demand shifts in the shorting
+market. The Journal of Finance 62(5), 2061–2096.
+Dai, M., Y. Zhong, and Y. K. Kwok (2011). Optimal arbitrage strategies on stock index
+futures under position limits. Journal of Futures Markets 31(4), 394–406.
+D’avolio, G. (2002). The market for borrowing stock. Journal of Financial Economics 66(23), 271–306.
+47
+
+Fernandez-Perez, A., B. Frijns, I. Indriawan, and Y. Tse (2020). Pairs trading of chinese and
+international commodities. Applied Economics 52(48), 5203–5217.
+Flori, A. and D. Regoli (2021). Revealing pairs-trading opportunities with long short-term
+memory networks. European Journal of Operational Research 295(2), 772–791.
+Gatev, E., W. N. Goetzmann, and K. G. Rouwenhorst (2006). Pairs trading: Performance
+of a relative-value arbitrage rule. The Review of Financial Studies 19(3), 797–827.
+G¨onc¨u, A. and E. Akyildirim (2016).
+A stochastic model for commodity pairs trading.
+Quantitative Finance 16(12), 1843–1857.
+Han, C., Z. He, and A. J. W. Toh (2023). Pairs trading via unsupervised learning. European
+Journal of Operational Research 307(2), 929–947.
+Huck, N. and K. Afawubo (2015). Pairs trading and selection methods: is cointegration
+superior? Applied Economics 47(6), 599–613.
+Husz´ar, Z. R. and M. P. Prado (2019). An analysis of over-the-counter and centralized stock
+lending markets. Journal of Financial Markets 43, 31–53.
+Jacobs, H. and M. Weber (2015). On the determinants of pairs trading proﬁtability. Journal
+of Financial Markets 23, 75–97.
+Lei, Y. and J. Xu (2015). Costly arbitrage through pairs trading. Journal of Economic
+Dynamics and Control 56, 1–19.
+Lintilhac, P. S. and A. Tourin (2017). Model-based pairs trading in the bitcoin markets.
+Quantitative Finance 17(5), 703–716.
+Liu, J. and F. A. Longstaﬀ(2004). Losing money on arbitrage: Optimal dynamic portfolio
+choice in markets with arbitrage opportunities. Review of Financial studies, 611–641.
+48
+
+Liu, J. and A. Timmermann (2013). Optimal convergence trade strategies. The Review of
+Financial Studies 26(4), 1048–1086.
+Mori, M. and A. J. Ziobrowski (2011). Performance of pairs trading strategy in the us reit
+market. Real Estate Economics 39(3), 409–428.
+Rinne, K. and M. Suominen (2017). How some bankers made a million by trading just two
+securities? Journal of Empirical Finance 44, 304–315.
+Schultz, P. and S. Shive (2010). Mispricing of dual-class shares: Proﬁt opportunities, arbitrage, and trading. Journal of Financial Economics 98(3), 524–549.
+Song, Q. and Q. Zhang (2013). An optimal pairs-trading rule. Automatica 49(10), 3007–
+3014.
+Tourin, A. and R. Yan (2013). Dynamic pairs trading using the stochastic control approach.
+Journal of Economic Dynamics and Control 37(10), 1972–1981.
+Wu, L., X. Zang, and H. Zhao (2020). Analytic value function for a pairs trading strategy
+with a l´evy-driven ornstein–uhlenbeck process. Quantitative Finance 20(8), 1285–1306.
+Xiang, Y., Y. Zhao, and S. Deng (2022). Pairs trading with fractional ornstein–uhlenbeck
+spread model. Applied Economics, 1–17.
+Yan, T., M. C. Chiu, and H. Y. Wong (2022). Pairs trading under delayed cointegration.
+Quantitative Finance 22(9), 1627–1648.
+Zeng, Z. and C.-G. Lee (2014). Pairs trading: optimal thresholds and proﬁtability. Quantitative Finance 14(11), 1881–1893.
+Zhang, G. (2021). Pairs trading with general state space models. Quantitative Finance 21(9),
+1567–1587.
+49
+
+A
+Appendix
+The content of this Appendix is as follows. In Appendix A.1, we present the procedure for
+estimating model parameters. In Appendix A.2, we derive the solution in the absence of
+short selling costs. In Appendix A.3, we provide the proof of Proposition 1. In Appendix
+A.4, we derive the near-optimal allocation rule proposed in Section 4.2.3. In Appendix A.5,
+we present the details of the model with a market portfolio studied in Section 4.4.
+A.1
+Quasi-Maximum Likelihood Estimation Procedure
+First, we rewrite the return dynamics (1) and (2) as follows:
+d ln P1t = (µ −δ1xt −1
+2(σ2 + b2
+1))dt +
+q
+σ2 + b2
+1dM1t,
+(35)
+d ln P2t = (µ + δ2xt −1
+2(σ2 + b2
+2))dt +
+q
+σ2 + b2
+2dM2t,
+(36)
+where
+dM1t = σdZ0t + b1dZ1t
+p
+σ2 + b2
+1
+,
+(37)
+dM2t = σdZ0t + b2dZ2t
+p
+σ2 + b2
+2
+(38)
+are two correlated standard Brownian motion processes. We discretize (35) and (36) using
+the Euler scheme as follows:
+ln P1,ti+1 = ln P1,ti + (µ −δ1xti −1
+2(σ2 + b2
+1))∆ti +
+q
+σ2 + b2
+1
+p
+∆tim1i,
+(39)
+ln P2,ti+1 = ln P2,ti + (µ + δ2xti −1
+2(σ2 + b2
+2))∆ti +
+q
+σ2 + b2
+2
+p
+∆tim2i,
+(40)
+50
+
+where t0 < t1 < · · · < tN are the series of time points when price data are observed; and
+{(m1i, m2i)} are serially independent and follow a normal distribution with zero mean and
+covariance matrix
+Λ =
+
+
+1
+σ2
+√
+σ2+b2
+1
+√
+σ2+b2
+2
+σ2
+√
+σ2+b2
+1
+√
+σ2+b2
+2
+1
+
+
+(41)
+for i = 0, 1, ..., N −1.
+Let yi = (ln P1,ti, ln P2,ti). Then, the transition density from yi to yi+1 is |Jti|f(zi+1; 0, Λ),
+where
+|Jti| =
+1
+p
+σ2 + b2
+1
+p
+σ2 + b2
+2∆ti
+,
+(42)
+zi+1 =
+
+
+ln P1,ti+1−ln P1,ti−(µ−δ1xti−1
+2 (σ2+b2
+1))∆ti
+√
+σ2+b2
+1
+√∆ti
+ln P2,ti+1−ln P2,ti−(µ+δ2xti−1
+2 (σ2+b2
+2))∆ti
+√
+σ2+b2
+2
+√∆ti
+
+,
+(43)
+xti = ln P1,ti −ln P2,ti −1
+2(b2
+2 −b2
+1)ti,
+(44)
+and f(x; µ, Σ) is the probability density function of the 2-dimensional normal distribution
+with mean vector µ and covariance matrix Σ. The log likelihood function of the data sample
+is given by
+L =
+N−1
+X
+i=0
+ln |Jti| + ln f(zi+1; 0, Λ).
+(45)
+Finally, the estimated parameter values are
+(ˆµ, ˆσ,ˆb1,ˆb2, ˆδ1, ˆδ2) = arg
+max
+µ,σ,b1,b2,δ1,δ2 L.
+(46)
+51
+
+A.2
+Solution in the No-Short-Selling-Costs Case
+Without short selling costs (i.e., κ1 = κ2 = ξ1 = ξ2 = 0), the HJB equation (14) reduces to
+max
+φ1,φ2
+
+ft −(δ1 + δ2)xfx + 1
+2(b2
+1 + b2
+2)(fxx + (1 −γ)f 2
+x) + (b2
+1φ1 −b2
+2φ2)(1 −γ)fx + r
++ φ1
+ −δ1x + µ −r
+
++ φ2
+ δ2x + µ −r
+
+−1
+2γ
+ (φ1 + φ2)2σ2 + φ2
+1b2
+1 + φ2
+2b2
+2
+
+= 0.
+(47)
+Solving the ﬁrst order conditions for φ1 and φ2 yields
+φ∗
+1 =1 −γ
+γ
+fx + −((σ2 + b2
+2)δ1 + σ2δ2)x + b2
+2(µ −r)
+γ((σ2 + b2
+1)(σ2 + b2
+2) −σ4)
+,
+(48)
+φ∗
+2 = −1 −γ
+γ
+fx + ((σ2 + b2
+1)δ2 + σ2δ1)x + b2
+1(µ −r)
+γ((σ2 + b2
+1)(σ2 + b2
+2) −σ4)
+.
+(49)
+Substituting (48)–(49) into (47), we obtain the following partial diﬀerential equation (PDE):
+ft −K2xfx + 1
+2(b2
+1 + b2
+2)fxx −K3f 2
+x + K4x2 + K5x + K6 = 0,
+(50)
+where
+K2 =1
+γ (δ1 + δ2),
+(51)
+K3 =γ −1
+2γ (b2
+1 + b2
+2),
+(52)
+K4 =(σ2 + b2
+2)δ2
+1 + (σ2 + b2
+1)δ2
+2 + 2σ2δ1δ2
+2γ((σ2 + b2
+1)(σ2 + b2
+2) −σ4)
+,
+(53)
+K5 =
+(b2
+1δ2 −b2
+2δ1)(µ −r)
+γ((σ2 + b2
+1)(σ2 + b2
+2) −σ4),
+(54)
+K6 =r +
+(b2
+1 + b2
+2)(µ −r)2
+2γ((σ2 + b2
+1)(σ2 + b2
+2) −σ4).
+(55)
+52
+
+We conjecture that the solution to (50) takes the following form:
+f(x, t) = A(t)x2 + B(t)x + C(t).
+(56)
+By substituting (56) into (50), we can yield the following system of ODEs:
+A′(t) −2K2A(t) −4K3A(t)2 + K4 = 0,
+(57)
+B′(t) −K2B(t) −4K3A(t)B(t) + K5 = 0,
+(58)
+C′(t) + (b2
+1 + b2
+2)A(t) −K3B(t)2 + K6 = 0.
+(59)
+Since f(x, T) = 0, we have
+A(T) = B(T) = C(T) = 0.
+(60)
+Solving the ODEs (57)–(59) together with (60) yields (the details are omitted for conciseness)
+A(t) = K4
+q (1 −e2p(t−T)),
+(61)
+B(t) = K5K2
+pq
+(1 −2ep(t−T) + e2p(t−T)) + K5
+q (1 −e2p(t−T)),
+(62)
+C(t) =
+Z T
+t
+ (b2
+1 + b2
+2)A(s) −K3B(s)2 + K6
+
+ds,
+(63)
+where
+p =
+q
+K2
+2 + 4K3K4,
+(64)
+q = (−K2 + p)e2p(t−T) + K2 + p.
+(65)
+53
+
+A.3
+Proof of Proposition 1
+Proof. When γ = 1, the optimal allocation functions satisfy (19). First, note that the ﬁrst
+order conditions for φ1 and φ2 are given by
+−δ1x + µ −r + κ11φ1<0 −((φ1 + φ2)σ2 + φ1b2
+1) = 0,
+(66)
+δ2x + µ −r + κ21φ2<0 −((φ1 + φ2)σ2 + φ2b2
+2) = 0,
+(67)
+for φ1̸ = 0 and φ2̸ = 0, respectively. Hence, given xt and the optimal allocation φ∗
+2t, there
+are three cases for the optimal allocation φ∗
+1t, corresponding to φ∗
+1t > 0, φ∗
+1t < 0, and φ∗
+1t = 0
+respectively:
+φ∗
+1t =
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+−δ1xt + µ −r −φ∗
+2tσ2
+σ2 + b2
+1
+,
+if φ∗
+2t < m1
+t = −δ1xt + µ −r
+σ2
+,
+−δ1xt + µ −r + κ1 −φ∗
+2tσ2
+σ2 + b2
+1
+,
+if φ∗
+2t > m2
+t = −δ1xt + µ −r + κ1
+σ2
+,
+0,
+otherwise.
+(68)
+Similarly, given xt and φ∗
+1t, there are three cases for φ∗
+2t, corresponding to φ∗
+2t > 0, φ∗
+2t < 0,
+and φ∗
+2t = 0 respectively:
+φ∗
+2t =
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+δ2xt + µ −r −φ∗
+1tσ2
+σ2 + b2
+2
+,
+if φ∗
+1t < n1
+t = δ2xt + µ −r
+σ2
+,
+δ2xt + µ −r + κ2 −φ∗
+1tσ2
+σ2 + b2
+2
+,
+if φ∗
+1t > n2
+t = δ2xt + µ −r + κ2
+σ2
+,
+0,
+otherwise.
+(69)
+Clearly, given xt, the optimal allocations φ∗
+1t and φ∗
+2t must satisfy one of the following
+nine conditions:
+(C1) φ∗
+2t < m1
+t and φ∗
+1t < n1
+t;
+54
+
+(C2) φ∗
+2t < m1
+t and φ∗
+1t > n2
+t;
+(C3) φ∗
+2t < m1
+t and n1
+t ≤φ∗
+1t ≤n2
+t;
+(C4) φ∗
+2t > m2
+t and φ∗
+1t < n1
+t;
+(C5) φ∗
+2t > m2
+t and φ∗
+1t > n2
+t;
+(C6) φ∗
+2t > m2
+t and n1
+t ≤φ∗
+1t ≤n2
+t;
+(C7) m1
+t ≤φ∗
+2t ≤m2
+t and φ∗
+1t < n1
+t;
+(C8) m1
+t ≤φ∗
+2t ≤m2
+t and φ∗
+1t > n2
+t;
+(C9) m1
+t ≤φ∗
+2t ≤m2
+t and n1
+t ≤φ∗
+1t ≤n2
+t.
+In each case, we can obtain the corresponding φ∗
+1t and φ∗
+2t as functions of xt from (68) and
+(69). The optimal allocations must be among them. Next, for each of these φ∗
+1t and φ∗
+2t, we
+test whether there exists xt such that the corresponding conditions are indeed satisﬁed. If
+such xt exists, we solve for its feasible range; otherwise, the solution is infeasible.
+The details are as follows. In case (C1), we have
+φ∗
+1t = −((σ2 + b2
+2)δ1 + σ2δ2)xt + b2
+2(µ −r)
+(σ2 + b2
+1)(σ2 + b2
+2) −σ4
+,
+(70)
+φ∗
+2t = ((σ2 + b2
+1)δ2 + σ2δ1)xt + b2
+1(µ −r)
+(σ2 + b2
+1)(σ2 + b2
+2) −σ4
+.
+(71)
+Solving φ∗
+2t < m1
+t and φ∗
+1t < n1
+t yields
+−b2
+1(µ −r)
+σ2δ1 + (σ2 + b2
+1)δ2
+= X2 < xt < X3 =
+b2
+2(µ −r)
+(σ2 + b2
+2)δ1 + σ2δ2
+.
+(72)
+This yields the optimal allocations for xt ∈(X2, X3).
+55
+
+In case (C2), we have
+φ∗
+1t = −((σ2 + b2
+2)δ1 + σ2δ2)xt + (σ2 + b2
+2)(µ −r) −σ2(µ −r + κ2)
+(σ2 + b2
+1)(σ2 + b2
+2) −σ4
+,
+(73)
+φ∗
+2t = ((σ2 + b2
+1)δ2 + σ2δ1)xt + (σ2 + b2
+1)(µ −r + κ2) −σ2(µ −r)
+(σ2 + b2
+1)(σ2 + b2
+2) −σ4
+.
+(74)
+Solving φ∗
+2t < m1
+t and φ∗
+1t > n2
+t yields
+xt < b2
+2(µ −r) −σ2κ2
+(σ2 + b2
+2)δ1 + σ2δ2
+(75)
+and
+xt < X1 = −b2
+1(µ −r) −(σ2 + b2
+1)κ2
+σ2δ1 + (σ2 + b2
+1)δ2
+≤0.
+(76)
+It can be shown that the right hand side of (75) is larger than that of (76); thus, only (76)
+is binding. Then, (73) and (74) are the optimal allocations for xt < X1.
+In case (C3), we have
+φ∗
+1t =
+1
+σ2 + b2
+1
+(−δ1xt + µ −r),
+(77)
+φ∗
+2t = 0.
+(78)
+Solving n1
+t ≤φ∗
+1t ≤n2
+t yields
+−b2
+1(µ −r) −(σ2 + b2
+1)κ2
+σ2δ1 + (σ2 + b2
+1)δ2
+≤xt ≤X2 =
+−b2
+1(µ −r)
+σ2δ1 + (σ2 + b2
+1)δ2
+≤0.
+(79)
+Note that for the condition φ∗
+2t < m1
+t, there are three cases: (i) when δ1 = 0 and µ = r, we
+have m1
+t = 0 and thus φ∗
+2t < m1
+t cannot hold; (ii) when δ1 = 0 and µ > r, φ∗
+2t < m1
+t holds for
+56
+
+all xt; and (iii) when δ1 > 0, φ∗
+2t < m1
+t is equivalent to
+xt < µ −r
+δ1
+,
+(80)
+which holds for all xt that satisﬁes (79) if µ > r, and for all xt that satisﬁes (79) except the
+right endpoint (i.e., xt = 0) if µ = r. Thus, when δ1 = 0 and µ = r, there is no solution for
+this case; when µ > r, the range for xt in this case is given by (79); and when δ1 > 0 and
+µ = r, the right endpoint of (79) (i.e., xt = 0) needs to be excluded. Then, (77) and (78) are
+the optimal allocations for X1 ≤xt ≤X2 when µ > r, and for X1 ≤xt < X2 when µ = r
+and δ1 > 0.
+Similarly, by analyzing the case (C4), we can obtain the optimal allocations for xt > X4.
+By analyzing the case (C7) in a similar manner, we can obtain the optimal allocations for
+X3 ≤xt ≤X4 when µ > r, and for X3 < xt ≤X4 when µ = r and δ2 > 0.
+In case (C9), we have
+φ∗
+1t = 0,
+(81)
+φ∗
+2t = 0.
+(82)
+Solving m1
+t ≤φ∗
+2t ≤m2
+t and n1
+t ≤φ∗
+1t ≤n2
+t yields
+−(µ −r + κ2) ≤δ2xt ≤−(µ −r)
+(83)
+and
+µ −r ≤δ1xt ≤µ −r + κ1.
+(84)
+57
+
+When µ > r, (83) and (84) imply δ2xt < 0 and δ1xt > 0, which cannot hold simultaneously.
+When µ = r and δ1 = 0, (84) holds for all xt; since we must have δ2 > 0 in this case, (83)
+reads
+−κ2
+δ2
+≤xt ≤0.
+(85)
+Then, (81) and (82) are the optimal allocations for X1 ≤xt ≤X2 = 0 when δ1 = 0 and
+µ = r. Similarly, it can be shown that (81) and (82) are also the optimal allocations for
+0 = X3 ≤xt ≤X4 when δ2 = 0 and µ = r. Moreover, in the remaining scenario with µ = r,
+δ1 > 0, and δ2 > 0, (83) and (84) hold simultaneously only for xt = 0. The above discussions
+indicate that (81) and (82) are always the optimal allocations for xt = 0 when µ = r.
+Since (77) and (78) obtained in case (C3) are equivalent to (81) and (82) when δ1 = 0 and
+µ = r or when µ = r and xt = 0, (77) and (78) are the optimal allocations for X1 ≤xt ≤X2
+when δ1 = 0 and µ = r, and for xt = X2 = 0 when δ1 > 0 and µ = r. Together with
+the solution obtained in case (C3), we conclude that (77) and (78) are always the optimal
+allocations for X1 ≤xt ≤X2. Similarly, the optimal allocations obtained in case (C7) are
+always those for X3 ≤xt ≤X4.
+Lastly, we can show that there is no solution satisfying the other three cases (C5), (C6),
+or (C8). Take the case (C5) as an example. In this case, we have
+φ∗
+1t = −((σ2 + b2
+2)δ1 + σ2δ2)xt + (σ2 + b2
+2)(µ −r + κ1) −σ2(µ −r + κ2)
+(σ2 + b2
+1)(σ2 + b2
+2) −σ4
+,
+(86)
+φ∗
+2t = ((σ2 + b2
+1)δ2 + σ2δ1)xt + (σ2 + b2
+1)(µ −r + κ2) −σ2(µ −r + κ1)
+(σ2 + b2
+1)(σ2 + b2
+2) −σ4
+.
+(87)
+58
+
+Solving φ∗
+2t > m2
+t and φ∗
+1t > n2
+t yields
+xt > (σ2 + b2
+2)(µ −r + κ1) −σ2(µ −r + κ2)
+(σ2 + b2
+2)δ1 + σ2δ2
+(88)
+and
+xt < σ2(µ −r + κ1) −(σ2 + b2
+1)(µ −r + κ2)
+(σ2 + b2
+1)δ2 + σ2δ1
+(89)
+respectively. It can be shown that the right hand side of (89) is smaller than that of (88);
+thus, (89) and (88) cannot hold simultaneously. The other two cases can be similarly analyzed.
+Combining all the discussions above, we conclude that the optimal allocations when the
+investor has logarithm utility are given by (20) and (21), respectively.
+A.4
+Details for the Near-Optimal Allocation Rule
+To construct the near-optimal allocation rule, we consider the ﬁve cases in (29) successively.
+To avoid unnecessary repetition, we use the case with x < X1(t) ≤0 to demonstrate the
+process; the other cases can be handled similarly and we only present the results.
+When x < X1(t) ≤0, with the ex-ante assumption that φ1 > 0 and φ2 < 0, the HJB
+equation (14) becomes
+max
+φ1,φ2
+
+ft −(δ1 + δ2)xfx + 1
+2(b2
+1 + b2
+2)(fxx + (1 −γ)f 2
+x) + (b2
+1φ1 −b2
+2φ2)(1 −γ)fx
++ r + φ1
+ −δ1x + µ −r
+
++ φ2
+ δ2x + µ −r + κ2
+
+−1
+2γ
+ (φ1 + φ2)2σ2 + φ2
+1b2
+1 + φ2
+2b2
+2
+
+= 0.
+(90)
+59
+
+Solving the ﬁrst order conditions for φ1 and φ2 yields
+˜φ1 =1 −γ
+γ
+fx + −((σ2 + b2
+2)δ1 + σ2δ2)x + b2
+2(µ −r) −σ2κ2
+γ((σ2 + b2
+1)(σ2 + b2
+2) −σ4)
+,
+(91)
+˜φ2 = −1 −γ
+γ
+fx + ((σ2 + b2
+1)δ2 + σ2δ1)x + b2
+1(µ −r) + (σ2 + b2
+1)κ2
+γ((σ2 + b2
+1)(σ2 + b2
+2) −σ4)
+.
+(92)
+Substituting them into the HJB equation yields
+ft + (L11 −L12x)fx + 1
+2(b2
+1 + b2
+2)fxx −L13f 2
+x + L14x2 + L15x + L16 = 0,
+(93)
+where the constants are given by
+L11 =γ −1
+γ
+κ2,
+(94)
+L12 =1
+γ
+ δ1 + δ2
+
+,
+(95)
+L13 =γ −1
+2γ (b2
+1 + b2
+2),
+(96)
+L14 =
+1
+2γ((σ2 + b2
+1)(σ2 + b2
+2) −σ4)
+
+(σ2 + b2
+2)δ2
+1 + (σ2 + b2
+1)δ2
+2 + 2σ2δ1δ2
+
+,
+(97)
+L15 =
+1
+γ((σ2 + b2
+1)(σ2 + b2
+2) −σ4)
+
+(b2
+1δ2 −b2
+2δ1)(µ −r) + ((σ2 + b2
+1)δ2 + σ2δ1)κ2
+
+,
+(98)
+L16 =r + (b2
+1 + b2
+2)(µ −r)2 + (σ2 + b2
+1)κ2
+2 + 2b2
+1(µ −r)κ2
+2γ((σ2 + b2
+1)(σ2 + b2
+2) −σ4)
+.
+(99)
+By enforcing the function ˜f1(x, t) = A1(t)x2 + B1(t)x + C1(t) to satisfy (93) and the
+terminal condition A1(T) = B1(T) = C1(T) = 0, we can obtain (the details are similar to
+those in the no-short-selling-costs case reported in Appendix A.2):
+A1(t) =L14
+q1
+(1 −e2p1(t−T)),
+(100)
+B1(t) =(1 −2ep1(t−T) + e2p1(t−T))(L15L12 + 2L11L14)
+q1p1
++ L15(1 −e2p1(t−T))
+q1
+,
+(101)
+60
+
+where p1 =
+p
+L2
+12 + 4L13L14 and q1 = (−L12 +p1)e2p1(t−T) +L12 +p1. By substituting ∂x ˜f1 =
+2A1(t)x + B1(t) into (91) and (92), we obtain the following allocation rule for xt < X1(t):
+˜φ1t =1 −γ
+γ
+(2A1(t)xt + B1(t)) + −((σ2 + b2
+2)δ1 + σ2δ2)xt + b2
+2(µ −r) −σ2κ2
+γ((σ2 + b2
+1)(σ2 + b2
+2) −σ4)
+,
+(102)
+˜φ2t = −1 −γ
+γ
+(2A1(t)xt + B1(t)) + ((σ2 + b2
+1)δ2 + σ2δ1)xt + b2
+1(µ −r) + (σ2 + b2
+1)κ2
+γ((σ2 + b2
+1)(σ2 + b2
+2) −σ4)
+. (103)
+Moreover, we require the allocation function ˜φ2(x, t) to be continuous at the threshold level
+X1(t) (i.e., ˜φ2t|xt=X1(t) = 0), which leads to
+X1(t) = −−(1 −γ)B1(t)((σ2 + b2
+1)(σ2 + b2
+2) −σ4) + b2
+1(µ −r) + (σ2 + b2
+1)κ2
+−(1 −γ)2A1(t)((σ2 + b2
+1)(σ2 + b2
+2) −σ4) + (σ2 + b2
+1)δ2 + σ2δ1
+.
+(104)
+In what follows, we only list the expressions of the quantities involved in the near-optimal
+allocation rule. The other threshold levels are:
+X2(t) = −
+−(1 −γ)B3(t)((σ2 + b2
+1)(σ2 + b2
+2) −σ4) + b2
+1(µ −r)
+−(1 −γ)2A3(t)((σ2 + b2
+1)(σ2 + b2
+2) −σ4) + (σ2 + b2
+1)δ2 + σ2δ1
+;
+X3(t) = −
+(1 −γ)B3(t)((σ2 + b2
+1)(σ2 + b2
+2) −σ4) + b2
+2(µ −r)
+(1 −γ)2A3(t)((σ2 + b2
+1)(σ2 + b2
+2) −σ4) −((σ2 + b2
+2)δ1 + σ2δ2);
+X4(t) = −(1 −γ)B5(t)((σ2 + b2
+1)(σ2 + b2
+2) −σ4) + b2
+2(µ −r) + (σ2 + b2
+2)κ1
+(1 −γ)2A5(t)((σ2 + b2
+1)(σ2 + b2
+2) −σ4) −((σ2 + b2
+2)δ1 + σ2δ2) ;
+61
+
+and the time-dependent functions involved are:
+A2(t) =L24
+q2
+(1 −e2p2(t−T)),
+B2(t) =(1 −2ep2(t−T) + e2p2(t−T))(L25L22 + 2L21L24)
+q2p2
++ L25(1 −e2p2(t−T))
+q2
+,
+A3(t) =K4
+q (1 −e2p(t−T)),
+B3(t) =K5K2
+pq
+(1 −2ep(t−T) + e2p(t−T)) + K5
+q (1 −e2p(t−T)),
+A4(t) =L44
+q4
+(1 −e2p4(t−T)),
+B4(t) =(1 −2ep4(t−T) + e2p4(t−T))(L45L42 + 2L41L44)
+q4p4
++ L45(1 −e2p4(t−T))
+q4
+,
+A5(t) =L54
+q5
+(1 −e2p5(t−T)),
+B5(t) =(1 −2ep5(t−T) + e2p5(t−T))(L55L52 + 2L51L54)
+q5p5
++ L55(1 −e2p5(t−T))
+q5
+,
+where
+L21 = −
+γ −1
+γ(σ2 + b2
+1)b2
+1
+ µ −r
+
+,
+L22 =δ1 + δ2 −
+γ −1
+γ(σ2 + b2
+1)b2
+1δ1,
+L23 =1
+2
+γ −1
+γ
+ γ(b2
+1 + b2
+2) + (1 −γ)
+b4
+1
+σ2 + b2
+1
+
+,
+L24 =
+δ2
+1
+2γ(σ2 + b2
+1),
+L25 = −δ1
+ µ −r
+
+γ(σ2 + b2
+1),
+p2 =
+q
+L2
+22 + 4L23L24,
+q2 =(−L22 + p2)e2p2(t−T) + L22 + p2;
+62
+
+L41 =
+γ −1
+γ(σ2 + b2
+2)b2
+2
+ µ −r
+
+,
+L42 =δ1 + δ2 −
+γ −1
+γ(σ2 + b2
+2)b2
+2δ2,
+L43 =1
+2
+γ −1
+γ
+ γ(b2
+1 + b2
+2) + (1 −γ)
+b4
+2
+σ2 + b2
+2
+
+,
+L44 =
+δ2
+2
+2γ(σ2 + b2
+2),
+L45 = δ2
+ µ −r
+
+γ(σ2 + b2
+2),
+p4 =
+q
+L2
+42 + 4L43L44,
+q4 =(−L42 + p4)e2p4(t−T) + L42 + p4;
+and
+L51 = −γ −1
+γ
+κ1,
+L52 =1
+γ (δ1 + δ2),
+L53 =γ −1
+2γ (b2
+1 + b2
+2),
+L54 =
+1
+2γ((σ2 + b2
+1)(σ2 + b2
+2) −σ4)
+
+(σ2 + b2
+2)δ2
+1 + (σ2 + b2
+1)δ2
+2 + 2σ2δ1δ2
+
+,
+L55 =
+1
+γ((σ2 + b2
+1)(σ2 + b2
+2) −σ4)
+
+(b2
+1δ2 −b2
+2δ1)(µ −r) −((σ2 + b2
+2)δ1 + σ2δ2)κ1
+
+,
+p5 =
+q
+L2
+52 + 4L53L54,
+q5 =(−L52 + p5)e2p5(t−T) + L52 + p5.
+Note that p, q and Kj involved in A3(t) and B3(t) are given by (51)–(55) and (64)–(65)
+respectively in Appendix A.2.
+63
+
+A.5
+Details of the Model with a Market Portfolio
+Following the setting in Liu and Timmermann (2013), we assume the risky investment opportunity set includes a market portfolio, whose price is denoted as Pmt, and a pair of stocks,
+whose prices are denoted as P1t and P2t respectively. Like in Liu and Timmermann (2013),
+we assume their return dynamics are
+dPmt
+Pmt
+= (r + µm)dt + σmdBt,
+(105)
+dP1t
+P1t
+= (r + βµm −δ1xt)dt + βσmdBt + ˜σdZ0t + b1dZ1t,
+(106)
+dP2t
+P2t
+= (r + βµm + δ2xt)dt + βσmdBt + ˜σdZ0t + b2dZ2t,
+(107)
+where Bt, Z0t, Z1t, and Z2t are four independent Brownian motion processes. The dynamics
+of the relative price xt = ln P1t −ln P2t −1
+2(b2
+2 −b2
+1)t still follows (4).
+Let φ0t be the fraction of wealth allocated to the market portfolio and decompose the
+total wealth as follows:
+Wt =
+2
+X
+i=0
+φitWt +
+2
+X
+i=0
+(1 + ηi)φ−
+itWt +
+ 
+1 −
+2
+X
+i=0
+φ+
+it −
+2
+X
+i=0
+ηiφ−
+it
+!
+Wt.
+Then, assuming short selling the market portfolio incurs costs at a rate of κ0, the investor’s
+budget constraint is
+dWt
+Wt
+=
+2
+X
+i=0
+φit
+dPit
+Pit
++ r
+ 
+1 −
+2
+X
+i=0
+φ+
+it −
+2
+X
+i=0
+ηiφ−
+it
+!
+dt +
+2
+X
+i=0
+(r(1 + ηi) −κi)φ−
+itdt
+=rdt + φ0t
+
+(µm + κ01φ0t<0)dt + σmdBt
+
++ φ1t
+
+(−δ1xt + βµm + κ11φ1t<0)dt + βσmdBt + ˜σdZ0t + b1dZ1t
+
++ φ2t
+
+(δ2xt + βµm + κ21φ2t<0)dt + βσmdBt + ˜σdZ0t + b2dZ2t
+
+.
+(108)
+64
+
+With a slight abuse of notation, we still denote as J(W, x, t) the investor’s value function.
+Then, the associated HJB equation becomes
+max
+φ0,φ1,φ2
+
+Jt −(δ1 + δ2)xJx + 1
+2(b2
+1 + b2
+2)Jxx + (φ1b2
+1 −φ2b2
+2)WJxW
++
+
+r + φ0(µm + κ01φ0<0) + φ1
+ −δ1x + βµm + κ11φ1<0
+
++ φ2
+ δ2x + βµm + κ21φ2<0
+
+WJW
++ 1
+2
+ (φ0 + (φ1 + φ2)β)2σ2
+m + (φ1 + φ2)2˜σ2 + φ2
+1b2
+1 + φ2
+2b2
+2
+
+W 2JWW
+
+= 0,
+(109)
+J(W, x, T) = Uγ(W).
+(110)
+We can use the same transformation (13) to reduce the dimensionality. The function
+f(x, t) must satisfy
+max
+φ0,φ1,φ2
+
+ft −(δ1 + δ2)xfx + 1
+2(b2
+1 + b2
+2)(fxx + (1 −γ)f 2
+x) + (φ1b2
+1 −φ2b2
+2)(1 −γ)fx
++ r + φ0(µm + κ01φ0<0) + φ1
+ −δ1x + βµm + κ11φ1<0
+
++ φ2
+ δ2x + βµm + κ21φ2<0
+
+−1
+2γ
+ (φ0 + φ1β + φ2β)2σ2
+m + (φ1 + φ2)2˜σ2 + φ2
+1b2
+1 + φ2
+2b2
+2
+
+= 0,
+(111)
+with the terminal condition
+f(x, T) = 0.
+(112)
+We then solve (111)–(112) numerically.
+65

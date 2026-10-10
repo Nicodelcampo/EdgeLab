@@ -1,0 +1,128 @@
+{
+  "doc_id": 187,
+  "titulo": "Informed Trading, Investor Beliefs Consensus and Volatility: Evidence from the Limit Order Book Dynamics During COVID-19 and Short-Selling Ban",
+  "resumen_operativo": "El estudio investiga la dinámica interactiva entre informed trading, distribución de creencias en el Limit Order Book (LOB), liquidez y volatilidad en el IBEX-35 durante COVID-19 y la prohibición de short-selling. Los hallazgos principales incluyen: (1) relación positiva entre VPIN no-contemporáneo y consenso de inversores sobre valor fundamental; (2) relaciones de causalidad Granger bidireccionales entre informed trading, consenso en el LOB y volatilidad, con diferencias por nivel de capitalización; (3) la dispersión de creencias en el LOB tiene mayor poder predictivo sobre la volatilidad que el informed trading medido por VPIN.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "Volume-Synchronized Probability of Informed Trading",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida dinámica de order flow imbalance y probabilidad de informed trading en alta frecuencia, usada como barómetro de información asimétrica. Valores extremos de su CDF (>0.99) indican toxicidad de mercado y predicen flash crashes.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "informed trading"},
+        {"tipo": "PREDICE", "objeto": "volatility"}
+      ],
+      "cita_textual": "One of the most commonly used measures in the literature for quantifying informed trading activity and information asymmetry is the Volume-Synchronized Probability of Informed Trading (known as VPIN)."
+    },
+    {
+      "nombre": "Limit Order Book Slope",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida de la relación entre profundidad del LOB y distancia al precio de mercado. Refleja la dispersión de creencias de los inversores: mayor pendiente indica mayor consenso sobre el valor fundamental entre los participantes del mercado.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "investor beliefs consensus"},
+        {"tipo": "PREDICE", "objeto": "volatility"}
+      ],
+      "cita_textual": "The slope of the LOB, a measure that examines the relationship between the depth of the LOB and its distance from the prevailing market price, provides a more comprehensive view of market dynamics and information asymmetry."
+    },
+    {
+      "nombre": "Investor Beliefs Consensus",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Grado de acuerdo entre inversores sobre el valor fundamental de un activo. Mayor consenso se asocia con órdenes límite más informadas y agrupadas cerca del precio de mercado, reflejando menor dispersión en el LOB.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "informed trading"},
+        {"tipo": "SE_OPONE_A", "objeto": "volatility"}
+      ],
+      "cita_textual": "A lower dispersion of beliefs (higher consensus) could be associated with a higher proportion of informed limit orders, implying that informed traders are active, integrating their private information into the order book."
+    },
+    {
+      "nombre": "Granger Causality",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Prueba estadística usada para identificar relaciones causales bidireccionales entre informed trading, consenso en el LOB y volatilidad, encontrando diferencias significativas según capitalización de los activos.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "VPIN"},
+        {"tipo": "USA", "objeto": "time series analysis"}
+      ],
+      "cita_textual": "Our findings indicate Granger causal relationships between informed trading, order book consensus, and volatility, occurring with significant differences across different asset capitalization levels."
+    },
+    {
+      "nombre": "Short-Selling Ban",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Prohibición regulatoria de ventas en corto impuesta sobre algunos componentes del IBEX-35 durante COVID-19, que afecta la dinámica entre informed trading, liquidez y volatilidad al restringir a informed traders.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "market liquidity reduction"},
+        {"tipo": "APLICA_A", "objeto": "IBEX-35 components"}
+      ],
+      "cita_textual": "This study investigates the interactive dynamics between informed trading, beliefs distribution on the Limit Order Book, liquidity and volatility, and examines the changes in these dynamics observed during the COVID-19 event, along with the short selling ban."
+    },
+    {
+      "nombre": "Market Toxicity",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Desequilibrio entre informed y uninformed traders que puede aumentar la volatilidad inducida por liquidez. Se mide mediante la CDF de VPIN, donde valores extremos (>0.99) indican toxicidad elevada.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "adverse selection risk"},
+        {"tipo": "CAUSA", "objeto": "volatility"}
+      ],
+      "cita_textual": "High levels of informed trading, which lead to an imbalance between informed and uninformed traders, often referred to as market toxicity, can increase liquidity-induced volatility."
+    },
+    {
+      "nombre": "Order Flow Imbalance",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Desequilibrio entre órdenes de compra y venta que refleja la dirección del trading informado. El VPIN es una medida dinámica de order flow imbalance en entornos de alta frecuencia.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "VPIN"},
+        {"tipo": "MIDE", "objeto": "informed trading direction"}
+      ],
+      "cita_textual": "VPIN is a dynamic measure of order flow imbalance, introduced as a tool to predict extreme events, such as flash crashes in high-frequency trading."
+    },
+    {
+      "nombre": "Relative Spread",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida de liquidez externa del mercado. El informed trading puede consumir liquidez, ampliando el spread, mientras que simultáneamente contribuye a un proceso de formación de precios más informado.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "external liquidity"},
+        {"tipo": "SE_OPONE_A", "objeto": "informed trading"}
+      ],
+      "cita_textual": "Informed trading could potentially decrease the depth of the LOB and widen the bid-ask spread while contributing to a more informed and efficient price formation process."
+    },
+    {
+      "nombre": "Bid-Ask Spread",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Diferencia entre el mejor precio de compra y venta en el LOB. El informed trading tiende a ampliarlo al consumir liquidez, aunque simultáneamente mejora la eficiencia informativa de los precios.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "relative spread"},
+        {"tipo": "MIDE", "objeto": "liquidity cost"}
+      ],
+      "cita_textual": "Informed trading could potentially decrease the depth of the LOB and widen the bid-ask spread."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "El nivel de informed trading no-contemporáneo (VPIN) muestra una relación positiva con el consenso de los inversores sobre el valor fundamental, sugiriendo que las órdenes límite informadas mejoran el acuerdo sobre el precio justo.",
+      "mercado": "IBEX-35 (acciones españolas)",
+      "periodo": "Período COVID-19 y prohibición de short-selling (2020)",
+      "magnitud": "Relaciones significativas con diferencias por nivel de capitalización de los activos",
+      "condiciones": "Datos del LOB de BME Market Data; análisis de series temporales con pruebas de Granger",
+      "robustez": "media",
+      "cita_textual": "The level of non-contemporaneous informed trading shows a positive relationship with investor consensus regarding the fundamental value."
+    },
+    {
+      "afirmacion": "La dispersión de creencias en el Limit Order Book (medida por la pendiente del LOB) muestra mayor poder predictivo sobre la volatilidad que el informed trading medido por VPIN, especialmente durante períodos de estrés de mercado.",
+      "mercado": "IBEX-35",
+      "periodo": "COVID-19 y prohibición de short-selling",
+      "magnitud": "El LOB slope supera al VPIN como predictor de volatilidad; efectos diferenciados por capitalización (large caps con mayor cobertura de analistas muestran patrones distintos)",
+      "condiciones": "Modelos de series temporales con VPIN, CDF de VPIN y LOB slope como predictores de volatilidad",
+      "robustez": "media",
+      "cita_textual": "The beliefs distribution on the Limit Order Book shows greater predictive power for volatility compared to informed trading."
+    },
+    {
+      "afirmacion": "Se documentan relaciones de causalidad Granger bidireccionales entre informed trading, consenso en el order book y volatilidad, con diferencias significativas entre niveles de capitalización (large cap vs small cap).",
+      "mercado": "IBEX-35 (todos los componentes)",
+      "periodo": "COVID-19 y prohibición de short-selling",
+      "magnitud": "Relaciones Granger-causales significativas; efectos más pronunciados en large caps debido a mayor cobertura de analistas",
+      "condiciones": "Pruebas de causalidad Granger con múltiples variables de microstructure",
+      "robustez": "media",
+      "cita_textual": "Our findings indicate Granger causal relationships between informed trading, order book consensus, and volatility, occurring with significant differences across different asset capitalization levels."
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "VPIN se calcula en alta frecuencia intradía y el LOB slope se deriva de snapshots del libro; análisis directamente aplicable a estrategias de market making y ejecución intradía."}
+}

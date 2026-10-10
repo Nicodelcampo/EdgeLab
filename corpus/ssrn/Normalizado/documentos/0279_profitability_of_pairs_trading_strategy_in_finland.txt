@@ -1,0 +1,1514 @@
+Electronic copy available at: http://ssrn.com/abstract=2014271
+Dynamic Pairs Trading using the Stochastic
+Control approach
+Agn`es Tourin∗†, Raphael Yan‡
+February 29, 2012
+Abstract
+We propose a model for analyzing dynamic pairs trading strategies
+using the stochastic control approach. The model is explored in an
+optimal portfolio setting, where the portfolio consists of a bank account and two co-integrated stocks and the objective is to maximize
+for a ﬁxed time horizon, the expected terminal utility of wealth. For
+the exponential utility function, we reduce the problem to a linear
+parabolic Partial Diﬀerential Equation which can be solved in closed
+form. In particular, we exhibit the optimal positions in the two stocks.
+Keywords: Optimal Stochastic Control; Pairs trading; Co-integration;
+Hamilton Jacobi Bellman equation; Merton problem.
+JEL classiﬁcation: C61
+1
+Introduction
+We develop an optimal stochastic control model for analyzing dynamic
+pairs trading strategies. For an introduction to pairs trading, we recommend the article by Elliott et al [3] and the references therein. In
+this paper, we consider a portfolio composed of a risk-free asset and
+∗New York University Polytechnic Institute, Department of Finance and Risk Engineering, Room RH519 , Six MetroTech Center, Brooklyn, NY 11201; atourin@poly.edu
+†This work was initiated while Agn`es Tourin was partially supported by an Immersion
+Fellowship at the Fields Institute in Toronto.
+‡Blackrock Inc., 55 East 52nd Street New York, NY 10055.
+1
+Electronic copy available at: https://ssrn.com/abstract=2014271
+
+Electronic copy available at: http://ssrn.com/abstract=2014271
+two co-integrated and correlated stocks. For a given maturity T > 0,
+the goal is to determine the trading policies that maximize the expected utility of terminal wealth.
+This work was inspired by an earlier work of Mudchanatongsuk,
+Primbs, Wong [8] who apply the optimal stochastic control approach
+to a simpliﬁed model of optimal pairs trading. In their model, they
+only allow positions that are short one stock and long the other, in
+equal dollar amounts. We use a similar co-integration model but we
+relax the above constraint and allow strategies with arbitrary amounts
+in each stock.
+The model for the co-integrated stocks is taken from Duan and
+Pliska [2] who obtain it as the diﬀusion limit of a discrete time cointegration model. While their focus is to value options on co-integrated
+assets, our goal is to compute optimal allocations directly on the cointegrated assets. Consequently, we work with the historical probability measure, not a risk-neutral measure.
+The parameters in our
+co-integration model can be estimated as in [2], by using a two-step
+Engle-Granger [5] method coupled with a Dicker-Fulley test.
+It is
+worth noting that, alternately, a ﬁltering method could be used as in
+Elliott et al [3].
+For the exponential utility function and for a zero risk-free interest
+rate, we are able to reduce the problem to a one dimensional linear
+parabolic Partial Diﬀerential Equation (PDE in short); we compute
+explicitly the optimal strategies and the value function which turns
+out to be smooth. As in the standard Merton problem, the amounts
+invested in each stock are inversely proportional to the risk aversion
+coeﬃcient. From a practitioner’s point of view, the investor must pick
+a particular value for the risk aversion coeﬃcient. For instance, cutting
+in half the risk aversion level is equivalent to investing twice as much
+capital in each stock. Besides, at the optimum, the amounts invested
+in each stock do not depend on the values of the individual stocks,
+but rather on a mean reverting process which is a linear combination
+of the stock prices.
+There is a similar article by Benth and Karlsen [1] who consider a
+Merton investment problem with a mean reverting asset price. They
+derive an explicit solution for the value function and the optimal
+trading strategies by reducing the model to a one-dimensional linear parabolic PDE. Although our application is diﬀerent than theirs,
+our calculations and proofs are similar. Besides, we refer to [6] for an
+overview of the theory of stochastic optimal control. Finally, we want
+2
+Electronic copy available at: https://ssrn.com/abstract=2014271
+
+Electronic copy available at: http://ssrn.com/abstract=2014271
+to point out the article by Gatev et al which contains an extensive
+empirical study on pairs trading.
+In the next section, we describe our optimal stochastic control
+model.
+In Section 3, we compute in closed form the solution of
+the stochastic control problem by deriving formally the associated
+Hamilton-Jacobi-Bellman (HJB in short) equation and solving it explicitly. We provide a veriﬁcation result in section 4 which holds under
+two conditions on the parameters in the model. In section 5, we add
+correlations to our model and we calculate the corresponding solution.
+In the last section, in order to illustrate our results, we produce an
+example with historical minute-by-minute stock data.
+2
+Formulation of the optimal stochastic control model
+We essentially use for the co-integrated stocks the model derived in [2]
+as the diﬀusion limit of a discrete-time model, in the case when there
+are only two assets. We ﬁx a time horizon T > 0. We denote by S1
+t
+and S2
+t the co-integrated stock prices for t ∈[0, T]. S1
+t , S2
+t satisfy the
+Stochastic Diﬀerential Equations
+d log S1
+t
+=
+
+µ1 −σ2
+1
+2 + δzt
+
+dt + σ1dB1
+t
+d log S2
+t
+=
+
+µ2 −σ2
+2
+2
+
+dt + σ2dB2
+t
+where (B1
+t , B2
+t ) is a 2-dimensional Brownian motion deﬁned on a ﬁltered probability space (Ω, Ft, IP), the underlying ﬁltration is Ft =
+σ((B1
+s, B2
+s) : 0 ≤s ≤t) and the co-integrating vector zt is deﬁned by
+zt
+=
+a + log S1
+t + β log S2
+t .
+(1)
+The main diﬀerences with [2] are the following: ﬁrst of all, we
+work under the historical probability measure instead of the riskneutral probability measure; secondly, for a sake of simplicity, the
+co-integration term zt appears only in the drift of the ﬁrst stock instead of aﬀecting the drifts of the two stocks as in [2]. However, our
+results can be easily generalized to the fully symmetric case. Thirdly,
+we omit the deterministic linear trend in our deﬁnition of zt. This only
+aﬀects the estimation of the coeﬃcients in the dynamics of zt and our
+3
+Electronic copy available at: https://ssrn.com/abstract=2014271
+
+results are readily applicable in the case when a linear deterministic
+trend is present.
+Furthermore, as in [2], we can see that zt is mean-reverting
+dzt
+=
+
+µ1 −σ2
+1
+2 + δzt
+
+dt + σ1dB1
+t + β
+
+µ2 −σ2
+2
+2
+
+dt + βσ2dB2
+t
+=
+
+µ1 −σ2
+1
+2 + βµ2 −β σ2
+2
+2 + δzt
+
+dt + σ1dB1
+t + βσ2dB2
+t
+=
+α(η −zt)dt + σβdBt
+where α = −δ is the speed of mean reversion, σβ =
+p
+σ2
+1 + β2σ2
+2,
+Bt = σ1
+σβ B1
+t + β σ2
+σβ B2
+t is a Brownian motion adapted to Ft and
+η = −1
+δ
+
+µ1 −σ2
+1
+2 + β
+
+µ2 −σ2
+2
+2
+
+is the equilibrium level.
+We also assume that there is a risk free asset such as a money
+market account. In this paper, we set the risk-free interest rate to 0
+because this allows us to derive a closed form solution by factoring
+out the wealth variable.
+Next, we introduce the variable Ws representing the value of the
+investor’s portfolio at time s. Note that we do not require the wealth
+Ws to be nonnegative. The investor starts at time t with an initial
+wealth Wt = w, in the money market account.
+Then she invests,
+at every time s ∈[t, T], in both the risk-free money market account
+and the two stocks. We denote by π1
+s, π2
+s the number of shares held
+respectively in the ﬁrst and second stocks at time s. We only consider
+self-ﬁnancing strategies and hence, the evolution of the wealth variable
+is given by
+dWs = π1
+sdS1
+s + π2
+sdS2
+s.
+The value of the portfolio Ws satisﬁes the Stochastic Diﬀerential
+Equation
+dWs = π1
+s(µ1 + δzs)S1
+sds + π2
+sµ2S2
+sds + π1
+sσ1S1
+sdB1
+s + π2
+sσ2S2
+sdB2
+s.
+Finally, the dynamics of the state variables Ws, S1
+s, S2
+s are given by
+the following controlled system of Stochastic Diﬀerential Equations
+4
+Electronic copy available at: https://ssrn.com/abstract=2014271
+
+dWs
+= π1
+s(µ1+δzs)S1
+sds+π2
+sµ2S2
+sds+π1
+sσ1S1
+sdB1
+s +π2
+sσ2S2
+sdB2
+s,(2)
+dS1
+s
+=
+(µ1+δzs) S1
+sdt + σ1S1
+sdB1
+s,
+(3)
+dS2
+s
+=
+µ2S2
+sds + σ2S2
+sdB2
+s,
+(4)
+Wt
+=
+w, S1
+t = s1, S2
+t = s2,
+(5)
+where zt is deﬁned in (1).
+We deﬁned without ambiguity the evolution of all the state variables. However, the above system may not have a unique solution for
+every control pair (π1, π2).
+A pair of controls (π1, π2) is said to be admissible if π1, π2 are
+real-valued, progressively measurable, are such that, (2),(3),(4),(5)
+deﬁne a unique solution (Ws, S1
+s, S2
+s) for every time s ∈[0, T] and
+(π1, π2, S1, S2) satisfy the integrability condition
+E
+Z T
+t
+(π1
+sS1
+s)2 + (π2
+sS2
+s)2ds < +∞.
+(6)
+We denote the set of admissible controls at the initial time of investment t, by At. Next, we deﬁne the value function u(t, w, s1, s2) of
+the following backward dynamic optimization problem: the investor
+seeks an admissible strategy (π1
+s, π2
+s) for every s ∈[t, T), that maximizes the utility he derives from wealth at time T, i.e.
+u(t, w, s1, s2) =
+sup
+(π1,π2)∈At
+E[U(W t,w,s1,s2,(π1,π2)
+T
+)],
+(7)
+where W t,w,s1,s2,(π1,π2)
+T
+denotes the solution of (2) at time T, corresponding to the control pair (π1, π2), the stock prices S1, S2 whose
+dynamics are respectively deﬁned by (3),(4) and for the initial conditions (5).
+Furthermore, in this article, we only treat the case of the exponential utility function, i.e.
+U(w) = −e−γw,
+where γ > 0 denotes the constant risk aversion coeﬃcient.
+One could alternately use the power function U(w) = 1
+γ cγ as in [1].
+However, for this model, we are unable to carry out the calculations
+5
+Electronic copy available at: https://ssrn.com/abstract=2014271
+
+explicitly and derive a solution in closed form. As we will see in the
+next section, the exponential utility function allows us to factor out
+the wealth variable and reduce the problem to a two-dimensional PDE.
+We simply can not make the same ansatz for the power function.
+3
+The Hamilton-Jacobi-Bellman equation and its solution
+Since we do not know a priori the regularity of the value function of the
+stochastic control problem, we only proceed formally with the hope
+of obtaining a smooth candidate solution for the stochastic control
+problem. We will verify later, in section 4, that our candidate solution
+coincides with the solution of the optimal stochastic control.
+We expect the value function u deﬁned above to satisfy the following HJB Partial Diﬀerential Equation:
+−ut −sup
+π1,π2
+h
+(π1(µ1 + δz)s1 + π2µ2s2)uw + (µ1 + δz)s1us1
++µ2s2us2 + π1σ2
+1s2
+1uws1 + π2σ2
+2s2
+2uws2
+(8)
++1
+2(π2
+1σ2
+1s2
+1 + π2
+2σ2
+2s2
+2)uww + 1
+2σ2
+1s2
+1us1s1 + 1
+2σ2
+2s2
+2us2s2
+i
+= 0,
+for all 0 ≤t < T, w, 0 ≤s1, 0 ≤s2,
+together with the ﬁnal condition
+u(T, w, s1, s2)
+=
+U(w) = −exp(−γw).
+(9)
+We introduce the following notations that will be needed later in
+section 4. We deﬁne the linear operator
+L(π1,π2)u(t, w, s1, s2) = (π1(µ1 + δz)s1 + π2µ2s2)uw
++(µ1 + δz)s1us1 + µ2s2us2 + π1σ2
+1s2
+1uws1 + π2σ2
+2s2
+2uws2
++1
+2(π2
+1σ2
+1s2
+1 + π2
+2σ2
+2s2
+2)uww + 1
+2σ2
+1s2
+1us1s1 + 1
+2σ2
+2s2
+2us2s2.
+We also deﬁne the matrix
+A =
+
+
+pww
+pws1
+pws2
+ps1w
+ps1s1
+ps1s2
+ps2w
+ps2s1
+ps2s2
+
+.
+6
+Electronic copy available at: https://ssrn.com/abstract=2014271
+
+and the Hamiltonian
+H(t, w, s1, s2, pw, ps1, ps2, A) = sup
+π1,π2
+
+(π1(µ1 + δz)s1 + π2µ2s2)pw
++(µ1 + δz)s1ps1 + µ2s2ps2 + π1σ2
+1s2
+1pws1 + π2σ2
+2s2
+2pws2
++1
+2(π2
+1σ2
+1s2
+1 + π2
+2σ2
+2s2
+2)pww + 1
+2σ2
+1s2
+1ps1s1 + 1
+2σ2
+2s2
+2ps2s2
+	
+.
+We then proceed by making two classic changes of variable: we ﬁrst
+apply the standard logarithmic transformation and secondly, we reduce the number of dimensions in the HJB equation by factoring
+out the wealth variable. To this end, we let s1 = ex, s2 = ey and
+u(t, w, s1, s2) = −e−γwg(t, x, y). Then g solves the transformed HJB
+equation
+−gt
++
+sup
+π1,π2
+h
+(π1(µ1 + δz)s1 + π2µ2s2)γg −(µ1 + δz)gx
+−
+µ2gy + π1σ2
+1s1γgx + π2σ2
+2s2γgy
+−
+1
+2(π1)2σ2
+1s2
+1γ2g −1
+2(π2)2σ2
+2s2
+2γ2g
+−
+1
+2σ2
+1(gxx −gx) −1
+2σ2
+2(gyy −gy)
+i
+= 0,
+(10)
+subject to
+g(T, x, y) = 1.
+(11)
+We notice that the maximization over π1, π2 in (10) is achieved at
+π∗
+1
+=
+(µ1 + δz)g + σ2
+1gx
+σ2
+1s1γg
+,
+(12)
+π∗
+2
+=
+µ2g + σ2
+2gy
+σ2
+2s2γg
+.
+(13)
+Plugging the formulae (12), (13) into the PDE (10), we obtain
+gt
+=
+1
+2
+(µ1 + δz)2
+σ2
+1
++ µ2
+2
+σ2
+2
+
+g + σ2
+1
+2 gx + σ2
+2
+2 gy
++1
+2
+ 
+σ2
+1g2
+x
+g
++ σ2
+2g2
+y
+g
+!
+−1
+2
+ σ2
+1gxx + σ2
+2gyy
+
+(14)
+7
+Electronic copy available at: https://ssrn.com/abstract=2014271
+
+Note that we can recover the HJB equation for the standard Merton
+problem (see [7]) in 2 dimensions by setting δ = 0 in our model; in
+this well known case, the value function is independent of the stocks
+and the dollar amounts invested in each stock are constant. We recall
+below the closed form formulae for the value function and the dollar
+amounts corresponding to the particular case δ = 0.
+g(t, x, y)
+=
+exp(−µ2
+1
+2σ2
+1
+(T −t) −µ2
+2
+2σ2
+2
+(T −t))
+s1π∗
+1(t, x, y)
+=
+µ1
+σ2
+1γ
+s2π∗
+2(t, x, y)
+=
+µ2
+σ2
+2γ .
+In the co-integrated case, the solution is no longer independent of the
+stocks. It essentially depends on the value of the co-integration process
+z, rather than on the individual stocks. We can therefore reduce (14)
+to a one dimensional equation in the variable
+X = µ1 + δz = µ1 + δ(a + x + βy).
+Furthermore, we combine this change of variable with a logarithmic
+transformation of the value function, in order to get rid of the nonlinearity. Indeed, simple calculations show that the function Φ(t, X) =
+−log(g(t, x, y)) solves the linear parabolic PDE
+Φt
+=
+−1
+2
+X2
+σ2
+1
++ µ2
+2
+σ2
+2
+
++ 1
+2(σ2
+1 + βσ2
+2)(δΦX)
+−1
+2(σ2
+1 + β2σ2
+2)
+ δ2ΦXX
+
+(15)
+for any real number X and time 0 ≤t < T and satisﬁes the terminal
+condition
+Φ(T, X)
+=
+0.
+(16)
+It is easy to see that Φ(t, X) = a(t)X2 + b(t)X + c(t) is an explicit
+solution of the linear PDE (15),(16), where the coeﬃcients a, b, c are
+8
+Electronic copy available at: https://ssrn.com/abstract=2014271
+
+given by
+a(t)
+=
+1
+2
+(T −t)
+σ2
+1
+(17)
+b(t)
+=
+−1
+4
+(σ2
+1 + βσ2
+2)δ
+σ2
+1
+(T −t)2
+(18)
+c(t)
+=
+1
+2
+µ2
+2
+σ2
+2
+(T −t) + 1
+4
+(σ2
+1 + β2σ2
+2)δ2
+σ2
+1
+(T −t)2 +
+1
+24
+(σ2
+1 + βσ2
+2)2δ2
+σ2
+1
+(T −t)3.
+(19)
+We also compute the optimal policies
+π∗
+1s1
+=
+X
+σ2
+1γ + δ(−2a(t)X −b(t))
+γ
+,
+π∗
+2s2
+=
+µ2
+γσ2
+2
++ δβ(−2a(t)X −b(t)
+γ
+.
+After substituting for a(t), b(t) their expressions in (17),(18), we obtain
+π∗
+1s1 = (µ1 + δz)
+γσ2
+1
+−δ(µ1+δz)
+γσ2
+1
+(T −t)+ 1
+4
+δ2(σ2
+1+βσ2
+2)
+γσ2
+1
+(T −t)2,(20)
+π∗
+2s2 =
+µ2
+γσ2
+2
+−βδ(µ1+δz)
+γσ2
+1
+(T −t)+ 1
+4β δ2(σ2
+1+βσ2
+2)
+γσ2
+1
+(T −t)2. (21)
+4
+Veriﬁcation
+We must verify that the smooth candidate solution we derived in the
+previous section is indeed the value function of the stochastic control
+problem. This can be achieved by proving a veriﬁcation result, which
+connects the HJB equation to the optimal control problem. In this
+section, we ﬁrst state below the veriﬁcation Theorem that we need.
+We omit its proof since it is standard (for instance see [6]). The next
+step then consists in checking that the assumptions of the veriﬁcation
+Theorem are satisﬁed and we show that this is indeed the case, under
+certain conditions on the parameters in the model.
+First of all, we recall that u, deﬁned in (7), denotes the value
+function of the optimal stochastic control problem and we state the
+veriﬁcation Theorem.
+9
+Electronic copy available at: https://ssrn.com/abstract=2014271
+
+Theorem 1 (Veriﬁcation) Let v ∈C1,2([0, T), R × (0, +∞)2)
+∩C([0, T)×R×[0, +∞)2). Assume that v(τ, Wτ,S1
+τ,S2
+τ) is a nonpositive
+and uniformly integrable function for every stopping-time τ ∈[t, T] for
+the process (Wu, S1
+u, S2
+u) starting at (w, s1, s2) at time t and for every
+admissible control pair (π1, π2) such that
+0 = vt(t, w, s1, s2) + L(π1,π2)v(t, w, s1, s2).
+(i) Suppose that v(t, w, ˙) ≥U(w) and
+−vt(t, w, s1, s2) −H(t, w, s1, s2, Dv, D2v) ≥0
+on [0, T) × R × (0, +∞)2. Then v ≥u on [0, T] × R × [0, +∞)2.
+(ii) Assume further that v(T, w, .) = U(w) and there exists a maximizer ( ˆπ1, ˆπ2) of (π1, π2) →L(π1,π2)v(t, w, s1, s2) such that
+• 0 = vt(t, w, s1, s2) + L( ˆ
+π1, ˆ
+π2)v(t, w, s1, s2).
+• The system of stochastic diﬀerential equations (2),(3),(4) for
+the pair of controls ( ˆπ1, ˆπ2) and each initial data (Wt, S1
+t , S2
+t ) =
+(w, s1, s2) deﬁnes a unique solution.
+• The processes µ1
+s = ˆπ1(s, Ws, S1
+s, S2
+s), µ2
+s = ˆπ2(s, Ws, S1
+s, S2
+s) are
+well-deﬁned control processes in A.
+Then, v = u and (µ1
+s, µ2
+s) is an optimal Markov control process.
+Next, we must check that the candidate solution satisﬁes the conditions required in Theorem 1. First of all, it is easy to show that
+the optimal control pair ( ˆπ1, ˆπ2) given by the formula (20),(21) is a
+Markovian control and is admissible. In particular, the integrability
+condition (6) holds. Furthermore, one can write explicitly the unique
+solution Wt of (2) corresponding to the optimal control, in terms of
+the process zt and the parameters in the model.
+Finally, we have to verify that the uniform integrability condition
+holds.
+The proof of this fact almost follows along the lines of [1].
+More precisely, we apply the Lemma in [1] proving the exponential
+integrability of the square of an Ornstein-Uhlenbeck process and use
+it to derive some suﬃcient conditions on the parameters of our model,
+under which the uniform integrability condition holds. First, we recall
+the lemma in [1].
+10
+Electronic copy available at: https://ssrn.com/abstract=2014271
+
+Lemma 1 (Benth-Karlsen [1]) If λ is a constant such that
+λ <
+|δ|
+2σ2
+β(T −t),
+Then
+E
+
+exp
+
+λ
+Z T
+t
+(zt,z
+u )2du
+
+< ∞.
+We then state our main result, which is an application of Theorem
+1. It provides an explicit solution for the optimal stochastic control
+under some conditions on the parameters.
+Theorem 2 Main result
+If
+|δ|T < 1
+4
+
+σ4
+1
+σ2
+2σ2
+ββ2
+ 1
+3
+and
+|δ|T(1 −δT)2 < 1
+64
+σ2
+1
+σ2
+β
+,
+the value function of the optimal stochastic problem is given by
+u(t, w, s1, s2) = −exp(−γw) exp(−a(t)X2 −b(t)X −c(t))
+where
+X = µ1 + δz = µ1 + δ(a + log s1 + β log s2)
+and the coeﬃcients a(.), b(.), c(.) are given by (17),(18),(19).
+Furthermore, the optimal control pair is given by (20),(21).
+Since the proof of Theorem 2 uses exactly the same arguments as
+in [1], we do not present it here. We can see that the conditions on the
+parameters translate into a limit on the time-horizon. Beyond a certain time horizon, we cannot guarantee that the solution we computed
+is the unique solution of the optimal stochastic problem.
+11
+Electronic copy available at: https://ssrn.com/abstract=2014271
+
+5
+A more general model with correlations
+It is also quite straightforward to incorporate correlations between the
+stocks into the above model and we present brieﬂy this extension in
+this section. The dynamics will read in this case
+dWt
+=
+π1dS1
+t + π2dS2
+t
+dS1
+t
+=
+(µ1 + δzt) S1
+t dt + σ1S1
+t dB1
+t
+dS2
+t
+=
+µ2S2
+t dt + σ2S2
+t (ρdB1
+t +
+p
+1 −ρ2dB2
+t )
+where 0 < ρ < 1 denotes the correlation coeﬃcient and the cointegrating vector zt is still deﬁned by
+zt = a + log S1
+t + β log S2
+t .
+Substituting, we ﬁnd that the wealth satisﬁes the Stochastic Differential Equation
+dWt
+=
+π1(µ1 + δzt)S1
+t dt + π2µ2S2
+t dt + π1σ1S1
+t dB1
+t
++
+π2σ2S2
+t (ρdB1
+t +
+p
+1 −ρ2dB2
+t ).
+In this case zt satisﬁes the SDE
+dzt
+=
+
+µ1 −σ2
+1
+2 + δzt
+
+dt + σ1dB1
+t + β
+
+µ2 −σ2
+2
+2
+
+dt + βσ2dB2
+t
+=
+
+µ1 −σ2
+1
+2 + βµ2 −β σ2
+2
+2 + δzt
+
+dt + σ1dB1
+t
++
+βσ2(ρdB1
+t +
+p
+1 −ρ2dB2
+t )
+=
+α(η −zt)dt + σβdBt
+where α = −δ is the speed of mean reversion,
+σβ =
+p
+σ2
+1 + β2σ2
+2 + 2βσ1σ2ρ, Bt =
+σ1+βσ2ρ
+σβ
+B1
+t + β σ2
+√
+1−ρ2
+σβ
+B2
+t is a
+Brownian motion adapted to Ft and
+η = −1
+δ
+
+µ1 −σ2
+1
+2 + β
+
+µ2 −σ2
+2
+2
+
+is the equilibrium level. The value function of this stochastic control
+problem is deﬁned, as earlier, in (7).
+12
+Electronic copy available at: https://ssrn.com/abstract=2014271
+
+For a sake of simplicity, we postpone the calculations of the explicit
+solution to Appendix A and we just summarize our ﬁndings in the
+following Theorem.
+Theorem 3 If
+|δ|T( ρσ1
+σ2β + δT)2 < 1
+64
+
+σ4
+1
+σ2
+2σ2
+ββ2
+
+(1 −ρ2)
+(22)
+and
+|δ|T
+
+1 −δT
+1
+1 −ρ2 (1 + ρβσ2/σ1)
+2
+< 1
+64
+σ2
+1
+σ2
+β
+,
+(23)
+the value function of the optimal stochastic problem with the correlation coeﬃcient ρ is given by
+u(t, w, s1, s2) = −exp(−γw) exp(−a(t)X2 −b(t)X −c(t))
+where
+X = µ1 + δz = µ1 + δ(a + log s1 + β log s2)
+and the coeﬃcients a(.), b(.), c(.) are given by (24),(25),(26) below.
+a(t)
+=
+1
+2
+(T −t)
+(1 −ρ2)σ2
+1
+(24)
+b(t)
+=
+−1
+4
+(T −t)2
+(1 −ρ2)σ2
+1
+(σ2
+1 + βσ2
+2)δ −
+ρ
+(1 −ρ2)
+µ2(T −t)
+σ1σ2
+(25)
+c(t)
+=
+1
+2( (T −t)µ2
+2
+(1 −ρ2)σ2
+2
++ 1
+4
+(σ2
+1 + β2σ2
+2 + 2σ1σ2βρ)δ2
+(1 −ρ2)σ2
+1
+(T −t)2
++
+1
+4
+δρ
+(1 −ρ2)
+µ2(σ2
+1 + βσ2
+2)(T −t)2
+σ1σ2
++
+1
+24
+(σ2
+1 + βσ2
+2)2δ2
+(1 −ρ2)σ2
+1
+(T −t)3.
+(26)
+13
+Electronic copy available at: https://ssrn.com/abstract=2014271
+
+Furthermore, the optimal control pair is given by (27),(28).
+π∗
+1s1
+=
+µ1 + δz
+γ(1 −ρ2)σ2
+1
+−
+ρµ2
+γ(1 −ρ2)σ1σ2
++
+δ
+γ(1 −ρ2)
+
+−(µ1 + δz)
+σ2
+1
++ ρµ2
+σ1σ2
+
+(T −t)
++
+1
+4
+δ2(σ2
+1 + βσ2
+2)
+γ(1 −ρ2)σ2
+1
+(T −t)2
+(27)
+π∗
+2s2
+=
+µ2
+γ(1 −ρ2)σ2
+2
+−
+ρ(µ1 + δz)
+γ(1 −ρ2)σ1σ2
++
+δβ
+γ(1 −ρ2)
+
+−(µ1 + δz)
+σ2
+1
++ ρµ2
+σ1σ2
+
+(T −t)
++
+1
+4
+δ2β(σ2
+1 + βσ2
+2)
+γ(1 −ρ2)σ2
+1
+(T −t)2.
+(28)
+6
+Example
+We provide an example to illustrate our results.
+We wish to emphasize that we are not conducting a comprehensive study here, on
+whether stock market indices are co-integrated or not; this exercise
+is merely to illustrate the our equations with a concrete real-life example. More precisely, we did not include a detection component in
+our algorithm. We simply browsed a number of arbitrary data sets
+and we picked one among those. We collected on October 17, 2011,
+minute-by-minute data, on two stocks traded on the New York Stock
+Exchange, Goldman Sachs Group, Incorporated, with ticker symbols
+GS, and JPMorgan Chase and Company, with ticker symbol JPM.
+This gives us a 2 dimensional time series with 390 data points. As
+in [2], we follow the standard two-step Engle-Granger methodology
+coupled with a Dickey-Fuller test [5], to test for co-integration and
+estimate the parameters in our co-integration model. We also performed in addition a Phillips-Ouliaris [9] test whose outcome further
+conﬁrmed that our time series were co-integrated. We also refer to
+the book by Enders [4] for a general presentation of co-integration
+tests. We ﬁrst run a regression as in equation (7) in [2], but without a
+time trend variable, which seems reasonable for an intra-day data set.
+Running the so-called Augmented-Dickey-Fuller (up to 16 lags) test
+suggests that log(S1) and log(S2) are co-integrated at the 5% level.
+We perform, in addition, the Phillips-Ouliaris [9] test. The variance14
+Electronic copy available at: https://ssrn.com/abstract=2014271
+
+ratio test statistic suggests that after de-trending with constant and
+linear trend, the data are co-integrated at the 5% level. We obtain
+the following annualized parameters:
+a = −3.105148, β = −0.5363258, δ = −3561.194, η = 9.298768e −
+04, σβ = 0.3085159, σ1 = 0.3828025, σ2 = 0.5076713, ρ = 0.61181479,
+µ1 = 4.662472, µ2 = 2.623764.
+For this set of parameters, we estimate the maximal time horizon T
+satisfying the set of conditions (22),(23) and we ﬁnd about 38 seconds.
+For the purpose of illustrating, we plot our stock prices and the optimal
+policies for a whole trading day, although the 38 second bound is
+violated here.
+More precisely, we show the stock prices S1, S2, as well as the
+optimal policies π1, π2 in ﬁgure 1. We then present in ﬁgure 2, the
+ratio |π1/π2| and the cumulative Proﬁt and Loss function.
+As expected, in a pairs trading setting, the controls are opposite
+in sign. For this data set and for a risk tolerance γ = 0.1, a signiﬁcant
+proﬁt is instantly realized. The proﬁt then ﬂuctuates throughout the
+day but remains strongly positive and by the end of the day, it is
+approximately $1,348. Of course, this ﬁgure does not take into account
+the cost of borrowing or transaction costs which are both assumed to
+be 0 in this model. We also notice that the positions, which are large
+during the ﬁrst half of the day, are both progressively unwound in the
+second half, ending close to 0 by the end of the trading day.
+7
+Conclusion
+In this article, we propose a dynamic model for pairs trading based
+on the theory of optimal stochastic control and we brieﬂy illustrate
+the applicability of our method with minute-by-minute historical stock
+data.
+In our model, the two stock processes are co-integrated, correlated,
+and have constant volatility. We also assume that the risk free interest
+rate is zero and we ignore the costs associated with trading.
+The
+simplicity of the present formulation enables a feasible implementation
+of parameter calibration and the derivation of analytical formulae for
+the optimal trading strategies.
+Finally, we acknowledge that we have not addressed in this work
+the question of detecting two instruments whose market price tends to
+evolve in tandem, although this is undoubtedly a fundamental issue.
+15
+Electronic copy available at: https://ssrn.com/abstract=2014271
+
+Figure 1: Stocks and optimal policies
+0
+50
+100
+150
+200
+250
+300
+350
+400
+94
+96
+98
+S1
+0
+50
+100
+150
+200
+250
+300
+350
+400
+14.8
+15
+15.2
+15.4
+S2
+0
+50
+100
+150
+200
+250
+300
+350
+400
+0
+500
+1000
+1500
+1
+0
+50
+100
+150
+200
+250
+300
+350
+400
+-6000
+-4000
+-2000
+0
+Time in minutes
+2
+16
+Electronic copy available at: https://ssrn.com/abstract=2014271
+
+Figure 2: The optimal ratio and the Proﬁt and Loss processes
+0
+50
+100
+150
+200
+250
+300
+350
+400
+2.6
+2.8
+3
+3.2
+3.4
+3.6
+-2/1
+0
+50
+100
+150
+200
+250
+300
+350
+400
+0
+500
+1000
+1500
+2000
+Time in minutes
+Profit & Loss
+17
+Electronic copy available at: https://ssrn.com/abstract=2014271
+
+8
+Appendix A
+Next, we expect the value function u(t, w, s1, s2) to solve the HJB
+equation
+ut
++
+sup
+π1,π2
+h
+(π1(µ1 + δz)s1 + π2µ2s2)uw + (µ1 + δz)s1u1 + µ2s2u2
++
+π1σ2
+1s2
+1uws1 + π2ρσ1σ2s1s2vs1w + π2σ2
+2s2
+2uws2
++
+π1ρσ1σ2s1s2vs2w + 1
+2(π2
+1σ2
+1s2
+1 + π2
+2σ2
+2s2
+2 + ρπ1π2σ1σ2s1s2)uww
++
+1
+2σ2
+1s2
+1us1s1 + 1
+2σ2
+2s2
+2us2s2 + ρσ1σ2s1s2vs1s2
+i
+= 0
+The function g(t, x, y) satisﬁes the HJB equation
+−gt
++
+sup
+π1,π2
+h
+(π1(µ1 + δz)s1 + π2µ2s2)γg −(µ1 + δz)gx −µ2gy
++
+π1σ2
+1s1γgx + π2γρσ1σ2s2gx + π2σ2
+2s2γgy + π1γρσ1σ2s1gy
+−
+1
+2(π1)2σ2
+1s2
+1γ2g −1
+2(π2)2σ2
+2s2
+2γ2g −γ2π1π2ρσ1σ2s1s2g
+−
+1
+2σ2
+1(gxx −gx) −1
+2σ2
+2(gyy −gy) −ρσ1σ2gxy
+i
+= 0,
+(29)
+subject to
+g(T, x, y) = 1.
+(30)
+The optimal controls are
+π∗
+1
+=
+(µ1 + δz)
+γ(1 −ρ2)σ2
+1s1
++
+gx
+γgs1
+−ρ
+µ2
+γ(1 −ρ2)σ1σ2s1
+,
+(31)
+π∗
+2
+=
+µ2
+γ(1 −ρ2)σ2
+2s2
++
+gy
+γgs2
+−ρ
+(µ1 + δz)
+γ(1 −ρ2)σ1σ2s2
+.
+(32)
+After substituting the controls into the HJB equation, we obtain
+the PDE
+gt =
+1
+2
+(µ1 + δz)2
+(1 −ρ2)σ2
+1
++ 1
+2
+µ2
+2
+(1 −ρ2)σ2
+2
+−ρµ2(µ1 + δz)
+(1 −ρ2)σ1σ2
+
+g
++σ2
+1
+2 gx + σ2
+2
+2 gy + 1
+2σ2
+1
+g2
+x
+g + 1
+2σ2
+2
+g2
+y
+g + ρσ1σ2
+gxgy
+g
+−1
+2σ2
+2σ2
+1gxx −1
+2σ2
+2gyy −ρσ1σ2gxy.
+18
+Electronic copy available at: https://ssrn.com/abstract=2014271
+
+Replacing the variables (x, y) by the single variable X = µ1 + δz
+and by using the exponential change of variable g = exp(−Φ), we
+reduce the problem to the linear parabolic PDE
+Φt
+=
+−
+1
+1 −ρ2
+1
+2(X2
+σ2
+1
++ µ2
+2
+σ2
+2
+) −ρµ2X
+σ1σ2
+
++ 1
+2(σ2
+1 + βσ2
+2)(δΦX)
+−1
+2(σ2
+1 + β2σ2
+2 + 2σ1σ2βρ)
+ δ2ΦXX
+
+(33)
+for any real number X and time 0 ≤t < T and is subject to the
+terminal condition
+Φ(T, X)
+=
+0.
+(34)
+The above linear PDE has the explicit solution φ(t, X) = a(t)X2 +
+b(t)X + c(t) where
+a(t)
+=
+1
+2
+(T −t)
+(1 −ρ2)σ2
+1
+,
+(35)
+b(t)
+=
+−1
+4
+(T −t)2
+(1 −ρ2)σ2
+1
+(σ2
+1 + βσ2
+2)δ −
+ρ
+(1 −ρ2)
+µ2(T −t)
+σ1σ2
+,
+(36)
+c(t)
+=
+1
+2( (T −t)µ2
+2
+(1 −ρ2)σ2
+2
++ 1
+4
+(σ2
+1 + β2σ2
+2 + 2σ1σ2βρ)δ2
+(1 −ρ2)σ2
+1
+(T −t)2
++
+1
+4
+δρ
+(1 −ρ2)
+µ2(σ2
+1 + βσ2
+2)(T −t)2
+σ1σ2
++
+1
+24
+(σ2
+1 + βσ2
+2)2δ2
+(1 −ρ2)σ2
+1
+(T −t)3.
+(37)
+Finally, we substitute the values of g, gx and gy into the formulae
+(31),(32), in order to obtain the optimal policies
+π∗
+1s1
+=
+µ1+δz
+γ(1−ρ2)σ2
+1
++ δ(−2a(t)(µ1 + δz)−b(t))
+γ
+−
+ρµ2
+γ(1−ρ2)σ1σ2
+,
+π∗
+2s2
+=
+µ2
+γ(1−ρ2)σ2
+2
++ δβ(−2a(t)(µ1+δz)−b(t))
+γ
+−
+ρ(µ1+δz)
+γ(1−ρ2)σ1σ2
+.
+19
+Electronic copy available at: https://ssrn.com/abstract=2014271
+
+References
+[1] F. E. Benth and K. H. Karlsen. A note on merton’s portfolio selection problem for the schwartz mean-reversion model. Stochastic
+Analysis and Applications, 23:687–704, 2005.
+[2] J.-C. Duan and S. Pliska.
+Option valuation with co-integrated
+asset prices. Journal of Economic Dynamics and Control, 28:727–
+754, 2004.
+[3] R. J. Elliott, J. V. D. Hoek, and W. P. Malcolm. Pairs trading.
+Quantitative Finance, 5(3):271–276, 2005.
+[4] W. Enders. Applied Econometric Time Series. Wiley Series in
+Probability and Statistics. Wiley, 2004.
+[5] R. F. Engle and C. W. J. Granger. Co-integration and error correction: Representation, estimation and testing.
+Econometrica,
+55(2):251–276, 1987.
+[6] W. H. Fleming and H. M. Soner. Controlled Markov Processes and
+Viscosity Solutions. Springer-Verlag, 1993.
+[7] R. Merton. Optimum consumption and portfolio rules in a continuous time model. Journal of Economic Theory, 3:373–413, 1971.
+[8] S. Mudchanatongsuk, J. A. Primbs, and W. Wong. Optimal pairs
+trading: A stochastic control approach. Proceedings of the American Control Conference, pages 1035–1039, 2008.
+[9] P. C. B. Phillips and S. Ouliaris. Asymptotic properties of residual
+based tests for cointegration. Econometrica, 58(1):165–193, 1990.
+20
+Electronic copy available at: https://ssrn.com/abstract=2014271

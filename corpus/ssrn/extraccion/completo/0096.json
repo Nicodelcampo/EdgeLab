@@ -1,0 +1,98 @@
+{
+ "doc_id": 96,
+ "titulo": "Does Trade Clustering Reduce Trading Costs? Evidence from Periodicity in Algorithmic Trading",
+ "resumen_operativo": "El paper investiga el impacto de la actividad de trading sobre la liquidez y la volatilidad, identificando dos periodicidades de alta frecuencia impulsadas por algoritmos. La primera es absoluta, con un aumento en las operaciones y actualizaciones de cotizaciones en los primeros 100 milisegundos de cada segundo. La segunda es relativa, donde los picos de actividad se repiten en intervalos exactos de un segundo. Estos picos de actividad elevan la volatilidad pero no afectan significativamente la liquidez (spread bid-ask y lambda de Kyle). El documento atribuye este comportamiento a un sesgo cognitivo de los programadores de algoritmos hacia los números redondos (tiempos redondos e intervalos de un segundo), y argumenta que este comportamiento predecible expone a los algoritmos a ser explotados.",
+ "calidad_paper": "alta",
+ "conceptos": [
+  {
+   "nombre": "absolute periodicity",
+   "tipo": "fenomeno",
+   "definicion_en_contexto": "Patrón estacional de microestructura en el que la actividad de trading (operaciones y cotizaciones) aumenta un 40% durante los primeros 100 milisegundos de un segundo en comparación con el resto del segundo.",
+   "relaciones": [
+    {
+     "tipo": "AUMENTA",
+     "objeto": "volatilidad"
+    },
+    {
+     "tipo": "NO_AFECTA",
+     "objeto": "liquidez"
+    }
+   ],
+   "cita_textual": "First, for the absolute periodicity, trading activity is higher at the start of a second, e.g., between 11h:11m:11s:000ms and 11h:11m:11s:099ms."
+  },
+  {
+   "nombre": "relative periodicity",
+   "tipo": "fenomeno",
+   "definicion_en_contexto": "Patrón temporal donde los picos en la actividad de trading tienden a repetirse exactamente un segundo después del pico de actividad inicial, originados probablemente por bucles de espera algorítmicos.",
+   "relaciones": [
+    {
+     "tipo": "AUMENTA",
+     "objeto": "volatilidad"
+    },
+    {
+     "tipo": "NO_AFECTA",
+     "objeto": "liquidez"
+    }
+   ],
+   "cita_textual": "Second, for the relative periodicity, trading activity spikes are likely to repeat at exactly one-second frequencies."
+  },
+  {
+   "nombre": "behavioral algorithmic trading",
+   "tipo": "teoria",
+   "definicion_en_contexto": "Concepto que indica que los algoritmos de trading heredan sesgos cognitivos o conductuales (como la preferencia por números y tiempos redondos) de los programadores humanos que los codifican.",
+   "relaciones": [
+    {
+     "tipo": "CAUSA",
+     "objeto": "absolute periodicity"
+    },
+    {
+     "tipo": "CAUSA",
+     "objeto": "relative periodicity"
+    }
+   ],
+   "cita_textual": "Due to a programmer’s psychological preference for round numbers, a time loop often starts at a round time, such as 9:30am, and repeats at rounded-time intervals, such as one second."
+  }
+ ],
+ "hallazgos": [
+  {
+   "afirmacion": "La ejecución algorítmica genera picos de actividad sistemáticos al inicio de cada segundo (absolute periodicity) y en intervalos cíclicos de un segundo (relative periodicity).",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  },
+  {
+   "afirmacion": "La mayor intensidad de trading en estos picos se traslada de forma casi proporcional a un aumento de la volatilidad y de los saltos de precios de los activos.",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  },
+  {
+   "afirmacion": "A pesar de los picos de volumen y volatilidad, los costos de trading y la liquidez (bid-ask spread y lambda de Kyle) no varían de manera significativa.",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  },
+  {
+   "afirmacion": "Durante las agrupaciones de actividad de un segundo, los traders de alta frecuencia (HFTs) no consumen liquidez sino que actúan como proveedores, indicando que el agrupamiento es originado por no-HFTs.",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  }
+ ],
+ "aplicabilidad_es_intradia": {
+  "nivel": "alta",
+  "nota": "Los resultados son extremadamente pertinentes para la operativa intradía e infra-segundo. Proporcionan conocimiento accionable sobre la microestructura del mercado, permitiendo la posible explotación del flujo de órdenes algorítmico predecible anclado a temporalidades redondeadas de un segundo. A nivel ES intradía, conocer estas ventanas de volatilidad predecible puede optimizar el enrutamiento de órdenes y estrategias oportunistas."
+ }
+}

@@ -1,0 +1,885 @@
+AI-Powered Energy Algorithmic Trading:
+Integrating Hidden Markov Models with Neural
+Networks
+Tiago Monteiro
+Northeastern University
+Email: monteiro.t@northeastern.edu
+November 17, 2025
+Abstract
+In quantitative finance, machine-learning methods are key for alpha
+generation. This study introduces a refreshing approach that combines
+Hidden Markov Models (HMM) and neural networks integrated with
+Black-Litterman portfolio optimization. The approach was tested during the COVID period (2019–2022), where it achieved an 83% return
+with a Sharpe ratio of 0.77. Two risk models were incorporated to enhance risk management, particularly during the volatile periods. The
+methodology was implemented on the QuantConnect platform, which
+was chosen for its robust framework and experimental reproducibility.
+The system is designed to predict future price movements and includes
+a three-year warm-up period to ensure the proper use of the algorithm.
+It focuses on highly liquid, large-cap energy stocks to ensure stable
+and reliable results, while also accounting for broker payments. The
+dual-model alpha system utilizes log returns to select the optimal state
+based on historical performance.
+It combines state predictions with
+neural network outputs derived from historical data to generate trading
+signals. This study presents an in-depth examination of the trading
+system’s architecture, data pre-processing, training, and performance.
+1
+arXiv:submit/6991870  [q-fin.PM]  17 Nov 2025
+
+The full code and backtesting data are available under QuantConnect’s
+terms.
+Keywords: Hidden Markov Models; Neural Networks; Algorithmic
+Trading; Machine Learning; Energy Sector; Portfolio Optimization
+JEL Codes: C45, C53, G11, G17
+1
+Introduction
+Algorithmic trading influences financial markets by enabling the rapid and
+exact execution of trading strategies beyond human capability [8]. Machine
+learning integration has further reinvented this field by providing novel techniques for pattern recognition and predictive modeling [2].
+QuantConnect, chosen for this study, offers data access, back-testing, and
+a powerful algorithmic trading framework. This simplifies the development,
+testing, and deployment of trading strategies. The environment also ensures
+result replication, which is crucial for assessing the advanced trading algorithms.
+This study outlines a novel methodology that fuses the HMM and neural
+networks to create a dual-model alpha generation system. The aim is to leverage the HMM’s ability to capture temporal dependencies and market regimes,
+along with the power of neural networks to learn subtle patterns from historical
+price data [16, 9]. The strategy uses Black-Litterman portfolio optimization
+combined with two risk management models.
+The system employs a low-frequency buying strategy that is activated by
+converging signals from various AI models. A buy decision is made only when
+different model signals align.
+The main objective is to develop an adaptable trading strategy that predicts price fluctuations and optimizes trading decisions. The results indicate
+the potential of this unified approach, with the algorithm achieving a 83%
+return and a Sharpe ratio of 0.77 during the COVID period (2019–2022).
+2
+
+2
+Background
+HMMs, deep learning, and multi-model AI are crucial for optimizing algorithmic trading strategies. HMMs simulate systems with partially observable
+states, whereas deep learning utilizes neural networks to capture complex patterns. Multi-model AI integrates various machine learning models to improve
+robustness and accuracy [10].
+The use of HMMs in financial markets has evolved from simple regimeswitching models to advanced volatility modeling methods [11]. Deep learning
+has progressed from basic neural networks to sophisticated architectures, such
+as LSTM, CNN, and transformer-based models [24]. Multi-model AI, employing ensemble methods, surpasses single ML algorithms in terms of robustness
+[1]. These theories form the basis for advanced trading strategies. HMMs provide insights into market regimes and volatility, deep learning models forecast
+price movements, and multi-model AI enhances the overall performance.
+2.1
+Previous Research
+Previous research has highlighted the utility of HMMs in identifying market regimes and in volatility modeling. In addition, deep learning techniques
+have shown potential for time-series forecasting and sentiment analysis [14].
+Multi-model AI approaches, such as stacking and boosting, have improved
+prediction accuracy across various fields [15]. HMM studies often use regimeswitching models and probabilistic analysis, whereas deep learning focuses on
+neural network architectures and training methods. Multi-model AI research
+combines different algorithms through ensemble techniques to leverage their
+unique strengths.
+2.2
+Challenges
+Despite their advantages, HMMs face challenges in capturing the market complexity. Simple HMMs may not ideally interpret market dynamics because
+of their inability to capture both immediate and extended trends [17]. Deep
+learning models capture nonlinear relationships but require substantial data
+and computational resources.
+Although they often outperform traditional
+3
+
+methods, their benefits can be modest and context-dependent, especially when
+data are limited or computational costs are high [12]. Multi-model AI approaches offer enhanced robustness and predictive performance but are more
+complex to implement [26]. Variability in data, methods, and implementation
+can lead to inconsistencies, complicating the reproduction of results [7].
+2.3
+Research Gaps and Future Directions
+Researchers often downplay the benefits of HMMs, deep learning, and multimodel AI in trading strategies owing to the lack of standardized frameworks
+for strategy standardization and data pre-processing. This absence challenges
+the creation of single and multi-model systems [3].
+Bridging these gaps is
+essential to craft trading strategies capable of traversing complex financial
+markets. Future studies should explore integrating techniques to capture both
+linear and nonlinear market behavior, and investigate the impact of real-time
+market conditions on model performance [5].
+2.4
+Tools and Hypotheses
+QuantConnect facilitates advanced trading by supporting multi-model deployment using the LEAN open-source engine. It standardizes data and algorithm
+development, improving efficiency and reproducibility, while addressing current limitations [22].
+The execution of the hypotheses depends on incorporating HMM, deep
+learning, and multi-model AI to optimize algorithmic trading strategies. A
+comprehensive literature review clarifies each approach’s advantages and limitations, forming the following research questions: How does integrating HMM,
+deep learning, and multi-model AI affect the effectiveness of algorithmic trading strategies? What computational challenges does this integration present,
+and how can they be mitigated? How does the unified model perform under
+market conditions compared with the S&P 500, a standard benchmark for
+evaluating equity trading algorithms?
+These hypotheses and research questions aim to develop an adaptive trading strategy that addresses the stated research gaps and takes advantage of
+HMM, deep learning, and multi-model AI strengths.
+4
+
+Figure 1: Workflow of Algorithmic Trading System
+Note: This figure illustrates the complete workflow from data collection through
+signal generation to portfolio execution.
+3
+Methodology
+This section explains how the dual-model system for generating trading signals
+was created using the HMM and neural networks. The QuantConnect platform
+was used in this project because it provides significant market data and streamlines strategy testing and deployment. Since 2013, it has been refined through
+over two million algorithms, ensuring reproducibility and transparency [20].
+However, QuantConnect has limitations, such as data availability, which
+might lead to missing market scenarios required for training deep learning
+models. Future studies can use distributed computing to address these limitations. This study covers aspects such as model design, data management,
+training, signal generation, and portfolio strategies, as illustrated in figure 1.
+A transparent and reproducible approach was used to confirm the reliability
+and success of the system.
+Full code and backtesting data are available and licensed under the QuantConnect terms.
+3.1
+Universe Selection
+This study used a dynamic universe with two filters to select tradable securities. The first filter evaluates liquidity through the dollar volume by selecting
+stocks with the highest total traded value. The second filter focuses on energy sector stocks based on market capitalization and identifies the top 20
+companies in this sector. Larger companies typically exhibit more stable and
+predictable performance, beneficial for analysis [23]. This way, this dynamic
+universe prioritizes liquidity and market capitalization. Establishing a solid
+foundation for scientific models to operate effectively without artificial complexity [21].
+5
+
+Figure 2: HMM Architecture for Simulating Stock Price Fluctuations
+Note: The model uses five hidden states to capture different market regimes
+including bull, bear, and transitional phases.
+3.2
+Alpha Generation
+3.2.1
+Model Architecture
+The system leverages the fusion of an HMM and a neural network based on
+PyTorch to examine the historical price data, generate trading insights, and
+facilitate their integration.
+Hidden Markov Model
+The HMM is a stochastic framework for simulating
+stock price fluctuations (figure 2). An HMM is formally defined by the tuple
+λ = (S, O, A, B, π) where:
+• S = {s1, s2, . . . , sN} is the set of N hidden states (in this study, N = 5)
+• O = {o1, o2, . . . , oT} is the sequence of observations (log returns)
+• A = {aij} is the state transition probability matrix, where
+(1)
+aij = P(st = j|st−1 = i),
+N
+X
+j=1
+aij = 1
+• B = {bj(ot)} is the observation probability distribution
+• π = {πi} is the initial state distribution, where πi = P(s1 = i)
+6
+
+The model is trained on log returns, calculated as:
+(2)
+rt = ln
+ Pt
+Pt−1
+
+where Pt is the closing price at time t.
+For a Gaussian HMM with full covariance, the emission probability is:
+(3)
+bj(ot) = N(ot; µj, Σj) =
+1
+p
+(2π)d|Σj|
+exp
+
+−1
+2(ot −µj)TΣ−1
+j (ot −µj)
+
+where µj and Σj are the mean vector and covariance matrix for state j.
+The optimal state sequence is determined using the Viterbi algorithm,
+which finds:
+(4)
+s∗= arg max
+s1:T P(s1:T|o1:T, λ)
+The best state for prediction is selected based on historical mean return:
+(5)
+sbest = arg max
+j
+E[rt|st = j]
+The model runs for up to 10 iterations during fitting to ensure convergence
+while preserving computational efficiency. The five hidden states represent
+various market conditions, such as bull, bear, and transitional phases, offering
+a broader market view.
+The HMM can overfit past data, affecting the prediction accuracy with respect to abrupt market changes. Future research should explore regularization
+techniques and hybrid models that combine HMM with unsupervised machine
+learning to navigate market transitions.
+PyTorch-Based Neural Network
+The neural network aims to detect complex patterns in the historical price data, as shown in figure 3. The architecture
+is a fully connected feedforward neural network with the following mathematical formulation:
+The input layer receives a feature vector x ∈R5 representing five consecu7
+
+Figure 3: Neural Network Architecture for Detecting Complex Patterns in
+Historical Price Data
+Note: The feedforward network consists of four hidden layers with ReLU
+activations, trained using the Adam optimizer.
+tive historical price differences:
+(6)
+x = [Pt−4 −Pt−5, Pt−3 −Pt−4, . . . , Pt −Pt−1]T
+The network architecture consists of four hidden layers with ReLU activation functions and one output layer:
+h1 = ReLU(W1x + b1),
+h1 ∈R10
+(7)
+h2 = ReLU(W2h1 + b2),
+h2 ∈R10
+(8)
+h3 = ReLU(W3h2 + b3),
+h3 ∈R10
+(9)
+h4 = ReLU(W4h3 + b4),
+h4 ∈R5
+(10)
+ˆy = W5h4 + b5,
+ˆy ∈R
+(11)
+where Wi and bi are the weight matrices and bias vectors for layer i, and
+ReLU(z) = max(0, z) is the Rectified Linear Unit activation function.
+The network is trained to minimize the mean squared error (MSE) loss
+function:
+(12)
+L(θ) = 1
+n
+n
+X
+i=1
+(yi −ˆyi)2
+where θ = {W1, b1, . . . , W5, b5} represents all trainable parameters, yi is the
+actual price change, and ˆyi is the predicted price change.
+8
+
+The Adam optimizer is employed for parameter updates with adaptive
+learning rates:
+mt = β1mt−1 + (1 −β1)∇θLt
+(13)
+vt = β2vt−1 + (1 −β2)(∇θLt)2
+(14)
+ˆmt =
+mt
+1 −βt
+1
+,
+ˆvt =
+vt
+1 −βt
+2
+(15)
+θt+1 = θt −α
+ˆmt
+√ˆvt + ϵ
+(16)
+where α = 0.001 is the learning rate, β1 = 0.9 and β2 = 0.999 are the exponential decay rates, and ϵ = 10−8 is a small constant for numerical stability.
+The model was trained for five epochs to balance training time and risk of
+overfitting.
+The complete network architecture can be represented as:
+(17)
+fNN : R5
+W1
+−−→R10
+W2
+−−→R10
+W3
+−−→R10
+W4
+−−→R5
+W5
+−−→R
+Neural networks can encounter challenges in hyperparameter tuning and
+overfitting. Overcoming these challenges can be achieved by cross-validation
+and automated hyperparameter optimization.
+3.2.2
+Data Management
+Effective data management is crucial for optimizing the model’s forecasting
+performance. The algorithm uses a rolling window approach to update historical price data continuously. At each time step t, a window of size k is
+maintained:
+(18)
+Wt = {Pt−k+1, Pt−k+2, . . . , Pt}
+Feature extraction differs between the two models to leverage their respective strengths:
+For the HMM, log returns are computed as:
+(19)
+rt = ln
+ Pt
+Pt−1
+
+9
+
+For the neural network, price differences are used as features:
+(20)
+∆Pt = Pt −Pt−1
+Data normalization is applied to ensure numerical stability:
+(21)
+xnorm = x −µ
+σ
+where µ and σ are the mean and standard deviation computed over the rolling
+window.
+Data integrity was ensured through validation, adding only trade bars with
+valid closing prices, and using QuantConnect’s infrastructure for data consistency. The validation criterion requires:
+(22)
+Pt > 0
+and
+|rt| < τ
+where τ is a threshold for detecting anomalous returns (e.g., τ = 0.5 representing 50% change).
+Regular retraining occurs at frequency f (measured in days) to ensure the
+models adapt to evolving market conditions:
+(23)
+Retrain at t if t mod f = 0
+This approach ensures that models have fresh data for predictions while
+maintaining computational efficiency via error handling and robust data validation across market conditions.
+3.2.3
+Models Training
+HMM training uses a Gaussian HMM with several components to capture
+and adapt to different market regimes.
+Neural network training occurs in
+mini-batches over multiple epochs and involves forward propagation, loss calculation, backpropagation, and parameter updates. This repeatable process
+enables the network to learn from data, refine parameters, and improve accuracy. A three-year preparation period provides historical data to help models
+recognize patterns before making predictions.
+10
+
+Cross-validation and regularization techniques are essential for preventing
+underfitting and overfitting. Incorporating validation metrics and evaluation
+methods further enhances model performance assessment.
+3.2.4
+Insight Generation
+The dual-model system generates trading insights by integrating predictions
+from both the HMM and neural network through a consensus-based decision
+framework.
+The HMM produces a state prediction for the next time step using the
+forward algorithm:
+(24)
+ˆst+1 = arg max
+j∈S P(st+1 = j|o1:t, λ)
+For each state j, the expected return is computed from historical data:
+(25)
+E[r|s = j] =
+1
+|Tj|
+X
+t∈Tj
+rt
+where Tj = {t : st = j} is the set of time steps when the system was in state
+j.
+The Neural Network predicts the next price change:
+(26)
+ˆPt+1 = Pt + fNN(xt; θ)
+where fNN is the trained neural network function with parameters θ.
+The trading signal is generated by combining both predictions through the
+following decision rule:
+(27)
+Signalt =
+
+
+
+
+
+
+
+
+
++1
+(Buy) if E[r|s = ˆst+1] > ϵ AND ˆPt+1 > Pt
+−1
+(Sell) if E[r|s = ˆst+1] < −ϵ AND ˆPt+1 < Pt
+0
+(Hold) otherwise
+where ϵ is a threshold parameter that filters out weak signals (typically ϵ =
+0.001 or 0.1%).
+11
+
+The confidence level of the signal can be quantified as:
+(28)
+Confidencet = |E[r|s = ˆst+1]| × P(st+1 = ˆst+1|o1:t)
+This consensus mechanism ensures that a trading signal is only generated
+when both models agree on the direction of price movement, thereby reducing
+false signals and improving overall strategy reliability. The approach can be
+formalized as:
+(29)
+Executet =
+
+
+
+True
+if sign(E[r|s = ˆst+1]) = sign( ˆPt+1 −Pt)
+False
+otherwise
+Possible conflicts between model predictions can be addressed using ensemble techniques, such as stacking, weighted voting, and gradient boosting,
+which enhance prediction accuracy and resilience by leveraging the strengths
+of each model.
+3.3
+Portfolio Construction
+Proper portfolio construction is crucial for the success of the algorithm. The
+Black-Litterman model was chosen for its innovative approach, combining expected returns and risk. Created by Fischer Black and Robert Litterman, this
+model merges investor views with market equilibrium for better asset allocation [6].
+The Black-Litterman model combines market equilibrium returns with investor views to produce posterior expected returns. The model starts with
+the market equilibrium return vector Π, derived from market capitalization
+weights:
+(30)
+Π = λΣwmkt
+where λ is the risk aversion coefficient, Σ is the covariance matrix of asset
+returns, and wmkt is the market capitalization weight vector.
+The investor views are expressed through a picking matrix P and view
+portfolio returns Q, with uncertainty in the views captured by the diagonal
+12
+
+matrix Ω. The posterior expected return is then computed as:
+(31)
+E[R] =
+
+(τΣ)−1 + P TΩ−1P
+−1 
+(τΣ)−1Π + P TΩ−1Q
+
+where τ is a scalar parameter representing the uncertainty in the prior (typically τ ∈[0.01, 0.05]).
+The posterior covariance matrix is:
+(32)
+Σpost = Σ +
+
+(τΣ)−1 + P TΩ−1P
+−1
+Optimal portfolio weights are determined by maximizing the expected utility:
+(33)
+w∗= arg max
+w
+
+wTE[R] −λ
+2wTΣpostw
+
+This yields the optimal weight vector:
+(34)
+w∗= 1
+λ(Σpost)−1E[R]
+subject to the constraint PN
+i=1 wi = 1 (fully invested portfolio).
+The expected portfolio return and variance are:
+Rp =
+N
+X
+i=1
+w∗
+i Ri = (w∗)TE[R]
+(35)
+σ2
+p = (w∗)TΣpostw∗
+(36)
+This model increases algorithm modularity, separating alpha generation
+from portfolio management [25]. Unlike signal-based portfolio construction,
+it reduces the probability of inaccurate signals, preventing inefficient management in achieving the optimal Sharpe ratio. The Black-Litterman model
+improves system reliability by clearly dividing alpha generation and portfolio management. It directs alpha model insights into risk management and
+execution models and minimizes unnecessary trades and risks.
+13
+
+3.4
+Risk Management and Execution Models
+This study integrates two risk management models to enhance portfolio robustness. The selected models are the Maximum Drawdown Percent per security
+and the trailing-stop risk management model.
+Maximum Drawdown Model
+The maximum drawdown (MDD) for a security measures the largest peak-to-trough decline in portfolio value. For a
+given security i, the drawdown at time t is:
+(37)
+DDi(t) = maxs∈[0,t] Vi(s) −Vi(t)
+maxs∈[0,t] Vi(s)
+where Vi(t) is the value of security i at time t.
+The maximum drawdown over the entire period is:
+(38)
+MDDi = max
+t∈[0,T] DDi(t)
+A position in security i is automatically closed if:
+(39)
+DDi(t) > MDDthreshold
+where MDDthreshold is typically set between 10% and 20%, depending on risk
+tolerance. This model protects investor capital by automatically exiting positions with excessive losses, thereby ensuring disciplined risk controls.
+Trailing Stop Model
+The trailing-stop model dynamically adjusts stoploss levels to capture gains while protecting against losses. For a long position
+in security i, the trailing stop price is updated as:
+(40)
+Stopi(t) = max (Pi(t) × (1 −δ), Stopi(t −1))
+where δ is the trailing stop percentage (typically δ ∈[0.05, 0.15]), and Pi(t) is
+the current price.
+The position is closed if:
+(41)
+Pi(t) ≤Stopi(t)
+14
+
+For short positions, the trailing stop is computed as:
+(42)
+Stopi(t) = min (Pi(t) × (1 + δ), Stopi(t −1))
+The trailing-stop model locks in profits in trending markets while providing
+downside protection. The expected profit captured by the trailing stop can be
+approximated as:
+(43)
+E[Profit] ≈
+max
+t∈[tentry,texit] [Pi(t) −Pi(tentry)] × (1 −δ)
+These risk management models, combined with the lean engine’s execution
+model, ensure timely trade execution and capitalize on market opportunities.
+This approach supports robust prediction models and effective asset allocation, balancing the alpha generation with disciplined risk management. The
+combined risk-adjusted return can be expressed as:
+(44)
+Radj = Rp −λrisk × Riskpenalty
+where λrisk is the risk aversion parameter and Riskpenalty captures drawdown
+and volatility concerns.
+4
+Results and Discussion
+4.1
+Key Statistics
+This table presents the essential metrics used to evaluate the performance
+and risk of an investment portfolio. It covers Runtime Days over a period of
+1096 days to assess performance sustainability and volatility. The Drawdown
+indicates a maximum loss from peak to trough of 17.1%, reflecting the risk of
+potential declines. A Portfolio Turnover of 3.29% signifies trading frequency,
+with lower figures suggesting a more passive management strategy aimed at
+minimizing transaction costs.
+Risk-adjusted performance was assessed using several ratios, as summarized in table 1.
+These metrics provide a comprehensive evaluation of the
+trading strategy’s effectiveness:
+15
+
+Table 1: Key Trading Metrics
+Metric
+Value
+Performance Metrics
+Runtime Days
+1,096
+Compounded Annual Growth Rate (CAGR)
+22.2%
+Sharpe Ratio (Probabilistic)
+30%
+Sortino Ratio
+0.6
+Information Ratio
+−0.1
+Risk Metrics
+Maximum Drawdown
+17.1%
+Portfolio Turnover
+3.29%
+Capacity
+Optimal Investment Level (USD)
+$10M
+Note: Performance metrics cover the full backtesting period from January 2019 to
+January 2022, encompassing the COVID-19 market volatility.
+The Sharpe Ratio measures risk-adjusted returns:
+(45)
+S = E[Rp −Rf]
+σp
+where Rp is the portfolio return, Rf is the risk-free rate, and σp is the portfolio
+standard deviation. The probabilistic Sharpe ratio at 41% quantifies returns
+relative to risk, with higher ratios denoting more efficient risk management.
+The Compounded Annual Growth Rate (CAGR) at 22.2% represents the
+geometric mean return:
+(46)
+CAGR =
+ Vfinal
+Vinitial
+ 1
+n
+−1
+where Vfinal = $182, 761, Vinitial = $100, 000, and n = 1096/365 = 3 years.
+The Sortino Ratio of 0.6 focuses on downside risk:
+(47)
+Ssortino = E[Rp −Rf]
+σdownside
+where σdownside =
+p
+E[min(Rp −Rf, 0)2] measures downside deviation.
+16
+
+The Information Ratio of −0.1 compares performance to a benchmark:
+(48)
+IR = E[Rp −Rb]
+σRp−Rb
+where Rb is the benchmark return (S&P 500) and σRp−Rb is the tracking error.
+Further details include the Capacity (USD) at $10 million, which represents
+the optimal investment level for strategy sustainability and achieving target
+returns.
+4.2
+Detailed Trading Metrics
+The metrics evaluate trading outcomes over a specified period, revealing a relatively low frequency, with only 40 trades. An average win rate of 7.70% and
+an average loss of −3.29%, with a 60% success rate, highlight the effectiveness
+of the strategy. The initial equity of $100,000 increased to $182,761.12, indicating substantial gain. A Sharpe Ratio of 0.77 demonstrates a risk-return
+trade-off.
+An alpha of 0.13 suggests modest active returns, and a beta of 0.175 indicates lower market volatility than broader indices, as detailed in table 2.
+An annual standard deviation of 0.21 and a variance of 0.044 quantified the
+return variability. A tracking error of 0.256 indicates how the portfolio’s returns deviate from the benchmark, whereas a Treynor Ratio of 0.951 indicates
+good risk-adjusted returns. Fees amounting to $971.62, are relatively small
+compared to growth in equity.
+These data indicate a robust trading strategy that can effectively manage
+risk. Optimizing hyperparameters and preprocessing data can enhance model
+performance and improve results. However, extensive Monte Carlo simulations
+are necessary to ensure model reliability. This reinforces the importance of
+rigorous data analysis and strategy refinement in trading.
+4.3
+Cumulative Returns
+The Cumulative Returns chart illustrates the performance comparison of a
+backtested investment strategy against a benchmark from January 2019 to
+January 2022. The x-axis represents the timeline, marked in months, while
+17
+
+Table 2: Detailed Trading Metrics and Performance Indicators
+Metric
+Value
+Trading Activity
+Total Orders Executed
+40
+Win Rate
+60%
+Loss Rate
+40%
+Average Win
+7.70%
+Average Loss
+−3.29%
+Profit-Loss Ratio
+2.34
+Portfolio Performance
+Initial Equity
+$100,000
+Final Equity
+$182,761
+Total Return
+82.76%
+Sharpe Ratio
+0.77
+Treynor Ratio
+0.924
+Risk-Adjusted Returns
+Alpha
+0.13
+Beta
+0.175
+Annual Standard Deviation
+0.21
+Annual Variance
+0.044
+Tracking Error
+0.256
+Transaction Costs
+Total Broker Fees
+$972
+Note: The low trading frequency (40 total orders) reflects the conservative,
+signal-based approach of the dual-model system.
+the y-axis quantifies cumulative returns in percentage terms. The backtested
+strategy is depicted by a light blue line, whereas the benchmark (presumed to
+be the S&P 500) is shown in gray.
+Throughout the observation period, the strategy generally aligns closely
+with the benchmark, indicating a strong market correlation.
+Notably, the
+strategy outperformed the benchmark at specific points, such as during the
+onset of the COVID-19 pandemic in May 2020 and September 2021, as illustrated in figure 4. These surges suggest effective strategy adjustments in
+response to market volatility.
+Despite some instances of notable growth, the strategy often mirrors the
+18
+
+Figure 4: Cumulative Returns Comparison (January 2019–January 2022)
+Note: The light blue line represents the backtested strategy while the gray line
+shows the S&P 500 benchmark. Notable outperformance occurred during the
+COVID-19 market volatility in May 2020 and September 2021.
+benchmark’s movements, highlighting its dependence on broader market trends
+rather than consistently outperforming it. During the COVID-19 crisis, the
+strategy demonstrated resilience, maintaining its value better than the benchmark and taking advantage of the recovery phase, which is indicative of adept
+risk management and opportunity utilization.
+4.4
+Advantages of the Approach
+Utilizing the HMM alongside neural networks offers notable advantages for
+predictive modeling in financial markets. HMMs capture temporal dependencies crucial for sequential data like stock prices, while neural networks excel
+in recognizing complex patterns and relationships [4, 19]. By combining these
+approaches, a more complete and accurate prediction model is achieved, leveraging the strengths of both strategies. This hybrid approach enhances the
+robustness by reducing the biases inherent in any single model, resulting in
+more reliable trading signals. Risk management strategies also play a crucial
+role in guarding against potential losses and improving the overall portfolio
+stability. The adaptability gained from merging HMMs and neural networks
+is essential for maintaining a high performance across different market conditions.
+4.5
+Future Research Directions
+Future research should explore various approaches to enhance dual-model
+methodology by combining HMMs and neural networks.
+19
+
+Wavelet Transform for Enhanced Market Pattern Recognition
+One
+potential approach is to apply a wavelet transform to the pre-processing strategy of the data. Wavelet transforms capture both time and frequency domain
+information, improving the potential of the model to recognize patterns in
+price data, which is crucial to ensuring its success [13]. This is vital as it
+accounts for the dynamic nature of the market, making it more effective than
+static methods such as Pearson’s correlation coefficient.
+Monte Carlo Simulations for Model Generalizability
+The use of extensive Monte Carlo simulations across diverse temporal frames is another
+promising area of research. These simulations help analyze the generalization
+capabilities of the model, evaluating its reliability and identifying possible cases
+of overfitting or incorrect market predictions [28]. This ensures the stability
+and accuracy of the algorithmic trading system in a real trading scenario.
+Hyperparameter Tuning and Ensemble Methods
+Employing novel neural network architectures along with automated hyperparameter fine-tuning
+can enhance forecasting capabilities by finding the optimal architecture for a
+specific dataset [27]. Additionally, incorporating an ensemble machine learning method for HMM and neural network systems can enable the model to
+adapt dynamically to market fluctuations, improving overall alpha generation
+performance [18].
+Diversifying Equities for Growth and Stability
+Increasing sector diversification is essential to enhance portfolio resilience. For example, combining the 25 largest stocks from high-potential sectors such as technology,
+biomedicine, pharmaceuticals, and energy can enhance diversification and access growth alternatives. This approach helps offset sector-specific risks, leverages the strengths of each sector, and theoretically leads to more stable returns.
+4.6
+QuantConnect for Reproducibility
+QuantConnect was chosen for its powerful framework and user-friendly design, which simplified research replication. Its extensive access to data assures
+20
+
+precise training and testing of the model. The integrated lean open-source algorithmic trading framework allows the implementation and testing of complex
+strategies, accelerating the development and validation of innovative models.
+This platform enhances research replicability, enabling other researchers and
+practitioners to validate and extend the outcomes. Which is essential for the
+advancement of scientific research.
+5
+Conclusion
+The combined use of the HMM and neural networks in a dual-model approach
+has shown success in enhancing the accuracy and resilience of trading signals.
+During the COVID period (2019–2022), the dual-model system achieved an
+83% return and a Sharpe ratio of 0.77, highlighting its practical potential.
+A three-year preparation period provides historical data to help models
+recognize patterns and understand market dynamics before making predictions. However, replicating these outcomes in complex financial markets is
+harder. These results suggest that combining the HMM and neural networks
+can strengthen algorithmic trading by generating more precise and reliable signals. Additionally, integration of multiple risk models improves the robustness
+of the system.
+This study underscores the benefits of combining HMMs and neural networks for signal trading. Future research could explore wavelet transform preprocessing, extensive Monte Carlo simulations, and adaptive machine learning
+methods to further improve model performance.
+Using QuantConnect can
+enhance the reproducibility of results.
+The full code and backtesting data are available and licensed under the
+QuantConnect terms.
+Acknowledgments
+The author acknowledges the QuantConnect platform for providing the infrastructure and data access necessary for this research.
+21
+
+Conflict of interest
+The author declares no conflicts of interest in this paper.
+References
+[1] V. Aelgani and D. Vadlakonda. Explainable artificial intelligence based
+ensemble machine learning for ovarian cancer stratification using electronic health records. International Journal of Recent Innovation Trends
+in Computing and Communication, 11:78–84, 2023. doi: 10.17762/ijritcc.
+v11i7.7832. URL https://doi.org/10.17762/ijritcc.v11i7.7832.
+[2] W. Afua, N. A. O. Ajayi-Nifise, G. Bello, et al. Algorithmic trading and
+AI: A review of strategies and market impact. World Journal of Advanced
+Engineering Technology and Sciences, 11:258–267, 2024. doi: 10.30574/
+wjaets.2024.11.1.0054. URL https://doi.org/10.30574/wjaets.2024.
+11.1.0054.
+[3] W. Afua, N. A. O. Ajayi-Nifise, G. Bello, et al. Algorithmic trading and
+AI: A review of strategies and market impact. World Journal of Advanced
+Engineering Technology and Sciences, 11:258–267, 2024. doi: 10.30574/
+wjaets.2024.11.1.0054. URL https://doi.org/10.30574/wjaets.2024.
+11.1.0054.
+[4] M. M. Alwateer, E. Atlam, M. Farsi, et al. Hidden Markov models for pattern recognition. In IntechOpen. 2023. doi: 10.5772/intechopen.1001364.
+URL https://doi.org/10.5772/intechopen.1001364.
+[5] Bharath et al. Evaluating the performance of diverse machine learning
+approaches in stock market forecasting. In Lecture Notes in Computer
+Science, pages 255–264. 2023. doi: 10.1007/978-3-031-36402-0 23. URL
+https://doi.org/10.1007/978-3-031-36402-0_23.
+[6] O. Cayirli. The Black-Litterman model: Extensions and asset allocation.
+SSRN, 2019.
+doi: 10.2139/ssrn.3464770.
+URL https://doi.org/10.
+2139/ssrn.3464770.
+22
+
+[7] W.-B. Chen, X.-Y. Li, and R. Kang. Integration for degradation analysis
+with multi-source ADT datasets considering dataset discrepancies and
+epistemic uncertainties.
+Reliability Engineering & System Safety, 222:
+108430, 2022. doi: 10.1016/j.ress.2022.108430. URL https://doi.org/
+10.1016/j.ress.2022.108430.
+[8] M. P. Dananjayan, S. Gopakumar, and P. Narayanasamy. Unleashing
+the algorithmic frontier: Navigating the impact of algo trading on investor portfolios.
+Journal of Information Technology Teaching Cases,
+2023.
+doi: 10.1177/20438869231189519.
+URL https://doi.org/10.
+1177/20438869231189519.
+[9] C. El Morr, M. Jammal, H. Ali-Hassan, et al.
+Neural networks.
+In
+International Series in Management Science/Operations Research, pages
+319–360. 2022. doi: 10.1007/978-3-031-16990-8 11. URL https://doi.
+org/10.1007/978-3-031-16990-8_11.
+[10] P. Giudici, E. Raffinetti, and M. Riani. Robust machine learning models:
+linear and nonlinear. International Journal of Data Science and Analytics, 2024. doi: 10.1007/s41060-024-00512-1. URL https://doi.org/10.
+1007/s41060-024-00512-1.
+[11] I. Gorynin, E. Monfrini, and W. Pieczynski. Pairwise Markov models
+for stock index forecasting. Zenodo, 2017. doi: 10.23919/eusipco.2017.
+8081568. URL https://doi.org/10.23919/eusipco.2017.8081568.
+[12] W. Jiang. Time series classification: nearest neighbor versus deep learning
+models. SN Applied Sciences, 2, 2020. doi: 10.1007/s42452-020-2506-9.
+URL https://doi.org/10.1007/s42452-020-2506-9.
+[13] H. Kwon et al.
+Distillation column temperature prediction based
+on machine-learning model using wavelet transform.
+In Computer
+Aided Chemical Engineering, pages 1651–1656. Elsevier, 2022.
+doi:
+10.1016/b978-0-323-85159-6.50275-x. URL https://doi.org/10.1016/
+b978-0-323-85159-6.50275-x.
+[14] P. Lara-Benitez, M. Carranza-Garcia, and J. C. Riquelme.
+An experimental review on deep learning architectures for time series fore23
+
+casting.
+International Journal of Neural Systems, 31:2130001, 2021.
+doi:
+10.1142/s0129065721300011.
+URL https://doi.org/10.1142/
+s0129065721300011.
+[15] R. Odegua. An empirical study of ensemble techniques (bagging, boosting and stacking). In Proceedings of the Conference on Deep Learning,
+IndabaX, 2019.
+URL https://www.researchgate.net/publication/
+338681876.
+[16] L. Oelschl¨ager and T. Adam. Detecting bearish and bullish markets in
+financial time series using hierarchical hidden Markov models.
+arXiv,
+2020.
+doi:
+10.48550/arxiv.2007.14874.
+URL https://doi.org/10.
+48550/arxiv.2007.14874.
+[17] L. Oelschl¨ager and T. Adam. Detecting bearish and bullish markets in
+financial time series using hierarchical hidden Markov models. Statistical
+Modelling, 1471082X2110340, 2021.
+doi: 10.1177/1471082x211034048.
+URL https://doi.org/10.1177/1471082x211034048.
+[18] H. F. Ong and A. M. Ahmad. Malay language speech recogniser with
+hybrid hidden Markov model and artificial neural network (HMM/ANN).
+International Journal of Information and Education Technology, pages
+114–119, 2011. doi: 10.7763/ijiet.2011.v1.19. URL https://doi.org/
+10.7763/ijiet.2011.v1.19.
+[19] R. Qamar and B. A. Zardari. Artificial neural networks: An overview.
+Mesopotamian Journal of Computer Science, pages 130–139, 2023. doi:
+10.58496/mjcsc/2023/015.
+URL https://doi.org/10.58496/mjcsc/
+2023/015.
+[20] QuantConnect.
+Overview
+-
+QuantConnect.com,
+2024.
+URL
+https://www.quantconnect.com/docs/v2/writing-algorithms/
+algorithm-framework/overview.
+[21] T. S. Rakovic. The effect of market liquidity on the company value. In
+Springer, pages 183–196. 2018. doi: 10.1007/978-3-319-75907-4 12. URL
+https://doi.org/10.1007/978-3-319-75907-4_12.
+24
+
+[22] A. Rashid. Using a service oriented architecture for simulating algorithmic
+trading strategies. 2010. doi: 10.1145/1967486.1967650. URL https:
+//doi.org/10.1145/1967486.1967650.
+[23] L. Sauberschwarz and L. Weiss. How corporations can win the race against
+disruptive startups. In Springer Berlin Heidelberg, pages 155–167. 2017.
+doi: 10.1007/978-3-662-49275-8 18.
+URL https://doi.org/10.1007/
+978-3-662-49275-8_18.
+[24] F. M. Shiri, T. Perumal, N. Mustapha, et al. A comprehensive overview
+and comparative analysis on deep learning models: CNN, RNN, LSTM,
+GRU. arXiv, 2023. URL https://arxiv.org/abs/2305.17473.
+[25] S.-W. Tzang, C.-H. Hung, Y.-S. Tsai, et al. Black-Litterman model and
+momentum strategy: Evidence of taiwan top 50 ETF. In Springer, pages
+490–497. 2020. doi: 10.1007/978-3-030-50399-4 47. URL https://doi.
+org/10.1007/978-3-030-50399-4_47.
+[26] J. Wang, Q. Li, and B. Zeng.
+Multi-layer cooperative combined forecasting system for short-term wind speed forecasting. Sustainable Energy
+Technologies and Assessments, 43:100946, 2021. doi: 10.1016/j.seta.2020.
+100946. URL https://doi.org/10.1016/j.seta.2020.100946.
+[27] L. Wu, S. Picek, and G. Perin. I choose you: Automated hyperparameter
+tuning for deep learning-based side-channel analysis. IEEE Transactions
+on Emerging Topics in Computing, 12:546–557, 2024. doi: 10.1109/tetc.
+2022.3218372. URL https://doi.org/10.1109/tetc.2022.3218372.
+[28] R. Zillich, S. Chin, and J. Mayrhofer. Extrapolated high-order propagators for path integral Monte Carlo simulations. 2009. doi: 10.48550/
+arxiv.0907.3495. URL https://doi.org/10.48550/arxiv.0907.3495.
+25

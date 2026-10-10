@@ -1,0 +1,106 @@
+ Electronic copy available at: http://ssrn.com/abstract=2710477 
+1 Copyright © Quantum Way Data Analytics Corporation 
+ 
+Pairs Trading and Its Implied Timing Ability 
+ 
+Jessy Gao1 
+1 THE THEORY OF PAIRS TRADING 
+The pairs trading strategy has a long trading history. Many investors are still trading this strategy with 
+different versions of model. The basic idea is still the mean reversion, which people believe that the 
+relationship between two securities tends to reverse to its long-term mean. 
+However, as indicated in the paper, "Pairs trading with a fundamental flavor", (Jussa, Chen, et al, 
+Deutsche Bank global quantitative strategy, March 20, 2012) the profitability of pairs trading strategies 
+has been declining in recent years, possible due to: 
+ 
+The proliferation of quant and hedge funds that mobilize automated, instantaneous trading 
+strategies 
+ 
+Large inflows of capital chasing similar investment strategies could potentially have impacted 
+arbitrage strategies like pairs trading. 
+ 
+The dramatic increase in the availability of pricing and fundamental data enables savvy investors to 
+easily develop standard pairs trading models. 
+ 
+Limits to arbitrage may be a result of constraining transaction costs. 
+Therefore, in order to explore the market with the pairs trading idea, a unique model is required. 
+We have adopted a different approach in pairs trading with NASDAQ 100 Index future (NQ) and Dow 
+Jones Industry Average Index future (YM). Generally speaking, stocks in NASDAQ 100 Index tend to be 
+growth oriented stocks, while Dow Jones Industry Average Index consists of value oriented stocks. Since 
+both indices are broad market indices, they are highly correlated. In a bull market, growth stocks tend to 
+outpace value stocks, and in a bear market, value stocks perform better. 
+We implement the model on intraday base. During the trading hours (9:30 am - 4:00 PM, EST), the 
+model calculates whether NASDAQ 100 Index is overbought or oversold relative to Dow Jones Industry 
+Average Index. If NASDAQ 100 Index is overbought, we will short its future NQ and long Dow Jones 
+Industry Average Index future (YM) with 1-on-1 contract ratio. If NASDAQ 100 Index is oversold, we will 
+long its future NQ and short Dow Jones Industry Average Index future (YM) with 1-on-1 contract ratio. 
+2 THE IMPLIED MARKET TIMING ABILITY BEHIND THE INDEX PAIRS TRADING  
+In the previous section, we point out that "In a bull market, growth stocks tend to outpace value stocks, 
+and in a bear market, value stocks perform better". In other words, when the pairs trading model 
+suggests to long NQ and short YM, the market is likely to go up, otherwise, the market is likely to drop. 
+This is the implied market timing ability of the index pairs trading model. 
+                                                          
+1 Co-founder of Quantum Way Data Analytics Corp. jessygao@quandumda.com http://www.quantumda.com 
+Electronic copy available at: https://ssrn.com/abstract=2710477
+
+ Electronic copy available at: http://ssrn.com/abstract=2710477 
+2 Copyright © Quantum Way Data Analytics Corporation 
+ 
+Figure 1 out-of-sample signals 
+ 
+This timing ability can be demonstrated in the highlighted transaction. During all 5 completed "long NDX 
+short DOW" trades, market indices were all up, while in three of five completed "short NDX long DOW", 
+the market was down. Therefore, the timing probability is 80%! The current signal is "long NDX short 
+DOW". Even though the US market dropped on April 30, the market recovered the loss on May 1st, 
+suggesting that market indices are likely to go up when we close the current transaction.  
+This timing ability can enable us to improve the performance significantly. We can buy call or put 
+options on indices or ETFs based on signals to add addition returns to the pairs trading. 
+3 CHOOSE BETTER ENTRY POINTS WITH TREND FOLLOWING SYSTEMS  
+We can improve entry points of the pairs trading with the trend following system both for indices and 
+pairs. 
+Figure 2 pairs trading and trend following 
+ 
+The above chart shows the system that combines the pairs trading model and a trend following system. 
+We could wait to open the pairs trading positions until the system shows the spread forms a trend. 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2710477
+
+ Electronic copy available at: http://ssrn.com/abstract=2710477 
+3 Copyright © Quantum Way Data Analytics Corporation 
+ 
+4 EXPANDING THE MODEL AND IDEA  
+The idea of trading between NDX and Dow Jones can be expanded to other markets. 
+ 
+In Hong Kong market, pairs can be formed with HSI and HSCEI, both indexes have regular future and 
+mini-size futures. Following are results: 
+Figure 3 Performance in Hong Kong market 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2710477
+
+4 Copyright © Quantum Way Data Analytics Corporation 
+ 
+In FX market, commodity currencies such as AUD and CAD are paired with safe heaven currencies 
+including CHF and JPY. We choose CADJPY to trade.  The leverage is 5. 
+Figure 4 performance in FX market 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2710477
+
+5 Copyright © Quantum Way Data Analytics Corporation 
+ 
+5 LIVE OUT-OF-SAMPLE PERFORMANCE 
+Figure 5 and Figure 6 show the live out-of-sample performance of the pairs trading and its timing ability 
+in 2015 as of September 28. Both the market-neutral portfolio and the timing portfolio could have 
+achieved very promising risk adjusted returns. 
+Figure 5live performance statistics 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2710477
+
+6 Copyright © Quantum Way Data Analytics Corporation 
+ 
+Figure 6Live portfolios 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2710477

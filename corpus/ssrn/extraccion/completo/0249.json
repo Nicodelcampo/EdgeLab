@@ -1,0 +1,59 @@
+{
+  "doc_id": 249,
+  "titulo": "Optimal Limit-versus-Market Order Slicing under a VWAP Benchmark - Continuous Case",
+  "resumen_operativo": "Extiende el modelo discreto de Li (2012) al caso continuo para optimizar el slicing de órdenes entre limit y market orders bajo benchmark VWAP. La solución óptima se caracteriza por fronteras forward y backward (L̃_t y M̃_t) que acotan el número de acciones pendientes de ejecutar: se colocan v_t - L̃_t limit orders en el libro y se ejecutan market orders al alcanzar la frontera backward. Deriva solución cerrada para el stationary limit usando la función W de Lambert y soluciones vía transformada de Fourier para casos generales.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "VWAP Benchmark Trading",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Problema de ejecución donde un broker debe ejecutar una orden grande minimizando la diferencia entre el precio promedio de ejecución y el VWAP del mercado en el mismo intervalo, enfrentando un trade-off entre market orders (certeza, coste de spread) y limit orders (ahorro, incertidumbre de ejecución).",
+      "relaciones": [{"tipo": "USA", "objeto": "Optimal Stochastic Control"}, {"tipo": "REQUIERE", "objeto": "Volume Forecasting"}],
+      "cita_textual": "The broker faces a risk-reward trade off in deciding whether to execute with market (active) or limit (passive) orders"
+    },
+    {
+      "nombre": "Forward-Backward Boundaries",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Par de fronteras óptimas dependientes del tiempo (L̃_t ≤ v_t ≤ M̃_t) que definen la región de no-trading: se colocan limit orders hasta la frontera forward (L̃_t) y se disparan market orders al alcanzar la frontera backward (M̃_t).",
+      "relaciones": [{"tipo": "PARTE_DE", "objeto": "Optimal Execution Policy"}, {"tipo": "DEFINE", "objeto": "No-Trade Region"}],
+      "cita_textual": "the optimal solution consists of forward and backward boundaries (L̃_t and M̃_t) that track the ideal VWAP trajectory"
+    },
+    {
+      "nombre": "Stationary Limit Solution",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Caso asintótico donde las funciones de intensidad y volatilidad son constantes, permitiendo derivar una solución cerrada para las fronteras óptimas usando la función W de Lambert. Representa el comportamiento lejos de las condiciones de borde.",
+      "relaciones": [{"tipo": "USA", "objeto": "Lambert W Function"}, {"tipo": "MEJORA_A", "objeto": "Numerical Solution"}],
+      "cita_textual": "a closed-form solution for the large-fill case"
+    },
+    {
+      "nombre": "Poisson Arrival of Crossing Orders",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Modelado de las órdenes de contrapartida que cruzan las limit orders como llegadas Poisson con intensidad determinística variable en el tiempo, capturando la incertidumbre de ejecución de las órdenes pasivas.",
+      "relaciones": [{"tipo": "PARTE_DE", "objeto": "Limit Order Execution Uncertainty"}],
+      "cita_textual": "We assume ΔZ are the poisson arrivals which arrive with time-varying but deterministic intensity"
+    },
+    {
+      "nombre": "Wasserstein Distance",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Métrica de transporte óptimo entre distribuciones de probabilidad, usada para definir la continuidad de la solución del problema continuo como límite uniforme del caso discreto cuando el tamaño de tick tiende a cero.",
+      "relaciones": [{"tipo": "USA", "objeto": "Continuous Limit Convergence"}],
+      "cita_textual": "define the metric function d(μ', μ) to be the Wasserstein distance"
+    },
+    {
+      "nombre": "VWAP Mistracking Error",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Penalización cuadrática γσ²(X_t - x_t)² por desviarse de la trayectoria ideal de VWAP, incorporando tanto la volatilidad del precio como un parámetro de aversión al riesgo de tracking error.",
+      "relaciones": [{"tipo": "MIDE", "objeto": "Execution Quality"}, {"tipo": "PARTE_DE", "objeto": "Objective Function"}],
+      "cita_textual": "γσ(T-t)²/2 (X(T-t) - x_t)² dt"
+    },
+    {
+      "nombre": "Fourier Transform Solution",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica para resolver la ecuación integral de las fronteras óptimas en el caso general (no large-fill), transformando el problema al dominio de Fourier donde admite representación semi-analítica para clases muy generales de distribuciones de intensidad.",
+      "relaciones": [{"tipo": "USA", "objeto": "Integral Equation"}, {"tipo": "APLICA_A", "objeto": "Gamma Distribution Approximations"}],
+      "cita_textual": "we can derive the solution in terms of a Fourier transform for a number of very general classes"
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "Diseñado específicamente para ejecución VWAP intradía; las fronteras forward-backward se computan en tiempo continuo y son directamente implementables en sistemas de trading algorítmico en producción."}
+}

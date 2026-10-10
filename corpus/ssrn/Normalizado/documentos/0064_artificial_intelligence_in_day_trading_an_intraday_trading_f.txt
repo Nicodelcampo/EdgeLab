@@ -1,0 +1,708 @@
+Artificial Intelligence in Day Trading: An Intraday Trading Framework
+with Economic Indicators and Large Language Model Analysis
+Zhuokai Chen
+The Chinese University of Hong Kong, Shenzhen
+This version: May 06, 2025
+zhuokaichen@link.cuhk.edu.cn
+@CodyOutcast
+Abstract
+This paper introduces a novel intraday trading strategy for the USTEC CFD, leveraging volatility patterns
+around economic news events. By integrating a large language model (LLM) to filter trading signals based on news
+sentiment, the strategy achieves significant improvements in profitability. Backtested from 2018 to 2025 with over
+1,700 trades, the backbone strategy delivers a cumulative return of 730% and an annualized return of 33%. The
+LLM-enhanced version further increases the annual return by 5%, outperforming the buy-and-hold benchmark and
+maintaining a high alpha. Additionally, the paper investigates the stability and interpretability of LLMs in historical
+backtesting, revealing that while prompt variations affect filtering efficacy, identical prompts yield consistent results,
+enhancing the framework’s reliability. These findings highlight the potential of AI-driven approaches in quantitative
+finance and suggest avenues for future research in prompt engineering and multi-model architectures.
+1
+Introduction
+This paper presents a pioneering intraday trading strategy for the USTEC CFD, harnessing volatility from economic
+news events and integrating a large language model (LLM) to refine trading signals through sentiment analysis.
+Backtested from 2018 to 2025 with over 1,700 trades, the strategy achieves a 730% cumulative return and a 33%
+annualized return, with the LLM-enhanced version boosting performance by an additional 5%. Outperforming the
+buy-and-hold benchmark, it showcases significant alpha and probes the stability and interpretability of LLMs in financial
+applications. Through detailed analysis, we outline the strategy’s design, performance metrics, and implications,
+bridging traditional quantitative finance with AI-driven innovation while paving the way for future research in prompt
+engineering and advanced model architectures.
+2
+Literature Review
+The integration of macroeconomic indicators into financial modeling has emerged as a critical approach for enhancing
+predictive accuracy in trading strategies, particularly for volatile instruments like the USTEC CFD, which tracks the
+Nasdaq-100 (Finance Brokerage, 2024). Latif (2024) demonstrated that combining macroeconomic variables—such as
+the Volatility Index (VIX), Economic Policy Uncertainty (US EPU), and Financial Stress Index (FSI)—with technical
+indicators significantly improves S&P 500 return forecasts. Their analysis, covering January 2001 to June 2023, found
+that a LeNet-Highway hybrid model reduced root mean squared error by 11% compared to single models, emphasizing
+the role of macroeconomic data in capturing market volatility. Similarly, Ryu (2022) examined 392,141,196 transaction
+data points from 2010 to 2018 to assess the intraday impact of scheduled macroeconomic news announcements. They
+identified asymmetric market responses, with positive GDP news reducing sentiment, highlighting the complex influence
+of economic indicators on intraday trading.
+In parallel, large language models (LLMs) have transformed financial analysis by enabling sophisticated processing
+of unstructured data, such as news sentiment, for trading applications (Cao, 2023). Their comprehensive survey outlined
+LLMs’ roles in trading, risk modeling, and sentiment analysis, proposing a decision framework for model selection.
+Domain-specific models like BloombergGPT outperformed general-purpose models like BLOOM176B, achieving a
+62.51 score on finance classification tasks versus 54.35, underscoring LLMs’ potential in signal generation. Rahimikia
+(2024) further showed that LLMs pre-trained on financial datasets from 2007 to 2023 excel in return prediction while
+mitigating look-ahead bias (Harris, 2022). Additionally, Kim (2024) found that GPT-based models surpass human
+analysts in predicting earnings changes, particularly in complex scenarios, suggesting LLMs’ ability to enhance intraday
+trading signals.
+1
+
+Despite these advances, the integration of macroeconomic indicators with LLMs for intraday trading, especially for
+the USTEC CFD, remains underexplored. Research by Niu (2023) and Salisu (2022) has explored geopolitical risks and
+economic uncertainty’s effects on stock market volatility, providing risk management insights relevant to day trading.
+However, these studies do not address the use of LLM-derived sentiment analysis alongside economic indicators to
+optimize intraday strategies. This paper fills this gap by proposing a volatility-based trading framework enhanced by
+DeepSeek LLM signal filtering. By building on prior work in macroeconomic forecasting and LLM applications, this
+study advances algorithmic trading, demonstrating how AI-driven sentiment analysis can improve risk-adjusted returns
+and profitability in the USTEC CFD market.
+3
+Strategy Definition
+3.1
+Backbone Strategy
+This strategy leverages market volatility triggered by high-impact US economic events, using a breakout approach
+to capture significant price movements post-announcement. It focuses on scheduled USD events from the MQL5
+Terminal, selected for their consistent market-moving potential (MQL5, n.d.). Regularly scheduled announcements
+create predictable volatility patterns, while avoiding ad-hoc events reduces noise. The key event categories include:
+• Interest Rate Decisions (FOMC)
+• Employment Data (NFP, Unemployment)
+• Inflation Metrics (CPI, PPI)
+• Growth Indicators (GDP)
+• Central Bank Communications
+• Business Activity (PMI, Retail Sales)
+3.1.1
+Trading Signal Generation
+Execution occurs Tdelay after the announcement, allowing the initial market shock to subside, which reduces spread
+volatility and erratic price movements while capturing the emerging trend. Price thresholds are defined using Nlookbackminute extremes to reflect recent pre-event volatility:
+HNlookback = max(pt−Nlookback+1, . . . , pt),
+LNlookback = min(pt−Nlookback+1, . . . , pt)
+(1)
+The Trading Indicator (TI) integrates a Kalman filter with a sigmoid function to detect breakout signals:
+TI =
+100
+1 + 2−Sfactor·δ
+(2)
+where δ is the normalized price deviation:
+δ = pt −bpt
+pt
+(3)
+The Kalman filter estimates the underlying price trend bpt by filtering noise:
+Prediction:
+bp−
+t = bpt−1
+P −
+t = Pt−1 + Qnoise
+Update:
+Kt =
+P −
+t
+P −
+t + Rnoise
+bpt = bp−
+t + Kt(pt −bp−
+t )
+Pt = (1 −Kt)P −
+t
+(4)
+Here, process noise Qnoise and measurement noise Rnoise are derived from historical volatility analysis, with a scaling
+factor of Sfactor balancing signal responsiveness and noise reduction.
+3.1.2
+Threshold Determination
+The TI thresholds are set at TIbuy and TIsell. A TI above TIbuy indicates strong upward momentum, suggesting a
+breakout, while a TI below TIsell avoids short positions during strong upward trends. The buffer zone between TIbuy
+and TIsell minimizes false signals during market indecision or mean reversion, based on historical signal distribution
+analysis.
+2
+
+3.1.3
+Risk Management Protocol
+A Pstop stop loss is applied:
+SL = PUSTEC × (1 ± Pstop)
+(5)
+where PUSTEC is the current USTEC index price, balancing volatility absorption with capital preservation. Risk
+allocation is limited to Prisk of equity:
+Lot Size =
+Prisk × Equity
+|Entry −SL| × Point Value
+(6)
+For USTEC, ”Point Value” is the value per point movement, ensuring consistent risk exposure across volatility regimes.
+3.1.4
+Position Management
+To prevent account over-leveraging during consecutive event occurrences, the strategy verifies existing active stop orders
+before initiating new ones. If an active stop order remains pending (neither triggered nor expired), the current trading
+signal is disregarded. This approach permits active positions while maintaining restrictions on concurrent stop orders.
+Positions are closed at 15:50 ET, ten minutes before the US cash market close, to avoid overnight funding costs and
+capture full session liquidity. Awareness of CFD expiration dates prevents unintended rollovers.
+Table 1: Strategy Parameter Optimization
+Parameter
+Value
+Empirical Basis
+News Delay (Tdelay)
+120s
+MQL5 data base update lag buffer
+Lookback (Nlookback)
+200m
+Intraday volatility window
+TI Thresholds (TIbuy/TIsell)
+30/70
+Historical signal percentiles
+Scaling Factor (Sfactor)
+500
+Signal-noise balance
+Process Noise (Qnoise)
+0.01
+Volatility-based noise weighting
+Measurement Noise (Rnoise)
+100
+Volatility-based noise weighting
+Stop Loss (Pstop)
+0.01
+Volatility absorption balance
+Risk Allocation (Prisk)
+0.015
+Consistent risk exposure
+Order Expiration (Texpire)
+24h
+Short-term volatility focus
+The strategy is implemented using stop orders placed according to the trading signals. The strategy first verifies
+that no active stop orders are currently open before proceeding. Tdelay after a high-impact US economic announcement,
+the Trading Indicator (TI) is evaluated. If TI > TIbuy, indicating strong upward momentum, a buy stop order is placed
+at HNlookback, the Nlookback-minute high, to capture a potential breakout. Conversely, if TI < TIsell, suggesting the
+absence of an overextended rally, a sell stop order is placed at LNlookback, the Nlookback-minute low, to exploit downward
+moves. These thresholds were chosen based on historical quintile analysis, ensuring signals align with statistically
+significant price deviations while avoiding noise-driven trades. Stop orders expire after Texpire if not triggered, aligning
+with the strategy’s focus on short-term volatility and preventing prolonged exposure. Positions are closed at 15:50 ET
+to avoid overnight risks, and risk management employs a Pstop stop loss and Prisk equity risk allocation per trade, as
+outlined in the risk management protocol.
+Figure 1: Example Trade Execution
+Figure 1 illustrates a typical trade execution under this strategy.
+3
+
+3.2
+Large Language Model Integration
+This subsection details the integration of a Large Language Model (LLM) to enhance the backbone strategy’s trading
+signals. Utilizing the DeepSeek Chat API, the framework evaluates economic indicator announcements to determine
+their impact on the Nasdaq 100 (USTEC) index. The LLM serves as a filter, refining buy and sell signals by analyzing
+market sentiment and forecast deviations in real time.
+3.2.1
+Filtering Economic Indicators
+Post the two-minute mark after an announcement, the algorithm processes all news events adhering to the backbone
+strategy’s conditions. It filters out announcements without quantifiable actual values (e.g., FOMC meetings) or those
+with delayed updates, ensuring only reliable and actionable data is considered. If multiple events occur simultaneously,
+the average confidence level across these events will be used as the reference value during the confidence level validation
+phase.
+Quantifiable actual values enable precise deviation analysis from forecasts, critical for effective sentiment evaluation.
+Excluding non-quantifiable or delayed data minimizes noise and enhances signal reliability.
+3.2.2
+LLM Prompt Construction
+The Large Language Model (LLM) is queried using structured prompts sent to the DeepSeek Chat API to analyze the
+impact of economic news on the Nasdaq 100 index. The prompts and input data are defined as follows:
+• System Prompt: “Analyze the impact of this economic news on increasing Nasdaq100 value for the day, based
+on market sentiment and forecast deviations. Provide a JSON output with ‘confidence’ (0 to 1) and ‘reason’ (less
+than 50 words). Example: {“confidence”: 0.7, “reason”: “Positive economic indicators suggest growth”}” This
+prompt instructs the LLM to evaluate market sentiment and forecast deviations, returning a structured JSON
+response with a confidence score and a concise rationale.
+• User Prompt: “Evaluate this news event: {“event”: “[event name]”, “actual”: [actual value], “forecast”:
+[forecast value], “previous”: [previous value]}. Output in JSON format with ‘confidence’ and ‘reason’.” This
+prompt provides the LLM with specific event details—event name, actual reported value, forecast value, and
+previous value—to perform the analysis.
+• News Data Input: A JSON object specifying the DeepSeek Chat model, containing an array of messages that
+includes the system prompt (defining the task and output format) and the user prompt (supplying event-specific
+data: event name, actual value, forecast value, and previous value). The input also includes a directive to ensure
+the response is formatted as a JSON object for automated processing.
+The system prompt ensures consistent, structured outputs suitable for algorithmic integration, while the user
+prompt delivers precise event data for accurate sentiment analysis. The JSON-structured news data input facilitates
+seamless API communication and reliable response parsing.
+The system prompt specifies the analysis task and output structure, while the user prompt provides event-specific
+data—event name, actual value, forecast, and previous value—for consistent processing.
+3.2.3
+Confidence Level Extraction and Signal Validation
+The LLM outputs a confidence level (C ∈[0, 1]) reflecting the predicted Nasdaq 100 impact. This is applied to validate
+backbone strategy signals:
+• Buy Signal: Valid if C > 0.25.
+• Sell Signal: Valid if C < 0.75.
+Thresholds of 0.25 for buys and 0.75 for sells filter out ambiguous signals. A buy confidence above 0.25 confirms
+sufficient positive sentiment, while a sell confidence below 0.75 prevents shorting in potentially bullish scenarios,
+optimizing signal accuracy.
+3.2.4
+Position Management and Risk Protocol
+Position closure and risk management align with the backbone strategy: positions close at 15:50 ET, with risk controlled
+via a Pstop stop loss and Prisk equity allocation. This ensures the study focuses solely on the LLM’s filtering efficacy.
+In summary, integrating the LLM refines the backbone strategy by filtering signals based on economic indicator
+sentiment analysis, potentially boosting performance. The process is visualized below:
+Figure 2 illustrates the workflow, from news filtering to signal validation.
+4
+
+Table 2: LLM Integration Parameters
+Parameter
+Value
+Rationale
+Buy Confidence Threshold
+0.25
+Confirms sufficient positive sentiment
+Sell Confidence Threshold
+0.75
+Prevents shorting in bullish conditions
+LLM Model
+DeepSeek Chat
+Offers real-time, structured responses
+Output Format
+JSON
+Enables automated processing
+Figure 2: Strategy Flow Chart
+4
+Backtest Methodology
+4.1
+Addressing Risk of Look-ahead Bias
+Backtesting trading strategies that incorporate news events, such as economic indicators, poses unique challenges due
+to the risk of look-ahead bias. Look-ahead bias occurs when a backtest utilizes information that was not available
+at the time of the trading decision, potentially inflating the strategy’s perceived performance (Harris, 2022). In the
+context of news-based trading, this bias can manifest if the backtest assumes immediate knowledge of news releases
+or uses data revisions that were only available later (Analyzing Alpha, 2023). For instance, economic indicators like
+employment data are often subject to revisions, and using revised data in a backtest without accounting for when
+those revisions were available can introduce look-ahead bias (Analyzing Alpha, 2023).
+Economic indicators differ from general news events in ways that mitigate the risk of look-ahead bias. Unlike
+event-specific news, such as “Brexit Referendum” or “Federal Reserve Emergency Rate Cut,” which may have names
+tied to historical moments, economic indicators like Nonfarm Payrolls or Consumer Price Index are announced regularly
+with consistent names. This consistency ensures that the indicator name does not expose historical context or specific
+timing, reducing the likelihood that the model could infer future outcomes based on the event name alone (Analyzing
+Alpha, 2023). By leveraging this property, our methodology minimizes the risk of inadvertently introducing temporal
+cues into the backtest.
+To further address look-ahead bias, our methodology ensures that the Large Language Model (LLM) receives
+the actual value of the economic indicator only after its historical release time, using unrevised (initial) values from
+the MQL5 terminal database. This approach aligns with best practices for backtesting news-based strategies, which
+emphasize the importance of using only the data that was available at the time of the trading decision (Analyzing
+Alpha, 2023). By relying on initial estimates rather than revised figures, we prevent the introduction of look-ahead
+bias that could arise from using information that was not known at the time.
+Additionally, our strategy does not provide the LLM with specific dates for the economic events. Instead, it feeds
+the LLM only with the economic indicator’s name, previous value, forecasted value, and actual value. This omission
+of temporal context ensures that the LLM processes the data without information that could allow it to correlate
+the event with future market movements or other historical events, further minimizing the risk of look-ahead bias.
+Since the LLM is not exposed to any information that would clearly reveal the exact timing or future outcomes of the
+event, it is unlikely to inadvertently incorporate look-ahead bias into its predictions. The LLM’s task is to infer buying
+confidence based solely on the provided data points, which are consistent with what was available at the time of the
+event (MQL5 Community, 2024).
+This approach is supported by the principle that backtesting should simulate real-world conditions as closely as
+possible, using only the information that would have been available to traders at the time (MQL5 Community, 2024).
+By using unrevised data, omitting dates, and leveraging the consistent naming of economic indicators, our methodology
+5
+
+ensures a more accurate representation of how the strategy would have performed under historical market conditions.
+4.2
+Backtest Information
+This subsection details the methodology employed to backtest the trading strategy, encompassing both the backbone
+strategy and its enhancement through Large Language Model (LLM) integration. The backtest covers the period
+from January 1, 2018, to May 1, 2025, utilizing 1-minute OHLC (Open, High, Low, Close) data for the USTEC CFD
+(Nasdaq 100 index), sourced from IC Markets.
+4.2.1
+Data Collection and LLM Integration
+Historical economic indicator data were obtained natively from the MQL5 Terminal. These data were used to replicate
+the LLM integration process by issuing web requests identical to those outlined in the strategy definition section.
+Specifically, requests were sent to the DeepSeek Chat API, and the resulting responses—comprising confidence levels,
+event names, and timestamps—were recorded in a CSV file. This file was subsequently aligned with the backbone
+strategy’s backtest, enabling the application of an additional confidence level filter. This approach ensures a direct and
+fair comparison between the backbone strategy and the LLM-enhanced version.
+Storing LLM responses in a CSV file facilitates efficient cross-referencing with historical trade data, mimicking
+real-time decision-making without the need for live API calls during the backtest.
+4.2.2
+Trading Costs and Fees
+The backtest incorporates trading costs typical of A-book ECN brokers:
+• Commissions: No commissions are applied to cash indices.
+• Spreads: An average spread of 2.00 points is assumed for USTEC.
+• Swap Fees: Swap rates are based on IC Markets’ values as of the writing of this paper:
+– Swap long: -3.29
+– Swap short: 1.69
+– Triple swap applied on Wednesdays
+It is recognized that historical swap rates may vary from those used. However, this approximation is considered
+negligible, as the intraday focus of the strategy results in only a minimal number of trades incurring swap fees.
+4.2.3
+Backtest Parameters
+Key parameters governing the backtest are summarized in Table 3:
+Table 3: Backtest Parameters
+Parameter
+Value
+Backtest Period
+2018-01-01 to 2025-05-01
+Instrument
+USTEC CFD (Nasdaq 100)
+Data Frequency
+1-minute OHLC
+Data Provider
+IC Markets
+Starting Capital
+$10,000
+Leverage
+1:30 (per European CFD regulations)
+Spread
+2.00 points
+Swap Long
+-3.29 (tripled on Wednesdays)
+Swap Short
+1.69 (tripled on Wednesdays)
+The starting capital is set at $10,000 to ensure that initial trade sizes exceed the minimum lot requirement while
+avoiding maximum lot size limits, thereby maintaining a consistent risk percentage across the backtest period. The
+leverage of 1:30 aligns with European CFD regulations, reflecting realistic trading constraints (Comisi´on Nacional del
+Mercado de Valores, 2018).
+4.2.4
+Backtesting Environment
+The backtest was executed in Python 3, utilizing 1-minute OHLC data from IC Markets. The environment simulates
+trade executions by accurately timing news events, signal generation, and order placements, closely mirroring real-world
+trading dynamics.1
+High-frequency data and precise timing are essential for assessing the strategy’s effectiveness, particularly given its
+reliance on short-term volatility following economic announcements.
+1See the GitHub repository for backtest data source: https://github.com/CodyOutcast/Academic-Paper-Data-Source.
+6
+
+4.3
+Relevant Metrics
+This subsection outlines the key metrics used to evaluate the profitability and performance of the trading strategy,
+enabling a comparison between the LLM-enhanced version and the backbone strategy. Each metric is chosen to provide
+insights into returns, risk, and consistency.
+• Benchmark: USTEC Buy-and-Hold (No Swap Fees) A passive investment baseline in the USTEC index,
+excluding swap fees, to assess whether the active strategy outperforms simple market exposure. This strategy
+would be replicated by entering trades at 5:01 AM ET each day and closing positions at 3:59 PM ET. The interval
+between these times corresponds to the broker settlement period, during which trading activity is restricted.
+• Alpha and Beta (Daily Returns) Derived from the Capital Asset Pricing Model (CAPM), these metrics
+measure excess returns and market sensitivity:
+rstrategy,t = α + β · rmarket,t + ϵt
+(7)
+where rstrategy,t is the strategy’s daily return, rmarket,t is the USTEC return, and ϵt is the error term. Alpha (α)
+reflects returns beyond market performance, while beta (β) shows correlation with market movements. These are
+essential for evaluating added value and systematic risk. The final alpha for reference would be α ∗252 to express
+the annualized alpha.
+• Sharpe Ratio Assesses risk-adjusted returns, calculated as:
+Sharpe Ratio = rstrategy −rf
+σstrategy
+(8)
+where rstrategy is the average return, rf is the risk-free rate (3% annually), and σstrategy is the return standard
+deviation. It balances return against volatility, indicating if gains justify the risk taken.
+• Profit Factor The ratio of gross profits to gross losses:
+Profit Factor =
+P Profits
+P Losses
+(9)
+This measures profitability efficiency, showing whether profits adequately exceed losses.
+• Total Return and Yearly Return Total return is the cumulative gain over the period, and yearly return
+annualizes it. These provide a clear view of overall and standardized profitability.
+• Trade Amount and Win Rate Trade amount is the number of trades executed, and win rate is the percentage
+of profitable trades. They evaluate activity level and consistency, key to understanding execution and reliability.
+• Maximum Drawdown The largest peak-to-trough equity drop during the period. It highlights the worst-case
+risk, critical for assessing potential capital loss.
+5
+Results and Discussion
+5.1
+Profitability Analysis
+This subsection evaluates the performance of the backbone strategy, the LLM-integrated version, and the USTEC
+buy-and-hold benchmark through a set of key financial metrics. Table 4 provides a comparative summary, offering
+insights into profitability, risk exposure, and operational efficiency across the three approaches.
+Table 4: Evaluation Metrics for Backbone Strategy, LLM-Integrated Version, and USTEC Buy-and-Hold
+Metric
+Backbone Strategy
+LLM-Integrated Version
+USTEC Buy-and-Hold
+Total Return (%)
+730.59
+982.93
+205.42
+Yearly Return (%)
+33.53
+38.46
+16.47
+Trade Amount
+1717
+1401
+1893
+Win Rate (%)
+49.74
+52.61
+55.15
+Maximum Drawdown (%)
+−17.40
+−14.10
+−35.54
+Alpha
+0.51
+0.65
+0.00
+Beta
+0.03
+0.03
+1.00
+Sharpe Ratio
+1.67
+2.11
+0.61
+Profit Factor
+1.27
+1.41
+1.11
+The data in Table 4 highlights several critical observations:
+7
+
+• Total Return and Yearly Return: The LLM-integrated version achieves a total return of 982.93% and an
+annualized return of 38.46%, substantially outperforming the backbone strategy (730.59% and 33.53%) and the
+USTEC benchmark (205.42% and 16.47%). This superior performance suggests that the LLM filter enhances
+profitability, potentially by refining trade selection and amplifying returns over time.
+• Trade Amount and Win Rate: The LLM-integrated version executes fewer trades (1401) than the backbone
+strategy (1717) while improving the win rate from 49.74% to 52.61%. This indicates that the LLM filter prioritizes
+quality over quantity, effectively reducing noise and targeting trades with higher success probabilities.
+• Maximum Drawdown: With a maximum drawdown of -14.10%, the LLM-integrated version demonstrates
+better risk control compared to the backbone strategy (-17.40%) and the benchmark (-35.54%). This reduction
+in drawdown underscores the LLM’s role in mitigating losses, particularly during adverse market conditions.
+• Alpha and Beta: Both strategies generate significant alpha (0.51 for the backbone and 0.65 for the LLMintegrated version), reflecting their ability to deliver excess returns independent of market movements. Their
+beta values of 0.03 indicate minimal market correlation, contrasting with the benchmark’s beta of 1.00 and alpha
+of 0.00, reinforcing their status as market-neutral strategies.
+• Sharpe Ratio: The LLM-integrated version’s Sharpe ratio of 2.11 surpasses the backbone strategy’s 1.67 and
+the benchmark’s 0.61, indicating higher risk-adjusted returns. This improvement highlights the LLM filter’s
+contribution to balancing profitability and volatility.
+• Profit Factor: The profit factor rises from 1.27 in the backbone strategy to 1.41 in the LLM-integrated version,
+reflecting a greater proportion of gains relative to losses. This metric emphasizes the enhanced efficiency of the
+LLM-integrated approach in profit generation.
+Figure 3: Equity Curves for Backbone Strategy, LLM-Integrated Version, and USTEC Buy-and-Hold
+Figure 4: Drawdown Curves for Backbone Strategy, LLM-Integrated Version, and USTEC Buy-and-Hold
+8
+
+Figure 3 depicts the equity trajectories of the three approaches. From 2018 to 2022, all versions exhibit comparable
+growth, achieving approximately 200% cumulative returns. However, between 2022 and 2023, when the USTEC
+benchmark declined due to macroeconomic pressures, both strategies continued to appreciate, evidencing resilience
+and macro alpha. Post-2023, the LLM-integrated version markedly outpaces the backbone strategy, likely due to the
+compounding effect of filtered signals. Figure 4 reveals that the LLM-integrated version consistently reduces drawdown
+magnitudes, with notable improvements during mid-2019 and early 2024. Both strategies outperform the benchmark,
+which suffered drawdowns exceeding 20% in early 2019 and 2020, while the strategies maintained drawdowns below
+15%.
+Figure 5: Daily Return Distributions for Backbone Strategy, LLM-Integrated Version, and USTEC Buy-and-Hold
+Figure 5 illustrates the daily return distributions. Compared to the USTEC benchmark, both strategies display
+shorter left tails, indicating fewer significant losses, and longer right tails, suggesting greater upside potential. This
+distribution aligns with the strategies’ design to capture volatility while limiting downside risk. The LLM-integrated
+version further narrows the left body of the distribution, reflecting its effectiveness in filtering out unprofitable trades,
+which contributes to its superior overall profitability.
+5.2
+Investigating LLM Stability and Interpretability
+5.2.1
+Background Knowledge
+This subsection evaluates the reliability and interpretability of the Large Language Model (LLM) integration framework
+proposed in this study, addressing concerns related to hallucination and the blackbox nature of LLM-generated outputs.
+Hallucination, the generation of plausible but incorrect confidence scores, poses a risk to trading decisions, while the
+opaque decision-making process of LLMs undermines trust and validation. To assess the framework’s robustness, we
+analyze the distribution patterns of LLM confidence scores and their impact on profitability through backtesting. By
+comparing performance across identical prompts, similar prompts, and varying confidence score thresholds, this study
+seeks to elucidate the consistency and competitive advantage of the LLM-integrated trading strategy.
+Recent studies highlight the transformative potential of large language models (LLMs) in generating trading signals
+from financial texts, such as news and reports, while also noting significant challenges (Li&Zhang, 2024). LLMs are
+prone to hallucination, producing factually inaccurate outputs that can mislead trading strategies (Kang&Sarmah,
+2023). To mitigate this, techniques like retrieval-augmented generation, which grounds LLM outputs in verified data,
+have shown promise (Sarmah, 2023). The blackbox nature of LLMs further complicates their adoption, as their internal
+reasoning remains difficult to interpret (Biancotti, 2023). Approaches such as knowledge distillation, which transfers
+LLM knowledge to smaller, more transparent models, have been proposed to enhance interpretability (Chen, 2024).
+Despite these hurdles, well-calibrated LLMs have demonstrated superior performance in financial tasks, including stock
+selection, when paired with robust mitigation strategies (Zhang, 2024).
+5.2.2
+Data Analysis
+In this subsection, we explore the stability and interpretability of Large Language Models (LLMs) by examining how
+variations in prompt design influence the confidence scores generated for trading decisions on the Nasdaq 100 index.
+We define three distinct prompts and analyze their impact on the LLM’s output and the subsequent performance of
+the trading strategy.
+Prompt Definitions:
+• Prompt1: “You are an assistant that analyzes news events and provides a buying confidence score for Nasdaq
+100 along with a brief reason. The output should be in JSON format with ‘confidence’ (a number between 0 and
+9
+
+1) and ‘reason’ (a string). For example: {\”confidence\”: 0.7, \”reason\”: \”Positive economic indicators suggest
+growth.\”}”
+• Prompt2: “You are a fundamental analyst that analyzes news events data and provides a confidence score
+of going long Nasdaq 100 for the day along with a brief reason. The output should be in JSON format with
+‘confidence’ (a number between 0 and 1) and ‘reason’ (a string less than 50 words). For example: {\”confidence\”:
+0.7, \”reason\”: \”Positive economic indicators suggest growth.\”}”
+• Prompt3: As defined in the strategy definition section, this prompt emphasizes market sentiment and forecast
+deviations in its analysis, though the exact wording is not repeated here for brevity.
+Additionally, we evaluate two variations:
+• Prompt3 Again: The result of reapplying the exact same prompt as Prompt3, to assess the consistency of the
+LLM’s output across identical inputs.
+• Prompt3 Thres 35/65: The result of applying Prompt3 with adjusted thresholds of 0.35 and 0.65 for buy and
+sell signals, respectively, compared to the original thresholds of 0.25 and 0.75.
+All prompts include the same example output to ensure consistency in the expected format.
+Confidence Distribution Analysis:
+Figure 6: Distribution of Confidence Levels Outputted by LLM for All Economic Announcements During the Backtested Period
+The distribution of confidence scores for each prompt is presented in Figure 6. Prompt1 and Prompt2 exhibit
+a neutral stance, with mean confidence scores of approximately 0.53, whereas Prompt3 demonstrates a bullish bias,
+with a mean confidence of 0.64. This variation suggests that prompt wording significantly affects the LLM’s output.
+For instance, Prompt3’s focus on “impact” rather than “confidence” may inadvertently induce a bullish tendency,
+though the black-box nature of LLMs precludes definitive attribution. This observation underscores the interpretability
+challenges inherent in such models.
+Approximately 3,300 confidence scores were generated across all prompts; however, only about half triggered trades.
+This reduction stems from the strategy’s rules, which average confidence scores for simultaneous events and invalidate
+signals if active stop orders are present. These filtering mechanisms enhance the robustness of the trading signals by
+mitigating redundancy and conflicts.
+Performance Metrics and Equity Curves: Figure 7 illustrates the equity curves for the trading strategies
+derived from each prompt, while Table 5 summarizes the key performance metrics.
+From these results, we draw the following insights:
+• Prompt Variability: Different prompts yield distinct confidence distributions, affecting the filtering of trading
+signals. Prompt1 and Prompt2, with their neutral scores, produce strategies with lower Sharpe ratios (1.51 and
+1.66, respectively) and higher betas (0.03 and 0.05) compared to the backbone strategy (Sharpe: 1.67, Beta:
+0.03). This indicates that their filtering may not enhance risk-adjusted returns.
+• Threshold Adjustment: Adjusting thresholds to 0.35 and 0.65 for Prompt1 and Prompt2 aligns the trade
+count with the backbone strategy. However, their performance remains inferior, suggesting limited added value.
+For Prompt3 Thres 35/65, the stricter threshold reduces the trade count to 1,226, slightly lowering the Sharpe
+ratio to 1.71, yet it still outperforms the backbone strategy.
+10
+
+Figure 7: Backtest Equity Curves of Different Prompts
+Table 5: Performance Metrics for Different Prompts
+Metric
+Backbone
+Prompt3
+Prompt3 Again
+Prompt1
+Prompt2
+Prompt3 Thres 35/65
+Total Return (%)
+730.59
+982.93
+882.53
+460.38
+542.88
+452.66
+Yearly Return (%)
+33.53
+38.46
+36.61
+26.54
+28.94
+26.30
+Trade Amount
+1717
+1401
+1382
+1455
+1427
+1226
+Win Rate (%)
+49.74
+52.61
+52.60
+51.07
+51.23
+52.77
+Maximum Drawdown (%)
+-17.40
+-14.10
+-12.91
+-14.63
+-17.12
+-14.42
+Alpha
+0.51
+0.65
+0.62
+0.46
+0.49
+0.51
+Beta
+0.03
+0.03
+0.04
+0.03
+0.05
+0.03
+Sharpe Ratio
+1.67
+2.11
+2.07
+1.51
+1.66
+1.71
+Profit Factor
+1.27
+1.41
+1.38
+1.26
+1.28
+1.35
+• Stability Assessment: The comparison between Prompt3 and Prompt3 Again reveals minor output variations,
+yet the performance metrics remain closely aligned (e.g., Sharpe ratios of 2.11 vs. 2.07). This consistency suggests
+a degree of stability in the LLM’s behavior, enhancing the reliability of backtesting within this framework.
+• Interpretability Insights: The bullish bias in Prompt3, contrasted with the neutrality of Prompt1 and Prompt2,
+highlights how prompt design influences outcomes. However, pinpointing the exact cause—such as the term
+“impact”—remains challenging, reflecting the opaque decision-making process of LLMs.
+Overall, the choice of prompt significantly shapes the LLM’s confidence scores and the trading strategy’s performance.
+Prompt3 enhances metrics like Sharpe ratio and win rate, while Prompt1 and Prompt2 offer limited benefits over the
+backbone strategy. The stability observed between Prompt3 and Prompt3 Again supports the framework’s credibility,
+despite inherent variability in LLM outputs. Nevertheless, the interpretability of these models poses ongoing challenges,
+necessitating careful prompt design and rigorous evaluation in financial applications.
+6
+Conclusion
+This paper presents a robust framework for backtesting and live trading a volatility-based intraday strategy applied to
+the USTEC CFD, leveraging economic indicators and integrating a large language model (LLM) as a signal filter to
+systematically enhance trade profitability. Through extensive analysis conducted over the period from January 1, 2018,
+to May 1, 2025, encompassing more than 1,700 samples, the backbone strategy demonstrates exceptional performance,
+achieving a cumulative return of 730% and an annualized growth rate of 33% (net of trading fees). The incorporation
+of the LLM filter further augments profitability, contributing an additional 5% to the annual return while improving
+key performance metrics.
+The proposed strategy significantly outperforms the benchmark buy-and-hold approach for USTEC, maintaining
+a substantial alpha exceeding 0.5. This outperformance highlights the potential advantage of modeling volatility in
+the context of non-technical informational announcements and employing LLMs for advanced information analysis.
+By systematically filtering signals with LLMs, the framework showcases their ability to enhance traditional trading
+strategies, offering a pioneering method for leveraging unstructured data in financial markets.
+Additionally, this study addresses critical methodological considerations, including the risk of look-ahead bias and
+the stability of LLM outputs in historical backtesting. The findings indicate that prompt design plays a pivotal role
+in shaping the LLM’s analytical focus, leading to variations in filtering effects even when tasks and inputs remain
+constant. However, reapplying identical prompts in backtests produces largely consistent results, with only minor
+11
+
+deviations, suggesting that the LLM’s filtering capability is reliable and not entirely stochastic. This stability bolsters
+the framework’s credibility for both historical evaluation and prospective live trading applications.
+Looking ahead, future research could explore the intricacies of prompt engineering by quantitatively assessing
+how specific wording impacts LLM performance. Moreover, investigating multi-model approaches, such as RetrievalAugmented Generation (RAG), could refine the LLM’s decision-making precision for this trading context. Tailoring
+LLMs more closely to financial applications through such advancements may unlock further potential for AI-driven
+strategies in quantitative finance.
+In conclusion, this paper delivers a comprehensive framework that integrates LLMs into a volatility-based trading
+strategy, demonstrating both profitability and robustness. The results affirm the strategy’s efficacy and lay a foundation
+for continued exploration of artificial intelligence’s transformative role in financial decision-making.
+12
+
+References
+Analyzing Alpha. (2023). Look-ahead bias: What it is & how to avoid.
+https://analyzingalpha.com/look-ahead-bias
+Biancotti, C. (2023). ChatGPT as a Policy Advisor? Potential and Pitfalls of Large Language Models in Economic
+Policy Making. Questioni di Economia e Finanza (Occasional Papers), No. 814, Bank of Italy, Economic
+Research and International Relations Area. https://ideas.repec.org/p/bdi/opques/qef 814 23.html
+Cao, Y., Chen, X., Li, Z., & Zhang, S. (2023). Large language models in finance: A survey. Proceedings of the Fourth
+ACM International Conference on AI in Finance (ICAIF ’23), 1–9.
+https://doi.org/10.1145/3604237.3626869
+Chen, C., Liu, Z., Dong, J., & Wang, J. (2024). Knowledge Distillation of LLM for Automatic Scoring of Science
+Education Assessments. arXiv preprint arXiv:2401.07013. https://arxiv.org/abs/2401.07013
+Comisi´on Nacional del Mercado de Valores. (2018). ESMA agrees to prohibit binary options and restrict CFDs to
+protect retail investors [Press release].
+https://www.cnmv.es/portal/verDoc.axd?t=\{67901c46-9485-46ca-8a43-398e2795c609\}
+Finance Brokerage. (2024). What is USTEC, and what is in it for traders?
+https://www.financebrokerage.com/ustec/
+Harris, M. (2022). Look-ahead bias in backtests and how to detect it. Medium. https://mikeharrisny.medium.com/
+look-ahead-bias-in-backtests-and-how-to-detect-it-ad5e42d97879
+Kang, K., Lee, D., Baek, J., Shin, S., Park, J., & Lee, M. (2023). Deficiency of Large Language Models in Finance: An
+Empirical Examination of Hallucination. arXiv preprint arXiv:2311.15548.
+https://arxiv.org/abs/2311.15548
+Kim, A. G., Lopez-Lira, A., & Zhang, Y. (2024). Beyond human expertise: The rise of LLMs in financial forecasting.
+SSRN. https://doi.org/10.2139/ssrn.4831599
+Latif, S., Khan, M. Y., & Qureshi, M. A. (2024). Integrating macroeconomic and technical indicators into forecasting
+the stock market: A data-driven approach. Economies, 12(7), 181.
+https://doi.org/10.3390/economies12070181
+Li, J., Li, Y., Wang, Y., & Rao, Y. (2024). A Survey of Large Language Models in Finance: Applications and
+Challenges. arXiv preprint arXiv:2406.11903. https://arxiv.org/abs/2406.11903
+MQL5. (n.d.). Economic calendar: United States. https://www.mql5.com/en/economic-calendar/united-states
+MQL5 Community. (2024). Backtesting news trading based on economic calendar history with adjusted timings [Blog
+post]. https://www.mql5.com/en/blogs/post/759851
+Niu, Z., Demirer, R., Gupta, R., & Wohar, M. E. (2023). Geopolitical risks and stock market volatility: Evidence from
+emerging markets. SSRN. https://doi.org/10.2139/ssrn.4379966
+Rahimikia, E., & Drinkall, R. (2024). Domain-specific large language models for return prediction: Evidence from
+earnings call transcripts. SSRN. https://doi.org/10.2139/ssrn.4831599
+Ryu, R., & Yu, J. (2022). Scheduled macroeconomic news announcements and intraday market sentiment. The North
+American Journal of Economics and Finance, 62, 101739. https://doi.org/10.1016/j.najef.2022.101739
+Salisu, A. A., Cu˜nado, J., Gupta, R., & Yin, K. (2022). Stock markets and economic uncertainty: Evidence from the
+US and China. SSRN. https://doi.org/10.2139/ssrn.4050549
+Sarmah, A., Ho, W., & Kher, R. (2023). Reducing Hallucination: A Grounded Generation Approach for Accurate
+Document-Level Information Extraction from Financial Reports. arXiv preprint arXiv:2310.10760.
+https://arxiv.org/abs/2310.10760
+Zhang, T., Yang, W., Wei, Z., Liu, Z., Wang, J., Yang, J., & Chen, P. (2024). Multimodal Foundation Agent for
+Financial Trading: Tool-Augmented Intelligence. arXiv preprint arXiv:2402.18485.
+https://arxiv.org/abs/2402.18485
+13

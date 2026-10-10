@@ -1,0 +1,97 @@
+{
+  "doc_id": 229,
+  "titulo": "Mean Variance Optimal VWAP Trading",
+  "resumen_operativo": "Formula una estrategia VWAP óptima en sentido media-varianza asumiendo conocimiento del volumen final y proyectándola al espacio de estrategias accesibles (filtración F). La estrategia óptima se descompone en dos trades independientes: una estrategia de cobertura VWAP de mínima varianza y una estrategia direccional de precio. Cuanto mayor es el tamaño relativo β del trader VWAP, más óptimo es aumentar el trade direccional.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Volume Weighted Average Price (VWAP)",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Precio promedio ponderado por volumen de todos los trades admisibles en un período [0,T]. Benchmark estándar de calidad de ejecución para traders institucionales; definido como VT = Σ Xi·ΔVi / Σ ΔVi.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "execution quality"},
+        {"tipo": "REQUIERE", "objeto": "relative volume process"}
+      ],
+      "cita_textual": "VWAP is the Volume Weighted Average Price of traded stock over a defined period. It is a metric of trade execution quality used by institutional traders to minimize the execution cost of large trades."
+    },
+    {
+      "nombre": "Minimum Variance VWAP Hedging Strategy",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Componente de la estrategia VWAP óptima que minimiza la varianza del error de tracking respecto al VWAP del mercado, independiente de las propiedades direccionales del precio. Corresponde al límite λ → ∞.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Mean-Variance Optimal VWAP Strategy"},
+        {"tipo": "SE_OPONE_A", "objeto": "Directional Price Strategy"}
+      ],
+      "cita_textual": "The optimal VWAP trading strategy is the sum of two distinct trading strategies, a minimum variance VWAP hedging strategy and a 'directional' price strategy independent of the hedging strategy and market VWAP."
+    },
+    {
+      "nombre": "Directional Price Strategy",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Componente de la estrategia VWAP óptima que explota propiedades direccionales del precio usando la Variance Optimal Martingale Measure. Independiente de la cobertura VWAP, solo depende de la dinámica estocástica del precio X.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Mean-Variance Optimal VWAP Strategy"},
+        {"tipo": "USA", "objeto": "Variance Optimal Martingale Measure"}
+      ],
+      "cita_textual": "The 'directional' price strategy uses the properties of the Variance Optimal Martingale Measure to determine additional variance and expected return."
+    },
+    {
+      "nombre": "Variance Optimal Martingale Measure",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Medida martingala que minimiza la varianza del error de hedging en mercados incompletos, usada para determinar la varianza adicional y el retorno esperado de la estrategia direccional de precio.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Directional Price Strategy"}
+      ],
+      "cita_textual": "The 'directional' price strategy uses the properties of the Variance Optimal Martingale Measure."
+    },
+    {
+      "nombre": "Relative Volume Process",
+      "tipo": "dato",
+      "definicion_en_contexto": "Proceso Yt = Vt/VT que representa el volumen acumulado normalizado por el volumen final total. Adaptado a la filtración G = F ∨ σ(VT), que incluye conocimiento del volumen final.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "Volume Weighted Average Price (VWAP)"},
+        {"tipo": "USA", "objeto": "Itô integral representation"}
+      ],
+      "cita_textual": "The relative volume process Y is defined as market cumulative volume Vt divided by market total final volume Yt = Vt/VT."
+    },
+    {
+      "nombre": "Market Impact Cost",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Movimiento adverso de precio debido a la ejecución de un trade grande, componente principal del execution cost. La fragmentación de órdenes grandes reduce el impacto al distribuir la demanda de liquidez en el tiempo.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "VWAP trading"},
+        {"tipo": "CAUSA", "objeto": "execution cost"}
+      ],
+      "cita_textual": "Market impact cost results from the liquidity demand of large trades and information signalled to other market participants by the presence of a large trade in the market."
+    },
+    {
+      "nombre": "Trade Size Parameter β",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Proporción del volumen total de mercado VT que un trader VWAP intenta negociar. A mayor β, menor aversión efectiva al riesgo (1−β)λ, lo que hace óptimo aumentar el tamaño del trade direccional.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "larger directional trade"},
+        {"tipo": "REQUIERE", "objeto": "Mean-Variance Optimal VWAP Strategy"}
+      ],
+      "cita_textual": "It is optimal for large 0 < β < 1 mean-variance VWAP traders to increase the size of the price 'directional' trade for additional return."
+    },
+    {
+      "nombre": "Continuous Semimartingale Price",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Modelo del precio X como semimartingala continua cuadrado-integrable X ∈ S²(P, F) que permite representar VWAP como integral de Itô con integrando ξV,G = 1−Yt−.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "Itô integral VWAP representation"}
+      ],
+      "cita_textual": "The price process X is assumed to be a F continuous square integrable semimartingale X ∈ S²(P, F)."
+    },
+    {
+      "nombre": "Implementation Shortfall",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Diferencia entre el precio de la acción al momento de la decisión de trading y el precio efectivamente ejecutado. El componente principal es el market impact cost.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "execution cost"}
+      ],
+      "cita_textual": "Execution cost (also known as 'implementation shortfall') is the difference in stock price between the time the decision to trade is taken and the eventual traded price."
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "VWAP es un benchmark intradiario por definición; la estrategia se formula como proceso continuo Ft-adaptado actualizado dinámicamente durante la sesión."}
+}

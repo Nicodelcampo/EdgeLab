@@ -1,0 +1,156 @@
+{
+  "doc_id": 276,
+  "titulo": "Path Signature Features vs. Raw Inputs for Intraday Quantitative Trading Model with Deep Learning",
+  "resumen_operativo": "Compara path signature transforms versus features crudos para prediccion intradia de senales de trading (short/neutral/long) usando datos NASDAQ cada 5 minutos (2019-2024). Signatures de orden 2 logran Sharpe 2.82, retorno 22.14% y max DD -7.75%. Ordenes superiores introducen ruido: orden 4 produce retorno -4.51% y Sharpe -0.59. Raw features solo alcanzan Sharpe 0.46. Las signatures de bajo orden capturan eficientemente la geometria temporal de precios y volumen.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Path Signature Transform",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Transformacion de rough path theory que mapea trayectorias multivariadas en secuencias de integrales iteradas preservando orden temporal e interacciones de alto orden.",
+      "relaciones": [
+        {
+          "tipo": "MEJORA_A",
+          "objeto": "Raw Features"
+        },
+        {
+          "tipo": "REQUIERE",
+          "objeto": "Rough Path Theory"
+        }
+      ],
+      "cita_textual": "Signature transforms map a multivariate time series into a structured feature space where higher-order interactions and time-order dependencies are preserved"
+    },
+    {
+      "nombre": "Signature Truncation Order",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Orden k al que se trunca la signature; d=6 features produce dim(Sig2)=43, dim(Sig3)=259, dim(Sig4)=1555. Orden 2 optimo.",
+      "relaciones": [
+        {
+          "tipo": "PARTE_DE",
+          "objeto": "Path Signature Transform"
+        }
+      ],
+      "cita_textual": "lower-order signatures, particularly second-order, appear to preserve essential discriminative structure"
+    },
+    {
+      "nombre": "Chen Identity",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Propiedad multiplicativa: S(X)a,b = S(X)a,c x S(X)c,b, permitiendo composicion eficiente de signatures sobre intervalos concatenados.",
+      "relaciones": [
+        {
+          "tipo": "PARTE_DE",
+          "objeto": "Path Signature Transform"
+        }
+      ],
+      "cita_textual": "Chens identity states that S(X)a,b = S(X)a,c x S(X)c,b"
+    },
+    {
+      "nombre": "Intraday Feature Engineering",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Seis features sobre ventanas de 36 barras de 5min: MA Deviation, Normalized Time of Day, Price Range, Volume Change, Log Close, Volatility Clustering.",
+      "relaciones": [
+        {
+          "tipo": "USA",
+          "objeto": "Path Signature Transform"
+        }
+      ],
+      "cita_textual": "6 features: Moving Average Deviation, Normalized Time of Day, Price Range, Volume Change, Log Close Price, Volatility Clustering"
+    },
+    {
+      "nombre": "t-SNE Feature Visualization",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Visualizacion que revela que ordenes superiores de signature comprimen el espacio de features perdiendo separabilidad entre clases.",
+      "relaciones": [
+        {
+          "tipo": "MIDE",
+          "objeto": "Feature Quality"
+        }
+      ],
+      "cita_textual": "higher-order signature features tend to compress the feature space, diminishing the separability of actionable trading signals"
+    },
+    {
+      "nombre": "Reward-to-Risk Trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Ratio 1:1.4 para stop-loss/take-profit; posicion size = 0.5% del equity; comision 0.01% por entrada y salida.",
+      "relaciones": [
+        {
+          "tipo": "PARTE_DE",
+          "objeto": "Trading Strategy Design"
+        }
+      ],
+      "cita_textual": "a reward-to-risk ratio of 1:1.4, with stop-loss and take-profit levels"
+    },
+    {
+      "nombre": "Feedforward Neural Network Classifier",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Red de dos capas con ReLU, layer normalization y softmax que clasifica direccion del mercado en Short/Neutral/Long.",
+      "relaciones": [
+        {
+          "tipo": "USA",
+          "objeto": "Path Signature Transform"
+        }
+      ],
+      "cita_textual": "a two-layer feedforward neural network with ReLU activation, layer normalization, and softmax output"
+    },
+    {
+      "nombre": "Universality Theorem (Rough Paths)",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Funcionales lineales sobre signatures aproximan cualquier funcional continuo sobre trayectorias; garantiza representacion lossless.",
+      "relaciones": [
+        {
+          "tipo": "PARTE_DE",
+          "objeto": "Path Signature Transform"
+        }
+      ],
+      "cita_textual": "linear functionals on signatures approximate arbitrary continuous functionals on paths"
+    },
+    {
+      "nombre": "ROC-AUC Analysis",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Curvas ROC muestran que raw features (AUC 0.72-0.81) superan a signatures (AUC 0.58-0.68) en discriminacion, pero no en trading real.",
+      "relaciones": [
+        {
+          "tipo": "CONTRADICE_A",
+          "objeto": "Path Signature Transform"
+        }
+      ],
+      "cita_textual": "Raw features outperforms all engineered signature features with AUCs of 0.81, 0.78, and 0.72"
+    },
+    {
+      "nombre": "Cooldown Period",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Periodo de espera de una barra (5 min) tras cada salida para evitar overtrading en entornos volatiles.",
+      "relaciones": [
+        {
+          "tipo": "MITIGA",
+          "objeto": "Overtrading"
+        }
+      ],
+      "cita_textual": "a cooldown period of one bar (5 minutes) is enforced after each trade exit"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Signature orden 2: retorno total 22.14%, Sharpe 2.82, max DD -7.75%. Raw features: retorno 1.92%, Sharpe 0.46.",
+      "mercado": "NASDAQ-100 5-min OHLCV",
+      "periodo": "Ago 2019-Ago 2024 (train), Abr-Jul 2025 (OOS)",
+      "magnitud": "Order 2: 22.14% return, Sharpe 2.82; Raw: 1.92%, Sharpe 0.46",
+      "condiciones": "36 bar window (3h), 0.01% commission, 1:1.4 reward-risk",
+      "robustez": "alta",
+      "cita_textual": "second-order signature features provided the strongest results, with a final equity of 1.2214 (22.14% return), an annualized Sharpe ratio of 2.82"
+    },
+    {
+      "afirmacion": "Signature orden 4 produce retorno negativo (-4.51%) y Sharpe negativo (-0.59).",
+      "mercado": "NASDAQ-100",
+      "periodo": "OOS Abr-Jul 2025",
+      "magnitud": "Return -4.51%, Sharpe -0.59, max DD -10.81%",
+      "condiciones": "Order 4 signature con 1555 features",
+      "robustez": "alta",
+      "cita_textual": "the fourth-order model produced a total return of -4.51% and a negative Sharpe ratio of -0.59"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "alta",
+    "nota": "Disenado explicitamente para trading intradia con datos de 5 minutos; directamente aplicable a otros activos de alta frecuencia."
+  }
+}

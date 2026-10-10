@@ -1,0 +1,4584 @@
+Limit Order Book Shape and Return Distribution*
+Tolga Cenesizoglu†
+HEC Montreal
+Gunnar Grass
+HEC Montreal
+December 1, 2025
+Abstract
+We develop a reduced-form microstructure model showing that the distribution of market
+orders and the shape of the limit order book (LOB) jointly determine return distributions. LOB
+imbalance, defined as the ratio of the slopes of the ask and bid sides, drives return mean and
+skewness. LOB convexity, the ratio of the slopes of higher and lower levels, shapes variance
+and kurtosis, linking liquidity and tail risk. Using ultra-high-frequency LOB data for NYSE
+stocks, we provide strong empirical support. Exploiting the Reg SHO pilot program as an
+exogenous shock, we establish the causal effect of LOB shape on return distribution.
+Key words: Limit Order Book, Imbalance, Convexity, Skewness, Kurtosis, Quantiles, Market
+Order Distribution, RegSHO
+JEL Classification: G12, G18
+*This paper was previously circulated under the title “On the (Market Microstructure Origins) of the Return Distribution”. We would like to thank Kerry Back, Micheal Brennan, Vincent Gr´egoire, Wallmeier Martin, Yuhang Xing,
+Morad Zekhnini and seminar participants at the University of Manchester, Bogazici University, Ozyegin University,
+AFFI Conference 2025, HEC Montr´eal-McGill Finance Workshop 2025.
+†Corresponding author. email: tolga.cenesizoglu@hec.ca
+
+1
+Introduction
+In order-driven markets, non-marketable limit orders are placed in a queue prioritized by price and
+time, forming the limit order book (LOB). Transaction prices are established when market orders
+(or marketable limit orders) arrive and execute against the existing limit orders in the book. In a
+sense, the LOB acts as a mirror that reflects incoming market orders. Consequently, the distribution
+of market orders and the shape of the LOB jointly determine the distribution of transaction prices
+and thus returns.
+Figure 1 provides an intuitive framework for visualizing the relationship between the distribution of market orders, the shape of the LOB, and price formation. In this simplified framework, we
+assume that the shape of both the ask and bid sides of the LOB over a given time interval—say, a
+trading day—can be represented by a continuous price impact function centered around a midquote
+price (set at $15 in this example), as depicted in the top-right panel labeled “Price Impact Function
+P(Q).” Positive values in the market order distribution correspond to market buy orders executed
+against the ask side of the LOB, while negative values correspond to market sell orders executed
+against the bid side. Furthermore, we assume that, over this time interval, market orders arrive according to a normal distribution, shown in the lower-right panel titled “Quantity PDF” (probability
+density function). This implies that there is no market order imbalance—defined as the difference
+in volume (in number of shares) between buy and sell orders—yielding a market order distribution
+with a mean of zero. As market orders arrive and execute (or, figuratively speaking, are reflected)
+against the LOB, transaction prices are observed, as represented in the top-left panel, “Price PDF.”
+[Figure 1 about here.]
+Panel (a) of Figure 1 illustrates the baseline scenario with a balanced, linear LOB, where the
+price impact functions for both bid and ask sides are linear and have identical slopes. In this case,
+the return distribution is a scale transformation of the market order distribution, where the scaling
+factor is the reciprocal of the LOB slope. Thus, if the market orders follow a normal distribution
+with zero mean and some variance, the returns will also exhibit a normal distribution with zero
+mean, and the return variance will equal the market order variance multiplied by the slope of the
+LOB. This is the well-known fact that higher transaction costs or greater illiquidity lead to greater
+return variance, given that the LOB slope can be considered as a measure of transaction costs, or
+equivalently, market illiquidity.
+1
+
+Panel (b) of Figure 1 illustrates the impact of an imbalanced LOB, where the ask side’s price
+impact function has a steeper slope than the bid side, though both remain linear. Here, the LOB
+imbalance, defined as the ratio of the ask and bid side slopes, can be considered as an indicator of
+buying or selling pressure from limit orders. When the ask side slope exceeds that of the bid side,
+as in this example, there is relatively more liquidity on the bid side, creating a buying pressure
+from limit orders. Consequently, a positive LOB imbalance produces a positively skewed return
+distribution in the absence of market order (MO) imbalance, suggesting a strong link between
+return skewness and LOB imbalance.
+Panel (c) of Figure 1 demonstrates the effects of a balanced but convex LOB, where the price
+impact functions for both ask and bid sides have equal overall slopes, indicating no LOB imbalance, but exhibit convexity—meaning that slopes farther from the midquote are steeper than those
+closer to it. LOB convexity, defined as the ratio of slopes at higher versus lower levels, affects
+the relative price impact of large versus small market orders. A convex (or concave) LOB occurs
+when the slope farther from the midquote, i.e., at higher levels, is steeper (or less steep) than the
+slope near the midquote, i.e., at lower levels. In a convex LOB, as seen in Panel (c), large market
+orders exert a disproportionately stronger price impact due to reduced liquidity at levels away from
+the midquote. Consequently, this shape leads to a return distribution with fatter tails and higher
+kurtosis than a normal distribution, implying a direct relationship between LOB convexity and the
+tails and kurtosis of the return distribution.
+Building on our intuition from the simple framework, we develop a reduced-form model of
+price formation in an order-driven market to analyze how the shape of the LOB influences the
+return distribution. Under assumptions similar to those in Figure 1, returns can be expressed as
+the sum of truncated normal variables. This allows us to derive closed-form expressions for the
+first four central moments and to compute return quantiles via the Cornish–Fisher expansion or
+simulation. Thus, the model not only confirms our initial intuition but also generates a richer set
+of testable predictions.
+The key implications of our model for the effect of LOB imbalance on the return distribution
+are as follows: the return mean and skewness of returns are monotonically increasing functions
+of LOB imbalance, regardless of MO imbalance or LOB convexity, underscoring the role of LOB
+imbalance in shaping these moments. By contrast, the effects of LOB imbalance on variance and
+kurtosis depend on the sign of MO imbalance: with positive MO imbalance, variance rises and
+kurtosis falls with imbalance, while the opposite holds when MO imbalance is negative. Further2
+
+more, all quantiles of the return distribution (with the exception of the median) are higher than the
+corresponding quantiles of a normal distribution when there is positive LOB imbalance regardless
+of the LOB convexity. This implies that, with zero MO imbalance, a higher LOB imbalance shifts
+both the left (below the median) and right (above the median) parts of the return distribution to the
+right, while leaving the median fixed at zero. This suggests that the effects of the LOB imbalance
+on the return mean and skewness dominate its effects on return variance and kurtosis.
+Turning to LOB convexity, we find that its impact on the return variance and kurtosis is straightforward when considering symmetric bid- and ask-side convexities. Specifically, return variance
+decreases, while kurtosis increases with LOB convexity. The combined effect of these findings on
+the return distribution is that all quantiles below (above) the median increase (decrease) as LOB
+convexity rises, irrespective of LOB imbalance. In line with the framework discussed earlier, our
+reduced-form price formation model further suggests that higher LOB convexity leads to fatter
+tails and higher kurtosis compared to a normal distribution, after accounting for its effect on return
+variance. Moreover, when considering bid- and ask-side convexities separately, our model implies
+that ask-side convexity primarily affects the right side of the return distribution, while bid-side
+convexity influences the left side.
+We test the implications of our reduced-form price formation model using two primary data
+sources: the Trade and Quote (TAQ) database for return and market order distributions, and the
+Thomson Reuters Tick History (TRTH) database for LOB shape parameters. To mitigate intraday
+noise in higher moments, we aggregate all variables at the daily frequency. Specifically, we compute the first four central moments of the return distribution from five-minute midquote returns
+within each trading day, and the first four central moments of the market order distribution from
+signed trade volumes. For LOB shape parameters, we compute them at the snapshot level and then
+take their time-weighted averages to construct daily proxies.
+We estimate separate daily fixed-effects panel regressions of the first four central moments of
+the return distribution on lagged values of LOB shape parameters. In these regressions, we control
+for the contemporaneous effects of the first four central moments of the market order distribution,
+as well as for the three central moments of the return distribution other than the one being analyzed.
+We aggregate the variables at a daily level and assume that the return distribution on day t is
+determined by the market order distribution on day t executed against the LOB on the previous
+trading day t −1. This approach helps to mitigate endogeneity concerns in interpreting the effect
+of LOB shape parameters on the shape of the return distribution.
+3
+
+Our results provide strong empirical support for the main predictions of our model. Specifically, we observe that return skewness increases with LOB imbalance, independent of MO imbalance and LOB convexity, consistent with our theoretical expectations. Although the economic
+magnitude of this effect is somewhat smaller than predicted by our model, LOB imbalance ranks
+as the second most economically significant factor among the MO and LOB variables considered.
+Similarly, we find that variance decreases and kurtosis increases with LOB convexity, aligning
+with our theoretical predictions. Notably, LOB convexity emerges as the second most economically significant variable influencing return variance and kurtosis.
+To establish a causal link between LOB shape and the return distribution, we examine the
+exogenous shock to LOB shape caused by Regulation SHO (Reg SHO), a 2005 rule governing
+short selling and thus liquidity. The regulatory implications on the market were tested for a random
+subsample in a pilot program, making it ideal for our analysis. Our approach closely follows
+Diether et al. (2009), who examined Reg SHO’s effect on market quality. Specifically, we assess
+the causal impact of LOB parameters on return moments by using the exogenous changes to LOB
+shape induced by Reg SHO.
+Our results indicate that changes in LOB convexity following Reg SHO are the primary driver
+of changes in return variance and kurtosis. Specifically, LOB convexity for pilot stocks decreases
+significantly more than for control stocks after the uptick rule’s suspension. This relative decrease
+in LOB convexity accounts for the observed increase in return variance and decrease in return
+kurtosis. We further show that other factors, such as shifts in the market order distribution, cannot
+explain these changes in the return distribution.
+Our paper contributes to both the theoretical and empirical literature on LOBs in many dimensions. Theoretically, our reduced-form price formation model extends Kyle’s framework (Kyle
+(1985)) to allow not only for distinct price impact functions (lambdas) on the buy and sell sides but
+also different price impacts of large versus small market orders. Both Rosu (2009) and Goettler,
+Parlour, and Rajan (2009) develop theoretical models of the LOB where the price impact functions can be nonlinear. However, these and other theoretical papers, such as Foucault, Kadan, and
+Kandel (2005) and Chakrabarty, Li, Nguyen, and Van Ness (2007), are mostly interested in the theoretical relation between the LOB and future price movements, i.e., the first moment of returns. To
+the best of our knowledge, we are among the first to consider how the shape of the LOB determines
+the whole distribution of returns and not just its first moment.
+Empirically, there is a growing body of literature analyzing the information content of LOB
+4
+
+for future price movements. Biais, Hillion, and Spatt (1995) are among the first to explore the
+dynamics of limit order markets and observe that price adjustments tend to follow the direction
+of prior limit order flows, implying that the LOB contains valuable information regarding future
+price trends. Among others, Hasbrouck (1991), Hasbrouck (1992), Keim and Madhavan (1996),
+and Knez and Ready (1996), Kaniel and Liu (2006), Wuyts (2008), Kalay and Wohl (2009), Cao,
+Hansch, and Wang (2009), Beltran-Lopez, Giot, and Grammig (2009), Kozhan and Salmon (2012),
+R¨osch and Kaserer (2014), Cenesizoglu, Dionne, and Zhou (2022), Cenesizoglu and Grass (2018)
+examine LOB data from markets around the world, such as US, Spain, Israel, Australia, and Germany, and show that LOBs are generally nonlinear and contain information about future price
+movements. Once again, most of these papers focus on the empirical relation between the LOB
+and future price movements, i.e. the first moment of returns. The closest paper to ours is Brennan,
+Chordia, Subrahmanyam, and Tong (2012) who conduct an empirical analysis of buy- and sellside liquidity pricing using monthly transaction data. Our high-frequency data provides a unique
+opportunity to uncover new empirical relationships between LOB shape and return distribution,
+contributing significantly to the empirical literature on the effect of LOB on returns.
+The rest of the paper is organized as follows: Section 2 presents our reduced-form price formation model. Section 3 discusses the implications of our reduced-form price formation model for
+the effects of the shapes of LOB and market order distribution on the return distribution. Section
+4 presents the data and the variable definitions. Section 5 presents the results from our regression
+analysis. Section 6 attempts to establish a causal effect of LOB shape on the return distribution
+based differences-in-differences analysis using RegSHO as an exogenous shock to LOB shape.
+Finally, Section 7 concludes.
+2
+Reduced-Form Model of Price Formation
+In this section, we first develop a reduced-form model of how transaction prices form in an orderdriven market when market orders are executed against the existing LOB. We then derive the
+implications of this reduced-form price formation model for how the shapes of the market order
+distribution and the LOB jointly influence the return distribution. For the rest of the paper, lowercase letters indicate variables in log.
+We assume that at any instant t, the market orders denoted by Q arrive with a normal distribution with mean µ and standard deviation σ, i.e., q ∼N(µ, σ2). Positive (negative) values
+of Q correspond to market buy (sell) orders and are matched and executed against the prevailing
+5
+
+limit orders available in the ask (bid) side of the LOB. We refer to the mean of the market order
+distribution as market order (MO) imbalance.
+We assume that ask and bid sides of the LOB can be described by piecewise linear price impact
+functions. To be more precise, we assume that the log prices in the ask and bid sides of the LOB
+can be written as piecewise linear functions of their respective cumulative depths, DA and DB:
+pA(DA)
+=
+m + (a −b)/2 + SA,lowDA1{0<DA<KA} + (SA,lowKA + SA,high(DA −KA))1{DA≥KA}
+pB(DB)
+=
+m −(a −b)/2 −SB,lowDB1{0<DB<KB} −(SB,lowKB + SB,high(DB −KB))1{DB≥KB}
+where a and b are the logarithm of the best ask and bid prices, respectively, and m is the midquote
+price defined as (a + b)/2, and DA ≥KA and DB ≥KB. We assume that there is total cumulative depth of ¯DA available in the ask side of the LOB and use KA to denote the threshold for
+cumulative depth distinguishing between low and high levels. Any cumulative depth less than KA
+is considered as corresponding to the lower levels of the ask side. SA,low and SA,high are the slopes
+of the lower and higher levels of the ask side, respectively. The slopes, total cumulative depth, and
+threshold for the bid side are defined similarly.
+We define the overall slopes of the ask and bid sides, SA and SB, as the quantity-weighted
+averages of the slopes of their corresponding low and high levels as follows:
+SA = KA
+¯DA
+SA,low +
+¯DA −KA
+¯DA
+SA,high
+(1)
+SB = KB
+¯DB
+SB,low +
+¯DB −KB
+¯DB
+SB,high
+(2)
+Finally, we define the overall slope of the LOB, Savg, as the simple arithmetic average of the overall
+slopes of the ask and bid sides, i.e. Savg = (SA + SB)/2.1
+There are several intuitive ways to think about these slope variables. We discuss them for
+the overall slope of the ask side, but they are very similar for the other slope variables. First,
+1We can also define the overall LOB slope, Savg, as a weighted average of the overall slopes of the ask and bid
+sides as Savg = ¯DA/( ¯DA + ¯DB)SA + ¯DB/( ¯DA + ¯DB)SB). As we will discuss below, the overall LOB slope acts
+as a scaling factor for the mean and variance of the return distribution but does not affect its skewness and kurtosis.
+Hence, using this alternative definition of the overall LOB slope will slightly change the mean and variance implied
+by our reduced-form model of price formation but will not alter skewness or kurtosis.
+6
+
+mathematically, the overall slope of the ask side measures how the ask prices increase as a function
+of the quantity demanded, i.e., the size of the market buy order to be executed. Thus, when the ask
+side is steeper, the ask prices increase faster as a function of the quantity demanded compared to
+a less steep ask side. Second, the slope can also be considered as a measure of transaction costs
+in the LOB. Specifically, a trader who wants to buy a certain number of shares will have to pay a
+higher (quantity-weighted) average price when the ask side is steeper. Third, the slope can also be
+considered as a measure of liquidity, with a steeper slope indicating that there is less liquidity in
+the LOB. Finally, the overall slope of the ask side captures selling pressure from limit orders. If
+the slope of the ask side is lower, there is more liquidity on the ask side, indicating a higher interest
+of investors to sell. In the rest of the paper, we use these different ways to think about the LOB
+slopes interchangeably, i.e., a steeper slope indicates higher transaction costs and less liquidity in
+the LOB.
+Suppose now that a market order Q arrives at time t and is executed against the corresponding
+side of the LOB. Assuming that the spread (a −b) remains unchanged after the market order is
+executed, the new midquote price, ˜m, is given by:
+˜m =
+
+
+
+
+
+m + a−b
+2
++ SA,lowQ 1{0<Q<kA} + ((SA,low −SA,high)KA + SA,highQ)1{Q≥KA},
+if Q > 0;
+m −a−b
+2
+−SB,low|Q| 1{0<|Q|<kB} −((SB,low −SB,high)KB + SB,high|Q|)1{|Q|≥KB},
+if Q < 0.
+(3)
+Equation 3 follows from our assumption that positive (negative) values of Q correspond to market
+buy (sell) orders and are matched and executed against the limit orders on the ask (bid) side of the
+LOB. More specifically, when a market buy (sell) order arrives, it is matched against the ask (bid)
+side and the price impact function of the ask (bid) side determines the new midquote price. For
+market sell orders, we need to use their absolute values since the price impact function of the bid
+side is defined over cumulative depth, which is positive by definition. The midquote return is then
+given by:
+r ≡˜m −m
+=
+SA,lowQ1{0<Q<KA} + ((SA,low −SA,high)KA + SA,highQ)1{Q≥KA}
++
+SB,lowQ1{−KB<Q<0} + ((SB,high −SB,low)KB + SB,highQ)1{Q≤−KB}
+(4)
+It is easy to see from Equation 4 the intuition behind the relation between the shape of the LOB
+7
+
+and returns. First, it is the ask side of the book that determines the return when a market buy order
+arrives (Q > 0). If the size of the market buy order is smaller than the threshold KA, then the
+return is determined only by the slope of the lower levels. On the other hand, if the size of the
+market buy order is larger than the threshold KA, then the return is determined by the slopes of
+both the higher and lower levels. Furthermore, the steeper the overall slope, the higher the price
+impact and thus the return in absolute value. A similar intuition holds for the bid side and market
+sell orders, i.e., negative values of Q.
+Several remarks are in order before proceeding to the implications of this model for the relation
+between the shape of the LOB and the return distribution. First, we make the implicit assumption
+that no other order (limit or market) arrives when computing returns based on a given market order
+and shape of the LOB. This is realistic at ultra-high frequencies but less so over longer periods of
+time. Second, our approach is intentionally reduced-form in the sense that we do not consider the
+underlying economic dynamics that give rise to a specific market order and/or shape of the LOB. In
+reality, they are jointly determined by the investors trading in consideration of past trading activity,
+newly arrived information, or changes in portfolio preferences, among others. In our model, we
+abstract from these complications in favor of a simple analysis of the relation between the shape
+of the LOB and the return distribution.
+Before deriving the moments of the return distribution based on this reduced-form model of
+price formation, we define several variables which summarize the shape of the LOB. We start with
+the LOB imbalance, denoted as I and defined as the ratio of the overall ask and bid side slopes,
+i.e., I = SA/SB. In order to have a symmetric measure centered around zero, we consider the log
+transformation of LOB imbalance (i = log(I)) when analyzing its relation with the return distribution in Section 3. A negatively infinite LOB imbalance indicates that the ask side is infinitely
+more liquid than the bid side and the price does not change following a market buy order of any
+size. Similarly, a positively infinite LOB imbalance indicates that the bid side is infinitely more
+liquid than the ask side and the price does not change following a market sell order of any size.
+Between these two extremes, a positive LOB imbalance indicates that the slope of the ask side is
+higher than that of the bid side and thus a relative buying pressure from limit orders, given that
+there is relatively more liquidity on the bid side. A LOB imbalance of zero indicates a balanced
+LOB, or equivalently, no buying or selling pressure from the limit orders.
+We define ask (bid) side convexity, CA (CB), as the ratio of the slopes of its higher levels to
+8
+
+those of its lower levels as follows:
+CA = SA,high/SA,low
+(5)
+CB = SB,high/SB,low
+(6)
+Once again, in order to have a symmetric measure centered around zero, we consider the log
+transformation of LOB convexity (cA = log(CA) and cB = log(CB)) when analyzing its relation
+with the return distribution in Section 3. A positive LOB convexity indicates there is less liquidity
+in the higher levels of the ask side and a large (greater than KA to be more precise) market buy order
+would have a disproportionately larger market impact than a small (smaller than KA to be more
+precise) market buy order. A negative LOB convexity, or a concave LOB, implies the opposite.
+We refer to a side with a LOB convexity of zero as linear.
+The following proposition derives the jth non-central moment of the return distribution, E[rj]:
+Proposition 1. The jth non-central moment of the return distribution, E[rj], can be written as
+follows:
+E[rj]
+=
+(2Savgσ)j
+
+I
+I + 1
+˜¯DA
+˜KA + ( ˜¯DA −˜KA)CA
+j
+Γj(˜µ, 1, 0, ˜KA)(Φ( ˜KA, ˜µ, 1) −Φ(0, ˜µ, 1))
++
+Γj(CA˜µ + (1 −CA) ˜KA, CA, ˜KA, +∞)(1 −Φ( ˜KA, CA˜µ + (1 −CA) ˜KA, CA))
+
++
+
+1
+I + 1
+˜¯DB
+˜KB + ( ˜¯DB −˜KB)CB
+j
+Γj(˜µ, 1, −˜KB, 0)(Φ(0, ˜µ, 1) −Φ(−˜KB, ˜µ, 1))
++
+Γj(CB ˜µ + (CB −1) ˜KB, CB, −∞, −˜KB)Φ(−˜KB, CB ˜µ + (CB −1) ˜KB, CB)
+
+(7)
+where ˜µ, ˜KA, ˜KB, ˜¯DA and ˜¯DB are the corresponding variables normalized by the market order
+standard deviation σ, i.e., ˜µ = µ/σ, ˜KA = KA/σ, ˜KB = KB/σ, ˜¯DA = QA/σ and ˜¯DB = QB/σ.
+Γj(ν, ω, l, u) denotes the jth non-central moment of a truncated normal with a mean ν and stan9
+
+dard deviation ω and lower and upper truncation points of l and u, respectively. Γj(ν, ω, l, u) can
+be computed numerically based on the recursive formula described in the proof of this proposition in the appendix. Φ(x, ν, ω) denotes the cumulative distribution function (CDF) of a normal
+distribution with mean ν and ω evaluated at x.
+We use Mj for j = 1, 2, 3, 4 to denote the first four central moments of the return distribution, i.e., the mean, variance, skewness, and kurtosis, respectively, with the following standard
+definitions:
+M1 = E[r]
+M2 = E[r2] −M 2
+1
+M3 = E[r3] −M1M2 −M 3
+1
+M 3/2
+2
+M4 = E[r4] −4M1E[r3] + 6M 2
+1E[r2] −3M 4
+1
+M 2
+2
+(8)
+Proposition 1 shows that the non-central moments of the return distribution can be expressed
+analytically as functions of the market order distribution parameters (µ, σ) and the LOB shape
+parameters (Savg, KA, KB, ¯DA, ¯DB, I, CA, CB). This, in turn, implies that the central moments are
+also analytical functions of these variables. It further follows from Proposition 1 that the average
+LOB slope Savg acts as a pure scaling factor for the non-central moments: if Savg doubles, the
+first four non-central moments increase by factors of 2, 4, 8, and 16, respectively. Consequently,
+skewness and kurtosis are invariant to changes in Savg because the numerator and denominator of
+S and K scale by the same factors (8 and 16, respectively).
+Similarly, the standard deviation σ of the market order distribution serves both as a scale factor and as the reference against which quantity variables are normalized. Hence, the non-central
+moments depend on quantities (e.g., µ, ¯DA, ¯DB, KA, KB) relative to σ, not on their absolute
+magnitudes.
+3
+Implications for the Return Distribution
+In this section, we examine how our reduced-form price formation model links the market order
+distribution and the structure of the LOB to the return distribution. We begin with the effects of the
+market order distribution. We then analyze two primary LOB shape variables—LOB imbalance
+10
+
+and convexity—and show that they are the main determinants of return dynamics. Finally, we
+assess the effects of secondary LOB shape variables, such as total available quantity on each side of
+the book, their ratio, and the average LOB slope, which, as we show, have limited direct influence
+on the return distribution.
+3.1
+Effects of Market Order Distribution on the Return Distribution
+The following lemma characterizes the return distribution for the special case of a balanced and
+linear LOB and provides the implications of our reduced-form price formation model for the unconditional effects of the market-order distribution on the return distribution.
+Lemma 1. Assume that the LOB is balanced and linear, i.e., SA,low = SA,high = SB,low = SB,high =
+S and, thus, I = 1 and CA = CB = 1. The return can be expressed as r = SQ and is normally
+distributed with a mean of Sµ and a variance of (Sσ)2 and, thus, has zero skewness and (excess)
+kurtosis.
+In Lemma 1, our assumption that the market orders are normally distributed implies that returns
+are normally distributed when the LOB is balanced and linear. One can easily generalize the result
+in Lemma 1 under a more general assumption for the distribution of market orders. Specifically, if
+market orders have a probability density function f, i.e. Q ∼f(x), returns will have a distribution
+function given by 1/Sf(x/S). In other words, the return distribution reflects (up to a multiplicative
+factor which is the reciprocal of the LOB slope) the market order distribution when the LOB is
+balanced and linear. This has important implications for our empirical analysis as it shows the
+importance of controlling for the distribution of market orders when analyzing the effect of LOB
+shape parameters on the return distribution.
+Not surprisingly, Lemma 1 yields several additional implications consistent with established
+market microstructure models, such as Kyle (1985). First, expected returns are positive (negative)
+when there is expected buying (selling) pressure from market orders, i.e., when the MO imbalance
+is positive (µ > 0). This follows naturally from the fact that prices tend to rise when market buy
+orders outnumber market sell orders. Second, the slope of the LOB amplifies the effect of MO
+imbalance on expected returns: a steeper slope leads to larger positive (negative) expected returns
+when MO imbalance is positive (negative). Intuitively, a steeper slope reflects lower liquidity,
+11
+
+which increases the price impact of a given market order. Third, return volatility increases when
+the volatility of market orders rises, since a more dispersed MO distribution implies a greater
+likelihood of large trades, which in turn generate larger price changes. Finally, return volatility
+also rises with the LOB slope, again because lower liquidity magnifies the price impact of trades,
+thereby amplifying price fluctuations.
+3.2
+Effects of LOB Imbalance on the Return Distribution
+In this section, we present the implications of our reduced-form price formation model for how
+LOB imbalance affects the first four central moments and the quantiles of the return distribution.
+3.2.1
+Effects of LOB Imbalance on the Moments of the Return Distribution
+Figure 2 illustrates how the first four central moments of the return distribution vary with (log)
+LOB imbalance, i = log(I). We consider LOB imbalance values ranging from −0.7040 to 0.7040,
+corresponding to the sample standard deviation of its empirical counterpart. This range enables
+direct comparison with our empirical results, where economic significance is defined as the regression coefficient multiplied by the variable’s standard deviation.
+In panel (a), we remove any influence of MO imbalance on the relationship between LOB
+imbalance and the return distribution by setting the MO imbalance mean to zero. We also focus
+on the case of symmetric LOB convexity, where ask- and bid-side convexities are equal (cA =
+cB = c).2 We consider three values for this symmetric convexity: high (+1.0431), zero, and
+low (−1.0431)—corresponding to ± one standard deviation of its empirical counterpart. In panel
+(b), we fix LOB convexity at zero and let MO imbalance take high (+559), zero, and low (−559)
+values, based on the sample median of MO standard deviations. These cases allow us to assess both
+unconditional and conditional effects of LOB imbalance, the latter depending on LOB convexity
+and MO imbalance—two variables that materially shape its impact on the return distribution. All
+other variables are calibrated to the median of their empirical counterparts across stock-days in our
+sample, as reported in Table 1.3
+[Table 1 about here.]
+[Figure 2 about here.]
+2The effects of asymmetric convexities are presented in the online appendix.
+3As discussed later in the section, other variables do not materially alter the effect of LOB imbalance.
+12
+
+We start with the effects of LOB imbalance conditional on LOB convexity presented in panel
+(a). The return mean increases monotonically with LOB imbalance, irrespective of convexity.
+When there is no MO imbalance, the return mean is positive (negative) when LOB imbalance is
+positive (negative). In other words, in the absence of MO imbalance, the sign of expected returns
+is determined entirely by the sign of LOB imbalance: more liquidity on the bid side signals buying
+pressure, raising expected prices and returns. This effect of LOB imbalance on the return mean
+strengthens as LOB convexity declines.
+The relationship between LOB imbalance and return variance is U-shaped, reaching its minimum when the LOB is balanced (i = 0). This U-shaped pattern is more pronounced when LOB
+convexity is lower. Under our calibration, however, the economic magnitude of the effect is modest: the variance is approximately 0.00101 (corresponding to a daily volatility of 3.16%) when
+LOB imbalance is one standard deviation below its mean, compared with about 0.00098 (corresponding to a daily volatility of 3.14%) at its minimum. This represents a 3.1% change in variance
+for a one-standard-deviation shift in LOB imbalance.
+Return skewness increases monotonically with LOB imbalance in the absence of MO imbalance, and its sign mirrors that of the LOB imbalance regardless of LOB convexity. In other words,
+without MO imbalance, returns are positively skewed if and only if LOB imbalance is positive.
+This result aligns with the intuitive framework outlined in the introduction: a positive LOB imbalance signals buying pressure from limit orders, producing a positively skewed return distribution
+in the absence of market-order-driven pressure. Moreover, the positive impact of LOB imbalance
+on return skewness is amplified when LOB convexity is high.
+Our model predicts that any LOB imbalance—positive or negative—produces excess kurtosis,
+with greater LOB imbalance leading to higher values. Starting from three (the return kurtosis when
+LOB is balanced), kurtosis increases monotonically as LOB imbalance moves away from zero in
+either direction. The U-shaped pattern is more pronounced when LOB convexity is high, whereas
+the effect is virtually negligible when convexity is low, i.e., set to minus one standard deviation of
+its empirical counterpart.
+We now turn our attention to the effect of LOB imbalance conditional on MO imbalance presented in panel (b). The return mean and skewness are increasing functions of LOB imbalance
+regardless of MO imbalance. In other words, the effects of LOB imbalance on both the return
+mean and skewness do not depend on MO imbalance. However, MO imbalance influences the
+magnitude of these effects: for instance, the impact of LOB imbalance on return skewness is
+13
+
+smaller in absolute value when MO imbalance is nonzero. In contrast, MO imbalance substantially alters the effect of LOB imbalance on the return variance and kurtosis. Specifically, when
+there is MO imbalance, the return variance and kurtosis cease to follow the U-shaped patterns discussed above. When MO imbalance is low, the return variance decreases monotonically with LOB
+imbalance, while the return kurtosis increases monotonically. The opposite pattern emerges when
+MO imbalance is high.
+3.2.2
+Effects of LOB Imbalance on the Quantiles of the Return Distribution
+While the first four central moments offer valuable insights into how LOB imbalance shapes the
+return distribution, they do not capture the complete picture. For instance, it is unclear from those
+moments alone whether the effects of LOB imbalance on the mean and skewness outweigh its
+effects on variance and kurtosis. To address this, we examine how the quantiles of the return
+distribution vary with LOB imbalance. Since, unlike the moments, the quantiles have no closedform expressions, we estimate them by simulating 1,000,000 returns from Equation 4 under the
+same assumptions used above.4
+Figure 3 plots the inverse cumulative distribution function (CDF) of simulated returns—that
+is, quantiles from 0.01 to 0.99 in increments of 0.01—for low, zero, and high LOB imbalance.
+Similar to Figure 2, we set MO imbalance to zero and consider three values for LOB convexity in
+panel (a) and set LOB convexity to zero and consider three values for MO imbalance in panel (b).
+When MO imbalance, LOB imbalance, and LOB convexity are all zero, returns follow a normal
+distribution with zero mean; thus, the quantiles for zero LOB imbalance (solid lines in the middle
+figures of both panels) coincide with those of the normal distribution.
+[Figure 3 about here.]
+Panel (a) shows that in the absence of MO imbalance, all return quantiles—except the median—are higher (lower) when LOB imbalance is high (low), regardless of LOB convexity. This
+effect is stronger when LOB convexity is lower. These patterns have important implications for
+how LOB imbalance affects the return moments. Recall that, in the absence of any MO imbalance,
+the mean and skewness increase monotonically with LOB imbalance, while variance and kurtosis
+4We also explored a Gram–Charlier type expansion using the first four moments, finding qualitatively similar
+relationships to those obtained from the simulations.
+14
+
+follow U-shaped patterns. These effects of LOB imbalance on the first four moments imply that
+an increase in the LOB imbalance results in a rightward shift for the right part (quantiles above the
+median) of the return distribution. On the other hand, its effects on the first four moments imply
+shifts in different directions for the left part of the return distribution. To be more price, as LOB
+imbalance increases, its effects on the mean and skewness imply a rightward shift for the left part
+(quantiles below the median) but its effects on the variance and kurtosis imply a leftward shift for
+the left part. Our results in panel (a) show that the left part of the distribution shifts more to the left
+as LOB imbalance decreases. This in turn implies that the effects of LOB imbalance on mean and
+skewness dominate its effects on variance and kurtosis. This finding reinforces the conclusion that
+LOB imbalance is a key driver of the return mean and skewness, but plays a less prominent role in
+shaping variance and kurtosis.
+Panel (b) illustrates how MO imbalance alters the effects of LOB imbalance on return quantiles.
+All quantiles-with the exception of one, which we refer to as the reference quantile-increases as
+LOB imbalance increases. Lemma 1 implies that, all else equal, an increase in MO imbalance
+induces a rightward shift in the return distribution without affecting its shape. Our results suggest
+that this location shift changes the reference quantile for assessing the effects of LOB imbalance.
+Specifically, the reference quantile when MO imbalance is zero is 50% quantile (i.e., the median).
+Under our calibration, this reference point shifts to around 15% quantile when MO imbalance is
+high, and to between the 85% quantile when MO imbalance is low. So, all return quantiles—except
+the 85% 15% quantile when MO imbalance is low (high) -increase as LOB imbalance increases.
+3.3
+Effects of LOB Convexity on the Return Distribution
+In this section, we examine how LOB convexity—the other primary LOB shape parameter—affects
+the first four central moments and the quantiles of the return distribution in our reduced-form price
+formation model.
+3.3.1
+Effects of LOB Convexity on the Moments of the Return Distribution
+As in the LOB imbalance analysis, we set the mean of the market order distribution to zero to
+eliminate MO imbalance. We then consider three values of (log) LOB imbalance–high (+0.7040),
+zero, and low (−0.7040)–to assess whether the impact of LOB convexity varies with LOB imbalance. We begin with symmetric LOB convexity, setting the ask- and bid-side convexities equal
+15
+
+(cA = cB = c). Figure 4 shows how the first four central moments of the return distribution change
+with (log) LOB convexity under these assumptions. LOB convexity values range from minus to
+plus one standard deviation of its sample counterpart (0.4226).
+[Figure 4 about here.]
+We begin with the return mean. The effect of LOB convexity on the return mean depends
+crucially on the LOB imbalance. First of all, as discussed above, in the absence of MO imbalance,
+the sign of the return mean is determined entirely by the sign of the LOB imbalance, regardless
+of the LOB convexity. Second, the return mean decreases with LOB convexity when the LOB
+imbalance is positive and increases with LOB convexity when the LOB imbalance is negative.
+When the LOB imbalance is zero, the return mean remains zero for all values of the LOB convexity.
+Finally, a larger (in magnitude) LOB imbalance amplifies the effect of LOB convexity on the
+return mean, with the amplification being particularly pronounced for negative values of the LOB
+convexity.
+We now turn to the return variance. For all values of the LOB imbalance, the return variance
+is a monotonically decreasing function of the LOB convexity. Consistent with our discussion in
+Section 3.2, the effect of LOB convexity on the return variance changes little across different levels
+of the LOB imbalance. As the LOB becomes more convex, the price impact of small market orders
+declines because these orders are executed against the lower levels of the book, which are more
+liquid than the higher levels when the LOB is more convex.
+We now turn to the return skewness. As with the return mean, the effect of LOB convexity on
+the return skewness depends critically on the LOB imbalance. In the absence of MO imbalance,
+the sign of the return skewness is determined entirely by the sign of the LOB imbalance, regardless
+of the LOB convexity. However, unlike the return mean, the return skewness increases with LOB
+convexity when the LOB imbalance is positive and decreases with LOB convexity when the LOB
+imbalance is negative. When the LOB imbalance is zero, the return skewness remains zero for
+all values of the LOB convexity. Finally, a larger (in magnitude) LOB imbalance amplifies the
+effect of LOB convexity on the return skewness, with this amplification being more pronounced
+for positive values of the LOB convexity.
+Finally, the return kurtosis increases monotonically with LOB convexity, regardless of the LOB
+imbalance. In the absence of MO imbalance and LOB imbalance, returns are leptokurtic when the
+book is convex and platykurtic when the book is concave, consistent with the intuitive frame16
+
+work outlined in the introduction. As the book becomes more convex—or equivalently, less concave—the price impact of large market orders rises because they are executed against higher levels
+of the book, which are less liquid than the lower levels. This greater price impact of large market
+orders produces fatter tails in the return distribution. The opposite effect occurs when the book is
+concave.
+3.3.2
+Effects of LOB Convexity on the Quantiles of the Return Distribution
+Figure 5 plots the inverse CDF of simulated returns—that is, the quantiles from 0.01 to 0.99 in
+increments of 0.01—for low, zero, and high values of LOB convexity, under the assumption that
+the LOB imbalance is low (panel (a)), zero (panel (b)), or high (panel (c)), along with the same
+assumptions used above. When MO imbalance, LOB imbalance, and LOB convexity are all zero,
+returns follow a normal distribution with zero mean. Accordingly, the quantiles of the simulated
+returns in the zero-LOB-convexity case coincide with those of the normal distribution (solid lines
+in panels (a)–(c) of Figure 5).
+[Figure 5 about here.]
+Figure 5 shows that when the LOB convexity is high, quantiles below the median are higher,
+and quantiles above the median are lower, compared with the case of zero LOB convexity. Conversely, when the LOB convexity is low, quantiles below the median are lower, and quantiles above
+the median are higher, relative to zero LOB convexity. These patterns hold for all levels of LOB
+imbalance. In other words, all quantiles below (above) the median increase (decrease) with LOB
+convexity, regardless of the LOB imbalance.
+From Figure 4, recall that the return variance decreases with LOB convexity, while the return
+kurtosis increases. Thus, higher LOB convexity tightens the return distribution through its effect
+on variance but widens it through its effect on kurtosis. Figure 5 indicates that the variance effect
+dominates, so higher LOB convexity results in an overall tighter distribution. Notably, when LOB
+convexity is nonzero, the inverse CDF of simulated returns exhibits a kink—this corresponds to the
+threshold quantity where the slope shifts between the lower and higher levels of the book, driving
+the effect of LOB convexity on the tails of the return distribution. To highlight this effect, Figure
+6 compares the inverse CDF of simulated returns with that of a normal distribution having zero
+mean and variance equal to that of the simulated returns when LOB convexity is high or low.
+17
+
+[Figure 6 about here.]
+Panel (a) of Figure 6 shows that when the LOB convexity is positive (i.e., the LOB is convex),
+the tails of the return distribution—quantiles below 5% and above 95%—lie farther from zero than
+those of a normal distribution with the same variance. This indicates that higher LOB convexity
+produces fatter tails and greater kurtosis once its effect on return variance is controlled for. The
+opposite holds when the LOB convexity is negative (i.e., the LOB is concave). These findings
+confirm the intuition from the introduction that LOB convexity shapes the tails, and therefore the
+kurtosis, of the return distribution.
+3.4
+Effects of Secondary LOB Shape Variables on the Return Distribution
+In this section, we briefly discuss the effects of the secondary LOB shape variables on the return
+moments and distribution. We start with the average slope of the LOB. Recall from the discussion
+following Proposition 1 that the average slope of the LOB, Savg, is a scaling factor for the noncentral moments, which implies that if the average LOB slope is twice as high, the first four
+non-central moments of the return distribution increase by factors of 2, 4, 8, and 16, respectively.
+This in turn yields the following implications for its effect on the return distribution: (1) The return
+mean is zero regardless of the average LOB slope when both MO and LOB imbalances are zero.
+Otherwise, the return mean can be either an increasing or a decreasing function of the average
+slope, depending on the signs and magnitudes of the MO and LOB imbalances. (2) The return
+variance is an increasing function of the average LOB slope. (3) The return skewness and kurtosis
+do not depend on the average LOB slope. (4) The overall effect of the average slope on the return
+distribution depends critically on the signs and magnitudes of the MO and LOB imbalances.
+We next consider the total quantity available in the bid and ask sides of the LOB. When these
+quantities are changed symmetrically, the effects on the return moments and distribution are similar to those observed for the average slope: (1) The return mean is zero when both MO and LOB
+imbalances are zero. Otherwise, the return mean can be either an increasing or a decreasing function of the total quantity, depending on the signs and magnitudes of the MO and LOB imbalances.
+(2) The return variance is an increasing function of the total quantity if and only if the LOB convexity is positive, regardless of the signs and magnitudes of the MO and LOB imbalances. (3) The
+return skewness and kurtosis do not depend on the total quantity. (4) The overall effect of the total
+quantity on the return distribution depends closely on the signs and magnitudes of the MO and
+LOB imbalances.
+18
+
+Finally, when the quantity available on one side of the LOB—either the bid or the ask—is
+varied while the quantity on the opposite side is held constant, our model yields the following
+predictions: (1) When the LOB convexity is zero, the total quantity available on either side has no
+effect on the return moments or distribution, regardless of the MO or LOB imbalances. (2) When
+the LOB convexity is non-zero, the return moments can increase or decrease with the total quantity
+available on a given side, with the direction of the effect determined by other model parameters,
+including the signs and magnitudes of the MO and LOB imbalances.
+4
+Data and Variable Description
+To analyze the empirical relationship between the shapes of the LOB, market order, and return
+distributions, we require empirical proxies for the variables in our reduced-form model of price
+formation. We obtain the moments of the return and market order distributions from the TAQ
+database. As discussed above, this requires selecting a time interval over which to compute these
+moments. In our empirical analysis, we aggregate the data at the daily frequency, primarily to
+reduce the sensitivity of higher moments to noise in intraday data.5
+As a proxy for the daily first central moment (i.e., the daily expected return), we use the daily
+return from the Center for Research in Security Prices (CRSP). For the second, third and fourth central moments, we compute daily realized non-central moments based on 5-minute (log) midquote
+returns within each trading day, following the literature on realized variance. Specifically, for stock
+i on day t, the return for the mth 5-minute interval, ritm, is defined as the difference between the
+(log) midquote prices at the end of the mth and (m −1)th intervals, for m = 1, . . . , 78. The jth
+non-central moment of returns is then given by for j = 2, 3, 4
+E
+
+rj
+it
+
+=
+78
+X
+m=1
+rj
+itm,
+The daily realized second, third and fourth central moments are obtained based on their standard
+definitions in Equation 8 using the daily realized non-central moments, assuming that 5-minute
+returns have zero mean.
+5Chordia, Roll, and Subrahmanyam (2002) examine the relationship among liquidity, order imbalances, and returns, and argue that daily intervals strike a balance between mitigating problems associated with very high-frequency
+data and capturing short-term interactions among the variables of interest.
+19
+
+For the market order distribution, we classify each trade as a buy (+1), sell (−1), or unclassified
+(0) following the Lee and Ready algorithm. We then compute the first four central moments
+of the signed trade volume (in shares) for each stock-day pair and use these as proxies for the
+corresponding moments of the market order distribution.
+We now turn our attention to the LOB shape parameters. Our LOB data is from the Thomson
+Reuters Tick History (TRTH) Market Depth (MD) New York Stock Exchange (NYSE) files. This
+dataset includes snapshots of the first ten levels of the LOB, i.e., the prices and the number of
+shares (quantity) available at the first ten price levels for both the bid and ask sides. Each snapshot
+is identified by a Reuters Instrument Code (RIC) and a millisecond timestamp. As soon as there is
+a change in price or quantity at any level of the book due to a newly placed, withdrawn, or executed
+order, a new snapshot of the entire book is created.
+We clean this data and match it to TAQ and CRSP using the procedures described in Cenesizoglu and Grass (2018). Briefly, we require that each LOB snapshot includes price and volume
+data for all levels and that prices increase monotonically throughout the book. We further delete
+observations with Level 1 (Level 10) bid-ask spreads above 25% (250%), midprices below $1 or
+above $1000. Finally, deleting all firm-days with fewer than 100 snapshots in the TRTH data or
+fewer than 100 trades in the matched TAQ dataset, as well as observations with incomplete CRSP
+data, results in LOB snapshots for 2,050 stocks over 2,736 trading days and 3.58 million stock-day
+observations between 2002 and 2012.6
+Our sample period begins in January 2002—when the NYSE began making level-two LOB data
+available to market participants outside the trading floor and TRTH MD data became available—
+and ends in December 2012.7 We focus on this period for two main reasons. First is the sheer
+size of this data. Our initial sample before filtering includes 52.44 billion LOB snapshots, each
+with up to 10 price-quantity values for each bid and ask side—a total close to 2 trillion data points.
+The second reason is that this sample period includes two important episodes: the Securities and
+Exchange Commission’s (SEC) temporary suspension of short-sale price tests for a set of pilot
+securities between May 2005 and August 2007, which we use to establish a causal link, and the
+6Although the TRTH MD data are also available for stocks listed on NASDAQ, we follow Korajczyk and Sadka
+(2008) and restrict our analysis to stocks listed on the NYSE due to differences in trading mechanisms between the
+two exchanges.
+7We exclude days for which the number of book snapshots per trading hour is less than 50% of the monthly
+average, namely January 28th, February 1st, October 31st and November 20th, 2002, January 21st and October 15th,
+2003, January 13th, 2004, and May 4th, 2009. TRTH confirms technical problems related to data collection for these
+days.
+20
+
+Global Financial Crisis between 2007 and 2009.
+For a given LOB snapshot n with a timestamp tn, we compute the slope of the bid (ask) between
+levels l1 and l2, SB
+l1,l2,n (SA
+l1,l2,n), as follows:
+SB
+l1,l2,n
+=
+−P B
+l2,n −P B
+l1,n
+DB
+l1+1,l2,n
+,
+(9)
+SA
+l1,l2,n
+=
+P A
+l2,n −P A
+l1,n
+DA
+l1+1,l2,n
+(10)
+where P B
+l,n and P A
+l,n are, respectively, bid and ask prices at level l and DB
+l1+1,l2,n and DA
+l1+1,l2,n
+are, respectively, cumulative quantity available between levels l1 and l2 in the LOB snapshot n
+for l1 = 1, . . . , 9 and l2 > l1. The slopes of the bid and ask sides between levels l1 and l2
+at time tn, SB
+l1,l2,n and SA
+l1,l2,n, are defined as the change in the price relative to the cumulative
+quantity available between levels l1 and l2. Given that the prices in the bid side decrease as the
+level increases, the change in the bid price between levels l1 and l2 for l2 > l1 is always negative.
+Hence, we consider the negative of the price change so that bid side slope is always positive.
+We then compute LOB imbalance with a threshold level of l for snapshot n, Il,n, as the ratio of
+the ask- and bid-sides slopes between levels 1 and l as follows:
+Il,n = SA
+1,l,n
+SB
+1,l,n
+(11)
+Similarly, we compute ask and bid side convexity with a cutoff level of l for snapshot n, CA
+l,n and
+CB
+l,n, as the ratio of the slope between levels l and 10 to the slope between levels 1 and l as follows:
+CA
+l,n
+=
+SA
+l,10,n
+SA
+1,l,n
+(12)
+CB
+l,n
+=
+SB
+l,10,n
+SB
+1,l,n
+(13)
+Having computed these measures for each snapshot, we aggregate them to daily level for each
+21
+
+stock-day pair to match them with their corresponding daily return moments. Specifically, we
+consider a time-weighted aggregation where each LOB snapshot and any measure computed based
+on that snapshot gets the weight corresponding to the time that this snapshot was in effect, i.e. the
+time until the next LOB snapshot. This aggregation scheme puts more weight on snapshots that
+were in effect for a longer period. The computation is similar for all variables. The following
+equation illustrates this aggregation scheme mathematically for the bid-side slope of a given stockday pair:
+SB
+l1,l2
+=
+N−1
+X
+n=1
+SB
+l1,l2,n
+tn+1 −tn
+tN −t1
+(14)
+where N is the total number of LOB snapshots for that stock-day pair, tn is the timestamp of the
+nth LOB snapshot as before. Once variables are aggregated to the daily level, we retain the same
+notation but omit the n subscript.
+Several remarks are in order regarding our theoretical and empirical measures of LOB slopes,
+imbalance, and convexity. In our theoretical framework, LOB convexity is defined in terms of
+cumulative depth. Specifically, we classify as low levels those for which the cumulative depth is
+below a threshold (KA for the ask side or KB for the bid side), and as high levels those exceeding
+this threshold. Moreover, these thresholds can be expressed in normalized form by dividing by the
+standard deviation of the market order distribution.
+In practice, it is not always feasible to match the observed LOB quantities to the same multiple
+of the market order standard deviation for every stock–day pair. Consequently, our empirical LOB
+convexity measures are based on depth levels rather than quantities. To reduce the mismatch between the empirical and theoretical definitions, we compute convexity for three candidate cutoffs,
+l = 2, 3, 5, and select the one whose cumulative quantity is closest to a given multiple h of the
+previous day’s market order standard deviation. Conceptually, any market order exceeding h standard deviations is considered “large”, and the cutoff level is chosen to match this size as closely as
+possible. For our main empirical results, we set h to one and present the robustness of our results
+22
+
+in the online appendix. Formally, we select
+l∗= arg
+min
+l=1,2,...,10
+
+DA
+1,l + DB
+1,l
+2
+−h × σ
+ ,
+(15)
+where DA
+1,l and DB
+1,l are the cumulative quantities on the ask and bid sides up to and including level
+l on a given day, and σ is the standard deviation of the market order distribution on the preceding
+day.
+The selected cutoff l∗determines the average convexity measure as follows:
+Cavg =
+
+
+
+
+
+
+
+
+
+CA
+2 +CB
+2
+2
+,
+if l∗= 1,
+CA
+3 +CB
+3
+2
+,
+if 1 < l∗≤3,
+CA
+5 +CB
+5
+2
+,
+if l∗> 3.
+(16)
+Finally, as discussed earlier, our theoretical model implies that the instantaneous return distribution between n and n + ϵ, where ϵ is a short time interval, is determined by market orders
+executed against the LOB at time n. This motivates a lag structure in our empirical analysis: when
+aggregating variables to the daily level, the return distribution on day t is matched with the market order distribution from day t and the LOB from day t −1. Implicit in this approach is the
+assumption that the LOB exhibits resilience and thus retains a degree of persistence across trading
+days.
+The following table provides summary statistics for the variables used in our empirical analysis.
+[Table 2 about here.]
+Daily returns exhibit the well-documented stylized facts: near-zero mean, slight positive skewness, excess kurtosis, and mild negative autocorrelation. Return variance is highly persistent,
+whereas skewness and kurtosis show weak positive autocorrelation. Market orders have a small
+positive mean and median (not statistically different from zero), a mean standard deviation of 1291
+(median 559), mild positive skewness, and high kurtosis. Their variance and kurtosis are positively
+autocorrelated, while skewness autocorrelation is negligible.
+LOB variables indicate more quantity on the ask than bid side, and higher average slope on
+23
+
+the bid side, yielding a positive (log) LOB imbalance on average. All three average (log) convexity measures are positive, suggesting steeper higher levels. LOB variables are highly persistent,
+indicating substantial day-to-day stability in LOB shape.
+5
+Regression Results
+In this section, we test the empirical implications of our reduced-form price formation model. We
+begin with the unconditional effects of LOB imbalance and convexity on return moments. We then
+present the unconditional effects of other variables, such as the shape of the MO distribution and
+secondary LOB shape variables. We next analyze the conditional effects of LOB imbalance and
+convexity on the return moments. Finally, we present the unconditional effect of primary LOB
+shape variables on return quantiles.
+5.1
+Unconditional Effects of LOB Imbalance and Convexity on Return Moments
+We first examine the unconditional relationship between the primary LOB shape variables and
+the first four central moments of the return distribution. To this end, we estimate the following
+linear regression of a given return moment on (i) the contemporaneous values of the other three
+moments of the return distribution, (ii) the first four moments of the market order distribution, and
+(iii) lagged values of the LOB shape parameters:
+Mk,jt = αk
+j +
+4
+X
+l=1
+l̸=k
+βk
+l Ml,jt +
+4
+X
+l=1
+γk
+l MOl,jt + δk
+1davg,jt + δk
+2savg,jt + δk
+3ijt + δk
+4cavg,jt + εk,jt, (17)
+where the subscript j, t denotes stock j on day t. Here, Mk and MOk are the kth central moments of
+the return and market order distributions, respectively. The variable davg = log
+ (DA
+1,10+DB
+1,10)/2
+
+is the (log) average of the total quantities available in the first ten levels of the bid and ask sides.
+The variables i and cavg denote the (log) LOB imbalance and convexity, respectively, as defined
+above. We estimate this specification with firm fixed effects and standard errors clustered at the
+firm level.
+Several remarks are in order regarding our empirical specification. First, we include the other
+moments of the return distribution as control variables. Since our focus is not on the relationships among different return moments, we omit the corresponding coefficient estimates. Second,
+24
+
+we employ a linear specification, given that additional (unreported) analyses reveal no statistically
+significant nonlinearities.8 Last but not least, we use the lagged values of the LOB shape parameters. As discussed above, the LOB shape should be evaluated with a lag. Aggregating the variables
+at the daily level implies that the return distribution on day t is determined by the market order
+distribution on day t and the LOB from the previous trading day, t −1. This approach also mitigates potential endogeneity concerns when interpreting the effect of LOB shape parameters on the
+return distribution.
+Table 3 reports the economic significance of the market order distribution and LOB shape parameters, computed as the product of the coefficient estimate and the standard deviation of the
+corresponding independent variable. These values represent the change in the return moment of
+interest resulting from a one–standard deviation increase in the independent variable and can be
+directly compared to Figures 2 and 4, which display analogous effects for primary LOB shape parameters. We begin our discussion with LOB imbalance and LOB convexity, our primary variables
+of interest, before turning to the remaining variables.
+[Table 3 about here.]
+5.1.1
+Return Mean
+Consistent with our predictions, the LOB imbalance has a significantly positive coefficient estimate in the equation for the mean, indicating that the mean return is higher following days with
+above-normal LOB imbalance. Quantitatively, a one–standard deviation increase in LOB imbalance raises the mean return on the subsequent day by approximately two basis points. Given that
+the mean return in our sample has a standard deviation of 0.0304, this represents a relatively small
+economic effect. Moreover, LOB imbalance ranks as the least economically important variable
+among the market order and LOB variables considered. While the direction of the effect is consistent with our theoretical predictions, its magnitude is much smaller than predicted. As shown
+in Panel (a) of Figure 2, our theoretical model suggests that a one–standard deviation increase in
+LOB imbalance should increase the mean return by roughly 1%. This discrepancy may reflect the
+8Specifically, our theoretical framework suggests that the effects of primary LOB shape variables – particularly
+LOB imbalance – on variance and kurtosis may exhibit mild nonlinearities depending on other determinants (see
+Figures 2 and 4). To investigate this, we augment the empirical specification in Equation 17 by including the squared
+terms of LOB imbalance and convexity. The results, omitted here for brevity, provide little evidence of any meaningful
+nonlinear effects of these variables on the moments of the return distribution.
+25
+
+inherent noise in daily returns and the inclusion of control variables in our empirical specification—such as other return moments or higher moments of the market order distribution—which
+are absent in the theoretical model.
+Turning to LOB convexity, we find a significantly positive effect on the mean return: a one–
+standard deviation increase in LOB convexity raises the next-day mean return by nearly 3.5 basis
+points. Assessing whether this finding aligns with our theoretical predictions is less straightforward, as our model implies that the impact of LOB convexity on the mean return depends critically
+on the signs of the MO and LOB imbalances (see Figure 4). In the next section, we extend our
+empirical specification to include interactions between LOB imbalance, MO imbalance, and LOB
+convexity, and examine whether the conditional effects of LOB convexity are consistent with the
+model’s predictions.
+5.1.2
+Return Variance
+We now examine the effects of the primary LOB shape variables on return variance, beginning
+with LOB imbalance. The results show that LOB imbalance has a significantly positive effect
+on next-day return variance. A one–standard deviation increase in LOB imbalance raises the return variance by approximately 0.00026, an economically meaningful magnitude corresponding
+to roughly 10% of the standard deviation of return variance in our sample. Our theoretical model
+predicts that return variance should increase (decrease) with LOB imbalance when MO imbalance is positive (negative), as shown in Panel (b) of Figure 2. Therefore, it is not immediately
+clear whether the unconditional effect we observe aligns with the theory. We address this question in the next section by analyzing the effect of LOB imbalance conditional on MO imbalance.
+Nevertheless, the magnitude of the unconditional effect is broadly consistent with the model’s predictions. Specifically, Panel (b) of Figure 2 shows that, when MO imbalance is high, the return
+variance in the model rises from about 0.00023 to 0.00035—an increase of 0.00012—following
+a one–standard deviation increase in LOB imbalance, compared with the empirical increase of
+0.00026.
+Turning to LOB convexity, we find that a one–standard deviation increase reduces next-day
+return variance by approximately 0.00042. This effect is economically significant, representing
+about 16% of the standard deviation of return variance in our sample. Among the LOB and MO
+variables considered, LOB convexity emerges as the second most economically important variable
+26
+
+for explaining return variance. Both the sign and magnitude of this effect provide strong empirical
+support for our theoretical predictions. In particular, our model predicts that return variance should
+decrease with LOB convexity regardless of the sign and magnitude of LOB imbalance (Panel (b)
+of Figure 4) and MO imbalance (Panel (b) of Figure 4). The theoretical magnitude of the effect
+depends on both imbalances; for example, with zero MO and LOB imbalances, the model predicts
+a decrease in return variance from about 0.00023 to 0.00008 when LOB convexity increases from
+zero to one standard deviation. This prediction is comparable in magnitude to the empirical effect
+of 0.00042 observed in the data.
+5.1.3
+Return Skewness
+Regarding return skewness, we find that a one–standard deviation increase in LOB imbalance raises
+next-day return skewness by 0.0134. The positive sign of this effect is consistent with our model,
+which predicts that return skewness increases with LOB imbalance regardless of MO imbalance or
+LOB convexity. The economic magnitude of this effect is small relative to the standard deviation
+of return skewness in our sample (1.2313), and its empirical size is also well below the model’s
+prediction. For instance, with zero LOB convexity and MO imbalance (solid line in Panel (c) of
+Figure 2), the model predicts an increase in skewness from 0 to roughly 0.75 when LOB imbalance
+rises from zero to one standard deviation. This gap may stem from the high noise in daily skewness
+estimates and the inclusion of control variables in the empirical specification that are absent from
+the theoretical model. Despite its modest absolute size, LOB imbalance ranks as the second most
+economically important variable among the MO and LOB variables examined—consistent with the
+theoretical expectation that LOB imbalance is a key determinant of return skewness. By contrast,
+LOB convexity has no statistically significant effect on return skewness. This is not unexpected:
+the model predicts that the sign and magnitude of the LOB convexity effect on skewness depend
+critically on MO and LOB imbalances. Hence, an insignificant unconditional effect is consistent
+with our theoretical model.
+5.1.4
+Return Kurtosis
+Our empirical results on return kurtosis show that LOB imbalance has a significantly negative effect. The model predicts that, regardless of LOB convexity, kurtosis increases (decreases) with
+27
+
+LOB imbalance when MO imbalance is negative (positive) and follows a U-shaped pattern when
+MO imbalance is zero (see Figure 2). Given that MO imbalance is positive on average in our sample, the negative sign of the empirical effect is consistent with theory. Economically, a one–standard
+deviation increase in LOB imbalance reduces kurtosis by 0.13162, a modest change relative to the
+standard deviation of kurtosis in our sample (5.4989). Still, LOB imbalance ranks as the third most
+economically important determinant of kurtosis, and the effect size is comparable to the theoretical
+prediction: when MO imbalance is positive, the model shows kurtosis falling from about 3 to 2.7
+after such an increase (dotted line Return Kurtosis graph in Panel (b) of Figure 2)).
+LOB convexity, in contrast, has a significantly positive effect on kurtosis, consistent with the
+model’s prediction that kurtosis increases with convexity regardless of LOB or MO imbalance.
+While the effect size is small relative to the empirical standard deviation of kurtosis (5.4989)
+and smaller than the theoretical prediction, it remains economically meaningful. In the model,
+a one–standard deviation increase in convexity raises kurtosis from 3 to about 6 (see Figure 4).
+Moreover, convexity is the second most economically important determinant of kurtosis, in line
+with the theoretical view that it should be one of the primary drivers of higher-order return moments.
+5.2
+Unconditional Effects of Other Variables on Return Moments
+In this section, we summarize the effects of the first four moments of the market order (MO)
+distribution and the secondary LOB shape variables, namely the total cumulative quantity and
+the slope of the LOB. The mean and standard deviation of the MO distribution, as well as the
+secondary LOB shape variables, are directly implied by our theoretical framework, allowing for
+a straightforward comparison between the empirical estimates and the model’s predictions. By
+contrast, the skewness and kurtosis of the MO distribution are not explicitly incorporated in the
+model. Nonetheless, as discussed in Section 3, our framework suggests that the third and fourth
+moments of the MO distribution may exert significant effects on the corresponding moments of the
+return distribution.
+We begin with the first four moments of the market order (MO) distribution before turning to
+the secondary LOB shape variables. An increase in the MO imbalance is positively associated
+with the contemporaneous return mean. Specifically, a one standard deviation increase in MO
+mean corresponds to an increase of approximately 20 basis points in the return mean, or about 6%
+of the standard deviation of daily returns in our sample. The sign of this effect is both intuitive and
+28
+
+consistent with our theoretical predictions. However, its magnitude is smaller than that implied
+by our model: Panel (b) of Figure 2 shows that, in the absence of LOB imbalance, a one standard
+deviation increase in MO mean raises the return mean by slightly more than 1%. Nevertheless,
+MO mean emerges as the most important determinant of the return mean.
+Turning to the higher moments of MO imbalance, we find that the effect of MO standard deviation on return mean is neither statistically nor economically significant, in line with our model’s
+prediction that MO standard deviation should not be a key driver of return mean. By contrast, MO
+skewness and MO kurtosis exhibit significantly negative and significantly positive effects, respectively, on the return mean. It is difficult to assess whether these findings align with our theoretical
+framework, as the latter assumes a normally distributed MO imbalance.
+The MO imbalance mean has no statistically significant effect on the return variance, whereas
+the MO imbalance standard deviation has a significantly positive effect. These results are consistent with Lemma 1, which implies that, in the absence of LOB imbalance, the return distribution
+should mirror the MO imbalance distribution. That said, the economic magnitude and importance
+of the MO standard deviation are smaller than expected; it ranks only sixth among the eight determinants considered. As previously noted, our model is largely silent on the effects of MO skewness
+and kurtosis on return variance. Intuitively, one might expect MO skewness to be negatively related and MO kurtosis to be positively related to return variance. Our empirical findings support
+this intuition: MO kurtosis has a significantly positive effect on return variance and is the third
+most economically important determinant of this moment.
+The MO imbalance mean and skewness both have significantly positive effects on return skewness, consistent with the expectations from Lemma 1. MO imbalance is by far the most important
+determinant of return skewness, whereas MO skewness ranks only fifth in economic importance.
+In contrast, neither MO variance nor MO kurtosis has a statistically significant effect on return
+skewness, also in line with our expectations under Lemma 1, which does not predict a relationship
+between these variables and return skewness.
+The MO standard deviation has a significantly positive effect on return kurtosis, consistent with
+Lemma 1 and the positive relation between variance and kurtosis of a distribution. Nevertheless, it
+ranks only as the fourth most economically important determinant of return kurtosis. In contrast,
+MO imbalance mean and skewness have no significant effects, as expected, since the mean and
+skewness of a distribution are generally unrelated to its kurtosis. Surprisingly, MO imbalance
+kurtosis has a significantly negative effect on return kurtosis, whereas Lemma 1 would suggest a
+29
+
+positive effect. This discrepancy may be due to the fact that Lemma 1 applies only in the absence
+of LOB imbalance; in our setting, LOB shape variables are by far the most important determinants
+of return kurtosis, and their dominant role may alter the impact of MO imbalance kurtosis.
+We now turn to the effects of the secondary LOB shape variables: the average slope of the
+LOB and the average total quantity available. The average LOB slope has significantly negative
+effects on return mean and skewness, and significantly positive effects on return variance and kurtosis. Our model predicts that return variance should increase with the average LOB slope, while
+return skewness and kurtosis should be unaffected. Thus, the positive effect on return variance is
+consistent with the model, whereas the effects on return skewness and kurtosis are not. Regarding
+the return mean, the model offers no clear prediction.
+The average total quantity available in the LOB has significantly positive effects on return
+mean and variance, and significantly negative effects on skewness and kurtosis. As with the average slope, the positive effect on return variance is consistent with the model—recall that the model
+predicts an increasing relation when LOB convexity is positive, regardless of the signs and magnitudes of MO and LOB imbalances—while the effects on skewness and kurtosis are not. The model
+does not provide a clear prediction for its effect on the return mean.
+5.3
+Conditional Effects of LOB Imbalance and Convexity on Return Moments
+We next investigate the conditional relationship between primary LOB shape variables and the
+first four central moments of the return distribution. Specifically, we extend the regression in
+Equation 17 by adding interaction terms between LOB imbalance, LOB convexity, and the first
+two moments of the market order distribution. Formally, we estimate the following specification
+with firm fixed effects and standard errors clustered at the firm level:
+Mk,jt
+=
+αk
+j +
+4
+X
+l=1
+l̸=k
+βk
+l Ml,jt +
+4
+X
+l=1
+γk
+l MOl,jt + δk
+1davg,jt + δk
+2savg,jt + δk
+3ijt + δk
+4cavg,jt
++
+δk
+5
+
+ijt × MO1,jt
+
++ δk
+6
+
+cavg,jt × MO1,jt
+
++ δk
+7
+
+ijt × cavg,jt
+
++
+δk
+8
+
+ijt × MO2,jt
+
++ δk
+9
+
+cavg,jt × MO2,jt
+
++ εk,jt,
+(18)
+where the subscript j, t denotes stock j on day t. The interaction terms with coefficients δk
+5–δk
+9
+allow us to analyze how the empirical effects of LOB imbalance and convexity depend on market
+30
+
+order imbalance and market order volatility.
+We begin by examining how the effect of LOB imbalance on return moments varies with MO
+imbalance, MO volatility, and LOB convexity. From the specification in Equation 18, the effect of
+LOB imbalance on the kth central moment of the return distribution conditional on MO imbalance
+is given by δk
+3 + δk
+5 × MO1,jt. To interpret this effect, we set all other variables to zero and vary the
+MO imbalance between its high and low values, defined as ±std(MO1), where std(MO1) is the
+standard deviation of MO imbalance. This choice of ±1 standard deviation allows for direct comparison with our theoretical predictions in Figures 2 and 4. To evaluate the economic magnitude
+of this conditional effect, we multiply the coefficient by the standard deviation of LOB imbalance.
+For example, the economic effect of LOB imbalance on the return mean when MO imbalance is
+high is given by (ˆδ1
+3 + ˆδ1
+5 × std(MO1)) × std(i). Table 4 reports these conditional effects.
+[Table 4 about here.]
+We begin with the effect of LOB imbalance on return moments conditional on MO imbalance.
+Note first that when MO imbalance is set to zero, the conditional effect of LOB imbalance on return
+moments should be comparable to its unconditional effect reported in Table 3. Any differences
+arise because the conditional regression in Equation 18 includes additional interaction terms that
+are absent from the unconditional regression in Equation 17.
+Our results show that LOB imbalance has a significantly positive effect on the return mean
+only when MO imbalance is high. This finding is consistent both with our theory and with the
+unconditional effect of LOB imbalance on the return mean. However, this effect changes sign and
+becomes significantly negative when MO imbalance is low, contrary to our theoretical prediction
+that the return mean should be an increasing function of LOB imbalance regardless of the level of
+MO imbalance. Moreover, the effect of LOB imbalance on the return mean becomes statistically
+insignificant when MO imbalance is zero, suggesting that once the interaction terms are controlled
+for, the unconditional effect of LOB imbalance disappears.
+The effects of LOB imbalance on higher-order moments appear less sensitive to MO imbalance.
+Regardless of MO imbalance, variance and skewness increase with LOB imbalance, while kurtosis
+decreases. These patterns are consistent with our results on the unconditional effects of LOB
+imbalance. That said, the evidence for variance and kurtosis provides at best mixed support for the
+theory, which predicts that variance (kurtosis) should be increasing in LOB imbalance when MO
+imbalance is high (low), and decreasing otherwise.
+31
+
+We now examine how the effect of LOB imbalance varies with the standard deviation of MO
+imbalance. Recall that our theoretical framework predicts that the effects of LOB shape variables
+on return moments—particularly skewness and kurtosis—should be amplified when market orders
+are more volatile. The results reported in Panel (b) of Table 4 are broadly consistent with this
+prediction. Specifically, we find that LOB imbalance has a significantly positive effect on the
+return mean only when MO volatility is high. By contrast, the effect of LOB imbalance on the
+return variance does not appear to depend on the standard deviation of MO imbalance. More
+importantly, and in line with our predictions, the effects of LOB imbalance on both return skewness
+and return kurtosis are substantially stronger when market orders are more volatile.
+We now examine how the effect of LOB imbalance on return moments varies with LOB convexity. We find that this effect is more pronounced for all moments, except for the return mean,
+when LOB convexity is high. The results for the return mean and skewness are consistent with
+our theoretical predictions: the effect of LOB imbalance on the return mean should be more pronounced when convexity is low, whereas the effect on skewness should be stronger when convexity
+is high.
+For return variance and kurtosis, our theory predicts U-shaped relationships with respect to
+LOB imbalance, and that these nonlinearities should be more pronounced when convexity is high.
+However, as noted at the end of Section 5.1, we do not find strong empirical evidence of such nonlinearities. Instead, our unconditional results indicate that variance and kurtosis respond monotonically to LOB imbalance, with variance increasing and kurtosis decreasing. The conditional results
+in Panel (c) of Table 4 confirm that these patterns persist and, importantly, that the effects are amplified when LOB convexity is high, which is broadly consistent with our theoretical predictions.
+Table 5 reports the effects of LOB convexity on return moments conditional on MO imbalance,
+MO volatility, and LOB imbalance. We begin with the role of MO imbalance. The effect of LOB
+convexity on the return mean changes sign depending on the level of MO imbalance: the mean is
+an increasing function of convexity when MO imbalance is low, while the opposite holds when MO
+imbalance is high. This finding is exactly in line with our theoretical predictions. Return variance
+decreases with convexity regardless of MO imbalance, with a steeper slope when MO imbalance
+is low, which is also broadly consistent with the model.
+Turning to return skewness, we find that LOB convexity has a positive but statistically insignificant effect regardless of MO imbalance. Although this effect is somewhat more pronounced when
+MO imbalance is low, it does not align with the theory, which predicts that skewness should in32
+
+crease with convexity when MO imbalance is high and decrease when it is low. That said, the
+lack of statistical significance is broadly consistent with the insignificant unconditional effect of
+convexity on skewness, itself in line with the theory.
+Finally, kurtosis increases with convexity regardless of MO imbalance, with a stronger slope
+when MO imbalance is low, again broadly consistent with the model’s predictions. When we
+condition on MO volatility, we find that the effects of convexity on all return moments are larger in
+magnitude and statistically more significant when market orders are more volatile, consistent with
+the prediction that volatility amplifies the impact of LOB shape variables on return moments.
+[Table 5 about here.]
+5.4
+Unconditional Effects of LOB Shape and MO Distribution on Return Quantiles
+In this section, we turn to the unconditional effects of the market order distribution and LOB shape
+on the quantiles of the return distribution. To construct the quantiles, we first compute the pth
+quantile of the return distribution for each stock-day pair using the Cornish–Fisher expansion:
+qp ≈M1 +
+p
+M2
+
+zp + M3
+6
+ z2
+p −1
+
++ M4
+24
+ z3
+p −3zp
+
+−M 2
+3
+36
+ 2z3
+p −5zp
+
+,
+(19)
+where Mk denotes the kth central moment of the return distribution, zp is the pth quantile of the
+standard normal distribution, and we focus on p = {5%, 10%, 25%, 50%, 75%, 90%, 95%}.
+We then estimate the following empirical specification separately for each quantile:
+qp,jt = αp
+j +
+4
+X
+k=1
+γp
+k MOk,jt + δp
+1davg,jt + δp
+2savg,jt + δp
+3ijt + δp
+4cavg,jt + εp,jt.
+(20)
+This empirical specification mirrors Equation 17, with the key difference that we do not include
+the return moments as controls. This omission is intentional, since the Cornish–Fisher expansion
+already expresses the quantiles as functions of the return moments. As before, we estimate this
+specification with firm fixed effects and cluster standard errors at the firm level.
+Table 6 presents the economic significance of the coefficients, defined as the product of the
+estimated coefficient and the sample standard deviation of the corresponding variable. These values
+33
+
+can be interpreted as the effect of a one standard deviation increase in the explanatory variable
+on the return quantile of interest. They can be directly compared to the theoretical magnitudes
+reported in Figures 3 and 5, which also depict the impact of a one standard deviation change in
+selected variables.
+[Table 6 about here.]
+We begin with the LOB imbalance and LOB convexity, our main variables of interest, before
+turning to the other determinants. Consistent with our predictions, an increase in LOB imbalance
+on day t −1 has significantly positive effects on all return quantiles, except the 5% quantile, on
+day t. In other words, higher LOB imbalance shifts the entire return distribution to the right.
+Recall from Table 3 that LOB imbalance has significantly positive effects on the return mean,
+variance, and skewness, and a significantly negative effect on kurtosis. Our quantile results provide
+additional insight into how these effects interact. For the left shoulder of the distribution (e.g., the
+25% quantile), the impact of LOB imbalance on the return mean and skewness dominates its impact
+on variance. Similarly, for the right tail (e.g., the 90% and 95% quantiles), the effects on mean and
+skewness dominate those on kurtosis.
+The economic magnitudes of these effects are smaller than predicted by our model. For instance, Figure 3 indicates that a one standard deviation increase in LOB imbalance should raise
+the 90% quantile by approximately 0.005 (from 0.020 to 0.025), whereas our empirical results in
+Table 6 suggest an increase of only 0.00059—almost an order of magnitude smaller. Moreover,
+LOB imbalance ranks as the least important variable for the left part of the return distribution, but
+becomes the third and fourth most important for the right part. Overall, these findings support our
+prediction that LOB imbalance is a key determinant of
+LOB convexity has significantly positive effects on the left part, the median, and the right shoulder of the return distribution, while its effects on the right tail are statistically insignificant. This
+pattern is mirrored in its economic importance: LOB convexity ranks as the third most important
+determinant for the left part and the median, but is the least important for the right tail. Moreover,
+its effect is stronger for the left tail (5% and 10% quantiles) than for the left shoulder (25% quantile). These findings suggest that the empirical effects of LOB convexity on the return mean and
+variance dominate its effect on kurtosis, consistent with Table 3. Overall, the sign and magnitude
+of these effects align broadly with our theoretical predictions. In particular, Figure 5 shows that an
+34
+
+increase in average LOB convexity raises quantiles below the median and lowers quantiles above
+the median, with the effect being more pronounced for the tails than for the shoulders.
+Turning to the secondary LOB shape parameters, we find that the average LOB slope has
+significantly negative effects on all quantiles and is economically the second most important determinant. Its effect is stronger on the left part of the distribution than on the right, implying that an
+increase in the LOB slope shifts the entire return distribution to the left and makes it more negatively skewed. This finding is consistent with our results in Table 3 and is intuitive, since a higher
+LOB slope corresponds to lower liquidity. By contrast, the average LOB quantity has significantly
+positive effects on quantiles above the median and significantly negative effects on those below
+the median. The magnitudes of these effects on the left and right sides are similar, suggesting a
+widening of the return distribution. This in turn implies that the positive effect of LOB quantity on
+return variance dominates its negative effect on kurtosis.
+Finally, we find that the MO imbalance is economically the most important determinant of the
+return distribution, with significantly positive effects on all quantiles. In other words, an increase
+in MO imbalance shifts the entire return distribution to the right, as expected. By contrast, the
+MO standard deviation does not have a significant effect on the return quantiles. An increase in
+MO skewness shifts the whole distribution to the left, while an increase in MO kurtosis widens
+the distribution. That said, the variance, skewness, and kurtosis of MO imbalance are, on average,
+economically less important than the LOB shape variables in determining the return distribution.
+6
+Establishing Causality
+Since we use lagged LOB shape parameters in our analysis above, we argue that the preceding
+results provide evidence of a causal relationship between LOB shape and return distribution. In
+this section, we offer additional empirical support for this causal effect from a different perspective.
+Our approach closely follows Diether et al. (2009), who examine how the suspension of the uptick
+rule impacts market quality. In this section, we provide further empirical evidence on this causal
+effect from a different angle. Our approach follows closely Diether et al. (2009), who analyze the
+effect of suspension of the uptick rule on market quality. Specifically, we exploit the suspension
+of the uptick rule for pilot stocks as an exogenous shock to the shape of the LOB and market order
+distribution, and we show that the resulting changes in the return distribution are consistent with
+our theoretical predictions. To this end, we first discuss the expected implications of the uptick
+rule suspension for LOB and market order distributions, and present supporting evidence. We then
+35
+
+examine how the return distribution of pilot stocks, relative to control stocks, changes as a result
+of the suspension. These changes, we argue, align with our theoretical expectations based on the
+observed LOB and market order dynamics.
+Short-selling restrictions were introduced in the U.S. in the aftermath of the 1929 market crash
+to curb speculative pressure. The SEC introduced the uptick rule in 1938, which restricted short
+sales on the NYSE unless the last price movement was upward. Regulation SHO, adopted in
+September 2004, aimed to modernize short sale regulation in response to evolving market conditions and concerns over persistent delivery failures and potential abuses in naked short selling.
+Rule 202T of Regulation SHO, known as the Pilot Program, serves as the focus of our analysis.
+Its goal was to assess the impact of short sale price tests on market volatility, price efficiency, and
+liquidity, as in Diether et al. (2009). Under Rule 202T, the SEC removed price test restrictions
+for approximately 1,000 designated securities—termed pilot stocks—starting May 2, 2005. Every
+third stock in the Russell 3000 index, sorted by volume, was selected as a pilot stock; the remaining
+2,000 served as controls. The SEC eliminated short sale price tests for all stocks on July 6, 2007,
+marking the conclusion of the Pilot Program.
+Given that we only have LOB data for NYSE stocks, we focus on the effect of the Pilot Program
+on the NYSE stocks. Diether et al. (2009) argue that the uptick rule of the NYSE significantly
+affects how the specialist adjust non-compliant short sell orders so that they can be presented to
+the market. Specifically, non-compliant short-sale orders, i.e. those that are not submitted after
+an uptick, are effectively changed into nonmarketable limit orders and added to the LOB. As a
+result, Diether et al. (2009) argue that when there are short-selling restrictions there would be a
+disproportionate depth at the best ask and a disproportionate amount of trades executing above the
+midquote, creating a positive market order imbalance. They also argue based on Jones (2003) that
+passive short-sale order strategies adopted by short-sellers when faced with short-selling restrictions may also result in lower short-term volatility. Once the uptick rule is suspended for pilot
+stocks, short-sale orders can no longer be classified as non-compliant and thus are not changed
+into nonmarketable limit orders or added to the book. Thus, one would expect a decrease in the
+depth at the best ask price, a decrease in the market order imbalance and an increase in short-term
+volatility for pliot stocks relative to control stocks following the suspension of the uptick rule for
+pilot stocks. They provide empirical evidence in support of these hypothesis using differences-indifferences analysis.
+By construction, LOB imbalance and convexity depend on quoted depths at the best bid and
+36
+
+ask. Diether et al. (2009) document a significant decline in quoted depth following the rule suspension for pilot stocks. Consequently, we expect both the imbalance and convexity of the LOB to
+change, absolutely and relatively, for pilot stocks. Similarly, the suspension of the uptick rule for
+pilot stocks might also affect the higher moments of their market order distributions, in addition
+to the changes in their first moments, i.e. the market order imbalance, reported by Diether et al.
+(2009). While it is straightforward to hypothesize about changes in quoted depths at the best bid
+and ask as well as the mean market order imbalance, it is less clear how higher moments of the
+market order distribution and other LOB shape parameters would respond to the Pilot Program.
+We therefore empirically investigate how these features evolve following the implementation of
+the Pilot Program.
+Figure 7 shows the daily differences between pilot and control stocks in the Reg SHO: panel (a)
+reports the first four moments of the market order distribution, panel (b) the LOB shape parameters,
+and panel (c) the first four moments of the return distribution. Table 7 presents a formal DiD
+analysis covering the 63 trading days before and after the May 2, 2005 suspension.
+[Figure 7 about here.]
+[Table 7 about here.]
+We begin our discussion with the distribution of market orders. The Pilot Program led to a
+significant reduction in market order imbalances for both pilot and control stocks, but the decline
+was markedly larger for pilot stocks. This finding is consistent with both theoretical predictions
+and the empirical evidence in Diether et al. (2009). As illustrated in Panel (a) of Figure 7, the
+relative selling pressure on pilot stocks diminishes over time but remains economically meaningful
+until the end of the Pilot Program, after which the imbalance difference between pilot and control
+stocks effectively disappears. Turning to market order variance, we observe a significant decline
+for control stocks following the start of the Pilot Program, while the variance for pilot stocks
+remains largely unchanged. This pattern persists throughout the Program, as shown in Panel (a) of
+Figure 7. In contrast, the skewness of market orders for pilot stocks decreases substantially—both
+in absolute terms and relative to control stocks. Meanwhile, kurtosis increases for both groups, but
+more significantly for pilot stocks, indicating a greater likelihood of extreme market orders in the
+pilot group. These differences in skewness and kurtosis between pilot and control stocks remain
+economically important for most of the Program’s duration.
+37
+
+We now turn our attention to the LOB shape parameters. The LOB imbalance falls significantly for both groups, but the drop is more pronounced for control stocks. This implies that the
+decline in limit order buying pressure is smaller for pilot stocks. Panel (b) of Figure 7 shows that
+this differential effect is concentrated in the early months and fades by the third month of the Program. LOB convexity decreases significantly for pilot stocks and more so than for control stocks,
+indicating that the LOB for pilot stocks becomes less convex. The average cumulative quantity
+in the LOB also declines significantly for pilot stocks but increases for control stocks, suggesting
+that liquidity providers withdrew liquidity from pilot stocks to a greater extent. Finally, while the
+average LOB slope decreases for both groups, the decline is steeper for pilot stocks, implying that
+liquidity is being offered at more aggressive prices despite a thinner book.
+We now examine how these changes affect the moments of the return distribution, as shown
+in Panel (c) of Figure 7 and Table 7. Starting with the mean, we find a modest increase for both
+pilot and control stocks, but the difference between these changes is not statistically significant.
+This result suggests that the suspension of the uptick rule for pilot stocks was perceived as equally
+favorable across both groups. Our theoretical framework predicts that the return mean is primarily
+influenced by market and limit order imbalances. Given that MO imbalance decreases more for
+pilot stocks, while LOB imbalance decreases more for control stocks, the offsetting effects likely
+explain the absence of a significant differential impact on return means.
+For return variance, we observe a significant decrease for both groups, but the decline is notably larger for control stocks. Consequently, the return variance of pilot stocks rises relative to
+control stocks after the Pilot Program. This pattern is consistent throughout the Program, as seen
+in Panel (c) of Figure 7.9 Among the theoretical determinants of return variance—market order
+variance, LOB slope, and LOB convexity—we argue that the latter plays the central role. Since
+LOB convexity falls more for pilot stocks, and return variance is inversely related to convexity, this
+explains the observed relative increase in variance for pilot stocks. Changes in MO variance and
+LOB slope do not align with the observed change in the return variance: MO variance is stable
+across groups, and LOB slope declines more for pilot stocks, which would have been expected to
+lower, not raise, their variance.
+We next consider return skewness. As with the mean, both pilot and control stocks experience
+an increase, but the difference is not statistically significant. Theoretically, return skewness is in9Interestingly, at the end of the Program, we observe a relative decline in the variance of pilot stocks, which we
+leave for future research as our focus is on the initial suspension.
+38
+
+fluenced by LOB imbalance and MO skewness. While the former decreases less for pilot stocks (a
+force that would raise skewness), MO skewness declines more sharply for pilot stocks (a force that
+would reduce skewness). The net effect appears to cancel out, explaining the lack of differential
+impact.
+Finally, we turn to return kurtosis. Following the suspension, kurtosis declines significantly for
+pilot stocks and increases for control stocks, resulting in a meaningful divergence. As kurtosis is
+driven by MO kurtosis and LOB convexity, this result is best explained by the latter. Although MO
+kurtosis increases more for pilot stocks—which should push return kurtosis up—LOB convexity
+declines substantially more for pilot stocks, and since return kurtosis is increasing in convexity,
+this convexity effect dominates, driving a net decline in return kurtosis for pilot stocks.
+Figure 8 and Table 8 further illustrate the impact of the Pilot Program on the return distribution
+by examining selected quantiles. Across the board, quantiles for pilot stocks shift to the right,
+indicating an overall increase in return levels. For control stocks, the quantiles below the median, including the median and 75th percentile, increase significantly, while changes in the upper
+quantiles (90th and 95th percentiles) are statistically insignificant. Comparing these shifts reveals
+interesting asymmetries. The increase in lower quantiles is larger for control stocks, suggesting a
+smaller upward shift in the left tail for pilot stocks. However, the higher quantiles increase more
+for pilot stocks than for controls, indicating a stronger upward shift in the right tail. These combined effects suggest that, relative to control stocks, pilot stocks experienced both a broader return
+distribution and a greater upward skew in their upper tails. These patterns reinforce the conclusion
+that the increase in variance outweighs the decrease in kurtosis, leading to a simultaneous widening
+and rightward shift in the return distribution of pilot stocks.
+[Table 8 about here.]
+[Figure 8 about here.]
+In summary, our results in this section confirm our theoretical predictions. First, we find that
+LOB convexity is the primary determinant of return variance and is negatively related to it. Consistent with this prediction, return variance increases significantly for pilot stocks relative to control
+stocks, largely due to a sharper decline in LOB convexity for pilot stocks. Second, LOB convexity
+also emerges as the main determinant of return kurtosis, with a positive relationship. Accordingly,
+we observe a decline in return kurtosis for pilot stocks while it rises for control stocks, a divergence
+39
+
+driven by the pronounced reduction in LOB convexity for pilot stocks, which more than offsets the
+concurrent increase in their market order (MO) kurtosis. For the return mean and skewness, the
+evidence is less definitive. While the return mean increases for both pilot and control stocks, the
+difference is statistically insignificant, suggesting that the offsetting effects of MO and LOB imbalances—both key determinants of expected returns—neutralize each other across groups. Similarly,
+return skewness increases for both groups without a significant differential effect, likely reflecting
+two opposing forces: a relatively smaller decline in LOB imbalance for pilot stocks, which tends
+to raise skewness, and a larger drop in MO skewness, which tends to lower it. Overall, these findings emphasize the central role of LOB shape—particularly convexity—in driving changes in the
+higher moments of return distributions.
+7
+Conclusion
+In this paper, we developed a reduced-form microstructure model of price formation to study the
+joint role of market and limit orders in shaping the distribution of returns in an order-driven market. Our theoretical framework posits that the distribution of market orders and the shape of the
+limit order book jointly determine the moments of the return distribution. By deriving closed-form
+expressions for the first four central moments, we established clear predictions on how LOB imbalance and convexity affect the mean, variance, skewness, and kurtosis and the quantiles of the
+return distribution.
+Our empirical analysis, based on high-frequency data for NYSE stocks, provides strong support
+for these predictions. We find that LOB imbalance primarily drives the mean and skewness of
+returns, independently of the market order distribution. By contrast, LOB convexity plays a central
+role in determining return variance and kurtosis, underscoring the link between market liquidity,
+transaction costs, and tail risk in asset returns.
+Exploiting the Reg SHO pilot program as an exogenous shock to market liquidity, we further
+establish a causal relationship between LOB shape and return moments. In particular, we show
+that changes in LOB convexity were the main driver of shifts in return variance and kurtosis following the suspension of the uptick rule, reinforcing the importance of market structure in shaping
+return dynamics. In addition, our analysis of return quantiles around the Reg SHO pilot program
+reveals asymmetric shifts in the return distribution of pilot stocks relative to controls. Pilot stocks
+experienced a stronger upward shift in the right tail but a weaker shift in the left tail, implying both
+a widening and rightward shift of the distribution. These results reinforce our conclusion that the
+40
+
+increase in variance outweighed the decrease in kurtosis.
+Taken together, our findings contribute to the literature on price formation and market microstructure by providing a unified model that links order book shape to the distribution of stock
+returns. These results carry important implications for both market participants and regulators,
+highlighting the role of LOB dynamics in determining risk, especially tail risk, and return in equity
+markets.
+41
+
+References
+Beltran-Lopez, H., Giot, P., Grammig, J., 2009. Commonalities in the order book. Financial Markets and Portfolio Management 23 (3), 209–242.
+Biais, B., Hillion, P., Spatt, C., 1995. An empirical analysis of the limit order book and the order
+flow in the Paris Bourse. Journal of Finance 50 (5), 1655–1689.
+Brennan, M. J., Chordia, T., Subrahmanyam, A., Tong, Q., 2012. Sell-order liquidity and the crosssection of expected stock returns. Journal of Financial Economics 105 (3), 523–541.
+Cao, C., Hansch, O., Wang, X., 2009. The information content of an open limit-order book. Journal
+of Futures Markets 29 (1), 16–41.
+Cenesizoglu, T., Dionne, G., Zhou, X., 2022. Asymmetric effects of the limit order book on price
+dynamics. Journal of Empirical Finance 65, 77–98.
+Cenesizoglu, T., Grass, G., 2018. Bid- and ask-side liquidity in the NYSE limit order book. Journal
+of Financial Markets 38, 14–38.
+Chakrabarty, B., Li, B., Nguyen, V., Van Ness, R. A., 2007. Trade classification algorithms for
+electronic communications network trades. Journal of Banking and Finance 31 (12), 3806–3821.
+Chordia, T., Roll, R., Subrahmanyam, A., 2002. Order imbalance, liquidity, and market returns.
+Journal of Financial Economics 65 (1), 111–130.
+Foucault, T., Kadan, O., Kandel, E., 2005. Limit order book as a market for liquidity. Review of
+Financial Studies 18 (4), 1171–1217.
+Goettler, R. L., Parlour, C. A., Rajan, U., 2009. Informed traders and limit order markets. Journal
+of Financial Economics 93 (1), 67–87.
+Hasbrouck, J., 1991. Measuring the information content of stock trades. Journal of Finance 46 (1),
+179–207.
+Hasbrouck, J., 1992. Assessing the quality of a security market: A new approach to transactions
+cost measurement. Review of Financial Studies 5 (2), 191–212.
+42
+
+Kalay, A., Wohl, A., 2009. Detecting liquidity traders. Journal of Financial and Quantitative Analysis 44 (1), 29–54.
+Kaniel, R., Liu, H., 2006. So what orders do informed traders use? Journal of Business 79 (4),
+1867–1913.
+Keim, D. B., Madhavan, A., 1996. The upstairs market for large-block transactions: Analysis and
+measurement of price effects. Review of Financial Studies 9 (1), 1–36.
+Knez, P. J., Ready, M. J., 1996. Estimating the profits from trading strategies. Review of Financial
+Studies 9, 1121–1163.
+Korajczyk, R. A., Sadka, R., 2008. Pricing the commonality across alternative measures of liquidity. Journal of Financial Economics 87 (1), 45–72.
+Kozhan, R., Salmon, M., 2012. The information content of a limit order book: The case of an FX
+market. Journal of Financial Markets 15 (1), 1–28.
+Kyle, A. S., 1985. Continuous auctions and insider trading. Econometrica 53 (6), 1315–1335.
+R¨osch, C. G., Kaserer, C., 2014. Market liquidity in the financial crisis: The role of liquidity
+commonality and flight-to-quality. Journal of Banking and Finance 45 (1), 152–170, reprint of
+the 2013 original published in Journal of Banking and Finance 37(7):2284–2302.
+Rosu, I., 2009. A dynamic model of the limit order book. Review of Financial Studies 22 (11),
+4601–4641.
+Wuyts, G., 2008. The impact of liquidity shocks through the limit order book. Unpublished working paper. University of Leuven.
+43
+
+(a) Symmetric LOB
+(b) Imbalanced LOB
+(c) Convex LOB
+Figure 1: Market Order Distribution, LOB and Return Distribution
+Note: This figure illustrates the relationship between the distribution of market orders, the shape
+of the LOB, and the distribution of returns. In all three panels, the figure labeled “Quantity PDF”
+(lower right) displays the assumed normal distribution of market orders, centered at zero, indicating
+no market order imbalance. Positive values (shown in red) represent buy market orders matched
+with the ask side of the LOB, while negative values (shown in blue) correspond to sell market
+orders matched with the bid side. The “Price Impact Function P(Q)” (top right) represents the
+shape of the ask and bid sides of the LOB, modeled as a continuous price impact function, against
+which market orders are executed. The total shares available in both bid and ask sides are assumed
+to be 1,000 and the midquote is assumed to be $15 per share. The “Price PDF” (top left) presents
+the distribution of prices around the midquote of $15, resulting from the execution of market
+orders with different number of shares (presented in “Quantity PDF” (lower right)) against the
+LOB (presented in “Price Impact Function P(Q)”). The blue (red) line in “Price PDF” corresponds
+to negative (positive) returns resulting from the execution of sell (buy) market orders. Panel (a)
+presents the case with a balanced, linear LOB where both the bid and ask sides have identical
+slopes. Panel (b) presents the case with an imbalanced, linear LOB, with a steeper slope on the ask
+side compared to the bid side. Panel (c) presents the case with a balanced but convex LOB, where
+the higher levels on both bid and ask sides have steeper slopes than their lower levels.
+44
+
+Panel (a): Zero MO Imbalance
+Return Mean
+-0.6
+-0.4
+-0.2
+0
+0.2
+0.4
+0.6
+LOB Imbalance
+-0.03
+-0.02
+-0.01
+0
+0.01
+0.02
+0.03
+Mean
+Zero LOB Conv
+High LOB Conv
+Low LOB Conv
+Return Variance
+-0.6
+-0.4
+-0.2
+0
+0.2
+0.4
+0.6
+LOB Imbalance
+0
+0.2
+0.4
+0.6
+0.8
+1
+1.2
+Variance
+10-3
+Zero LOB Conv
+High LOB Conv
+Low LOB Conv
+Return Skewness
+-0.6
+-0.4
+-0.2
+0
+0.2
+0.4
+0.6
+LOB Imbalance
+-1.5
+-1
+-0.5
+0
+0.5
+1
+1.5
+Skewness
+Zero LOB Conv
+High LOB Conv
+Low LOB Conv
+Return Kurtosis
+-0.6
+-0.4
+-0.2
+0
+0.2
+0.4
+0.6
+LOB Imbalance
+0
+1
+2
+3
+4
+5
+6
+7
+8
+Kurtosis
+Zero LOB Conv
+High LOB Conv
+Low LOB Conv
+Panel (b): Zero LOB Convexity
+Return Mean
+-0.6
+-0.4
+-0.2
+0
+0.2
+0.4
+0.6
+LOB Imbalance
+-0.03
+-0.02
+-0.01
+0
+0.01
+0.02
+0.03
+Mean
+Zero MO Imb
+High MO Imb
+Low MO Imb
+Return Variance
+-0.6
+-0.4
+-0.2
+0
+0.2
+0.4
+0.6
+LOB Imbalance
+0
+0.2
+0.4
+0.6
+0.8
+1
+1.2
+Variance
+10-3
+Zero MO Imb
+High MO Imb
+Low MO Imb
+Return Skewness
+-0.6
+-0.4
+-0.2
+0
+0.2
+0.4
+0.6
+LOB Imbalance
+-1.5
+-1
+-0.5
+0
+0.5
+1
+1.5
+Skewness
+Zero MO Imb
+High MO Imb
+Low MO Imb
+Return Kurtosis
+-0.6
+-0.4
+-0.2
+0
+0.2
+0.4
+0.6
+LOB Imbalance
+0
+1
+2
+3
+4
+5
+6
+7
+8
+Kurtosis
+Zero MO Imb
+High MO Imb
+Low MO Imb
+Figure 2: The Effects of the LOB Imbalance on the First Four Central Moments of the Return Distribution
+Note: Panel (a) shows the effect of LOB imbalance on the first four central moments of the return distribution, conditional on zero MO imbalance and three levels of LOB convexity. Panel (b)
+shows the corresponding effects conditional on zero LOB convexity and three levels of MO imbalance. In panel (a), high (dotted line) and low (dashed line) LOB convexity values are ±1.0431,
+corresponding to the sample standard deviation of its empirical counterpart. In panel (b), high
+(dotted line) and low (dashed line) MO imbalance values are ±559, corresponding to the sample
+standard deviation of its empirical counterpart. Solid lines in both panels correspond to zero LOB
+convexity and zero MO imbalance. All other parameters follow Table 1. LOB imbalance presented
+in the x-axis ranges from ±0.7040, corresponding to the sample standard deviation of its empirical
+counterpart.
+45
+
+Panel (a): Zero MO Imbalance
+Low LOB Convexity
+0
+10
+20
+30
+40
+50
+60
+70
+80
+90
+100
+-0.08
+-0.06
+-0.04
+-0.02
+0
+0.02
+0.04
+0.06
+0.08
+Quantiles
+Low LOB Imb
+Zero LOB Imb
+High LOB Imb
+Zero LOB Convexity
+0
+10
+20
+30
+40
+50
+60
+70
+80
+90
+100
+-0.05
+-0.04
+-0.03
+-0.02
+-0.01
+0
+0.01
+0.02
+0.03
+0.04
+0.05
+Quantiles
+Low LOB Imb
+Zero LOB Imb
+High LOB Imb
+High LOB Convexity
+0
+10
+20
+30
+40
+50
+60
+70
+80
+90
+100
+-0.04
+-0.03
+-0.02
+-0.01
+0
+0.01
+0.02
+0.03
+0.04
+Quantiles
+Low LOB Imb
+Zero LOB Imb
+High LOB Imb
+Panel (b): Zero LOB Convexity
+Low MO Imbalance
+0
+10
+20
+30
+40
+50
+60
+70
+80
+90
+100
+-0.07
+-0.06
+-0.05
+-0.04
+-0.03
+-0.02
+-0.01
+0
+0.01
+0.02
+0.03
+Quantiles
+Low LOB Imb
+Zero LOB Imb
+High LOB Imb
+Zero MO Imbalance
+0
+10
+20
+30
+40
+50
+60
+70
+80
+90
+100
+-0.05
+-0.04
+-0.03
+-0.02
+-0.01
+0
+0.01
+0.02
+0.03
+0.04
+0.05
+Quantiles
+Low LOB Imb
+Zero LOB Imb
+High LOB Imb
+High MO Imbalance
+0
+10
+20
+30
+40
+50
+60
+70
+80
+90
+100
+-0.03
+-0.02
+-0.01
+0
+0.01
+0.02
+0.03
+0.04
+0.05
+0.06
+0.07
+Quantiles
+Low LOB Imb
+Zero LOB Imb
+High LOB Imb
+Figure 3: The Effects of LOB Imbalance on the Quantiles of the Return Distribution
+Note: Panel (a) shows the effect of LOB imbalance on the quantiles of the return distribution,
+conditional on zero MO imbalance and three levels of LOB convexity. Panel (b) shows the corresponding effects conditional on zero LOB convexity and three levels of MO imbalance. In panel
+(a), high (dotted line) and low (dashed line) LOB convexity values are ±1.0431, corresponding to
+the sample standard deviation of its empirical counterpart. In panel (b), high (dotted line) and low
+(dashed line) MO imbalance values are ±559, corresponding to the sample standard deviation of
+its empirical counterpart. In both panels, we consider high, zero, and low values of LOB imbalance: +0.7040 (dotted), 0 (solid), and −0.7040 (dashed), corresponding to the sample standard
+deviation of its empirical counterpart.
+46
+
+Panel (a): Zero MO Imbalance
+Return Mean
+-1
+-0.8
+-0.6
+-0.4
+-0.2
+0
+0.2
+0.4
+0.6
+0.8
+1
+LOB Convexity
+-0.03
+-0.02
+-0.01
+0
+0.01
+0.02
+0.03
+Mean
+Zero LOB Imb
+High LOB Imb
+Low LOB Imb
+Return Variance
+-1
+-0.8
+-0.6
+-0.4
+-0.2
+0
+0.2
+0.4
+0.6
+0.8
+1
+LOB Convexity
+0
+0.2
+0.4
+0.6
+0.8
+1
+1.2
+Variance
+10-3
+Zero LOB Imb
+High LOB Imb
+Low LOB Imb
+Return Skewness
+-1
+-0.8
+-0.6
+-0.4
+-0.2
+0
+0.2
+0.4
+0.6
+0.8
+1
+LOB Convexity
+-1.5
+-1
+-0.5
+0
+0.5
+1
+1.5
+Skewness
+Zero LOB Imb
+High LOB Imb
+Low LOB Imb
+Return Kurtosis
+-1
+-0.8
+-0.6
+-0.4
+-0.2
+0
+0.2
+0.4
+0.6
+0.8
+1
+LOB Convexity
+0
+1
+2
+3
+4
+5
+6
+7
+8
+Kurtosis
+Zero LOB Imb
+High LOB Imb
+Low LOB Imb
+Panel (b): Zero LOB Imbalance
+Return Mean
+-1
+-0.8
+-0.6
+-0.4
+-0.2
+0
+0.2
+0.4
+0.6
+0.8
+1
+LOB Convexity
+-0.03
+-0.02
+-0.01
+0
+0.01
+0.02
+0.03
+Mean
+Zero MO Imb
+High MO Imb
+Low MO Imb
+Return Variance
+-1
+-0.8
+-0.6
+-0.4
+-0.2
+0
+0.2
+0.4
+0.6
+0.8
+1
+LOB Convexity
+0
+0.2
+0.4
+0.6
+0.8
+1
+1.2
+Variance
+10-3
+Zero MO Imb
+High MO Imb
+Low MO Imb
+Return Skewness
+-1
+-0.8
+-0.6
+-0.4
+-0.2
+0
+0.2
+0.4
+0.6
+0.8
+1
+LOB Convexity
+-1.5
+-1
+-0.5
+0
+0.5
+1
+1.5
+Skewness
+Zero MO Imb
+High MO Imb
+Low MO Imb
+Return Kurtosis
+-1
+-0.8
+-0.6
+-0.4
+-0.2
+0
+0.2
+0.4
+0.6
+0.8
+1
+LOB Convexity
+0
+1
+2
+3
+4
+5
+6
+7
+8
+Kurtosis
+Zero MO Imb
+High MO Imb
+Low MO Imb
+Figure 4: The Effects of Symmetric LOB Convexity on the First Four Central Moments of the Return Distribution
+Note: Panel (a) shows the effect of LOB convexity on the first four central moments of the return
+distribution, conditional on zero MO imbalance and three levels of LOB imbalance. Panel (b)
+shows the corresponding effects conditional on zero LOB imbalance and three levels of MO imbalance. In panel (a), high (dotted line) and low (dashed line) LOB imbalance values are ±0.7040,
+corresponding to the sample standard deviation of its empirical counterpart. In panel (b), high
+(dotted line) and low (dashed line) MO imbalance values are ±559, corresponding to the sample
+standard deviation of its empirical counterpart. Solid lines in both panels correspond to zero LOB
+imbalance and zero MO imbalance. All other parameters are calibrated to Table 1. LOB convexity
+presented in the x-axis ranges from ±1.0431, corresponding to the sample standard deviation of its
+empirical counterpart.
+47
+
+Panel (a): Zero MO Imbalance
+Low LOB Imbalance
+0
+10
+20
+30
+40
+50
+60
+70
+80
+90
+100
+-0.08
+-0.06
+-0.04
+-0.02
+0
+0.02
+0.04
+Quantiles
+Low LOB Conv
+Zero LOB Conv
+High LOB Conv
+Zero LOB Imbalance
+0
+10
+20
+30
+40
+50
+60
+70
+80
+90
+100
+-0.06
+-0.04
+-0.02
+0
+0.02
+0.04
+0.06
+Quantiles
+Low LOB Conv
+Zero LOB Conv
+High LOB Conv
+High LOB Imbalance
+0
+10
+20
+30
+40
+50
+60
+70
+80
+90
+100
+-0.04
+-0.02
+0
+0.02
+0.04
+0.06
+0.08
+Quantiles
+Low LOB Conv
+Zero LOB Conv
+High LOB Conv
+Panel (b): Zero LOB Imbalance
+Low MO Imbalance
+0
+10
+20
+30
+40
+50
+60
+70
+80
+90
+100
+-0.06
+-0.04
+-0.02
+0
+0.02
+0.04
+0.06
+Quantiles
+Low LOB Conv
+Zero LOB Conv
+High LOB Conv
+Zero MO Imbalance
+0
+10
+20
+30
+40
+50
+60
+70
+80
+90
+100
+-0.06
+-0.04
+-0.02
+0
+0.02
+0.04
+0.06
+Quantiles
+Low LOB Conv
+Zero LOB Conv
+High LOB Conv
+High MO Imbalance
+0
+10
+20
+30
+40
+50
+60
+70
+80
+90
+100
+-0.06
+-0.04
+-0.02
+0
+0.02
+0.04
+0.06
+Quantiles
+Low LOB Conv
+Zero LOB Conv
+High LOB Conv
+Figure 5: The Effects of Symmetric LOB Convexity on the Quantiles of the Return Distribution
+Note: Panel (a) shows the effect of LOB convexity on the quantiles of the return distribution,
+conditional on zero MO imbalance and three levels of LOB imbalance. Panel (b) shows the corresponding effects conditional on zero LOB imbalance and three levels of MO imbalance. In panel
+(a), high (dotted line) and low (dashed line) LOB imbalance values are ±0.7040, corresponding to
+the sample standard deviation of its empirical counterpart. In panel (b), high (dotted line) and low
+(dashed line) MO imbalance values are ±559, corresponding to the sample standard deviation of
+its empirical counterpart. In both panels, we consider high, zero, and low values of LOB convexity:
++1.0431 (dotted), 0 (solid), and −1.0431 (dashed), corresponding to the sample standard deviation
+of its empirical counterpart.
+48
+
+(a) High LOB Convexity
+0
+10
+20
+30
+40
+50
+60
+70
+80
+90
+100
+-0.03
+-0.02
+-0.01
+0
+0.01
+0.02
+0.03
+Quantiles
+Normal
+High LOB Conv
+(b) Low LOB Convexity
+0
+10
+20
+30
+40
+50
+60
+70
+80
+90
+100
+-0.08
+-0.06
+-0.04
+-0.02
+0
+0.02
+0.04
+0.06
+0.08
+Quantiles
+Normal
+Low LOB Conv
+Figure 6: The Effects of Symmetric LOB Convexity on the Tails of the Return Distribution
+Note: This figure shows the quantiles (1% to 99%) of the simulated return distribution when the
+LOB convexity is high (panel (a)) and low (panel (b)). In both panels, the solid line represents the
+quantiles of a normal distribution with zero mean and variance equal to that of the corresponding
+simulated returns. The high and low LOB convexity values are 0.4226 and −0.4226, respectively,
+corresponding to plus and minus one standard deviation of their empirical counterparts. Both the
+LOB imbalance and MO imbalance are set to zero, and all other variables are calibrated to the
+values in Table 1.
+49
+
+Panel (a): Market Order Distribution
+MO Mean
+MO Variance
+MO Skewness
+MO Kurtosis
+Panel (b): LOB Shape Parameters
+LOB Imbalance
+LOB Convexity
+LOB Convexity
+LOB Quantity
+Panel (c): Return Moments
+Return Mean
+Return Variance
+Return Skewness
+Return Kurtosis
+Figure 7: Changes around RegSHO: Market Order Distribution, LOB Shape, and Return Moments.
+Note: This figure presents the daily differences between pilot and control stocks in the Reg SHO:
+panel (a) reports the first four moments of the market order distribution, panel (b) the LOB shape
+parameters, and panel (c) the first four moments of the return distribution. The pilot stocks began
+trading without any short sale restrictions on May 2, 2005 (the left dashed vertical line). Every third
+stock in the Russell 3000 index sorted by volume was chosen as a pilot stock while the remaining
+2,000 stocks constitute the control stocks. The short-selling restrictions were lifted for all stocks
+in the Russell 3000 index on 6 July 2007 (the right dashed vertical line).
+50
+
+(a) 5% Quantile
+(b) 10% Quantile
+(c) 25% Quantile
+(d) 75% Quantile
+(e) 90% Quantile
+(f) 95% Quantile
+Figure 8: The Effect of RegSHO on the Return Quantiles
+Note: The figure presents the daily differences between the selected quantiles of the return distribution of pilot and control stocks in the RegSHO. The pilot stocks began trading without any short
+sale restrictions on May 2, 2005 (the left dashed vertical line). Every third stock in the Russell
+3000 index sorted by volume was chosen as a pilot stock while the remaining 2,000 stocks constitute the control stocks. The short-selling restrictions were lifted for all stocks in the Russell 3000
+index on 6 July 2007 (the right dashed vertical line).
+51
+
+Table 1: Calibration of Model Parameters
+Parameter
+Symbol
+Value
+Market Order Mean
+µ
+0
+Market Order Std. Dev.
+σ
+559
+Avg. LOB Slope (×10000)
+Savg
+0.2694
+Ask Side Threshold Quantity
+KA
+559
+Bid Side Threshold Quantity
+KB
+559
+Ask Side Total Quantity
+¯DA
+10481
+Bid Side Total Quantity
+¯DB
+10481
+Note: This table presents the names and symbols of the model parameters as well as their calibrated values. We compute the empirical counterparts
+of each model parameter for each stock and trading day in our sample presented in Section 4, and use the median of these variables over all stocks
+and trading days to calibrate these model parameters. The mean of the market order distribution is not calibrated but rather set to zero.
+52
+
+Table 2: Summary Statistics
+Variable
+Symbol
+Mean
+Median
+Std. Dev.
+5% Perc.
+95% Perc.
+Autocorr.
+Return Mean
+M1
+0.0006
+0.0000
+0.0304
+-0.0405
+0.0426
+-0.0217
+Return Variance
+M2
+0.0035
+0.0028
+0.0026
+0.0012
+0.0083
+0.7848
+Return Skewness
+M3
+0.0075
+-0.0002
+1.2313
+-1.8598
+1.9035
+0.0152
+Return Kurtosis
+M4
+6.9787
+5.3303
+5.4984
+3.0136
+16.3946
+0.0821
+MO Imb. Mean
+µ
+17.7227
+2.9238
+147.8520
+-52.8244
+141.4816
+0.1468
+MO Imb. Std. Dev.
+θ
+1291
+559
+3621
+148
+4409
+0.2576
+MO Imb. Skewness
+-
+0.6834
+0.3327
+35.4439
+-49.2652
+50.5662
+0.0087
+MO Imb. Kurtosis
+-
+1983
+236
+7954
+9
+8974
+0.6837
+LOB Cum Quant Ask (Levels 1-10)
+DA
+1,10
+21193
+11104
+114431
+2924
+60692
+0.9502
+LOB Cum Quant Bid (Levels 1-10)
+DA
+1,10
+19628
+9858
+111737
+2731
+55644
+0.9519
+LOB Slope Ask (Levels 1-10) (×10000)
+SA
+1,10
+1.8611
+0.2575
+25.5464
+0.0224
+5.0411
+0.8241
+LOB Slope Bid (Levels 1-10) (×10000)
+SB
+1,10
+2.0945
+0.2813
+23.4200
+0.0237
+6.9309
+0.8409
+(log) LOB Imb (Levels 1-10)
+i10
+0.1226
+0.0542
+0.7040
+-0.9094
+1.3425
+0.6575
+(log) Avg. LOB Conv (Levels 2-10)
+cavg
+0.4422
+0.1412
+1.3494
+-1.2305
+3.0996
+0.9237
+(log) Avg. LOB Conv (Levels 3-10)
+cavg
+0.4433
+0.1768
+1.1850
+-1.0074
+2.8192
+0.9117
+(log) Avg. LOB Conv (Levels 5-10)
+cavg
+0.6648
+0.4426
+1.0431
+-0.6151
+2.7447
+0.8916
+Note: This table presents some summary statistics on the variables used in our empirical analysis. Symbol presents the corresponding symbol of the
+variable in our reduced-form price formation model. If the symbol is missing, the variable is not in our model but used in our empirical analysis. The
+summary statistics are computed over all stock-day pairs in our sample. The return mean is the daily (log) returns from CRSP. The jth non-central
+moment of returns E[rj
+it] = P78
+m=1 rj
+itm for j = 2, 3, 4 are computed using 5-minute (log) midquote returns from TAQ in a given trading day.
+The central moments are obtained as per their usual definitions based on non-central moments assuming that 5-minute returns have zero mean. The
+first four central moments of the market order distribution are, respectively, the first four central moments of the signed volume in shares based on
+the Lee-Ready algorithm. LOB Cum Quant Ask (Levels 1–10) and LOB Cum Quant Bid (Levels 1–10) are the total quantities available in the first
+ten levels of the ask and bid sides of the LOB, respectively. LOB Slope Ask (Levels 1–10) (×10000) and LOB Slope Bid (Levels 1–10) (×10000)
+are the 10000 times the slopes of the first ten levels of the ask and bid sides, respectively, defined in Equation 4. (Log) LOB Imb (Levels 1–10) is
+the (log) LOB imbalance defined as the ratio of the slopes of the first ten levels of the bid and ask sides as in Equation 11. (Log) Avg. LOB Conv
+(Levels x–10) is the (log) LOB convexity defined as the average of the bid and ask sides convexities, which are computed as the ratios of the slopes
+of a given side between levels 1–x and x–10 as in Equations 12 and 13.
+53
+
+Table 3: Unconditional Effects of LOB Shape and Market Order Distribution on Return Moments
+(a) Economic Importance
+Mean
+Variance
+Skewness
+Kurtosis
+MO Imb Mean
+0.00196***
+0.00000
+0.02645***
+0.00044
+MO Imb Std. Dev.
+0.00023*
+0.00004***
+-0.00057
+0.10216***
+MO Imb Skewness
+-0.00044***
+-0.00001***
+0.00911***
+0.00145
+MO Imb Kurtosis
+0.00022***
+0.00032***
+-0.00139
+-0.08671***
+LOB Avg. Cum Quant (t-1)
+0.00027***
+0.00047***
+-0.01083***
+-0.18896***
+LOB Avg. Slope (t-1)
+-0.00086***
+0.00031***
+-0.00917***
+0.06307**
+LOB Imb (t-1)
+0.00021***
+0.00026***
+0.01340***
+-0.13162***
+LOB Conv (t-1)
+0.00034***
+-0.00042***
+0.00333*
+0.18609***
+(b) Ranking
+Mean
+Variance
+Skewness
+Kurtosis
+MO Imb Mean
+1
+8
+1
+8
+MO Imb Std. Dev.
+6
+6
+8
+4
+MO Imb Skewness
+3
+7
+5
+7
+MO Imb Kurtosis
+7
+3
+7
+5
+LOB Avg. Cum Quant (t-1)
+5
+1
+3
+1
+LOB Avg. Slope (t-1)
+2
+4
+4
+6
+LOB Imb (t-1)
+8
+5
+2
+3
+LOB Conv (t-1)
+4
+2
+6
+2
+Note: Panel (a) reports the economic significance of the market order distribution and LOB shape parameters. Economic significance is computed
+as the coefficient estimate from the firm–fixed effects regression in Equation 17 multiplied by the standard deviation of the corresponding variable,
+where the standard deviation is calculated across all stock–day observations in the sample. Standard errors are clustered at the firm level. Panel
+(b) reports the rank of each variable among the eight variables of interest (market order distribution and LOB shape parameters), excluding the
+three additional return-moment controls. A lower rank denotes greater economic importance, with 1 indicating the most important and 8 the least
+important within this set.
+54
+
+Table 4: Conditional Effects of LOB Imbalance on the Return Moments
+(a) Conditional on Market Order Imbalance
+Mean
+Variance
+Skewness
+Kurtosis
+Low MO Imb
+-0.00022***
+0.00048***
+0.02058***
+-0.16877***
+Zero MO Imb
+0.00004
+0.00048***
+0.01910***
+-0.16551***
+High MO Imb
+0.00030***
+0.00048***
+0.01761***
+-0.16224***
+(b) Conditional on Market Order Variance
+Mean
+Variance
+Skewness
+Kurtosis
+Low MO Std
+-0.00008
+0.00049***
+0.01635***
+-0.15811***
+Zero MO Std
+0.00004
+0.00048***
+0.01910***
+-0.16551***
+High MO Std
+0.00017***
+0.00047***
+0.02184***
+-0.17291***
+(c) Conditional on LOB Convexity
+Mean
+Variance
+Skewness
+Kurtosis
+Low LOB Conv
+0.00001
+0.00059***
+0.02234***
+-0.18316***
+Zero LOB Conv
+0.00004
+0.00048***
+0.01910***
+-0.16551***
+High LOB Conv
+0.00007*
+0.00038***
+0.01585***
+-0.14785***
+Note: This table reports the economic significance of the effects of LOB imbalance on the first four moments of the return distribution, conditional
+on MO imbalance mean in Panel (a), MO imbalance variance in Panel (b), and LOB convexity in Panel (c). The empirical specification with
+interaction terms in Equation 18 is estimated with firm fixed effects, and standard errors are clustered at the firm level. The economic significance
+of the effect of LOB imbalance, say on the return mean when MO imbalance is high, is computed as (ˆδ1
+3 + ˆδ1
+5 × std(MO1)) × std(i), where
+std(MO1) and std(i) are the sample standard deviations of MO and LOB imbalance, respectively, computed over all stock-day pairs in our sample.
+The high and low values of MO imbalance mean, MO imbalance variance, and LOB convexity are set to are set to plus and minus one times their
+standard deviations, e.g. high MO Imbalance = +std(MO1) and Low MO Imbalance = −std(MO1).
+55
+
+Table 5: Conditional Effects of LOB Convexity on the Return Moments
+(a) Conditional on Market Order Imbalance
+Mean
+Variance
+Skewness
+Kurtosis
+Low MO Imb
+0.00079***
+-0.00038***
+0.00271
+0.17620***
+Zero MO Imb
+0.00028***
+-0.00034***
+0.00228
+0.16199***
+High MO Imb
+-0.00022**
+-0.00030***
+0.00185
+0.14779***
+(b) Conditional on Market Order Variance
+Mean
+Variance
+Skewness
+Kurtosis
+Low MO Std
+0.00027*
+-0.00042***
+-0.00126
+0.21422***
+Zero MO Std
+0.00028***
+-0.00034***
+0.00228
+0.16199***
+High MO Std
+0.00030***
+-0.00026***
+0.00582***
+0.10977***
+(c) Conditional on LOB Imbalance
+Mean
+Variance
+Skewness
+Kurtosis
+Low LOB Imb
+0.00025***
+-0.00023***
+0.00553***
+0.14434***
+Zero LOB Imb
+0.00028***
+-0.00034***
+0.00228
+0.16199***
+High LOB Imb
+0.00032***
+-0.00045***
+-0.00097
+0.17965***
+Note: This table reports the economic significance of the effects of LOB convexity on the first four moments of the return distribution, conditional
+on MO imbalance mean in Panel (a), MO imbalance variance in Panel (b), and LOB imbalance in Panel (c). The empirical specification with
+interaction terms in Equation 18 is estimated with firm fixed effects, and standard errors are clustered at the firm level. The economic significance
+of the effect of LOB convexity, say on the return mean when MO imbalance is high, is computed as (ˆδ1
+4 + ˆδ1
+6 × std(MO1)) × std(cavg), where
+std(MO1) and std(cavg) are the sample standard deviations of MO imbalance and LOB convexity, respectively, computed over all stock-day pairs
+in our sample. The high and low values of MO imbalance mean, MO imbalance variance, and LOB imbalance are set to are set to plus and minus
+one times their standard deviations, e.g. high MO Imbalance = +std(MO1) and Low MO Imbalance = −std(MO1).
+56
+
+Table 6: The Effect of LOB Shape and Market Order Distribution
+(a) Economic Importance
+q5
+q10
+q25
+q50
+q75
+q90
+q95
+MO Imb Mean
+0.00270***
+0.00264***
+0.00257***
+0.00255***
+0.00257***
+0.00263***
+0.00268***
+MO Imb Std. Dev.
+0.00022
+0.00024
+0.00026
+0.00026
+0.00026
+0.00028
+0.00030*
+MO Imb Skewness
+-0.00039***
+-0.00040***
+-0.00042***
+-0.00043***
+-0.00043***
+-0.00043***
+-0.00042***
+MO Imb Kurtosis
+-0.00033***
+-0.00019**
+0.00000
+0.00016**
+0.00032***
+0.00050***
+0.00064***
+LOB Avg. Cum Quant (t-1)
+-0.00070***
+-0.00046***
+-0.00017***
+0.00007
+0.00029***
+0.00057***
+0.00080***
+LOB Avg. Slope (t-1)
+-0.00172***
+-0.00150***
+-0.00128***
+-0.00117***
+-0.00107***
+-0.00091***
+-0.00074***
+LOB Imb (t-1)
+-0.00004
+0.00007***
+0.00020***
+0.00031***
+0.00043***
+0.00059***
+0.00072***
+LOB Conv (t-1)
+0.00121***
+0.00101***
+0.00076***
+0.00055***
+0.00034***
+0.00011*
+-0.00008
+(b) Ranking
+q5
+q10
+q25
+q50
+q75
+q90
+q95
+MO Imb Mean
+1
+1
+1
+1
+1
+1
+1
+MO Imb Std
+7
+6
+5
+6
+8
+7
+7
+MO Imb Skew
+5
+5
+4
+4
+3
+6
+6
+MO Imb Kurt
+6
+7
+8
+7
+6
+5
+5
+(Log) Cum Quant Ask (t-1)
+4
+4
+7
+8
+7
+4
+2
+(Log) Avg LOB Slope (t-1)
+2
+2
+2
+2
+2
+2
+3
+(Log) LOB Imb (t-1)
+8
+8
+6
+5
+4
+3
+4
+(Log) LOB Conv (t-1)
+3
+3
+3
+3
+5
+8
+8
+Note: Panel (a) of this table presents the economic significance of market order distribution and LOB shape parameters in determining the quantiles
+of the return distribution. The economic significance is computed as the coefficient of a given variable from the estimation of the regression model in
+Equation 20 with firm fixed effects times the standard deviation of that variable computed over all stock-day pairs in our sample. The standard errors
+are clustered at the firm level. Panel (b) presents the ranking of each variable among the eight variables of interest, i.e. market order distribution and
+LOB shape parameters, excluding the other control variables, i.e. the other three moments of the return distribution. A smaller ranking indicates a
+higher economic importance, with one being the most important and eight being the least important variable among the eight variables.
+57
+
+Table 7: Diff-in-diff Analysis of Market Order Distribution, LOB Shape, and Return Moments
+around RegSHO
+(a) Moments of the Market Order Distribution
+Pilot
+Control
+Pre
+Post
+Diff
+Pre
+Post
+Diff
+Diff-Diff
+Mean
+42.2960
+7.9547
+-34.3413***
+46.3519
+38.5226
+-7.8292***
+-26.5121***
+Variance
+1,842.6188
+1,788.4930
+-54.1258
+1,927.1735
+1,814.0361
+-113.1373***
+59.0115
+Skewness
+1.6515
+0.7004
+-0.9510***
+1.7343
+1.6325
+-0.1018
+-0.8492***
+Kurtosis
+345.3823
+375.0246
+29.6423***
+345.2019
+355.7659
+10.5640**
+19.0783***
+(b) Shape of the LOB
+Pilot
+Control
+LOB
+Pre
+Post
+Diff
+Pre
+Post
+Diff
+Diff-Diff
+Log Imb
+0.1197
+0.0304
+-0.0893***
+0.1338
+-0.0110
+-0.1448***
+0.0555***
+Log Conv
+1.4181
+1.1714
+-0.2467***
+1.4317
+1.2638
+-0.1679***
+-0.0788***
+Avg Cum Quant
+5.0935
+5.0856
+-0.0079***
+5.1069
+5.1158
+0.0089***
+-0.0168***
+Avg Slope
+-9.6307
+-9.8340
+-0.2032***
+-9.6657
+-9.8252
+-0.1595***
+-0.0437**
+(c) Moments of the Return Distribution
+Pilot
+Control
+Ret
+Pre
+Post
+Diff
+Pre
+Post
+Diff
+Diff-Diff
+Mean
+-0.0001
+0.0023
+0.0023***
+-0.0003
+0.0024
+0.0027***
+-0.0004
+Variance
+26.4197
+25.2810
+-1.1387***
+26.0983
+23.9229
+-2.1754***
+1.0367***
+Skewness
+0.0157
+0.0752
+0.0595***
+0.0087
+0.0663
+0.0576***
+0.0019
+Kurtosis
+6.6908
+6.3131
+-0.3777***
+6.6627
+6.8309
+0.1682***
+-0.5459***
+Note: This table presents the results of a differences-in-differences analysis of the first four moments of the market order distribution in panel (a),
+the LOB shape variables in panel (b) and the first four moments of the return distribution in panel (c) around the suspension of the uptick rule
+following the adaptation of Rule 202T on May 2, 2005. The pilot stocks are the stocks that were excluded from the operation of any short sale price
+test rule, such as the uptick rule. Every third stock in the Russell 3000 index sorted by volume was chosen as a pilot stock while the remaining
+2,000 stocks constitute the control stocks. Our sample includes the pilot and control stocks traded on the NYSE and excludes other stocks. The
+numbers represent the averages of the corresponding variable in the row over stocks and period specified in the columns. The columns titled “Pre”
+and “Post” cover respectively the three month period before and after the suspension of the uptick rule on May 2, 2005. The columns titled “Pilot”
+and “Control” present the results for the pilot and control stocks. The columns titled “Diff” presents the differences in means between the pre and
+post periods for pilot and control stocks. The column titled “Diff-Diff” presents the differences in differences between pilot and control stocks. The
+standard errors are HAC standard errors.
+58
+
+Table 8: Changes in the Quantiles of the Return Distribution around RegSHO
+(a) Quantiles of the Return Distribution
+Pilot
+Control
+Pre
+Post
+Diff
+Pre
+Post
+Diff
+Diff-Diff
+5% Quantile
+-0.0769
+-0.0722
+0.0047***
+-0.0766
+-0.0695
+0.0071***
+-0.0024***
+10% Quantile
+-0.0540
+-0.0510
+0.0030***
+-0.0540
+-0.0483
+0.0057***
+-0.0027***
+25% Quantile
+-0.0250
+-0.0233
+0.0017***
+-0.0252
+-0.0214
+0.0038***
+-0.0021***
+50% Quantile
+-0.0001
+0.0017
+0.0018***
+-0.0003
+0.0019
+0.0022***
+-0.0004
+75% Quantile
+0.0248
+0.0272
+0.0024***
+0.0245
+0.0256
+0.0011***
+0.0013***
+90% Quantile
+0.0540
+0.0564
+0.0024***
+0.0533
+0.0538
+0.0005
+0.0020***
+95% Quantile
+0.0769
+0.0789
+0.0019***
+0.0759
+0.0762
+0.0003
+0.0017**
+Note: This table presents the results of a differences-in-differences analysis of the quantiles of the return distribution around the suspension of the
+uptick rule following the adaptation of Rule 202T on May 2, 2005. The pilot stocks are the stocks that were exclude from the operation of any
+short sale price test rule, such as the uptick rule. Every third stock in the Russell 3000 index sorted by volume was chosen as a pilot stock while
+the remaining 2,000 stocks constitute the control stocks. Our sample includes the pilot and control stocks traded on the NYSE and excludes other
+stocks. The numbers represent the averages of the corresponding variable in the row over stocks and period specified in the columns. The columns
+titled “Pre” and “Post” cover respectively the three month period before and after the suspension of the uptick rule on May 2, 2005. The columns
+titled “Pilot” and “Control” present the results for the pilot and control stocks. The columns titled “Diff” presents the differences in means between
+the pre and post periods for pilot and control stocks. The column titled “Diff-Diff” presents the differences in differences between pilot and control
+stocks. The standard errors are HAC standard errors.
+59
+
+Online Appendix of “Limit Order Book Shape and Return
+Distribution”
+December 1, 2025
+1
+Proof of Proposition 1
+Recall that the return is given by
+r
+=
+SA,lowQ1{0<Q<KA} + ((SA,low −SA,high)KA + SA,highQ)1{Q≥KA}
++
+SB,lowQ1{−KB<Q<0} + ((SB,high −SB,low)KB + SB,highQ)1{Q≤−KB}
+Dividing the first two components by SA,low and the last two components by SB,low and using the definitions of ask
+and bid side convexities, i.e. CA = SA,high/SA,low and CB = SB,high/SB,low respectively, yields
+r
+=
+SA,low
+
+Q1{0<Q<KA} + ((1 −CA)KA + CAQ)1{Q≥KA}
+
++
+SB,low
+
+Q1{−KB<Q<0} + ((CB −1)KB + CBQ)1{Q≤−KB}
+
+These equations imply that the return is composed of four mutually exclusive components defined by the indicator
+functions of the market order size (Q). For example, the first component SA,lowQ1{0<Q<KA} is a normal variable
+with a mean SA,lowµ and a variance (SA,lowθ)2 truncated below at zero and above at KA. This in turn implies that
+the jth non-central moment of the return can be written as follows as the sum of the non-central moments of each
+1
+
+component which themselves are truncated normal variables:
+E[rj]
+=
+Sj
+A,low
+
+Γj(µ, σ, 0, KA)
+
+Φ(KA, µ, σ) −Φ(0, µ, σ)
+
++
+Γj(CAµ + (1 −CA)KA, CAσ, KA, +∞)
+
+1 −Φ(KA, CAµ + (1 −CA)KA, CAσ)
+
++
+Sj
+B,low
+
+Γj(µ, σ, −KB, 0)
+
+Φ(0, µ, σ) −Φ(−KB, µ, σ)
+
++
+Γj(CBµ + (CB −1)KB, CBσ, −∞, −KB)Φ(−KB, CBµ + (CB −1)KB, CBσ)
+
+where the first four non-central moments of a truncated normal distribution can be obtained as follows:
+Γ1(µ, σ, a, b)
+=
+µ −σ
+ϕ
+
+b−µ
+σ
+
+−ϕ
+  a−µ
+σ
+
+Φ
+
+b−µ
+σ
+
+−Φ
+  a−µ
+σ
+
+Γ2(µ, σ, a, b)
+=
+µ2 + σ2 −σ
+(µ + b)ϕ
+
+b−µ
+σ
+
+−(µ + a)ϕ
+  a−µ
+σ
+
+Φ
+
+b−µ
+σ
+
+−Φ
+  a−µ
+σ
+
+Γ3(µ, σ, a, b)
+=
+2σ2Γ1(µ, σ, a, b) + µΓ2(µ, σ, a, b) −σ
+b2ϕ
+
+b−µ
+σ
+
+−a2ϕ
+  a−µ
+σ
+
+Φ
+
+b−µ
+σ
+
+−Φ
+  a−µ
+σ
+
+Γ4(µ, σ, a, b)
+=
+3σ2Γ2(µ, σ, a, b) + µΓ3(µ, σ, a, b) −σ
+b3ϕ
+
+b−µ
+σ
+
+−a3ϕ
+  a−µ
+σ
+
+Φ
+
+b−µ
+σ
+
+−Φ
+  a−µ
+σ
+
+Normalizing the variables in the above equation by dividing them by σ yields:
+E[rj]
+=
+(SA,lowσ)j
+
+Γj(˜µ, 1, 0, ˜KA)
+
+Φ( ˜KA, ˜µ, 0) −Φ(0, ˜µ, 1)
+
++
+Γj(CA˜µ + (1 −CA) ˜KA, CA, ˜KA, +∞)
+
+1 −Φ( ˜KA, CA˜µ + (1 −CA) ˜KA, CA)
+
++
+(SB,lowσ)j
+
+Γj(˜µ, 1, −˜KB, 0)
+
+Φ(0, ˜µ, 1) −Φ(−˜KB, ˜µ, 1)
+
++
+Γj(CB ˜µ + (CB −1) ˜KB, CB, −∞, −˜KB)Φ(−˜KB, CB ˜µ + (CB −1) ˜KB, CB)
+
+(1)
+where ˜µ = µ/σ, ˜KA = KA/σ and ˜KB = KB/σ and
+Using the definitions of definitions of average LOB slope (Savg = (SA + SB)/2), LOB imbalance (I = SA/SB),
+2
+
+SA,low and SB,low can be written as follows:
+SA,low
+=
+2SavgI
+I + 1
+˜¯DA
+˜KA + ( ˜¯DA −˜KA)CA
+SB,low
+=
+2Savg
+I + 1
+˜¯DB
+˜KB + ( ˜¯DB −˜KB)CB
+where ˜¯DA = ¯DA/σ and ˜¯DB = ¯DB/σ.
+Plugging these into Equation 1 yields the equation in Proposition 1.
+2
+The Effects of Asymmetric LOB convexity
+We now examine the effect of asymmetric LOB convexity on the first four central moments of the return distribution.
+Specifically, we set the (log) ask-side convexity to zero—so the ask side is linear—and vary the bid-side convexity
+over the same range used above, and vice versa. Figures OA 1 and OA 2 show how the first four central moments
+change as functions of the bid- and ask-side convexities, respectively.
+First, consistent with the results for symmetric convexity, the return variance decreases and the return kurtosis
+increases with both bid- and ask-side convexities, regardless of the LOB imbalance. The effects on the return mean
+and skewness differ slightly from the symmetric case. Here, we focus on the bid-side convexity, noting that the results
+for the ask-side convexity are similar but with opposite signs.
+The return mean increases with bid-side convexity for all values of the LOB imbalance considered. Holding other
+factors constant, increasing bid-side convexity reduces the slopes of the lower levels of the bid side and increases the
+slopes of the higher levels. This shifts liquidity toward the lower levels of the bid side, increasing buying pressure and,
+in turn, raising the return mean.
+The effect on return skewness is more nuanced. Skewness increases with bid-side convexity when the LOB imbalance is zero or high but decreases when the LOB imbalance is low. The reason is that the rate at which buying pressure
+from the lower levels of the bid side rises with bid-side convexity depends on the LOB imbalance: this increase in
+buying pressure is much slower when the LOB imbalance is low than when it is zero or high. Consequently, under
+low LOB imbalance, higher bid-side convexity results in lower skewness.
+3
+
+[Figure OA 1 about here.]
+[Figure OA 2 about here.]
+Finally, Figure OA 3 shows the effects of bid-side convexity (panels (a)–(c)) and ask-side convexity (panels (d)–(f))
+on the quantiles of the return distribution. Panels (a) and (d) present the inverse CDF of simulated returns for low, zero,
+and high values of bid- and ask-side convexities, respectively, under the same assumptions as above. As in Figure 5 of
+the main text, the solid lines in panels (a) and (d) correspond to the quantiles of a normal distribution because returns
+are normally distributed with zero mean when MO imbalance, LOB imbalance, and both bid- and ask-side convexities
+are zero.
+Panels (a) and (d) reveal that ask-side convexity affects only the right side of the return distribution, while bid-side
+convexity affects only the left side. Moreover, the right (left) side of the return distribution shifts left (right) as askside (bid-side) convexity increases, mirroring the patterns observed for symmetric convexity in Figure 5 of the main
+text. However, the effects of ask- and bid-side convexity on return quantiles—through their influence on the first four
+central moments—are more nuanced.
+Consider the ask-side convexity when LOB imbalance is zero. All else equal, an increase in ask-side convexity
+shifts the return distribution to the left through its effects on the return mean and skewness (see Figure 2 of the main
+text). At the same time, higher ask-side convexity produces a tighter distribution via its effect on return variance, but a
+wider distribution via its effect on kurtosis. Panel (d) shows that, for quantiles above the median, the combined effects
+of mean, variance, and skewness dominate the effect of kurtosis, resulting in a leftward shift of the right tail when
+ask-side convexity is high. These opposing effects offset each other for quantiles below the median, leaving the left
+tail unchanged.
+Controlling for the variance effect—as in Figure 6 of the main text—panel (e) shows that higher ask-side convexity
+yields a return distribution whose quantiles from 1% to 99% (except the median) are all smaller than those of a normal
+distribution with the same variance. The reverse holds for low ask-side convexity, as shown in panel (f). Results for
+bid-side convexity are qualitatively the same but with opposite signs, as illustrated in panels (b) and (c).
+[Figure OA 3 about here.]
+4
+
+3
+Robustness Checks
+In this section, we assess the robustness of our results reported in Tables 3 and 6 of the main text to alternative variable
+definitions and empirical choices. For brevity, we summarize the robustness checks and the corresponding findings.
+3.1
+Using Different Levels for LOB Variables
+In our main results, we measure LOB variables based on the first ten levels of the bid and ask sides. We adopt this
+choice to incorporate all available information. However, if investors engage in aggressive order splitting, small market
+orders may not reach the upper levels of the book and could instead be executed against only the lower levels. In such
+cases, LOB measures constructed from the first ten levels might not be the most relevant, since relatively few market
+orders would interact with all ten levels.
+To address this concern, we recompute the LOB measures using only the first three or five levels of the bid and ask
+sides. All LOB variables except convexity can be straightforwardly adjusted to these alternative depths. For convexity,
+we modify the definition to reflect the reduced number of levels. Specifically, for the ask side, we define convexity at
+snapshot n based on the first l levels, l = 3, 5, as
+CA
+2,l,n =
+SA
+2,l,n
+SA
+1,2,n
+,
+(2)
+where the cutoff between the lower and higher levels is fixed at level two. The bid-side convexity is defined analogously, and the average LOB convexity is given by the simple average of the two sides. As in our baseline empirical
+analysis, we compute the time-weighted average of this convexity measure across the day to obtain our proxy for cavg.
+Tables OA 1 and OA 2 present our main results when LOB variables are constructed from the first five levels.
+Results based on the first three levels are very similar. More importantly, the tables show that our main findings on the
+effects of LOB variables on the first four moments and the quantiles of the return distribution (Tables 3 and 6 of the
+main text) are robust to using only the first three or five levels instead of the first ten.
+5
+
+3.2
+Alternative Definitions of LOB Convexity
+Recall that in our main empirical results we construct three convexity measures with cutoff levels l = 2, 3, 5. For a
+given stock-day pair, we select the measure based on the level where the cumulative quantity is closest to one market
+order standard deviation of that stock on the previous trading day. In this subsection, we change the definition of
+large market orders from those exceeding one standard deviation of the market order distribution (in absolute value)
+to those exceeding two or three standard deviations. Tables OA 3 and OA 4 present the results for the two-standarddeviation case. The findings are very similar to our baseline results, suggesting that our main conclusions are robust
+to alternative definitions of LOB convexity.
+In addition, following the robustness check in the previous subsection, we also construct a convexity measure
+using only the first five levels of the LOB. More specifically, we compute two convexity measures for the ask side of
+snapshot s with cutoff levels at two and three:
+CA
+2,5,s = SA
+2,5,s
+SA
+1,2,s
+,
+CA
+3,5,s = SA
+3,5,s
+SA
+1,3,s
+,
+(3)
+with analogous definitions for the bid side. For a given stock-day pair, we then select the convexity measure based on
+the level l∗that minimizes the distance between normalized cumulative quantities and the cutoff multiple k × ˜K:
+l∗= arg
+min
+l=1,2,...,5
+
+QA,l/σ + QB,l/σ
+2
+−k × ˜K
+ .
+(4)
+If l∗= 1, we use cavg,2,5 = (CA
+2,5,s + CB
+2,5,s)/2. If 1 < l∗≤3, we use cavg,3,5 = (CA
+3,5,s + CB
+3,5,s)/2. As before, we
+then compute the time-weighted daily average of this measure as our proxy for LOB convexity.
+For brevity, we do not present the detailed results here. However, they are very similar to our main results, further
+confirming that our conclusions are robust to alternative definitions of LOB convexity.
+3.3
+Excluding the Global Financial Crisis
+Finally, we exclude the period between 1 July 2007 and 31 December 2008, which corresponds to the Global Financial
+Crisis (GFC). This period is characterized by unusually high volatility and, more importantly, includes the short-sale
+ban on financial stocks, both of which could affect our results. Tables OA 5 and OA 6 show that excluding the GFC
+6
+
+does not materially change our main conclusions regarding the effects of LOB variables on the return distribution.
+7
+
+(a) Mean
+-1
+-0.8
+-0.6
+-0.4
+-0.2
+0
+0.2
+0.4
+0.6
+0.8
+1
+Bid-Side Convexity
+-0.03
+-0.02
+-0.01
+0
+0.01
+0.02
+0.03
+Mean
+Zero LOB Imb
+High LOB Imb
+Low LOB Imb
+(b) Variance
+-1
+-0.8
+-0.6
+-0.4
+-0.2
+0
+0.2
+0.4
+0.6
+0.8
+1
+Bid-Side Convexity
+0
+0.2
+0.4
+0.6
+0.8
+1
+1.2
+Variance
+10-3
+Zero LOB Imb
+High LOB Imb
+Low LOB Imb
+(c) Skewness
+-1
+-0.8
+-0.6
+-0.4
+-0.2
+0
+0.2
+0.4
+0.6
+0.8
+1
+Bid-Side Convexity
+-1.5
+-1
+-0.5
+0
+0.5
+1
+1.5
+Skewness
+Zero LOB Imb
+High LOB Imb
+Low LOB Imb
+(d) Kurtosis
+-1
+-0.8
+-0.6
+-0.4
+-0.2
+0
+0.2
+0.4
+0.6
+0.8
+1
+Bid-Side Convexity
+0
+1
+2
+3
+4
+5
+6
+7
+8
+Kurtosis
+Zero LOB Imb
+High LOB Imb
+Low LOB Imb
+Figure OA 1: The Effects of Bid-Side Convexity on the First Four Central Moments of the Return Distribution
+Note: This figure shows the effect of bid-side convexity on the first four central moments of the return distribution for
+three values of the LOB imbalance: high (dotted line), zero (solid line), and low (dashed line). The high and low LOB
+imbalance values are 0.7044 and −0.7044, corresponding to plus and minus one standard deviation of its empirical
+counterpart. All other variables are calibrated to the values in Table 1. Bid-side convexity values range from −0.4226
+to 0.4226, representing minus and plus one standard deviation of its empirical counterpart.
+8
+
+(a) Mean
+-1
+-0.8
+-0.6
+-0.4
+-0.2
+0
+0.2
+0.4
+0.6
+0.8
+1
+Ask-Side Convexity
+-0.03
+-0.02
+-0.01
+0
+0.01
+0.02
+0.03
+Mean
+Zero LOB Imb
+High LOB Imb
+Low LOB Imb
+(b) Variance
+-1
+-0.8
+-0.6
+-0.4
+-0.2
+0
+0.2
+0.4
+0.6
+0.8
+1
+Ask-Side Convexity
+0
+0.2
+0.4
+0.6
+0.8
+1
+1.2
+Variance
+10-3
+Zero LOB Imb
+High LOB Imb
+Low LOB Imb
+(c) Skewness
+-1
+-0.8
+-0.6
+-0.4
+-0.2
+0
+0.2
+0.4
+0.6
+0.8
+1
+Ask-Side Convexity
+-1.5
+-1
+-0.5
+0
+0.5
+1
+1.5
+Skewness
+Zero LOB Imb
+High LOB Imb
+Low LOB Imb
+(d) Kurtosis
+-1
+-0.8
+-0.6
+-0.4
+-0.2
+0
+0.2
+0.4
+0.6
+0.8
+1
+Ask-Side Convexity
+0
+1
+2
+3
+4
+5
+6
+7
+8
+Kurtosis
+Zero LOB Imb
+High LOB Imb
+Low LOB Imb
+Figure OA 2: The Effects of Ask-Side Convexity on the First Four Central Moments of the Return Distribution
+Note: This figure shows the effect of ask-side convexity on the first four central moments of the return distribution for
+three values of the LOB imbalance: high (dotted line), zero (solid line), and low (dashed line). The high and low LOB
+imbalance values are 0.7044 and −0.7044, corresponding to plus and minus one standard deviation of its empirical
+counterpart. All other variables are calibrated to the values in Table 1. Bid-side convexity values range from −0.4226
+to 0.4226, representing minus and plus one standard deviation of its empirical counterpart.
+9
+
+Bid Convexity
+(a) Bid Convexity
+0
+10
+20
+30
+40
+50
+60
+70
+80
+90
+100
+-0.06
+-0.05
+-0.04
+-0.03
+-0.02
+-0.01
+0
+0.01
+0.02
+0.03
+0.04
+Quantiles
+Low LOB Conv
+Zero LOB Conv
+High LOB Conv
+(b) High Bid Convexity
+0
+10
+20
+30
+40
+50
+60
+70
+80
+90
+100
+-0.03
+-0.02
+-0.01
+0
+0.01
+0.02
+0.03
+0.04
+Quantiles
+Normal
+High LOB Conv
+(c) Low Bid Convexity
+0
+10
+20
+30
+40
+50
+60
+70
+80
+90
+100
+-0.06
+-0.04
+-0.02
+0
+0.02
+0.04
+0.06
+Quantiles
+Normal
+Low LOB Conv
+Ask Side Convexity
+(d) Ask Convexity
+0
+10
+20
+30
+40
+50
+60
+70
+80
+90
+100
+-0.04
+-0.03
+-0.02
+-0.01
+0
+0.01
+0.02
+0.03
+0.04
+0.05
+0.06
+Quantiles
+Low LOB Conv
+Zero LOB Conv
+High LOB Conv
+(e) High Ask Convexity
+0
+10
+20
+30
+40
+50
+60
+70
+80
+90
+100
+-0.04
+-0.03
+-0.02
+-0.01
+0
+0.01
+0.02
+0.03
+Quantiles
+Normal
+High LOB Conv
+(f) Low Ask Convexity
+0
+10
+20
+30
+40
+50
+60
+70
+80
+90
+100
+-0.06
+-0.04
+-0.02
+0
+0.02
+0.04
+0.06
+Quantiles
+Normal
+Low LOB Conv
+Figure OA 3: The Effects of Ask- and Bid-Side Convexities on the Quantiles of the Return Distribution
+Note: Panels (a) and (d) present the quantiles (1% to 99%) of the return distribution for high (dotted line), zero
+(solid line), and low (dashed line) values of bid- and ask-side convexities, respectively. Panels (b) and (e) show the
+quantiles (1% to 99%) of the simulated return distribution for high bid- and ask-side convexities, respectively, while
+panels (c) and (f) present the corresponding quantiles for low bid- and ask-side convexities. In panels (b), (c), (e), and
+(f), the solid lines represent the quantiles of a normal distribution with zero mean and variance equal to that of the
+corresponding simulated returns. In all panels, the high and low values of LOB convexity are 0.4226 and −0.4226,
+corresponding to plus and minus one times the sample standard deviation of their empirical counterparts. The LOB
+imbalance and MO imbalance are set to zero, and all other variables are calibrated to the values reported in Table 1.
+10
+
+Table OA 1: The Effect of LOB Shape and Market Order Distribution
+(a) Economic Importance
+Mean
+Variance
+Skewness
+Kurtosis
+MO Imb Mean
+0.00196***
+0.00000
+0.02696***
+-0.00329
+MO Imb Std. Dev.
+0.00024*
+0.00004***
+0.00006
+0.09547***
+MO Imb Skewness
+-0.00045***
+-0.00001***
+0.00910***
+0.00135
+MO Imb Kurtosis
+0.00021***
+0.00031***
+-0.00216
+-0.08170***
+LOB Avg. Cum Quant (t-1)
+0.00014***
+0.00064***
+-0.02345***
+-0.09253***
+LOB Avg. Slope (t-1)
+-0.00086***
+0.00062***
+-0.02400***
+0.08519***
+LOB Imb (t-1)
+0.00011***
+0.00024***
+0.01409***
+-0.15598***
+LOB Conv (t-1)
+0.00017***
+-0.00058***
+0.00143
+0.21540***
+(b) Ranking
+Mean
+Variance
+Skewness
+Kurtosis
+MO Imb Mean
+1
+8
+1
+7
+MO Imb Std
+4
+6
+8
+3
+MO Imb Skew
+3
+7
+5
+8
+MO Imb Kurt
+5
+4
+6
+6
+(Log) Cum Quant Ask (t-1)
+7
+1
+3
+4
+(Log) Avg LOB Slope (t-1)
+2
+2
+2
+5
+(Log) LOB Imb (t-1)
+8
+5
+4
+2
+(Log) LOB Conv (t-1)
+6
+3
+7
+1
+Note: Panel (a) of this table presents the economic significance of market order distribution and LOB shape parameters. The economic significance is computed as the
+coefficient of a given variable from the estimation of the regression model in Equation 17 with firm fixed effects times the standard deviation of that variable computed
+over all stock-day pairs in our sample. The standard errors are clustered at the firm level. Panel (b) presents the ranking of each variable among the eight variables of
+interest, i.e. market order distribution and LOB shape parameters, excluding the other control variables, i.e. the other three moments of the return distribution. A smaller
+ranking indicates a higher economic importance, with one being the most important and eight being the least important variable among the eight variables.
+11
+
+Table OA 2: The Effect of LOB Shape and Market Order Distribution
+(a) Economic Importance
+q5
+q10
+q25
+q50
+q75
+q90
+q95
+MO Imb Mean
+0.00271***
+0.00265***
+0.00258***
+0.00256***
+0.00258***
+0.00264***
+0.00269***
+MO Imb Std. Dev.
+0.00022
+0.00025
+0.00027
+0.00028*
+0.00028*
+0.00030*
+0.00032*
+MO Imb Skewness
+-0.00039***
+-0.00040***
+-0.00042***
+-0.00043***
+-0.00043***
+-0.00043***
+-0.00042***
+MO Imb Kurtosis
+-0.00033***
+-0.00019**
+-0.00001
+0.00015**
+0.00030***
+0.00047***
+0.00061***
+LOB Avg. Cum Quant (t-1)
+-0.00133***
+-0.00097***
+-0.00055***
+-0.00023***
+0.00007
+0.00044***
+0.00075***
+LOB Avg. Slope (t-1)
+-0.00249***
+-0.00211***
+-0.00168***
+-0.00139***
+-0.00114***
+-0.00081***
+-0.00050***
+LOB Imb (t-1)
+-0.00012***
+-0.00002
+0.00010***
+0.00021***
+0.00034***
+0.00048***
+0.00060***
+LOB Conv (t-1)
+0.00127***
+0.00101***
+0.00066***
+0.00036***
+0.00006
+-0.00027***
+-0.00052***
+(b) Ranking
+q5
+q10
+q25
+q50
+q75
+q90
+q95
+MO Imb Mean
+1
+1
+1
+1
+1
+1
+1
+MO Imb Std
+7
+6
+6
+5
+6
+7
+8
+MO Imb Skew
+5
+5
+5
+3
+3
+6
+7
+MO Imb Kurt
+6
+7
+8
+8
+5
+4
+3
+(Log) Cum Quant Ask (t-1)
+3
+4
+4
+6
+7
+5
+2
+(Log) Avg LOB Slope (t-1)
+2
+2
+2
+2
+2
+2
+6
+(Log) LOB Imb (t-1)
+8
+8
+7
+7
+4
+3
+4
+(Log) LOB Conv (t-1)
+4
+3
+3
+4
+8
+8
+5
+Note: Panel (a) of this table presents the economic significance of market order distribution and LOB shape parameters in determining the quantiles of the return
+distribution. The economic significance is computed as the coefficient of a given variable from the estimation of the regression model in Equation 20 with firm fixed
+effects times the standard deviation of that variable computed over all stock-day pairs in our sample. The standard errors are clustered at the firm level. Panel (b) presents
+the ranking of each variable among the eight variables of interest, i.e. market order distribution and LOB shape parameters, excluding the other control variables, i.e. the
+other three moments of the return distribution. A smaller ranking indicates a higher economic importance, with one being the most important and eight being the least
+important variable among the eight variables.
+12
+
+Table OA 3: The Effect of LOB Shape and Market Order Distribution
+(a) Economic Importance
+Mean
+Variance
+Skewness
+Kurtosis
+MO Imb Mean
+0.00196***
+0.00000
+0.02643***
+0.00050
+MO Imb Std. Dev.
+0.00023*
+0.00004***
+-0.00061
+0.10185***
+MO Imb Skewness
+-0.00044***
+-0.00001***
+0.00911***
+0.00148
+MO Imb Kurtosis
+0.00022***
+0.00033***
+-0.00134
+-0.08702***
+LOB Avg. Cum Quant (t-1)
+0.00027***
+0.00045***
+-0.01223***
+-0.19677***
+LOB Avg. Slope (t-1)
+-0.00083***
+0.00025***
+-0.01170***
+0.05648*
+LOB Imb (t-1)
+0.00021***
+0.00026***
+0.01330***
+-0.13219***
+LOB Conv (t-1)
+0.00032***
+-0.00037***
+0.00549***
+0.19386***
+(b) Ranking
+Mean
+Variance
+Skewness
+Kurtosis
+MO Imb Mean
+1
+8
+1
+8
+MO Imb Std
+6
+6
+8
+4
+MO Imb Skew
+3
+7
+5
+7
+MO Imb Kurt
+7
+3
+7
+5
+Cum Quant Ask (t-1)
+5
+1
+3
+1
+Avg LOB Slope (t-1)
+2
+5
+4
+6
+LOB Imb (t-1)
+8
+4
+2
+3
+LOB Conv (t-1)
+4
+2
+6
+2
+Note: Panel (a) of this table presents the economic significance of market order distribution and LOB shape parameters. The economic significance is computed as the
+coefficient of a given variable from the estimation of the regression model in Equation 17 with firm fixed effects times the standard deviation of that variable computed
+over all stock-day pairs in our sample. The standard errors are clustered at the firm level. Panel (b) presents the ranking of each variable among the eight variables of
+interest, i.e. market order distribution and LOB shape parameters, excluding the other control variables, i.e. the other three moments of the return distribution. A smaller
+ranking indicates a higher economic importance, with one being the most important and eight being the least important variable among the eight variables.
+13
+
+Table OA 4: The Effect of LOB Shape and Market Order Distribution
+(a) Economic Importance
+q5
+q10
+q25
+q50
+q75
+q90
+q95
+MO Imb Mean
+0.00270***
+0.00264***
+0.00258***
+0.00255***
+0.00257***
+0.00263***
+0.00268***
+MO Imb Std. Dev.
+0.00022
+0.00024
+0.00026
+0.00026
+0.00026
+0.00028
+0.00030*
+MO Imb Skewness
+-0.00039***
+-0.00040***
+-0.00042***
+-0.00043***
+-0.00043***
+-0.00043***
+-0.00042***
+MO Imb Kurtosis
+-0.00034***
+-0.00019**
+-0.00001
+0.00016**
+0.00031***
+0.00050***
+0.00064***
+LOB Avg. Cum Quant (t-1)
+-0.00068***
+-0.00044***
+-0.00016***
+0.00007
+0.00028***
+0.00055***
+0.00076***
+LOB Avg. Slope (t-1)
+-0.00161***
+-0.00142***
+-0.00123***
+-0.00114***
+-0.00108***
+-0.00095***
+-0.00081***
+LOB Imb (t-1)
+-0.00003
+0.00007***
+0.00020***
+0.00031***
+0.00043***
+0.00059***
+0.00072***
+LOB Conv (t-1)
+0.00114***
+0.00096***
+0.00073***
+0.00054***
+0.00035***
+0.00014***
+-0.00002
+(b) Ranking
+q5
+q10
+q25
+q50
+q75
+q90
+q95
+MO Imb Mean
+1
+1
+1
+1
+1
+1
+1
+MO Imb Std
+7
+6
+5
+6
+8
+7
+7
+MO Imb Skew
+5
+5
+4
+4
+3
+6
+6
+MO Imb Kurt
+6
+7
+8
+7
+6
+5
+5
+(Log) Cum Quant Ask (t-1)
+4
+4
+7
+8
+7
+4
+3
+(Log) Avg LOB Slope (t-1)
+2
+2
+2
+2
+2
+2
+2
+(Log) LOB Imb (t-1)
+8
+8
+6
+5
+4
+3
+4
+(Log) LOB Conv (t-1)
+3
+3
+3
+3
+5
+8
+8
+(Log) LOB Conv (t-1)
+3
+3
+3
+3
+5
+8
+8
+Note: Panel (a) of this table presents the economic significance of market order distribution and LOB shape parameters in determining the quantiles of the return
+distribution. The economic significance is computed as the coefficient of a given variable from the estimation of the regression model in Equation 20 with firm fixed
+effects times the standard deviation of that variable computed over all stock-day pairs in our sample. The standard errors are clustered at the firm level. Panel (b) presents
+the ranking of each variable among the eight variables of interest, i.e. market order distribution and LOB shape parameters, excluding the other control variables, i.e. the
+other three moments of the return distribution. A smaller ranking indicates a higher economic importance, with one being the most important and eight being the least
+important variable among the eight variables.
+14
+
+Table OA 5: The Effect of LOB Shape and Market Order Distribution
+(a) Economic Importance
+Mean
+Variance
+Skewness
+Kurtosis
+MO Imb Mean
+0.00204***
+0.00001*
+0.02290***
+-0.00198
+MO Imb Std. Dev.
+0.00020
+0.00006***
+-0.00003
+0.08131***
+MO Imb Skewness
+-0.00042***
+-0.00001***
+0.00401***
+-0.00280
+MO Imb Kurtosis
+0.00017***
+0.00019***
+-0.00090
+-0.05628***
+LOB Avg. Cum Quant (t-1)
+0.00027***
+0.00036***
+-0.01250***
+-0.15913***
+LOB Avg. Slope (t-1)
+-0.00065***
+0.00008**
+-0.00979***
+0.15360***
+LOB Imb (t-1)
+0.00031***
+0.00013***
+0.01311***
+-0.11446***
+LOB Conv (t-1)
+0.00008*
+-0.00015***
+0.00366*
+0.09367***
+(b) Ranking
+Mean
+Variance
+Skewness
+Kurtosis
+MO Imb Mean
+1
+8
+1
+8
+MO Imb Std
+6
+6
+8
+5
+MO Imb Skew
+3
+7
+5
+7
+MO Imb Kurt
+7
+2
+7
+6
+(Log) Cum Quant Ask (t-1)
+5
+1
+3
+1
+(Log) Avg LOB Slope (t-1)
+2
+5
+4
+2
+(Log) LOB Imb (t-1)
+4
+4
+2
+3
+(Log) LOB Conv (t-1)
+8
+3
+6
+4
+Note: Panel (a) of this table presents the economic significance of market order distribution and LOB shape parameters. The economic significance is computed as the
+coefficient of a given variable from the estimation of the regression model in Equation 17 with firm fixed effects times the standard deviation of that variable computed
+over all stock-day pairs in our sample. The standard errors are clustered at the firm level. Panel (b) presents the ranking of each variable among the eight variables of
+interest, i.e. market order distribution and LOB shape parameters, excluding the other control variables, i.e. the other three moments of the return distribution. A smaller
+ranking indicates a higher economic importance, with one being the most important and eight being the least important variable among the eight variables.
+15
+
+Table OA 6: The Effect of LOB Shape and Market Order Distribution
+(a) Economic Importance
+q5
+q10
+q25
+q50
+q75
+q90
+q95
+MO Imb Mean
+0.00277***
+0.00271***
+0.00265***
+0.00263***
+0.00266***
+0.00273***
+0.00279***
+MO Imb Std. Dev.
+0.00015
+0.00018
+0.00021
+0.00023
+0.00024
+0.00027
+0.00030
+MO Imb Skewness
+-0.00044***
+-0.00044***
+-0.00045***
+-0.00045***
+-0.00046***
+-0.00046***
+-0.00047***
+MO Imb Kurtosis
+-0.00015***
+-0.00007
+0.00004
+0.00014***
+0.00023***
+0.00034***
+0.00042***
+LOB Avg. Cum Quant (t-1)
+-0.00050***
+-0.00030***
+-0.00007
+0.00010**
+0.00027***
+0.00048***
+0.00066***
+LOB Avg. Slope (t-1)
+-0.00107***
+-0.00096***
+-0.00088***
+-0.00088***
+-0.00089***
+-0.00086***
+-0.00078***
+LOB Imb (t-1)
+0.00031***
+0.00035***
+0.00041***
+0.00046***
+0.00053***
+0.00062***
+0.00070***
+LOB Conv (t-1)
+0.00043***
+0.00035***
+0.00025***
+0.00018***
+0.00011**
+0.00001
+-0.00006
+(b) Ranking
+q5
+q10
+q25
+q50
+q75
+q90
+q95
+MO Imb Mean
+1
+1
+1
+1
+1
+1
+1
+MO Imb Std
+8
+7
+6
+5
+6
+7
+7
+MO Imb Skew
+4
+3
+3
+4
+4
+5
+5
+MO Imb Kurt
+7
+8
+8
+7
+7
+6
+6
+(Log) Cum Quant Ask (t-1)
+3
+6
+7
+8
+5
+4
+4
+(Log) Avg LOB Slope (t-1)
+2
+2
+2
+2
+2
+2
+2
+(Log) LOB Imb (t-1)
+6
+4
+4
+3
+3
+3
+3
+(Log) LOB Conv (t-1)
+5
+5
+5
+6
+8
+8
+8
+Note: Panel (a) of this table presents the economic significance of market order distribution and LOB shape parameters in determining the quantiles of the return
+distribution. The economic significance is computed as the coefficient of a given variable from the estimation of the regression model in Equation 20 with firm fixed
+effects times the standard deviation of that variable computed over all stock-day pairs in our sample. The standard errors are clustered at the firm level. Panel (b) presents
+the ranking of each variable among the eight variables of interest, i.e. market order distribution and LOB shape parameters, excluding the other control variables, i.e. the
+other three moments of the return distribution. A smaller ranking indicates a higher economic importance, with one being the most important and eight being the least
+important variable among the eight variables.
+16

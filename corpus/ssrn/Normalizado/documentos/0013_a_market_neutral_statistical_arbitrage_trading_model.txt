@@ -1,0 +1,4792 @@
+ Electronic copy available at: https://ssrn.com/abstract=2919837 
+A Market Neutral Statistical Arbitrage Trading Model
+01/01/95
+07/02/97
+01/01/00
+07/02/02
+−0.5
+0
+0.5
+1
+1.5
+2
+2.5
+3
+3.5
+4
+4.5
+x 10
+7
+Date
+Skr
+Development of Our Default Model
+AFGX
+AFGX 3m Moving Average
+Our Model 3m Moving Average
+Our Model
+Net Position Short
+Erik Larsson
+Lars Larsson
+Johan Åberg∗
+13th March 2003
+∗Larsson, Larsson and Åberg are students at the Stockholm School of Economics and the Royal Institute of
+Technology.
+The authors thank Patrik Säfvenblad (Head of Portfolio Management at RPM), Andrei Shleifer
+(Professor of Economics at Harvard), and Johan Ahlberg (Datastream expert) for helpful comments.
+Email:
+primus@kth.se (Erik), d98-lla@nada.kth.se (Lars) and 17774@student.hhs.se (Johan).
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+ Electronic copy available at: https://ssrn.com/abstract=2919837 
+Abstract
+The momentum eﬀect is a systematic ineﬃciency in the market that can be exploited
+by a trading strategy. This conclusion is supported by theoretical and empirical evidence.
+But the academic research that tries to quantify the performance of this kind of strategy
+often relies on a methodology that is too simplistic. The question arises what performance
+a trader realistically could achieve in relation to the results presented in academic journals.
+To answer this, we have written a computer program to run simulations with the added
+realism of transaction costs and more advanced trading rules based on a wider array of data
+than classic methodology allows. This has been done on Swedish stocks between 1995 and
+2001. We then compare the simulation based on our own advanced model with a simulation
+that emulates a simplistic methodology.
+It is found that the negative impact on return of including transaction costs is outweighed
+by the lower risk attributed to our more advanced trading rules, as indicated by e.g. Sharpe
+and standard measures of risk. We can thus conclude that the momentum eﬀect might be
+even more attractive as a basis for a trading strategy than have been suggested in prior
+academic research.
+As an academic paper, we think that the methodology (our simulation platform) used to
+obtain the conclusion in our thesis is more important than the conclusion itself. It is evident
+that a good evaluation of any trading strategy requires more realistic simulations than is
+commonplace in academia today.
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+Contents
+1
+Introduction
+1
+1.1
+Background . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+1
+1.2
+Purpose . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+2
+1.3
+Delimitation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+2
+1.4
+Outline and Reader’s Guide . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+2
+2
+Previous Research
+4
+2.1
+Theoretical Justiﬁcation for Momentum Strategies . . . . . . . . . . . . . . .
+4
+2.1.1
+Eﬃcient Markets . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+4
+2.1.2
+Data mining and Spurious Data
+. . . . . . . . . . . . . . . . . . . . .
+6
+2.2
+A Model of Over- and Underreaction . . . . . . . . . . . . . . . . . . . . . . .
+7
+2.2.1
+Conclusions and Discussion . . . . . . . . . . . . . . . . . . . . . . . .
+12
+2.3
+Theoretical Motivation for the Stop-Loss Rule . . . . . . . . . . . . . . . . . .
+14
+2.4
+Empirical Evidence Using CAR . . . . . . . . . . . . . . . . . . . . . . . . . .
+15
+2.4.1
+The Momentum Eﬀect . . . . . . . . . . . . . . . . . . . . . . . . . . .
+15
+2.4.2
+The Role of Volume, Fundamental and Sentiment Variables . . . . . .
+17
+2.4.3
+Conclusions . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+18
+3
+An Overview of Our Model and Its Context
+19
+3.1
+Diﬀerent Hedge Fund Strategies . . . . . . . . . . . . . . . . . . . . . . . . . .
+19
+3.2
+Our Model – an Optimization Problem . . . . . . . . . . . . . . . . . . . . . .
+20
+3.3
+Technical Speciﬁcation of the Computer Program . . . . . . . . . . . . . . . .
+22
+4
+Data
+24
+4.1
+Description of the Data
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+24
+5
+Methodology – Signal Generation and Risk Control
+25
+5.1
+Signal Generation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+25
+5.2
+Risk Control
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+26
+5.3
+Assumptions in Our Simulations
+. . . . . . . . . . . . . . . . . . . . . . . . .
+27
+5.3.1
+Basic Assumptions of Our Trading Model . . . . . . . . . . . . . . . .
+27
+6
+Results - Portfolio Simulations
+29
+6.1
+Results of Our Trading Model . . . . . . . . . . . . . . . . . . . . . . . . . . .
+29
+6.1.1
+Comments on the Results of Our Model . . . . . . . . . . . . . . . . .
+32
+6.1.2
+Comparison with the Simplistic Momentum Strategy . . . . . . . . . .
+33
+7
+Conclusions
+35
+A Appendices
+36
+A.1 Robustness
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+36
+A.1.1
+Four Criteria of Robustness . . . . . . . . . . . . . . . . . . . . . . . .
+36
+A.1.2
+Tables of Results for Robustness . . . . . . . . . . . . . . . . . . . . .
+37
+A.1.3
+Discussion on the Robustness of Our Model . . . . . . . . . . . . . . .
+43
+A.2 Statistical Comparison of Our Model and the Simplistic Model . . . . . . . .
+45
+A.2.1
+Volatility
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+45
+A.2.2
+Return . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+45
+A.3 Screenshot of the Program . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+47
+A.4 A Day of Trading . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+48
+i
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+A.5 A List of the Swedish Stocks Used
+. . . . . . . . . . . . . . . . . . . . . . . .
+49
+A.6 Some Basic Financial and Statistical Concepts
+. . . . . . . . . . . . . . . . .
+50
+ii
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+List of Figures
+1
+Realizations of earnings over 600 periods . . . . . . . . . . . . . . . . . . . . .
+10
+2
+The essence of the momentum eﬀect. . . . . . . . . . . . . . . . . . . . . . . .
+11
+3
+Histogram of our simulation of the overreaction eﬀect
+. . . . . . . . . . . . .
+13
+4
+Histogram of our simulation of the underreaction eﬀect . . . . . . . . . . . . .
+13
+5
+Conceptual view of the computer system.
+. . . . . . . . . . . . . . . . . . . .
+23
+6
+A diagram over the development of our model, compared with the same investment in AFGX . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+29
+7
+Histogram describing the distribution of the daily returns of our model . . . .
+31
+8
+Histogram describing the distribution of the monthly returns of our model . .
+31
+9
+The program in action . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+47
+List of Tables
+1
+Illustration of how the investor changes her beliefs
+. . . . . . . . . . . . . . .
+9
+2
+A brief summary of empirical research on the momentum eﬀect. . . . . . . . .
+16
+3
+The momentum eﬀect in Germany, compared with Jegadeesh-Titman’s results
+for USA . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+17
+4
+The momentum eﬀect in Sweden 1980-1999 . . . . . . . . . . . . . . . . . . .
+18
+5
+Hedge fund history at a glance
+. . . . . . . . . . . . . . . . . . . . . . . . . .
+19
+6
+Categorization of hedge funds . . . . . . . . . . . . . . . . . . . . . . . . . . .
+20
+7
+Statistical Arbitrage . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+20
+8
+Performance Jan. 1990 - Dec. 1999 of various hedge fund categories
+. . . . .
+21
+9
+Our strategy
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+22
+10
+Number of companies for which there exist various fundamental data at the
+beginning and end of the test period . . . . . . . . . . . . . . . . . . . . . . .
+24
+11
+The stocks used in the model . . . . . . . . . . . . . . . . . . . . . . . . . . .
+24
+12
+Our momentum-proxies
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+25
+13
+Evaluation variables
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+30
+14
+Results of our trading model
+. . . . . . . . . . . . . . . . . . . . . . . . . . .
+32
+15
+Correlations of our trading model with diﬀerent industries . . . . . . . . . . .
+32
+16
+Results of the simplistic momentum strategy
+. . . . . . . . . . . . . . . . . .
+34
+17
+Replication of earlier studies . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+38
+18
+Random rankings (median of 50 runs) . . . . . . . . . . . . . . . . . . . . . .
+39
+19
+Transaction costs and risk control based on price variable
+. . . . . . . . . . .
+40
+20
+Simulations from 1995 in Sweden . . . . . . . . . . . . . . . . . . . . . . . . .
+41
+21
+Changes in our default model . . . . . . . . . . . . . . . . . . . . . . . . . . .
+42
+22
+Hypotheses testing . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+46
+23
+Swedish stocks
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+49
+iii
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+1
+INTRODUCTION
+1
+1
+Introduction
+1.1
+Background
+Technical analysts have always been the neglected outcasts of the world of academic ﬁnance.
+Business students learn in their ﬁrst year that any attempts to study historical data in search
+of that elusive gold mine are futile. The market quickly abolishes such pretensions. And it is
+not hard to see why the lecturer has that sarcastic tone in his voice while preaching the laws
+of ﬁnance and their relentless eﬀect on the pity chartist. Anyone who has read a book from
+the 80’s on charting techniques knows why. Pen and paper are the tools, and with them one
+will ﬁnd speciﬁc patterns of stock prices emerging and then it is just to ﬁll in the blanks and
+the order book. No statistical or theoretical foundation, no portfolio view or risk control.
+But often with a closing chapter on the link between the stock market and astrology.
+This tarnished image did not disappear even as the upholding arguments of the eﬃcient
+market hypothesis (hereafter EMH) came under question in the 80’s; the assumptions of the
+rational investor and the eﬀect of arbitrage on bringing back prices to their fundamental
+value.
+A tidal wave of theory and empirical evidence has since then given the chartists
+right on their main point: historical data do provide some information valuable in predicting
+future prices. The reason being irrational investors and limited arbitrage.
+The old school of technical analysis has not changed that much though except for better
+data and computing power, but the professional community of investment management did
+change. In conjunction with the surge of alternative investments in the 90’s, many popular
+strategies were based on the new paradigm, trying to exploit systematic ineﬃciencies in the
+market. And the question of where the line between arbitrage proﬁts and risk premium goes
+may be one of semantic rather than practical importance, especially in the more numbercrunching inclined strategies.
+In any case, the explosive growth of the hedge-fund industry, the availability of good
+data and more powerful computers, have moved the frontiers for the statistically interested
+investor and manager. The situation today is indeed horizons away from the pen and paper
+chartist of the 80’s. Our own skills in programming and mathematics intersect with this new
+development and the gold-shimmering prospect of ﬁnding an untouched deposit of a steady
+stream of proﬁts. This is of course the ancient romantic dream that have left many fortune
+hunters in dismay and destitution. So a more realistic goal for this master thesis becomes
+an attempt to use some of the new theory and empirical research that has come under the
+name of behavioral ﬁnance in recent years to construct a trading model which performance
+will be tested.
+Speciﬁcally, we are looking at a strategy categorized as market neutral statistical arbitrage. It is an equity market neutral strategy of interest for investors who want to have an
+asset with low market correlation.
+This strategy has caught the attention of many academicians lately, as being a good example of a systematic ineﬃciency on the market. The
+methodology used when analyzing this phenomenon in most academic papers, called Cumulative Abnormal Return (CAR), is straightforward and easy to use. However, it is also very
+rigid and simplistic.
+To assess the true potential of exploiting the momentum eﬀect, we argue, one must simulate trading in a way that is much more realistic and that combines a variety of trading rules.
+We have done this by constructing a simulation platform, a computer program, amounting
+to a total of 220 pages of Java code.
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+1
+INTRODUCTION
+2
+1.2
+Purpose
+The purpose of this Master Thesis is to assess the merits in terms of risk and return of a selfmade trading model based on the momentum eﬀect. This is however not done in an absolute
+way, instead we want to see how performance changes in our sample when we introduce both
+transaction costs and more advanced trading rules in relation to the naive (or simplistic,
+see Appendix A.6 for a deﬁnition) strategy common in academic papers on the momentum
+eﬀect. We can then determine whether it is feasible to exploit the momentum eﬀect in a
+more realistic setting.
+As a second, but in our view more important objective of this thesis, we want to demonstrate the simulation platform we have developed, and advocate its use as a superior methodology when evaluating trading strategies.
+1.3
+Delimitation
+We limit the scale and scope of our thesis in the following areas:
+• Our data is limited to 6 years of Swedish ﬁnancial and fundamental data (see further
+Section 4). We have however stock quotes for more than ten years in Sweden, Germany,
+France and the United Kingdom.
+This data will be analyzed in the Appendix to
+estimate the robustness of our model and the underlying market ineﬃciency it tries to
+exploit.
+• The technical details of our model and simulation platform are not the focus of this
+thesis and will not be examined in depth. It is not possible with the information in this
+thesis to replicate the simulation platform or the exact algorithms that constitute our
+own trading model. This would have required a lot of technical documentation that we
+have chosen to withhold.
+• We have still not optimized our market neutral statistical arbitrage model in a way
+that would be recommendable in a real life setting. For example; we are fully invested
+at all times, we do not consider an optimal hedge, and we do always include 10 long
+and 10 short positions in our portfolio.
+Further clariﬁcation and justiﬁcation for the focus of the model within these limitations
+are given in more detail in Sections 3 and 5.
+1.4
+Outline and Reader’s Guide
+To our knowledge, no other master thesis in Sweden has been written in an attempt to
+produce a full-ﬂedged trading system.
+This should be seen in light of the fact that the
+required computing power and data quality have not been available more than a few years
+for student use.
+What we gain in realism is lost in simplicity, and thus to some extent also in replicability,
+transparency and focus. But realism is an objective of this thesis. As is our critique of
+simplistic methodologies, such as CAR, and their equally simplistic conclusions that do not
+extend beyond a mere theoretical domain, often without bearing on the real world.
+Our thesis is structured as follows:
+• Previous Research. First of all, we want to establish a theoretical and empirical
+foundation for the ineﬃciencies (in an EMH sense) we want to exploit. We provide a
+theoretical model that tries to explain the phenomenon of momentum in stock prices.
+Also, we highlight some empirical evidence on the momentum eﬀect from diﬀerent stock
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+1
+INTRODUCTION
+3
+markets, using the classic CAR methodology. Furthermore, we look at other variables
+that could be used in the model, such as sentiment and fundamental variables.
+• An Overview of the Model and its Context. Next, we look at our model in
+the context of diﬀerent trading strategies used by hedge funds and make some notes
+on the technical structure of our simulation platform. This section does not lie on
+the otherwise straight line between purpose and conclusions, but is important for the
+general understanding of this thesis.
+• Data. The data used as input in the model is described in this chapter.
+• Methodology – Signal Generation and Risk Control. This chapter describes how
+we turn the input into output, i.e. a market neutral portfolio. Signal generation deals
+with how buy and sell signals are generated from the data. Risk control is necessary in
+order to optimize the risk-return proﬁle on a portfolio level, by taking into consideration
+the risk implications of the generated buy and sell signals.
+The word methodology here is referring to how we derive the algorithms used when
+deciding what, when and how many stocks should be bought or sold at a speciﬁc moment. The methodology in a wider sense is referring to the Java program, or simulation
+platform, that we use to implement the algorithms.
+• Results – Portfolio Simulations. The model’s output is statistically analyzed and
+then compared with a simplistic strategy with static rebalancing and only price as an
+input variable.
+Finally, we conclude on our ﬁndings. In the Appendix, we have an extensive discussion on
+the robustness of our model, based on out-of-sample tests of our model using price data from
+Germany, France, UK and Sweden. Basic ﬁnancial and statistical concepts used in this thesis
+are explained in Appendix A.6.
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+2
+PREVIOUS RESEARCH
+4
+2
+Previous Research
+This section begins with a theoretical background to our experiments, and continues with
+an illustrative model of irrational behavior. The section ends with a digression on our use of
+the stop-loss rule and a brief review of previous empirical studies.
+2.1
+Theoretical Justiﬁcation for Momentum Strategies
+The ambition of this section is to give a theoretical motivation for the momentum eﬀect.1
+This motivation will be supported by Section 2.4, where we also deal with aspects of the
+momentum eﬀect that are of more practical use to our trading model.
+This theoretical
+section is included since the momentum eﬀect is of utmost importance to our trading model.
+We will thus ﬁrst present the main lines of critique of momentum, and then the answers to
+these issues in turn.
+Those who oppose the existence of the momentum eﬀect argue mainly along one or both
+of the following two lines:
+The markets are eﬃcient According to the EMH, a continuation of stock prices not based
+on changes in fundamental values is not possible, or at the most a temporary anomaly.
+Data mining Another explanation is that the eﬀects discovered empirically simply are the
+results of data mining, i.e. the data is spurious.
+2.1.1
+Eﬃcient Markets
+The EMH has a long history in ﬁnance, and its proponents are some of the most prominent
+ﬁgures in ﬁnancial economics such as Eugene Fama at University of Chicago.2
+To start
+oﬀthis section, we ﬁrst discuss the concept of eﬃcient markets and the implications they
+have for momentum strategies, since our trading system would not work if the markets were
+eﬃcient, even if only in the weak form (see below).
+In words, the EMH states that the current market price reﬂects the assimilation of all
+the information available. This means that given the information, no prediction of future
+changes in the price can be made. As new information enters the system, the unbalanced
+state is immediately discovered and quickly eliminated by a ”correct” change in the market
+price, i.e. the momentum eﬀect should not be possible.
+In Fama (1970), the concept of eﬃcient markets was for the ﬁrst time formalized, even
+though the mathematical foundation had been put forth earlier in Mandelbrot (1966). Fama
+expresses the non-predictable characteristic of market prices formally as
+E(˜pj,t+1|Φt) = [1 + E(˜rj,t+1|Φt)]pj,t,
+(1)
+where pj,t is the price of security j at time t, rj,t+1 is the one-period percentage return
+(pj,t+1 −pt,j)/pt,j, Φt is the information reﬂected at time t, and the tildes indicate random
+variables. The expression E(A|B) indicates the expected value of A given that event B has
+occured. Fama then goes on to state explicitly that this rules out any possibility of trading
+systems based solely on information in Φt that have expected proﬁts or returns in excess of
+equilibrium expected proﬁts or returns.
+1The momentum eﬀect is here deﬁned as ”the persistence in the returns of stocks over horizons between three
+months and one year” (Grinblatt and Han, 2002, p. 1). The typical set-up of a momentum strategy is to go long
+in past winners and take a short position in past losers.
+2We will sometimes refer to the champions of the EMH as ”traditionalists”.
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+2
+PREVIOUS RESEARCH
+5
+According to Fama, the EMH has three diﬀerent shapes, based on how ”large” the information set Φt is; the strong form (where groups of investors have more information than
+others, e.g. insiders), the semi-strong form (where the information set includes all the obviously publicly available data such as volume data, proﬁt prognoses and sales forecasts), and
+the weak form (where the information subset is just historical price or return sequences).
+He concludes that the weak and semi-strong forms are heavily supported by empirical tests,
+while the status of the strong form is more ambigious, since it is very hard to test statistically
+due to shortage of data. He also discusses the existence of autocorrelation in price sequences,
+which is of utmost importance for momentum strategies, but concludes that they are either
+insigniﬁcant or too small to make any economic sense. Furthermore, he mentions trading
+strategies that beat buy-and-hold on a consistent basis when not regarding transaction costs.
+It is worth noting that we have tested our model with transaction costs.
+The essence of Fama’s paper is that one cannot systematically beat the market, using e.g.
+a momentum strategy. So why would a momentum strategy work? The theory presented
+above is theoretically sound, the problem is that the assumptions upon which the theory rests
+are not plausible nor applicable in reality. The most fundamental of these assumptions is
+that investors behave rationally, or, if they do not, that the deviations of irrational investors
+cancel each other out, which is the view expressed in e.g. Fama (1998). Another ”eﬃcient
+markets”-explanation is that the irrationality is exploited by arbitrageurs, something which
+has been put forth by de Long et al. (1990).
+But research done the last 30 years has shown that investors in fact are not strictly
+rational nor possess unlimited computational capacity (Shiller, 1998). Instead of trying to
+compute expected values and arrive at sensible strategies through the use of Bayes’ rule,
+investors commonly rely on various heuristics.3 Particularly interesting for our thesis is the
+representativeness heuristic, by which is meant the ”tendency for people to try to categorize
+events as typical or representative of a well-known class, and then, in making probability
+estimates, to overstress the importance of such a categorization, disregarding evidence about
+the underlying probabilities”
+(Shiller, 1998, p. 22). A manifestation of this somewhat abstract idea is the tendency of people to see patterns in strictly random sequences of numbers.
+People are also victims of various biases, of which conservatism bias is one of the most important. People with a bias towards conservatism tend to underweight new information in
+updating their weighting of new information (Jegadeesh and Titman, 2001). For a thorough
+exploration of these issues, we refer the interested reader to e.g. Shiller (1998).
+The above biases and rules of thumb all point to deﬁciencies of the EMH, but what
+about the proposition that the eﬀects of irrational investors trading according to various
+heuristics or biases cancel each other out? Experiments done by Kahneman and Tversky
+have shown that individuals tend to deviate systematically, and deviations will thus have a
+real impact (Shleifer, 2000).
+What speciﬁcally do the heuristics and biases lead to? First and foremost, they generate
+over- and underreaction to e.g. news. These reaction eﬀects are essential to the momentum
+eﬀect, which will be shown below. We describe these two eﬀects formally as follows:
+Overreaction:
+E[rt+1|zt = G, zt−1 = G, . . . , zt−j = G] < E[rt+1|zt = B, zt−1 = B, . . . , zt−j = B]
+(2)
+3Bayes’ rule states that, if Ai, i = 1, . . . , n and B are events, then
+P(Ai|B) =
+P(Ai)P(B|Ai)
+Pn
+j=1 P(Aj)P(B|Aj),
+see e.g. Råde (1999). In words, investors following Bayes’ rule will weight information after how precise it is.
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+2
+PREVIOUS RESEARCH
+6
+Underreaction:
+E[rt+1|zt = G] > E[rt+1|zt = B],
+(3)
+where zt is the news that the investor hears in period t, G is good news, B bad news and
+rt is the period t return. Below, we will give examples of good and bad news. In words:
+overreaction occurs when the average return (an approximation of expected return) following
+a series of announcements of good news is lower than the average return following a series
+of bad news announcements. Underreaction in its turn occurs when the average return on
+the company’s stock in the period following an announcement of good news is higher than
+the average return in the period following bad news (the notation as well as the deﬁnitions
+are from Shleifer (2000)).
+The momentum eﬀect and the phenomena described above that cause it, were ﬁrst documented in Bondt and Thaler (1985), where empirical support for the overreaction eﬀect is
+found.4 Evidence of the underreaction eﬀect can be found in Jegadeesh and Titman (1993).
+The traditionalists have also tried to ﬁnd other explanations than the irrational behavior
+of investors to the momentum eﬀect. Fama and French (1993, 1996) have e.g. tried to relate
+the phenomenon to risk premia on investing in value stocks and small stocks, which would
+imply that the EMH is not violated. They take the comovements of stock prices in these
+categories as evidence that the securities share some common fundamental risk. But this has
+not been shown directly (Shleifer, 2000), and instead there could be a behavioral explanation,
+as shown by e.g. R. La Porta and Vishny (1997). A case can be made that similar stocks are
+inﬂuenced by the same investor sentiment, so that the stock prices are correlated. The upshot
+of this is that the comovement of stocks does not have to be explained by risk premia. Another
+setback for the EMH is that an implication of the rational explanation of the value/glamour
+evidence is that investors should expect lower returns when investing in glamour stocks
+because of those stocks’ risk characteristics. But evidence points the other way, i.e. that
+investors are too optimistic about the future returns of growth stocks (J. Lakonishok and
+Vishny, 1994).
+2.1.2
+Data mining and Spurious Data
+Jegadeesh and Titman (1993) ﬁrst made the momentum eﬀect more widely accepted by
+getting their ﬁndings published in the Journal of Finance. One common answer from the
+traditionalists was that the data was spurious, i.e. that Jegadeesh and Titman had looked at
+too short periods, special periods and so on. This critique was answered by Jegadeesh and
+Titman (2001), where they repeat their tests with more recent data and with longer periods
+of earlier data. Of course, to really ”prove” the momentum eﬀect, one would have to test
+all available data from all countries, but the Jegadeesh and Titman tests at least seem to
+conﬁrm that there exists or has existed a momentum eﬀect for American stocks.
+One case that has been made against the momentum research is that the returns only
+reﬂect recent U.S. history. An attempt at dealing with this claim was made in Rouwenhorst
+(1998), where momentum strategies in 12 European countries, including Sweden, between
+1985 and 1990 are tested. Rouwenhorst found that the strategies worked in all 12 countries,
+and hence that the momentum eﬀect is not restricted to the United States. See Section 2.4
+for further discussion.
+4The authors do not investigate the momentum eﬀect explicitly, but that stocks have momentum is an implication of the fact that they tend to revert.
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+2
+PREVIOUS RESEARCH
+7
+2.2
+A Model of Over- and Underreaction
+With this model we will attempt to illustrate, nota bene not prove, the concepts of over- and
+underreaction and how those can aﬀect the prices of stocks leading to the momentum-eﬀect.5
+The model is thus a theoretical motivation to why our trading model could work in reality.
+The model is a so called ”representative agent”-model, i.e. there is only one agent in the
+model. We further assume that the investor is risk neutral and that 100% of earnings are
+paid out as dividends.6 Hence, the agent’s valuation of the earnings-stream will equal the
+price of the stock. This investor is not aware of the true underlying process governing the
+earnings process, which is a random walk (i.e. completely random):
+Nt = Nt−1 + yt,
+(4)
+where Nt is the earnings in period t and
+yt =
+
+
+
+y
+with probability 0.5
+−y
+with probability 0.5,
+is the period t shock to earnings. The earningsprocess is a martingale, since E[Nt+1|Nt] =
+Nt + E[yt+1] = Nt + (0.5)y −(0.5)y = Nt and E(|Nt|) < ∞.7 If the investor were fully
+rational, and would have the computational capacity to realize that the earnings-stream is
+a random walk, her valuation of the stock would just be
+Pt = Et
+·Nt+1
+1 + δ +
+Nt+2
+(1 + δ)2 + . . .
+¸
+= Nt
+δ ,
+(5)
+where δ is the investor’s discount factor.8 With this valuation, there would be no over- or
+underreaction and hence no momentum eﬀect.
+The investor in the model at hand is however not fully rational, and instead believes that
+the shocks to earnings are governed by either one of two models, either a mean-reverting
+model or a model of positive autocorrelation (earnings trend). She will then use whichever
+model she thinks governs earnings to forecast dividends and prices. Depending on the shocks
+to earnings the investor observes at time t, she will shift between the two models. Both the
+two models and the process by which the investor switches between the two are Markov
+5The model is Barberis’, Shleifer’s and Vishny’s model as presented in Shleifer (2000).
+6The assumption of risk neutrality is done for the sake of simplicity.
+7We have used the deﬁnition of a martingale found in Djehiche (2000).
+8Equation (5) holds, since Nt is a martingale and hence the expression reduces to
+Nt
+∞
+X
+n=1
+1
+(1 + δ)n ,
+which is a geometric series, and can be rewritten as
+Nt
+ ∞
+X
+n=0
+xn −1
+!
+,
+(6)
+where x =
+1
+1+δ . The sum equals
+1
+1−x =
+1
+1−
+1
+1+δ = 1+δ
+δ
+(see e.g. Adams (1995, p. 530)). Equation (6) thus reduces
+to Nt( 1+δ
+δ
+−1) = Nt 1
+δ , so Et
+h
+Nt+1
+1+δ +
+Nt+2
+(1+δ)2 + . . .
+i
+equals Nt
+δ .
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+2
+PREVIOUS RESEARCH
+8
+processes (see Appendix A.6 for an explanation of Markov processes).
+Model one9:
+yt+1 = y
+yt+1 = −y
+yt = y
+πL
+1 −πL
+yt = −y
+1 −πL
+πL
+This will be a mean-reverting model if πL ∈(0, 0.5).
+Model two:
+yt+1 = y
+yt+1 = −y
+yt = y
+πH
+1 −πH
+yt = −y
+1 −πH
+πH
+The shocks according to model two will be positively autocorrelated if πH ∈(0.5, 1).
+We can write the transition matrix for the Markov process governing the switches between
+the two models as
+st+1 = 1
+st+1 = 2
+st = 1
+1 −λ1
+λ1
+st = 2
+λ2
+1 −λ2,
+where st = i, i = 1, 2 means that at time t, the investor believes that model i governs the
+earnings shocks.
+As mentioned above, the valuation of the stock would be really simple if the investor knew
+the process was a random walk, but now we have to take into account that the investor’s
+beliefs regarding the governing process change over time between the mean-reverting model
+and the model of positive autocorrelation. According to the strings of news she receives,
+where news is deﬁned as the shock to earnings in a speciﬁc period, she updates her beliefs
+according to Bayes’ rule. A shock is considered as good news if it is positive and as bad
+news if it is negative. To make this formal, assume that the investor at time t calculates qt,
+the probability that the shock observed in period t was generated by model 1, using the new
+data to update her beliefs from the preceding period, qt−1. This means that qt = P(st =
+1|yt, yt−1, qt−1). The process of updating can be expressed as qt+1 =
+((1 −λ1)qt + λ2(1 −qt))P(yt+1|st+1 = 1, yt)
+((1 −λ1)qt + λ2(1 −qt))P(yt+1|st+1 = 1, yt) + (λ1qt + (1 −λ2)(1 −qt))P(yt+1|st+1 = 2, yt)
+(7)
+This expression follows from the deﬁnition of transition probabilities above and the use of
+Bayes’ rule. To get a feeling for how this updating works, we have plotted a string of shocks
+and the corresponding qts in Table 1. When the investor sees a string of positive or negative
+shocks, she gets more and more certain that the earnings are generated by the positive autocorrelation model, i.e. qt sinks. When she observes shocks of alternating good and bad news,
+she gets more and more convinced that the earnings are generated by model 1, i.e. qt goes
+up.
+We are now ready to explore how the investor values the stock. As we mentioned above,
+a fully rational investor would, according to the EMH, value the stock as Pt = Nt
+δ , but this
+investor believes that the earnings are generated by the model-switching scheme described
+above. Thus, she will value the stock according to the following formula
+Pt = Nt
+δ + yt(p1 −p2qt),
+(8)
+9This is a transition matrix, which means that if the initial state is yt = −y, the next state will be yt+1 = −y
+with probability πL etc.
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+2
+PREVIOUS RESEARCH
+9
+Table 1. Illustration of how the investor changes her beliefs about which model governs the earnings
+according to the shocks to earnings she observes, when the shock to earnings is 10.
+qt is the
+probability that she assigns to the earnings being generated by model 1, i.e. the mean-reverting
+model. The qts are rounded to four decimal places.
+Time
+Shock
+qt
+0
+10
+0.5000
+1
+10
+0.4000
+2
+10
+0.3429
+3
+-10
+0.7318
+4
+-10
+0.5573
+5
+10
+0.8223
+6
+-10
+0.9110
+7
+10
+0.9364
+8
+-10
+0.9433
+9
+10
+0.9451
+10
+10
+0.7436
+where p1 = 1
+δ (γT
+0 (1 + δ)(I(1 + δ) −Q)−1Qγ1) and p2 = −1
+δ (γT
+0 (1 + δ)(I(1 + δ) −Q)−1Qγ2).
+The transpose of a matrix or vector x is written xT . γT
+0 = (1, −1, 1, −1), γT
+1 = (0, 0, 1, 0),
+γT
+2 = (1, 0, −1, 0).
+Q =
+
+
+
+
+(1 −λ1)πL
+(1 −λ1)(1 −πL)
+λ2πL
+λ2(1 −πL)
+(1 −λ1)(1 −πL)
+(1 −λ1)πL
+λ2(1 −πL)
+λ2πL
+λ1πH
+λ1(1 −πH)
+(1 −λ2)πH
+(1 −λ2)(1 −πH)
+λ1(1 −πH)
+λ1πH
+(1 −λ2)(1 −πH)
+(1 −λ2)πH
+
+
+
+
+The transpose of the matrix Q describes the transitions between the models and the earnings
+shocks,
+A plot of the earnings and corresponding prices is given in Figure 1 to make the reader
+aware of how the model looks. To give an indication of how the ”true” price diﬀers from
+the value perceived by the representative investor, we have plotted some values for both the
+price process discussed above and the prices if the investor knew the underlying process was
+a random walk in Figure 2. This shows the essence of the momentum eﬀect, the over- and
+undershooting of price in relation to the ”rational” price.
+The diﬀerence between the ”true” price and the actual price is represented by the last
+term in Equation (8), which can be thought of as the deviation from the fundamental value.
+This bias gives rise to the over- and underreaction eﬀect. If the overreaction eﬀect holds,
+then, according to our claims above, we would observe a lower return on the stock following
+a period of good news, than following a string of bad ones.
+If, on the other hand, the
+underreaction eﬀect holds, we would observe a result in line with Equation (3), i.e.
+the
+return on a company’s stock is higher following an announcement of good news than the
+return following bad news.
+To test these eﬀects within the framework of the presented
+model, we simulate the earnings of 50 ”companies” for 6 periods, where one period could be
+e.g. a year. A company is deﬁned as a six-period earnings string.
+If overreaction existed in the given model, we should observe that r4
++ is lower than r4
+−,
+in line with Equation (2).10 This is the observation of Shleifer (2000), but we want to take
+the analysis further, by getting an indication of the signiﬁcance of the results, which is not
+done in Shleifer (2000). To test this, we run the described simulation of 50 ﬁrms 100 times
+in Matlab. This leaves us with a sample of 100 observations.
+To check the existence of the overreaction eﬀect we look at the average diﬀerence between
+r4
++ and r4
+−. This is done by constructing a 99% conﬁdence interval for the average diﬀerence. The distribution of the diﬀerences is plotted in Figure 3. Knowing that each run is
+10We denote the return on stocks of companies with four consecutive years of positive earnings shocks r4
++.
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+2
+PREVIOUS RESEARCH
+10
+0
+100
+200
+300
+400
+500
+600
+0
+100
+200
+300
+400
+500
+600
+700
+Time
+Price and Earnings
+Earnings
+Price
+Figure 1.
+Realizations of earnings over 600 periods and the corresponding prices.
+To see the
+diﬀerence between irrational and rational pricing, see Figure 2.
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+2
+PREVIOUS RESEARCH
+11
+0
+5
+10
+15
+20
+25
+30
+35
+40
+280
+290
+300
+310
+320
+330
+340
+350
+360
+370
+380
+Time
+Price
+"True" Value of Stock
+Value Perceived by Irrational Investor
+Figure 2. The essence of the momentum eﬀect. 40 realizations of the earnings and the corresponding
+prices if the investor knows the underlying process is a random walk vs. the prices perceived by the
+investor when she does not know the price process. This price pattern can be exploited by a trading
+strategy.
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+2
+PREVIOUS RESEARCH
+12
+independent of the others and assuming that each run is identically distributed, with ﬁnite
+expectation and variance, we can, by the central limit theorem (see e.g. Gut (1995, pp.
+173-174)), construct a conﬁdence interval of the following form:
+¯x −tn−1,α/2sx
+√n
+< µ < ¯x + tn−1,α/2sx
+√n
+,
+(9)
+where ¯x and sx are the sample mean and standard deviation respectively, n is the sample
+size and µ is the mean of the population (see e.g. Newbold (1995)). We ﬁnd that
+P(−4.15 · 10−3 < µ < −4.09 · 10−3) = 0.99,
+which is consistent with the overreaction eﬀect, since the average return diﬀerence is so
+clearly below zero.
+To check for the existence of the underreaction eﬀect, we examine the average diﬀerence
+between r1
++ and r1
+−. This is done by constructing a 99% conﬁdence interval for the average
+diﬀerence. The distribution of the diﬀerences is plotted in Figure 4. The 99% conﬁdence
+interval for r1
++ −r1
+−, calculated analogously to above, is
+µ ∈(2.62 · 10−4, 3.06 · 10−4)
+This is consistent with the formal deﬁnition of underreaction, Equation (3) above, in the
+sense that it is clearly above zero.
+When considering our results, please note that we have used a speciﬁc parameter setting
+(for π and λ). The model will not produce signiﬁcant over- and underreaction results for
+all possible parameter speciﬁcations.
+For a further discussion of the stability issue, the
+interested reader is referred to the original working paper (Barberis and Shleifer, 1997), and
+the discussion below.
+2.2.1
+Conclusions and Discussion
+To conclude, we ﬁrst state three criteria that are generally considered as relevant when
+evaluating models of this kind (Hong and Stein, 1999):
+• The assumptions underlying the model should be a priori plausible or consistent with
+casual observation
+• The model should explain existing evidence in a parsimonious and uniﬁed way
+• The model should make a number of further predictions that can be subject to out-ofsample testing and that are ultimately validated
+The assumptions are very robust, since they are based on the results of research both in ﬁnancial economics and in experimental psychology, see e.g. Bondt and Thaler (1985) and Kahneman and Tversky (1979). One draw-back though, is that there is only one agent, which means
+that the model fails to capture the eﬀect of traders with heterogenous beliefs. This issue has
+been addressed in the famous study by Hong and Stein (1999). They also provide a uniﬁed
+account of over- and underreaction, but with two groups of traders.
+An interesting question is how the model would change if the investor were risk averse,
+which is assumed in e.g. CAPM. We would then have needed to specify a utility function
+for the investor, which would aﬀect her valuation of the stock.
+This would increase the
+arbitrariness of the model, since utility functions are not observable in reality.
+The most obvious strength of the model employed is that it is parsimonious and that it
+is uniﬁed, i.e. it covers both the under- and overreaction eﬀects. A weak side is that it really
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+2
+PREVIOUS RESEARCH
+13
+−0.04
+−0.03
+−0.02
+−0.01
+0
+0.01
+0.02
+0.03
+0
+5
+10
+15
+20
+25
+Figure 3. A histogram describing the distribution of results of the simulation of the overreaction
+eﬀect. The mean of the diﬀerences is −4.12 · 10−3 and the standard deviation is 9.96 · 10−5. The
+existence of the overreaction eﬀect is signiﬁcant.
+−0.03
+−0.02
+−0.01
+0
+0.01
+0.02
+0.03
+0
+5
+10
+15
+20
+25
+30
+Figure 4. Results of the simulation of the underreaction eﬀect. The mean is 2.84 · 10−4 and the
+standard deviation 8.55 · 10−5. Our ﬁndings are consistent with the underreaction eﬀect.
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+2
+PREVIOUS RESEARCH
+14
+does not make any further predictions, but this issue is not relevant for our thesis. There are
+some points which the model above does not address, e.g. how arbitrageurs would aﬀect the
+results. One may argue that the addition of arbitrageurs would eliminate the eﬀects. This
+is not necessarily the case, since arbitrage is quite risky in this setting. No one can perfectly
+predict when and how prices will reach the fundamental value. Trend following arbitrage
+trading can result in a self-feeding bubble, that makes prices deviate even further from the
+fundamental value (de Long et al., 1990). This accentuates stock momentum even further.
+Increased volatility is not only beneﬁcial however, since exact timing will most probably be
+harder.
+Regarding the results of the theoretical model above, we have seen that the representativeness heuristic and the conservatism bias could be explanations for the over- and underreaction eﬀects, which together drive the momentum eﬀect. As can be seen below, this claim
+is also supported by empirical evidence, see e.g. Table 2. Underreaction and overreaction
+cause over- and undershooting of prices, in the sense that prices of a stock keep irrationally
+trending up after the release of good news, and vice versa when the news is bad. The model
+depicted above implies that a typical investor can be seen as using the representativeness
+heuristic, i.e. she sees systematic patterns in sequences that are in fact completely randomly
+generated. This explains the momentum eﬀect according to this model.
+But, having said this, one can still question the exact parameter speciﬁcations of this
+model, and the circumstances under which it produces economically signiﬁcant results. We
+e-mailed Professor Shleifer and asked him if he could motivate these parameter settings (e.g.
+the transition probabilities) from an empirical standpoint. He replied and commented that
+he could not, but that we indeed had an important point in questioning this and that he
+also very much would like to know the answer to this question and possibly weak link in his
+model. Once again, theoretical reasoning needs to be complemented with empirical facts in
+order to say something meaningful about reality.
+2.3
+Theoretical Motivation for the Stop-Loss Rule
+This section oﬀers a theoretical motivation for the use of the stop-loss rule, which is often
+incorporated in trading models. In its most simple form, the stop-loss rule means that one
+liquidates a losing position when its price exceeds or drops below a certain limit, depending
+on if it is long or short. Its use is motivated by the fact that one gains by taking small rather
+than large bets when one is subject to “bankruptcy costs”. Assume a situation where one
+does not limit one’s bets. A well-known such situation is the martingale betting strategy,
+a version of which we will go through brieﬂy here.11The strategy is called the martingale
+betting strategy since the sequence Sn deﬁned below is a martingale with respect to itself.
+Assume that a game is played where the player bets on the result of a toin coss. The player
+wins her bet if the coin comes up a head and loses if it is a tail. The strategy is simple:
+double the bet until the preferred side of the coin comes up, which it is bound to do, say at
+time T. The proﬁt of this strategy every time one wins is
+2T −(1 + 2 + 4 + · · · + 2T −1) = 1
+(10)
+The ﬁrst term on the left-hand-side of Equation (10) is the player’s gain at time T and the
+second term is the money she has lost up to and including time T −1. Let Sn denote the
+11This example is adapted from Djehiche (2000).
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+2
+PREVIOUS RESEARCH
+15
+accumulated gain up to the nth toss, S0 = 0. Then Sn evolves according to
+Sn+1 =
+
+
+
+Sn −2n
+with probability 0.5
+Sn + 2n
+with probability 0.5
+The probability that the game stops after the nth toss, i.e. that the player wins, is given by
+P(T = n) = 1
+2
+1
+2 . . . = 1
+2n ,
+for n ≥1, since there is a probability of a half that the coin comes up head. This means
+that the mean loss of the gambler tends to the following limit as n grows large:
+∞
+X
+n=1
+1
+2n (1 + 2 + · · · + 2n−1) = ∞,
+where the sum in parentheses is the same as the second term of the left-hand-side of Equation (10). This implies that the initial capital of the gambler, or investor, needs to be inﬁnite,
+if she intends to pursue her martingale betting strategy. Otherwise, after a string of unfavourable events, the gambler will go bankrupt (this is the strategy pursued by casinos when
+limiting the maximum size of bets). The essence of the stop-loss rule is precisely to minimize
+the risk of losing large ”bets”, so therefore the managers of funds using the stop-loss rule will
+not be needing unlimited funds, or at least not as much access to capital.
+2.4
+Empirical Evidence Using CAR
+Now, we turn our attention to the empirical evidence of primarily the momentum eﬀect.
+These general facts will later be used as guidance when we test diﬀerent trading rules in our
+model. Also, we will later emulate the simplistic methodology (as in only using the price
+variable, no transaction costs, static rebalancing etc) used here, to compare it with our own
+model as stated in the purpose of this thesis.
+The research cited in the following text often takes the form of a statistical test for
+abnormal returns in a market neutral portfolio that is rebalanced periodically a few times a
+year in accordance with a ranking scheme based solely on price changes. It is thus a static
+version of the more dynamic model that we try to build.
+2.4.1
+The Momentum Eﬀect
+As we have seen in Section 2.1 above, the momentum eﬀect is basically return continuation
+in the medium term in both negative and positive direction, followed by mean reversion over
+the longer term. The reason: economically irrational investors.
+The basic methodology of the momentum studies cited in Table 2 is, as stated above,
+to rank stocks after a ”ranking period”. Normally, the 10-20% best and worst performers
+form a long and short portfolio, respectively. This combined portfolio is a close to zero β
+investment that in theory should yield 0% in return (save transaction costs and interest on
+short positions). Then, one looks at a ”test period” directly after the ranking period and
+test statistically if the strategy yields any abnormal return above 0%, in which case the
+momentum eﬀect would be present. The results are presented as a Cumulative Abnormal
+Return (CAR) in the test period. Diﬀerent lengths of the ranking and test periods are then
+studied. Transaction costs are excluded in the cited research, leading to an overstatement
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+2
+PREVIOUS RESEARCH
+16
+of achievable returns. Furthermore, these strategies are very simplistic, which also aﬀects
+performance, as we will see later. And CAR, accompanied with a t-statistic, does deﬁnitely
+not give the whole picture necessary to correctly assess the true potential (in a negative or
+positive sense) of the momentum eﬀect.
+Table 2. A brief summary of empirical research on the momentum eﬀect.
+Paper
+Data
+Sample
+(Period)
+Results
+Other Conclusions
+L.K.C.
+Chan
+and
+Lakonishok
+(1999)
+NYSE, Amex, Nasdaq
+(1973-1993 and 19941998)
+Signiﬁcant momentum eﬀect, both
+for ranking based on 6-month return and changes in earnings expectations.
+Continuing positive and negative trends in the
+months following portfolio formation are attributed to ”conservatism bias” among investors, being slow to adjust to new information.
+D. Schiereck and
+Weber (1999)
+Frankfurt
+Stock
+Exchange (1961-1991)
+Signiﬁcant momentum eﬀect.
+See
+Table 3.
+Beta, risk or ﬁrm size does not account for momentum, but behavioral theory does provide a
+plausible explanation.
+The momentum eﬀect is similar to what is found
+in US data despite diﬀerences in markets.
+Predictable reversals of earnings and price for the
+winning and losing portfolios.
+M.
+Finn
+and
+Kling (1999)
+S&P 500 (1983-1998)
+Signiﬁcant momentum eﬀect.
+A
+long/short
+portfolio
+would
+yield
+7.8% with a tracking error of 4.8%
+and beta close to zero, with respect
+to the S&P 500.
+Most of the proﬁt from a long/short strategy using large capitalized stocks comes from the short
+side, due to high analyst coverage and limited
+short selling by large investors in this universe.
+The momentum eﬀect decreases with company
+size.
+If one controls for B/M and size, economic sector
+is of a less importance, probably sample speciﬁc
+however.
+Jegadeesh
+and
+Titman (2001)
+NYSE,
+Amex
+(19651997)
+Reaﬃrms
+support
+for
+previous
+studies that a long/short portfolio
+can earn approximately 1% excess
+return per month.
+Signiﬁcant mean reversion of momentum in the
+13-60 month period following portfolio formation.
+The
+momentum
+eﬀect
+can
+not
+be
+explained
+by cross-sectional dispersion of expected return,
+only by behavioral theories.
+Swaminathan and
+Lee (1999)
+NYSE,
+Amex
+(19651995)
+Signiﬁcant momentum eﬀect.
+Trading volume works as a good predictor.
+The best shorting candidates are high volume low
+momentum with a ranking period of six months.
+The best buy candidates overperformed less than
+the sell candidates underperformed.
+Daniel
+and
+Titman (1999)
+NYSE, Amex, Nasdaq
+(1963-1997)
+Signiﬁcant momentum eﬀect.
+13%
+yearly return if one takes a long position (20% most extreme) in high
+B/M high momentum and shorted
+the low B/M low momentum stocks,
+t-statistic 5.66.
+Stronger momentum eﬀect for low B/M stocks,
+since they are more susceptible to investor sentiment.
+Rejection of adaptive market eﬃciency in favor
+of behavioral explanations.
+O’Neal (2000)
+S&P (1989-1999)
+Much of the observed momentum in individual
+stocks are attributed to industry momentum.
+In the study by D. Schiereck and Weber (1999), who studied the German market, the
+results of their investigation of the momentum eﬀect are compared with the classic study
+by Jegadeesh and Titman (1993) using US data. Table 3 shows that the two studies have
+similar return patterns and that there are signiﬁcant momentum eﬀects when the ranking
+period is more than or equal to 3 months. The CAR increases generally at a decreasing rate
+as the test period reaches 6 to 12 months where mean reversion sets in. Note that the CAR
+is measured as a total up until the end of the test period, and not as a monthly return.
+The latest study on the momentum eﬀect for Swedish data was done as a Master Thesis
+at Stockholm School of Economics in 2000, presented in Table 4. The CAR numbers are
+here presented on a monthly basis, not total. They also found signiﬁcant results comparable
+to previous studies. However, during 1992 when Sweden devaluated its currency, the losing
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+2
+PREVIOUS RESEARCH
+17
+Table 3. The momentum eﬀect in Germany, compared with Jegadeesh-Titman’s results for USA,
+1961-1990. 20 W-L means that the 20 winning and 20 losing stocks in the ranking period form
+the market neutral long/short portfolio.
+Sample size:
+357 most traded stocks.
+Reproduced
+from D. Schiereck and Weber (1999)
+Strategy
+CARrank period
+CAR3
+CAR6
+CAR9
+CAR12
+One-month rank period
+20 W 1961-90
+13.18%
+0.00%
+0.35%
+0.02%
+0.78%
+(t-statistics)
+(0.02)
+(2.38)
+(0.17)
+(5.64)
+20 L 1961-90
+-10.43
+-0.20
+-0.15
+-0.25
+-0.70
+(-1.24)
+(-1.03)
+(-1.70)
+(-4.65)
+20 W-L 1961-90
+23.61
+0.20
+0.50
+0.28
+1.49
+(0.78)
+(2.14)
+(1.24)
+(6.35)
+20 W-L 1961-70
+22.06
+-0.62
+0.73
+0.22
+0.96
+20 W-L 1971-80
+21.37
+0.82
+0.74
+0.38
+1.33
+20 W-L 1981-90
+27.41
+0.41
+0.04
+0.24
+2.17
+Three-month rank period
+20 W 1961-90
+20.76
+0.31
+1.46
+2.10
+3.47
+(0.99)
+(3.10)
+(3.32)
+(4.78)
+20 L 1961-90
+-19.58
+0.38
+-0.07
+-0.80
+-2.06
+(1.06)
+(-0.18)
+(-1.40)
+(-3.05)
+20 W-L 1961-90
+40.35
+-0.07
+1.53
+2.90
+5.52
+(-0.15)
+(2.45)
+(3.40)
+(5.57)
+20 W-L 1961-70
+39.01
+-1.35
+0.02
+1.46
+3.59
+20 W-L 1971-80
+36.32
+0.13
+1.17
+1.42
+2.17
+20 W-L 1981-90
+46.73
+1.00
+3.40
+5.81
+10.81
+20 W-L 1965-89
+Na
+-0.03
+1.56
+2.61
+5.40
+Jegadeesh-Titman
+Na
+0.96
+1.74
+5.40
+8.28
+Six-month rank period
+20 W 1961-90
+30.07
+0.28
+1.95
+3.12
+4.15
+(0.46)
+(2.24)
+(2.95)
+(3.66)
+20 L 1961-90
+-29.44
+0.37
+-1.51
+-2.73
+-3.92
+(0.67)
+(-2.09)
+(-2.78)
+(-3.34)
+20 W-L 1961-90
+59.51
+-0.09
+3.46
+5.84
+8.07
+(-0.11)
+(3.06)
+(4.06)
+(4.95)
+20 W-L 1961-70
+55.90
+-0.39
+0.05
+0.74
+2.26
+20 W-L 1971-80
+53.38
+0.88
+4.99
+8.31
+8.83
+20 W-L 1981-90
+69.31
+-0.77
+5.33
+8.48
+13.13
+20 W-L 1965-89
+Na
+0.09
+4.32
+6.75
+8.76
+Jegadeesh-Titman
+Na
+2.52
+5.70
+9.18
+10.32
+Twelve-month rank period
+20 W 1961-90
+47.05
+1.77
+3.06
+3.06
+4.14
+(1.88)
+(3.27)
+(2.33)
+(2.59)
+20 L 1961-90
+-45.90
+0.98
+-1.84
+-0.83
+-1.07
+(0.83)
+(-1.57)
+(-0.52)
+(-0.47)
+20 W-L 1961-90
+92.95
+0.80
+4.90
+3.89
+5.21
+(0.53)
+(3.26)
+(1.88)
+(1.87)
+20 W-L 1961-70
+81.12
+-2.01
+0.96
+0.27
+1.06
+20 W-L 1971-80
+83.71
+4.83
+8.85
+8.55
+5.31
+20 W-L 1981-90
+114.04
+-0.43
+4.90
+2.85
+9.24
+20 W-L 1965-89
+Na
+1.11
+5.40
+4.95
+3.52
+Jegadeesh-Titman
+Na
+3.93
+6.84
+8.37
+8.16
+portfolio with negative momentum suddenly outperformed the winning portfolio, resulting
+in a large loss for the long/short portfolio. The authors therefore eliminated one year of
+data to evaluate the impact of the devaluation, and one can clearly see the improvement
+in performance.
+Eliminating bad data is of course a dubious way of proving a strategy
+proﬁtable, but it highlights an important aspect of our strategy: risk control. If one does
+not take into consideration the composition of the long and short positions, one will surely
+end up with a lot of exposure to various risk factors. A long stream of steady proﬁts can
+disappear literally overnight.
+2.4.2
+The Role of Volume, Fundamental and Sentiment Variables
+The most important variable when modeling the momentum eﬀect is of course the price
+itself, as was evident in Shleifer’s model. It incorporates investors’ beliefs and will thus also
+indicate whether a speciﬁc stock is ”neglected”, with negative momentum, or a ”glamour”
+stock with positive momentum. But there are other variables to consider.
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+2
+PREVIOUS RESEARCH
+18
+Table 4. The momentum eﬀect in Sweden 1980-1999. Stockholm Stock Exchange, between 118
+and 233 stocks. The Table is reproduced from Söderström (2000).
+Strategy
+CAR3
+CAR3
+CAR6
+CAR6
+CAR9
+CAR9
+CAR12
+CAR12
+1 year after
+1 year after
+1 year after
+1 year after
+devaluation
+devaluation
+devaluation
+devaluation
+eliminated
+eliminated
+eliminated
+eliminated
+Three-month rank period
+10% W-L 1980-1999, monthly return
+-0.37%
+-0.05%
+0.22%
+0.63%
+0.25%
+0.53%
+0.16%
+0.56%
+(t-statistics)
+(-0.83)
+(-0.12)
+(0.61)
+(2.40)
+(0.92)
+(2.12)
+(0.53)
+(2.54)
+monthly standard deviation
+3.90%
+3.61%
+2.80%
+2.22%
+2.51%
+2.15%
+2.77%
+1.95%
+Six-month rank period
+10% W-L 1980-1999, monthly return
+0.37
+0.85
+0.66
+0.99
+0.47
+0.87
+0.19
+0.68
+(t-statistics)
+(0.70)
+(1.86)
+(1.99)
+(3.30)
+(1.49)
+(3.43)
+(0.59)
+(3.11)
+monthly standard deviation
+2.27
+1.90
+2.96
+2.52
+2.90
+2.16
+2.93
+1.90
+Nine-month rank period
+10% W-L 1980-1999, monthly return
+0.64
+0.96
+0.79
+1.36
+0.52
+1.13
+0.12
+0.74
+(t-statistics)
+(1.25)
+(2.03)
+(2.13)
+(4.19)
+(1.52)
+(4.53)
+(0.34)
+(3.78)
+monthly standard deviation
+4.38
+3.96
+3.30
+2.71
+3.11
+2.13
+3.20
+1.75
+Twelve-month rank period
+10% W-L 1980-1999, monthly return
+0.37
+1.07
+0.45
+1.26
+0.30
+1.01
+0.02
+0.62
+(t-statistics)
+(0.68)
+(2.36)
+(1.03)
+(4.26)
+(0.76)
+(4.19)
+(0.05)
+(3.12)
+monthly standard deviation
+4.67
+3.76
+3.76
+2.48
+3.52
+2.08
+3.15
+1.77
+The volume variable can be viewed in two ways. Either as a proxy for analyst coverage,
+where high volume means bad momentum characteristics (high analyst coverage is bad for
+long positions, but can be good for short positions since analysts tend to push valuations to
+their upper limits), since the price will be less exposed to sentiment changes and irrational
+pricing. Or as a proxy for strong positive feedback trading, if the volume exhibits an increasing trend during price increases or decreases. The volume variable is therefore an example
+of a variable that can be used in many ways to ﬁnd the optimal composition of a momentum
+portfolio.
+Fundamental variables can be eﬀectively used for value stocks, where a lot of the valuecreating process is reﬂected in the quarterly reports. Piotroski (2000) constructed a market
+neutral portfolio using US data on high B/M ﬁrms between 1976 and 1996. He ranked the
+stocks quarterly using 9 measurements of fundamental strength and achieved a 23% annual
+return. The problem with this approach in our case is that we have not got quarterly data
+and that we focus on the price variable where growth stocks are more prone to trend. We
+will however use the P/E, M/B and market cap variables as proxies for analyst coverage and
+growth characteristics. Furthermore, we have data on analysts’ beliefs about cash ﬂow one
+year ahead, which in essence is a combination of a fundamental and a sentiment variable.
+2.4.3
+Conclusions
+Reviewing this section, we ﬁnd empirical support for the existence of the momentum eﬀect
+and some interesting results on more speciﬁc characteristics of the momentum eﬀect. We
+will not in this thesis discuss exactly how we translate these speciﬁc facts into algorithms;
+a non-mathematical summary is however given in Table 12 in Section 5.
+Not all of the
+variables in our model are even directly referenced in this section, but rather used as proxies
+for underlying phenomena.
+One speciﬁc issue needs commenting, though. In the simplistic strategy that we emulate
+later in this thesis, we use a 6-month ranking period and a 4-month holding period. These
+parameter values yield approximately the best results, judging both from the empirical results presented here and our own simulations. In the more advanced model that we have
+constructed ourselves, one of the rules also has these settings, although somewhat modiﬁed
+by giving more weight to price changes the last week.
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+3
+AN OVERVIEW OF OUR MODEL AND ITS CONTEXT
+19
+3
+An Overview of Our Model and Its Context
+3.1
+Diﬀerent Hedge Fund Strategies
+We will here give a brief overview of the hedge fund market in order to better understand
+the context of the kind of model we try to build and the strategy behind it.
+The term ”hedge fund” has evolved over time to include a multitude of skill-based investment strategies with a broad range of risk and return objectives. The common element
+among these strategies is the use of investment and risk management skills to seek positive
+returns regardless of market direction. A hedge fund can use investment techniques that
+include derivatives, leverage and arbitrage in any market in order to generate speciﬁc riskreturn proﬁles. The largest incentive to invest in a hedge fund is the diversiﬁcation beneﬁt
+for the investor’s portfolio due to the attractive risk-return proﬁles of hedge funds, often due
+to the low correlation with stocks, the largest asset class.
+Below are some quick facts about the hedge fund industry:
+Table 5. Hedge fund history at a glance. Reproduced from Säfvenblad (2001).
+History:
+1949
+AW Jones formed the ﬁrst hedge fund. He used long/short equity positions and
+leverage, and charged a performance-based incentive fee.
+1966
+Fortune ran an article on Jones’ fund, and public interest led to many new hedge
+funds.
+1970
+Hedge funds entered their ﬁrst crisis as equity markets fell. Industry studies estimated that hedge fund assets under management fell by 70%.
+1986
+Institutional Investor ran an article on the Tiger fund which renewed interest in
+hedge funds.
+1992
+George Soros speculates against several European currencies with his Quantum
+fund and makes a fortune.
+1997
+Hedge funds blamed for triggering the Asian currency crisis
+2000
+6000 hedge funds, $ 450 billion in assets
+Asset allocation within hedge fund universe in 2000:
+•
+Long/Short Equity 40%
+•
+Event Driven 15%
+•
+Managed Futures 14%
+•
+Global Macro 14%
+•
+Fixed Income Arbitrage 7%
+•
+Convertible Arbitrage 4%
+•
+Other 6%
+The classiﬁcation of diﬀerent hedge funds is not entirely straightforward since some funds
+may use a combination of strategies, if they disclose anything at all.
+Strategies can be
+categorized in many ways. Using the deﬁnitions by Morgan Stanley as in Tables 6 and 7
+below, we can see that our return generating technique is categorized as a statistical arbitrage
+investment process.
+In Table 8, we see how three data-providers have divided the hedge fund universe into
+sub-categories. The performance data gives an indication of the similarities between groups
+of funds and what their characteristics are.
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+3
+AN OVERVIEW OF OUR MODEL AND ITS CONTEXT
+20
+Table 6. The investment process main and sub-category designations for hedge funds. The categories are Morgan Stanley’s.
+Hedge Fund Strategies
+•
+Directional Trading
+–
+Discretionary Trading
+–
+Strategic Allocation
+–
+Systematic Trading
+•
+Relative Value
+–
+Convergence Arbitrage
+–
+Merger Arbitrage
+–
+Statistical Arbitrage
+•
+Specialist Credit
+–
+Distressed Securities
+–
+Positive Carry
+–
+Private Placements
+•
+Stock Selection
+–
+Long Bias
+–
+No Bias
+–
+Short Bias
+–
+Variable Bias
+Table 7. Deﬁnition of Statistical Arbitrage.
+An approach is deﬁned to be Statistical Arbitrage if . . .
+•
+positions are entered into on the basis of
+systematic models designed to ﬁnd opportunities where the relative value of two or
+more assets is currently diﬀerent from a
+theoretically or quantitatively predicted
+value, and
+•
+manager intervention is limited to reducing or eliminating the trades entered into
+in less than 25% of cases, and
+•
+the portfolio is comprised solely of individual securities within one particular asset class, and
+•
+the portfolio net exposure is never more
+than 20% long or 20% short, and
+•
+the approach does not conform to Convergence Arbitrage or Merger Arbitrage
+3.2
+Our Model – an Optimization Problem
+There are basically three important aspects of choice that deﬁne the characteristics of a
+strategy. Our choices are displayed in Table 9.
+In essence, the problem of building a statistical arbitrage model that yields an optimal
+risk-return proﬁle is an optimization problem. The input data makes up the independent
+variables, the model itself is the function, and some risk-return measure is the dependent
+target variable.
+Certainly, this is not the ordinary linear maximization problem that is
+analytic and algebraically solvable. The function is unknown, the full data-set is unknown
+and the data is stochastic. Mathematically, we have a multi-variable problem with many
+local maxima that are not stable over time.
+The idea is thus, in a semi-deductive way, to try to localize approximate areas in the
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+3
+AN OVERVIEW OF OUR MODEL AND ITS CONTEXT
+21
+Table 8.
+Performance Jan.
+1990 - Dec.
+1999 from three diﬀerent hedge fund data providers.
+Reproduced from Könberg and Lindberg (2000).
+Average
+Annual
+Sharpe
+Annual
+Standard
+Ratio
+Benchmark Indexes
+Return
+Deviation
+S&P 500 Composite
+18.90%
+13.15%
+1.05
+MSCI World US
+12.99%
+14.75%
+0.53
+Lehman Government
+7.46%
+4.10%
+0.57
+Lehman Corporate
+8.47%
+4.80%
+0.70
+Lehman Govt./Corp.
+7.70%
+4.25%
+0.61
+GSCI Commodity
+6.55%
+18.02%
+0.08
+Salomon Bros. Treasury
+7.74%
+4.57%
+0.57
+Salomon Bros. Govt. Corporate
+7.87%
+4.58%
+0.60
+Salomon Bros. Wgbi US All Maturities
+7.96%
+6.50%
+0.44
+US Treasury Constant Maturities 3 month
+5.12%
+Hedge Fund Research Indexes
+Convertible Arbitrage
+11.57%
+3.50%
+1.84
+Distressed Securities
+16.83%
+6.57%
+1.78
+Emerging Mkt. Asia
+14.45%
+14.42%
+0.65
+Equity Hedge
+24.80%
+8.58%
+2.29
+Equity Market Neutral
+11.38%
+3.16%
+1.98
+Equity Non - Hedge
+23.25%
+13.48%
+1.35
+Event-Driven
+17.59%
+6.68%
+1.87
+Fixed Income Total
+8.88%
+4.00%
+0.94
+Fixed Income : Arbitrage
+9.54%
+4.95%
+0.89
+Fixed Income : Convertible Bonds
+17.53%
+9.89%
+1.26
+Fixed Income : High Yield
+11.22%
+7.28%
+0.84
+Fixed Income : Mortage-Backed
+11.14%
+4.63%
+1.30
+Macro
+20.99%
+9.24%
+1.72
+Market Timing
+17.75%
+8.17%
+1.55
+Merger Arbitrage
+13.02%
+4.67%
+1.69
+Relative Value Arbitrage
+14.39%
+4.12%
+2.25
+Short Selling
+0.38%
+19.77%
+-0.24
+Statistical Arbitrage
+11.93%
+3.73%
+1.82
+Fund of Funds
+12.78%
+6.06%
+1.26
+MAR Hedge Fund Indexes
+Event-Driven
+13.85%
+4.89%
+1.79
+Distressed Securities
+18.23%
+8.43%
+1.56
+Risk Arbitrage
+20.23%
+17.96%
+0.84
+Global Emerging
+16.85%
+17.51%
+0.67
+Global Established
+18.95%
+9.32%
+1.48
+Macro
+15.59%
+7.33%
+1.43
+Market Neutral
+11.92%
+2.60%
+2.62
+Market Neutral: Arbitrage
+14.97%
+6.33%
+1.56
+Market Neutral: Long/Short
+10.69%
+1.61%
+3.46
+Short Sellers
+0.51%
+17.47%
+-0.26
+Fund of Funds
+11.26%
+4.60%
+1.33
+Diversiﬁed
+11.83%
+4.96%
+1.35
+Niche
+10.68%
+5.60%
+0.99
+EACM Hedge Fund Indexes
+EACM100
+15.62%
+4.25%
+2.47
+Relative Value
+10.47%
+3.42%
+1.56
+Long/short Equity
+9.72%
+3.00%
+1.53
+ConvHedge
+10.50%
+4.43%
+1.21
+BondHedge
+7.65%
+4.53%
+0.56
+Rotational
+14.09%
+6.98%
+1.29
+Event
+13.47%
+5.37%
+1.55
+Arbitrage
+10.21%
+6.35%
+0.80
+Bank
+15.56%
+6.95%
+1.50
+Multi
+14.71%
+5.35%
+1.79
+EQ HEDG
+22.31%
+9.80%
+1.75
+DomLong
+23.48%
+13.15%
+1.40
+DomOpp
+21.77%
+9.77%
+1.70
+Gl/Int
+21.69%
+11.54%
+1.44
+GLOB AA
+19.84%
+10.63%
+1.39
+Discretionary
+18.29%
+9.92%
+1.33
+Systematic
+21.41%
+17.28%
+0.94
+Short
+-0.93%
+22.32%
+-0.27
+domain of the function and variables where one is likely to ﬁnd good results, and then do
+a rough optimization with the computer’s help. By avoiding to search for maxima in areas
+where there are no theoretical or empirical evidence pointing in that direction, one also averts
+data-mining. Only stable maxima are of interest here since they are likely to persist in the
+future and yield proﬁtable trading opportunities.
+This is the overarching principle that lies behind what is described in Section 5 (MethElectronic copy available at: https://ssrn.com/abstract=2919837
+
+3
+AN OVERVIEW OF OUR MODEL AND ITS CONTEXT
+22
+Table 9. Our strategy.
+Aspect of Choice
+Our Choice
+Justiﬁcation
+Return
+Generating
+Technique
+Statistical Arbitrage
+Strategies based on fundamental analysis, advanced macro-models or experience within an industry are not interesting since we have not got
+the necessary competence. What remain are basically the more technically inclined strategies,
+where programming, statistics and knowledge of
+the anomalies of the markets are the critical
+knowledge factors.
+Investment Style
+Market Neutral Trading with a horizon of between a few weeks and a
+few months
+Given our statistical arbitrage technique, a market neutral approach is suitable because it isolates the eﬀect of the arbitrage, and the link
+with academic papers on behavioral phenomena
+is clear. Furthermore, the important momentum
+eﬀect that we want to exploit appears within
+the chosen trading horizon.
+If this horizon is
+too short, transaction costs will be prohibitively
+large, and if it is too long, prices mean revert
+and the eﬀect disappears.
+One could enhance
+the model with varying betas on diﬀerent factors
+(making directional bets), but we limit ourselves
+here.
+Market
+Swedish Stocks
+Equity is the most accessible asset class when it
+comes to data-availability and literature on arbitrage. It also has the most interesting prospects
+in terms of risk-return proﬁle. The exclusion of
+derivatives is a limitation from our side. Swedish
+data is used for limitation and availability reasons.
+odology – Signal Generation and Risk Control).
+3.3
+Technical Speciﬁcation of the Computer Program
+The computer program, which took us 6 months to develop, functions as a simulation platform. With it we can, using data stored in the Microsoft Access database format, simulate
+virtually any trading strategy with a few adjustments in the program. We have built in functions to automatically analyze any interesting statistical property of a user-speciﬁed model
+executed in the program.
+The programming environment employed is Sun’s Java.
+Among the reasons for this
+choice are Java’s relative robustness, its scalability, its position among ﬁnancial computer
+systems in general, its object oriented nature, and its platform independence. The choice of
+programming system is not critical, but it is convenient to be able to use it under diﬀerent
+operating systems (Windows, Linux, MacOS and so on). Java 1.4 is the latest version and
+therefore probably the better choice when it comes to speed of execution and richness in
+features, but the larger installed base of software made Java 1.3 the ﬁnal choice.
+This section requires some understanding of object oriented design, but it should be
+enough to note that a program written in a language such as Java or C++ consists of
+several classes with diﬀerent duties and relations among themselves. The main goals in the
+development phase were robustness, ease-of-use, speed, and scalability. The program is based
+on a scalable plugin architecture, where the plugins are diﬀerent sets of rules (see Section 5)
+that are to be applied to the underlying data (such as price or volume). Implementationwise,
+this means that each set of rules is its own class. One minor goal has been to minimize the
+coding eﬀort needed to add a new rule. In the current version of the program, it is enough to
+write one main function for each plugin and some small methods for determining what kind
+of data the plugin needs. Without going in too deep on object oriented design, the rest of the
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+3
+AN OVERVIEW OF OUR MODEL AND ITS CONTEXT
+23
+Figure 5. Conceptual view of the computer system.
+functions reside in the superclass. The conceptual design of the system is depicted in Figure 5.
+In the diagram, one can view the ﬁlter (abstraction for trading rule) MasterFilter and its
+relationship to the rest of the system, particularly the core (Ingenium). The collaboration
+and hierarchy of diﬀerent classes are illustrated using arrows. As is hopefully evident, the
+modularity of the system makes it an easy task to write a new ﬁlter.
+A part of the graphical user interface of the system is depicted in Figure 9 in Appendix A.3. Ease-of-use has been the goal in this area, as well as clarity in design. Robustness and numerical stability in calculations have been checked using Microsoft Excel
+XP. In Appendix A.4, we display an example of what kind of data the simulation platform
+can generate in a day of trading.
+The source code amounts to more than one megabyte of sheer text, which is approximately
+equivalent to 220 pages of text (assuming 4500 characters per page). 270 classes have been
+produced from the code.
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+4
+DATA
+24
+4
+Data
+The data was electronically retrieved from the international database Datastream and the
+Swedish Trust.
+4.1
+Description of the Data
+We have used closing prices for the most liquid Swedish stocks. The stocks are all from
+OM’s liquidity classes A and B, and have been adjusted for splits and dividends.12
+The
+Swedish stock prices were retrieved from Trust. Moreover, data on traded volume, market
+value, market-to-book and predicted cash ﬂow for the Swedish stocks were retrieved from
+Datastream. See further Tables 10 and 11.
+Table 10. Number of companies for which there exist various fundamental data at the beginning
+and end of the test period.
+M/B
+Market Value
+Volume
+Predicted Cash Flow
+95-06-30
+69
+91
+98
+65
+01-11-06
+111
+155
+150
+143
+The stocks have been divided into 10 diﬀerent sectors, based on ”Veckans Aﬀärers Industriindex”, see Table 15 for speciﬁcation.13 To get a reasonable number of foreign stocks in
+each respective market, we set the market capitalization limit to 4.9 billion SKr. The nonSwedish stocks were downloaded from Datastream. The reason for looking at non-Swedish
+stocks is to make out-of-sample tests to ensure that the eﬀects we are studying are not isolated to the Swedish market. Further details can be seen in Table 11. For a list of the stocks
+Table 11. The stocks used in the model.
+Country
+Number of Stocks
+Time Period
+France
+110-181
+900101 - 011106
+Germany
+110-167
+900101 - 011106
+Sweden
+101-175
+950101 - 011106
+U K
+192-202
+900101 - 011106
+used please see Table 23 in Appendix A.5.
+Apart from the data on stocks, daily quotes of the Swedish one-year rates from 199001-02 through 2001-12-21 have been used. For the calculations of β-values, ”Aﬀärsvärldens
+Generalindex” ranging from 1979-12-31 – 2001-11-14 has been used.
+Missing data has been approximated as a weighted average of the two closest neighbors.
+12The criteria for the A-group are that the stocks should be traded every day, have an average turnover exceeding
+MSkr 4 and a spread under 1%. The B-class of stocks requires that the proportion of trading days exceeds 50%,
+that the average daily turnover exceeds Skr 200 000 and that the spread is below 5%. From these classes we have
+taken the 175 most liquid stocks.
+13The data is from 1982-09-13 - 2001-11-05 and was downloaded from EcoWin.
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+5
+METHODOLOGY – SIGNAL GENERATION AND RISK CONTROL
+25
+5
+Methodology – Signal Generation and Risk Control
+We will in this chapter give a non-technical and non-detailed description of how we have
+constructed the algorithms of our trading model (also called default trading model), which is
+based on Swedish data and incorporates all trading rules. For the non-Swedish markets, we
+have only got the price variable and hence only used a subset of the rules that are applied
+to the Swedish market.
+A stock in the portfolio can be dropped for two reasons; it hits the stop-loss limit, or it
+reaches the end of the holding period when the momentum eﬀect is believed to fade away.
+This means that the stocks in the portfolio quickly will move out of phase. In 95% of the days
+in our model (see Section 6) there are 0 - 3 trades (sell one & buy another) executed, with
+an average of one stock traded every third day. Since we always keep 10 stocks in the long
+and 10 stocks in the short portfolio, a dropped stock needs to be replaced immediately (we
+have tested the eﬀects of delayed execution in our robustness tests in Appendix A.1.2). And
+every time a stock is bought (or shorted), the program needs to evaluate all stocks available
+and rank them according to a scheme and then pick a stock from the top (or bottom if it is
+a short stock that needs to be added) if it ﬁts the portfolio risk criteria.
+We have thus divided this process into two steps. First, the model uses the data and
+diﬀerent algorithms to rank all the stocks according to expected strength and direction in
+future momentum, and a ”master list” is created. We have called this step Signal Generation.
+Next, we let the program go through the top candidates. For example, if we need a long
+(short) stock, the program checks the ﬁrst 4 stocks (the last 4 stocks) on the master list for
+certain properties. The one that best meets our risk criteria is chosen. We have called this
+step Risk Control.
+5.1
+Signal Generation
+The purpose of this part of the model is to produce an optimal master list of momentum
+stocks. In Sections 2.4 and 2.1 we have found a few guidelines on where to look for good
+momentum stocks, which are illustrated in Table 12.
+For these 5 dimensions, we have
+Table 12. Our momentum-proxies.
+Characteristics
+of
+strong
+momentum
+stocks
+Our Proxy
+Large
+increase/decrease
+in
+price
+last
+6
+months, momentum persists for 4 months
+Stock price 6 months back compared with
+today, with an extra weight to the last week
+to sort out declining stocks: 20% weight to
+the last week and 80% weight to the rest.
+Low analyst coverage (long portfolio)/ High
+analyst coverage (short portfolio)
+Low market cap for long, high market cap
+for short portfolio.
+More susceptible to sentiment changes, i.e.
+growth stocks
+High M/B
+Positive/negative sentiment in trading
+Large changes in price during increase in
+volume
+Fundamental
+strength/weakness
+Positive/negative sentiment of analysts
+Large
+changes
+in
+analyst
+expectations of
+Cash Flow one year ahead
+constructed mathematical rules to rank the stocks in accordance with their expected future
+momentum. The most important variable is as stated before price, i.e. the rule that ranks
+stocks by performance the last 6 months and keeps them for 4 months (although we have
+modiﬁed this rule somewhat by giving extra weight to the last week).
+This rule is thus
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+5
+METHODOLOGY – SIGNAL GENERATION AND RISK CONTROL
+26
+almost the same as in the simplistic strategy. But by combining this simple rule with others
+we have constructed a more advanced and hopefully more eﬀective strategy.
+5.2
+Risk Control
+An investor wants, given the return, as low volatility and low correlation with other assets
+as possible. The correlation with the market (or beta) measures this exposure assuming
+that the investor holds a diversiﬁed portfolio. In a market neutral portfolio such as ours,
+the market risk will be rather low (see Section 6). But there are other risks that are not
+correlated with the market. These risks stem from the fact that the long and short portfolios
+may contain stocks that belong to groups of stocks that are negatively correlated. A decrease
+in the price of the long portfolio and a simultaneous increase in the stock prices of the short
+portfolio will result in a large loss. It is therefore important to neutralize these risks.
+The most obvious risk is that the long and short portfolios end up with a large exposure to
+diﬀerent industries that tend to move in the opposite direction of each other. This frequently
+happens when one ranks stocks on price changes alone, where one industry is located on the
+top of the chart and another industry close to the bottom. If there is a turnaround in the
+economy, both the long and short portfolio will start to lose money at the same time.
+Other categorizations of stocks that tend to move in cycles are growth versus value stocks
+and large cap versus small cap stocks. The growth category is overweight in both the long
+and short portfolios and will as such not pose a large threat to the stability of the portfolio.
+The relative small overweight of large caps in the short and small caps in the long portfolio
+also does not seem to create a systematic risk exposure of great importance (see correlations
+with industry index below in Section 6.1), in line with our observations in Section 2.1.
+What we basically have then is a problem of covariance within the portfolio. Our main
+solution is that we test the best 4 candidates for inclusion in the portfolio by calculating the
+sum of the variance-covariance matrix, one at a time, and then pick the stock that results
+in the lowest portfolio risk. By testing 4 candidates, one will increase the chance of ﬁnding
+a stock that has strong momentum but also a beneﬁcial volatility structure.
+We have three more categories of risk control; the stop-loss rule, a low price cut-oﬀand an
+indicator of extreme valuations. We do not trade when the stock price is under 3 SKr. These
+stocks often move in large discrete steps in an unpredictable manner. The stop-loss rule is
+set to 20% of the maximum value during the holding period. Interpreting the 20% stoploss as a contrarian signal motivates this rule, since expected momentum proﬁts diminish
+with contradictory signals (since the basis for momentum is return continuation). When a
+stock hits the stop-loss limit, it is banned from entering the portfolio for 15 trading days (3
+weeks). And when 4 stop-losses are executed within one month and industry (as deﬁned by
+correlation with AFGX indices 6 months back), the whole industry is banned from entering
+the portfolio for one month and an opposite position is taken within the industry relative
+to the original position. This rule remedies situations where an industry has had a strong
+momentum for a long time and suddenly turns around. This industry will be overweight
+in the long (or short) portfolio, and some signals will still indicate momentum in the old
+direction before the turnaround.
+The indicator for extreme valuations is also targeted to challenge the problem of turnarounds. The rule bans industry sectors on the long (short) side where the M/B has doubled
+(halved) the last year for more than 4 stocks in the sector. When valuations deviate too
+much from fundamental value, prices start to converge again. In the words of Shiller (2000),
+irrational exuberance can not hold forever.
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+5
+METHODOLOGY – SIGNAL GENERATION AND RISK CONTROL
+27
+5.3
+Assumptions in Our Simulations
+In all of our simulations, we let the program use three separate accounts to make the simulations as realistic as possible. These are:
+1. The Long Portfolio
+2. The Short Portfolio
+3. The Transaction Account (TA)
+We start out with an equal value of the long and short position (consisting of 10 long, 10
+short stocks respectively) and a blank Transaction Account, where the transaction costs for
+taking the initial positions are subtracted at the end of the ﬁrst day. When a long position
+is sold it is booked in the TA, and when a long position is bought, money is withdrawn from
+the TA. All the transaction costs for both the long and short portfolios are booked in the
+TA. Except for the transaction costs, the short portfolio (which is a zero net investment) will
+aﬀect the TA every time one closes a position, leading to a net proﬁt or loss. In essence, the
+structure of the accounts and the transactions between them should mimic the real world
+situation.
+The following deﬁnitions have been made:
+• Value of Total Portfolio(t) = [Value of Long Position(t)]+[Value of Net Short Position(t)]+
+[Value of Transaction Account(t)]
+• Total Return(t) = log[Value of Total Portfolio(t)/Value of Total Portfolio(t −1)]
+5.3.1
+Basic Assumptions of Our Trading Model
+These are all true unless otherwise stated.
+• We have 10 short and 10 long positions at all times. This is of course a variable that
+could be changed in a better model. But it is a reasonable limitation from our side
+considering that our sample of less than 175 stocks would cause less proﬁtability on
+the margin if one includes many more stocks, and that fewer stocks would make the
+portfolio too undiversiﬁed.
+• Our default trading model is run from 1995-06-30 through 2001-11-06. We had to work
+with this limitation due to our restricted access to good fundamental data.
+• Transaction costs are set to 0.3% for both long and short trades. This should not be
+an understatement of the costs for an investor with more than 1 million SKr to invest.
+These ﬁgures are from Germer (2002).
+• When a new position is entered, the basic rule is to make it 10% of the total value of
+the long and short portfolios, respectively. This will keep the portfolios from deviating
+too much from equal weighting (ten long and ten short positions).
+• The Transaction Account, which is initially set to zero, will increase as proﬁtable short
+positions are closed and decrease with transaction costs and unproﬁtable short positions. We have put two limits on the size of this account; the lower limit being -3%
+of Total Portfolio Value, and a higher limit of +3%. The reason is that a too large
+negative balance would yield interest rates, and that a too large positive balance would
+not eﬀectively use the capital. If it exceeds the positive limit, positions on the long
+stocks are increased. Similarly, if the TA exceeds the negative limit, long positions are
+trimmed to bring back the account balance to zero. It would be preferable to shift
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+5
+METHODOLOGY – SIGNAL GENERATION AND RISK CONTROL
+28
+weight during rebalancing to the stocks with the most expected momentum left. However, since we only have +10 -10 stocks and a small sample to pick from, the portfolio
+turns out to be very undiversiﬁed in these simulations.
+• All trades are made at closing prices, and all changes in the portfolio are made within
+the day. For example, if a long position exceeds the stop-loss limit, it will be sold at a
+worse price than the set limit (the closing price), and a new stock will be added that
+day at that day’s closing price.
+• The portfolios are rebalanced (in terms of total weight of long and short portfolios)
+every time the long or the short portfolio exceeds the other with more than 25%, in
+order to keep market neutrality (see Tables 6 and 7). If the long portfolio outgrows
+the short, the short portfolio is increased in value by adding to existing positions. The
+same process is applied if the short portfolio outgrows the long, which happens rarely.
+However, this assumption leads to a small asymmetry between the portfolios where the
+short portfolio on average is worth less than the long. This is not the case in the (less
+realistic) classical methodology with CAR where an equal money amount is assumed
+when the portfolio is periodically rebalanced.
+• Interest earned on the proceeds from the shorting of stocks (which is used as a security
+by the broker) is set to 0%. This would in real life be somewhat less than the risk-free
+interest rate. Interest rate on the TA is also set to zero.
+• Fees on entering short positions are set to 0%.
+This would be less than 0.5% on
+an annual basis for the more liquid stocks, but over 10% for illiquid stocks that are
+drastically declining in price for longer periods (this happens rarely according to Germer
+(2002)). Not including these fees, and the interest rate on the Transaction Account, is
+however more than oﬀset on average by not including the interest rates earned on the
+security deposits described above.
+• We start each simulation with a nominal value of 10 million SKr. The absolute starting
+level is however irrelevant for the statistical analysis since everything is expressed in
+relative terms and there are no ﬁxed costs assumed.
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+6
+RESULTS - PORTFOLIO SIMULATIONS
+29
+6
+Results - Portfolio Simulations
+6.1
+Results of Our Trading Model
+The idea now is to apply a battery of descriptive statistical tests to evaluate the performance
+of our model. These are described in Table 13. We believe that all of these measures are
+necessary complements to each other, although not all are discussed in this thesis.
+The
+futility of using only CAR and a t-statistic when evaluating trading strategies is evident.
+Unfortunately, it is very common.
+01/01/95
+07/02/97
+01/01/00
+07/02/02
+−0.5
+0
+0.5
+1
+1.5
+2
+2.5
+3
+3.5
+4
+4.5
+x 10
+7
+Date
+Skr
+Development of Our Default Model
+AFGX
+AFGX 3m Moving Average
+Our Model 3m Moving Average
+Our Model
+Net Position Short
+Figure 6. A diagram over the development of our model, compared with the same investment in
+AFGX.
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+6
+RESULTS - PORTFOLIO SIMULATIONS
+30
+Table 13. Evaluation variables.
+Evaluation Variable
+Mathematical Deﬁnition
+Comment on variable
+Annualized
+Return
+(1st
+moment)
+“ Total Valuet=T
+Total Valuet=0
+”1/T , T
+= number of years since inception.
+How much money can this strategy produce
+per year?
+Daily Return day t
+R = log(
+Total Valuet+1
+Total Valuet
+), t = day
+Annualized
+standard
+deviation (2nd central moment)
+(monthly standard deviation)
+√
+12
+We have used months as a base for calculating annualized standard deviation since the
+trading horizon is a few months.
+Standard
+deviation alone do not however give a correct picture of a portfolio’s risk characteristics.
+Also, there are many ways to measure
+standard deviation, which makes it susceptible to manipulation. Had we used 3 months
+averaged portfolio value as a basis for calculating std, the Sharpe ratio would be over
+5!
+Skewness (3rd moment)
+See Appendix
+This measure and kurtosis is based on daily
+values.
+Negative skewness is less attractive
+than positive.
+Kurtosis (4th moment)
+See Appendix
+The lower kurtosis, the better, since that will
+mean less exposure to extreme events.
+Sharpe (rf = 4%)
+Annualized Return−4%
+Annualized Std
+We have used 4% as the risk-free interest
+rate.
+This measure is rather blunt for our
+kind of strategy since it does not consider
+correlations or distinguish between positive
+or negative (return) contributions to volatility. However, as a comparison tool for similar simulations it is excellent.
+VaR 1 day (worst, 1%, 5%,
+10%)
+The Value at Risk measure can be used to
+get a feeling for the negative end of the distribution of returns.
+Worst 1 day,
+1 week,
+1
+month, 1 year)
+A good way to establish how bad bad can
+get.
+Worst/Best
+log
+“ ST
+St
+”
+Date given is starting date for period. Note
+that the returns are logged, which e.g. means
+that the continuous return one year can be
+below -100% (or -63.2% =e−1 −1 simple return).
+Downside Risk
+Pt=T
+t=0 (min(0, daily returnt−rf ))2,
+t = day
+This measure gives a value to the aggregate returns below the risk-free rate (averaged
+yearly risk-free rate in Sweden).
+Beta (AFGX)
+See Appendix
+Comovement with market. A low β provides
+insurance which is valuable to investors.
+Autocorrelation
+total
+return
+(1
+day,
+1
+week
+1
+month)
+See Appendix
+The return’s correlation with itself yields an
+indication of whether the portfolio is prone
+to trend.
+Accumulated
+transaction
+costs divided by ﬁnal total
+portfolio value
+This
+measure
+quantiﬁes
+total
+transaction
+costs. One should divide with time elapsed
+since inception and also consider the dependence of ending total value to make this number comparable across simulations.
+Total
+return
+from
+short
+positions and total return
+from long positions
+This non-normalized measure before transaction costs (total sum of percentage return of
+all positions) tells us the relative decomposition of returns from the long and short portfolio. The short portfolio will lose money on
+average and can be interpreted as the price
+to be paid for lower risk and beta.
+The results of our model is displayed in Table 14. In Figures 7 and 8 the distribution of
+returns is depicted.
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+6
+RESULTS - PORTFOLIO SIMULATIONS
+31
+−8
+−6
+−4
+−2
+0
+2
+4
+6
+8
+0
+20
+40
+60
+80
+100
+120
+140
+160
+180
+200
+Daily Return (%)
+Frequency
+Figure 7. Histogram describing the distribution of the daily returns of our model.
+−20
+−15
+−10
+−5
+0
+5
+10
+15
+20
+25
+0
+5
+10
+15
+Monthly Return (%)
+Frequency
+Figure 8. Histogram describing the distribution of the monthly returns of our model.
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+6
+RESULTS - PORTFOLIO SIMULATIONS
+32
+Table 14. Results of our trading model.
+Sweden
+Number of stocks
+94-175
+Time period
+19950630-20011106
+Annualized Return
+21.8%
+Daily Std
+1.46%
+Annualized Std
+25.6%
+Downside Risk
+4.33%
+Beta
+-0.011
+Skewness
+-0.154
+Kurtosis
+2.20
+VaR (daily)
+Worst
+-6.90%
+1%
+-3.95%
+5%
+-2.26%
+10%
+-1.57%
+Autocorrelation
+One day
+0.0981
+One week
+0.0248
+One month
+-0.0307
+Sharpe (rf = 4%)
+0.71
+Acc. Tr. Costs/Total Value end
+13.6%
+Acc. Return Long
+2181
+Acc. Return Short
+-159
+No. of short/long investments/run
+344/272
+Worst annual returns
+1996-06-30: -7.15%
+1998-06-30: -0.705%
+1995-06-30: 9.44%
+1999-06-30: 17.9%
+2000-06-30: 41.4%
+Worst monthly returns
+1998-12-28: -19.2%
+2001-09-28: -12.1%
+1998-09-28: -11.8%
+2000-04-28: -8.96%
+1999-08-28: -8.44%
+Best annual returns
+1997-06-30: 64.4%
+2000-06-30: 41.4%
+1999-06-30: 17.9%
+1995-06-30: 9.44%
+1998-06-30: -0.705%
+Table 15. Correlations of our trading model with diﬀerent industries.
+Industry
+Correlation with our model
+Correlation with our model from 980101
+Bank and ﬁnancial
+0.01653
+-0.02286
+Forestry
+-0.03130
+-0.03283
+IT
+N/A
+0.00353
+Manufacturer
+-0.01962
+0.01270
+Miscellaneous
+0.00669
+0.03007
+Retail
+0.01143
+0.03245
+Chemicals and pharma
+-0.02407
+-0.09324
+Investment companies
+-0.01788
+0.00585
+Real estate and constr
+-0.00729
+0.01093
+Shipping and transportation
+-0.02769
+-0.00090
+6.1.1
+Comments on the Results of Our Model
+The stock market in Sweden between 1995 and 2001 is characterized by a relatively calm
+period followed by a boom-bust cycle, which should be a favorable environment for momentum traders that manage to time the turnaround in the market. As one can see in the
+Appendix, without risk control, our momentum strategy produces returns close to 40% per
+year in this period. But it is not entirely straightforward to objectively compare the merits
+of diﬀerent strategies, and return is certainly not the only (or even most important) measure
+of performance.
+To establish the optimal balance between return, risk structure and correlations, one
+would need to specify a utility function, which we have not done due to the inherent subjectivity and diﬃculties in doing that. Instead, we have simply set out that we would like to
+produce returns that are comparable to the naïve momentum strategies while avoiding large
+losses and sustained periods with negative returns. But we have only roughly optimized the
+model; we could for example have ﬁne-tuned the sector ban rules to strike in the beginning
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+6
+RESULTS - PORTFOLIO SIMULATIONS
+33
+of March 2000 and hence produced better results.
+The basic problem we have had with our strategy is that the model at times bans up
+to 40% of an already small sample. We have chosen to accept this ﬂaw and recognize that
+results would be smoother and more diversiﬁed in a larger market with more stocks to choose
+from. Also, as we stated earlier in Section 4, the fundamental data is of poor quality before
+1997. Other than that, the result depicted in Table 14 is rather representative of our kind
+of strategy.
+Before 1998, the market moves sideways and the model has a hard time ﬁnding proﬁtable
+positions in stocks with momentum. Return picks up in 1998 until the Russian crisis shakes
+the markets. Then comes a period of rather poor performance where there are no clear
+trends in the market. Our risk control rules ban most of the stocks that skyrocketed in 1999
+from entering the long portfolio (more than doubled M/B in 6 months). In the beginning of
+2000, some of these technology stocks have entered the portfolio, only to start losing money
+in March. And from the summer of 2000 to the last trading day, a lot of value is created
+from short positions in dwindling stocks in the bust tech sector. In summary, we can see the
+importance of clear trends and volatility in the underlying market for the proﬁtability of our
+strategy.
+All things considered, our strategy has performed very well in this period, delivering both
+high returns and a low correlation with the market index.
+6.1.2
+Comparison with the Simplistic Momentum Strategy
+The simplistic strategy (see also Appendix A.6 for a deﬁnition) common in academic papers
+on the momentum eﬀect means basically a static rebalancing after a ﬁxed interval and ranking
+based purely on the price variable. In this strategy, we change all stocks every 4th month
+and go long (short) in the 10 stocks that have exhibited the biggest increase (decrease) in
+price the last 6 months. This is thus the strategy we set out to compare our own model
+with as stated in the purpose of this thesis, and also the strategy that usually has the best
+performance in academic research (see Section 2.4). We want to ﬁnd out how an inclusion
+of transaction costs and more advanced trading rules aﬀect performance. (Our emulated
+simplistic strategy still diﬀers somewhat from the strategies in Section 2.4, due to our use of
+the Transaction Account and rebalancing rules. This is however of minor importance.)
+It is important to note that we have already assumed, based on theoretical and empirical
+evidence, the existence of a momentum eﬀect. Our goal here is merely an assessment of how
+performance is aﬀected when introducing the added realism of transaction costs and more
+advanced trading rules in relation to a simplistic strategy. For a discussion of the strength
+of this underlying assumption, see our analysis of robustness with respect to our sample in
+Appendix A.1.
+The robustness of the relationship between our own model and the simplistic strategy
+is however another question. The inclusion of transaction costs always lowers returns while
+keeping risk virtually unchanged. The use of more advanced trading rules always lowers
+risk in approximately the same magnitude as evident here, and some return is of course also
+sacriﬁced. This conclusion is supported both by theoretical arguments and statistical tests of
+our simulations (see Appendix A.2). The robustness of this relationship is therefore stronger
+than that of the model itself, which strengthens our conclusions.
+Looking at Table 16 and comparing it with Table 14, we can see that even before including transaction costs, the Sharpe measure is about the same (0.68 compared with 0.71).
+Sharpe incorporates the two ﬁrst moments of return and is hence a good indicator of relative
+performance. The rest of the statistics tells the story why this is so and should not come
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+6
+RESULTS - PORTFOLIO SIMULATIONS
+34
+as a surprise. The risk characteristic of the simplistic strategy is dramatically worse than
+in our model. All the risk measures; standard deviation, downside risk, VaR, are worse. In
+Appendix A.2, we ﬁnd that the standard deviation of monthly returns is indeed signiﬁcantly
+lower in our model. Returns on a monthly basis are not signiﬁcantly diﬀerent however, with
+or without transaction costs, leaving Sharpe virtually unchanged. Although we do see some
+tendencies of lower return in our model with transaction costs compared with the simplistic
+model without transcation costs, these tendencies are not as statistically signiﬁcant as the
+improvement in risk.
+The use of more advanced trading rules in our model have thus paid oﬀ, and the bulk
+of improved performance is apparent on the risk side. We do give up some upside potential
+when controlling risk, but this and the eﬀect of transaction costs is compensated for by the
+much better risk proﬁle in terms of risk-return tradeoﬀ. There are many things that can be
+said about the relative performance, but these facts are the most important.
+We can thus conclude that, when assessing the feasibility of a simplistic no transaction
+cost momentum strategy commonly depicted in academic research in a real-life setting, performance loss when introducing transaction costs may be less than the improvement from
+more advanced trading rules. In our case and in this sample, assuming any risk-averse utility
+function, the attractiveness of the risk-return proﬁle has actually improved a lot due to the
+lower risk.
+Table 16. Results of simplistic momentum strategy.
+Simplistic
+price
+momentum without transaction
+costs
+(replication of earlier studies)
+Simplistic
+price
+momentum
+with
+transaction costs
+Number of stocks
+101-175
+101-175
+Time period
+19950602-20011106
+19950602-20011106
+Annualized Return
+30.4%
+19.8%
+Daily Std
+2.52%
+2.47%
+Annualized Std
+39.1%
+40.9%
+Downside Risk
+7.93%
+8.91%
+Beta
+-0.062
+-0.076
+Skewness
+-0.707
+-2.07
+Kurtosis
+22.5
+34.5
+VaR (daily)
+Worst
+-26.1%
+-29.7%
+1%
+-7.30%
+-7.00%
+5%
+-3.57%
+-3.29%
+10%
+-2.07%
+-1.96%
+Autocorrelation
+One day
+0.194
+0.171
+One week
+0.012
+-0.019
+One month
+0.147
+0.157
+Sharpe (rf = 4%)
+0.68
+0.39
+Acc. Tr. Costs/Total Value end
+0%
+11.4%
+Acc. Return Long
+2887
+2887
+Acc. Return Short
+-274
+-274
+No. of short/long investments/run
+200/200
+200/200
+Worst annual returns
+1999-06-30: 8.68%
+1999-06-30: -32.1%
+1995-06-30: 13.1%
+1995-06-30: 9.91%
+1998-06-30: 16.9%
+1998-06-30: 15.1%
+1996-06-30: 18.7%
+1996-06-30: 16.3%
+2000-06-30: 29.7%
+2000-06-30: 31.9%
+Worst monthly returns
+2000-12-28: -46.2%
+2000-12-28: -45.9%
+1999-12-28: -27.3%
+1999-12-28: -44.3%
+2001-09-28: -19.8%
+2001-09-28: -21.6%
+1999-02-28: -14.7%
+2000-01-28: -13.8%
+2001-04-28: -13.6%
+2000-04-28: -12.9%
+Best annual returns
+1997-06-30: 72.8%
+1997-06-30: 69.8%
+2000-06-30: 29.7%
+2000-06-30: 31.9%
+1996-06-30: 18.7%
+1996-06-30: 16.3%
+1998-06-30: 16.9%
+1998-06-30: 15.1%
+1995-06-30: 13.1%
+1995-06-30: 9.91%
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+7
+CONCLUSIONS
+35
+7
+Conclusions
+There is both theoretical and empirical support for the existence of the momentum eﬀect.
+But any good quantiﬁcations of what performance actually can be achieved in a real trading
+strategy are hard to get by. Results presented in most academic journals are not based on a
+methodology realistic enough to measure the performance really available to investors.
+We have found that, when introducing transaction costs and more advanced trading rules
+using Swedish data from 1995 to 2001, performance as measured by e.g. Sharpe does not
+deteriorate in relation to a simplistic strategy (with static rebalancing, no transaction costs,
+only price as input variable and no other trading rules). The negative impact on return
+when introducing transaction costs (0.3% per trade) is outweighed by the much lower risk
+attainable with our model that uses a variety of data and rules to optimize performance.
+In fact, the improved risk characteristics of our more realistic model infer that exploiting
+the momentum eﬀect might be even more attractive as a trading strategy than have been
+suggested in academic research.
+Having stated this conclusion, we would like to emphasize once again that the real importance of this thesis lies in the use of the simulation platform, which took us 6 months to
+develop. But it now takes us only 5 seconds to run a 10-year simulation, a few minutes to
+adjust the parameters and test an alternative hypothesis, and a few hours to download new
+data and test any other trading strategy. And all this is done in a way that is more realistic
+than the use of for example CAR.
+If the ﬁnance departments at business schools were to adopt an introduction to simulation
+platforms in their methodology courses, maybe someday one would not have to look up the
+impact of transaction costs in a footnote in the Appendix.
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+A
+APPENDICES
+36
+A
+Appendices
+A.1
+Robustness
+A.1.1
+Four Criteria of Robustness
+We will here discuss the robustness of our model and the momentum eﬀect with the help of
+simulations from Germany, France, UK and Sweden.
+We will use four conditions of robustness to evaluate our trading model. These conditions
+have implications for the proﬁtability in a real life setting, and whether the strategy beneﬁts
+investors in a way that is at least as good as in the historical simulations.
+These four
+stipulations are as follows:
+1. Liquid Markets
+One of the theoretical explanations for the existence of the momentum eﬀect is illiquid
+markets, or limits to arbitrage with respect to the short side. We have assumed that all
+the stocks in the sample can be shorted without delay, and that there always is someone
+willing to lend us stocks. This is not a realistic assumption indeed, but we believe that these
+constraints will not impede the results if the investor is big enough to have good relationships
+with brokers, but small enough not to drain the market or aﬀect prices.
+For the simulations on the Swedish markets, where the lowest volume stocks in our
+sample have a turnover of about 1 million SKr per day, it is evident that a portfolio bigger
+than 10 million SKr would not allow immediate execution as assumed in this thesis, see
+below for further discussion. In the foreign countries, where we have stocks based on market
+capitalization (>4.9 billion SKr), the liquidity is better. For example, the daily turnover of
+the 200 UK stocks we have in our sample is above 90 million SKr. But in France, there are a
+few high capitalization, low volume stocks that one realistically could not trade in. We have
+commented on this in the simulations below.
+To test the robustness of our default model in Sweden (where we have daily data on
+volume), we exclude the 10% stocks with the lowest volume, and do a simulation where
+these stocks are included, but subjected to delayed execution and higher transaction costs.
+2. Trading rules based on sound empirical and theoretical evidence
+We have seen that it is a trivial task to construct very proﬁtable strategies. Try using this
+rule starting 1992: buy large cap Finnish companies that begin with the letter ”N”. This is
+obviously an ex post constructed rule, that is not based on a theory why it should outperform
+the market. We have to have some kind of reason to believe that a certain strategy will
+continue to work, and we have found that support in the theoretical and empirical ﬁndings
+of behavioral ﬁnance. And the best way of checking for the potential of any sample speciﬁc
+bias is to compare the results with previous studies and to do out-of-sample tests of the
+model.
+We have done this on German, French and UK data, by replicating the methodology (only
+using price as momentum signal) of previous empirical studies and comparing the results with
+randomly generated signals. For these countries, we have almost 12 years of data, and the
+time consistency of performance can also be studied. In Sweden, we have rather few stocks
+(for a 20 stock momentum portfolio) between 1990 and 1995. When we run simulations using
+rules that can ban stocks or industries, it can happen that the portfolio almost runs out of
+stocks to consider including. In general, assuming that 5-10% of the market at any given
+moment exhibit momentum characteristics, including more than that in a portfolio is likely
+to produce bad results. Hence, these simulations should be interpreted with care.
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+A
+APPENDICES
+37
+But the biggest threat for an absolute return manager that believes that there are real
+arbitrage proﬁts to be made is however new entrants. Theory describes a gloomy scenario in
+the case of too many investors chasing too little momentum: markets will be more volatile
+and it will be much harder to catch the momentum in time. The Catch 22 is this; one want
+to have good and solid research to build your strategy on, but one does not want anyone else
+to know about it. We have not tested for this problem but can only note that momentum
+strategies appear proﬁtable up to date and that behavioral ineﬃciencies are likely to persist.
+3. Correct assessment of risk, especially extreme events
+Historical data is a poor judge when deciding upon the merits of a model’s protection towards extreme events. The negative tails are stochastic and hard to estimate correctly. We
+believe that our default model is reasonably crash-proof if unleveraged, at least on the catastrophic scale. Changes in the volatility structure of the market may lead to periods of worse
+performance, but not sudden crashes. But we can never be certain. For the naïve strategies
+without risk control, big drops in value are common however. One can look at the VaR table
+to get a feeling for the bad side of the return distribution. This requires that one has long
+data series.
+4. Correct assessments of costs incurred
+We have included transaction costs, and made in our view assumptions on fees and interest
+rate charged and earned that lower returns in our simulations. However, costs like getting
+information, setting up computers and oﬃce space, taxes, and so forth are not included. In
+one of the simulations below, we check for the sensitivity of the default model when increasing
+transaction costs.
+A.1.2
+Tables of Results for Robustness
+Since we only have the price variable for the German, UK, and French markets, we primarily
+use this data to check for the momentum eﬀect with roughly the same methodology as
+indicated in Section 2.4. We just turn oﬀall risk control, and let the model rank the stocks
+according to price change the last 6 months. The holding period is set to 4 months. This
+means that all stocks will be replaced simultaneously every 4th month.
+The results presented in Table 17 are clearly consistent with previous studies, e.g. the
+study on the German market by D. Schiereck and Weber (1999). An abnormal return of a
+little bit less than 1% per month, together with a risky volatility structure with large and
+sudden drops in value.
+Without risk control, this naïve strategy is not very interesting for an investor, even
+before considering transaction costs. But for academic purposes, the results strengthen the
+hypothesis that there is return continuation in the medium term.
+There are two problems with the data presented here, one is the few stocks in the beginning of the Swedish sample, and one is the existence of thinly traded stocks in the French
+sample. One exceptional example of a winning position is noticeable on the ﬁrst of August
+2000 when a stock called Look Voyages increases from 3 to over 40 franc in one day (which
+helps explain the large skewness for French stocks). The company is a 97% majority owned
+travel group. This experience is also a hint for a rule that bans short positions in stocks that
+are not widely held. If we exclude the four French stocks that have increased or decreased
+more than 50% in one day, the annual return stops at 2.55% and annual standard deviation is
+33.2%. In Sweden, where the devaluation of the currency shook up the economy in 1992-93,
+this momentum strategy lost over 70% (simple return) in one year (see Section 2.4).
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+A
+APPENDICES
+38
+Due to these problems, we would like to consider the UK and German simulations to
+have the most reliable samples.
+Table 17. Replication of earlier studies. Settings: No transaction costs, no risk control, ranking
+based on last 6 month price change (not weighted), rebalancing every fourth month.
+Germany
+UK
+France
+Sweden
+Number of stocks
+110-167
+192- 202
+110-181
+90-175
+Time period
+19900702-20011106
+19900702-20011106
+19900702-20011106
+19900702-20011106
+Annualized Return
+8.25%
+10.9%
+7.42%
+13.9%
+Daily Std
+1.22%
+1.32%
+2.24%
+2.57%
+Annualized Std
+22.5%
+27.7%
+42.7%
+44.9%
+Downside Risk
+10.6%
+Beta
+-0.095
+Skewness
+-0.266
+-1.19
+18
+-0.346
+Kurtosis
+4.36
+9.94
+6.89
+22.66
+VaR (daily)
+Worst
+-15.5%
+-11.4%
+-24.0%
+-32.9%
+1%
+-3.36%
+-4.20%
+-4.88%
+-7.39%
+5%
+-1.82%
+-2.09%
+-2.19%
+-3.16%
+10%
+-1.21%
+-1.39%
+-1.56%
+-2.09%
+Autocorrelation
+One day
+0.0427
+0.2040
+0.0168
+0.0875
+One week
+0.0118
+0.0394
+0.0166
+-0.0155
+One month
+0.0139
+0.0072
+0.0013
+0.0116
+Acc. Tr. Costs/Total Value end
+0%
+0%
+0%
+0%
+Sharpe (rf =4%)
+0.19
+0.25
+0.08
+0.22
+No. of short/long investments
+350/350
+350/350
+350/350
+350/350
+Acc. Return Long
+1854
+2717
+3104
+2887
+Acc. Return Short
+-716
+-1057
+-1505
+-274
+Worst annual returns
+1992-07-02: -24.3%
+1998-07-02: -38.3%
+1998-07-02: -53.7%
+1992-07-02: -161%
+1998-07-02: -6.95%
+1999-07-02: -31.3%
+1992-07-02: -46.5%
+1999-07-02: -37.9%
+1991-07-02: -2.09%
+1992-07-02: -13.9%
+1990-07-02: -42.0%
+1990-07-02: 8.19%
+1990-07-02: -1.83%
+1993-07-02: -1.07%
+1993-07-02: -12.4%
+1995-07-02: 10.4%
+1997-07-02: 3.11%
+1990-07-02: 5.09%
+1997-07-02: 9.84%
+1994-07-02: 14.4%
+Worst monthly returns
+2001-04-02: -19.1%
+2000-05-02: -33.2%
+2000-03-02: -30.5%
+1992-11-02: -65.1%
+2000-03-02: -16.7%
+2000-03-02: -32.2%
+2001-10-02: -25.1%
+1993-02-02: -62.1%
+2001-10-02: -15.9%
+1999-04-02: -24.3%
+2001-04-02: -24.9%
+2000-03-02: -36.5%
+1998-05-02: -12.9%
+2001-10-02: -17.3%
+2000-05-02: -23.8%
+2001-10-02: -31.5%
+1997-05-02: -12.9%
+1991-02-02: -17.2%
+1993-02-02: -23.3%
+2000-05-02: -31.4%
+Best annual returns
+1995-07-02: 37.2%
+1991-07-02: 53.1%
+2000-07-02: 112%
+1997-07-02: 99.5%
+2000-07-02: 28.8%
+2000-07-02: 46.0%
+1999-07-02: 39.2%
+2000-07-02: 68.8%
+1999-07-02: 21.4%
+1995-07-02: 37.9%
+1995-07-02: 32.5%
+1991-07-02: 68.4%
+1994-07-02: 14.7%
+1997-07-02: 23.7%
+1996-07-02: 31.6%
+1998-07-02: 38.2%
+1993-07-02: 14.5%
+1996-07-02: 17.2%
+1994-07-02: 22.8%
+1996-07-02: 19.5%
+The signiﬁcance of the momentum eﬀect is clearly evident when comparing Table 17 with
+Table 18, where we have ranked the stocks randomly. The average return is centered slightly
+below zero due to the asymmetry between the long and short positions (see Section 5.3.1).
+Returns are not as volatile here because of the lower correlations within the portfolios.
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+A
+APPENDICES
+39
+Table 18. Random rankings (median of 50 runs). Settings: No transaction costs, no risk
+control, ranking based on a random number generator, rebalancing every fourth month.
+Germany
+UK
+France
+Sweden
+Number of stocks
+110-167
+192-202
+110- 181
+90-175
+Time period
+19900702-20011106
+19900702-20011106
+19900702-20011106
+19900702-20011106
+Annualized Return
+-0.75%
+-1.81%
+-1.31%
+-0.65%
+Daily Std
+0.739%
+0.813%
+0.981%
+1.32%
+Annualized Std
+11.5%
+13.4%
+14.4%
+21.0%
+Downside Risk
+4.72%
+Beta
+-0.008
+Skewness
+-0.141
+0.522
+-0.796
+1.02
+Kurtosis
+2.62
+8.798
+9.76
+20.572
+VaR (daily)
+Worst
+-5.99%
+-5.05%
+-10.1%
+-7.90%
+1%
+-1.86%
+-2.18%
+-2.67%
+-3.53%
+5%
+-1.14%
+-1.21%
+-1.47%
+-2.08%
+10%
+-0.86%
+-0.913%
+-1.06%
+-1.51%
+Autocorrelation
+One day
+0.0249
+0.0941
+0.0080
+0.0380
+One week
+0.0085
+-0.0384
+-0.0221
+-0.0158
+One month
+0.0211
+-0.0038
+-0.0183
+0.00822
+Sharpe (rf = 4%)
+-0.41
+-0.43
+-0.37
+-0.22
+Acc. Tr. Costs/Total Value end
+0%
+0%
+0%
+0%
+Acc. Return Long
+829
+1845
+871
+1014
+Acc. Return Short
+-883
+-1732
+-1269
+-1089
+No. of short/long investments/run
+350/350
+350/350
+350/350
+350/350
+Worst annual returns
+1997-07-02: -24.4%
+1991-07-02: -32.7%
+1992-07-02: -16.5%
+1999-07-02: -58.4%
+1995-07-02: -16.5%
+1995-07-02: -13.3%
+1990-07-02: -14.0%
+1991-07-02: -30.9%
+1999-07-02: -2.62%
+1996-07-02: -6.57%
+1998-07-02: -11.1%
+1994-07-02: -13.4%
+1996-07-02: 1.87%
+1992-07-02: -5.10%
+2000-07-02: -10.8%
+1998-07-02: -3.19%
+1994-07-02: 2.39%
+1990-07-02: -5.09%
+1999-07-02: -9.36%
+2000-07-02: 1.17%
+Worst monthly returns
+1999-01-02: -10.8%
+1998-07-02: -12.7%
+2000-02-02: -19.2%
+2000-06-02: -19.0%
+2000-01-02: -10.1%
+1995-09-02: -11.8%
+2000-01-02: -15.1%
+1999-11-02: -17.7%
+2001-10-02: -7.75%
+1995-11-02: -9.28%
+1999-12-02: -14.7%
+1999-12-02: -14.2%
+1993-08-02: -7.64%
+1992-02-02: -8.84%
+1997-02-02: -9.05%
+1999-10-02: -12.1%
+1998-02-02: -7.41%
+1991-09-02: -8.46%
+1990-10-02: -8.44%
+1992-04-02: -11.8%
+Best annual returns
+1992-07-02: 14.8%
+1998-07-02: 24.2%
+1996-07-02: 10.5%
+1993-07-02: 27.8%
+2000-07-02: 11.1%
+1999-07-02: 9.11%
+1994-07-02: 7.33%
+1992-07-02: 25.9%
+1990-07-02: 8.99%
+1993-07-02: 8.70%
+1997-07-02: 3.17%
+1997-07-02: 22.2%
+1991-07-02: 6.70%
+2000-07-02: 7.43%
+1991-07-02: 0.21%
+1990-07-02: 16.1%
+1993-07-02: 3.65%
+1994-07-02: 5.42%
+1993-07-02: -0.24%
+1996-07-02: 12.7%
+In Table 19, we have introduced transaction costs and risk control with the price variable.
+The portfolio will now quickly move out of phase because of the stop-loss rule, and we can
+see that the turnover is higher. The returns still seem to be signiﬁcantly diﬀerent from zero
+after transaction costs have been subtracted. But the volatility has not come down much at
+all. Again, France has important outlier observations that aﬀect the results, when we delete
+the 4 worst stocks, annualized return goes down to 6.05% and annual standard deviation
+to 26.9%. This makes the results across the European markets we have tested look very
+similar. The higher volatility in Sweden can be explained by the much smaller and more
+volatile stocks in the Swedish sample.
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+A
+APPENDICES
+40
+Table 19.
+Transaction costs and risk control based on price variable. Settings: 0.3%
+transaction costs, risk control (stop-loss 25% of maximum price, covariance matrix), ranking based
+on weighted return of 6 months price changes (last week: 20%, rest: 80%), stocks are held until
+stop-loss or 4 months pass.
+Germany
+UK
+France
+Sweden
+Number of stocks
+110-167
+192-202
+110-181
+90-175
+Time period
+19900702-20011106
+19900702-20011106
+19900702-20011106
+19900702-20011106
+Annualized Return
+5.77%
+7.75%
+15.1%
+11.2%
+Daily Std
+1.27%
+1.25%
+2.54%
+2.00%
+Annualized Std
+24.5%
+25.4%
+43.9%
+35.9%
+Downside Risk
+7.63%
+Beta
+-0.024
+Skewness
+-0.666
+-0.0222
+27.3
+-0.613
+Kurtosis
+7.46
+10.032
+118
+6.07
+VaR (daily)
+Worst
+-8.53%
+-10.2%
+-9.55%
+-37.0%
+1%
+-3.86%
+-3.92%
+-4.22%
+-5.69%
+5%
+-1.95%
+-1.93%
+-2.05%
+-2.65%
+10%
+-1.38%
+-1.30%
+-1.44%
+-1.83%
+Autocorrelation
+One day
+0.119
+0.165
+0.0439
+0.119
+One week
+-0.0189
+0.031
+0.00822
+0.0304
+One month
+-0.0309
+0.003
+-0.0048
+0.0226
+Sharpe (rf = 4%)
+0.07
+0.15
+0.25
+0.20
+Acc. Tr. Costs/Total Value end
+22.3%
+36.9%
+11.3%
+14.4%
+Acc. Return Long
+2029
+2897
+3731
+2264
+Acc. Return Short
+-980
+-1402
+-1329
+-471
+No. of short/long investments/run
+429/380
+495/376
+481/391
+601/420
+Worst annual returns
+1990-07-02: -30.3%
+1999-07-02: -25.1%
+1990-07-02: -43.3%
+1992-07-02: -33.1%
+1998-07-02: -15.2%
+1993-07-02: -0.80%
+1998-07-02: -38.9%
+1990-07-02: -29.1%
+1996-07-02: -7.35%
+1994-07-02: -0.67%
+1992-07-02: -14.7%
+1993-07-02: -23.1%
+1997-07-02: -6.51%
+1997-07-02: -0.05%
+1996-07-02: -4.37%
+1998-07-02: -22.2%
+1992-07-02: -5.18%
+1996-07-02: 0.460%
+1994-07-02: 10.9%
+1995-07-02: 2.35%
+Worst monthly returns
+2001-04-02: -26.2%
+2001-10-02: -31.1%
+2000-03-02: -28.9%
+1992-01-02: -40.3%
+2000-03-02: -25.8%
+2000-03-02: -22.0%
+2001-10-02: -23.3%
+1991-01-02: -34.1%
+1991-02-02: -16.6%
+1997-08-02: -15.6%
+2000-08-02: -20.8%
+2000-03-02: -26.9%
+1999-04-02: -13.5%
+2000-04-02: -14.1%
+2000-05-02: -15.8%
+1999-09-02: -20.6%
+2000-05-02: -12.4%
+2000-05-02: -13.7%
+1999-02-02: -14.6%
+2000-08-02: -20.5%
+Best annual returns
+1995-07-02: 47.9%
+1992-07-02: 41.1%
+2000-07-02: 139%
+1997-07-02: 68.5%
+2000-07-02: 38.7%
+1991-07-02: 37.9%
+1995-07-02: 34.1%
+1999-07-02: 44.3%
+1993-07-02: 27.1%
+1995-07-02: 32.5%
+1991-07-02: 22.5%
+2000-07-02: 41.6%
+1994-07-02: 8.16%
+2000-07-02: 16.6%
+1993-07-02: 21.8%
+1991-07-02: 25.5%
+1991-07-02: 6.23%
+1990-07-02: 4.41%
+1999-07-02: 20.6%
+1994-07-02: 21.4%
+Looking only at the period used in our default model, we can see that the relationships
+between the diﬀerent types of simulations persist. However, returns are about twice as high
+in this period, as evidenced by the data in Table 20.
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+A
+APPENDICES
+41
+Table 20. Simulations from 1995 in Sweden.
+Replication
+of
+earlier
+studies (Table 17)
+Random
+ranking
+(Table 18)
+Transaction
+costs
+and
+risk control with price
+variable (Table 19)
+Number of stocks
+101-175
+101-175
+101-175
+Time period
+19950602-20011106
+19950602-20011106
+19950602-20011106
+Annualized Return
+30.4%
+-3.28%
+24.0%
+Daily Std
+2.52%
+1.23%
+1.84%
+Annualized Std
+39.1%
+17.3%
+33.9%
+Downside Risk
+7.93%
+3.18%
+5.99%
+Beta
+-0.062
+0.052
+0.0064
+Skewness
+-0.707
+1.02
+-0.613
+Kurtosis
+22.5
+20.6
+6.07
+VaR (daily)
+Worst
+-26.1%
+-7.53%
+-10.6%
+1%
+-7.30%
+-3.02%
+-5.98%
+5%
+-3.57%
+-1.89%
+-2.78%
+10%
+-2.07%
+-1.38%
+-1.82%
+Autocorrelation
+One day
+0.194
+-0.0113
+0.158
+One week
+0.012
+-0.0250
+-0.005
+One month
+0.147
+-0.0286
+0.044
+Sharpe (rf = 4%)
+0.68
+-0.42
+0.59
+Acc. Tr. Costs/Total Value end
+0%
+0%
+11.2%
+Acc. Return Long
+2887
+1014
+2264
+Acc. Return Short
+-274
+-1089
+-471
+No. of short/long investments/run
+200/200
+200/200
+200/200
+Worst annual returns
+1999-06-30: 8.68%
+1998-06-30: -39.5%
+1998-06-30: -29.5%
+1995-06-30: 13.1%
+1995-06-30: -20.1%
+1995-06-30: 0.195%
+1998-06-30: 16.9%
+1997-06-30: -19.4%
+1996-06-30: 20.1%
+1996-06-30: 18.7%
+2000-06-30: 2.11%
+1999-06-30: 41.1%
+2000-06-30: 29.7%
+1996-06-30: 17.7%
+2000-06-30: 44.2%
+Worst monthly returns
+2000-12-28: -46.2%
+1998-11-28: -9.55%
+1999-08-28: -21.9%
+1999-12-28: -27.3%
+1998-07-28: -9.28%
+1999-04-28: -16.5%
+2001-09-28: -19.8%
+1999-02-28: -8.97%
+1998-12-28: -16.3%
+1999-02-28: -14.7%
+1998-04-28: -8.69%
+2000-04-28: -16.0%
+2001-04-28: -13.6%
+1995-10-30: -8.32%
+2001-09-28: -15.0%
+Best annual returns
+1997-06-30: 72.8%
+1999-06-30: 33.3%
+1997-06-30: 54.5%
+2000-06-30: 29.7%
+1996-06-30: 17.7%
+2000-06-30: 44.2%
+1996-06-30: 18.7%
+2000-06-30: 2.11%
+1999-06-30: 41.1%
+1998-06-30: 16.9%
+1997-06-30: -19.4%
+1996-06-30: 20.1%
+1995-06-30: 13.1%
+1995-06-30: -20.1%
+1995-06-30: 0.195%
+Finally, we look at alterations of our default model in Table 21. The results are expected,
+at least the direction of changes. No risk control yields a (much) higher return but also
+higher risk. We do not interpret the higher Sharpe ratio as this being a better model. Apart
+from worse risk characteristics, this proﬁle seem to be rather time speciﬁc, considering the
+extremely proﬁtable trades in connection with the rise and fall of the technology sector. Also,
+our method of banning stocks as a means for risk control in our default model is, as stated
+above, not very optimal in a small sample.
+Transaction costs (TC) of 0.7% signiﬁcantly lowers the return. Note that the model will
+not do the exact same trades as in the default model, when TC are altered. Much higher TC
+than 0.7% would in any way be critical to the proﬁtability of the model. When we introduce
+delayed execution and higher TC for the 15 most illiquid stocks results are worse, but not
+much. In our simulations, the buy/sell order is postponed 1 day for these stocks. The eﬀect
+of higher TC is thus more important in this case.
+If we are restricted from trading in stocks with low volume, say the bottom 10% (less than
+about 1.5 million SKr/day), return drops. But this simulation points more to the importance
+of a large sample to start with rather than the importance of high volume, since there is not
+a big diﬀerence in daily turnover of the stocks at the bottom of the chart. If one takes away
+10%, and these being mostly growth companies, from a small sample, performance will be
+severely hit.
+An interesting simulation is if we just turn oﬀthe stop-loss rule (not tabulated). The
+model will rebalance all stocks simultaneously every 4th month and thus not trade in the
+same stocks as in the default model. We ﬁnd that annual return is up to 30.9% and that the
+VaR and standard deviation (30.3%) are higher. Most of our simulations exhibit improved
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+A
+APPENDICES
+42
+performance with the stop-loss rule. But these gains are most often on the risk side and are
+most signiﬁcant in the presence of long sustained trends that diminish portfolio value.
+In a simulation where we only have used weighted price as a signal generator (not tabulated), ceteris paribus, the Sharpe ratio is down to 0.04. We have found that when the
+risk control rules are turned oﬀ, price is the most important signal generator, but if it is not
+turned oﬀ, it does not work very well alone.
+If we let the default model start the simulation in 1997 (not tabulated), the portfolio is
+in essence the same as in a simulation where one starts in 1995 and cuts oﬀthe ﬁrst two
+years. In this case, performance is somewhat better because of the ﬂat performance between
+1995 and 1997 in our default model.
+Also, the model does remarkably well in 1992-93, where the simplistic momentum strategy
+lost over 70% simple return (see Table 17), even without access to fundamental data. Total
+value is down 2.5% in the corresponding year.
+Table 21. Changes in our default model. Default settings: 0.3% transaction costs, all ranking
+signals and risk control rules
+No risk Control
+0.7% transaction costs
+1
+day
+delayed
+trades
+and 0.6% higher transaction
+costs
+for
+10%
+most illiquid stocks
+No trades in the 10%
+with
+lowest
+volume
+(<about
+2
+million
+SKr/day)
+Number of stocks
+94-175
+94-175
+94-175
+94-175
+Time period
+19950630-20011106
+19950630-20011106
+19950630-20011106
+19950630-20011106
+Annualized Return
+39.8%
+13.4%
+12.9%
+17.0%
+Daily Std
+1.94%
+1.55%
+1.42%
+1.60%
+Annualized Std
+33.6%
+31.5%
+28.1%
+31.6%
+Downside Risk
+5.82%
+5.13%
+5.56%
+6.18%
+Beta
+0.0022
+-0.014
+-0.022
+-0.053
+Skewness
+-0.524
+-0.416
+-0.279
+-0.373
+Kurtosis
+5.95
+4.79
+5.97
+5.52
+VaR (daily)
+Worst
+-14.9%
+-10.9%
+-11.5%
+-11.8%
+1%
+-5.87%
+-4.50%
+-4.24%
+-4.52%
+5%
+-2.79%
+-2.26%
+-2.11%
+-2.39%
+10%
+-1.87%
+-1.65%
+-1.49%
+-1.62%
+Autocorrelation
+One day
+0.0830
+0.137
+0.128
+0.126
+One week
+0.0462
+0.0313
+0.0659
+0.0481
+One month
+0.0423
+-0.0271
+0.00822
+0.0177
+Sharpe
+(rf
+=
+4%)
+1.06
+0.298
+0.319
+0.411
+Acc.
+Tr.
+Costs/Total
+Value end
+7.46%
+49.7%
+20.5%
+15.9%
+Acc.
+Return
+Long
+2868
+1952
+2044
+2436
+Acc.
+Return
+Short
+173
+-314
+-436
+-505
+No.
+of
+short/long
+investments/run
+200/202
+342/268
+343/265
+339/270
+Worst
+annual
+returns
+1998-06-30: 0.860%
+1998-06-30: -19.1%
+1999-06-30: -21.4%
+1998-06-30: -25.4%
+1996-06-30: 9.78%
+1996-06-30: -12.2%
+1996-06-30: -6.99%
+1996-06-30: 2.60%
+1995-06-30: 25.8%
+1995-06-30: 3.85%
+1998-06-30: 11.8%
+1995-06-30: 7.93%
+1999-06-30: 36.9%
+1999-06-30: 18.3%
+1995-06-30: 17.7%
+1999-06-30: 25.8%
+2000-06-30: 69.3%
+2000-06-30: 33.2%
+2000-06-30: 29.4%
+2000-06-30: 26.7%
+Worst
+monthly
+returns
+2000-12-28 -28.1%
+2000-02-28: -17.6%
+2000-12-28: -23.1%
+2000-12-28: -32.4%
+2001-09-28: -21.5%
+1998-09-28: -15.9%
+2000-02-28: -15.9%
+2000-04-28: -17.1%
+2000-02-28: -19.6%
+2000-03-28: -12.6%
+2000-03-28: -14.4%
+1999-01-28: -16.8%
+1999-01-28: -12.5%
+2001-09-28: -12.6%
+2000-04-28: -13.7%
+2000-08-28: -13.6%
+2000-03-28: -9.67%
+2000-07-28: -11.4%
+2000-08-28: -13.2%
+1998-12-28: -12.9%
+Best annual returns
+1997-06-30: 77.2%
+1997-06-30: 59.8%
+1997-06-30: 47.7%
+1997-06-30: 62.2%
+2000-06-30: 69.3%
+2000-06-30: 33.2%
+2000-06-30: 29.4%
+2000-06-30: 26.7%
+1999-06-30: 36.9%
+1999-06-30: 18.3%
+1995-06-30: 17.7%
+1999-06-30: 25.8%
+1995-06-30: 25.8%
+1995-06-30: 3.85%
+1998-06-30: 11.8%
+1995-06-30: 7.93%
+1996-06-30: 9.78%
+1996-06-30: -12.2%
+1996-06-30: -6.99%
+1996-06-30: 2.60%
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+A
+APPENDICES
+43
+A.1.3
+Discussion on the Robustness of Our Model
+To reach a conclusive statement about robustness and other statistical properties of a trading
+model one needs extensive data from many countries and time series that are measured in
+decades. We have neither. But for the simplistic momentum strategy using only price as a
+variable, we can compare with earlier research and thus come to a more distinct conclusion.
+Our results conﬁrm other researchers’ ﬁndings on the momentum eﬀect.
+Results are
+similar for Sweden, UK, Germany and France and are consistent with both prior empirical
+evidence and contemporary theory. A market neutral momentum strategy in its most simple
+form can earn money. It is not a random walk. This conclusion holds true even after including
+transaction costs. But the performance is very volatile with long periods of good performance
+and sudden losses. This is why normal statistical methods to establish signiﬁcance of results,
+such as the t-statistic, is aﬄicted with problems. Especially if the time period is too short
+and important extreme events are not captured in the sample.
+One dimension of our analysis of robustness, the existence and similarity of the momentum eﬀect across countries can thus be given an aﬃrmative answer with respect to our
+sample.
+As for our own self-made model, we can not draw any strong conclusions about the
+exact level of performance. Just over 6 years of data is simply too short, and there are no
+comparable studies. Considering that our model is a combination of many strategies, it is
+not either very likely that someone ever will test all possible permutations of these strategies.
+We can only tentatively state our conclusions and not accurately quantify future statistical
+properties of our strategy.
+But we can be reasonably sure that our result is not a statistical ﬂuke, since we have
+based our trading rules on established theoretical and empirical research, and not ﬁne-tuned
+the model to ﬁt a speciﬁc time-period. In conclusion, we ﬁnd that the following things can
+be said about the robustness of results of our default model:
+• On average, measured over a long time period, we believe that our model can produce
+economically signiﬁcant results in the future.
+This conclusion is based on evidence
+from earlier research on the momentum eﬀect and the relative stability of our model.
+However, the Swedish sample using only the price variable yields higher returns in the
+period where we have simulated our default model, than from 1990. It may be the case
+that one should expect an average return that relates in the same way to the results
+from 1995, i.e. only about half of the returns or 10% per year for the default model.
+The years around the turn of the millenium seem to have been favorable indeed for
+a momentum trader; ﬁrst one long upward trend among especially high-tech growth
+companies, and then an equally persistent bearish trend. The fundamental determinant
+and limiting factor of proﬁtability for a momentum strategy is the existence of persistent
+trends in the market. It is not hard to pick up on these trends in general once they
+show up, but it is a delicate task to spot the turnarounds that quickly diminish the
+value of the portfolio. How would our model have acted in earlier periods and, more
+importantly, how will it behave in the future? One can not exactly know the answer
+to that question.
+• To implement our model on the Swedish market, one can not be too big. With a daily
+turnover of around 1-2 million SKr for the stocks with the lowest volume, we can with
+a rough estimation say that returns will be hit if total portfolio value exceeds about
+30 million SKr. When we excluded the 10% lowest volume stocks, which would not
+be immediately executed in a 30 million SKr portfolio without price impact, returns
+dropped signiﬁcantly. It is therefore imperative to diversify across many markets, not
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+A
+APPENDICES
+44
+only to reduce risk, but also to gain access to more liquid stocks. Then it is possible
+to run a much larger portfolio. The size of the market one trades in is thus a limiting
+factor for performance.
+• Transaction costs are critical determinants of proﬁtability due to the high turnover of
+the portfolio. One needs to be big enough to avoid paying a ﬁxed fee, and even if you
+can avoid this, average transaction costs most probably will exceed 0.3%. This limit,
+to reach 0.3%, is about 1 million SKr with an Internet broker today. Hence, we have
+both an upper and a lower limit to consider for the size of the portfolio. But these
+limits are obviously not critical for the interested momentum trader, who would seek
+out much larger and more liquid stock markets than the Swedish one.
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+A
+APPENDICES
+45
+A.2
+Statistical Comparison of Our Model and the Simplistic Model
+In this section we will compare the risk and return parameters of our trading model to the
+ones of the simplistic price momentum model including and excluding transaction costs,
+respectively. More speciﬁcally, we will try to test if our model performs worse than the other
+two strategies in two dimensions: standard deviation and return. Both tests are based on
+monthly ﬁgures, primarily to ensure large sample sizes and thereby more powerful tests. We
+have used monthly ﬁgures as they yield a large enough sample, and are closer to the trading
+horizon than ﬁgures on a daily basis. One could also test the equality of the Sharpe ratios,
+but the available tests have been criticized for their low power, see e.g. Jobson and Korkie
+(1981).
+A.2.1
+Volatility
+At ﬁrst sight, one would handle this topic by applying the standard procedure of testing the
+diﬀerence between two variances (the so called variance ratio test). According to Newbold
+(1995), "[t]hat test is valid when independent random samples from the two populations
+are available". However, in our case we are dealing with matched pairs (since we have run
+the simulations during the same time period during which the same set of stocks has been
+considered). Henceforth the parameter of our model will be denoted X, and the one of the
+model we compare to Y . The test procedure consists of a test for Zero Population Correlation
+(using Newbold’s terminology), where one uses the fact that the correlation between (X −Y )
+and (X + Y ) is zero if and only if σ2
+x and σ2
+y are equal. Our onesided test then looks like
+this:
+H0 : σ2
+x = σ2
+y
+(11)
+H1 : σ2
+x < σ2
+y
+(12)
+Decision rule:
+Reject H0 if
+r
+p
+(1 −r2)(n −2)
+< −tn−2,α,
+(13)
+where r is the sample correlation, σ2
+x is the variance of our model and σ2
+y is the volatility of
+the simplistic model without transaction costs. n is the sample size (76 in all tests) and α is
+the signiﬁcance level. tn−2,α is the number for which
+P(tn−2 > tn−2,α) = α,
+(14)
+where the random variable tn−2 follows a Student’s t distribution with (n −2) degrees
+of freedom. Replace Y with Z to get the notation for the model with transaction costs.
+Comparing our model to the simplistic model without transaction costs, we ﬁnd that the
+correlation is −0.454 and the corresponding test statistic is −4.39. The null hypothesis can
+thus (see Table 22) be rejected already at the ﬁve percent level, in favour of the hypothesis
+that our model has a lower variance, and thereby a lower volatility.
+The correlation in the second test case is −0.466 yielding a test statistic of −4.53. The
+null hypothesis can once again be rejected at the ﬁve percent level, and the conclusions above
+apply here as well.
+A.2.2
+Return
+Testing for the diﬀerence in returns is a simple matter of testing the diﬀerences between two
+means. In line with the standard deviation tests, we will use the matched pairs methodology
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+A
+APPENDICES
+46
+presented in Newbold (1995). The test is set up as follows:
+H0 : µx = µy
+(15)
+H1 : µx < µy
+(16)
+Decision rule:
+Reject H0 if
+¯d
+sd/√n < −tn−1,α,
+(17)
+where µx and µy are the average monthly returns of our model and the simplistic model
+without transaction costs, respectively.
+¯d is the sample mean of the diﬀerence between X
+and Y (here X and Y are the monthly return vectors). sd is the sample standard deviation.
+Replace Y with Z to get the notation for the model with transaction costs.
+The test statistic in the case where we compare the return of our model to the return of
+the simplistic model where the transaction costs are excluded is −0.398 which implies that
+the null hypothesis cannot be rejected (see Table 22). The corresponding statistic for the
+comparison between the returns of our model and the simplistic model excluding transaction
+costs is 0.155, and yet again we cannot reject the null hypothesis that the population means
+are equal. Thus, statistically speaking, one cannot say that performance in terms of risk and
+return deteriorates when one introduces transaction costs and the set of more advanced rules
+we have discussed in this thesis.
+Table 22. A brief summary of the hypotheses tested above. x corresponds to our model, y to the
+simplistic model without transaction costs and z to the one with transaction costs.
+H0
+H1
+Test Statistic
+Critical Value (5 %)
+Result
+σ2
+x = σ2
+y
+σ2
+x < σ2
+y
+−4.39
+−2.58
+Reject H0
+σ2
+x = σ2
+z
+σ2
+x < σ2
+z
+−4.53
+−2.58
+Reject H0
+µx = µy
+µx < µy
+−0.398
+−2.66
+Cannot reject H0
+µx = µz
+µx < µz
+0.155
+−2.66
+Cannot reject H0
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+A
+APPENDICES
+47
+A.3
+Screenshot of the Program
+Figure 9. The program in action.
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+A
+APPENDICES
+48
+A.4
+A Day of Trading
+***New Trading Day***
+1996-02-22 340
+Transaction Account: 198889.75 (1.9625976 % of long portfolio).
+The portfolio consists of the following stocks:
+DORO (short) 1996-02-06.
+SSABA (short) 1996-01-24.
+ELEKTAB (long) 1995-11-23.
+SANDVIK (short) 1996-02-02.
+SKANDIA (long) 1995-10-30.
+AKZONOBELSDB (short) 1995-11-14.
+SKFB (short) 1996-02-02.
+BERGMANBEVINGB (long) 1995-10-30.
+HENNESMAURITZB (short) 1995-10-30.
+TRELLEBORGB (short) 1995-10-30.
+MUNKSJO (short) 1996-01-12.
+ROTTNEROS (short) 1996-02-06.
+SAS (long) 1996-01-30.
+NOBELBIOCARE (long) 1996-02-19.
+CUSTOSA (long) 1995-10-30.
+NCCB (long) 1995-10-30.
+ALLGONB (short) 1995-10-30.
+FRONTECB (long) 1996-01-23.
+OM (long) 1995-10-30.
+IBSB (long) 1995-10-30.
+Size of long: 1.0562329E7.
+Size of short: 9329879.0
+Time to divest HENNESMAURITZB (short).
+Transaction Account before drop: 198889.75
+Transaction Account after drop: 167891.78
+Banned short stock HENNESMAURITZB
+HENNESMAURITZB belongs to the sector: [retail$]
+Divested the short stock HENNESMAURITZB at a price of 949319.06 SEK.
+The Transaction Account is now 167891.78 SEK.
+SCAB: Number of days between 1996-02-06 and 1996-02-22 is 16
+SCAB is unbanned.
+CONCORDIAMARITIMEB: Number of days between 1996-02-09 and 1996-02-22 is 13
+HENNESMAURITZB: Number of days between 1996-02-22 and 1996-02-22 is 0
+The following stocks are banned from the short portfolio:
+CONCORDIAMARITIMEB
+HENNESMAURITZB
+Original candidate: NOKIASDBSEE
+Considering the following stocks:
+NOKIASDBSEE <=> 1.9383791E-5
+KLIPPANS <=> 2.1233047E-5
+TV4A <=> 2.2088336E-5
+PRIF <=> 2.3530345E-5
+At 1996-02-22 NOKIASDBSEE was shorted for 930188.9 SEK.
+Size of long portfolio at end of trading day: 1.0562329E7
+Size of short portfolio at end of trading day: 9310749.0
+Total value decomposition:
+lv (1.0562329E7) + nps (-339003.47) + transaction account (165092.81) = 1.0388419E7.
+Checking development of market-to-book (1996-02-23).
+Market-to-book for ACTIVEBIOTECHB has developed from 2.54 to 0.51 implying a ratio of 0.2007874.
+ACTIVEBIOTECHB has therefore been banned from the short list.
+Banned short stock ACTIVEBIOTECHB
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+A
+APPENDICES
+49
+A.5
+A List of the Swedish Stocks Used
+Table 23. Swedish stocks. The numbers in parentheses indicate the number of times the stock has
+entered the long and short portfolio in our default model, respectively.
+ABBSEE (0, 0)
+GORTHONLINES (1, 2)
+PANDOX (2, 1)
+ACTIVEBIOTECHB (3, 3)
+GOTLANDREDERIB (4, 0)
+PEABB (4, 3)
+AGA A (1, 4)
+GRANINGE (1, 0)
+PERS B (2, 4)
+AGA B (3, 3)
+GUNNEBO (3, 0)
+PHARMACIASDB (0, 3)
+AKZONOBELSDB (1, 1)
+HAGSTROMERQVIBERG (0, 0)
+PIRE (3, 2)
+ALFA (2, 4)
+HALDEX (1, 5)
+PLAT B (1, 2)
+ALLGONB (0, 5)
+HANDBKNHYPOTEKPREF (2, 0)
+PLM (1, 1)
+ALTH B (2, 4)
+HENNESMAURITZB (0, 3)
+PREVASB (1, 3)
+ANGPANNEFORENINGENB (6, 1)
+HEXAGONB (3, 1)
+PRICERB (1, 2)
+ASSAABLOYB (3, 1)
+HLDISPLAYB (4, 2)
+PRIF (1, 4)
+ASSIDOMAN (1, 0)
+HOGANASB (2, 2)
+PROTECTDATA (3, 2)
+ASTI (2, 0)
+HOISTINTLB (4, 1)
+RATOSB (2, 0)
+ASTRAZENECASEE (0, 1)
+HUFVUDSTADENA (0, 4)
+REALIAB (1, 2)
+ATLASCOPCOA (0, 0)
+IBSB (1, 5)
+RESCOB (1, 2)
+AUTOLIVSDB (0, 2)
+ICONMEDIALABINTL (2, 4)
+ROTTNEROS (1, 3)
+AVESTAPOLARITSEE (1, 0)
+INDLFINLSYSB (2, 1)
+SAABB (0, 0)
+BERGMANBEVINGB (4, 3)
+INDUSTRIVARDENA (0, 1)
+SALUSANSVARB (0, 1)
+BIACOREINTL (3, 3)
+INTENTIAINTLB (1, 5)
+SANDVIK (1, 3)
+BILIAA (1, 3)
+INVESTORB (0, 0)
+SAPA (0, 0)
+BIOGAIABIOLOGICSB (2, 0)
+INVIKB (2, 1)
+SARDUS (0, 0)
+BIOPHAUSIAA (3, 1)
+ITABINDUSTRIB (2, 0)
+SAS (2, 4)
+BIORA (2, 4)
+JM (4, 0)
+SCAB (0, 1)
+BNNORDSJB (0, 4)
+JPB B (0, 1)
+SCANIAB (2, 4)
+BONGSLJUNGDAHLB (5, 0)
+KARLSHAMNS (1, 0)
+SCRIBONAB (1, 3)
+BPA B (3, 1)
+KAROBIOB (1, 0)
+SEBA (0, 4)
+BROSTROM (2, 2)
+KAROLINMACHINETOOL (0, 1)
+SECOTOOLSB (2, 0)
+BUREEQUITY (0, 3)
+KINNEVIKINDB (0, 3)
+SECURITASB (2, 1)
+CARDO (0, 2)
+KLIPPANS (3, 5)
+SEMCON (2, 1)
+CASTELLUM (1, 0)
+KNOWIT (2, 3)
+SHBA (0, 1)
+CLOETTAFAZERB (2, 1)
+LATOURINVESTMENTB (2, 1)
+SIGMAB (0, 0)
+COLU B (4, 1)
+LEDSTIERNANB (0, 3)
+SINTERCASTA (0, 0)
+CONCORDIAMARITIMEB (3, 4)
+LINDEX (0, 0)
+SKANDIA (3, 3)
+CONNOVA (1, 4)
+LJUNGBERGGRUPPEN (4, 0)
+SKANSKAB (0, 4)
+CONSILIUMB (0, 1)
+LUNDBERGSB (1, 0)
+SKFB (1, 4)
+CUSTOSA (2, 0)
+MALD B (2, 2)
+SOFTRONICB (4, 3)
+DILI (1, 2)
+MANDAMUS (2, 1)
+SSABA (1, 2)
+DORO (1, 4)
+MAXIMPHARMSSEE (1, 3)
+STORAENSORSEE (0, 1)
+DROTTB (1, 0)
+MEDITEAMDENTAL (2, 4)
+STRALFORSB (1, 0)
+ELANDERSB (3, 0)
+MEDIVIRB (4, 5)
+SVEDBERGSB (0, 0)
+ELECTROLUXB (0, 3)
+MODUL1DATA (6, 3)
+SVENSKAORIENTB (0, 2)
+ELEKTAB (6, 6)
+MSCKONSULTB (0, 0)
+SVOLDERB (0, 0)
+ELEKTRONIKGRUPPENB (4, 2)
+MUNKSJO (0, 1)
+SWEDISHMATCH (1, 1)
+ENAT (0, 1)
+MUNTERS (2, 0)
+SWITCHCORE (0, 4)
+ENEADATA (4, 2)
+NCCB (1, 2)
+SYD C (1, 2)
+ENTR A (3, 2)
+NEFABB (4, 1)
+TELE2B (2, 6)
+ERICSSONB (0, 3)
+NETINSIGHTB (0, 2)
+TELELOGIC (0, 4)
+ESSELTEA (1, 4)
+NEWWAVEGROUPB (1, 0)
+TELIA (0, 1)
+EUROPOLITAN (4, 3)
+NHNORDISKAB (1, 5)
+TELIGENT (1, 3)
+FAGERHULT (2, 1)
+NOBELBIOCARE (7, 1)
+TICKETTRAVEL (2, 0)
+FGLD (0, 3)
+NOKIASDBSEE (2, 5)
+TORNETFASTIGHETSB (0, 0)
+FINNVEDENB (1, 3)
+NOLATOB (2, 4)
+TRELLEBORGB (3, 5)
+FNSPKA (0, 2)
+NORDEA (0, 1)
+TURNITB (2, 5)
+FORC B (0, 2)
+NORSKHYDROSDB (2, 0)
+TV4A (3, 2)
+FRAMTIDSFABRIKEN (1, 3)
+OEMINTERNATIONALB (3, 0)
+UTFORS (0, 2)
+FRONTECB (2, 1)
+OM (2, 4)
+VOLVOB (0, 4)
+GAMBROA (1, 3)
+ORESUND (2, 1)
+VOSTOKNAFTASDB (2, 2)
+GETINGEINDUSTRIER (2, 2)
+ORTIVUSB (3, 0)
+WALLENSTAMB (1, 3)
+GEVEKOB (3, 0)
+OXIGENESEE (1, 2)
+WIHLBORGSB (1, 1)
+WMDATAB (1, 4)
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+A
+APPENDICES
+50
+A.6
+Some Basic Financial and Statistical Concepts
+Adaptive Market Eﬃciency is a somewhat weaker form of market eﬃciency that allows
+for the appearance of proﬁt opportunities in historical data, but requires these proﬁt
+opportunities to dissipate when they become apparent.
+Alpha According to the traditional capital asset pricing model, the expected rate of return
+for asset i can, in equilibrium, be expressed as:
+E[ri] = rf + βi(E[rm] −rf),
+where ri is the rate of return on asset i, βi is deﬁned as below, rf is the risk-free rate of
+return, and rm is the return on the market portfolio. Since rf is assumed to be risk-free,
+it has zero variance, and can hence be handled as a constant, i.e. E[rf] = rf. If the
+expected rate of return exceeds this equilibrium value, then the asset is underpriced,
+and we would expect it to outperform the market, adjusted for risk. We cannot directly
+observe expectations, but we can infer them statistically from averages over historical
+data. If we regress ri −rf against rm −rf, we assume that
+ri −rf = αi + βi(rm −rf) + εi,
+(18)
+where εi ∼N(0, s2) is the error term, and s2 is the sample variance.
+Taking the
+expectation, we get
+αi = E[ri] −rf −βi(E[rm] −rf),
+so we can estimate βi as the slope coeﬃcient in the regression, and we can interpret
+our estimate of the intercept αi as an estimate of the amount by which the ith asset
+has outperformed the market (of course, if αi < 0, the security has underperformed in
+relation to the market).
+Arbitrage Informally, arbitrage means that an agent can act in such a way that she is
+guaranteed a proﬁt without exposure to risk, or with insigniﬁcant exposure.
+More
+formally we can deﬁne price as the vector {St; t = 0, 1}, if we assume that the market
+only exists at time t = 0 and at t = 1.
+A portfolio is in this context deﬁned as
+h = (h1, . . . , hN)T . We can deﬁne the value process V (h) as
+Vt(h) = hT St,
+t = 0, 1
+The portfolio h is an arbitrage strategy if it satisﬁes
+V0(h) ≤0,
+P(V1(h) > 0) = 1
+In the context of this thesis, an arbitrage opportunity emerges when a security for some
+reason is mispriced. That is for example the case with the double listings of the Royal
+Dutch/Shell stocks (they are listed both as Royal Dutch and as Shell, see e.g. Shleifer
+(2000) for a discussion).
+Autocorrelation Given returns R1, R2, . . . , RN, the lag k autocorrelation function is deﬁned
+as
+rk =
+PN
+1 (Ri −¯R)(Ri+k −¯R)
+PN
+1 (Ri −¯R)2
+As one of our performance measures, we use k = 1, 7, 30 lag(s). In words, autocorrelation is the correlation between lagged realizations of a random variable.
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+A
+APPENDICES
+51
+Behavioral ﬁnance This attempt at explaining the movements of stock prices says that
+”investors can make systematic errors in forecasting cash ﬂows or in setting the discount
+rate, and [that] these errors can push stock prices away from fundamental value for
+extended periods of time.” This description is taken from Barberis (June 23 1997).
+Beta β is a measure of the systematic risk in a security. The technical deﬁnition is
+βi = σim
+σ2m
+,
+where βi is the risk of security i, σim is the covariance between the security and the
+market, and σ2
+m is the variance of the market.
+CAR Abnormal return is the return on an asset in relation to some index. Cumulative
+abnormal return is of course the cumulation of abnormal returns of some period of
+time.
+In this thesis, we also use the acronym CAR as a reference for a simplistic
+methodology (see below) where a market neutral portfolio is created and evaluated.
+Correlation The correlation coeﬃcient ρ indicates the extent to which pairs of realizations
+of two stochastic variables lie on a straight line. For perfect linearity, ρ = ±1. If there
+is no linear trend at all – for example, if there is a random scatter of points – the
+value of ρ is close to zero. Points distributed evenly around a circle would also give a
+correlation of near zero, because there would be no overall linear trend. The correlation
+coeﬃcient between the random variables X and Y is deﬁned as
+ρ = σXY
+σXσY
+,
+where σXY is the covariance between X and Y , and σX is the standard deviation of
+X.
+Data mining The data mining method is intended to work on data without starting from a
+particular hypothesis or even a particular question. Essentially, it reverses the scientiﬁc
+method, starting from data and moving towards hypotheses instead of following the
+traditional order of the scientiﬁc method:
+1. Deﬁne the problem
+2. Generate hypotheses/models
+3. Collect relevant data/conduct experiments to generate data
+4. Test models against the data
+5. Use the results to generate new hypotheses
+The problems with this approach should be obvious to readers familiar with regression
+analysis.
+Data-snooping is ﬁnding seemingly signiﬁcant but in fact spurious patterns in data. Antonym for “our model”.
+Derivative instruments Contracts such as options and futures whose price is derived from
+the price of an underlying ﬁnancial asset.
+EMH (Eﬃcient Market Hypothesis) This hypothesis says that the ”price (of e.g.
+a
+stock) reﬂects fundamental value, deﬁned as the best possible forecast, given available
+information, of a security’s future cash ﬂows, discounted at a rate that is appropriate
+for the risk of those cash ﬂows”.
+Fat Tails If one uses the normal distribution to model stock returns, one will get too low
+probabilities for extreme events, i.e. the mass in the tails are too low. One way to get
+around this is to use e.g. hyperbolic distributions, which will render extreme events a
+larger likelihood.
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+A
+APPENDICES
+52
+Fundamental data Data that is objective in some sense, e.g. accounting data.
+Glamour stock A glamour stock is characterized by a high P/E-ratio, high trading volume
+and long term positive earnings surprises. See Swaminathan and Lee (2000).
+Growth stocks Companies that have a strong predicted growth in earnings, reﬂected in
+e.g. a high P/E-ratio. The opposite of growth stock is value stock.
+Hedge Hedging is a way of reducing some of the risk involved in holding an investment. A
+hedge is a way of insuring an investment against risk.
+Kurtosis Kurtosis is a measure of whether the data are peaked or ﬂat relative to a normal
+distribution. That is, data sets with high kurtosis tend to have a distinct peak near the
+mean, decline rather rapidly, and have heavy tails. Data sets with low kurtosis tend to
+have a ﬂat top near the mean rather than a sharp peak. A uniform distribution would
+be the extreme case. For the data Y1, Y2, . . . , YN, the formula for kurtosis is
+kurtosis =
+PN
+i=1(Yi −¯Y )4
+(N −1)s4
+,
+where ¯Y is the mean, s is the standard deviation and N is the number of data points.
+Leverage The use of debt ﬁnancing to increase the return of an investment.
+Long position To be long in a security means to actually own it.
+Market neutral A market neutral strategy is neutral to market movements, i.e. its β is
+practically zero.
+Markov Process A stochastic process x(t) is a Markov process if
+P(x(tn) ≤xn|x(t)∀t ≤tn−1) = P(x(tn) ≤xn|x(tn−1))
+∀n, t1 < t2 < · · · < tn
+In words, ”a Markov process models a situation in which where one is, is all one needs
+[to] predict the future – how one got there provides no further information” (Bingham
+and Kiesel, 1998).
+Martingale A sequence of random variables X0, X1, . . . with ﬁnite means such that the
+conditional expectation of Xn+1 given X0, X1, . . . , Xn is equal to Xn:
+E[Xn+1|X0, X1, . . . , Xn] = Xn
+Momentum Here deﬁned as persistence in returns of stocks over approximately three
+months to one year.
+Neglected stock The opposite of ‘glamour stock.
+P/E ratio The ratio of price to earnings for a stock.
+Proxy Stand-in or substitute. Proxy data is used in statistics when it is not possible to
+directly measure the object or phenomenon under observation.
+Random Walk To get a mental picture of this concept, it is helpful to think about a
+moving particle. In one dimension (the space of interest in this thesis) the particle
+moves right with probability p and left with probability q = 1−p. The jumps are made
+independently of each other. A random walk is a martingale.
+Risk Risk is subjective. In ﬁnancial models, risk is often (e.g. in the mean-variance approach, CAPM etc) modelled with a quadratic utility function of the form U(x) =
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+A
+APPENDICES
+53
+x −bx2, where U is the utility, x is a random wealth variable, and b is a positive parameter. But this is just one speciﬁcation of the utility model, and there is an unlimited
+number of diﬀerent speciﬁcations. The quadratic utility function models a risk-averse
+behavior, but there are also investors who are risk-lovers or risk-neutral, and their
+utility functions are of course of another form.
+Risk Averse Investor Risk aversion implies that when facing choices with comparable
+returns, investors tend chose the less-risky alternative.
+Risk Neutral Investor A risk neutral investor, choosing between diﬀerent lotteries, picks
+the one that gives the highest expected monetary income.
+Semi-deductive approach To simultaneously use both empirical data and theories to
+reach a conclusion about reality.
+Sharpe ratio This ratio is deﬁned as
+S(X) = rX −rf
+σX
+,
+where X is some investment, rX is the average annual return on this investment, rf is
+the best available return of a ”risk-free” security and σX is the standard deviation of
+rX.
+Short position Taking a short position means that one sells securities which one does not
+own, and buys them back later, hopefully at a lower price than when one sold them.
+Simplistic Methodology refers to the use of the classic CAR methodology. Stocks are
+ranked by price change the last X months, the best say 10-20% and worst 10-20% of
+the stocks available form the long and short portfolio respectively. These are equally
+weighted. Then these stocks are kept for Y months until the portfolio is rebalanced.
+Abnormal return in this market neutral portfolio is measured against 0% (which it
+should yield if markets where eﬃcient, save transaction costs and interest rate received
+on the security deposit for the short positions). It is suﬃcient to use a program such
+as Excel to do these kinds of simulations.
+Simplistic Strategy in this thesis refers to a strategy that emulates the simplistic methodology while using our simulation platform. We rank stocks after the price change the
+last 6 months, and hold them for 4 months until they are all replaced simultaneously. 10
+stocks are always included in the long and short portfolios respectively. No transaction
+costs or other trading rules are used. The simulations with these parameter settings
+will yield the same kind of risk-return proﬁle as those presented in the empirical section
+using CAR, as evidenced by our longer simulations in the Appendix.
+Skewness For the data Y1, Y2, . . . , YN, the formula for skewness is:
+skewness =
+PN
+i=1(Yi −¯Y )3
+(N −1)s3
+,
+where ¯Y is the mean, s is the standard deviation and N is the number of data points.
+The skewness for a normal distribution is zero, and any symmetric data should have a
+skewness near zero. Negative values for the skewness indicate data that are skewed left
+and positive values for the skewness indicate data that are skewed right. By skewed
+left, we mean that the left tail is heavier than the right tail. Similarly, skewed right
+means that the right tail is heavier than the left tail.
+Trading horizon This is the end of the trading period, when the investment is assumed to
+pay oﬀ.
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+A
+APPENDICES
+54
+t-statistic The t statistic is used to test hypotheses about an unknown population mean µ
+in situations where the value of σ is unknown. Often used on e.g. monthly return or
+CAR when using the simplistic methodology, where the null hypothesis is that returns
+are zero. It is however aﬄicted with problems in our case since the return distribution
+of a market neutral momentum strategy has fatter tails than the one assumed when
+using the t-statistic. We believe that the performance measures used in this thesis give
+a better picture.
+Utility Function Quoting from Luenberger (1998): ”A utility function is a function U
+deﬁned on the real numbers (representing possible wealth levels) and giving a real value.
+Once a utility function is deﬁned, all alternative random wealth levels are ranked by
+evaluating their expected utility values.” It is important to note that utility functions
+do not produce cardinal values, so their only signiﬁcance is in relation to other utility
+scores. An important insight when reading this thesis is that a certain Sharpe value
+can have diﬀerent utility values, depending on the level of risk aversion.
+Value stocks Companies which earnings are not assumed to grow fast in the future, reﬂected in e.g. a low P/E-ratio.
+Zero-cost investment An investment that does not require capital to be paid upfront. A
+margin (risk buﬀer) is however usually required. Going short in a stock is an example.
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+REFERENCES
+55
+References
+Interview with Björn Germer, Head of SE-Banken Hedge Fund Equity, April 2002.
+R. A. Adams. Calculus: A Complete Course. Addison-Wesley, Ontario, 3rd edition, 1995.
+N. Barberis. Markets: the Price May Not Be Right. Financial Times, June 23 1997.
+N. Barberis and A. Shleifer. A Model of Investor Sentiment. Working paper, NBER Working
+Paper 5926, February 1997.
+N. H. Bingham and R. Kiesel. Risk-Neutral Valuation. Springer, London, 1998.
+W. F. M. De Bondt and R. Thaler. Does the Stock Market Overreact? Journal of Finance,
+40(3):793–805, 1985.
+W. Bondt D. Schiereck and M. Weber. Contrarian and Momentum Strategies in Germany.
+Financial Analysts Journal, November/December, 1999.
+K. Daniel and S. Titman. Market Eﬃciency in an Irrational World. Financial Analysts
+Journal, November/December, 1999.
+J. Bradford de Long, A. Shleifer, L. H. Summers, and R. J. Waldmann. Positive Feedback
+Investment Strategies and Destabilizing Rational Speculation. Journal of Finance, 45(2):
+379–395, 1990.
+B. Djehiche.
+Stochastic Calculus: An Introduction with Applications.
+Royal Institute of
+Technology, Stockholm, 2000.
+E. Fama. Eﬃcient Capital Markets: A Review of Theory and Empirical Work. Journal of
+Finance, 48:383–417, March 1970.
+E. Fama. Market Eﬃciency, Long-term Returns, and Behavioral Finance. Journal of Financial Economics, 49:283–306, 1998.
+E. Fama and K. French. Common Risk Factors in the Returns on Stocks and Bonds. Journal
+of Financial Economics, 33:3–56, 1993.
+E. Fama and K. French. Multifactor Explanations of Asset Pricing Anomalies. Journal of
+Finance, 51:55–84, 1996.
+M. Grinblatt and B. Han. The Disposition Eﬀect and Momentum. Working Paper 8734,
+NBER, January 2002.
+A. Gut. An Intermediate Course in Probability. Springer, New York, 1995.
+H. Hong and J. Stein. A Uniﬁed Theory of Underreaction, Momentum Trading and Overreaction in Asset Markets. Journal of Finance, 54:2143–2184, 1999.
+A. Shleifer J. Lakonishok and R. Vishny. Contrarian Investment, Extrapolation, and Risk.
+Journal of Finance, 49:1541–1578, 1994.
+N. Jegadeesh and S. Titman. Returns to Buying Winners and Selling Losers: Implications
+for Stock Market Eﬃciency. Journal of Finance, 48:65–93, March 1993.
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+REFERENCES
+56
+N. Jegadeesh and S. Titman.
+Proﬁtability of Momentum Strategies: An Evaluation of
+Alternative Explanations. Journal of Finance, 56:699–720, September 2001.
+J.D. Jobson and B. Korkie. Performance Hypothesis Testing with the Sharpe and Treynor
+Measures. Journal of Finance, 36:888–908, 1981.
+D. Kahneman and A. Tversky.
+Prospect Theory: An Analysis of Decision under Risk.
+Econometrica, 47(2):263–292, March 1979.
+M. Könberg and M. Lindberg. Strategic Investing in Hedge Funds. Master thesis, Linköpings
+Universitet, 2000.
+N. Jegadeesh L.K.C. Chan and J. Lakonishok. The Proﬁtability of Momentum Strategies.
+Financial Analysts Journal, November/December, 1999.
+D. G. Luenberger. Investment Science. Oxford University Press, New York, 1998.
+R. Fuller M. Finn and J. Kling. It’s mostly on the short side. Financial Analysts Journal,
+November/December, 1999.
+B. Mandelbrot. Forecasts of Future Prices, Unbiased Markets and "Martingale" Models.
+Journal of Business, 39(1):242–255, 1966.
+P. Newbold. Statistics for Business and Economics. Prentice Hall, Englewood Cliﬀs, 1995.
+E. S. O’Neal. Industry Momentum and Sector Mutual Funds, Financial Analysts Journal.
+Financial Analysts Journal, July/August, 2000.
+J.D. Piotroski. Value Investing: The Use of Historical Financial Statement Information to
+Separate Winners from Losers. Journal of Accounting Research, 38, 2000.
+A. Shleifer R. La Porta, J. Lakonishok and R. Vishny. Good News for Value Stocks: Further
+Evidence on Market Eﬃciency. Journal of Finance, 52:859–874, 1997.
+K. G. Rouwenhorst. International Momentum Strategies. Journal of Finance, 53:267–284,
+1998.
+L. Råde. Mathematics Handbook for Science and Engineering. Springer, Berlin, 1999.
+R. J. Shiller. Human behavior and the Eﬃciency of the Financial System. Working Paper
+6375, NBER, January 1998.
+R. J. Shiller. Irrational Exuberance. Princeton University Press, New Jersey, 2000.
+A. Shleifer. Ineﬃcient Markets, An Introduction to Behavioral Finance. Oxford University
+Press, New York, 2000.
+B. Swaminathan and C.M.C. Lee. Price Momentum and Trading Volume. Working paper,
+Cornell University, 1999.
+B. Swaminathan and C.M.C. Lee. Do Stock Prices Overreact to Earnings News? Working
+paper, Johnson Graduate School of Management, January 2000.
+P. Säfvenblad. Creating Returns and Controlling Risks in Managed Funds. Lecture notes,
+Stockholm School of Economics, 2001.
+Electronic copy available at: https://ssrn.com/abstract=2919837
+
+REFERENCES
+57
+J. Söderström. The Swedish Momentum Eﬀect. Master thesis, Stockholm School of Economics, 2000.
+Electronic copy available at: https://ssrn.com/abstract=2919837

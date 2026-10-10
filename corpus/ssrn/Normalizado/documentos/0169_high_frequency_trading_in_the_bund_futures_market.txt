@@ -1,0 +1,2009 @@
+Discussion Paper
+Deutsche Bundesbank
+No 15/2016
+High-frequency trading     
+in the Bund futures market 
+Kathi Schlepper
+Discussion Papers represent the authors‘ personal opinions and do not
+necessarily reflect the views of the Deutsche Bundesbank or its staff.
+
+Editorial Board: 
+ 
+Daniel Foos 
+Thomas Kick 
+Jochen Mankart 
+Christoph Memmel 
+Panagiota Tzamourani 
+Deutsche Bundesbank, Wilhelm-Epstein-Straße 14, 60431 Frankfurt am Main,  
+Postfach  10 06 02, 60006 Frankfurt am Main 
+Tel +49  69 9566-0 
+Please address all orders in writing to: Deutsche Bundesbank, 
+Press and Public Relations Division, at the above address or via fax  +49 69 9566-3077 
+Internet http://www.bundesbank.de 
+Reproduction permitted only if source is stated. 
+ISBN  978–3–95729–255–1 (Printversion) 
+ISBN  978–3–95729–256–8 (Internetversion) 
+
+Non-technical summary
+Research Question
+This study examines the role of high-frequency trading (HFT) in the German Bund
+Futures market. The main focus of this work is to analyze how the reaction of highfrequency traders (HFTs) to new information aﬀects market prices and price volatility.
+Another important aspect of this study is the relationship between HFT and liquidity in
+this market. More speciﬁcally, the question whether HFTs continue providing liquidity
+also during phases of higher market stress or whether they increasingly withdraw from
+markets is investigated.
+Contribution
+Using a new and extremely high-frequency dataset, this study examines how HFTs react to important news announcements. News announcements in this study refer to the
+publication of macroeconomic data (labor market data in the US and ECB interest rate
+decisions).
+Results
+The results suggest that liquidity-taking HFTs trade in the direction of the market trend
+and are more active in phases of high volatility. Accordingly, they are also more active
+around the release of macroeconomic news than usual. In these situations, HFTs beneﬁt from their speed advantage and trade according to the news surprise in a fraction of
+a second and immediately realize their trading proﬁts. Their trades improve the price
+discovery process.
+However, the faster reﬂection of news in prices comes at the cost
+of short-term excessive volatility, which increases the risk of market disruptions. Moreover, my results show liquidity-providing HFTs increasingly withdraw from markets when
+volatility rises, either expectedly following macroeconomic news or unexpectedly due to
+rising risk aversion.
+
+Nichttechnische Zusammenfassung
+Fragestellung
+In diesem Papier wird untersucht, welche Rolle der Hochfrequenzhandel am Markt f¨ur
+Terminkontrakte auf Bundesanleihen (Bund Futures) spielt. Insbesondere soll analysiert
+werden, wie die Reaktion von Hochfrequenzh¨andlern auf neue Informationen die Kurse
+ver¨andert und sich auf die Kursschwankungen (Volatilit¨at) auswirkt. Ein weiterer Aspekt
+ist der Zusammenhang zwischen dem Hochfrequenzhandel und der Liquidit¨at auf dem
+Markt, das heißt die Frage, ob Hochfrequenzh¨andler in turbulenten Marktphasen weiterhin
+Liquidit¨at bereitstellen oder sich vermehrt aus dem Markt zur¨uckziehen.
+Beitrag
+Anhand eines neuen Datensatzes mit hoher Frequenz wird analysiert, wie Hochfrequenzh¨andler auf marktbewegende Nachrichten reagieren. Marktbewegende Nachrichten sind in
+dieser Studie die Ver¨oﬀentlichung von makro¨okonomischen Daten (hier: Neu geschaﬀene
+Stellen in den USA und EZB-Zinsentscheidungen).
+Ergebnisse
+Die Ergebnisse deuten darauf hin, dass liquidit¨atsnehmende Hochfrequenzh¨andler grunds¨atzlich in Richtung des Markttrends handeln und in Phasen hoher Volatilit¨at aktiver
+sind. Entsprechend partizipieren sie auch um die Ver¨oﬀentlichung von wichtigen makro¨okonomischen Nachrichten ¨uberdurchschnittlich stark am Handel. Dabei nutzen Hochfrequenzh¨andler ihren Geschwindigkeitsvorteil aus und reagieren auf die ¨Uberraschungskomponente der Nachrichten schneller als andere Marktteilnehmer, sodass kurzfristige
+Gewinne realisiert werden k¨onnen. Zwar werden die neuen Informationen dadurch schneller in den Kursen reﬂektiert, allerdings erzeugt der Hochfrequenzhandel auch kurzfristige
+zus¨atzliche Kursschwankungen, was die Gefahr von Marktverwerfungen erh¨oht. Die Ergebnisse zeigen außerdem, dass sich liquidit¨atsbereitstellende Hochfrequenzh¨andler sowohl
+in Phasen ¨uberraschender Volatilit¨at infolge steigender Risikoaversion als auch infolge der
+Ver¨oﬀentlichung von makro¨okonomischen Daten zur¨uckziehen. Dies zeigt sich daran, dass
+sie in solchen Phasen mehr Handelsauftr¨age l¨oschen als neue generieren.
+
+Bundesbank Discussion Paper No 15/2016
+High-Frequency Trading in the Bund Futures Market∗
+Kathi Schlepper
+Deutsche Bundesbank
+Abstract
+In this work, I study the impact of high-frequency trading (HFT) on price discovery
+and volatility in the Bund futures market. Using a new dataset based on microseconds, the focus of the study is on the reaction of high-frequency traders (HFTs)
+to major macroeconomic news events. I show that through their fast and strong
+reaction to news, HFTs contribute more to price discovery compared to Non-HFTs,
+but also add a higher share to noise than to permanent volatility. Moreover, I ﬁnd
+evidence that HFTs tend to supply less liquidity after an unexpected rise in market volatility and prior to upcoming macroeconomic news events. These ﬁndings
+suggest that in times of high market stress, HFT behavior may exacerbate intraday
+price volatility and amplify the risk of market disruptions in ﬁxed income markets.
+Keywords: High-Frequency Trading, Price Discovery, Volatility
+JEL classiﬁcation: G10, G12, G14
+∗Contact address: Wilhelm-Epstein-Straße 14, 60431 Frankfurt am Main. Phone: +49 69 9566 8015.
+E-mail: kathi.schlepper@bundesbank.de.
+The author would like to thank Mark Weth and Christian
+Speck for their comments in the review process of this paper, Christian Schlag for his support and
+helpful comments as supervisor at Goethe University Frankfurt as well as Rafael Zajonz for the fruitful
+discussions and data cooperation with the Deutsche B¨orse. The author expresses her thanks to the Eurex
+for providing the data underlying this study. The paper is substantially a revised version of one chapter
+of the author’s dissertation at Goethe University.
+Discussion Papers represent the authors’ personal
+opinions and do not necessarily reﬂect the views of the Deutsche Bundesbank or its staﬀ.
+
+1
+Introduction
+High-frequency trading (HFT) has become a dominant tool in many liquid ﬁnancial markets, such as equity and futures markets. Being considered a subcategory of Algorithmic
+trading (AT), high-frequency traders (HFTs) typically invest in technological infrastructure that allows them to process a variety of trading signals and send orders to marketplaces in a fraction of a second. In 2012, HFT accounted for about 40% of the activity
+on European and over 50% of US equity markets (see, e.g., TABB Group (2012)).
+Their speed advantage enables HFTs to react to new information faster than other
+traders (see, e.g., Foucault, Hombert, and Rosu (2015), Zhang (2013)). However, a common point of criticism is that HFTs overreact to important news announcements and
+thereby generate excessive short-term volatility. Such episodes of extreme volatility can
+even induce so-called “ﬂash events”, characterized by a rapid and strong fall or rise in
+asset prices followed by a reversal in a matter of minutes or seconds. Especially since
+the US equity ﬂash crash on 6 May 2010, HFT has attracted the attention of academics,
+regulators and policy makers around the globe. Recently, similar ﬂash events could also
+be observed in ﬁxed income markets. In particular, the Flash rally on 15 October 2014 in
+US treasury markets and the Bund tantrum in the German government bond market in
+April/ May 2015 have initiated discussions about the resiliency of ﬁxed income markets
+and the impact of new market participants like HFTs (BIS (2016a)). Moreover, since
+the implementation of unconventional policy measures, such as the broad-based asset
+purchase programs in Europe or the US, many observers fear an increased vulnerability
+of ﬁxed income markets. Hence, the question whether HFTs’ trading strategies pose an
+additional risk to market functioning is especially relevant nowadays. Against this background, diﬀerent regulatory institutions and central banks have investigated the evolution
+and potential causes of events like the US Flash rally ((Joint StaﬀReport (2015)) and the
+Bund tantrum (BIS (2016a), BIS (2016b)) in detail. The debate has mainly focused on
+the impact HFT has on liquidity, price discovery and excessive volatility. To the extent
+that HFT aﬀects these features of market quality, it also has implications for ﬁnancial
+stability (Benos and Sagade (2013)). Therefore, policy makers and regulators, especially
+in the US but lately also in Europe, have been discussing whether stricter regulation
+should apply to the HFT practice. However, the market impact HFT and AT activities
+have during those events remains diﬃcult to establish and also depends on the strategies
+followed by the respective HFT ﬁrm (Joint StaﬀReport (2015)).
+Based on a very recent and unique dataset from Deutsche B¨orse on a microsecond
+frequency, I study the role of HFTs in the price discovery process in the Bund futures
+market. Since macroeconomic news announcements usually have a strong impact on bond
+1
+
+prices (see, e.g., Altavilla, Giannone, and Modugno (2014)), I investigate whether HFT
+aids or hinders the market’s incorporation of such news into asset prices. If HFTs trade
+on information faster than other traders, they should contribute to price discovery by
+accelerating the speed at which new information is impounded into prices. However, a
+common point of critique is that the fast reaction by HFTs to news may also be associated
+with prices overshooting, leading to noise that cannot be related to information about
+fundamentals (Benos and Sagade (2013)). Using the methodology by Hasbrouck (1991b)
+to decompose the price in its transitory and permanent components allows me to study this
+question in detail. Another recent point of criticism is that HFTs supply liquidity when
+volatility is low but withdraw from markets when volatility rises (ESMA (2011), ASIC
+(2012)). This might pose an additional risk for ﬁnancial stability because if a market
+shock induces HFTs to suspend their liquidity provision, the shock may be ampliﬁed.
+Hence, in the ﬁnal part of this work, I study the behavior of liquidity-providing HFTs
+considering two diﬀerent types of volatility. I distinguish between phases of unexpected
+increases in market volatility due to higher risk perception by market participants and
+phases of anticipated volatility that follow from macroeconomic news releases in order to
+ﬁnd out whether HFT behavior depends on the nature of volatility.
+This paper represents the ﬁrst study on the impact of HFT on price discovery and
+volatility in European bond markets. The few existing ﬁxed income studies are limited
+to US Treasury markets (Jiang, Lo, and Valente (2013), Liu, Lo, Nguyen, and Valente
+(2014)) but suﬀer from less granular data. The present study is based on a new Bund
+futures dataset from 2013 to 2014 which is in contrast to existing empirical work that
+mostly rely on US stock market data (e.g., Gao and Mizrach (2013), Zhang (2013) Brogaard, Hendershott, and Riordan (2013)) with some exceptions for FX data (Chaboud,
+Chiquoine, Hjalmarsson, and Vega (2012)) that are already several years old. Although
+there might still be some useful conclusions to be drawn on the eﬀect of HFT using older
+data, HFT activity has developed strongly in the last years. Particularly the dimensions
+of speed and latency have changed substantially over the last decade, supporting the need
+for data timeliness. A unique HFT ﬂag assigned by Deutsche B¨orse makes it possible to
+distinguish the trading behavior of HFTs from that of other market participants, which
+is not available in most other studies. The existing literature often relies on proxies for
+AT or HFT based on certain data characteristics like reaction times typical for HFT (e.g.,
+Jiang et al. (2013), Hendershott, Jones, and Menkveld (2011), Zhang (2010)). Moreover,
+the data are based on microseconds, which enables a more granular and deep analysis
+than in other empirical HFT studies that are at most based on milliseconds (e.g., Brogaard et al. (2013), Gao and Mizrach (2013), Zhang (2013)). Given the improvement in
+trading speed over the last years, the extremely high frequency of the Bund futures data
+2
+
+is of particular value and helps to understand the reactions of HFTs to major macroeconomic news on a tick-by-tick basis. Since macroeconomic news has been proven to be
+a crucial driver of bond price movements on a lower data frequency (see, e.g., Altavilla
+et al. (2014), Jones, Lamont, and Lumsdaine (1998)), the analysis of the HFT price impact around important news releases reveals new insights about HFT strategies in these
+highly volatile market episodes. Also, to my knowledge the contribution of HFT trading
+to the noise- and information-related determinants of the variance has not been studied
+around the publication of macroeconomic news before. Moreover, investigating the liquidity supply by HFTs in two diﬀerent volatility environments, i.e. after macroeconomic
+news releases and in times of higher risk aversion, allows new insights into HFT market
+making behavior. While most existing studies rely on trading volume data to measure
+liquidity provision (Brogaard et al. (2013), Chaboud et al. (2012)), this study focuses on
+order deletion activity, which is often associated with HFT behavior (e.g., ESMA (2014)).
+The major advantage with this approach is that order deletions can be directly related
+to volatility, whereas any causal link between trading volume and volatility is hard to
+establish as the two variables cannot be considered separately from each other.
+In the ﬁrst part of this work, I study the behavior and trading strategies of liquiditytaking (active) and liquidity-providing (passive) HFTs and Non-HFTs (NHFTs), using
+one week of increased and one week of low volatility deﬁned as the positive and negative deviation of the German implied volatility index (VDAX) from its average historical
+level. I ﬁnd that active HFTs tend to follow momentum strategies, implying that they
+trade in the direction of the market return, which can increase intraday price movements.
+In contrast, passive HFTs appear to dampen excessive volatility using contrarian trading strategies. During the high-volatility week, active HFTs initiating momentum trades
+dominate over passive HFTs such that overall HFTs exacerbate price trends when volatility is already at an increased level. Moreover, the results show that both active and
+passive HFTs trade more in times of high volatility, which is broadly consistent with the
+ﬁndings by Boehmer, Fong, and Wu (2012) and Benos and Sagade (2013). In particular,
+the share of active HFTs in the traded volume rises to above-average levels in the highest
+3% of market volatility in both weeks. A possible explanation for this result is that active
+HFTs prefer phases of high volatility since their trading strategies are most beneﬁcial
+in these times. An alternative explanation is that HFT trading simply generates high
+volatility. By contrast, slower traders deem these phases too risky and rather withdraw
+from markets.
+In the second part, I analyze the trading behavior of HFTs around macroeconomic
+news releases using a vector auto-regression (VAR) model based on return and order
+ﬂow time series on a second-by-second and tick-by-tick data frequency. Here, the most
+3
+
+inﬂuential US and European macroeconomic news, namely the US Nonfarm Payrolls
+(NFPs) and ECB rate decisions (Schopen and Missong (2011), Chaboud et al. (2012)),
+are taken into account.
+The exogeneity of the macroeconomic news (Chaboud et al.
+(2012)) and the granularity of this analysis allow to study the link between HFT trading
+and volatility more precisely. The results show that liquidity-taking HFTs are the most
+active trading group around the release of macroeconomic news and dominate overall HFT
+activity, whereas slower active traders rather withdraw from markets a couple of seconds
+prior to the news announcement. Active HFTs beneﬁt from their speed advantage and
+trade in the direction of the news release within the ﬁrst second after publication and
+thereby pick oﬀthe standing limit orders of NHFTs. Analyzing the eﬀect of HFT and
+NHFT trading on prices on a tick-by-tick-basis, I ﬁnd that HFT contributes about ﬁve
+times more to the price formation process of the Bund futures return in the millisecond
+environment following the news release compared to NHFTs, which is similar to previous
+ﬁndings (e.g., Hendershott and Riordan (2011), Benos and Sagade (2013), Brogaard et al.
+(2013)). Applying variance decomposition methods to the permanent and transitory price
+components, my results show that HFT contributes more to noise than to permanent price
+volatility, which is in line with an overshooting behavior. This is a new ﬁnding in the
+empirical literature and implies that the trading by active HFTs adds signiﬁcantly to price
+discovery but also generates disproportionally high short-term volatility through their fast
+and aggressive trading in response to macroeconomic news. Given that most of the HFT
+news reaction occurs within the ﬁrst second, the ultra-high frequency data are uniquely
+suited for this part of the study.
+The above results suggest that diﬀerent active HFT strategies dominate in diﬀerent
+market environments. While in times of rising unexpected volatility active HFTs tend
+to follow momentum strategies, around the release of macroeconomic news they pursue
+news trading strategies and react independent of previous price movements.
+In the last part, I examine the market making activity of passive HFTs and NHFTs
+in times of high and low unexpected volatility as well as around macroeconomic news
+releases. The results suggest that deletion activity depends on the nature of uncertainty.
+Passive HFTs tend to delete more orders than they submit after market volatility has risen
+suddenly, since they fear higher risks to their market making activity. By contrast, passive NHFTs delete fewer orders than average when volatility rises unexpectedly. Against
+this evidence, HFTs and, to a lesser extent, also NHFTs already tend to withdraw from
+markets several minutes before an upcoming macroeconomic news event. This is because
+they anticipate increasing market volatility following macroeconomic news releases and
+want to minimize their risk exposure. Even though passive HFTs still participate signiﬁcantly in the traded volume following sudden increases in volatility, my ﬁndings suggest
+4
+
+that overall a signiﬁcant part of the liquidity supplied by HFTs disappears quickly as
+soon as market uncertainty rises, either expected or unexpected. Also, one can conclude
+that NHFTs supply liquidity more continuously than HFTs and are not as sensitive to
+changes in the market environment as HFTs.
+The present study allows for a better understanding of the role HFT plays in diﬀerent
+phases of the market and oﬀers useful implications for market stability. According to
+Biais and Foucault (2014), short-term volatility reﬂects the impact of liquidity demand
+to a certain extent. Hence, the ﬁnding that under increased market stress HFTs reduce
+their liquidity supply and consume more liquidity at the same time suggests that, overall,
+HFT trading exacerbates extreme price movements in those periods. This may in turn
+increase the risk of ﬂash events that have been observed more frequently in the recent
+past, particularly in ﬁxed income markets. Therefore, regulators and policy makers should
+indeed think about appropriate tools to strengthen market quality, especially liquidity
+supply in phases of increased market stress.
+The paper is organized as follows. Section 2 contains a literature review, Section 3
+describes the data used in this study and explains diﬀerent characteristics of the data.
+Section 4 presents the results on the trading strategies of HFTs and their activity related
+to market volatility. Section 5 provides the empirical analysis of HFT trading around
+news releases and its contribution to price discovery.
+Section 6 discusses the role of
+passive HFTs as liquidity providers during diﬀerent phases of market volatility. Section
+7 concludes.
+2
+Literature Review
+Analyzing the impact of HFT in the government bond market is a very new ﬁeld of
+research. The bulk of empirical HFT studies are based on the US stock market, with some
+exceptions on FX markets. Given the scarcity of recent high-frequency data, especially
+for markets outside the US and for asset classes other than equity, new empirical evidence
+is limited. I am aware of only two papers focusing on ﬁxed income markets which both
+examine the role of HFT in the US Treasury bond markets (Jiang et al. (2013), Liu
+et al. (2014)). Similar to my work, Jiang et al. (2013) study the eﬀect of HFT on bond
+market quality aspects around major macroeconomic news announcements from 2004
+to 2007. The authors show that HFT increases market volatility during pre- and postannouncement periods. Before the news release, HFT has an adverse eﬀect on market
+liquidity and does not enhance the price eﬃciency of US Treasury securities. But after
+the information’s arrival, HFT narrows bid-ask spreads and has a positive eﬀect on price
+eﬃciency. Liu et al. (2014) examine the impact of HFT on expected returns of US Treasury
+5
+
+bonds and document a signiﬁcantly positive relationship between bond expected returns
+and a factor capturing HFT intensity in the market.
+Empirical research on the role of HFT around news events is generally sparse. Closely
+related to my work is the paper by Chaboud et al. (2012), who investigate the impact
+of AT in the foreign exchange market around macroeconomic news releases from 2003
+through 2007. Using a VAR model they ﬁnd that AT contributes to a more eﬃcient
+price discovery process through the elimination of arbitrage opportunities and the faster
+incorporation of news into prices. However, human-initiated trades add a larger share
+to the variance in exchange rate returns than AT-initiated trades. Although computer
+trades tend to be correlated, they ﬁnd no evidence that AT causes excessive volatility.
+Focusing on news events in the stock market, Zhang (2013) examines the role of HFTs in
+reacting to extreme price changes as well as to ﬁrm-speciﬁc news in US equity markets
+from 2008 to 2009. By testing whether HFT order ﬂow has a signiﬁcant inﬂuence on stock
+returns relative to NHFT order ﬂow, she ﬁnds that HFT orders dominate price discovery
+in the short run. In the longer run, however, NHFTs contribute more to price discovery
+than HFTs.
+Some other recent studies address the role of HFT in the price discovery process
+in a broader context.
+Brogaard et al. (2013) use a state space model to decompose
+price movements for 120 US stocks from 2008 to 2009 into permanent (information) and
+temporary (pricing errors) components and to relate changes in both to HFT. The authors
+ﬁnd that HFT trades improve price eﬃciency by trading in the direction of permanent and
+in the opposite direction of transitory price changes, both on average and on the highest
+volatility days. Benos and Sagade (2013) analyze the behavior of HFTs and their impact
+on market quality for four UK stocks in a randomly selected 1-week period from 2010-2011.
+They ﬁnd that higher price volatility causes HFT activity to increase. Finally, the authors
+provide evidence that while HFTs have a higher information-to-noise ratio than NHFTs,
+there are instances in which the contribution to information by HFTs is accompanied by
+a large absolute noise contribution. The study is one of the few exceptions that analyze
+HFT in European ﬁnancial markets. The bulk of empirical literature on HFT are based
+on US markets using data from the NASDAQ exchange (e.g., Gao and Mizrach (2013),
+Zhang (2013) and Brogaard et al. (2013)). Other studies on European markets comprise
+the work by Breckenfelder (2013), who investigates the impact of HFT competition on
+market quality in the Swedish stock exchange in 2009 using the OMXS Index obtained
+from the NASDAQ OMS Nordic, or the paper by Menkveld (2013), which is based on data
+on Dutch local index stocks from 2007 through 2008 and examines the trading strategy
+of a large HFT. There is, however, no work so far on European bond markets.
+Information on whether trades or orders are placed by a HFT or not is usually scarce.
+6
+
+Therefore, a large part of empirical work on HFT uses proxies of HFT and AT, which
+are often based on certain data characteristics like reaction times and other properties
+typical for HFTs (e.g., Hendershott et al. (2011), Zhang (2010)). For example, Jiang
+et al. (2013) and Liu et al. (2014) infer HFT trades and orders on the basis of the reaction
+time between order placement and subsequent modiﬁcation and cancellation that exceeds
+human ability. Datasets including AT and HFT identiﬁers have become available only
+recently. For example, the NASDAQ dataset from 2008 to 2009 used by Gao and Mizrach
+(2013), Zhang (2013) and Brogaard et al. (2013) includes an HFT ﬂag which identiﬁes
+26 HFT ﬁrms. However, it cannot identify all HFTs, e.g., those that also act as brokers,
+but only independent proprietary trading ﬁrms. The dataset used by Chaboud et al.
+(2012) exhibits a distinction between humans and computers behind each trade. While
+this might have been an appropriate classiﬁcation scheme during the study period from
+2003 to 2007, a pure distinction between humans and computers would no longer be
+appropriate nowadays. Not only has the trading volume of HFTs in US stock markets
+increased dramatically (from 30% in 2005 to more than 50% in 2012, according to a study
+by TABB Group (2012)), but also speed and latency have developed strongly in the
+last decade. Today, most trades are carried out electronically on highly liquid ﬁnancial
+markets, and many business units apply AT strategies which cannot be classiﬁed as HFT,
+however, given their speciﬁc characteristics, particularly their lower speed. Only very little
+empirical work is based on datasets including the identities of the HFT ﬁrms. Among
+these few exceptions are the studies by Benos and Sagade (2013) and Breckenfelder (2013),
+which are based on trade data. However, the datasets including an HFT identiﬁer can
+often only identify speciﬁc HFT ﬁrms, as in the work by Benos and Sagade (2013), where
+only the largest HFT ﬁrms are identiﬁed.
+3
+Data and Descriptive Statistics
+3.1
+Bund Futures Dataset
+This study is based on Bund futures data from Deutsche B¨orse’s subsidiary Eurex and
+comprises two diﬀerent datasets. The ﬁrst dataset consists of one week of relatively high
+volatility from 6 to 13 March 2014 and one week of relatively low volatility from 3 to 10
+June 2014.1 Each of the 12 trading days consists of all order book activities, including
+modiﬁcations, executions, and deletions, that occurred between 8 a.m.
+and 10 p.m.
+CET. The diﬀerent volatility episodes are deﬁned using the VDAX, which is the implied
+1Given the extremely high frequency of the data and the focus on rather short-term aspects of HFT
+trading strategies, two weeks of data seem suﬃcient to draw conclusions on HFT trading behavior in
+high and low volatility environments.
+7
+
+volatility index based on equity options on the German DAX index. In March 2014, when
+the Krim crisis induced a period of increased risk aversion on European ﬁnancial markets,
+the VDAX reached a level of close to 20, with an average of 17.2 during the 6 days in
+March compared to an average level of 14.1 in the previous 6 months. In the low-volatility
+period in June, the DAX attained a new all-time high of more than 10,000 points and the
+VDAX was at an average level of 13.4 during the 6 days of June compared to an average
+level of 16.7 in the previous 6 months. The second dataset comprises single trading days
+between July 2013 and June 2014 on which major macroeconomic news was released.
+More speciﬁcally, I use the entire trading days of the Bund futures contract from 8:00
+a.m. to 10 p.m. when the Nonfarm Payrolls for the US (ﬁrst Friday of each month) and
+ECB rate decisions (ﬁrst Thursday of each month) were published. These are the most
+relevant US and European macroeconomic news (e.g., Schopen and Missong (2011) and
+Chaboud et al. (2012)) which also have the strongest impact on bond market prices.
+A large number of studies are based on trade data (e.g., Brogaard et al. (2013), Benos
+and Sagade (2013), Breckenfelder (2013)), while the dataset used in this study comprises
+the full order book information. Hence, besides best bid and ask prices, limit and market orders submitted and any order activity including cancellations or modiﬁcations are
+available. This allows to follow each order from its submission to its execution or deletion.
+Moreover, depending on the size of a marketable order, in addition to the best bid/ask
+price, further limit orders may be executed, too. This is especially relevant for large orders
+that often occur after important macroeconomic news releases. Thus, the information on
+all limit orders enables to see how deeply an order hits the order book.
+Trade and order timestamps are given in microseconds and ranked within each microsecond. This high data frequency allows for a more granular analysis than in other
+empirical HFT studies that are, at most, based on milliseconds (e.g., Brogaard et al.
+(2013), Gao and Mizrach (2013), Zhang (2013)). Given that trading speed has improved
+steadily in the last years and latency has become more and more important, the extremely
+high frequency of the Bund futures data is of particular value and allows to appropriately
+study the information processing of prices and the role HFTs play therein.
+Furthermore, the dataset includes a dummy variable for HFT. This dummy is based
+on a methodology developed by Deutsche B¨orse (see Appendix A.1). The idea is to test
+whether the order submission sequencing of a business unit, i.e. the branch of a ﬁrm
+that submits the order, exhibits patterns that are typical for HFT participants. More
+speciﬁcally, the theoretical random sequencing is calculated by the expected mean arrival
+rate of incoming transactions.2
+The deviation of the observed transactions from the
+2The theoretical random sequencing is derived from the following formula: f(t) = 1
+µe
+−t
+µ , where µ is
+the mean arrival rate and t the time interval.
+8
+
+expected sequencing is used as selection criterion for being classiﬁed as a latency-sensitive
+business unit (HFT). So if the transactions carried out by a speciﬁc business unit exhibit
+a latency-sensitive behavior, all orders of this business unit will be classiﬁed as HFT. The
+methodology is updated on a continuous basis. One limitation of the data is that they
+do not include the identity of the order initiator.
+3.2
+Characteristics of the Dataset
+In the following, several ratios related to the orders submitted by HFTs and NHFTs are
+presented.
+First, I want to ﬁnd out whether HFTs or NHFTs submit more orders on an absolute
+and relative basis and thereby add liquidity to the market. For this purpose, I estimate
+the total number of submitted orders as well as the order submission ratio, deﬁned as
+the ratio of submitted orders to all activities, including modiﬁcations, deletions and executions. A typical characteristic of HFT is its speed of trading. Hence, in the second step, I
+measure the life-time of each order given by the execution time and the deletion time,
+i.e. the time that elapses from the order submission to its execution or its cancellation.
+Next, I measure the modiﬁcation time, which is the time diﬀerence between an order
+submission and subsequent modiﬁcations. Furthermore, I calculate the deletion ratio
+and the modiﬁcation ratio, given by the average number of deletions and modiﬁcations
+relative to the added orders, respectively, as well as the number of modiﬁcations, deﬁned as the average number of modiﬁcations per order. A typical observation of HFT
+activity is the frequent submission and cancellation of limit orders. Hence, I also calculate
+the order-to-trade ratio, which reﬂects the overall quoted volume divided by all real
+transactions. In this study, volume is measured as the number of Bund futures contracts.
+The following results are based on the six trading days of high volatility in March
+and the six low-volatility days in June. This allows me to compare the HFT activity in
+two diﬀerent market environments. Table 1 displays the calculated numbers and ratios.
+According to the ﬁrst row, both trading groups, i.e. HFTs and NHFTs, submit more
+orders in the week of relatively higher volatility than in the low-volatility week on an
+absolute basis. Relative to other order book activities, HFTs submit more orders than
+NHFTs. This ratio is nearly constant across the two weeks. Also, the results show that
+during a more volatile market environment it takes, on average, longer for both HFTs and
+NHFTs to execute or modify an order. Regarding latency, which is an important factor
+of HFT strategies, I ﬁnd evidence that the life-time of an order is much shorter in the
+case of HFTs, i.e. it is executed or deleted on average almost twice as fast as for NHFTs.
+Other studies focusing on European markets (e.g., ESMA (2014)) also highlight the great
+importance of order deletion for HFTs. For example, Hasbrouck and Saar (2009) argue
+9
+
+Table 1: Descriptive Statistics
+A: High Vola
+B: Low Vola
+Variable
+Measure
+HFT
+NHFT
+HFT
+NHFT
+Orders submissions
+Number (million)
+1.700
+1.352
+1.379
+1.146
+Ratio in %
+40.91
+33.73
+39.65
+33.04
+Execution time
+Median
+2.04
+3.94
+1.75
+3.13
+Mean
+185.70
+370.24
+152.60
+288.60
+Deletion time
+Median
+2.57
+3.66
+2.43
+3.92
+Mean
+253.15
+511.51
+286.61
+468.16
+Deletion ratio in %
+Mean
+73.51
+67.63
+68.56
+71.25
+Modiﬁcation time
+Median
+3.07
+2.01
+1.74
+1.11
+Mean
+115.18
+66.66
+93.70
+61.12
+Modiﬁcation ratio in %
+Mean
+36.55
+90.68
+43.62
+95.65
+Number of modiﬁcations
+Mean
+14.99
+130.14
+76.54
+160.34
+Order-to-trade ratio
+Mean
+2.85
+2.32
+2.50
+2.29
+This table includes diﬀerent measures describing the characteristics in the trading behavior of HFTs and NHFTs. Most measures are given as the mean or median value for the
+6 trading days in March (high vola) and June (low vola). Time is displayed in seconds.
+that over one-third of limit orders are canceled within two seconds in the US equity market
+and name those “ﬂeeting orders”. The calculated median deletion time of 2.5 seconds is
+close to their ﬁndings. This result suggests that the supplied liquidity by HFTs is rather
+short-lived.
+As Table 1 shows, the median modiﬁcation time is smaller for NHFTs than for HFTs.
+This might seem surprising at ﬁrst. But due to technical properties of the exchange’s
+trading infrastructure, it generally takes more time to modify an order than to delete
+it. Therefore, a high number of modiﬁcations is not typical for HFTs, who focus on the
+very short term, but rather for slower algorithmic traders, who are not dependent on
+extremely low latency strategies. The much higher average number of modiﬁcations for
+NHFTs provides further evidence for the diﬀerent trading approaches. Remarkably, the
+discrepancy is even higher during the highly volatile market phase, i.e. NHFTs modify
+their orders almost 10 times more often than HFTs. Hence, HFTs seem to prefer canceling
+over modifying orders when volatility rises to above-average levels. The order-to-trade
+ratio is higher for HFTs in both market phases, implying that the ratio of submitted
+orders which lead to a real execution is lower. The diﬀerence is more pronounced in the
+10
+
+Figure 1: This ﬁgure depicts the HFT activity as measured by participation in the overall
+orders.
+Figure 2: This ﬁgure depicts the HFT activity as measured by participation in the overall
+traded volume.
+high-volatility phase, underlining the higher deletion activity by HFTs relative to real
+transactions in these times.
+Second, I classify the HFT identiﬁer variable further and distinguish between active
+and passive HFTs and NHFTs (liquidity taker and provider).
+I deﬁne the liquidityproviding part of the transaction as being the limit order in the order book that was
+hit by a marketable order, i.e. a market or another more recent limit order that takes
+the opposite side of a trade. The liquidity taker is the market participant that enters
+the marketable order. The order of the liquidity taker is immediately executed when it
+enters the order book. The sum of active and passive HFTs (NHFTs) constitutes the total
+number of HFTs (NHFTs). This classiﬁcation is the same as in, e.g., Brogaard et al. (2013)
+or Brogaard (2011). It is important to mention, however, that the division in active and
+passive market participants just refers to the cross-section of trades. Hence, unlike Benos
+and Sagade (2013), who group traders based on their overall liquidity taking/providing
+activity, in the present study the composition of the trading groups (active and passive
+HFTs and NHFTs) can vary over time. Thus, a trade from an HFT ﬁrm who mostly
+places “aggressive” orders can still be classiﬁed as passive at a speciﬁc point in time if
+the ﬁrm places a limit order that is not immediately executed.
+According to Figure 1, in March total HFT participation of all orders is over 50%,
+but only 3.7% of HFT orders are submitted by active HFTs. However, when considering
+the total traded volume (Figure 2), active HFTs contribute with a much higher share of
+21.6%. In contrast, the traded volume by passive HFTs is much smaller than their share
+11
+
+in the submitted orders, which again reﬂects the signiﬁcant role of order deletions in HFT
+activity. In June, during the low-volatility market period, both HFT order submission
+activity and trading volume participation is slightly lower than in March.
+One can conclude that HFTs seem to be slightly more active and delete signiﬁcantly
+more orders in highly volatile market periods. Although HFTs contribute to a larger share
+of the traded volume in these periods, a smaller share of their submitted orders leads to
+a real transaction as shown by the order-to-trade ratios. The speed advantage of HFTs
+is reﬂected in the overall lower execution and deletion time compared to NHFTs.
+4
+HFT Trading Strategies
+4.1
+Momentum vs. Contrarian Strategies
+In this section, the overall trading behavior of active and passive HFTs and NHFTs in
+periods of high and low market stress is investigated. The week in March captures the
+high-volatility period and the week in June the low-volatility period.
+In the ﬁrst subsection, the question whether HFTs amplify or dampen excessive price
+movements by trading in the direction of or opposed to the market return is analyzed. In
+the second subsection, I study the relationship of active and passive HFT and NHFT trading activity and volatility within the two market environments. To investigate whether
+HFTs rather follow momentum or contrarian strategies and thereby exacerbate or reduce
+short-term volatility, I follow the work by Breckenfelder (2013), who proposes several
+measures to capture momentum strategies. The measure I apply is given by
+Momd = 1
+T ΣT
+t=1rd,t
+V olj
+buy,d,t −V olj
+sell,d,t
+V old,t
+,
+(1)
+where rd,t represents the log mean return over time interval t, V olj
+buy,d,t denotes the trading
+volume from buy trades for trading group j, where j = 1, ..., 6 (HFT, NHFT, active
+HFT/NHFT, passive HFT/NHFT), in time interval t, V olj
+sell,d,t captures the trading
+volume from sell trades for trading group j in t, and V old,t is the total volume traded in
+the futures contract within the same time interval t. The momentum measure constitutes
+the sum over the 1-minute intervals for each trading day d and is calculated separately
+for each trading group j. It becomes positive when the trading group, e.g., HFTs, buy
+(sell) on average with an increasing (decreasing) futures price, and negative when they
+trade in the opposite direction of the price movement. Hence, a positive sign signals a
+momentum strategy, whereas a negative one would be interpreted as a contrarian strategy.
+The average momentum measure is calculated for both weeks to obtain an indication of
+12
+
+Table 2: Momentum Measure
+A: High Vola
+Active HFT
+Active NHFT
+Passive HFT
+Passive NHFT
+HFT
+NHFT
+0.5541***
+0.4654***
+-0.3658***
+-0.6776***
+0.1362***
+-0.1306***
+(0.0211)
+(0.02174)
+(0.0140)
+(0.0212)
+(0.0183)
+(0.0182)
+B: Low Vola
+Active HFT
+Active NHFT
+Passive HFT
+Passive NHFT
+HFT
+NHFT
+0.4394***
+0.5763***
+-0.4093***
+-0.6621***
+-0.1229***
+0.0175
+(0.0310)
+(0.0259)
+(0.0209)
+(0.0311)
+(0.0067)
+(0.0209)
+This table shows the results of the momentum measure, which is the product of the
+return and the signed net order ﬂow relative to the traded volume, for active HFTs and
+NHFTs, passive HFTs and NHFTs as well as overall HFTs and NHFTs. It is calculated
+as the mean over all 1-minute time intervals for the week in March and the week in June,
+multiplied times 100,000. Positive values indicate momentum, negative values indicate
+contrarian strategies. Standard errors are given in parentheses and * denotes signiﬁcant
+at 10%, ** denotes signiﬁcant at 5%, *** denotes signiﬁcant at 1%.
+the strategies applied by HFTs and NHFTs in phases of high and low volatility.
+Table 2 summarizes the results for all six trading groups. As the results show, the
+momentum measure for active HFTs exhibits a signiﬁcantly positive coeﬃcient in both
+market environments, implying that active HFTs tend to trade in the direction of price
+changes. In contrast, passive HFTs on average trade in the opposite direction of contemporaneous price movements, as indicated by their signiﬁcantly negative coeﬃcient.
+Using one lag of the return variable does not change the results which implies that active
+(passive) HFTs also trade in the direction of (opposed to) past price movements. The
+results are in line with Benos and Sagade (2013) and Brogaard et al. (2013), which points
+to consistent patterns of HFTs’ trading behavior across diﬀerent markets.
+While the
+measure for active HFTs (NHFTs) is higher (lower) during the high-volatility week than
+in the low-volatility week, passive HFTs and NHFTs do not exhibit any adjustment of
+their strategies to the market environment. Interestingly, the overall HFT ratio is signiﬁcantly positive in March and negative in June. This implies that, on average, HFTs follow
+momentum strategies on high-volatility days and contrarian strategies on low-volatility
+days.
+One can conclude that overall HFT activity varies with diﬀerent market environments.
+In highly volatile market periods, HFTs overall trade in the direction of the market trend,
+while they act as liquidity-providers in periods of low market stress. At the same time
+HFTs’ share of the traded volume is higher in volatile market phases. Hence, by trading
+in the direction of the market return, active HFTs may amplify intraday price variation,
+especially in times of high market uncertainty. Although the contrarian strategies by
+13
+
+passive HFTs tend to dampen excessive price ﬂuctuations, they are dominated by momentum trades of active HFTs in those times. Thus, liquidity-providing strategies by
+HFTs mainly prevail in tranquil market phases. The question whether active and passive
+HFTs trade in the direction of or opposed to the market movement is also analyzed in
+the context of macroeconomic news releases in Section 5.
+4.2
+HFT and Volatility
+In the next step, I want to ﬁnd out how the trading behavior of HFTs is related to market
+volatility. In order to obtain proper volatility measurements on short time scales, one must
+take into account the high variation of tick-by-tick market activity within speciﬁc time
+intervals. One of the most common measures in the context of high-frequency data is
+the realized variance, which is the sum of squared incremental returns. Zhang, Mykland,
+and Ait-Sahalia (2005) propose a method to estimate the realized variance consistently
+for predeﬁned subsamples in the presence of microstructure noise. The idea is to divide
+a time span, e.g. one day, into non-overlapping time intervals of the same length. Based
+on this approach, the realized variance for each 1-minute time interval is given by
+Real V art = ΣN
+i=1r2
+t,i,
+(2)
+where N is the number of observations in time interval t and r is the log Bund futures
+return. In order to link the volatility measure to HFT activity, I build 100 volatility
+percentiles based on the realized variance per 1-minute interval for the week in March and
+the week in June and calculate the excess HFT and NHFT trading participation ratio per
+percentile. The ratio reﬂects the traded volume of active and passive HFTs and NHFTs
+divided by the overall trading volume per time interval. Excess trading participation
+is deﬁned as deviation of the trading participation ratio per 1-minute interval from the
+average ratio of the traded volume over all time intervals for each week.
+Figures 3 and 4 depict HFT and NHFT trading activity for the highest 50 volatility
+percentiles.3
+For the week in March (Figure 3) one can see that active and passive
+HFT trading activity is positively related to volatility. This positive relationship is also
+statistically signiﬁcant and in line with the ﬁndings by Brogaard et al. (2013). In contrast,
+both active and passive NHFT trading activity co-moves negatively with volatility. While
+HFTs trade more the higher the volatility, NHFTs trade less compared to their average
+share at the overall traded volume. This is in contrast to the results for the week in June,
+3To get a clearer picture of the relationship between HFT trading and increasing volatility, I have
+only included the highest 50 percentiles. Also, the question whether HFTs are more active in times of
+high market stress is at the core of this study. There is no clear relationship between HFT trading and
+volatility for the lower 50 percentiles, anyway.
+14
+
+where no clear relationship between the volatility percentiles and the HFT and NHFT
+trading can be identiﬁed (see Figure 4). However, in the highest 3 volatility percentiles the
+ratio of active HFT exhibits a sudden jump, which shows that above a certain volatility
+level liquidity-taking HFTs suddenly trade more. At the same time, active NHFTs scale
+back their trading activity dramatically. Against this evidence, trading by passive HFTs
+and NHFTs does not change with varying volatility levels.
+0
+-0.04
+0.02
+-0.02
+0.04
+50
+60
+70
+80
+90
+100
+Volatility percentiles
+Excess active HFT trading ratio
+Excess passive HFT trading ratio
+(a) HFT
+0
+-0.04
+0.02
+-0.02
+0.04
+50
+60
+70
+80
+90
+100
+Volatility percentiles
+Excess active NHFT trading ratio
+Excess passive NHFT trading ratio
+(b) NHFT
+Figure 3: These ﬁgures depict the HFT and NHFT excess trading ratios for the highest
+50 volatility percentiles in March.
+0
+-0.1
+-0.05
+0.1
+0.05
+50
+60
+70
+80
+90
+100
+Volatility percentiles
+Excess active HFT trading ratio
+Excess passive HFT trading ratio
+(a) HFT
+0
+-0.1
+0.05
+-0.05
+0.1
+50
+60
+70
+80
+90
+100
+Volatility percentiles
+Excess active NHFT trading ratio
+Excess passive NHFT trading ratio
+(b) NHFT
+Figure 4: These ﬁgures depict the HFT and NHFT excess trading ratios for the highest 50
+volatility percentiles in June. Excess trading ratio is calculated as the diﬀerence between
+the active and passive HFT trading volume participation and the average trading volume
+ratios over the entire week. The volatility percentiles are based on 1-minute time intervals.
+The results imply that in the most volatile market episodes, liquidity-taking HFTs
+seem to trade more, while active slower traders withdraw increasingly from markets. The
+evidence is more pronounced for the high-volatility week and is in line with prior work
+15
+
+(e.g., Zhang (2010), Boehmer et al. (2012) and Chaboud et al. (2012)). For liquidityproviding participants, the results depend on the week considered. In the low-volatility
+week, none of the passive trading groups are sensitive to volatility changes. In the week
+of higher market stress, passive HFTs trade more the higher the volatility, while slower
+traders again rather withdraw from the market. However, a certain part of this positive
+relationship between passive HFTs and volatility can be due to mechanical reasons: a limit
+order is more likely to be executed when volatility is high (Benos and Sagade (2013)).
+To conclude, the ﬁndings of this section suggest that active HFTs dominate in highvolatility periods and trade more than usual when volatility exceeds a certain level. By
+trading in the direction of market movements, they may exacerbate extreme volatility
+episodes. In contrast, NHFTs trade less the higher the volatility in a market environment
+that is already volatile. On low-volatility days, volatility-dampening passive strategies
+dominate overall HFT trading activity. The above results only provide evidence that
+excess trading of active HFTs coincides with highly volatile market environments. Based
+on this analysis, a conclusion on causality between HFT activity and volatility cannot be
+drawn. To establish a causal link between HFT trading and volatility requires appropriate
+instruments, which are generally hard to ﬁnd (Biais and Foucault (2014), Benos and
+Sagade (2013)). Hence, it could be that HFT trading induces stronger price ﬂuctuations.
+But it is also likely that HFTs are rather attracted by higher volatility.
+The reason
+may be that HFTs engage in trading strategies that are most beneﬁcial when volatility
+is high (Benos and Sagade (2013)), which allows them to quickly generate short-term
+proﬁts. Hence, in order to obtain a more precise idea about the relationship between
+HFT activity and volatility, the following analysis will focus on speciﬁc market episodes,
+namely the period around macroeconomic news releases, which constitute a source of high
+volatility. As macroeconomic news can be considered as exogenous variables (Chaboud
+et al. (2012)) and are announced at a speciﬁc time, the impact of HFT trading on volatility
+following the news is easier to establish, especially when the analysis is carried out at a
+very granular level.
+5
+HFT around Macroeconomic News Announcements
+5.1
+HFT Trading around Macroeconomic News
+It is well known that macroeconomic news releases receive especially strong attention in
+government bond markets. Among the most relevant macroeconomic news for European
+bond markets are the US Nonfarm Payrolls (NFPs), released every ﬁrst Friday of each
+month, and the ECB rate decision, released every ﬁrst Thursday of each month (e.g.,
+16
+
+Schopen and Missong (2011), Chaboud et al. (2012)). In the following, I analyze the
+impact of these macroeconomic news announcements on HFT activity in the Bund futures
+market within a one-year period from July 2013 to June 2014. The NFPs are usually
+reported at 2:30 pm and ECB rate decisions at 1:45 pm (CET). In order to avoid small
+deviations in the actual report time, the time stamp of the ﬁrst news announcement
+from Bloomberg is used, which usually corresponds to one second after the anticipated
+publication time. A positive macroeconomic data surprise occurs when the announced
+number is greater than the analysts’ survey median forecast as reported by Bloomberg,
+and a negative one if it is smaller than the forecast median.
+(a) HFT Activity
+(b) NHFT Activity
+Figure 5: These ﬁgures illustrate the average excess HFT activity and the volatility of
+the Bund futures around the release of the monthly NFPs including 12 news events from
+July 2013 to July 2014.
+In the ﬁrst step, I graphically examine HFT trading activity around the publication of
+NFPs compared to their average activity on that particular trading day.4 In the second
+step, the reaction of HFTs and NHFTs to both NFPs and ECB rate decisions is examined
+in an econometric approach.
+Figure 5 depicts the trading behavior of active and passive HFTs and NHFTs from 10
+seconds prior to 10 seconds after the NFPs release. Apparently, the excess volatility of the
+Bund futures return increases strongly immediately after the news release, but already
+reaches its normal level of zero after ﬁve seconds. As Figure 5 (a) shows, there is a clear
+diﬀerence in the activity of active and passive HFTs. While active HFTs already increase
+their trading activity signiﬁcantly several seconds before the data become public where
+the ﬁrst peak is reached exactly at the second of the announced publication time, passive
+HFTs only increase their trading share to an above-average level one to two seconds after
+the news release. However, even 10 seconds after the data are announced, both active
+and passive HFTs remain highly active. In contrast, as shown in Figure 5 (b), active and
+4In the graphical analysis, I focus only on NFP releases, since the distinction between positive and
+negative surprises is more clear-cut in the case of macroeconomic data than for ECB rate decisions.
+17
+
+passive NHFTs trade less after the NFP release compared to their average trading activity
+over the entire trading day. Interestingly, active NHFTs strongly scale back their activity
+already a few seconds before the macroeconomic news is published. A possible reason
+for this could be that NHFTs are aware of their disadvantage in speed and their lower
+chances of generating gains from short-term trading on the news compared to HFTs.
+Next, I analyze whether HFTs trade in or against the direction of the market return
+around news events and whether the reaction depends on the nature of the news surprise,
+i.e.
+a positive or a negative deviation of the NFPs from the market expectation.
+A
+positive (negative) macroeconomic news surprise usually implies rising bond yields and
+falling bond prices due to higher interest rate and inﬂation expectations. Figures 6 and
+7 depict the HFT and NHFT signed net order ﬂow and the return in 1-second intervals
+around positive and negative NFP releases. The ﬁgures show that immediately after the
+news is released (t = 0), the return jumps in the direction of the surprise, stabilizes
+shortly afterwards and ﬁnally reaches a level close to the pre-announcement value. As
+one can see in Figure 6 (a), the trading of active HFTs co-moves very closely with the
+price movement, especially when news releases are positive.5 This picture suggests that
+active HFTs sell Bund futures contracts on positive and buy on negative news releases,
+which is in line with the ﬁndings by Brogaard et al. (2013) for the US stock market. The
+opposed order ﬂow evolution of passive NHFTs suggests that their trades are picked oﬀ
+by active HFTs (see Figures 6 and 7 (b)). In contrast, passive HFTs do not change their
+trading activity signiﬁcantly around the news releases: their buy and sell trades remain
+balanced, which corresponds to a net order ﬂow of nearly zero. Therefore, overall HFT
+order ﬂow is positively related to the market return, meaning that HFTs, on average,
+take liquidity after macroeconomic news releases. This result contradicts the empirical
+evidence by Brogaard et al. (2013) that overall HFTs trade in the opposite direction of
+macroeconomic news and so dampen excessive price movements.
+5.2
+HFT Price Discovery around Macroeconomic News
+While the graphical analysis above was helpful to obtain a broad idea of HFT trading
+behavior around macroeconomic news events, I study this issue in more detail next. First,
+I investigate the impact of macroeconomic news releases on HFT trading behavior in clock
+time and then go over to tick time in order to exploit the high granularity of the data.
+Second, I analyze the role of HFT in price discovery and its contribution to information
+and noise on a tick-by-tick-basis.
+5The results for the negative news releases are biased because of a large HFT trade on one day
+immediately before the news release. Given the small number of negative news surprises of only ﬁve, this
+eﬀect distorts the results.
+18
+
+(a) HFT Activity
+(b) NHFT Activity
+Figure 6: These ﬁgures depict the HFT and NHFT order ﬂow as well as the log return
+within 1-second intervals around the release of positive NFPs from July 2013 to July
+2014, including seven positive news events. Positive news announcements occur when the
+actual NFP number is higher than the median forecast of NFPs. Order ﬂow is calculated
+as the diﬀerence between execution quantities from buy trades and sell trades.
+(a) HFT Activity
+(b) NHFT Activity
+Figure 7: These ﬁgures depict the HFT and NHFT order ﬂow as well as the log return
+within 1-second intervals around the release of negative NFPs from July 2013 to July
+2014, including ﬁve negative news events. Negative news announcements occur when the
+actual NFP number is lower than the median forecast of NFPs. Order ﬂow is calculated
+as the diﬀerence between execution quantities from buy trades and sell trades.
+Analysis in clock time
+For the clock time analysis, I build 1-second intervals and calculate the immediate (t = 0)
+and the long-term eﬀect (t = 10) of NFP and ECB news announcements on the order ﬂow
+of active and passive HFTs and NHFTs. Therefore, I estimate a structural VAR with
+excess HFT and NHFT order ﬂow as well as excess return within the 10-minute interval
+of the news releases (ﬁve minutes prior to ﬁve minutes after the news releases) using 10
+lags, as in Hendershott and Riordan (2011) and Benos and Sagade (2013). Excess order
+ﬂow and return are calculated as the diﬀerence between the order ﬂow of the 10-minute
+interval and the average values on the entire trading day excluding the event window.
+19
+
+This results in the following VAR model including the macroeconomic news as exogenous
+variable similar to Zhang (2013) and Chaboud et al. (2012).
+rt = α +
+l
+X
+i=1
+βiOF hft
+t−i +
+l
+X
+i=1
+γiOF nhft
+t−i
++
+l
+X
+i=1
+δirt−i +
+l
+X
+i=0
+ψiDi + ϵ1t
+OF hft
+t
+= κ +
+l
+X
+i=1
+ηiOF hft
+t−i +
+l
+X
+i=1
+λiOF nhft
+t−i
++
+l
+X
+i=1
+νirt−i +
+l
+X
+i=0
+φiDi + ϵ2t
+OF nhft
+t
+= ζ +
+l
+X
+i=1
+ρiOF hft
+t−i +
+l
+X
+i=1
+τiOF nhft
+t−i
++
+l
+X
+i=1
+υirt−i +
+l
+X
+i=0
+πiDi + ϵ3t,
+(3)
+where t denotes the 1-second time interval, OF is the signed net order ﬂow (buyerinitiated minus seller-initiated volume), r is the log return per time interval, and D is the
+dummy variable indicating the macroeconomic news. The latter is equal to 1 when news
+is released and 0 otherwise. In contrast to most existing HFT literature (e.g., Hendershott
+and Riordan (2011), Benos and Sagade (2013), Zhang and Riordan (2011)), instead of
+using the mid-price based on quote updates and transactions, I use execution prices as
+in Hasbrouck (1993). The reason for this is the following. The density of transactions
+is extremely high following certain news events such as the NFP releases, and often a
+large number of transactions occur within the same microsecond. In these instances, the
+bid-ask spread usually widens substantially due to some very large trades which can often
+only be partially executed, so that the execution price adjusts until the limit price of the
+large order is reached. Therefore, the execution price varies strongly, while the mid-price
+remains constant. Hence, using the mid-price would imply signiﬁcant information loss,
+especially around the publication of important macroeconomic news. Moreover, instead
+of using the trade direction as in Benos and Sagade (2013) or Hendershott and Riordan
+(2011), I include the signed net order ﬂow to account for the fact that large orders might
+have a stronger impact on prices than small trades. This seems reasonable given the above
+evidence of some large trades, especially by HFTs after major news releases.
+The above representation is based on the restriction that NHFT order ﬂow does not
+contemporaneously aﬀect HFT order ﬂow or vice versa, which would not be intuitive.
+Therefore, one does not need to assume a speciﬁc ordering of the order ﬂow time series
+in the VAR. As a robustness check, I switch the orderings of the two order ﬂow time
+series, which yields almost identical results. The above VAR model is estimated separately for active and passive trading participants. In order to capture the impact of the
+macroeconomic news on the order ﬂow variables, in the ﬁrst step I calculate the dynamic
+multipliers using the macroeconomic news as impulse and the order ﬂow variables as responses. In the second step, I estimate the impact of the HFT and NHFT order ﬂow
+20
+
+on return and the respective impulse responses. To generate dynamic multipliers and
+impulse responses, I invert the above VAR model and apply a Cholesky decomposition
+on the variance-covariance matrix Σ to obtain a vector moving average (VMA) form with
+orthogonalized error terms
+
+
+
+rt
+OF hft
+t
+OF nhft
+t
+
+
+=
+
+
+
+a(L)b(L)c(L)
+d(L)e(L)f(L)
+g(L)h(L)k(L)
+
+
+
+
+
+
+e1,t
+e2,t
+e3,t
+
+
++
+
+
+
+q(L)
+r(L)
+u(L)
+
+
+
+
+
+
+X1,t
+X2,t
+X3,t
+
+
+,
+(4)
+where the error terms ei,t are mutually orthogonal with etet′ = I. This allows for causal
+statements about shocks to one element of et without considering correlations with the
+other variables. The lag polynomials a(L) to k(L) represent the impulse response functions of the three variables to shocks, while q(L) to u(L) are dynamic multipliers that
+capture the cumulative impact of macroeconomic news on the three variables. The impulse response functions for HFT and NHFT order ﬂow are b(L) and c(L), respectively,
+and can be interpreted as an estimate of the permanent price impact of a trade innovation.
+Table 3: Impact of News Shocks on Order Flow - Clock-based Analysis
+Active HFT
+Active NHFT
+Passive HFT
+Passive NHFT
+HFT
+NHFT
+SR
+-0.247*
+-0.046
+-0.007
+0.463***
+-0.240
+0.398***
+(0.152)
+(0.159)
+(0.136)
+(0.157)
+(0.159)
+(0.159)
+LR
+0.170
+-0.012
+-0.397
+0.498
+-0.249
+0.578
+(0.383)
+(0.458)
+(0.384)
+(0.466)
+(0.487)
+(0.486)
+LR −SR
+0.417
+0.034
+-0.390
+0.035
+-0.05
+0.18
+(0.412)
+(0.485)
+(0.407)
+(0.492)
+(0.512)
+(0.511)
+This table shows the results of the VAR analysis including the macroeconomic news
+dummy as exogenous variable. The analysis is carried out on a 1-second frequency. SR
+denotes short-run eﬀect, which is the immediate impact of the news dummy on the order
+ﬂow of the diﬀerent market participants, LR is the cumulative eﬀect after 10 seconds
+and (LR −SR) the diﬀerence between the two. The analysis is carried out for active
+and passive HFTs and NHFTs as well as overall HFTs. Standard errors are given in
+parentheses and * denotes signiﬁcant at 10%, ** denotes signiﬁcant at 5%, *** denotes
+signiﬁcant at 1%.
+Table 3 summarizes the results of the impact of NFP and ECB events on the order
+ﬂow of active and passive HFTs and NHFTs, given by r(L) and u(L), respectively, based
+on 1-second intervals. As the graphical analysis already showed (Figures 6 and 7), only
+active HFTs and passive NHFTs exhibit a signiﬁcant reaction to the news release. The
+negative SR eﬀect (t = 0) of active HFTs implies that overall they net sell Bund futures
+contracts on macroeconomic news releases in the ﬁrst second following the announcement.
+Given the majority of positive news events and the stronger reaction of HFTs to positive
+surprises we have seen above, the negative coeﬃcient of active HFTs implies that overall
+21
+
+they trade in the direction of the market. While their initial reaction is quite strong,
+active HFTs already tend to reverse their trading positions right after the SR reaction
+(in t = 1), leading to a positive cumulative net trading eﬀect after 10 seconds (Table 3).
+As a robustness test, I performed the analysis accounting for positive and negative
+news surprises.6 Since this alternative speciﬁcation yields very similar results, I do not
+explicitly show them.
+The above results reﬂect the typical HFT trading behavior around news events. HFTs
+are aware of their advantage in speed and trade on the macroeconomic news surprise
+faster than other traders. Given the generally strong market impact of NFP and ECB
+news announcements, HFTs can be certain that other traders will also trade according to
+the surprise component of the news, but only with a delay. Hence, in case of a positive
+news surprise, HFTs are among the ﬁrst traders who sell Bund futures contracts at a
+still relatively high price. As soon as slower market participants also react to the news
+announcement by selling futures contracts, which ampliﬁes the downward price pressure,
+HFTs buy back the contracts at a much lower price and realize short-term trading gains.
+This eﬀect is called information arbitrage. Hirschey (2013) provides further support for
+this explanation, even though not directly linked to news. The author shows that HFTs
+anticipate NHFTs’ future buying and selling pressure and trade ahead of them to proﬁt
+from the NHFTs’ subsequent price impact. According to the results, on the other side
+of the trades are usually passive NHFTs, indicated by a signiﬁcantly positive coeﬃcient.
+When the news is announced, aggressive HFT orders hit their bid limit orders to sell the
+Bund futures contract within one second. NHFTs cannot withdraw their limit orders as
+fast as HFTs react to the news; this is called adverse selection risk. Hence, traders who
+post standing limit orders that do not yet reﬂect the price changes implied by news lose
+to HFTs.
+As Table 3 shows, the LR eﬀect (after 10 seconds) is not signiﬁcant overall. This
+supports the graphical evidence (see Figures 5 to 7 (a)) that HFTs execute their trading
+strategies within a few seconds and mostly even within the ﬁrst second following a news
+release.
+My results are not fully in line with the ﬁndings by Brogaard et al. (2013), who show
+that mainly passive HFTs are adversely selected by active HFTs around macroeconomic
+news releases using 1-second intervals. The diﬀerent results might be due to the fact
+6The dummy variable equals 1 for positive news surprises and −1 for negative surprises. In the case
+of the NFPs, a positive news event occurs when the actual employment number lies above the survey
+median, and vice versa for negative surprises. For ECB news, I apply two diﬀerent rules. A positive
+(negative) surprise of the ECB rate decision occurs if the Bund futures return after one tick following
+the decision is lower (higher) than one standard deviation below (above) its 30-tick rolling mean or if the
+cumulative return ﬁve ticks after the rate decision is lower (higher) than two standard deviations below
+(above) its mean.
+22
+
+that they look at stock markets, while I study government bond markets, which usually
+show the strongest reaction to macroeconomic data (Altavilla et al. (2014)). Hence, the
+reaction of stock returns to such news might diﬀer from that of bond returns. Given that
+HFTs know that macroeconomic news can create excessive intraday volatility in bond
+markets, they may anticipate higher risks in this market segment and withdraw from the
+market before the news is released. Overall, the previous ﬁndings highlight very well HFT
+trading strategies around news events from a human observer’s point of view, but they
+also suggest that most of the news reactions occur within a few seconds. On some of the
+NFP days between July 2013 and June 2014, more than 500 transactions are carried out
+within the ﬁrst second after the data are published. In order to get a clearer picture of
+the initial reactions by HFTs that usually occur within milliseconds, which is beyond the
+scope of human perception, the following analyses are carried out on a tick-by-tick-basis.
+Table 4: Impact of News Shocks on Order Flow - Tick Analysis
+Active HFT
+Active NHFT
+Passive HFT
+Passive NHFT
+HFT
+NHFT
+SR
+-0.089
+0.004
+-0.019
+0.065
+-0.099
+0.096
+(0.304)
+(0.237)
+(0.160)
+(0.346)
+(0.292)
+(0.316)
+LR
+-6.715***
+-0.875
+0.967
+5.686***
+-5.892***
+5.709***
+(1.764)
+(1.228)
+(0.654)
+(1.890)
+(1.704)
+(1.700)
+LR −SR
+-6.626***
+-0.879
+0.986
+5.621***
+-5.793***
+5.613***
+(1.790)
+(1.251)
+(0.673)
+(1.921)
+(1.729)
+(1.729)
+This table shows the results of the VAR analysis including the macroeconomic news
+dummy as exogenous variable. The analysis is carried out on a tick-by-tick basis. SR
+denotes the short-run eﬀect, which is the immediate impact of the news dummy on the
+order ﬂow of the diﬀerent market participants, LR is the cumulative eﬀect after 10 ticks
+and (LR −SR) the diﬀerence between the two. The analysis is carried out for active
+and passive HFTs and NHFTs as well as overall HFTs. Standard errors are given in
+parentheses and * denotes signiﬁcant at 10%, ** denotes signiﬁcant at 5%, *** denotes
+signiﬁcant at 1%.
+Analysis in tick time
+In the present dataset, the number of ticks within the ﬁrst 10 seconds after the news release
+varies between ﬁve trades for one ECB rate decision and 1330 for a speciﬁc NFP event.
+Applying a ﬁxed time window does not appropriately account for the strong variability of
+trades after a news release, while it allows for a chronological analysis of the news events,
+which has been particularly useful in gaining an intial idea of the trading reactions by
+HFTs and NHFTs. In a second approach, I replace seconds with number of ticks, i.e. the
+SR eﬀect equals the ﬁrst tick after the news is published and the LR eﬀect is set to 10
+ticks. This enables me to account for each event that takes place after the news release
+23
+
+and complements the above clock time analysis. The time period of the ﬁrst 10 ticks
+varies strongly among the single event days and ranges between 60 milliseconds for NFP
+events and 12 seconds for some ECB rate decisions. Order ﬂow and return variables are
+standardized using mean and standard deviation of the respective Bund futures trading
+day.
+The estimated eﬀects of the news shocks on HFT and NHFT order ﬂow, i.e. r(L) and
+u(L), based on ticks are given in Table 4. Within the ﬁrst 10 ticks, active HFTs trade
+exactly in the direction of the market and the cumulative eﬀect expands the more ticks are
+considered. The coeﬃcient is signiﬁcant from the second tick on. Comparing the results of
+the clock-based and the tick-based analysis shows that the signiﬁcance levels of the eﬀects
+are higher overall when using ticks. Particularly, the coeﬃcient after 10 ticks has a higher
+explanatory power than the coeﬃcient for the ﬁrst second in the clock-based analysis.
+This conﬁrms the presumption that active HFTs already realize their proﬁts by reversing
+their positions within the ﬁrst second following the news, which is likely the reason for
+the overall weaker impact in the initial 1-second interval. Also, the eﬀect that passive
+NHFT orders are hit by active HFT trades is stronger than in the clock-based analysis.
+This supports the hypothesis that estimating the trading behavior of HFTs and NHFTs
+after news based on trading events rather than time intervals captures the initial trading
+reaction more precisely. Performing the analysis using 20 ticks yields similar results.
+In the next step, I calculate the impulse responses for HFT and NHFT order ﬂow
+on return, given by b(L) and c(L), again for the ﬁrst 10 ticks. Similar to Hendershott
+and Riordan (2011) and Chaboud et al. (2012), I limit the analysis to active trading
+participants, since they initiate the trades around the news release and thereby mainly
+contribute to price discovery. Results are given in Table 5 Panel A. They show that both
+HFT and NHFT order ﬂow have a signiﬁcant positive immediate eﬀect on the return.
+Based on the ﬁrst tick, the impact of NHFT trading is even slightly greater. While the
+positive impact expands for HFTs over the subsequent 10 events, it diminishes slightly
+for NHFTs. This result is also shown in Figure 8, which depicts the cumulative impulse
+response functions and their 95% conﬁdence intervals of a positive shock to HFT and
+NHFT order ﬂow on return from the initial response to 10 steps in the future. The impulse
+response function for HFTs after 10 ticks is around ﬁve times as high as for NHFTs. This
+implies that an innovation in HFT trading induces a 400% greater price change than an
+innovation in NHFT trading, suggesting that HFT trades contain more information than
+NHFT trades, which is also conﬁrmed by the signiﬁcantly positive diﬀerence between
+HFT and NHFT impulse responses. Moreover, the subsequent adjustment (LR −SR) is
+signiﬁcantly positive only for HFT trading. As a robustness test, I performed the analysis
+for 20 ticks. The results are very similar to the analysis for 10 ticks (see Appendix A.2).
+24
+
+Table 5: Price Impact of Active HFT and NHFT - Tick Analysis
+Panel A: Single IRFs
+Active HFTs
+Active NHFTs
+Active HFT - NHFT
+SR
+0.069**
+0.081***
+-0.012
+(0.031)
+(0.032)
+(0.045)
+LR
+0.607***
+0.120*
+0.486***
+(0.063)
+(0.067)
+(0.092)
+LR −SR
+0.538***
+0.039
+0.498 ***
+(0.070)
+(0.074)
+(0.102)
+Panel B: Contribution to Permanent and Transitory Variance
+Active HFTs
+Active NHFTs
+Public information
+Permanent variance
+0.092***
+0.004
+0.905***
+(0.016)
+(0.017)
+(0.031)
+Transitory variance
+0.334***
+0.023
+0.643***
+(0.037)
+(0.065)
+(0.088)
+Information-to-noise ratio
+0.274***
+0.158
+1.408***
+(0.056)
+(0.855)
+(0.199)
+Panel A of this table shows the results of the impulse responses from active HFT and
+NHFT order ﬂow on returns using 10 ticks, based on the VAR analysis including the
+macroeconomic news dummy as exogenous variable. SR denotes the short-run eﬀect, LR
+is the cumulative eﬀect after 10 ticks and (LR−SR) the diﬀerence between the two. Panel
+B includes the result of the variance decomposition for the permanent and transitory price
+components. It shows the shares of the variance of active HFTs and NHFTs relative to the
+eﬃcient and transitory variance, as well as the information-to-noise ratio after 10 ticks.
+Standard errors are given in parentheses and * denotes signiﬁcant at 10%, ** denotes
+signiﬁcant at 5%, *** denotes signiﬁcant at 1%.
+The above results are consistent with news trading strategies by HFTs that rely on
+speedy and aggressive trades and are close to the existing empirical evidence: e.g., Jiang
+et al. (2013) also ﬁnd that HFT trades are more informative than NHFT trades for US
+Treasury bond returns after the announcement of important macroeconomic news. Independent of news releases, Hendershott and Riordan (2011) ﬁnd similar results for diﬀerent
+German stocks, and Benos and Sagade (2013) for UK stocks. Also, Brogaard et al. (2013)
+show that while both active HFTs and NHFTs trading are positively correlated with permanent price movements, HFT trades are the more informed ones. However, the above
+ﬁnding that HFT trades contain more information than NHFT trades relates to milliseconds. Hence, the improvement in price eﬃciency simply reﬂects the fact that through
+aggressive HFT trading on the surprise component of the news, the new information is
+25
+
+reﬂected into prices by fractions of a second faster than without the presence of HFTs.
+To conclude, HFT plays an important role in the price discovery process on a microperspective. Through their advantage in speed that enables them to react faster to news
+compared to other traders, HFT trading improves price eﬃciency. The incremental economic beneﬁt of this achievement is diﬃcult to assess, however. Regarding market eﬃciency, it is worth noting that these order ﬂow anticipation strategies pursued by HFTs
+might discourage NHFTs to participate in the market during those times. Also, Shorter
+and Miller (2014) state that while most empirical literature shows that HFT helps in
+price discovery (see also SEC (2014)), order anticipation and momentum ignition strategies pursued by HFTs can potentially exacerbate slower investors’ transaction costs and
+can contribute to extreme volatility events. In the next subsection, I will analyze how
+the above identiﬁed fast and strong reaction by active HFTs to news contributes to price
+volatility. Since volatility can have both a short-term noise and a permanent informationrelated character I will look at both volatility types separately.
+Figure 8: This ﬁgure shows the cumulative impulse response functions of active HFTs
+and NHFTs for 10 steps as well as the lower and upper conﬁdence levels at 5%.
+5.3
+HFT Contribution to Information and Noise
+In the following, I apply the variance decomposition method proposed by Hasbrouck
+(1991b) to assess the impact of HFT and NHFT trading on the fraction of information
+and noise. The method is based on the idea that the observed price has a permanent and
+a transitory component and is given by
+pt = mt + st.
+(5)
+The permanent price mt follows a random walk mt = mt−1+ωt, where Eωt = 0, Eω2
+t = σ2
+ω
+and Eωtωs = 0 for t̸ = s, and st denotes the transitory component, which is assumed
+26
+
+to have no long-term impact on prices. Given the assumption that the eﬃcient price
+follows a random walk, st can be referred to as noise, which holds true for any stationary
+deviation from a random walk process (Benos and Sagade (2013)). According to the above
+decomposition, the return can be expressed as
+rt = pt −pt−1 = ∆mt + ∆st.
+(6)
+Similar to the original approach by Hasbrouck (1993), I use actual transaction prices to
+calculate return and variance. Using equations (3) and (4), the permanent price impact
+is given by
+∆mt = (
+∞
+X
+i=0
+ai)e1t + (
+∞
+X
+i=0
+bi)e2t + (
+∞
+X
+i=0
+ci)e3t.
+(7)
+Based on 10 lags, the variance of the permanent price impact can be approximated by
+σ2
+ω = (
+10
+X
+i=0
+ˆai)2ˆσ2
+e1 + (
+10
+X
+i=0
+ˆbi)2ˆσ2
+e2 + (
+10
+X
+i=0
+ˆci)2ˆσ2
+e3.
+(8)
+Since the error terms are mutually orthogonal, the variances are equal to one. The ﬁrst two
+terms are trade-correlated and capture the proportions of the permanent price innovation
+related to HFT and NHFT trading activity, while the last term is the contribution to
+price discovery that is not related to trading and can be interpreted as public information
+(see Hasbrouck (1991a)).
+Next, I assess HFT contribution to noise, i.e. the transitory part of the observed
+price. Following Hasbrouck (1993) and Benos and Sagade (2013), noise is assumed to
+evolve according to a moving average (MA) process of the residuals of the VMA form
+st = (
+∞
+X
+i=0
+˜ai)e1t + (
+∞
+X
+i=0
+˜bi)e2t + (
+∞
+X
+i=0
+˜ci)e3t.
+(9)
+The noise process parameters can be estimated as follows:
+˜aj = −
+∞
+X
+v=j+1
+av,
+˜bj = −
+∞
+X
+v=j+1
+bv,
+˜cj = −
+∞
+X
+v=j+1
+cv.
+(10)
+Using 10 lags, the estimate for the transitory variance7 is given by
+σ2
+s = (
+10
+X
+i=0
+ˆ˜ai)2ˆσ2
+e1 + (
+10
+X
+i=0
+ˆ˜bi)2ˆσ2
+e2 + (
+10
+X
+i=0
+ˆ˜ci)2ˆσ2
+e3.
+(11)
+7Due to the speciﬁc identiﬁcation method of this model, which is based on Beveridge and Nelson
+(1981), the estimate represents a lower bound for σs. For details, see Hasbrouck (1993).
+27
+
+According to Hasbrouck (1993), the variance of the transitory component can be
+interpreted as a measure of market quality, i.e. the lower the transitory variance, the
+greater the price eﬃciency. In order to assess the informational eﬃciency of HFT and
+NHFT trading, each trader group’s contribution to the overall permanent and transitory
+variance, σ2
+ω and σ2
+s, respectively, are estimated based on the above decomposition.
+According to the results in Table 5 Panel B, active HFTs contribute a much higher
+share to permanent volatility than NHFTs, whose contribution is basically zero. Since
+HFTs’ share relative to the traded volume is about twice as high as for NHFTs around
+macroeconomic news, HFTs also add more to the permanent volatility in relative terms.
+The result is consistent with the ﬁndings by Chaboud et al. (2012) and Hendershott
+and Riordan (2011), who show that HFTs explain more of the variance of returns than
+NHFTs in the FX and the US equity market, respectively. However, the present ﬁndings
+also indicate that HFT trades add a large amount to noise, which is about 33% after 10
+ticks. In contrast, NHFTs make no statistically signiﬁcant contribution to noise. The
+information-to-noise ratio for HFTs is far below 1, indicating that HFTs’ fast trading
+after the news release contributes much more to transitory volatility than to information.
+Similar to my results, Benos and Sagade (2013) ﬁnd that HFTs both contribute a higher
+share to information and to noise than NHFTs. However, they obtain information-to-noise
+ratios greater than one for the majority of stocks they analyze. Brogaard et al. (2013)
+show that HFTs trade in the direction of the permanent and opposed to the transitory
+price component which they see as evidence for an improvement in price discovery. My
+results are not as conclusive given the large noise contribution of HFT trades. However, it
+is important to note that these two studies do not look at macroeconomic news releases,
+which is likely an environment where excessive volatility is more common than usual and
+where HFTs are more active than on average. Using 20 ticks instead of 10 results in a
+higher share of the transitory volatility for HFTs (around 45%) and of the permanent
+volatility as well (13%). For NHFTs the contribution to both information and noise is
+small and still insigniﬁcant (see Appendix A.2).
+The above results are consistent with HFTs following news trading strategies. Since
+this requires fast and aggressive trading according to the surprise component of the news,
+HFT trades amplify both the beneﬁcial and the harmful determinants of price volatility
+around such events. Due to the fast reaction of HFTs, the overall improvement in price
+discovery goes hand in hand with an even higher amount of excessive volatility. One
+reason for the high noise generation could be that HFTs process the signals they receive
+very quickly and overreact to these signals or even interpret them wrongly implying that
+their trades may not be entirely informative.
+28
+
+6
+HFT Liquidity Supply
+While in the previous chapter the trading strategies by active HFTs were analyzed, the
+ﬁnal part of this study focuses on liquidity-providing (passive) HFTs. A rising concern
+among regulators and practitioners has been that HFTs who act as market makers and
+supply liquidity only do so in quiet market phases, and tend to withdraw from markets in
+stress periods when liquidity is sparse (ESMA (2011), ASIC (2012)). The issue is crucial
+for market stability in the sense that if a market shock induces HFTs to suspend their
+liquidity provision, this shock might be ampliﬁed (Ait-Sahalia and Saglam (2014)).
+In the following, I address this topic by studying changes in HFT liquidity supply in
+diﬀerent market environments. More speciﬁcally, I introduce two measures of liquidity
+supply and relate these to periods of unexpected volatility due to a rise in risk aversion
+and to periods of anticipated volatility around macroeconomic news releases. I use the
+term liquidity supply instead of liquidity provision in order to distinguish the order book
+activities, such as quoting and cancellations, from the traded volume by passive HFTs,
+studied in the previous sections. In the existing literature, the notion “liquidity provision”
+also mostly refers to the traded volume (e.g., Chaboud et al. (2012), Brogaard et al.
+(2013)), but is also used to analyze quoting and order cancellations, as done by AitSahalia and Saglam (2014).
+To account for changes in the volume of quoted orders, I estimate an order deletion
+ratio, which I deﬁne as the volume of order cancellations relative to the volume of submitted orders. This ratio gives an indication of the change in the overall liquidity supplied by
+passive HFTs and NHFTs. If the ratio is greater than 1, the liquidity supply in a speciﬁc
+time interval is reduced.8 To study whether passive HFTs submit fewer orders during
+phases of increased volatility than usual, I also calculate the order submission ratio. The
+latter is deﬁned as the volume of added orders by trading group divided by the volume
+of all activity types, including transactions, modiﬁcations and deletions.
+The depth of the data is of particular value in this part of the analysis. Most of the
+existing studies that address liquidity supply in diﬀerent market environments are limited
+to transaction data (e.g., Chaboud et al. (2012), Brogaard et al. (2013)). Hence, as in
+the previous part of this study, they focus on liquidity provision, calculated as the traded
+volume by passive market participants.
+However, as pointed out by, e.g., Benos and
+Sagade (2013), a positive relationship between the volume of executed limit orders and
+volatility could also be due to mechanical reasons. In times of stronger market movements,
+8The deletion ratio captures the overall supplied liquidity independent of the distance to the current
+best bid and oﬀer price. In a more sophisticated approach one could account for this distance and attain
+a higher weighting to those orders that are closer to the last price. However, in order to proxy for the
+changes in the supplied liquidity in diﬀerent market environments, this measure should also provide useful
+insights on a relative basis.
+29
+
+limit orders are more likely to be executed. This potential disruption of the results does
+not occur when using order deletions and submissions.
+Another important beneﬁt of
+using deletions and submissions is that there are no endogeneity issues when studying
+the impact of volatility on changes in liquidity supply by HFTs. Yet, as discussed by
+Chaboud et al. (2012), it is not possible to regress the traded volume by passive market
+participants on volatility since the two variables cannot be considered separately from
+each other.
+In this section, I proceed as follows. First, I look at the deletion ratio for passive HFTs
+and NHFTs as aggregate ratio for both trading weeks and per time interval. Second, I
+calculate the volatility per 1-minute interval and generate volatility percentiles based
+on the intervals.
+From this, the deletion and submission ratios per percentile can be
+computed. Finally, the excess deletion and submission ratios for ﬁve minutes prior to ﬁve
+minutes after the NFP releases based on 1-second intervals are calculated.
+According to the descriptive statistics in Table 1, the aggregate deletion activity of
+passive HFTs is, on average, signiﬁcantly higher in the high-volatility week in March (77%
+versus 72% in June). Also, the deletion ratio in March is slightly higher for HFTs than
+for NHFTs, while in the week of June it is the opposite, although the diﬀerence is smaller
+than in March. In contrast, NHFTs exhibit the same deletion behavior in both market
+phases; they even delete slightly less in the high-volatility week. This highlights the fact
+that, on average, HFTs acting as liquidity suppliers indeed tend to withdraw from markets
+more than NHFTs when volatility increases unexpectedly. At the same time, both HFTs
+and NHFTs seem to submit more orders on an absolute scale in the high-volatility week,
+while the ratio relative to all activities is the same in both weeks. Since the deletion ratio
+is computed relative to the submitted orders, the deleted volume exceeds the volume of
+orders submitted, however.
+Next, the deletion ratio per time interval is calculated. Overall, there is a positively
+signiﬁcant relationship between the absolute number of deletions both for HFTs and
+NHFTs and volatility per minute, which is intuitive since market makers have to adjust
+their orders more often when prices vary more frequently. At the same time, absolute
+order submission by both trading groups exhibits a positive relationship with volatility as
+well. Moreover, in both weeks HFTs exhibit a signiﬁcantly higher deletion and submission
+ratio than NHFTs on a minute-by-minute basis.
+Figure 9 shows the excess HFT and NHFT deletion ratios for the highest 50 volatility
+percentiles out of 100 percentiles for March and June. For both weeks, there is no clear
+relationship between the excess deletion ratios and volatility for HFTs and NHFTs. Similar to the results for the trading participation ratios, I ﬁnd a stronger deviation from 0
+in both weeks for the highest volatility percentiles. Thereby, HFTs delete more in March
+30
+
+and less in June in the most volatile market phases compared to the average deletion ratios. In contrast, NHFTs delete less than average in the highest three percentiles in both
+weeks. Excess submission ratios are not depicted since they do not show any evidence of
+a relationship with volatility.
+0
+-0.05
+0.05
+50
+60
+70
+80
+90
+100
+Volatility percentiles
+HFT excess deletion ratio
+NHFT excess deletion ratio
+(a) March - High Volatility
+0
+-0.1
+-0.05
+0.1
+0.05
+50
+60
+70
+80
+90
+100
+Volatility percentiles
+HFT excess deletion ratio
+NHFT excess deletion ratio
+(b) June - Low Volatility
+Figure 9: These ﬁgures depict the HFT and NHFT excess deletion ratios for the highest
+50 volatility percentiles in March and June. The excess deletion ratio is calculated as the
+diﬀerence between the deletion ratio in a speciﬁc time interval t and the average deletion
+ratio over the entire week. The volatility percentiles are based on 1-minute time intervals.
+Since the graphical results do not provide a clear relationship between liquidity supply
+and volatility, a statistical analysis is carried out next. I therefore create a dummy variable
+which equals 1 when the deletion (submission) ratio per time interval is higher than the
+mean deletion (submission) ratio over the entire week for HFTs and NHFTs. In order to
+test whether the probability of deleting orders increases when volatility picks up suddenly,
+I regress the dummy variable on the lagged volatility for the 1-minute intervals. The same
+is done for order submissions. Results are given in Table 6.
+Apparently, in March HFTs are likely to delete more orders when volatility rises, while
+NHFTs tend to delete fewer orders. At the same time, HFTs tend to submit more orders
+when volatility rises, while NHFTs are less active. In June, when overall volatility is lower,
+both HFTs and NHFTs are likely to delete fewer orders after volatility has risen in the
+previous minute. There is weak statistical evidence that order submission also declines
+slightly for HFTs when volatility rises.9 Given that overall volatility was very low during
+the week of June, an increase in market stress during this time was not a reason for HFTs
+to withdraw from markets. The fact that they delete signiﬁcantly more orders in the
+highest volatility percentiles in March suggests that there are volatility thresholds above
+which HFTs consider the market too risky. Also, in these phases HFTs do not have any
+9Results are similar when carrying out the regressions without a time lag.
+31
+
+Table 6: Order Deletions and Submissions
+Panel A: March
+Probit regression
+HFT
+NHFT
+Deletion
+578.18***
+-293.44***
+(120.40)
+(109.45)
+Submission
+576.97***
+-746.43***
+(119.95)
+(126.34)
+Panel B: June
+Probit regression
+HFT
+NHFT
+Deletion
+-1815.34***
+-1113.57***
+(266.48)
+(254.70)
+Submission
+-185.17*
+27.092
+(113.33)
+(27.211)
+This table shows the probit regression results of a dummy variable indicating an aboveaverage deletion (submission) ratio on the ﬁrst lag of the 1-minute volatility. The analysis
+is carried out for passive HFTs and NHFTs. Standard errors are given in parentheses and
+* denotes signiﬁcant at 10%, ** denotes signiﬁcant at 5%, *** denotes signiﬁcant at 1%.
+informational advantage over NHFTs. This implies that they suddenly withdraw from
+markets when a certain level of market stress is reached to avoid increased hedging costs
+of market making (BIS (2014)). The above results are similar to those by Ait-Sahalia
+and Saglam (2014). In a theoretical approach the authors show that HFTs provide plenty
+of liquidity in quiet market periods but suddenly decrease their liquidity supply when
+volatility rises. I ﬁnd that both deletion and order submission by HFTs rise in times of
+higher market stress. However, given that the deletion ratio is calculated with respect to
+added orders, the volume of order cancellation seems to rise disproportionately strongly.
+Next, excess order deletions around NFP releases are analyzed. As shown by Figure
+10, both HFTs and NHFTs cancel more orders than on average in the minutes before the
+NFP event. However, while for HFTs the deletion activity is highly pronounced during
+the entire ﬁve minutes before the macroeconomic news release, NHFTs’ deletion activity
+increases immediately before the event.
+The diﬀerence between the HFT and NHFT
+excess deletion ratio is positively signiﬁcant during this episode as well.
+There is no
+statistical relationship between excess volatility and deletions, however. Figure 11 shows
+the excess order submission by HFTs and NHFTs around the NFP news releases. One
+can see a divergent movement in the order submissions between HFTs and NHFTs. While
+HFTs seem to submit more orders than usual a few minutes before the news release, they
+scale back their supplied liquidity strongly within the minute before the news is released.
+This is supported by a weakly signiﬁcant negative relationship between order submission
+and volatility for HFTs.
+At the same time, NHFTs submit many more limit orders
+32
+
+0
+2
+4
+6
+8
+-300
+-200
+-100
+0
+100
+200
+300
+Seconds around macro news announcement
+Excess deletion HFT
+Excess deletion NHFT
+Figure 10: This ﬁgure depicts the HFT and NHFT excess deletion ratios per second
+around the NFP news releases.
+immediately before the NFP release. Similarly, Chaboud et al. (2012) ﬁnd that HFTs
+do not increase liquidity provision as much as human traders in the minute following the
+macroeconomic news announcement in terms of traded volume.
+0
+-0.2
+0.2
+0.6
+0.4
+-300
+-200
+-100
+0
+100
+200
+300
+Seconds around macro news announcement
+Excess submission HFT
+Excess submission NHFT
+Figure 11: This ﬁgure depicts the HFT and NHFT excess submission ratios per second
+around NFP news releases.
+To conclude, the above analysis yields slightly diﬀerent results for HFT and NHFT
+liquidity supply depending on whether anticipated volatility due to previously announced
+macroeconomic news or unpredicted market stress as, e.g., in the week of March is considered. While passive HFTs tend to delete more limit orders as soon as market volatility
+rises suddenly, they know that macroeconomic news releases usually create high market
+33
+
+volatility and therefore already withdraw from markets several minutes before the event
+due to the risk of being adversely selected. Nonetheless, under both types of stress, HFTs
+overall supply less liquidity. By contrast, liquidity-providing NHFTs do not show a clear
+reaction to increased market stress.
+7
+Conclusion
+In this study, I examine the impact of HFTs for price discovery and excessive volatility
+around major macroeconomic news releases. I further analyze HFTs’ trading behavior
+and their role as market makers during episodes of high and low market stress. Within
+this work, I distinguish between two sources of volatility: unexpected volatility that
+is due to increasing risk aversion and expected volatility that follows from important
+macroeconomic news announcements.
+The ﬁrst part of the analysis looks at HFT trading behavior during a week of unexpected high volatility and a week of low volatility in a rather general setup. The results
+show that liquidity-taking (active) HFTs overall tend to follow momentum strategies.
+In times of high market stress they dominate over liquidity-providing (passive) HFTs
+who trade in the opposite direction of the market. But similar to active HFTs, the trading participation by passive HFTs is higher than usual when volatility rises unexpectedly. Against this evidence, slower traders overall withdraw from markets in phases of
+increased volatility since they deem the market too risky.
+The core part of this paper addresses the trading behavior of HFTs around the release
+of major macroeconomic news such as the NFPs and ECB rate decisions. Since these news
+releases are known in advance, they constitute a second source of market stress which is
+anticipated by market participants to a certain extent (“expected volatility”). My results
+show that active HFTs are more dominant than any other trading group during the release
+of important macroeconomic news. They beneﬁt from their speed advantage by trading
+according to the news surprise in the fraction of a second when the news is published.
+As soon as other slower traders buy or sell on the news, they close their positions and
+realize their trading proﬁts. Limit orders of slower traders are usually picked oﬀduring
+these events.
+Analyzing HFT trading activity on a tick-by-tick basis, I ﬁnd evidence
+that active HFTs substantially contribute to price discovery around macroeconomic news
+events. More speciﬁcally, in the milliseconds following the news release HFT trades contain more information than NHFT trades. Decomposing the variance into a permanent
+and a transitory component indicates a much larger contribution by active HFTs to transitory than to permanent volatility. Hence, the beneﬁt of higher market eﬃciency through
+HFT trading comes at the cost of short-term excessive volatility, which is the result of
+34
+
+the fast information processing and aggressive trading in response to news events. The
+above ﬁndings suggest that overall HFTs consume liquidity in times of higher volatility,
+either expected as a result of macroeconomic news announcements or unexpected due to
+higher risk aversion of investors. However, the strategies pursued by active HFTs seem to
+depend on the market environment. While in times of rising unexpected volatility active
+HFTs overall follow momentum strategies, around the release of macroeconomic news
+they apply news trading strategies and react independent of previous price movements.
+Finally, I address the question whether passive HFTs increasingly disappear from
+markets when uncertainty rises or whether they continue supplying liquidity. I ﬁnd that
+in response to an unexpected rise in market volatility, passive HFTs cancel more orders
+than they submit. The opposite holds true for passive NHFTs, who are probably not
+as fast or well enough informed to quickly withdraw from markets during those stress
+episodes. Nevertheless, given that passive HFTs contribute strongly to the traded volume
+when volatility rises suddenly, a large number of them still seem to provide liquidity when
+it is needed. Around macroeconomic news events, passive HFTs increasingly cancel limit
+orders already several minutes before the data are released and scale back their order
+submission activity at the same time due to the known risk of being adversely selected.
+The results of this study provide useful implications for academics, market participants
+and regulators. The ﬁnding that HFTs overreact to news and thereby contribute more
+strongly to noise than to information implies a higher risk of excessive volatility around
+important news events which can even cause ﬂash events. Therefore, regulators should
+think of potential measures to incentivize HFTs to generate more informational trades.
+The results that passive HFTs provide less liquidity during macroeconomic news events
+ampliﬁes the risk of market disruptions through the fast and strong reaction by active
+HFTs. In the future, slower market participants might be less willing to provide liquidity
+during those times given their inability to quickly withdraw from markets and the risk of
+being adversely selected, which could be additionally harmful for market stability. Hence,
+ﬁnding ways to guarantee liquidity provision even during stress episodes is of particular
+importance.
+35
+
+A
+Appendix
+A.1
+Classiﬁcation methodology of technical transactions by latencysensitive market participants
+Deutsche B¨orse Group applies a methodology in order to classify technical transactions by
+latency-sensitive market participants for internal purposes. Based on the assumption that
+for transactions arriving randomly the non-correlated intervals between single transactions
+constitute an exponential distribution, one can represent their ratios relative to each other
+as a linear function when using the log of the number of observations per time interval.
+The observation of a signiﬁcant accumulation of transactions within very short time
+intervals (< 500 µs) of all transactions by a speciﬁc business unit relative to all transactions
+by all other market participants provides an indication that these transactions have been
+initiated by a latency-sensitive participant. The results based on the application of this
+methodology are used exclusively for internal purposes in order to classify and analyze
+latency-sensitive activities. Neither the methodology nor the classiﬁcation are publicly
+available.
+This methodology is not entirely consistent with common classiﬁcation approaches
+such as, for example, those applied for regulatory purposes in order to identify highfrequency trading strategies. The aim of this methodology is the practicability and stability that guarantee the independence of third parties and transparency for the trading
+participants themselves.
+36
+
+A.2
+Price impact of active NHFTs and NHFTs for 20 ticks
+Table 7: Price impact of active HFT and NHFT - tick-based analysis 20 ticks
+Panel A: Single IRFs
+Active HFTs
+Active NHFTs
+Active HFT - NHFT
+SR
+0.053*
+0.084***
+-0.031
+(0.032)
+(0.032)
+(0.045)
+LR
+0.717***
+0.185**
+0.532***
+(0.080)
+(0.086)
+(0.117)
+LR −SR
+0.664***
+0.101
+0.563***
+(0.086)
+(0.092)
+(0.126)
+Panel B: Contribution to permanent and transitory variance
+Active HFTs
+Active NHFTs
+Public information
+Permanent variance
+0.129***
+0.000
+0.862***
+(0.021)
+(0.022)
+(0.032)
+Transitory variance
+0.453***
+0.040
+0.506***
+(0.109)
+(0.091)
+(0.118)
+Information-to-noise ratio
+0.285***
+0.010
+1.703***
+(0.082)
+(0.533)
+(0.403)
+Panel A of this table shows the results of the impulse responses from active HFT and
+NHFT order ﬂow on returns using 20 ticks, based on the VAR analysis including the
+macroeconomic news dummy as exogenous variable. SR denotes the short-run eﬀect, LR
+is the cumulative eﬀect after 20 ticks and (LR−SR) the diﬀerence between the two. Panel
+B includes the result of the variance decomposition for the permanent and transitory price
+components. It shows the shares of the variance of active HFTs and NHFTs, relative to
+the eﬃcient and transitory variance, as well as the information-to-noise ratio after 20
+ticks.
+Standard errors are given in parentheses and * denotes signiﬁcant at 10%, **
+denotes signiﬁcant at 5%, *** denotes signiﬁcant at 1%.
+37
+
+References
+Ait-Sahalia, Y. and M. Saglam (2014). High-frequency traders: taking advantage of speed.
+Working paper.
+Altavilla, C., D. Giannone, and M. Modugno (2014). Low frequency eﬀects of macroeconomic news on government bond yields. Working paper.
+ASIC (2012). Report 331: Dark liquidity and high-frequency trading. Australian Securities and Investments Commission (ASIC) Report.
+Benos, E. and S. Sagade (2013). High-frequency trading behaviour and its impact on
+market quality: evidence from the UK equity market. Working paper.
+Beveridge, S. and C. Nelson (1981). A new approach to the decomposition of economic
+time series into permanent and transitory components with particular attention to the
+measurement of the “business cycle”. Journal of Monetary Economics 7, 151–174.
+Biais, B. and T. Foucault (2014). High-frequency traders and market quality. Bankers,
+Markets and Investors 128, 5–19.
+Bank for International Settlement (2014). Market-making and proprietary trading: industry trends, drivers and policy implications. Study by the Committee on the Global
+Financial System.
+Bank for International Settlement (2016). Electronic trading in ﬁxed income markets.
+Study by the Markets Committee.
+Bank for International Settlement (2016). Fixed income market liquidity. Study by the
+Committee on the Global Financial System.
+Boehmer, E., K. Fong, and J. Wu (2012). International evidence on algorithmic trading.
+Working paper.
+Breckenfelder, H.-J. (2013). Competition between high-frequency traders, and market
+quality. Working paper.
+Brogaard, J. (2011). High-frequency trading and volatility. Working paper.
+Brogaard, J., T. Hendershott, and R. Riordan (2013). High-frequency trading and price
+discovery. Working paper.
+Chaboud, A., B. Chiquoine, E. Hjalmarsson, and C. Vega (2012). Rise of the machines:
+Algorithmic trading in the foreign exchange market. Working paper.
+38
+
+ESMA (2011).
+Report on trends, risks and vulnerabilities.
+European Securities and
+Markets Authority (ESMA) position paper.
+ESMA (2014). Securities and markets stakeholder group. European Securities and Markets Authority (ESMA) Annual Report.
+Foucault, T., J. Hombert, and I. Rosu (2015). News trading and speed. Working paper.
+Gao, C. and B. Mizrach (2013). Market quality breakdowns in equities. Working paper.
+Hasbrouck, J. (1991a). Measuring the information content of stock trades. Journal of
+Finance 46, 179–207.
+Hasbrouck, J. (1991b). The summary informativeness of stock trades: An econometric
+analysis. Review of Financial Studies 4, 571–595.
+Hasbrouck, J. (1993). Assessing the quality of a security market: a new approach to
+transaction-cost measurement. Review of Financial Studies 6, 191–212.
+Hasbrouck, J. and G. Saar (2009). Technology and liquidity provision: The blurring of
+traditional deﬁnitions. Journal of Financial Markets 12, 143–172.
+Hendershott, T., C. M. Jones, and A. J. Menkveld (2011).
+Does algorithmic trading
+improve liquidity? Journal of Finance 66, 1–33.
+Hendershott, T. and R. Riordan (2011). Algorithmic trading and information. Working
+paper.
+Hirschey, N. (2013). Do high-frequency traders anticipate buying and selling pressure?
+Working paper.
+Jiang, G. J., I. Lo, and G. Valente (2013). High-frequency trading around macroeconomic
+news announcements: Evidence from the US treasury market. Working paper.
+Jones, C. M., O. Lamont, and R. L. Lumsdaine (1998). Macroeconomic news and bond
+market volatility. Journal of Financial Economics 47, 315–337.
+Liu, X., I. Lo, M. Nguyen, and G. Valente (2014). High-frequency trading and treasury
+bond returns. Working paper.
+Menkveld, A. J. (2013). High-frequency trading and the new market makers. Journal of
+Financial Markets 16, 712–740.
+39
+
+U.S. Department of Treasury, Board of Governors of the Federal Reserve System, Federal
+Reserve Bank of New York, U.S. Securities and Exchange Commission, U.S. Commodity
+Futures Trading Commission (2015). The U.S. Treasury Market on October 15, 2014.
+Joint StaﬀReport.
+Schopen, J. and M. Missong (2011).
+The reaction of stock-bond correlations to risk
+aversion and real time macroeconomic announcements. Working paper.
+U.S. Securities and Exchange Commission (2014).
+Equity market structure literature
+review part II: High-frequency trading. Working paper.
+Shorter, G. and R. S. Miller (2014).
+High-frequency trading: Background, concerns,
+and regulatory developments.
+CRS Report 43608. Congressional Research Service,
+Washington DC.
+TABB Group (2012). U.S. Equities Market 2012: Mid-year review. Study.
+Zhang, F. (2010). High-frequency trading, stock volatility, and price discovery. Working
+paper.
+Zhang, L., P. Mykland, and Y. Ait-Sahalia (2005). A tale of two time scales: determining
+integrated volatility with noisy high-frequency data. Journal of the American Statistical
+Association 100, 1394–1411.
+Zhang, S. (2013). Need for speed: An empirical analysis of hard and soft information in
+a high-frequency world. Working paper.
+Zhang, S. and R. Riordan (2011).
+Technology and market quality: the case of highfrequency trading. Working paper.
+40

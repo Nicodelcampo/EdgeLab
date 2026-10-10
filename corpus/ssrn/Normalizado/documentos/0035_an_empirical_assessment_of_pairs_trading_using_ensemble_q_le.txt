@@ -1,0 +1,638 @@
+WORKING PAPER
+Real-World Viability of Cointegration-Based
+Forex Pairs Trading Strategy with Walk-Forward
+Optimization
+Alexandre Landi† and Tetiana Lemishko‡
+†IBM, alexandre.landi1@ibm.com
+‡Balanced Research, tetiana.lemishko@balanced-research.com
+December 22, 2024
+Abstract
+This study considers the application of Walk-Forward Optimization
+(WFO) to evaluate the real-world viability of a cointegration-based pairs
+trading strategy in the Forex market.
+In previous research, we observed that pairs trading benefited from
+the use of a cointegration-based filter such that trades on some given
+pair would be executed in the test window only when cointegration was
+observed in the training window. However, such improved performance
+relied on an arbitrary set of fixed parameters that produced decent results
+over the entire 17-year period.
+In this study, we apply WFO to dynamically recalibrate strategy parameters over time to enable adaptation to evolving market conditions.
+Results show that the use of WFO not only did not worsen historical performance, but also reduced maximum drawdowns, thus improving riskadjusted performance with respect to using the fixed parameter set.
+Cointegration; Forex; Pairs trading; Walk-Forward Optimization; Risk-adjusted
+performance; Cointegration
+C32; G11; G17
+1
+Introduction
+Pairs trading, a strategy that involves identifying two correlated assets and
+exploiting temporary price divergences between them, has proven effective in
+different markets, such as equities and commodities, where asset pairs often
+display measurable correlations and mispricing opportunities Gatev et al. [7],
+Liu et al. [13].
+1
+
+WORKING PAPER
+Simple pairs trading relies on short-term price correlations, assuming that asset prices will revert to their historical mean, but it lacks robustness in accounting for long-term trends or relationships. In contrast, cointegration-based pairs
+trading identifies pairs with stable long-term equilibrium relationships, ensuring mean reversion even in the presence of non-stationary financial time series,
+offering a more reliable framework for pairs trading Gatev et al. [7], Alexander
+[6]. Thus, cointegration techniques help identify pairs that, despite short-term
+price divergence in price fluctuations, maintain a consistent long-term relationship. This approach has proved to enhance the reliability of trading signals by
+filtering out false signals, leading to improved risk-adjusted performance Jiang
+and Xu [10].
+Our previous research Lemishko et al. [18] explored the application of cointegration in pairs trading within the Forex market. We investigated the profitability of incorporating the cointegration filter by comparing the performance of a
+simple pairs trading strategy with a cointegration-based approach. This study
+focused on pairs that included combinations of seven most liquid currencies,
+and we applied both strategies to a 17-year dataset of historical daily adjusted
+closing prices. Our findings revealed that the cointegration-based pairs trading
+strategy outperformed the simpler mean reversion strategy, demonstrating superior risk-adjusted performance, as indicated by higher Sharpe, Sortino, and
+Calmar ratios.
+Building upon these results, this study extends our previous work by incorporating Walk-Forward Optimization (WFO) to further gauge the real-world
+viability of the cointegration-based pairs trading strategy. WFO involves dynamically recalibrating model parameters through a series of rolling time windows, providing a more adaptive approach to changing market conditions. This
+methodology is expected to improve the robustness and reliability of the cointegrationbased strategy over time, offering more timely and responsive trading decisions.
+The aim of this study is to evaluate whether Walk-Forward Optimization
+can provide consistent and stable performance for the cointegration-based pairs
+trading strategy when applied to the Forex market. By applying this technique
+to the same 17-year dataset, we aim to investigate whether ongoing adjustments
+to the strategy parameters enable maintaining its performance in real-time trading scenarios.
+2
+Literature review
+The success of trading strategies is closely tied to the efficiency of the markets in
+which they operate. As a result, a thorough understanding of financial market
+efficiency is essential for investors aiming to design and implement effective
+trading strategies. [5] describes an informationally efficient market as one where
+all participants have swift access to relevant information, and this information is
+fully incorporated into asset prices. In such markets, security prices accurately
+represent their true intrinsic value.
+Backtesting is essential for developing systematic investment strategies, but
+2
+
+WORKING PAPER
+it has many pitfalls that can lead to false findings and strategies that do not
+work in real markets. Backtesting provides valuable insights into a strategy’s
+performance in past market conditions. However, it is inherently limited in its
+ability to predict future market behavior. Traders who have used backtesting
+understand that historical performance is not always a reliable indicator of future outcomes, as market dynamics can vary significantly over time. Bailey et al.
+[12] explore backtest overfitting, where a strategy optimized on historical data
+captures noise rather than genuine patterns, leading to poor performance on new
+datasets. Using a simulator with random walk time series, they demonstrate
+how ”optimal” strategies derived in-sample often fail out-of-sample, highlighting
+the need for rigorous validation techniques in financial modeling. In addition,
+the U.S. Securities and Exchange Commission announced that its examination
+of hedge funds uncovered a number of issues that are examples of “selection
+bias”. According to a Wall Street Journal report, the SEC “uncovered marketing and advertising issues, with some firms potentially misleading clients on
+past performance by ‘cherry picking’ their results from fund to fund” Ackerman
+[11].
+To address this issue, it is essential to rigorously evaluate trading strategies
+before deploying them. This involves using advanced techniques to ensure that
+the strategy is not merely overfitted to historical data but can also perform
+reliably in real-world market conditions. One such method for robust evaluation is Walk-Forward Optimization (WFO), which is widely used in financial
+forecasting to determine the most effective parameters for a trading strategy
+Kirkpatrick and Dahlquist [9].
+Walk-Forward Optimization provides critical
+insights into the robustness and adaptability of a strategy. By iteratively retraining models or recalibrating indicator parameters on updated market data,
+this approach tests how effectively a strategy adjusts to evolving market conditions, thereby improving its reliability in real-world applications.
+By utilizing only the information available at each historical point, it mitigates look-ahead bias and provides a realistic simulation of real-time strategy performance. Additionally, this method helps identify whether a strategy’s
+profitability and stability are sustainable over time or prone to deterioration.
+In practice, Walk-Forward Optimization involves splitting the dataset into sequential periods. For each period, the strategy is optimized on the preceding
+data (the ”training” period) and then evaluated on the subsequent data (the
+”testing” period).
+This rolling approach ensures continuous adaptation and
+validation of the strategy’s parameters in line with evolving market conditions.
+Walk-Forward Analysis (WFA) was created by Pardo [4] and expanded in
+the second edition Pardo [8]. The author emphasizes the importance of testing multiple parameter sets using historical simulations across various market
+conditions and timeframes. This iterative optimization process culminates in
+Walk-Forward Analysis, a robust methodology for assessing a strategy’s statistical significance and long-term viability. WFA enables traders to determine
+whether a strategy can maintain its effectiveness on unseen, out-of-sample data,
+enhancing its adaptability in dynamic market environments.
+For instance, Carta et al. [15] employed a Walk-Forward Optimization strat3
+
+WORKING PAPER
+egy, where they divided the in-sample (IS) time series into several segments,
+each consisting of training and testing sets, to optimize ensemble hyperparameters and intrinsic parameters, using performance on the testing data to identify
+the best parameters for the strategy across different segments. This approach
+is part of a broader, fully automated, and optimized ensemble strategy introduced in their work, which combines optimized feature selection with a set of
+classifiers whose intrinsic and hyper-parameters are learned specifically for each
+market under consideration. The strategy adapts to the chosen market, addressing challenges such as data irregularity and high unpredictability, and has
+been demonstrated to outperform both the Buy and Hold baseline and several
+state-of-the-art methods in real-world futures market experiments.
+Moreover Arian et al. [17] highlight Walk-Forward Optimization as a traditional method for financial model validation but notes its limitations, including
+sensitivity to window size, poor handling of temporal dependencies, and vulnerability to non-stationarity in financial data. It also struggles with false discovery
+prevention and overfitting in dynamic market conditions.
+While WFO preserves chronological data order, its rigidity and computational intensity make
+it less robust compared to advanced methods like Combinatorial Purged CrossValidation (CPCV), which better address biases, adapt to regime shifts, and
+offer more reliable performance assessments through diverse train-test splits.
+3
+Methodology
+3.1
+Data
+We collected historical daily adjusted closing prices of 7 currencies such as Euro
+to US Dollar (EUR/USD), British Pound to US Dollar (GBP/USD), US Dollar
+to Japanese Yen (USD/JPY), US Dollar to Swiss Franc (USD/CHF), US Dollar
+to Canadian Dollar (USD/CAD), Australian Dollar to US Dollar (AUD/USD),
+New Zealand Dollar to US Dollar (NZD/USD) from Yahoo Finance [19]. The
+overall study period spans 17 years, from January 1, 2007, to January 1, 2024,
+which is the longest period for which uninterrupted daily time series data is
+available for the entire set of selected currencies.
+In this study, to standardize the data and ensure that all currency pairs
+have a common denominator of USD, we converted the USD/JPY prices to
+JPY/USD by taking their reciprocal, effectively representing the value of one
+USD in terms of JPY. 1
+We performed similar conversions for other currencies, such as USD/CHF
+to CHF/USD and USD/CAD to CAD/USD, to maintain consistency across all
+data points. This allowed for a uniform comparison and analysis of the currency
+pairs. Furthermore, since all the currencies have USD as the denominator, we
+will, for simplicity, refer to the selected currencies without mentioning ’USD’
+1JPY/USD =
+1
+USD/JP Y . For example, on Friday, December 30, 2022, the closing price of
+one Japanese Yen was 131.12 American Dollars Pound Sterling Live [16]. This means that 1
+Dollar was equivalent to 1/131.12 = 0.0076 Yen.
+4
+
+WORKING PAPER
+(e.g., instead of ’EUR/USD,’ we will use ’EUR’). Then, we converted the currencies’ closing prices into logarithmic prices to normalize the data, making it
+easier to compare assets with different price levels (e.g. Euro versus the Japanese
+Yen).
+3.2
+Returns of Individual Currency Pairs generated by
+the Cointegration-Based Pairs Trading Strategy
+In our previous study Lemishko et al. [18], we proposed a cointegration-based
+pairs trading strategy applied to 42 unique currency pair combinations derived
+from 7 selected currencies. To implement the strategy, we used a training window of 257 days (approximately one year) and a testing window of 21 days
+(roughly one month). The strategy involved an iterative procedure over 17years period of study to ensure consistent evaluation: after each testing period,
+a new training and testing cycle was initiated.
+During each training period, we performed cointegration analysis on the
+currency pairs using the Engle-Granger test to identify pairs with a long-term
+statistical relationship. The first step of the Engle-Granger test involves conducting the Augmented Dickey-Fuller (ADF) test on each of the two time series
+variables to determine whether each variable is non-stationary. If both variables
+in the pair were individually non-stationary, we proceeded to the second step,
+which involved performing a regression analysis where one variable is regressed
+on the other. The regression equation takes the form:
+yt = α + β · xt + ϵt
+where yt is the dependent variable, xt is the independent variable, α is the
+intercept, β is the slope coefficient, and ϵt is the residual term. The residuals,
+ˆϵt = ˆyt −ˆβ · xt −ˆα, represent the deviation of the pair from the long-term
+equilibrium.
+The second step of the Engle-Granger test is to perform an ADF test on the
+residuals of the regression. If the residuals are found to be non-stationary, it
+implies that there is no evidence of cointegration.
+In simple terms, if both yt and xt are non-stationary, but the residuals ˆϵt
+are stationary, then yt and xt are said to be cointegrated. This implies that,
+despite the individual trends in the asset prices, a stable long-term relationship
+exists between them.
+The residuals, ˆϵt, are considered as the so-called synthetic spread, which captures the deviation of the two asset prices from their
+equilibrium relationship. The slope coefficient ˆβ is an important measure, as it
+represents the sensitivity of yt to changes in xt, or in other words, how much yt
+responds to fluctuations in xt.
+Specifically, the synthetic spread, ˆϵt, was calculated as the difference between
+the log prices of the paired currencies, adjusted by the regression coefficient β:
+ˆϵt = log(priceofcurrency1) −β · log(priceofcurrency2),
+where ˆϵt represents the synthetic spread.
+5
+
+WORKING PAPER
+The z-score for each day in the testing period was then computed as the
+difference between the current spread value and the mean of the synthetic spread
+from the training period, normalized by the standard deviation of the spread
+observed during the training period:
+Z −score(ˆϵt) = ˆϵt −µ(ˆϵt)
+σ(ˆϵt)
+,
+where µ(ˆϵt) and σ(ˆϵt) are the mean and standard deviation of the synthetic
+spread during the training period. A threshold for the z-score was set at ±1,
+and trading signals were generated when the z-score exceeded this threshold.
+Specifically, a long position was taken when the z-score fell below the negative
+threshold, indicating a potential buy opportunity, and a short position was
+taken when the z-score exceeded the positive threshold, signaling a potential
+sell opportunity.
+To simulate real-world trading conditions, a two-day lag was applied between
+the generation of the signal and the execution of the trade. This means that if a
+trading signal was generated at time t, the trade would be executed at time t+2,
+allowing for a more realistic simulation of the time required to act on the signal
+and account for practical constraints such as order execution delays or market
+frictions. The return for the strategy on any given day was then calculated as
+the product of the signal at t −2 and the price change at time t, as shown in
+the formula:
+StrategyReturn(t) = Signal(t −2) × ∆Price(t).
+This approach ensures that the strategy accounts for the inherent delays and
+complexities involved in real trading environments.
+This process was repeated across all testing periods, generating a time series
+of returns for each of the 42 currency pairs.
+3.3
+Walk-Forward Optimization
+In this study, we propose a similar approach but, instead of selecting the pairs
+yielding ex post a positive Sharpe ratio over the entire 17-year period of study,
+we dynamically evaluate the Sharpe ratio of the strategy for each pair on a walkforward basis. Specifically, we compute the rolling Sharpe ratio for each pair
+over a rolling training window (t−δtrain, t), and execute trades on a rolling test
+window (t, t+δtest) only when the Sharpe ratio for a given pair is positive in the
+corresponding training window (t−δtrain, t). This approach more closely mirrors
+the real-world scenario faced by practitioners, who need to make decisions at
+time t′ based on information available at time t, where t < t′.
+In this study, we implemented Walk-Forward Optimization using various
+rolling training windows δtrain of 1, 3, 6, 12, 18, 24, 36, 48, and 60 months
+to evaluate the performance of an optimized cointegration-based pairs trading
+strategy. At each window, we repeated the procedure described below.
+6
+
+WORKING PAPER
+First, we converted the optimization windows from months into days, taking
+into account that there are approximately 21 days in one month of trading in
+the Forex market.
+To assess the risk-adjusted returns of each currency pair, we computed the
+rolling Sharpe ratio over a window of N days. The rolling Sharpe ratio is calculated as:
+S = Rmean(N) × 257
+Rstd(N) ×
+√
+257
+where Rmean(N) represents the rolling mean of returns over the N-days
+window, and Rstd(N) represents the rolling standard deviation. The factor of
+257 corresponds to the average number of trading days in a year in the Forex
+market. This calculation provides a dynamic view of each pair’s risk-adjusted
+performance, updating over time.
+Next, we define a mask to filter out the currency pairs with a positive rolling
+Sharpe ratio. The mask is created by selecting those pairs where the rolling
+Sharpe ratio exceeds zero, with a shift applied by one day to avoid look-ahead
+bias. This mask effectively selects only the pairs that have shown positive performance in the immediate past in terms of their risk-adjusted returns, assuming
+the hypothesis that they will continue to perform positively in the near future.
+This study aims to test whether this hypothesis holds. For each day in the
+dataset, we count the number of currency pairs that meet the positive Sharpe
+ratio threshold. This is done by summing the ‘True‘ values across the mask.
+This step ensures that we have an accurate count of the pairs selected for each
+rolling window.
+Finally, the aggregate returns of the portfolio are calculated by averaging
+the returns of the selected pairs at each point in time. This calculation normalizes the returns by the number of selected pairs, ensuring that the portfolio
+performance reflects the varying number of pairs included in each period.
+By applying this Walk-Forward Optimization methodology, we ensure that
+the strategy is adaptive and responsive to changing market conditions, with a
+robust performance evaluation across different time windows.
+In order to compare the performance of the walk-forward optimized cointegrationbased strategy with dynamic pair selection over time and the strategy applied
+to the entire study period (we will simply refer to it as the fixed pair selection
+strategy), we first excluded the initial period used in optimization from the time
+series of returns obtained for the fixed pair selection strategy applied to the entire study period, ensuring that both return series start and end at the same
+dates. We then adjusted their leverage to achieve an arbitrary target annualized
+return of 10% for both. Specifically, we applied a leverage factor of 21.71 to the
+dynamic pair selection strategy and 26.40 to the fixed pair selection strategy.
+This adjustment ensures that both strategies deliver the same arbitrary target
+return of 10%, enabling a direct comparison of their respective risk given the
+same unit of return.
+7
+
+WORKING PAPER
+3.4
+Evaluation
+To evaluate whether Walk-Forward Optimization can provide consistent and
+stable performance for the proposed cointegration-based pairs trading strategy
+when applied to the Forex market we analyzed the trading performance of the
+dynamic pair selection strategy and compared it with the results obtained in our
+previous study, where we used fixed and ex post pair selection. We evaluated
+the performance of the strategies by calculating the metrics suggested by Sharpe
+[1], Sortino and van der Meer [3], Young [2] and Ardia et al. [14]: annualized
+return, annualized volatility, Sharpe ratio, Sortino ratio, downside risk, Calmar
+ratio, maximum drawdown, skewness and kurtosis.
+4
+Results
+4.1
+Impact of Optimization Window on Trading Strategy
+Performance
+Figure 1 presents the Sharpe, Sortino, and Calmar ratios, along with the annualized return, volatility, and maximum drawdown, obtained for the trading
+strategy across various optimization windows.
+It can be seen that shorter windows, such as 1 to 6 months, demonstrate
+high variability and appear overly reactive to short-term patterns in the data.
+While they may occasionally yield high returns, this comes at the expense of
+increased volatility and substantial drawdowns, making them less reliable for
+practical application.
+The 18-month optimization window stands out showing favorable metrics
+such as a relatively high Sharpe, Calmar, and Sortino ratios, along with reasonable drawdowns and volatility. However, one should note that this exceptional
+results might be highly sensitive to small changes in the data, which suggests
+a risk of overfitting. While the metrics look strong on the surface, the strategy
+optimized with this window may fail to generalize well to out-of-sample data or
+varying market conditions, limiting its practical utility.
+On the other hand, longer optimization windows, such as 24 to 60 months,
+exhibit more stable and consistent performance across the chosen metrics. While
+these windows may not achieve the highest Sharpe or Sortino ratios, they provide steadier annualized returns, lower volatility, and more manageable drawdowns. The robustness of these windows lies in their relatively lower sensitivity
+to small changes in the window size, which makes the resulting strategy more
+reliable and adaptable to different market environments. These longer windows
+achieve a balance between performance and stability, avoiding the pitfalls of
+overfitting while maintaining competitive results.
+8
+
+WORKING PAPER
+Figure 1: Impact of optimization window on trading strategy performance
+4.2
+Analysis of the 36-Month Walk-Forward Optimization
+Strategy Across 42 Pairs
+Here, as an example, our aim is to illustrate the behavior of each pair when applying WFO with an optimization window of 36 months, chosen for its relatively
+lower sensitivity to small changes in the data (see Section 4.1).
+Figure 2 presents a heatmap that illustrates the number of trades within 17
+years of study across 42 currency pairs, where the first currency listed vertically
+pairs with the second currency listed horizontally. It can be seen that all the
+pairs show low trading frequencies. GBP-related pairs (e.g., GBP/EUR with
+366 trades and EUR/GBP with 368) show the highest trading activity, while
+pairs like JPY/CAD (2) and EUR/CHF (14) demonstrate the lowest trading
+activity.
+Figure 3 presents a heatmap of annualized average returns calculated for
+42 currency pairs and measured in percentages. Among all pairs, EUR/CHF
+exhibited an exceptionally high annualized average return of 119.26 %, while
+9
+
+WORKING PAPER
+Figure 2: Heatmap of number of trades for 42 currency pairs within 17 years of
+study
+JPY/CAD showed an exceptionally low value of -162.16 %.
+These extreme
+results may be attributed to the remarkably low number of trades associated
+with these pairs, with 14 and 2 trades detected for EUR/CHF and JPY/CAD,
+respectively.
+Thus, we set an arbitrary filter of 30 trades to discard pairs that could
+exhibit anomalous performance due to a low trading frequency. Figure 4 shows
+a heatmap of annualized average returns calculated for 42 currency pairs showing
+the number of trades higher than 30.
+10
+
+WORKING PAPER
+Figure 3: Heatmap of annualized average returns calculated for 42 currency
+pairs and measured in %
+11
+
+WORKING PAPER
+Figure 4: Heatmap of annualized average returns calculated for 42 currency
+pairs showing the number of trades higher than 30 and measured in %
+Figure 5 presents a heatmap of annualized average volatilities for all 42
+currency pairs, while Figure 6 focuses on pairs with more than 30 trades. The
+EUR/CHF pair exhibited the highest average volatility of 25.45%, likely due to
+the limited number of trades recorded for this pair. In contrast, the NZD/AUD
+pair showed the lowest volatility of 4.61%. After applying the minimum trade
+threshold, the observed volatilities ranged from 4.61% (NZD/AUD) to 23.78%
+(AUD/JPY).
+Figure 7 displays a heatmap of annualized Sharpe ratios for all 42 currency
+pairs, with Figure 8 providing the filtered values for pairs exceeding 30 trades.
+The JPY/CAD pair recorded an unusually low Sharpe ratio of -23.20, attributed
+to the very poor performance coupled with the very small number of trades. On
+the other hand, the EUR/CHF pair achieved the highest Sharpe ratio of 4.69,
+while also having a very low number of trades. After filtering, the Sharpe ratios
+ranged from -3.29 (AUD/NZD) to 3.10 (CHF/EUR).
+Figure 9 illustrates a heatmap of annualized Sortino ratios for all 42 currency pairs, with Figure 10 showing results for pairs with over 30 trades. The
+JPY/CAD pair again displayed an extremely low Sortino ratio of -23.20, explained by its poor performance coupled with the very low trading frequency,
+thus generating an outsized value with respect to the rest of the table, while
+the EUR/CHF pair had the highest value of 24.17, which is due to the high returns generated by very low number of trades. Post-filtering, the Sortino ratios
+ranged between -4.61 (AUD/NZD) and 5.37 (CAD/JPY).
+Lastly, Figure 11 showcases a heatmap of annualized Calmar ratios for all
+42 currency pairs, while Figure 12 focuses on pairs with at least 30 trades. The
+JPY/CAD pair showed an extraordinarily low Calmar ratio of -489.04, this is attributed to the extremely poor performance combined with the minimal number
+12
+
+WORKING PAPER
+Figure 5: Heatmap of annualized average volatilities calculated for 42 currency
+pairs and measured in %
+Figure 6: Heatmap of annualized average volatilities calculated for 42 currency
+pairs showing the number of trades higher than 30 and measured in %
+13
+
+WORKING PAPER
+Figure 7: Heatmap of annualized Sharpe ratios calculated for 42 currency pairs
+Figure 8: Heatmap of annualized Sharpe ratios calculated for 42 currency pairs
+showing the number of trades higher than 30
+14
+
+WORKING PAPER
+Figure 9: Heatmap of annualized Sortino ratios calculated for 42 currency pairs
+Figure 10: Heatmap of annualized Sortino ratios calculated for 42 currency pairs
+showing the number of trades higher than 30
+15
+
+WORKING PAPER
+of trades, resulting in a disproportionately negative large value relative to the
+rest of the table. In contrast, the EUR/CHF pair recorded the highest Calmar
+ratio at 30.61, while showing similarly low trading frequency. After applying
+the trade filter, the observed Calmar ratios ranged from -3.53 (AUD/NZD) to
+10.53 (CHF/EUR).
+Figure 11: Heatmap of annualized Calmar ratios calculated for 42 currency pairs
+Figure 13 displays a heatmap of the skewness of returns calculated for all 42
+currency pairs. The value calculated for the JPY/CAD pair is NaN because the
+.skew() function in the Pandas library, which is used to calculate the skewness
+of a sample, employs N-2 in the denominator (where N is the number of trades,
+which in this case is 2), the denominator becomes zero, resulting in a NaN value.
+Figure 14 shows the skewness values for pairs with more than 30 trades.
+The skewness heatmap reveals asymmetries in the return distributions of
+currency pairs.
+The findings include relatively strong positive skewness for
+JPY/AUD (1.53) and CHF/EUR (1.82), indicating a higher frequency of positive returns during the study period considered, while pairs such as AUD /
+CHF (-1.01) and GBP / CAD (-1.20) exhibit negative skewness, suggesting a
+higher frequency of observing negative values during the study period considered. Many pairs involving EUR and NZD show near-zero skewness, indicating
+symmetric distribution of returns.
+Figure 15 presents a heatmap of the kurtosis of returns calculated for all 42
+currency pairs. The same issue of a NaN value is observed for JPY/CAD, which
+arises because the Pandas .kurt() function, used to calculate the kurtosis of a
+sample, also uses N-2 in the denominator. Since this pair has only two trades,
+the denominator becomes zero, resulting in a NaN value. Figure 16 displays the
+kurtosis values for pairs with more than 30 trades.
+The kurtosis heatmap illustrates the tail risk or extremity of return distributions for currency pairs. When kurtosis is 3, it indicates that the distribution
+16
+
+WORKING PAPER
+Figure 12: Heatmap of annualized Calmar ratios calculated for 42 currency pairs
+showing the number of trades higher than 30
+Figure 13: Heatmap of skewness of returns calculated for 42 currency pairs
+17
+
+WORKING PAPER
+Figure 14: Heatmap of skewness of returns calculated for 42 currency pairs
+showing the number of trades higher than 30
+Figure 15: Heatmap of kurtosis of returns calculated for 42 currency pairs
+18
+
+WORKING PAPER
+Figure 16: Heatmap of kurtosis of returns calculated for 42 currency pairs showing the number of trades higher than 30
+has the same tail thickness as a normal distribution. Higher kurtosis values
+(darker red) suggest heavier tails and a higher frequency of observing extreme
+returns during the considered period of study, while lower values (light blue)
+indicate thinner tails and a lower frequency of observing extreme values during the considered period of study. CHF/EUR (8.13) and JPY/AUD (8.11)
+show the highest kurtosis, highlighting a high frequency of extreme returns for
+these pairs during the study period considered. Similarly, GBP/CAD (6.52) and
+EUR/NZD (6.31) also exhibit heavy tails. In contrast, pairs such as CAD/EUR
+(-0.98) and CAD/NZD (-0.51) have low or negative kurtosis, implying more
+stable and less extreme return distributions during the considered period of
+study.
+4.3
+Overall Performance Comparison of Fixed Pair Selection (Ex Post) versus Dynamic Pair Selection (WalkForward)
+In this section, we present a performance comparison of the cointegration-based
+trading strategy with fixed pair selection applied to the entire study period ex
+post - as obtained in our previous publication Lemishko et al. [18] - versus the
+walk-forward optimized strategy with dynamic pair selection based on the rolling
+Sharpe ratio of each pair at any given time. Both strategies were executed for
+42 selected currency pairs using training/testing windows of 257/21 days and
+a z-score threshold of ±1 and adjusted to the (arbitrarily chosen) equal level
+of annualized target return of 10%. We selected a 36-month window, which is
+sufficiently large to allow the strategy to demonstrate stable performance (see
+19
+
+WORKING PAPER
+Section 4.1).
+Table 1: Performance of the strategy applied to the whole period of study
+(cointegration-based strategy) vs. the optimized cointegration-based strategy
+adjusted to the equal level of annualized return of 10%
+Metrics
+Fixed Pair Selection
+Ex Post
+Dynamic Pair Selection
+Walk-Forward
+Annualized Return (%)
+10.01
+10.00
+Annualized Volatility (%)
+17.25
+17.58
+Sharpe Ratio
+0.58
+0.57
+Sortino Ratio
+0.53
+0.49
+Calmar Ratio
+0.23
+0.36
+Maximum Drawdown (%)
+-44.14
+-27.71
+Downside Risk (%)
+18.83
+20.23
+Skewness
+2.23
+1.47
+Kurtosis
+59.41
+20.52
+Table 1 compares the performance of fixed pair selection (ex post) versus
+dynamic pair selection (walk-forward), both scaled to achieve an equal annualized return of 10%.
+At nearly identical annualized returns both strategies
+exhibit comparable annualized volatility (17.25% vs. 17.58%). This similarity
+in volatility results in closely aligned Sharpe ratios (0.58 vs. 0.57), indicating
+that both strategies offer similar risk-adjusted returns. Notably, dynamic pair
+selection (walk-forward) shows a significantly improved Calmar ratio (0.36 vs.
+0.23), indicating superior risk-adjusted returns relative to drawdowns.
+The most striking improvement is indeed observed in the maximum drawdown, where dynamic pair selection (walk-forward) experienced a drawdown of
+-27.71%, substantially better than the -44.14% drawdown of fixed pair selection
+(ex post).
+Further analysis of skewness and kurtosis reveals additional insights into the
+distribution of returns for the two strategies. Skewness measures the asymmetry of the return distribution, and a higher skewness value (2.23 for fixed pair
+selection vs. 1.47 for dynamic pair selection) indicates a stronger tendency for
+extreme positive returns.
+Kurtosis, on the other hand, measures the ”tailedness” of the distribution.
+Fixed pair selection (ex post) showed a much higher kurtosis (59.41 vs. 20.52),
+indicating a return distribution with greater frequency of extreme deviations
+from the mean on either side of the distribution. In contrast, the lower kurtosis
+of dynamic pair selection (walk-forward) reflects a distribution with less extreme
+events.
+Figure 17 shows a comparison of cumulative returns obtained by the two
+approaches - fixed pair selection (ex post) and dynamic pair selection (walkforward) - both executed for 42 selected currency pairs at the training/testing
+windows of 257/21 days and the z-score threshold of ±1 and both adjusted to
+the (arbitrarily chosen) equal level of annualized target return of 10%, while
+20
+
+WORKING PAPER
+Figure 18 shows the respective drawdowns suffered by the two approches.
+Figure 17: Comparison of cumulative returns obtained by fixed pair selection
+(ex post) vs dynamic pair selection (walk-forward), given an annualized target
+return of 10%
+Figures 17 and 18 show that fixed pair selection (ex post) delivered steady
+growth in cumulative returns, but it was marked by gigantic drawdowns, particularly during periods like 2020–2021. On the other hand, dynamic pair selection
+(walk-forward) exhibits a smoother growth trajectory, with significantly reduced
+and shorter drawdowns.
+21
+
+WORKING PAPER
+Figure 18: Comparison of drawdowns obtained by fixed pair selection (ex post)
+vs dynamic pair selection (walk-forward), given an annualized target return of
+10%
+22
+
+WORKING PAPER
+5
+Conclusions
+This study builds upon our previous work by incorporating Walk-Forward Optimization (WFO) to enhance the fixed pair selection (ex post) cointegrationbased pairs trading strategy’s real-world viability through dynamic pair selection (walk-forward). WFO recalibrates model parameters through rolling time
+windows, enabling the strategy to adapt to changing market conditions. Using
+a 17-year Forex dataset, this study evaluates whether WFO can deliver consistent and stable performance by maintaining robustness, thereby supporting
+more timely and responsive trading decisions.
+We analyzed the effects of varying optimization windows and found that
+medium-to-long optimization windows (24 to 60 months) are less sensitive to
+parameter changes, delivering more consistent performance.
+To illustrate the comparison between fixed pair selection (ex post) and dynamic pair selection (walk-forward), we used a 36-month optimization window
+and scaled both strategies to the same arbitrarily chosen annualized target return of 10%. The analysis of the results revealed that - while the annualized
+returns and overall volatility of the two strategies are nearly identical - their
+behavior differs in terms of extreme risk and drawdown.
+The Sharpe ratios
+are similar, indicating comparable risk-adjusted returns overall, but dynamic
+pair selection (walk-forward) exhibits significant improvements in its maximum
+drawdown and - consequently - Calmar ratio.
+The improved Calmar ratio
+highlights better risk-adjusted returns relative to drawdowns, and the significantly reduced maximum drawdown.
+These improvements suggest that the
+optimization process effectively reduces the magnitude and duration of drawdowns, thereby enhancing the stability and reliability of the strategy.
+By aligning the strategies to achieve the same returns, it becomes clear
+that dynamic pair selection through walk-forward optimization not only did
+not worsen risk-adjusted performance, but also mitigated tail risk as well as
+drawdowns.
+The relative consistency in the performance of the fixed pair selection (ex
+post) versus dynamic pair selection (walk-forward) observed in this study shows
+that a cointegration-based pairs trading strategy applied to foreign exchange
+markets could be well-suited for real-world trading scenarios.
+Future research could extend the cointegration-based pairs trading strategy
+to other asset classes, such as equities, commodities, and cryptocurrencies, to assess its robustness across different markets with distinct dynamics and volatility
+patterns. In addition, investigating the effects of market regimes and volatility
+shifts on the performance of the strategy would provide further insights into its
+stability and effectiveness across various market environments.
+References
+[1] Sharpe, W.F., Mutual fund performance. Journal of Business, 1966, 39(1),
+119–138.
+23
+
+WORKING PAPER
+[2] Young, T.W., Calmar ratio: A smoother tool. Futures, 1991, 20(1), 40–41.
+[3] Sortino, F.A. and van der Meer, R., Downside risk. Journal of Portfolio
+Management, 1991, 17(4), 27–31.
+[4] Pardo, R.E., Design, Testing and Optimization of Trading Systems, 1st
+edn, 1992, J. Wiley: US, pp. 108–119.
+[5] Sharpe, W.F., The Sharpe Ratio. The Journal of Portfolio Management,
+1994, Fall. Stanford University.
+[6] Alexander, C., Optimal hedging using cointegration. Philosophical Transactions of the Royal Society of London. Series A: Mathematical, Physical
+and Engineering Sciences, 1999, 357(1758), 2039–2058.
+[7] Gatev, E., Goetzmann, W.N., and Rouwenhorst, K.G., Pairs Trading: Performance of a Relative Value Arbitrage Rule. Review of Financial Studies,
+2006, 19(3), 797–827.
+[8] Pardo, R.E., The Evaluation and Optimization of Trading Strategies, 2nd
+edn, 2008, Wiley Trading: US.
+[9] Kirkpatrick, C.D. and Dahlquist, J.R., Technical Analysis: The Complete
+Resource for Financial Market Technicians, 2010, FT Press Science: Upper
+Saddle River, NJ, USA.
+[10] Jiang, G.J., and Xu, Z., Cointegration-Based Pairs Trading and Its Applications in Commodity Markets. Quantitative Finance, 2013, 13(7), 1091–
+1104.
+[11] Ackerman,
+A.,
+2014,
+September,
+SEC finds ‘deficiencies’ at hedge
+funds, Wall Street Journal, 22. Available at: http://online.wsj.com/
+articles/sec-finds-deficiencies-at-hedge-funds-1411403677.
+[12] Bailey, D.H., Ger, S., Lopez de Prado, M. and Sim, A., Statistical Overfitting and Backtest Performance. In Handbook of Financial Data and Risk
+Information II, pp. 73–102, 2015.
+[13] Liu, B., Chang, L.-B., and Geman, H., Intraday pairs trading strategies on
+high frequency data: the case of oil companies. The European Journal of
+Finance, 2016, 22(1), 87–100.
+[14] Ardia, D., Bluteau, K., and Boudt, K., Forecasting risk with time-varying
+skewness and kurtosis in financial time series. Journal of Financial Econometrics, 2018, 16(4), 545–571.
+[15] Carta, S., Corriga, A., Ferreira, A., Recupero, D.R. and Saia, R., A Holistic Auto-Configurable Ensemble Machine Learning Strategy for Financial
+Trading. Computation, 2019, 7(4), 67.
+24
+
+WORKING PAPER
+[16] Pound Sterling Live, USD to JPY exchange rate history, 2022. Available
+at: https://www.poundsterlinglive.com/history/USD-JPY-2022.
+[17] Arian, H., Norouzi Mobarekeh, D. and Seco, L., Backtest overfitting in the
+machine learning era: A comparison of out-of-sample testing methods in
+a synthetic controlled environment. Knowledge-Based Systems, 2024, 305,
+112477.
+[18] Lemishko, T., Landi, A., Caicedo-Llano, J., 2024. Cointegration-Based
+Strategies in Forex Pairs Trading. SSRN. Available at: https://ssrn.
+com/abstract=4771108.
+[19] Yahoo Finance, Home page, 2024. Available at: https://finance.yahoo.
+com/.
+25

@@ -1,0 +1,3264 @@
+Trading Pauses, High-Frequency Activity, and Market Quality
+William W. Xiong*
+First draft: July 2022
+This version: November 2024
+Abstract
+Trading pauses on individual stocks under the Limit Up-Limit Down (LULD) Plan are key
+volatility circuit breakers in the US market, designed to prevent future disastrous market events
+similar to the 2010 Flash Crash. However, unnecessary pauses could harm market quality.
+Since July 2016, the 10th Amendment to the LULD Plan (A10) has dramatically reduced superfluous trading pauses due to deceptive opening prices. Henceforth, the pre-pause liquidity improves, and there is less room for the post-pause liquidity to increase compared to the
+pre-pause level. Short-term volatility spikes around trading pauses after A10, and the postpause volatility increases. Furthermore, it is crucial to understand the role that high-frequency
+traders play around trading pause. Post A10, high-frequency quoting peaks closely around
+trading pauses, especially after trading resumptions. Suggestive evidence indicates that highfrequency quoting is related to improved liquidity around trading pauses, notably post A10
+and before trading pauses, but not necessarily linked to increased short-term volatility.
+Keywords: trading pause, high-frequency trading, market quality, liquidity, volatility
+JEL Classification: G10, G14, G18, D47
+*Wei (William) Xiong is with the School of Management, Binghamton University - SUNY. This manuscript was completed when I was a student at the Johnson Graduate School of Management, SC Johnson College of Business, Cornell
+University. I am grateful for feedback and suggestions from Andrew Karolyi, Maureen O’Hara, Gideon Saar, Scott
+Yonker, Jawad Addoum, Lawrence Jin, Yifei Mao, Nick Guest, and participants in Cornell Finance PhD Forum (internal). I thank NYSE for providing the Daily Trade and Quote (DTAQ) data, and NasdaqTrader.com for providing U.S.
+market trading pauses data. I appreciate Craig Holden and Stacey Jacobsen for sharing their SAS codes on DTAQ data.
+All errors remain my own. E-mail addresses: <wxiong3@binghamton.edu> and <william.w.xiong@outlook.com>.
+Postal address: Academic Building A, School of Management, SUNY Binghamton, Binghamton, NY 13902, USA.
+1
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+Trading Pauses, High-Frequency Activity, and Market Quality
+Abstract
+Trading pauses on individual stocks under the Limit Up-Limit Down (LULD) Plan are key
+volatility circuit breakers in the US market, designed to prevent future disastrous market events
+similar to the 2010 Flash Crash. However, unnecessary pauses could harm market quality.
+Since July 2016, the 10th Amendment to the LULD Plan (A10) has dramatically reduced superfluous trading pauses due to deceptive opening prices. Henceforth, the pre-pause liquidity improves, and there is less room for the post-pause liquidity to increase compared to the
+pre-pause level. Short-term volatility spikes around trading pauses after A10, and the postpause volatility increases. Furthermore, it is crucial to understand the role that high-frequency
+traders play around trading pause. Post A10, high-frequency quoting peaks closely around
+trading pauses, especially after trading resumptions. Suggestive evidence indicates that highfrequency quoting is related to improved liquidity around trading pauses, notably post A10
+and before trading pauses, but not necessarily linked to increased short-term volatility.
+Keywords: trading pause, high-frequency trading, market quality, liquidity, volatility
+JEL Classification: G10, G14, G18, D47
+1
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+1
+Introduction
+An active debate exists among scholars and policy makers about the role and economic consequences of trading pause mechanisms on market quality and price stability. Some believe trading
+halts (or “circuit breakers”) can mitigate volatility, and facilitate liquidity provision. Other beneficial effects include reducing information asymmetry, resolving order imbalances, improving price
+discovery, and stabilizing prices. In contrast, some others argue that trading pause mechanisms
+may not reduce volatility but only defer it to the period after the man-made interruption. They
+also think that enforced pauses may result in magnified shocks and increased volatility. A third
+school of views takes an intermediate position and emphasizes the origin of volatility from informed trading and uninformed trading. They point out that trading interruptions counter the
+negative effects from uninformed trading but may harm information dissemination and price discovery when price movements are triggered by informed trading.
+The current prevailing stock-level trading pause mechanism in the US market is under the
+Limit Up-Limit Down (LULD) plan, which contains straddle states, limit states, trading pauses,
+and clearly erroneous trades. Its predecessor is the single-stock circuit breaker (SSCB) mechanism
+which was introduced by SEC and FINRA in June 2010, while the LULD Plan was approved in
+May 2012 and gradually replaced SSCB rules starting from April 2013 in two phases.1 These rules
+are introduced to address sudden and extreme price fluctuations of individual stocks across the
+market in a short time window, as those that occurred during the “Flash Crash” on May 6, 2010.
+They are designed to protect against extreme price volatility which is potentially harmful to the
+market, while the LULD Plan is an improved version.2
+The LULD Plan trading pause is set to prevent individual stocks in the National Market System
+(NMS) from being traded beyond a certain price band, but it will allow trading to restart if the
+price deviation is transient. The price band for a stock is calculated by the Securities Information
+Processors (SIPs) based on an evolving reference price. The initial reference price is decided by the
+first trade price of a stock on its primary listing exchange if that trade occurs within 5 minutes from
+market opening. When there is no opening trade satisfying the above criteria, the initial reference
+1Alternatively, single-stock circuit breakers (SSCB) are also known as single-stock trading pauses (SSTP). And limitup limit-down pauses may be referred to as LUDP.
+2See Moise and Flaherty (2017) and Hughes, Ritter, and Zhang (2017).
+2
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+price is the midquote of the best bid and ask prices on that stock’s primary listing exchange, in
+the era before the implementation of Amendment 10 to the LULD Plan. However, LULD Plan
+participants noticed that in the latter case, using the mid-quote of the best bid and ask on the
+primary listing exchange leads to problematic opening reference price. That could start the price
+band away from the reasonable range of intrinsic price levels and triggers trading pauses even
+after someone submits a bid or offer quote at a reasonable price close to the intrinsic value.3
+To address the unrealistic opening reference price issue, Amendment 10 of the LULD Plan
+came into effect on 18 July 2016 with the approval of the SEC.4 When a stock’s primary listing
+exchange opens with quotes, now the opening reference price is set to be the previous day’s closing
+price of the stock on its primary listing exchange. If the closing price does not exist, the last sale on
+the primary listing exchange reported by the SIP will be used instead as the first reference price.
+In this way, a large amount of unnecessary trading pauses related to the problematic opening
+reference price could have been avoided, as these trading pauses do not suggest extraordinary
+market volatility. As documented in Hughes (2017), the occurrence of trading pauses decreased
+significantly after the implementation of Amendment 10, especially in the 30-minute window
+from market opening.
+This effective regulatory change provided a unique opportunity to study how unneeded trading pauses affect market quality and price stability compared to necessary ones, and whether
+Amendment 10 has additional beneficial effects on liquidity and volatility. It also created a chance
+to study whether high frequency traders or strategic liquidity providers step up to fill the gap
+when there is a mechanism flaw or whether they take advantage of this hole. Hypothetically,
+they may be able to trigger trading pauses especially in the pre-Amendment 10 (A10) period by
+exploiting the mechanism defect related to the problematic opening reference price decision. On
+the other hand, the improved LULD trading pauses mechanism in the post-A10 era may promote
+3For example, if a stock has a 20% opening price band expanded from its reference price and there is no opening
+trading on its primary listing exchange, then the best bid at $3 and offer at $19 will make the mid-quote $11 as the initial
+reference price, with a lower bound of $11×(1-20%)=$8.8 and an upper bound of $11×(1+20%)=$13.2. Now, if someone
+submits a buy order at $3.5, then the limit state is triggered and the LULD trading pause on this stock is set to happen
+15 seconds later (without other changes). Suppose that the closing price on the previous trading day is $3.5, this quote
+today at $3.5 is a reasonable price (based on the previous closing price) while it still triggered the trading pause. That is
+not sensible. See Hughes (2017) for more discussion of the unrealistic opening reference price issue before Amendment
+10.
+4See Hughes (2017), Amendment 10 order: https://www.sec.gov/rules/sro/nms/2016/34-77679.pdf, and Amendment 10 notice of filing: https://www.sec.gov/rules/sro/nms/2016/34-77205.pdf.
+3
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+high-frequency acitvity around trading pauses in a good way, which is beneficial to market quality. It is intriguing to examine whether high-frequency trading (HFT) activities around trading
+pauses change after the implementation of Amendment 10, and whether HFT activity is related
+to market quality improvement and price stability around trading pauses. To my best knowledge,
+there are no readily available studies investigating the important yet understudied aspects above.
+Empirical results in this paper show that, in the pre-A10 era, liquidity measured by percentage
+quoted spread starts to improve from 14 minutes before trading pauses till 2 minutes before trading pauses, compared to the base bin level 1 hour before trading pauses. It improves even more
+after trading resumes, and the improvement is significant throughout the 1 hour window after
+the resumption. However, in the post-A10 era, liquidity improvement, relative to the base bin at 1
+hour before trading pauses, starts from 23 minutes after trading resumes and the magnitude is less
+than half of that of their counterparts in the pre-A10 era. Difference-in-differences results further
+affirm that the liquidity improvement after trading resumes in the post-A10 era is significantly
+less than that in the pre-A10 era, for about 8 to 9 percentage points, compared to their base bin
+levels 1 hour hour before trading pauses, respectively, although the base bin level of liquidity is
+higher in the post-A10 era.
+The short-term volatility measure HighLow only increases significantly at the minute just before trading pauses and at the minute right after trading resumes, compared to the base bin level,
+in the pre-A10 era. However, there are 3 more minute-level bins with a significant increase of
+HighLow before trading pauses and 22 more minute-level bins after trading resumes in the postA10 era compared to the counterparts of the pre-A10 era. The magnitudes are larger, especially at
+the τ = +1 minute bin and at the τ = −1 minute bin. Difference-in-differences results also confirm
+that short-term volatility increases more in the window of a few minutes around trading pauses
+in the post-A10 era than those in the pre-A10 era relative to their base bin levels, respectively, especially after trading resumes. Especially, in the minute right after trading resumes, the difference
+in the magnitude of excess short-term volatility relative to the base bin level is the largest, and the
+post-A10 magnitude is significantly higher.
+For high-frequency quote updates HFQU, there are a dozen significant 1-minute bins that
+show an increase from the base bin level an hour before trading pauses in the pre-A10 era. After
+trading resumes, there are only 3 significant bins with an increase from the base bin level. Among
+4
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+those significant bins around trading pauses, the 1-minute bin right before trading pauses and
+the 1-minute bin right after trading resumes are much higher than the rest. In the post-A10 era,
+only the 1-minute bin right before trading pauses and the 1-minute bin right after trading resumes
+have a significantly higher level of HFQU from the base bin level. And their increased levels of
+HFQU from the base bin are much higher than their pre-A10 counterparts, especially in the exact
+minute after trading resumes. Difference-in-differences results further support that the difference
+between the excess increase of HFQU from base bin level between the post-A10 era and the preA10 era is the largest in the minute right after trading resumes, with the post-A10 one being much
+larger.
+High-frequency quote updates are correlated with a decrease in the percentage of quoted
+spread before and after trading pauses in both the pre-A10 era and the post-A10 era. That implies a liquidity improvement. The magnitude of quoted spread is larger during the hour before
+trading pauses in both eras. In the post-A10 era both before and after trading pauses, there are
+more 1-minute bins with a significant decrease of percentage quoted spread from the base bin
+level than in the pre-A10 era, especially in the hour before trading pauses. This indicates that after
+the implementation of Amendment 10 to the LULD Plan, high-frequency quoting activity in the
+2-hour window around trading pauses correlates more with liquidity improvement than before.
+In both the pre-A10 and post-A10 eras, high-frequency quote updates are only positively correlated with short-term volatility HighLow in just a few 1-minute bins in the hour before trading
+pauses and they are all in the [−25, −1] minutes window. After trading resumes, there are a few
+more bins with significantly positive correlation between high-frequency quote updates and shortterm volatility throughout the 1 hour interval in the Pre-A10 era. However, in the post-A10 era,
+only a handful of bins show a significantly positive correlation, and they are concentrated in the
+[+21, +34] minutes window. This suggests that, after the implementation of Amendment 10, highfrequency quote updates are less likely to be positively correlated with the increase in short-term
+volatility during the 2-hour window around trading pauses, especially in the hour after trading
+resumes.
+The remainder of the chapter follows this structure. Section 2 reviews the literature on trading
+pauses and mechanisms in practice. Then testable hypotheses are proposed based on the relevant literature and the purpose of this study. Section 3 describes the data, the measurements of
+5
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+liquidity, volatility, and high-frequency activity. Section 4 documents the empirical results on the
+effects of trading pauses on market quality in the pre- and post-Amendment 10 periods. Section
+5 depicts the evolution of high-frequency quoting activity around trading pauses before and after
+Amendment 10 and explores its correlation with market quality around trading pauses in the two
+periods. Section 6 concludes.
+2
+Literature Review, Regulatory Rules, and Hypotheses
+2.1
+Theory and Empirical Studies of Trading Halts
+The effect of trading halts is debatable. Brady et al. (1988) and Kyle (1988) indicate that they can
+help ease market tensions with a soothing effect and coordinate market forces. They argue that circuit breakers can reduce volatility, protect liquidity providers, decrease order imbalances, lessen
+credit risk, promote information processing, facilitate repositioning, and help to cover incurred
+losses by margins. They believe that the additional level of protection is beneficial to market quality. Consistent conclusions can be found in Greenwald and Stein (1991), claiming that trading halts
+can assist in balancing immediacy and complete information dissemination among participants in
+a continuous market. Similarly, Madhavan (1992) states that in times of severe information asymmetry, continuous trading should be replaced by periodic trading instead, which is more practical,
+allowing accumulation in both liquidity demand and liquidity supply.
+In contrast, Fama (1988) pointed out that trading halts can only delay volatility instead of reducing it, causing a spillover effect in the period after trading resumes. Subrahmanyam (1994)
+states that man-made limits on price changes may aggravate market failures instead of saving
+them from happening. That paper further claims that trading suspensions induce traders to revoke positions and leave the market, magnifying shocks to stock prices. The mechanism is also
+known as the magnet effect of price limits, which promotes volatility and propels the stock prices
+toward the trading suspension threshold.
+There can be a middle ground between the above two schools. Harris (1997) divides the causes
+of volatility into informed and uninformed trading. The former is fundamental, while the latter
+is transitory. In the circumstance of uninformed trading-driven volatility, trading halts may help
+to reduce it by absorbing order imbalances. However, when volatility is caused by fundamental
+6
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+trading, the price limits may harm the price discovery and hence the trading halts may prevent
+necessary information circulation.
+Among those undecided theoretical implications, the empirical literature mostly addressed the
+impact of an earlier mechanism, trading “halts”, which differs from the later trading “pauses” or
+price limits. The former trading “halts” interrupt all activities in the order book and are imposed
+at the will of exchanges with longer halting intervals. Trading “pauses”, however, only restrict
+trading executions but still allow quoting. In addition, the trading “pauses” are triggered under
+explicitly known rules, and they span 5 minutes precisely. The existing influential trading “halts”
+literature include Lee, Ready, and Seguin (1994), Corwin and Lipson (2000), and Christie, Corwin,
+and Harris (2002), while Harris (1997) and Cho et al. (2003) cover trading “pauses” and prices
+limits instead.
+Lee, Ready, and Seguin (1994) find that the trading volume increases after trading halts. Regarding stock returns after trading resume, Bhattacharya and Spiegel (1998) obtain evidence that
+return consistency can be obtained after news-induced trading halts, while return reversal occurs
+after trading halts which are triggered due to order imbalances. Corwin and Lipson (2000) and
+Christie, Corwin, and Harris (2002), display that the post-halt volatility and bid-ask spreads are
+at a higher level and can last for two hours or longer. The above studies are based on NYSE data.
+Meanwhile, Abad and Pascual (2010) study data from the Spanish Stock Exchange and observe
+an increasing dispersion of the trading volume and mid-quote price during sampling intervals of
+trading interruptions (i.e., “volatility call auctions”), but they regress to their original levels during
+the next two hours.
+There are some papers on modern automated trading control mechanisms. Zimmermann
+(2013) focuses on Deutsche Boerse Xetra exchange’s volatility interruptions, a mechanism comparable to Nasdaq’s trading pauses, and notices that the interruptions have a positive effect on
+price discovery as the pre-halt price uncertainty decreases. Brogaard and Roshak (2016) study the
+effects of trading pauses on extreme price movements (EPMs) and compare stock returns in the
+per-regulation and post-regulation periods. They document that trading pauses can mitigate the
+degree of extreme price movements while suppressing necessary price reactions.
+Hautsch and Horvath (2019) study the effects of trading pauses under the SSCB and LULD
+mechanisms during the pre-Amendment 10 period on liquidity, volatility, and price discovery in
+7
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+the 120-minute window around trading pauses. The existence of those mechanisms makes the
+market participant behave differently with the expectation of trading pauses to occur. Trading
+pauses may facilitate price discovery during the interruption, but hurt price stability and liquidity
+in the post-pause period. They also find that on average trading pauses fail to calm down the
+market but instead induced volatility. Although trading pauses may play a protective role in extreme market events, their average negative effects on market quality require additional attention
+as well.
+2.2
+High-Frequency Activity, Extreme Price Movements, and Market Quality
+Hasbrouck and Saar (2013) propose a low-latency trading measure that is a prominent representative of proprietary trading activities by HFT firms, although it could also involve a small portion
+of agency algorithms. Their measure is intended to capture high-frequency trading behavior and
+has been further tested and compared with other HFT proxies in Boehmer, Li, and Saar (2018) to
+show its relative advantage.
+The low-latency trading measure by Hasbrouck and Saar (2013) can be taken as a proxy for
+HFT activity. They use it to study low-latency trading’s impact on market quality both in normal
+times and during turbulent periods with economic uncertainties. Their measure, RunsInProcess,
+is built upon “strategic runs” as a chained sequence of order submissions, cancelations, and executions which are presumably components of a dynamic algorithmic trading strategy, as well as
+being identifiable through order-level data with public availability. It is calculated as the timeweighted number of “strategic runs” longer than 10 messages in each interval. The measure is
+highly correlated with the estimates from the Nasdaq 2008-2009 HFT dataset. They find that lowlatency trading activity can improve market quality measures in terms of decreasing spreads, increasing depths, and reducing short-term volatility. They also imply that low-latency trading need
+not harm the interest of long-term investors. Their low-latency trading measure is a publicly available HFT proxy which can be constructed from the Nasdaq TotalView-ITCH data. Researchers
+can compute the low-latency measure themselves instead of relying on exchanges provided HFT
+datasets that cover a limited time span.
+Boehmer, Li, and Saar (2018) compare the low-latency trading measure RunsInProcess with
+8
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+the other three HFT proxies that are computable based on publicly available data to see which may
+be the best to capture general HFT activity. Those three comparison measures include Ord2V ol,
+Cancel2Trd, and CancelRatio.5 The first two have been widely used in HFT and algorithm trading literature such as Hendershott, Jones, and Menkveld (2011), Hagströmer and Nordén (2013),
+Boehmer, Fong, and Wu (2021). The CancelRatio measure is designed to reflect the characteristic
+of HFT firms which is related to the large amount of orders submitted which are canceled shortly
+thereafter. The comparison results in Boehmer, Li and Saar (2018) show that RunsInProcess is a
+reasonable HFT activity proxy and has even better performance when time intervals are longer.
+The Canel2Trd and CancelRatio are also doing well, especially during short intervals.
+Listed below are more papers about the background knowledge of latency and algorithm trading, which are two related factors of low-latency trading.
+Looking at data from different markets, Hendershott and Moulton (2011) find that the expansion of automatic expansion and the reduction of execution time lead to decreased liquidity, while
+Riordan and Storkenmaier (2012) notice that a reduction in latency is accompanied by enhanced
+liquidity. The latency change may affect the market quality conditional on its impact on the competitions within the liquidity supply side and on how sophisticated the liquidity demanders are,
+which may help to explain the seemly contradicted results.
+Regarding how algorithm trading affects the market, there are papers such as Hendershott,
+Jones, and Menkveld (2011), Boehmer, Fong, and Wu (2021), Chaboud et al. (2014), Hendershott
+and Riordan (2013). Especially, Hendershott, Jones, and Menkveld (2011), use the electronic message arrival rate to measure the overall proprietary algorithm and trading algorithm activities,
+and find that algorithmic trading results in mixed results in different measures of market quality
+such as spreads and depths. In contrast, Hasbrouck and Saar (2013) find their low-latency trading
+measure lead to positive results in all their measures of market quality, given that their measure
+is intended to capture high-frequency proprietary trading as much as possible instead of agency
+algorithm. In addition, those two papers inspected different data sources in different years with
+regulation changes, which may contributed to some of the differences in conclusions as well.
+Conrad, Wahal, and Xiang (2015) propose a high-frequency quotation measure based on the
+5The measures are defined as: (1) Ord2V ol := number of submitted limit orders / (1 + value of trades); (2)
+Cancel2Trd := number of canceled limit orders / (1 + number of trades); (3) CancelRatio := number of canceled
+limit orders / (1 + number of submitted and canceled limit orders).
+9
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+Daily TAQ data. They calculate “high-frequency quote updates” by counting the number of any
+changes in prices or sizes of the best bid or offer (BBO) quotes during a given time interval on
+each exchange and then aggregated across all of them. That does not depend on the official National Best Bid and Offer (NBBO), and the venue selection is endogenous in liquidity-supplying
+or demanding algorithms. Their measure considers legitimate changes to the tip of the liquidity
+supply curve of each exchange.
+2.3
+Limit Up-Limit Down Plan and its Amendment 10
+The Flash Crash of May 6, 2010 has induced actions from the regulators such as the U.S. Securities
+and Exchange Commission (SEC) and the U.S. Commodity Futures Trading Commission (CFTC)
+to prevent future extreme market events and enhance market stability.6 On June 10, 2010, the SEC
+and the U.S. Financial Industry Regulatory Authority (FINRA) approve the implementation of the
+single-stock circuit breaker (SSCB) pilot program to address extraordinary volatility.7 The SSCB
+pilot program is supposed to be expired on July 31, 2012, and the SEC approves an improved
+replacement plan to SSCB on May 31, 2012.8 The new plan is the National Market System (NMS)
+Plan to Address Extraordinary Market Volatility, which is also know as the Limit Up-Limit Down
+(LULD) Plan.9 The LULD Plan is implemented in different phases, and the full implementation to
+all stocks is on May 12, 2014.10
+Briefly speaking, the LULD Plan prohibits trades from happening outside evolving price bands
+that are formed around reference prices to handle extraordinary market volatility in stocks.11 For
+a stock, in general, its reference price in force is dynamically decided based on the previous reference price in force and the preceding 5-minute moving average of transaction prices, except for
+the initial reference price (that is, opening price) and the reference price after trading pause (that
+is, reopening price).12 The reference price and price bands evolve throughout the market hour
+6See https://www.sec.gov/news/studies/2010/marketevents-report.pdf.
+7See https://www.sec.gov/rules/sro/finra/2010/34-62251.pdf.
+8See https://www.sec.gov/rules/sro/nms/2012/34-67091.pdf.
+9The full details of the LULD mechanism can be found in the original LULD Plan at https://www.sec.gov/rules/
+sro/nms/2012/34-67091.pdf, and in the amendments to the LULD Plan at https://www.sec.gov/rules/sro/nms.htm.
+10More details can be found in Angel (2015), Hughes, Ritter, and Zhang (2017), and Moise and Flaherty (2017).
+11The stocks in this paper are all NMS securities (including ETFs) in the U.S. securities market.
+12The immediately preceding 5-minute moving average of transaction prices is called the pro-forma reference price.
+10
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+from 9:30 am to 4:00 pm unless during trading pauses.13 A price band is formed as the percentage
+deviations above and below the reference price. The band width is decided by factors such as
+stock tiers, time of the day, and the previous day closing price.14 Especailly, the price band during
+9:30-9:45 am and during 3:35-4:00 pm is doubled from that during 9:45 am - 3:35 pm as there is
+usually higher volatility during the open and close.15 Trades are allowed to occur at quotes within
+the price band, but not at any bid or offer quote outside the band. If the National Best Offer (NBO)
+reaches the lower band or the National Best Bid (NBB) reaches the upper band, a limit state is imposed on the stock.16 The limit state could end if the quote prices are back within the price band.
+If a limit state lasts for 15 seconds, the stock enters a 5-minute trading pause, and the primary listing exchange could extend the pause for another 5 minutes under certain circumstances.17 After
+a trading pause, the trading on the stock reopens according to the reopening rules.18
+The key component in the LULD mechanism is the reference price. It is recalculated every 30
+seconds, but in practice the reference price is not updated unless it deviates from the pro-forma
+reference price by at least 1%.19 And, when the market opens, both the reference price and the pro
+forma reference price start at the initial reference price. 20
+Therefore, whether the initial reference price is set up in a sensible way has a significant impact
+on the evolution of reference price and price band, which then determines what kinds of quotes
+will trigger the limit states and trading pauses. However, the setup mechanism of the initial
+reference price before the implementation of Amendment 10 is problematic.21 Before Amendment
+10, on a trading day, the first reference price for a stock is the trade price in the opening auction
+13The time zone in this paper is the Eastern Time, i.e. EDT/EST.
+14See Footnote 9 and Footnote 10.
+15However, Amendment 18 removes the doubling rule of price band during 9:30-9:45 am for all stocks, and during
+3:35-4:00 pm for all Tier 2 stocks with prices higher than $3. See Table 1 in Moise (2022) and see Amendment 18 in
+https://www.sec.gov/rules/sro/nms/2019/34-85623.pdf.
+16There is another state called “straddle state”. See Footnote 9 and Footnote 10.
+17Toward the end of trading hours, the trading resumption or reopening rules could be different, and hence the
+trading pause lengths. Therefore, it is possible to see that trading pauses last for a different length from 5 minutes or 10
+minutes. See Footnote 9 and Footnote 10.
+18See Footnote 9 and Footnote 10.
+19The pattern of the reference price looks like a step function, while the pro-forma reference price is the 5-minute
+moving average of preceding transaction prices which fluctuates continuously. See Figure B.1 in Moise and Flaherty
+(2017) and Figure 2 in Moise (2022) for more details. And see footnote 12 for the definition of a pro forma reference
+price
+20The initial reference price is also called the “first reference price”. See the Amendment 10 notice of filling at https:
+//www.sec.gov/rules/sro/nms/2016/34-77205.pdf and Amendment 10 order of approval at https://www.sec.gov/
+rules/sro/nms/2016/34-77679.pdf.
+21More detailed discussion of the problem can be found in Angel (2015) and Hughes (2017) . See also the Amendment
+10 notice of filling and the Amendment 10 order of approval as in Footnote 20.
+11
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+(i.e., opening trade) on its primary listing exchange in the first 5 minutes from market opening.
+If no such opening trade exists and the stock opens with a quote, the first reference price is the
+midpoint of the bid and ask quote. 22 The problem is that using the bid and ask midpoint of the
+opening quote on the primary listing exchange as the opening price results in a skewed initial
+reference price, especially when the trading interest in that stock is thin or null, which makes it
+illiquid. That happens if the opening quote bid-ask spread is wide or the quote is skewed, which
+in turn drives the opening price far away from the stock’s fair value. Hence, the midpoint of the
+opening quote may not represent the true market of that stock, and it is highly affected by “crazy”
+quotes or “fat fingers”.
+To fix the problematic quote-based opening price, Amendment 10 redefines the opening price
+when the stock opens with quotes on its primary listing exchange, based on feedback and backtesting analysis from participants in the LULD Plan.23 When a stock does not open with a trade in
+the first 5 minutes, the new opening price is defined as the closing price of the stock on its primary
+listing exchange on the previous trading day. If the closing price does not exist, then the last sale
+on the primary listing exchange will be used. The new opening price should represent the fair
+value of the stock at the opening, especially for less liquid stocks, in a much more sensible way.
+Angel (2015) composes a joint assessment on the LULD mechanism prior to A10 and points
+out issues such as the problematic opening reference price which induces unnecessary trading
+pauses especially during the first 30 minutes of market hour.24 This assessment is prepared for
+the reference of LULD operating committee and contributes to the making and implementation of
+Amendment 10 to the LULD Plan. Hughes (2017) studies the real world effect of Amendment 10
+and shows that it indeed dramatically reduces unnecessary trading pauses related to the opening
+price issue, and the decrease of trading pauses in general is also significant.25
+22And if there is no such opening trade or quote on the primary listing exchange by 9:35 a.m., the open reference
+price is the arithmetic mean of the prices of eligible reported transactions for that stock over the preceding 5-minute
+period across all NMS markets.
+23See Angel (2015) and see the Amendment 10 notice of filling at https://www.sec.gov/rules/sro/nms/2016/
+34-77205.pdf.
+24See https://www.sec.gov/comments/4-631/4631-39.pdf.
+25Other SEC Division of Economic and Risk Analysis (DERA) white papers also evaluate the LULD mechanism
+before Amendment 10, such as Moise and Flaherty (2017) and Hughes, Ritter, and Zhang (2017). However, they do not
+focus on the initial opening reference price issue.
+12
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+2.4
+Testable Hypotheses
+Most of the trading pauses in the pre-A10 era are the unnecessary ones in terms of not being
+indicative of extraordinary market volatility on single stocks. However, the trading pauses in the
+post-A10 era are more closely in compliance with the spirit of the LULD Plan. The Amendment 10
+to the LULD Plan provides an unique opportunity to investigate how different the market quality
+evolution around the “ought-to-be” trading pauses is from that around the unneeded trading
+pauses, especially after trading resumptions. It is also a valuable opportunity to comparably study
+the high-frequency activity around the “ought-to-be” trading pauses and the unneeded ones, and
+to examine and to examine the influence of high-frequency activity on market quality in those two
+different scenarios.
+However, there is little documentation in the literature on trading mechanisms or in the highfrequency trading literature on the above important questions. Hence, this paper proposes the
+following hypotheses and empirically examines them. The results in this paper should be helpful
+to regulators in re-visiting or making future trading halts and circuit breaker rules, as well as in
+further understanding high-frequency activity and its impact on market quality.
+The first two hypotheses focus on market quality. They investigate the evolution of liquidity
+and short-term volatility before and after trading pauses and how their post-A10 patterns differ
+from their pre-A10 patterns.
+Hypothesis 1: There is more improvement in post-TP liquidity in the pre-A10 era compared to
+the post-A10 era, and it is because pre-TP liquidity is lower in the pre-A10 era.
+Hypothesis 2: The short-term volatility around trading pauses in the post-A10 era is higher
+than that in the pre-A10 era, especially after trading pauses.
+The next three hypotheses consider high-frequency quoting and its interaction with market
+quality measures. They explore how high-frequency quoting activity evolves before and after
+trading pauses, and the difference of that in the pre-A10 era and post-A10 era. They also investigate into the correlation between high-frequency quoting activity and market quality around
+trading pauses, in terms of liquidity and short-term volatility.
+Hypothesis 3: High-frequency quoting activity before and after trading pauses is higher in the
+post-A10 era than that in the pre-A10 era, especially in the minutes around trading pauses and
+13
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+after trading pauses.
+Hypothesis 4: High-frequency quoting activity is positively correlated with liquidity improvement in the 2-hour window around trading pauses, especially before trading pauses, and this
+correlation is more profound in the post-A10 era than in the pre-A10 era.
+Hypothesis 5: High-frequency quoting activity only occasionally positively correlates with
+short-term volatility in the 2-hour window around trading pauses, and it is even less so in the
+post-A10 era than in the pre-A10 era, especially after trading pauses.
+3
+Data, Measurement, and Descriptive Statistics
+3.1
+Limit Up-Limit Down Trading Pauses Overview
+This paper adopts two ways to access LULD trading pauses data. Following Hautsch and Horvath
+(2019), the LULD trading pauses data can be obtained from NasdaqTrader.com, which is a website
+affiliated with Nasdaq. Alternatively, similar to Moise (2022), the LULD trading pauses data can
+be inferred and extracted from administrative massages files from Daily TAQ.
+Figure 1 panel (a) depicts the distribution of daily LULD trading pauses and involved stocks in
+the [-6,+6] calendar months window around the implementation of the LULD Plan Amendment
+10. There is a sharp decrease in the frequency of trading pauses occurrence and also in the count
+of how many stocks experience any number of trading pauses per day after Amendment 10 comes
+into effect. The decrease actually started a few days before July 18, 2016, according to the trend
+by the 5-day moving average. In the post-A10 era, both the daily number of trading pauses and
+the daily number of stocks experiencing trading pauses stay low and never bounce back to the
+pre-A10 level, with much smaller fluctuations as well. Panel (a) also shows that the pre-A10
+daily number of trading pauses is about 40 higher than the daily number of stocks experiencing
+trading pauses. The pre-A10 daily average count of trading pauses is about 80 while that of stocks
+experiencing trading pauses is about 40. Also, the frequency of daily trading pauses in the pre-A10
+era is much more volatile than that of stocks experiencing trading pauses per day. However, the
+frequency of daily trading pauses after A10 and the daily number of stocks experiencing trading
+pauses overlap almost all together, with the frequency of trading pauses slightly higher and more
+volatile in some days. In general, the frequency of post-A10 trading pauses and the count of
+14
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+stocks experiencing trading pauses are both much less volatile than those in the pre-A10 era. Panel
+(a) indicates that Amendment 10 successfully reduces the daily occurrence frequency of trading
+pauses and the stocks experiencing trading pauses per day. It also reduced the ratio of daily
+trading pauses to stocks experience trading pauses per day. Therefore, in the post-A10 era, there
+are fewer stocks which are likely to experience trading pauses per day, and a stock is less likely
+to experience multiple trading pauses on the same day. After the implementation of Amendment
+10, there are also fewer day-to-day fluctuations in trading pauses or stocks involved.
+Next, Figure 1 Panel (b) shows the frequency of monthly trading pauses from the full implementation of the LULD Plan in May 2014 to September 2021, which shows a much longer horizon
+compared to panel (a).26 Similar to Panel (a), Panel (b) shows that the frequency of occurrence
+of monthly trading pauses before A10 is much higher than that in the post-10 era. The pre-A10
+average monthly level is about 1000 trading pauses per month, while that in the post-A10 era
+(but before the Covid-19 outbreak) is approximately in the 100 to 200 range. The decrease in the
+frequency of trading pause in the post-A10 era is consistent and lasting beyond the first 6 months
+post-10, until the US Covid-19 outbreak in March 2020. There is an unprecedentedly huge spike
+in March 2020, indicating that the market is extremely turbulent in that month and that the LULD
+trading pauses are triggered many times among many stocks, in addition to the four occurrence of
+the market-wide circuit breaker (MWCB).27 The monthly occurrence of trading pauses increases in
+the post-Covid era, and the month-by-month fluctuation is also larger compared to the post-A10
+but pre-Covid era. However, the average monthly frequency of trading pauses after March 2020 is
+still lower than that in the pre-A10 era. In an unreported figure showing the ratio of monthly trading pauses and involved stocks, the ratio is much higher in the pre-A10 era than in the post-A10
+era, and it has a clear drop after the implementation of Amendment 10. The pre-A10 ratio fluctuates between 2.8 and 6.5 approximately. The ratio does not bounce back even in the Covid-19
+outbreak (in March 2020) and afterwards, and it varies approximately in the range of 1.5 to 4.
+In the Appendix, Figure A.1 compares the number of trading pauses with VIX and Equity
+Market Uncertainty (EMU) and indicates that the dramatic decrease in trading pauses after the
+26The most recent data update of this study in the current draft covers from May 2014 to September 2021.
+27The four market-wide circuit breaker (MWCB) halts happened on the 9th, 12th, 16th, and 18th of March
+2020.
+See https://www.nyse.com/publicdocs/nyse/markets/nyse/Report_of_the_Market-Wide_Circuit_Breaker_
+Working_Group.pdf.
+15
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+implementation of Amendment 10 is not due to changes in market volatility or uncertainty. The effect of Amendment 10 on reducing the occurrence of trading pauses is also documented in Hughes
+(2017). Figure A.2 plots the monthly market volatility and uncertainty indices, VIX, Equity Market
+Volatility (EMV), infectious disease EMV, and EMU.28 Comparing those indices with the monthly
+trading pause frequency as in Figure 1 panel (b), it can be seen that changes in market volatility
+and uncertainty are not the causes for trading pauses to occur less after the implementation of
+Amendment 10. Before the Covid-19 outbreak, the post-A10 level of market volatility and uncertainty roughly fluctuated in the same range as the pre-A10 level. There is no significant drop in
+any of those indices when Amendment 10 comes into effect, but the occurrence of trading pauses
+is dramatically reduced and stays low until the Covid-19 outbreak. In contrast, the March 2020
+spike in trading pauses as in Figure 1 is driven by Covid-19-induced volatility and uncertainty as
+in Figure A.2. In addition, Amendment 18 of the LULD plan does not have a significant effect on
+increasing the frequency of trading pauses, which can be shown in Figure 2.
+The top panel of Figure 2 depicts the daily average intraday quarter-hour evolution of the
+trading pauses in the [-20, +20] trading days window and [-6, +6] months window before and after
+the implementation of Amendment 10. In the pre-A10 era, most of the trading pauses happen in
+the first 30 minutes since market open, i.e. the 9:30-9:45 a.m. and the 9:45-10:00 a.m. quarter-hours.
+In the top left plot (i.e. the [-20, +20] trading days window), the pre-A10 average count of trading
+pauses from all stocks is slightly more than 13 in the 9:30-9:45 a.m. quarter-hour interval. Then
+it increases to slightly less than 21 in the 9:45-10:00 a.m. quarter-hour interval. In the 10:00-10:15
+a.m. quarter-hour interval, the daily average of trading pauses drastically drops to about 5.5 and
+gradually decreases to 2 approximately in the 11:00-11:15 a.m. quarter-hour interval. Afterward, it
+stays in the 1 to 2 range until 3:00 p.m. and then further decreases toward 0 in the last quarter-hour
+interval before market closes. It is a similar case in the [-6, +6] months window for the pre-A10
+daily average trading pauses. The minor differences are that the 9:30-9:45 a.m. value is about 15
+and the 9:45-10:00 a.m. value is approximately 17.5. And the value of 10:00-10:15 a.m. is about
+5. That is, the daily averages of the first quarter hour of trading pauses in the [-6, +6] months
+28The VIX data is from the CBOE website https://www.cboe.com/tradable_products/vix/vix_historical_data/, and
+it is converted to monthly data from the original daily level data. The EMV and EMU indices are from the Economic
+Policy Uncertainty website by Scott R. Baker, Nicholas Bloom, and Steven J. Davis, https://www.policyuncertainty.
+com/. The monthly EMV indices (including the infectious disease EMV) are adopted directly, while the monthly EMU
+data is converted from the original daily EMU index.
+16
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+window is slightly higher than that in the [-20, +20] trading days window, while the peak at the
+9:45-10:00 am interval is about 3 trading pauses lower on average per day. The 10:00-10:15 am.
+level is about half the trading pauses less than that in the [-20, +20] trading days window, and the
+decrease since then is slightly smoother throughout the day. However, the evolution patterns of
+the post-A10 daily average of trading pauses are even more similar in the [-20, +20] trading days
+window and [-6, +6] months window. Both peaks occur in the 9:45-10:00 a.m. interval at around
+2.5 trading pauses on average per day, while the 9:30-9:45 a.m. level is approximately 1.5 in the
+[-20, +20] trading days window and about one in the [-6, +6] months window. From 10:00 a.m. to
+market close, the daily average trading pauses stay in the 0 to 1 range and close to the null side,
+in both windows.
+In short, the top panel of Figure 2 demonstrates that Amendment 10 significantly reduces the
+occurrence of trading pauses, especially in the 9:45-10:00 a.m. quarter-hour interval and in the first
+30 minutes since market opening. It also reduces the trading pause frequency throughout the rest
+of the day, but the degree is much smaller because the pre-A10 level of trading pauses after 10 a.m.
+is much less than the that in the opening half-hour. The eliminated trading pauses by Amendment
+10 are the ones linked to the problematic initial reference price issue when stocks open by quotes
+instead of trades. Those problematic trading pauses in the pre-A10 era are mostly likely to happen in the first hour of trading, especially in the first 30 minutes and after the LULD price band
+shrinks to half beginning at 9:45 a.m. Amendment 10 has significantly improved the issue and
+reduced unnecessary trading pauses linked to the previous problematic opening reference price
+mechanism.
+The middle and bottom panel of Figure 2 shows that the effect of Amendment 10 on reducing
+the occurrence of trading pauses in the opening hour is persistent, even in a longer horizon from
+May 12, 2014 (full implementation of the LULD Plan) to September 30, 2021, beyond the [-20, +20]
+trading days window and [-6, +6] months window. Similar to what has been shown in the top
+panel, the effect of Amendment 10 in reducing trading pauses especially in the opening hour is
+persistent all the way till Feb 2020 when LULD Plan Amendment 18 (A18) comes into effect as
+well as the March 2020 Covid-19 outbreak. The pre-A10 pattern and the post-A10 but pre-A18
+pattern are very similar to those in the top panel, although the pre-A10 highs are slightly lower.
+In addition, comparing the two plots in the middle panel, it can be seen that Amendment 18 of
+17
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+the LULD Plan (in force in February 2020 as shown in Figure 1) slightly increases the number of
+trading pauses in the 9:30-9:45 a.m. quarter-hour interval by 5 on average per day due to the LULD
+price band shrinking. In addition, the middle right plot and the bottom plot consider the effect
+of Covid-19 outbreak in March 2020 on the frequency of trading pauses, by removing March 2020
+and by singling out March 2020 respectively. In March 2020, the impact of the Covid-19 outbreak
+dramatically increases the frequency of occurrence of trading pauses in each of the quarter-hour
+intervals, especially during the 9:30-11:00 a.m. period. The 9:45-10:00 a.m. and 9:30-9:45 a.m.
+values are the highest.
+3.2
+Trading Pauses Screening Process
+There are 5 filtering and screening steps starting from all LULD trading pauses recorded in the
+[−20, +20] trading days window to the eligible ones used in the empirical analyses part of this
+paper. The filters are based on Hautsch and Horvath (2019).
+Firstly, each LULD trading pause needs to follow the LULD Plan rules regarding the trading
+pausing timestamp (i.e. starting time), trading resumption timestamp (i.e. ending time), and time
+duration of the pause. On a given day, a legitimate LULD trading pause must have its starting
+time and ending time within the regular trading hours and have a legitimate duration regulated
+by the rules depending on the starting time.29 This first filter results in the number of legitimate
+LULD trading pauses (i.e., “TP events”) and the involved stocks (i.e., “TP stocks”) as shown in the
+first row of Table 1 Panel (A).
+Next, from the remaining trading pauses, only those that last for 5 minutes are kept. That
+is, for the purpose of unifying comparison since trading pauses with different lengths may have
+different impacts on market quality and other aspects of interests. This second screening process
+leads to the second row in Table 1 Panel (A).
+Third, to avoid the overlapping effect, if there are multiple trading pauses on a stock on a given
+day, only those that are 2 hours apart from each other are selected.30 The remaining eligible TP
+29Most of the LULD trading pauses last for 5 minutes in length. Some can be extended for another 5 minutes. Some
+other have irregular time lengths. For example, for LULD trading pauses that start towards the market closing time,
+their ending time may be combined with the market closing time. Some others may have a resumption time recorded
+after the market closes. Those cases will result in their pause durations being longer than 5 minutes
+30Christie, Corwin, and Harris (2002) find that the increased level of bid-ask spreads and volatility last for at least 2
+hours after trading halts.
+18
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+events and TP stocks after the third filter are demonstrated in the third row of Table 1 Panel (A).
+The fourth filter requires that the trading pauses need to resume at least 20 minutes before
+market closes, so as to leave enough minutes after trading resumptions to start the post-TP market
+quality and other aspects of interests. That screening step results in the counts of TP events and
+TP stocks in the fourth row of Table 1 Panel (A).
+Lastly, the fifth filter requires eligible trading pauses to be at least 5 minutes after market opening, which will create at least 5 minutes of measurement units for market quality measures and
+proxies for other aspects of interest before trading pauses. This fifth filter leads to the last row in
+Table 1 Panel (A).
+3.3
+Time Window around Trading Pauses and Measurement Units of Variables
+Following Hautsch and Horvath (2019), the focus time range is 1 hour before trading pauses and 1
+hour after trading resumptions. However, what happen during the trading pauses is not covered.
+The 2-hour window should leave enough time to study how market quality and high-frequency
+activity evolve towards trading pauses and after trading resumptions, while avoiding the overlapping effects of two nearby trading pauses on the same stock.31 The time length for each of the
+bins before and after trading pauses could be 1 minutes, 3 minutes, or 5 minutes, which is also
+referred to as the bin interval in this paper. For 1-minute bins, there will be 60 bins before trading
+pauses and 60 bins after trading resumes, which constitute the [-60, +60] 1-minute bins window
+around trading pauses. Similarly, for the 3-minute bins, there will be 20 bins before and 20 bins
+after trading pauses in the [-20, +20] window composed of 3-minute bins around trading pauses.
+And for the 5-minute bins, there will be 12 bins fore and 12 bins after trading pauses in the [-12,
++12] window composed of 5-minute bins around trading pauses. Note that there is no “bin 0”
+in any of the window. The current version of this paper focuses on the 1-minute bins. Each bin
+serves as the time unit upon which the market quality and high-frequency activity measurements
+are computed.
+In this paper, the following notations are used to denote trading pauses and time bins in the 2hour window around. A unique stock-date-time tuple (s, d, t) identifies a trading pause. The letter
+s stands for stock, d for date, and t for the time of day when a trading pause occurs. Taking the
+31See Footnote 30.
+19
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+[−60, +60] window of 1-minute bins around trading pauses, for example, the proxies for variables
+are measured in each time bin τ, where τ = −60, −59, . . . , −2, −1, 1, 2, . . . , 59, 60 are for each 1minute bin in the [−60, +60] window.32 Bin “τ = 0” would represent the time when a trading
+pause is in progress, but this interval of time is not included in the study. Both the notations
+(s, d, t) and τ will be used as subscriptions in the equations in Section 4.1 and Section 5.2 to identify
+trading pauses and bins where the variables are computed.33
+3.4
+Trading Pauses Sample Summary Statistics
+As described in the previous section, the trading pause data is obtained from the DTAQ administrative messages files and from the NasdaqTrader.com via a cross-validation approach. The
+current version of this paper focuses on LULD trading pauses in the US stock market in the [-20,
++20] trading days window around July 18, 2016, the implementation date of Amendment 10.
+Table 1 summarizes the distribution of trading pauses in the [-20, +20] trading days window
+around the implementation of Amendment 10, from different aspects. Day 1 is on July 18, 2016,
+and Day 0 can be considered as the hours after market close on the previous trading day and
+before market opening time on July 18, 2016. To understand Table 1 Panel (A), it is necessary
+to first understand the filters for selecting eligible trading pauses in this paper, as described in
+Section 3.2.
+Table 1 Panel (A) displays the count of trading pauses and the count of stocks with trading
+pauses, after applying each filter cumulatively. The final eligible sample in the [−20, +20] trading
+days window after applying the 5 filters contains 566 trading pauses in the pre-A10 era and 105
+trading pauses in the post-A10 era. Consequently, there are 240 unique stocks involved in the
+above trading pauses in the pre-A10 era and 60 unique stocks involved in the post-A10 era. Those
+trading pauses and stocks involved are the ones used in Panel (C) and Panel (D), and throughout
+the remaining sections in this paper.
+Table 1 Panel (B) displays the hourly distribution of TP events and TP stocks in the 20 trading
+days pre-A10 and 20 trading days post-A10 respectively. To account for the filters of 5 minutes
+after market open and 20 minutes before market close as described above, the first row represents
+32This is subject to change depending on the bin length. For example, if each bin lasts for 3 minutes instead, then
+τ = −20, −19, . . . , −2, −1, 1, 2, . . . , 19, 20.
+33See Section 4.1 and Section 5.2 for more details.
+20
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+the 9:35-10:00 a.m. interval instead of an hour, and similarly, the last row is for the 3:00-3:40 p.m.
+interval. The rest of the rows are for each hour from 10:00 a.m. to 3:00 p.m., sequentially. The
+distribution of trading pauses is highly similar to the top-left plot in Figure 2, indicating that the
+9:35-10:00 a.m. interval has the most masses and there is a significant drop starting from 10:00
+a.m. and gradually decaying throughout the day with minor fluctuations. This pattern applies to
+both trading pauses in the pre-A10 era and in the post-A10 era, but the post-A10 trading pauses in
+each interval are much less than their counterparts in the pre-A10 era, especially in the 9:35-10:00
+a.m. interval and early hours. This further reinstates the effect of Amendment 10 in reducing the
+frequency of occurrence of trading pauses that are related to the problematic opening reference
+price in the pre-A10 era.
+Table 1 Panel (C) summarizes how many minutes exist before and after fully filtered trading
+pauses during market hours in the [−20, +20] trading days window around the implementation
+of Amendment 10. It reflects the happening time of those trading pauses during market hours
+from a specific angle. In the sample of pre-A10 trading pauses, there are 29.90 of the 1-minute
+bins before trading pauses on average, and 59.72 of those after trading resumptions. The pre-TP
+standard deviation of the count of the 1-minute bins is 19.51, while the post-TP standard deviation
+is 2.90. The means and standard deviations tell that most trading pause events have the complete
+60-minute span after trading resumptions, both in the pre-A10 era and post-A10 era. However,
+they also indicate that most of the trading pause events do not have a complete 60-minute span
+before trading pauses, and the span varies between different TP events. In the pre-A10 20 trading
+days, there is on average a nearly 30-minute pre-TP span, but the median is only 16 minutes while
+the 75th percentile is 59 minutes. That indicates that the majority of pre-TP 1-minute bins span
+less than 30 minutes in the pre-A10 era and probably concentrated at the 15 to 16-minute range.
+It further implies that many of the trading pauses occur in the 9:45-9:46 a.m. range, right after the
+LULD price band shrinks to half of level in the opening 15 minutes.34 In the post-A10 era, the
+mean of pre-TP 1-minute bins span is 38.92, which is about 9 minutes longer than in the pre-A10
+era. And now the median is 50 of the 1-minute bins with the 75th percentile being 60, while the
+34As stated in the captions of Figure 1 Panel (C), the timestamps on trading pause and resumption are rarely at 9:35:00
+am and 3:40:00 pm sharp. Therefore, the marginal time gap residuals are treated as extra 1-minutes bins when market
+opens and closes. Hereby, the minimum pre-TP and post-TP bins span are 6 of the 1-minute bins and 21 of the 1-minute
+bins instead of 5 and 20. And the 16 of 1-minute bins as seen in the 25th and 50th percentiles may actually mean a span
+of 15 to 16 minutes. And so on and so forth.
+21
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+25th percentile is now 16. Those indicate that most of the trading pauses in the post-A10 era have
+a longer pre-TP bins span, and that those trading pauses happen later than their counterparts in
+the pre-A10 era. The minimum, maximum, and other percentiles validate the above inferences.
+Panel (C) results further support the effect of Amendment 10 on reducing trading pauses that are
+linked to a problematic opening reference price, especially those that would occur in the first few
+quarters.
+Table 1 Panel (D) describes the actual coverage of the event window of minutes around each
+trading pause in the pre-A10 and post-A10 eras, respectively. It also depicts the happening time
+of trading pauses indirectly from a different aspect than that in Panel (C) above. The statistics
+are produced in this way. First, for each of the 120 time bins in the [−60, +60] minutes window,
+count how many trading pause events actually cover that 1-minute bin in their 120-minute event
+windows.35 There will be 120 counts of trading pauses, 60 in the pre-TP window, and 60 in the
+post-TP window. Next, compute the time-series summary statistics across the 60 bins in the preTP window and across the 60 bins in the post-TP window, respectively. And, the previous two
+steps are applied to the fully filtered trading pauses in the 20 trading days pre-A10 and in the
+20 trading days post-A10, respectively. The above steps result in the 4 rows in this panel. In the
+pre-A10 era, before trading pauses, there are 282.02 trading pauses involved in a 1-minute bin
+on average across the 60 bins and the standard deviation is 165.09. The minimum is 141 trading
+pauses involved in a 1-minute bin, and the maximum is 566 trading pauses involved in a bin,
+which are all the fully filtered trading pauses in the 20 trading days before A10. In the 60 minutes
+after trading pauses, there are on average 563.37 trading pauses involved in a 1-minute bin with
+the standard deviation of 2.35. The minimum is 560 trading pauses windows which are involved
+in a bin and the maximum is 566. That indicates that not all the 120 bins are covered in each of the
+trading pauses events, especially the earlier bins before trading pauses. However, almost all the
+60 bins post-TP are covered in all the trading pauses event windows. In the post-A10 era, there are
+105 fully filtered trading pauses, and on average there are 102.77 trading pause windows which
+cover a bin in the 60 minutes after trading pauses. That is similar to the case in the pre-A10 era,
+meaning that almost all trading pause event windows cover all the 60 bins after trading resumes.
+For the 60 bins before trading pauses in the post-A10 era, on average a bin is covered in 68.12 TP
+35Please also refer to the caption in 1 Panel (D) for a better understanding.
+22
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+event windows, and the standard deviation is 20.84. The bin with the least coverage of the TP
+event window is covered by 45 TP event windows, while the maximum bin is covered by all 105
+TP event windows.
+3.5
+Liquidity Measure and Descriptive Analysis
+The main liquidity measure in this study is the percentage quoted spread, which is calculated
+following the methodology in Holden and Jacobsen (2014).
+The QSpreadτ for each time bin τ (as described in Section 3.3) is computed on the basis of all
+the National Best Bid (NBB) and National Best Ask (NBO) in force in that time bin τ. A stockdate-time tuple (s, d, t) uniquely identifies a trading pause. The letter s stands for stock, d for
+date, and t for the time of day when a trading pause occurs. The measure is defined for each
+time bin τ around each trading pause (s, d, t). The stock-date-time tuple (s, d, t) is omitted from
+the subscripts that follow the formulas for parsimony. For each quote n which has any length of
+in-force time within bin τ, denote the National Best Bid as Bidn, and National Best Ask as Askn.36
+Suppose there are Nτ quotes which are ever in force in time bin τ, and the in-force time intervals
+for each of those quotes are denoted as ln.
+MidQuoten = (Askn + Bidn)
+2
+(1)
+Then, for the time bin τ, the dollar quoted spread and percentage quoted spread are:
+QSpreadτ =
+Nτ
+P
+n
+(Askn −Bidn) ln
+Nτ
+P
+n
+ln
+(2)
+QSpread (%)τ =
+Nτ
+P
+n
+[(Askn −Bidn) /MidQuoten] ln
+Nτ
+P
+n
+ln
+(3)
+Table 2 presents the time-series average of the cross-sectional summary statistics for the spread
+36This includes any quote which has a portion of in-force time outside bin t and the other portion of in-force time
+within bin t. For this type of quote, only the in-force time within the bin t is counted. There can be two scenarios: (1)
+a quote which becomes in force before the time bin t and is still in force after entering the bin t for a certain period of
+time; (2) a quote which becomes in force within the time bin t and lasts beyond it.
+23
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+quoted (%). It is based on the [-60, +60] 1-minute bin window around trading pauses. First,
+the percentage quoted spread is computed for each available bin around each trading pause.
+Next, the summary statistics are calculated at all the bin levels for qualified trading pauses crosssectionally.37 Then, the time-series average is taken across each bin in the pre-TP [-60, -1] interval
+or the post-TP [+1, +60] interval over the previously acquired bin-level summary statistics. For the
+time-series average, the data are grouped into four intervals along the pre- and post-A10 dimension and along the pre- and post-TP dimension: (1) pre-A10 and pre-TP, (2) pre-A10 and post-TP,
+(3) post-A10 and pre-TP, and (4) post-A10 and post-TP. Those correspond to the four rows in Table
+2.
+In the pre-A10 era, the time-series average of pre-TP mean of the bin-level percentage quoted
+spread is 7.09 which is much larger than 1.65 in the post-TP interval. So is the time-series average
+of pre-TP median, 1.51, compared to the post-TP median of 0.65. The mean and median indicate
+that the percentage quoted spread is on average smaller after trading resumes than before trading
+pauses in the pre-A10 era. That is a preliminary signal of liquidity improvement after trading
+resumes compared to the level before trading pauses. The time-series average of cross-sectional
+standard deviation, 13.86, is also much larger in the pre-TP interval than 3.94 in the post-TP interval. It points out that the pre-TP liquidity measured by percentage quoted spread is on average
+quite volatile across different trading pauses, whereas the post-TP quoted spread is on average
+much more stabler across trading pauses.
+In the post-A10 era, the time-series average of the pre-TP mean is 3.57, which is smaller than
+its counterpart, 7.09, in the pre-A10 era, but it is larger than the time-series average of the post-TP
+mean, 1.70, in the post-A10 era. The time-series average of the post-TP mean is similar in the
+pre-A10 era and the post-A10 era, while the latter is larger by 0.05. The time-series average of
+the pre-TP median is 1.02 in the post-A10 era, and the post-TP median is 0.70, which is smaller.
+Compared to their pre-A10 era counterparts, the pre-TP median is smaller by 0.49 while the postTP median is slightly larger by 0.05. The time-series average of the pre-TP standard deviation, 6.19,
+is larger than the post-TP standard deviation 3.11. It is also smaller than its counterpart, 13.86, in
+the pre-A10 era. The time-series average of the post-TP standard deviation in the post-A10 era is
+0.83 smaller than its counterpart in the pre-A10 era.
+37See Section 3 for the filtering process for qualified trading pauses.
+24
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+Figure 3 Panel (a) compares the cross-sectional mean and median of the percentage quoted
+spread before and after trading pauses in the pre-A10 and post-A10 periods. It can support the
+summary statistics in Table 2. The post-A10 evolution of the cross-sectional mean in the [-60,
++60] 1-minute intervals is stabler than that in the pre-A10 evolution. For the cross-sectional mean
+at the bin level after A10, there are more fluctuations in the 60-minute pre-TP interval than in
+the post-TP interval. The triangle-shaped scatter plot of the bin-level percentage quoted spread
+and its 5-minute moving average (both in grey color) in the left plot of Figure 3 Panel (a) also
+indicates that the pre-TP quoted spread is about 5%-6% higher than the post-TP level, especially
+in the [-60, -15] minutes window before trading pauses. The evolution of the post-TP percentage
+quoted spread is less fluctuated from bin to bin while it varies much more dramatically in the
+[-60, -15] minutes window before trading pauses and quickly decreases thereafter. The pre-A10
+cross-sectional mean of the percentage quoted spread is at a higher level at the [-60, -15] minutes
+interval before trading pauses and is more volatile compared to its post-A10 counterpart. It goes
+down around 15 minutes before trading pauses and converges to the post-A10 cross-sectional
+mean evolution. The post-A10 liquidity improvement after trading pauses are not as large as that
+in the pre-A10 era, because the post-TP liquidity level is much similar to the pre-TP liquidity level
+in the post-A10 era. However, the improvement in post-TP liquidity in the pre-A10 era is more
+dramatic, especially compared to the level in the [-60, -15] minutes interval before trading pauses.
+There is a spike in the quoted spread in the minute right before the trading pauses in both the
+mean plot and the median plot, as shown in Figure 3 Panel (a). The median plot is less volatile
+compared to the mean plot, while there is a little hill at the [-30, -15] window before the trading
+pauses in the pre-A10 era. The post-A10 median plot of percentage quoted spread is almost similar
+to a flat line except that it slightly goes up right around trading pauses.
+Figure 3 Panel (b) shows the evolution of the cross-sectional mean and median of the quoted
+spread in dollar terms. The post-A10 evolution patterns of the post-A10 mean and median are similar to that in the percentage term as in Panel (a), while the post-A10 mean and median evolution
+patterns have more larger spikes right before trading pauses.
+25
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+3.6
+Short-Term Volatility Measure and Descriptive Analysis
+The short-term liquidity measure is the HighLow, following the spirit of Hasbrouck and Saar
+(2013), which is computed as the difference of the highest ever in-force mid-quote in the bin τ minus the lowest ever in-force mid-quote in the same bin τ, divided by the mid-point of the highest
+and the lowest, times 10000. As before, the measure is defined for each time bin τ around each
+trading pause (s, d, t). The stock-date-time tuple (s, d, t) is omitted from the subscripts that follow
+the formulas for parsimony. Follow the notations of n and Nτ and the definition of MidQuoten as
+in Section 3.5, I define HighLow in bin τ as below.
+HighLowτ =
+max
+n∈Nτ {MidQuoten} −min
+n∈Nτ {MidQuoten}
+
+max
+n∈Nτ {MidQuoten} + min
+n∈Nτ {MidQuoten}
+
+/2
+× 10000
+(4)
+Figure 4 shows the cross-sectional mean and median of HighLow around trading pauses in
+the pre- and post-Amendment 10 periods, respectively. The plot on the left depicts the evolutions
+of the minute-by-minute cross-sectional mean in the pre-A10 and post-A10 eras. In the [-60, -10]
+1-minute interval before trading pauses, the pre-A10 HighLow is mostly higher than the post-A10
+HighLow. Starting from about 10 minutes before trading pauses, they cross paths, and the postA10 HighLow becomes higher than the pre-A10 HighLow mostly. The post-TP cross-sectional
+mean of HighLow is higher in the post-A10 era. The spike during the [-5, +5] 1-minute window
+around trading pauses in the post-A10 era is also much greater than that in the pre-A10 era. The
+patterns depicted above indicate that the mean of short-term volatility measured by HighLow is
+higher in the pre-A10 era before about 10 minutes until trading pauses and then it is higher in
+the post-A10 afterward. The short-term volatility also significantly shoots up during the [-5, +5]
+1-minute window around trading pauses in the post-A10 era, then decreases afterward, but stays
+higher above the level in the pre-A10 era after trading pauses.
+Table 3 displays the time-series average of the summary statistics for HighLow in the minutelevel bins before and after trading pauses in the pre-A10 and post-A10 eras. In the pre-A10 era, the
+time-series average of the minute-level cross-sectional means before trading pauses is 26.47, which
+is smaller than its counterpart, 18.24, in the interval after trading pauses. The pre-TP median is 4.24
+26
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+in the pre-A10 era, which is higher than the post-TP median of 2.56. The above statistics suggest
+that short-term volatility, measured by HighLow, decreases after the trading pauses in the pre-A10
+era. In other words, the trading pauses in the pre-A10 era seem to have an effect of cooling down
+short-term volatility on average, after trading resumes, compared to the 1-hour interval before
+trading pauses. In addition, the time-series average of standard deviation reduces from 51.50 in
+the pre-TP interval to 33.19 in the post-TP interval. In the post-A10 era, the time-series average of
+cross-sectional means increases from 21.47 in the pre-TP interval to 30.89 in the post-TP interval;
+the median increases from 3.51 pre-TP to 14.12 post-TP. Those suggest that, on the contrary, in the
+post-A10 era, short-term volatility increases after trading pauses. In other words, in the post-A10
+era, trading pauses seem to magnify short-term volatility instead of cooling it off. The post-A10
+time-series average of standard deviation before and after trading pauses are very similar. The
+pre-TP standard deviation is 42.17 while the post-TP standard deviation is 42.02.
+3.7
+High-Frequency Quoting Measure and Descriptive Analysis
+The key proxy for high-frequency activity in this paper is the measure of high-frequency quote
+updates HFQU based on Conrad, Wahal, and Xiang (2015). Taking the 1-minute bin as an example, for each 1-minute bin of the [-60, +60] minutes window around a trading pause of a ticker,
+any changes in the quote price or size of the best bid or best offer are counted on each exchange
+and aggregated across all exchanges.
+There are several merits of using HFQU as a measure of high-frequency activity in this study.
+First, HFQU is a quote-based proxy for high-frequency activity. The triggering mechanism of
+LULD trading pauses also depends on quote prices. Therefore, using HFQU as the high-frequency
+activity proxy can better capture the potential correlation between high-frequency quoting activity and extreme quote price movements, which can trigger trading pauses. Secondly, the HFQU
+measure can be calculated from the Daily TAQ data, which is the same data source for the main liquidity and volatility measures used in this study. This way, consistency is maintained throughout
+these different measures and there is no need to concern about the matching rate or data loss when
+merging different data sources together. Last but not least, HFQU is a relatively straightforward
+measure to compute and understand, while it can effectively capture high-frequency quotation
+27
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+activity as shown in Conrad, Wahal, and Xiang (2015).
+Similar to the liquidity measure and the short-term volatility measure defined in the previous sections, the HFQU measure is also defined for each time bin τ around each trading pause
+(s, d, t). The stock-date-time tuple (s, d, t) is omitted from the subscripts that follow the formulas
+for parsimony. Denote each exchange by e and the set of all exchanges as E. Suppose that there
+are Me,τ quotes on the exchange e at time bin τ, and each quote qm is a tuple containing 4 elements, i.e. qm = (bidm, bidsizem, askm, asksizem), where m, m+1 ≤Me,τ. And it is nature to have
+qm̸ = qm+1 if any of the 4 elements is different in this two quotes. For the mth quote on exchange e
+in time bin τ, note that bidm is the best bid price; bidsizem is the best bid size; askmis the best ask
+price; asksizem is the best ask size. As indicated in Conrad, Wahal, and Xiang (2015), they need
+not to be the national best bid or national best ask.
+HFQUe,τ =
+Me,τ
+X
+m
+1 {qm̸ = qm+1}
+(5)
+HFQUτ =
+E
+X
+e
+HFQUe,τ
+(6)
+Figure 5 presents the cross-sectional mean and median for each of the 1-minute bins in the [-60,
++60] minutes interval around trading pauses, before and after the implementation of Amendment
+10.
+In the pre-A10 era, the cross-sectional mean of HFQU stays around 10 to 30 during the [-60,
+-15] minutes window before trading pauses. Then, it goes up from around 15 minutes before
+trading pauses and climbs to the level around 50 until a spike of approximately 100 occurs 1
+minute before trading pauses and follows by another spike around 80 in the minute right after
+trading resumes. Afterward, it quickly drops to the level close to 50 and goes slightly down to
+about 40 during the [+1, +60] minutes interval after the trading resumes.
+In the post-A10 era, the cross-sectional mean of HFQU is higher than its counterpart in the preA10 era, oscillates from about 90 to 25, and stays mostly around 50 during the [-60, -15] minutes
+window before trading pauses. That suggests that high-frequency quotation activity is higher in
+the post-A10 era during the [-60, -15] minutes window before trading pauses. Strikingly, the postA10 cross-sectional mean of HFQU increases about 10 minutes before trading pauses and reaches
+28
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+above 250 in the minute right before trading pauses. It even reaches the 350 level in the minute
+after trading resumes and quickly declines to about 160 about 5 minutes after trading resumes
+and then oscillates around 110 till 20 minutes after trading resumes. Afterward, it drops to about
+80 and gradually goes town towards 50.
+Comparing the evolution of the post-A10 mean and that of the pre-A10 mean of HFQU, it is
+obvious that the mean high-frequency quoting activity is almost consistently higher in the postA10 era throughout the [-60, +60] 1-minute window before and after trading pauses, except for the
+short interval of [-15, -10] minutes approximately before trading pauses, where they cross paths
+and stay close around the level of 50.
+As for the median, both the pre-A10 and post-A10 medians stay around 0 until after 20 minutes
+before trading pauses when they climb up to above 5 and then the post-A10 median shoots up and
+reaches about 45 in the minute right before trading pauses while the pre-A10 median is at about
+35. The post-TP median in the pre-A10 era quickly drops from about 25 in the minute right after
+trading resume to 5 in a minute later and oscillates around 5 to 10 in the remaining 59 minutes
+after trading resumes. The median in the post-A10 era is close to 60 in the minute right after
+trading resumes, and it quickly goes down and oscillates around 35 to 15 during until 10 minutes
+after trading resumes. It then fluctuates and keeps decreasing to a level between 10 and 5 towards
+60 minutes after trading resumes. From the median plot, it is clear that the post-TP median is
+much higher than the pre-TP median from about 5 minutes before trading pauses to 60 minutes
+after trading resumes.
+It is also obvious that, according to both the mean plot and the median plot, there are huge
+spikes of high-frequency quoting updates from about 5 minutes before trading pauses and 10
+minutes after trading resumes in the post-A10 era. There is only a milder spike 1 minute before trading pauses and 1 minute after trading resumes in the pre-A10 era. In other words, after
+Amendment 10 implementation, high-frequency quoting update activity dramatically increases
+right before trading pauses and goes even higher in the minute right after trading resumes then it
+decays but still remains at a higher level than the pre-TP high-frequency quoting update intensity,
+and also much higher than its counterparts in the pre-10 era after trading resumes.
+Table 4 shows the time-series average of the cross-sectional summary statistics of HFQU before and after trading pauses in the pre-A10 and post-A10 eras. In the pre-A10 era, the time-series
+29
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+average of the pre-TP cross-sectional mean is 27.70, which is smaller than its counterpart 39.71
+in the post-TP interval. The times-series average of the median also shows an increase from the
+pre-TP level of 1.85 to 6.73 in the post-TP interval. In the pre-TP interval, the time-series average
+of standard deviation is 119.73, which slightly increases to 122.27 in the post-TP interval. Those
+are consistent with what is shown in Figure 5. In the post-A10 era, both the pre-TP mean and
+the post-TP mean are higher than their counterparts in the pre-A10 era. The pre-TP mean is now
+60.02 and the post-TP mean is 83.85. Similarly, the pre-TP median is now 2.81 and the post-TP
+median is 13.10. In other words, both the post-TP mean and median are higher than their preTP counterparts in the post-A10 era. In addition, the mean and median in the post-A10 era are
+higher than those in the pre-A10 era both in the pre-TP interval and in the post-TP interval. The
+time-series average of the standard deviation in the post-TP interval is 223.51 in the post-A10 era,
+higher than 155.50 in the pre-TP interval. Overall, these support the observation that the HFQU
+evolution post A10 is higher than that in the pre-A10 era both before trading pauses and after trading pauses. The HFQU is also more volatile in the post-A10 era around trading pauses, especially
+after trading resumes.
+4
+Market Quality around Trading Pauses pre and post the Amendment
+10
+4.1
+Liquidity around Trading Pauses
+This section empirically examines the evolution of liquidity before and after trading pauses in the
+pre-A10 era and in the post-A10 era. It also compares the difference between the post-A10 and
+post-A10 liquidity evolution patterns around trading pauses. Whether Amendment 10 induces
+liquidity improvement in the 2-hour window around trading pauses compared to those in the
+pre-A10 era is another intriguing question.
+The methodology in this section is inspired by Hautsch and Horvath (2019) but is re-designed
+for the purpose of this research.
+The single difference regression is estimated by Eq. (9) for trading pauses in the pre-Amendment
+10 and post-Amendment 10 periods, respectively. Potential first-order autocorrelations in resid30
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+uals are corrected using the Prais and Winsten (1954) method. Standard errors are clustered into
+four consecutive but distinct 30-minute groups per trading pause throughout the [−60, +60] minutes window. This way, the heteroskedastic-consistent variance-covariance matrix is assumed to
+have no correlation across trading pauses but intra-group correlation is allowed within each of the
+four half-hour groups per trading pause.
+y(s,d,t),τ = α(s,d,t) +
+X
+τ
+
+βτ + βTP
+τ
+
+Dτ + ϵ(s,d,t),τ
+(7)
+y(s,d,t),−1 = α(s,d,t) + ϵ(s,d,t),−1
+(8)
+Taking the difference between Eq. (7) and Eq. (8) yields the single difference regression,
+y∗
+(s,d,t),τ =
+X
+τ
+
+βτ + βTP
+τ
+
+Dτ + ϵ∗
+(s,d,t),τ
+(9)
+where y∗
+(s,d,t),τ ≡y(s,d,t),τ −y(s,d,t),−1 and ϵ∗
+(s,d,t),τ ≡ϵ(s,d,t),τ −ϵ(s,d,t),−1. The subscripts s stands
+for stock, d for date, and t for the time of day when a trading pause occurs. The definitions of the
+subscripts (s, d, t) and τ have been introduced in Section 3.3 before. A stock-date-time tuple (s, d, t)
+uniquely identifies a trading pause. For each trading pause, the outcome of interest is measured
+at each time bin τ, where τ = −60, −59, . . . , −2, −1, 1, 2, . . . , 59, 60 are for each 1-minute bin in
+the [−60, +60] minutes window around trading pauses.38 Bin “τ = 0” would represent the time
+when a trading pause is in progress and it is not included in the study. The base bin is the minute
+one hour before trading pauses happen, i.e. τ = −60. Therefore y∗
+(s,d,t),τ captures the relative
+difference of the outcome variable at bin τ from that at the base bin. The dummy variable Dτ
+takes value 1 if it is bin τ and 0 otherwise. The sum of coefficients
+ βτ + βTP
+τ
+
+captures a combined
+effect of high-frequency trends around trading pauses and the impact of trading pauses on the
+outcome measures at each bin τ, where
+ β−60 + βTP
+−60
+
+≡0 by default for the base bin at τ = −60.
+Regression results for trading pauses in the pre-A10 and post-A10 eras are estimated separately
+by Eq. (9), corresponding to
+ βτ + βTP
+τ
+
+Pre-A10 and
+ βτ + βTP
+τ
+
+Post-A10 respectively. For the case
+of the liquidity outcome QSpread (%) as the dependent variable, the estimated coefficients are
+38See Footnote 32.
+31
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+graphically presented in the top and middle panels of Figure 6 with different colors for significance
+levels.
+The difference-in-differences regression below extends the single-difference setup from above
+to illustrate the effect of Amendment 10 on trading pauses.
+y∗
+(s,d,t),τ =
+X
+τ
+
+βτ + βTP
+τ
+
+Dτ + βA101 {Post A10} + βTP
+A10,τ1 {Post A10} Dτ + ϵ∗
+(s,d,t),τ
+(10)
+When 1 {Post A10} = 0, Eq. (10) resembles Eq. (9) but it is for trading pauses before Amendment 10 only; when 1 {Post A10} = 1, the coefficient βA10 indicates the shift in common trends
+after Amendment 10, while the coefficient βTP
+A10,τ captures the effect of Amendment 10 on trading pauses at each bin around. For the liquidity outcome variable QSpread (%) as the dependent
+variable, the estimated βTP
+A10,τ for each bin τ is plotted in the bottom panel of Figure 6 with colordifferentiated significance levels.
+The results of the single differences and difference-in-differences regressions of liquidity measures QSpread (%) are displayed in Figure 6. The single differences results in the pre-A10 era can
+be found in the top panel, while the post-A10 results are in the middle panel.
+The top panel presents the single difference results for the pre-A10 period. The vertical bars
+correspond to the estimated
+
+ˆβτ + ˆβTP
+τ
+
+Pre-A10 as in Eq. (9). The base bin is at 60 minutes before trading pauses. The height of the bar represents the magnitude of the estimated coefficients,
+while the color corresponds to the significance level. Dark blue means significant at the 1% level,
+medium blue for 5%, light blue for 10%, and white for insignificance (i.e. p-value > 10%). The significance cut-off point is 5% by convention. This top panel shows that there starts to be significant
+(i.e. at least at the 5% significance level) liquidity improvement from 14 minutes before trading
+pauses until about 2 minutes before trading pauses, for more than 5 percentage points of decrease
+in quoted spread from the base bin level. The percentage quoted spread is not significantly different from the base bin level before the interval of [−14, −2] minutes, except that the quoted spread
+at τ = −59 is slightly higher than the base bin level for about 1 percentage point. The improvement is more so in both magnitude and significance level after trading resumes. After trading
+resumes, the percentage quoted spread is more than 10 percentage points less than the base bin
+level 60 minutes before trading pauses, and slowly decreasing toward 12 percentage points less
+32
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+than the base bin level when it is 60 minutes after trading pauses.
+The middle panel shows the single difference results from the base bin after the A10 period,
+measuring how different the percentage quoted spread is at each bin from the base bin level. They
+are the estimated coefficients
+
+ˆβτ + ˆβTP
+τ
+
+Post-A10 as in Eq. (9). At bin τ = −59, −58, −57, and −56,
+the quoted spread increases slightly from the level of the base bin. Afterwards, the bin-level
+quoted spread is not significantly different from the base level until about 23 minutes after trading resumes. From 23 minutes after trading resumes, the percentage quoted spread is about 3
+percentage points less than the base bin level, and going toward 5 percentage points less than the
+base bin level. The different is significant at at least the 5% level, which indicates a significant
+improvement in liquidity from 23 minutes after trading pauses and afterward. However, compared to the pre-A10 case, the liquidity improvement starts much later and the magnitude is less
+dramatic.
+The estimated difference-in-differences results, ˆβTP
+A10,τ, displayed in the bottom panel show
+that compared to their base bin levels of percentage quoted spread, respectively, the liquidity
+improvement after trading resumes in the pre-A10 era is more significant and dramatic than that
+in the post-A10 era. Note that the pre-A10 and post-A10 eras may not have the same base bin
+quoted spread levels as indicated in the summary statistics mean and median plots in Section
+3.5. Since trading resumes, the estimated coefficients are all significant at the level 1% and slightly
+decrease from about 8 to 6 percentage points throughout the [+1, +60] minute bins. This is because
+the post-A10 liquidity improvement compared to the base bin liquidity level is much lower than
+that in the pre-A10 era. Therefore, compared to the pre-A10 liquidity improvement, the post-A10
+liquidity appears to be “deteriorating” after trading resumes in the bottom panel, as the difference
+in the percentage quoted spread from the base-bin spread. However, the middle panel can show
+that this is actually not the case.
+This striking difference in the bottom panel could be caused by two different reasons. First, the
+liquidity levels of the base bin in the pre-A10 and post-A10 eras may not be the same. From the
+left plot in Figure 3 Panel (a), it can be seen that the mean percentage quoted spread of the base bin
+is approximately 5 percentage points lower in the post-A10 era than that in the pre-A10 era. The
+mean plot in Figure 3 Panel (a) also shows that the mean percentage quoted spreads after trading
+resumes in the pre-A10 era and in the post-A10 era are actually highly overlapped. Secondly, in
+33
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+the post-A10 era, the liquidity level at the bins in [-59, +60] minute interval is less different from
+the liquidity level at the base bin τ = −60 minutes before trading pauses. However, in the pre-A10
+era, there is a dramatic decrease, about 6 percentage points, of quoted spread (i.e., improvement
+of liquidity) from approximately 15 minutes before trading pauses. Therefore, the bottom panel
+does not suggest that LULD trading pauses hurt liquidity more after the trading resumes in the
+post-A10 era compared to those in the pre-A10 era.
+4.2
+Short-Term Volatility around Trading Pauses
+To study the impact of trading pauses on short-term volatility around trading pauses in the preand post-Amendment 10 eras, the same methodology as in Section 4.1 is applied. The dependent
+variable is now the short-term volatility measures HighLow. Figure 7 shows the estimated results.
+The top panel presents the estimated coefficients
+
+ˆβτ + ˆβTP
+τ
+
+Pre-A10 as in Eq. (9) for HighLow
+in the pre-A10 era. It captures on average how different the short-term volatility is from the base
+bin level at τ = −60 minutes before trading pauses. In the pre-A10 area, the short-term volatility
+HighLow only increases significantly from the base bin level in 1-minute bins just before and after
+trading pauses. It is close to 40 basis points above the base bin level in the minute before trading
+pauses and about 35 basis point about the base bin level in the minute right after trading resumes.
+The post-A10 results of the estiamted
+
+ˆβτ + ˆβTP
+τ
+
+Post-A10 are shown in the middle panel. There
+are more bins showing significantly increased short-term volatility around trading pauses, especially after trading resumes, compared to the significant pre-A10 coefficients. There are 5 significant minute-level bins before trading pauses and 23 bins after trading resumes. The HighLow
+is about 10 basis points lower than the base level at the τ = −39 minute bin. Close to trading
+pauses, HighLow is ranging from about 30 to 90 basis points higher than the base bin level at the
+τ = −5, −3, −2 and −1 minute bins. That indicates that the short-term volatility increase dramatically since it is 5 minutes before trading pauses in the pre-A10 era. In the 5 minutes after trading
+resumes, the short-term volatility is even higher. At the 1 minute bin right after trading resumes,
+HighLow is about 130 basis points higher than the level of the base bin. Then it drops to about
+40 basis points higher than the base bin level at the τ = 2 minute bin and goes down to about
+30 basis points higher than the base level at the τ = 5 minute bin. After 5 minutes from trading
+34
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+resumes, the short-term volatility oscillates around the level of 20 basis points higher than the
+base level to about 15 basis points higher than the base level until the τ = 24 minute bin. Only the
+τ = 8 minutes and τ = 11 minutes bins are not significant. The τ = 27 minutes bin is also significantly higher than the base bin, about 18 basis points. In general, in the post-A10 era, short-term
+volatility HighLow rises much higher and dramatically both within a few minutes before trading
+pauses and after trading resumes. Especially, the positive difference from the base bin level is
+more profound and longer lasting after trading resumes in the post-A10 era.
+The bottom panel displays the estimated difference-in-difference coefficients ˆβTP
+A10,τ. The single
+differences from their respective base bins are denoted as the excess differences. The bottom panel
+compares how the excess differences in the post-A10 era are different from those in the pre-A10
+era. The post-A10 excess differences in the last 3 minutes are about 40 to 60 basis points higher
+than those in the pre-A10 era. In the first minute after trading resumes, the excess difference is
+about 100 basis points higher than its counterpart in the pre-A10 era. During the τ = 2, 3, 4, and
+5 minute level bins after trading resumes, the excess differences in the post-A10 era are about 50
+to 30 basis points higher than their counterparts in the pre-A10 era. Afterwards, occasionally the
+differences in excess differences are significant at bin τ = 10, 13 and 22 after trading resumes,
+ranging from 40 to 30 basis points.
+The bottom panel shows that a few minutes before and after trading pauses, the post-A10
+period short-term volatility increased significantly for about 40 to 100 basis points more in magnitude compared to the pre-A10 periods increase relative to their base bin levels, respectively. Note
+that the base-bin levels may be different on average in those two periods. According to the mean
+plot in Figure 4, the average base bin HighLow is about 30 basis points in the pre-A10 era, while
+that is about 10 in the post-A10 era, which is about 20 basis point lower. However, the mean plot
+also demonstrates the pattern that the post-A10 era HighLow in the [-10, +10] minute window is
+much higher than that of the pre-10 era, which is consistent with the results in Figure 7. These
+dramatic differences in excess differences of HighLow are both driven by a lower base level for
+the post-A10 era and a much higher spike around trading pauses in the post-A10 era.
+Altogether, Figure 4 and Figure 7 results suggest that short-term volatility measured by HighLow
+shoot up significantly around trading pauses, especially after trading resumes, in the post-A10 era
+compared to the pre-A10 era. Cross-sectionally, on average, short-term volatility is lower during
+35
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+the [-60, -10] minute bins before trading pauses in the post-A10 era than in the pre-A10 era, while
+it is higher during the [-10, +60] minute bins. LULD Plan Amendment 10 might be correlated with
+an unexpected result in dramatically increasing short-term volatility, starting from a few minutes
+before trading pauses to a few minutes after trading resumes. Short-term volatility HighLow is
+also higher in the hour after trading resumes compared to that in the pre-A10 era.
+5
+High-Frequency Quoting and Its Role
+This section studies the behavior of high-frequency trading and quoting activities before and after
+trading pauses in the pre-A10 and post-A10 eras. It is intriguing to know how high-frequency
+activities evolve as trading pauses approach and after trading resumes. Whether high-frequency
+activities around trading pauses have changed after the implementation of Amendment 10 is also
+worth investigating. And if so, the possible reasons behind the change are awaiting to be explored.
+Another question to be examined in this section is whether high-frequency activities interact
+or correlate with market qualities around trading pauses. Is a higher high-frequency activity intensity correlated with a higher liquidity provision around trading pauses? Does high-frequency
+activity induce higher short-term volatility before and after trading pauses? Can high-frequency
+activity help explain or provide suggestive evidence on the changes of liquidity and volatility
+around trading pauses in the pre-A10 era and the post-A10 era?
+There could also be implications for future regulatory policy making. When the SEC was making Amendment 10, LULD Plan Amendment 10, they did not aim at regulating high-frequency
+trading or quoting activity around trading pauses.
+It would be helpful to understand highfrequency trading behavior around trading pauses and anticipate their future behavior and impact on market quality around trading pauses. When updating new LULD Plan trading pause
+rules, the conditional effects of trading pauses with the presence of high-frequency trading before
+trading pauses and after trading resumes should be worth considering.
+5.1
+High-Frequency Quoting around Trading Pauses
+Section 5.1 adopts the same methodology as in Section 4.1 to study the evolution of high-frequency
+quoting activity around trading pauses. The main regressions are the single-difference regressions
+36
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+for the pre-A10 period and post-A10 period, respectively, and difference-in-differences regression
+for comparing the high-frequency quotations around trading pauses after Amendment 10 implementation and before that. The estimated results are presented in the top, middle and bottom
+panels of Figure 8, respectively.
+In the pre-A10 period, compared to the base bin level, the high-frequency quoting measure
+HFQU starts to rise significantly from the τ = −12 minute bin before trading pauses to the
+τ = −1 minute bin. There are about 25 to 30 more high-frequency quote updates during the [-
+12, -2] minute window before trading pauses, compared to the base-bin level in the pre-A10 era.
+During the exact 1 minute bin right before trading pauses, the excess high-frequency quote updates compared to the base bin level is about 80. Immediately after trading resumes, in the τ = 1
+minute bin, the excess HFQU compared to the level of the base bin is about 60 to 70, slightly lower
+than the level of the 1-minute bin right before trading pauses, but higher than those in the [-12,
+-2] minute window. Afterward, the excess HFQU is significantly higher than the base-bin level in
+bins τ = 10 and τ = 11, for about 25 more high-frequency quote updates. The top panel shows that
+the excess increase of HFQU from the base bin level is concentrated in the [-12, -1] minute window before trading pauses and the minute right after trading resumes, plus two 1-minute bins
+about 10 minutes later. It is unclear whether the excess HFQU increases before trading pauses
+contributes to the happening of trading pauses or not. Alternatively, high-frequency traders can
+frequently update their quotes to provide liquidity and prevent unnecessary trading pauses from
+occurring. If it is an information-driven trading pause, there may be information involved in the
+arising HFQU before trading pauses. After trading resumes, the high excess HFQU at the τ = 1
+minute bin could represent that high-frequency traders (HFTs) digest information during trading
+pauses and quickly adjust their position immediately after trading resumes. The excess HFQU at
+the τ = 10 and τ = 11 may reflect some further adjustments made by HFT.
+In the post-A10 period, only the τ = −1 minute bin right before trading pauses and the τ = 1
+minute bin right after trading resumes have significant and dramatic excess HFQU compared to
+the base bin level. The excess HFQU in the minute right before trading pauses is about 170, and it
+even increased to about 250 in the minute right after trading resumes. These two spikes are much
+more dramatic than the milder increases in excess HFQU before trading pauses and after trading
+resumes in the pre-A10 era. And, the differences in magnitude are not induced by differences in
+37
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+the mean base level HFQU, as shown in Figure 5. The post-A10 base bin level of the mean HFQU
+is even about 75 higher than that in the pre-A10 era, but the spikes of HFQU are just too dramatic
+closely before and after trading pauses. This is fascinating as it may suggest that, in the post-A10
+era, without those unnecessary trading pauses in the pre-A10 era, HFTs only need to dramatically
+update their quotes frequently in the minute right before and after trading pauses in a much more
+efficient manner. The dramatic HFQU right before trading pauses and after trading resumes after
+more likely to be information-driven in the post-A10 era. It is not clear whether the spike in the
+minute before the trading pause can be viewed as “triggering” trading pauses or not. This awaits
+further study.
+When comparing the differences after A10 and before A10 as shown in the bottom panel of
+Figure 8, only the 1-minute bins immediately after trading resumes are significantly different in
+the two eras. In the 1-minute bin after trading resumes, there are much more high-frequency
+quote updates in the post-A10 period than in the pre-A10 period, relative to their base-bin level
+at 60 minutes before trading pauses. The difference in excess HFQU levels from their own base
+bin level is about 200, indicating that there are on average 200 more excess high-frequency quote
+updates from base bin level in the post-A10 era than in the pre-A10 era. Note that, as described
+above, the mean plot in Figure 5 shows that the mean of the pre-A10 base bin HFQU is about 75
+lower than that of the post-A10 era. However, this does not undermine the dramatic differences
+in excess HFQU in the minute immediately after trading resumes in the post-A10 and pre-A10
+eras. It suggests that the revised trading pause mechanism in the post-A10 era can better serve
+as a window for HFTs to digest information and adjust their positions. They update their quotes
+significantly more frequently at the minute right after trading resumes without those unnecessary
+trading pauses in pre-A10. This may suggest a better mechanism for information transmission in
+the post-A10 era, and now the trading pauses may serve their original purposes better.
+5.2
+High-Frequency Quoting and Liquidity
+By comparing Figure 3 and Figure 5, the evolution patterns of the mean and median around trading pauses are different in percentage quoted spread and HFQU, either in the pre-A10 era or in
+the post-A10 era. It is intriguing and important to empirically inspect the relationship between
+38
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+high-frequency quoting activity and liquidity both before trading pauses and after trading resumptions. In particular, are high-frequency quoting updates positively correlated with liquidity
+improvement around trading pauses? Does Amendment 10 bring about any changes to the above
+relation? This section formally studies these questions in detail.
+The following regression equation is used to study the correlation between market quality outcomes and high-frequency quoting for each of the 1-minute bin in the [-60, +60] minutes window
+around trading pauses.
+y(s,d,t),τ = ατ +
+X
+τ
+βτDτHFQU(s,d,t),τ + ϵ(s,d,t),τ
+(11)
+The dependent variable y stands for outcome of interest. In this section, it represents the liquidity measured by QSpread(%). The independent variable is the measure of high-frequency activity
+HFQU. Similar to the notations in Eq. (7), the subscripts s represent the stock, d the date, and t
+the time of day when a trading pause occurs. The definitions of the subscripts (s, d, t) and τ have
+been introduced in Section 3.3 before. A stock-date-time tuple (s, d, t) uniquely identifies a trading pause. For each trading pause, the outcome of interest is measured in each time bin τ, where
+τ = −60, −59, . . . , −2, −1, 1, 2, . . . , 59, 60 are for each 1-minute bin in the [−60, +60] minutes window around trading pauses.39 Bin “τ = 0” would represent the time when a trading pause in
+progress and it is not included in the study. The dummy variable Dτ takes value 1 if it is bin τ and
+0 otherwise. The constant term at each time bin is denoted as ατ. Standard errors are clustered
+into four consecutive but distinct 30-minute groups per trading pause throughout the [−60, +60]
+minutes window, following Hautsch and Horvath (2019). The coefficient βτ captures how much
+variation in the outcome variable is associated with changes in the dependent variable HFQU
+for high-frequency quoting. For liquidity as the outcome variable, the estimated coefficients ˆβτ
+are plotted in Figure 9, with magnitude along the vertical axis and color-coded significance levels.
+The magnitude of estimated coefficients is scaled up by a multiplier of 100 for better readability.
+The darker color means higher significance levels or lower p-values. The dark blue is for p-value
+< 1%, medium blue for p-value < 5%, light blue for p-value ≤10%, and transparent for p-value >
+10%.
+39This is subject to change depending on the bin length. For example, if each bin lasts for 3 minutes instead, then
+τ = −20, −19, . . . , −2, −1, 1, 2, . . . , 19, 20.
+39
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+The top panel of Figure 9 presents the correlation regression results between the percentage
+quoted spread QSpread (%) and the high-frequency quote updates HFQU for each bin during
+the [−60, +60] minutes window around trading pauses in the pre-A10 era. Note that only the
+medium-blue and dark-blue bins are significant at least at the 5% significance level. In the hour
+before trading pauses, there are 24 significant bins in which high-frequency quote updates are
+correlated with liquidity improvement. Those significant bins are concentrated in the [−60, −50]
+minute window and in the [−25, −1] window. The coefficients are negative, and the magnitude
+spans from 0 to less than 0.04, meaning that one more high-frequency quote update is associated
+with 0 to less than 0.04 percentage point decrease of quoted spread. This is an obvious drop of
+the magnitude of the coefficient around 15 minutes before trading pauses, and the liquidity improvement before that is more dramatic. The coefficient pattern in the [−15, −1] minute window
+before trading pauses is already very similar to that after trading resumes. In the hour after trading resumes, there are 34 bins throughout the [+1, +60] minutes window showing a significant
+negative correlation between percentage quoted spread and high-frequency quote updates, indicating liquidity improvement. The coefficients are all negative and the magnitude is consistently
+smaller than 0.01, meaning that one more high-frequency quote update in the 1-minute bin is associate with less than 0.01 percentage point quoted spread decrease. This suggests that even after
+trading resumes, HFQU is positively correlated with liquidity improvement throughout the hour,
+with smaller magnitude but more significant 1-minute bins, compared to the hour before trading
+pauses.
+The post-A10 era results are plotted in the bottom panel of Figure 9. In the hour before trading
+pauses, there are 43 bins with significant estimated coefficients, which are negative, and the magnitude ranges from 0 to 0.03. They are mostly evenly spread out during the 1-hour interval before
+trading pauses. The magnitude of coefficient is larger and more volatile during the [−60, −10]
+minute interval, while the coefficients in the [−10, −1]minute bins mostly fluctuate between 0 and
+-0.01. The pattern before trading pauses show that, in the post-A10 era, high-frequency quote
+updates are positively correlated with liquidity improvement in most of the 1-minute bins in the
+hour before trading pauses, and one more high-frequency quote update is associated with 0 to
+0.03 percentage point reduce of quoted spread. After trading resumes, there are 46 bins that are
+significant. They are all negative and the magnitude is mostly within the 0 to 0.005 range. It indi40
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+cates that, in the hour after trading resumes, one more high-frequency quote update in a 1-minute
+bin is associated with a decrease of less than 0.005 percentage points in the quoted spread.
+When comparing the post-A10 results with the pre-A10 results, there is a high similarity in
+the coefficient pattern after trading resumes in both eras. Most of the bins are significant, but the
+magnitude is small and relatively fluctuating in a stabler range compared to their pre-TP counterparts. That suggests a consistent, stable, but mild positive relation between the high-frequency
+quote update and liquidity improvements after trading resumes. In the post-A10 era after trading
+resumes, there are 12 more 1-minute bins that are significant compared to those in the pre-A10
+era, indicating that there are more minutes in which HFQU contributes significantly to liquidity
+improvement, although the overall magnitude in the pkost-A10 era is smaller.
+The main difference between the post-A10 and pre-A10 results appears in the hour before
+trading pauses. There are 43 bins in the post-A10 era that are significant, 19 bins more than those
+in the pre-A10 era. However, significant bins in the post-A10 era before trading pauses span a
+smaller range of 0 to -0.03 instead of 0 to -0.04 as in the pre-A10 era. This suggests that there are
+more minutes during the hour before trading pauses in the post-A10 era that high-frequency quote
+updates are associated with liquidity improvement, although they may have a smaller magnitude
+compared to those significant liquidity improvements related to HFQU in the pre-A10 era before
+trading pauses.
+In general, there are more 1-minute bins both before trading pauses and after trading resumes
+in the post-A10 era such that high-frequency quoting is significantly correlated with liquidity
+improvement.40 In some of the 1-minute bins before trading pauses in the pre-A10 era, the magnitude of liquidity improvement associated with high-frequency quote updates is greater than those
+in the post-A10 era. Figure 9 suggests that high-frequency quoting may have a net liquidity provision effect around trading pauses. This effect is more profound in the 2-hour window around
+trading pauses after the implementation of LULD Plan Amendment 10, and especially in the hour
+before trading pauses.
+The implementation of LULD Plan Amendment 10 may have brought about an unexpected
+beneficial effect on liquidity improvement conditional on the high-frequency quoting activity in
+the 2-hour window around trading pauses and resumptions. Figure 5 indicates that the high40The significance level cutoff is 5%.
+41
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+frequency quotation measure HFQU has been elevated in the post-A10 area throughout the 2hour window compared to that of the pre-A10 era. The regression plots in Figure 9 show that
+high-frequency quote updates in the post-A10 era are more likely to be significantly associated
+with improved liquidity in the 2-hour window, and the magnitude of the correlation is greater
+before trading pauses. However, a higher intensity of HFQU may not be associated with a higher
+correlation between high-frequency quote updates and quoted spread reduction. The highest average intensity of HFQU shows up around the [−10, +10] minute window around trading pauses
+as in Figure 5, but the largest magnitude of the significant coefficients does not show up during
+that window in Figure 9.
+5.3
+High-Frequency Quoting and Short-Term Volatility
+In addition to investigating the relationship between high-frequency quoting and liquidity around
+trading pauses in the pre-A10 and post-A10 eras, it is also worthwhile to examine the relation
+between high-frequency quoting and short-term volatility during the same window around trading pauses in those two eras. Both Figure 4 and Figure 5 appear to show a certain degree of
+comovement between the short-term volatility measure HighLow and high-frequency quote updates HFQU, especially in the post-A10 era. First, there is a huge spike closely before trading
+pauses and after trading resumes in short-term volatility HighLow. A similar spike also appears
+in high-frequency quote updates HFQU in the same interval. The spikes around trading pauses
+exist in both the pre-A10 era and the post-A10 era, especially in the post-A10 era. Secondly, from
+about 1 minute before trading pauses to 1 hour after trading resumes, both HFQU and HighLow
+are higher in the post-A10 era than in the pre-A10 era. Do all these indicate that high-frequency
+quote updates are highly positively correlated with short-term volatility around trading pauses,
+especially in the [−10, +10] minutes window? Does the implementation of LULD Plan Amendment 10 stimulate high-frequency quoting activity around trading pauses, which in turn drive up
+the short-term volatility around trading pauses? This section formally investigates these concerns
+empirically.
+Applying the same methodology as in Section 5.2, this section studies how short-term volatility
+in the 2-hour window around trading pauses is correlated to high-frequency quoting in the pre42
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+A10 and post-A10 eras, respectively. The outcome of interest y in Eq. (11) is now the short-term
+volatility measure HighLow. The estimated coefficients ˆβτ are shown in Figure 10. The magnitude
+of coefficients are scaled up by a multiplier of 100.
+In the pre-A10 era, during the hour before trading pauses, there are only 8 bins with significant
+coefficients, which are the τ = −25, −19, −18, −17, −14, −11, −8 and −7 minute-level bins. The
+magnitude of those 8 bins ranges from 0 to less than 0.003, which means that one more highfrequency quote update in a 1-minute bin correlates with an increase of less than 0.003 basis points
+of short-term volatility HighLow. This indicates that high-frequency quote updates are not a
+notable contributing factor to short-term volatility in the hour before trading pauses. In the hour
+after trading resumes, there are 20 significant bins, concentrated in the [+8, +26] minutes window
+and the [+35, +54] minutes window. The range of magnitude is even smaller, ranging from 0 to
+0.0015, which means that in these 20 bins, one more high-frequency quote update in a 1-minute
+bin contributes to an increase of less than 0.0015 basis points in the short-term volatility measured
+by HighLow. After trading resumes, HFQU is more likely to be positively correlated with shortterm volatility than before trading pauses, although the magnitude of the correlation is smaller.
+In the post-A10 era, there are only 7 bins with significant coefficients before trading pauses,
+which are the τ = −25, −24, −23, −22, −11, −3 and −1 minute bins. The signs of the coefficients
+for those significant bins are all positive, and the magnitude ranges from 0 to less than 0.002.
+That means that one more high-frequency quote update is associated with a less than 0.002 basis
+point increase of HighLow in each of those 7 significant bins before trading pauses. After trading
+resumes, there are 6 bins with significant coefficients, which are the τ = +21, +23, +24, +31, +33
+and +34 minute bins. The coefficient signs are all positive and their magnitudes are all less than
+0.001. That indicates that one more high-frequency quote update is associated with a less than
+0.001 basis point increase of HighLow in those 6 significant bins after trading resumes.
+Comparing the post-A10 result with the pre-A10 result, it is clear that the number of significant bins is smaller in the post-A10 era both before trading pauses and after trading resumes,
+especially in the hour after trading resumes. In addition, the magnitude of the coefficients is on
+average smaller in the post-A10 era. All of these suggest that the positive correlation between
+high-frequency quote updates HFQU and short-term volatility HighLow around trading pauses
+and resumptions is less profound in the post-A10 era compared to that in the pre-A10 era. Es43
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+pecially after trading resumes, in the post-A10 era, high-frequency quote updates are much less
+likely to contribute to short-term volatility.
+In summary, both in the pre-A10 and post-A10 eras, in the hour before trading pauses, there are
+only a few bins in which short-term volatility is significantly and positively correlated with highfrequency quoting. During the hour after trading resumes, 1/3 of the 60 bins show a significant
+and positive correlation between high-frequency quote updates and short-term volatility in the
+pre-A10 era, but it is much less so after the implementation of the LULD Plan Amendment 10.
+This suggests that high-frequency quoting is not significantly correlated with short-term volatility
+most of the time during the [-60, +60] minutes window around trading pauses. After Amendment
+10, high-frequency quoting is even less likely to be associated with the increase of short-term
+volatility either before trading pauses or after trading resumptions.
+6
+Conclusion
+Trading pauses under the LULD Plan are the key volatility circuit breakers for individual stocks
+across the US stock market. Their existence is to prevent events similar to the Flash Crash in
+May 2010 from happening again, and indeed that kind of event never occurs after the LULD trading pauses came into effect. This mechanism has been subjected to revisions and improvements
+throughout the years since its implementation in May 2014. Especially, LULD Plan Amendment 10
+has dramatically reduced the occurrence of unnecessary trading pauses which are due to problematic opening reference price, while no other LULD plan amendments so far have such a dramatic
+and consistent impact on the frequency of trading pauses. In addition to the reduction of trading
+pauses, it is important to examine how market quality around trading pauses changes after the
+implementation of Amendment 10.
+Meanwhile, high-frequency activities and their roles in market quality have been highly debatable since the emergence of high-frequency trading. The relation between high-frequency activities and extreme price movements is an intriguing question, especially the interaction between
+high-frequency activities and trading pauses on individual stocks. Little has been documented
+about high-frequency quoting activity around trading pauses and its correlations with market
+quality in the same window. The implementation of Amendment 10 provides a unique opportu44
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+nity to study high-frequency activities around unnecessary trading pauses and around necessary
+trading pauses. It also offers a change to gauge how high-frequency activities around trading
+pauses have changed after Amendment 10 came into effect, although Amendment 10 was not
+aimed at altering high-frequency activities around trading pauses.
+In conclusion, this paper empirically examines market quality and high-frequency quoting activity around trading pauses in the pre-Amendment 10 era and in the post-Amendment 10 era. In
+addition, it explores how market quality around trading pauses changes in the two eras and how
+high-frequency quoting activity is related to the change. The post-trading pauses reduction of
+illiquidity, measured by the percentage quoted spread, relative to 1 hour before trading pauses, is
+less after the implementation of Amendment 10 compared to that in the pre-Amendment 10 era.
+Short-term volatility HighLow becomes higher around trading pauses, especially after trading
+resumptions, in the post-Amendment 10 era than in the pre-Amendment 10 era. High-frequency
+quote updates HFQU are much higher right before and after trading pauses in the post-Amendment
+10 era, particularly after trading resumptions. There are more minutes in the 2-hour window
+around trading pauses in the post-Amendment10 era that high-frequency quote updates are positively correlated with liquidity improvement, especially before trading pauses. There are fewer
+minutes in the 2-hour window around trading pauses in the post-Amendment 10 era that highfrequency quote updates are positively correlated with short-term volatility, especially after trading resumptions.
+45
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+REFERENCES
+Abad, David, and Roberto Pascual, 2010, Switching to a temporary call auction in times of high
+uncertainty, Journal of Financial Research 33, 45–75.
+Angel, James J., 2015, Limit up – limit down: National market system plan assessment to address
+extraordinary market volatility, Technical report, Georgetown University.
+Bhattacharya, Uttpal, and Matthew Spiegel, 1998, Anatomy of a market failure: NYSE trading
+suspensions (1974–1988), Journal of Business & Economic Statistics 16, 216–226.
+Boehmer, Ekkehart, Kingsley Fong, and Juan Julie Wu, 2021, Algorithmic trading and market
+quality: International evidence, Journal of Financial and Quantitative Analysis 56, 2659–2688.
+Boehmer, Ekkehart, Dan Li, and Gideon Saar, 2018, The Competitive Landscape of HighFrequency Trading Firms, The Review of Financial Studies 31, 2227–2276.
+Brady, Nicholas F., James C. Cotting, Robert G. Kirby, John R. Opel, and Howard M. Stein, 1988,
+Report of the Presidential Task Force on Market Mechanisms: Submitted to the President of the United
+States, the Secretary of the Treasury, and the Chairman of the Federal Reserve Board (U.S. Dept. of the
+Treasury and U.S. Government Printing Office).
+Brogaard, Jonathan, and Kevin Roshak, 2016, Prices and price limits, Available at SSRN 2667104 .
+Chaboud, Alain P, Benjamin Chiquoine, Erik Hjalmarsson, and Clara Vega, 2014, Rise of the machines: Algorithmic trading in the foreign exchange market, The Journal of Finance 69, 2045–2084.
+Cho, David D., Jeffrey Russell, George C. Tiao, and Ruey Tsay, 2003, The magnet effect of price
+limits: evidence from high-frequency data on taiwan stock exchange, Journal of Empirical Finance
+10, 133–168, Emerging Markets S.I.
+Christie, William G., Shane A. Corwin, and Jeffrey H. Harris, 2002, Nasdaq trading halts: The
+impact of market mechanisms on prices, trading activity, and execution costs, The Journal of
+Finance 57, 1443–1478.
+Conrad, Jennifer, Sunil Wahal, and Jin Xiang, 2015, High-frequency quoting, trading, and the
+efficiency of prices, Journal of Financial Economics 116, 271–291.
+Corwin, Shane A, and Marc L Lipson, 2000, Order flow and liquidity around nyse trading halts,
+The Journal of Finance 55, 1771–1801.
+Fama, Eugene F., 1988, Perspectives on october 1987, or, what did we learn from the crash?, Working paper, University of Chicago.
+Greenwald, Bruce C., and Jeremy C. Stein, 1991, Transactional risk, market crashes, and the role
+of circuit breakers, Journal of Business 443–462.
+Hagströmer, Björn, and Lars Nordén, 2013, The diversity of high-frequency traders, Journal of
+Financial Markets 16, 741–770.
+Harris, Lawrence, 1997, Circuit breakers and program trading limits: what have we learned?,
+Technical report, Wharton School Center for Financial Institutions, University of Pennsylvania.
+46
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+Hasbrouck, Joel, and Gideon Saar, 2013, Low-latency trading, Journal of Financial Markets 16, 646–
+679, High-Frequency Trading.
+Hautsch, Nikolaus, and Akos Horvath, 2019, How effective are trading pauses?, Journal of Financial
+Economics 131, 378–403.
+Hendershott, Terrence, Charles M Jones, and Albert J Menkveld, 2011, Does algorithmic trading
+improve liquidity?, The Journal of finance 66, 1–33.
+Hendershott, Terrence, and Pamela C Moulton, 2011, Automation, speed, and stock market quality: The nyse’s hybrid, Journal of Financial Markets 14, 568–604.
+Holden, Craig W., and Stacey Jacobsen, 2014, Liquidity measurement problems in fast, competitive markets: Expensive and cheap solutions, The Journal of Finance 69, 1747–1785.
+Hughes, Paul, 2017, The effect of amendment 10 of the "limit up-limit down" pilot plan, White
+paper, SEC DERA.
+Hughes, Paul, John Ritter, and Hao Zhang, 2017, Limit up-limit down pilot plan and extraordinary
+transitory volatility, White paper, SEC DERA.
+Kyle, Albert S., 1988, Trading halts and price limits, Review of Futures Markets 7, 426–434.
+Lee, Charles MC, Mark J Ready, and Paul J Seguin, 1994, Volume, volatility, and new york stock
+exchange trading halts, The Journal of Finance 49, 183–214.
+Madhavan, Ananth, 1992, Trading mechanisms in securities markets, the Journal of Finance 47, 607–
+641.
+Moise, Claudia E., 2022, Circuit breakers, illiquidity, and the covid-19 crisis, Working paper, University of North Carolina at Chapel Hill.
+Moise, Claudia E., and Paca Flaherty, 2017, Limit up-limit down pilot plan and associated events,
+White paper, SEC DERA.
+Prais, Sigbert J, and Christopher B Winsten, 1954, Trend estimators and serial correlation, Working
+paper, Cowles Commission discussion paper Chicago.
+Riordan, Ryan, and Andreas Storkenmaier, 2012, Latency, liquidity and price discovery, Journal of
+Financial Markets 15, 416–437.
+Subrahmanyam, Avanidhar, 1994, Circuit breakers and market volatility: A theoretical perspective, The Journal of Finance 49, 237–254.
+Zimmermann, Kai, 2013, Price discovery in european volatility interruptions, Available at SSRN
+2365772 .
+47
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+Table 1
+Distribution of Trading Pauses and Stocks around Amendment 10
+Panel A: Monthly Trading Pauses and Involved Stocks
+This table compares the [-20, -1] and [+1, +20] trading days windows before and after the Limit-Up Limit-Down (LULD) Plan Amendment 10 (A10) comes into force. The implementation date, 18 July 2016, is Day 1. Each row corresponds to a filter for LULD trading
+pauses (TPs). The row below inherits the filters from the rows above. The last row represents the sample used in the empirical analysis
+section. [All legitimate LULD TPs] means the happening of these TPs follows the rules of the LULD Plan and their resumption time is at
+4 pm on the same day. With the next-level filter of the [5-min length] length, only TPs lasting 5 minutes are considered for comparison
+purposes. Furthermore, for [≥2 hours apart], if there are multiple LULD TPs for the same stock-day, only the ones which are at least
+2 hours apart from each other are selected. Next, [≥20 min before mkt close] means the LULD TPs need to resume at least 20 minutes
+before market closes (i.e., 4 p.m.). In the final level, [≥5 min after mkt open] requires the LULD TPs to be at least 5 minutes after market
+opening (i.e., 9:30 a.m.).
+Cumulative Filters
+LULD TP Events Count
+Unique LULD TP Stocks Count
+Pre A10
+(-20 tr days)
+Post A10
+(+20 tr days)
+Pre A10
+(-20 tr days)
+Post A10
+(+20 tr days)
+[All legitimate LULD TPs]
+1400
+199
+303
+97
+& [5-min length]
+1328
+181
+281
+83
+& [≥2 hours apart]
+716
+117
+265
+68
+& [≥20 min before mkt close]
+715
+117
+265
+68
+& [≥5 min after mkt open]
+566
+105
+240
+60
+Panel B: Hourly Distribution of Trading Pauses and Involved Stocks in the Empirical Analysis Sample
+This table presents the distribution of Limit-Up Limit-Down (LULD) trading pauses (TPs) and involved stocks in hourly interval
+across the [-20, +20] trading days around Amendment 10 (A10). The data sample in this table corresponds to the one described in
+the last row of Panel (a), which is produced by applying all filters. It is also the version used in the empirical analysis section. Note
+that a stock can have multiple trading pauses across different days in the same hourly interval per day. Therefore, the summation of
+uniquely involved stocks in the hourly intervals can surpass the total numbers in the last row of Panel (A).
+Hourly Interval
+LULD TP Events Count
+Unique LULD TP Stocks Count
+Pre A10
+(-20 tr days)
+Post A10
+(+20 tr days)
+Pre A10
+(-20 tr days)
+Post A10
+(+20 tr days)
+[9:35am, 10:00am)
+362
+46
+166
+24
+[10:00am, 11:00am)
+90
+21
+71
+18
+[11:00am, 12:00pm)
+40
+12
+38
+11
+[12:00pm, 1pm)
+28
+6
+23
+4
+[1:00pm, 2:00pm)
+18
+6
+18
+6
+[2:00pm, 3:00pm)
+22
+8
+21
+8
+[3:00pm, 3:40pm]
+6
+6
+6
+6
+48
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+Table 1
+Distribution of Trading Pauses and Stocks around Amendment 10 — Continued
+Panel C: Cross-Sectional Summary Statistics for 1-Minute Bins Span around Trading Pauses
+This table summarizes how many 1-minute bins exist before and after the Limit-Up Limit-Down (LULD) trading pauses (TPs) crosssectionally before and after Amendment 10 (A10). The maximum span is 60 minutes before and 60 minutes after a LULD TP for the
+complete [-60, +60] minutes event window around it. The data sample in this table corresponds to the one described in the last row of
+Panel (A), which is produced by applying all filters. It is also the version used in the empirical analysis section. A10 is an indicator of
+whether it is pre-A10 or post-A10. Similarly, TP indicates whether it is in the pre-LULD TP or post-LULD TP interval. Mean, SD, Skew,
+Kurt, Min, and Max represent the mean, standard deviation, skewness, kurtosis, minimum, and maximum. P5, P25, P50, P75, and P95
+represent the 5th, 25th, 50th, 75th, and 95th percentiles, respectively. N means the number of LULD TPs. The timestamps on trading
+pause and resumption are rarely at 9:35:00 am and 3:40:00 pm sharp. Therefore, the marginal time gap residuals are treated as extra
+1-minutes bins when market opens and closes. Thus, the minimum pre-TP and post-TP bins span are 6 bins and 21 bins instead of 5
+and 20.
+A10
+TP
+Mean
+SD
+Skew
+Kurt
+Min
+P5
+P25
+P50
+P75
+P95
+Max
+N
+Pre
+Pre
+29.90
+19.51
+0.72
+-1.27
+6
+12.00
+16.00
+16.00
+59.00
+60.00
+60
+566
+Post
+59.72
+2.90
+-11.25
+131.71
+21
+60.00
+60.00
+60.00
+60.00
+60.00
+60
+566
+Post
+Pre
+38.92
+21.13
+-0.18
+-1.81
+6
+8.60
+16.00
+50.00
+60.00
+60.00
+60
+105
+Post
+58.72
+5.99
+-5.42
+30.51
+21
+54.20
+60.00
+60.00
+60.00
+60.00
+60
+105
+Panel D: Time-Series Summary Statistics for Trading Pauses Event Window Coverage per Minute-Bin
+This table presents the time-series summary statistics of the Limit-Up Limit-Down (LULD) trading pauses (TP) event window coverage per 1-minute bin in the [-60, +60] minutes window. For instance, the bin of the [-1, 0) minutes before a LULD TP is covered in 566
+LULD TP event windows in the pre-Amendment 10 (A10) era, while the bin of [-60, -59) minutes before a LULD TP is only covered
+in 141 LULD TP event windows in the same era. Those two values also correspond to the Max and Min during the pre-TP interval
+in that era. For another example, in the post-A10 era, there are on average 102.77 LULD TP event windows involved, across all the
+1-minute bins after a LULD TP. The data sample in this table corresponds to the one described in the last row of Panel (A), which
+is produced by applying all filters. It is also the version used in the empirical analysis section. A10 is an indicator of whether it is
+pre-A10 or post-A10. Similarly, TP indicates whether it is in the pre-LULD TP or post-LULD TP window. Mean, SD, Skew, Kurt, Min,
+and Max represent the mean, standard deviation, skewness, kurtosis, minimum, and maximum. P5, P25, P50, P75, and P95 represent
+the 5th, 25th, 50th, 75th, and 95th percentiles, respectively. N means the number of 1-minute bins.
+A10
+TP
+Mean
+SD
+Skew
+Kurt
+Min
+P5
+P25
+P50
+P75
+P95
+Max
+N
+Pre
+Pre
+282.02
+165.09
+0.99
+-0.90
+141
+145.90
+164.50
+205.50
+524.75
+566.00
+566
+60
+Post
+563.37
+2.35
+-0.17
+-1.51
+560
+560.00
+561.00
+563.00
+566.00
+566.00
+566
+60
+Post
+Pre
+68.12
+20.84
+0.81
+-0.96
+45
+45.95
+54.00
+59.00
+94.25
+105.00
+105
+60
+Post
+102.77
+2.12
+-0.58
+-0.79
+98
+99.00
+101.00
+103.00
+105.00
+105.00
+105
+60
+49
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+Table 2
+Time-Series Average of Cross-Sectional Summary Statistics for Quoted Spread
+This tables displays the time-series average of the cross-sectional summary statistics for the liquidity measure, Quoted Spread (%).
+The rows are divided into pre- and post- trading pause (TP) intervals, and pre- and post- Amendment 10 (A10) eras. For example, a
+“Pre” (“Post”) in the A10 column means the adjacent two rows are for the pre-A10 (post-A10) period; and a “Pre” (“Post”) in the TP
+column indicates that the row shows the time-series average of the cross-sectional summary statistics across the 60 minutes bins before
+(after) trading pauses. The definition of the liquidity measure, the quoted spread (%) follows that in Holden and Jacobsen (2014).
+Measure
+A10
+TP
+Mean
+SD
+Skew
+Kurt
+Min
+P5
+P25
+P50
+P75
+P95
+Max
+N
+Quoted
+Spread
+(%)
+Pre
+Pre
+7.09
+13.86
+317.80
+1780.09
+0.07
+0.18
+0.50
+1.51
+8.74
+29.16
+71.31
+79.18
+Post
+1.65
+3.94
+640.04
+5664.29
+0.06
+0.16
+0.38
+0.65
+1.20
+6.67
+41.71
+268.63
+Post
+Pre
+3.57
+6.19
+224.70
+783.11
+0.02
+0.05
+0.48
+1.02
+3.15
+17.13
+24.46
+26.90
+Post
+1.70
+3.11
+418.67
+2323.26
+0.09
+0.30
+0.53
+0.70
+1.36
+6.85
+20.32
+59.75
+Table 3
+Time-Series Average of Cross-Sectional Summary Statistics for HighLow
+This tables displays the time-series average of the cross-sectional summary statistics for the short-term volatility measure HighLow.
+The rows are divided into pre- and post- trading pause (TP) intervals, and pre- and post- Amendment 10 (A10) eras. For example,
+a “Pre” (“Post”) in the A10 column means the adjacent two rows are for the pre-A10 (post-A10) period; and a “Pre” (“Post”) in the
+TP column indicates that the row shows the time-series average of the cross-sectional summary statistics across the 60 minutes bins
+before (after) trading pauses. The definition of the short-term volatility measure HighLow follows Hasbrouck and Saar (2013). The
+values are in basis point.
+Measure
+A10
+TP
+Mean
+SD
+Skew
+Kurt
+Min
+P5
+P25
+P50
+P75
+P95
+Max
+N
+HighLow
+(bps)
+Pre
+Pre
+26.47
+51.50
+2.64
+10.96
+0.00
+0.00
+0.70
+4.24
+27.03
+140.51
+254.35
+79.18
+Post
+18.24
+33.19
+3.66
+25.83
+0.00
+0.00
+0.52
+2.56
+26.28
+76.91
+273.38
+268.63
+Post
+Pre
+21.47
+42.17
+2.77
+10.63
+0.00
+0.03
+0.72
+3.51
+21.93
+119.88
+186.85
+26.90
+Post
+30.89
+42.02
+2.13
+9.13
+0.00
+0.00
+1.59
+14.12
+47.52
+113.89
+207.46
+59.75
+Table 4
+Time-Series Average of Cross-Sectional Summary Statistics for HFQU
+This tables displays the time-series average of the cross-sectional summary statistics for high-frequency quotation measure HFQU.
+The rows are divided into pre- and post- trading pause (TP) intervals, and pre- and post- Amendment 10 (A10) eras. For example,
+a “Pre” (“Post”) in the A10 column means the adjacent two rows are for the pre-A10 (post-A10) period; and a “Pre” (“Post”) in the
+TP column indicates that the row shows the time-series average of the cross-sectional summary statistics across the 60 minutes bins
+before (after) trading pauses. The definition of high-frequency quotation measure HFQU follows Conrad, Wahal, and Xiang (2015).
+Measure
+A10
+TP
+Mean
+SD
+Skew
+Kurt
+Min
+P5
+P25
+P50
+P75
+P95
+Max
+N
+HFQU
+Pre
+Pre
+27.70
+119.73
+8.98
+105.48
+0.02
+0.03
+0.20
+1.85
+13.32
+116.18
+1634.00 227.08
+Post
+39.71
+122.27 10.65
+168.79
+0.00
+0.05
+0.23
+6.73
+37.23
+171.47
+2107.05 488.35
+Post
+Pre
+60.02
+155.50
+3.47
+16.03
+0.03
+0.08
+0.22
+2.81
+28.16
+376.27
+873.27
+61.88
+Post
+83.85
+223.53
+5.10
+33.68
+0.07
+0.10
+0.35
+13.10
+67.40
+411.02
+1686.42
+92.77
+50
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+(a) Panel A: Daily LULD Trading Pauses, [-6, +6] Months around Amendment 10 Implementation
+2016-01-19
+2016-02-04
+2016-02-23
+2016-03-10
+2016-03-29
+2016-04-14
+2016-05-02
+2016-05-18
+2016-06-06
+2016-06-22
+2016-07-11
+2016-07-27
+2016-08-12
+2016-08-30
+2016-09-16
+2016-10-04
+2016-10-20
+2016-11-07
+2016-11-23
+2016-12-12
+2016-12-29
+2017-01-18
+Date
+0
+20
+40
+60
+80
+100
+120
+140
+160
+180
+Frequency
+LULD Plan 
+Amendment 10 in force 
+(Jul 18, 2016)
+[-20, +20] 
+trading days window 
+around 
+Amendment 10 date
+[-60, +60]
+trading days window
+around Amendment 10 date
+Daily LULD Trading Pauses and Involved Stocks
+Daily Trading Pauses (TP)
+Trading Pauses 5-Day MA
+Daily TP Stocks
+TP Stocks 5-Day MA
+(b) Panel B: Monthly LULD Trading Pauses, 2014-05-01 to 2021-09-30
+2014-05
+2014-06
+2014-07
+2014-08
+2014-09
+2014-10
+2014-11
+2014-12
+2015-01
+2015-02
+2015-03
+2015-04
+2015-05
+2015-06
+2015-07
+2015-08
+2015-09
+2015-10
+2015-11
+2015-12
+2016-01
+2016-02
+2016-03
+2016-04
+2016-05
+2016-06
+2016-07
+2016-08
+2016-09
+2016-10
+2016-11
+2016-12
+2017-01
+2017-02
+2017-03
+2017-04
+2017-05
+2017-06
+2017-07
+2017-08
+2017-09
+2017-10
+2017-11
+2017-12
+2018-01
+2018-02
+2018-03
+2018-04
+2018-05
+2018-06
+2018-07
+2018-08
+2018-09
+2018-10
+2018-11
+2018-12
+2019-01
+2019-02
+2019-03
+2019-04
+2019-05
+2019-06
+2019-07
+2019-08
+2019-09
+2019-10
+2019-11
+2019-12
+2020-01
+2020-02
+2020-03
+2020-04
+2020-05
+2020-06
+2020-07
+2020-08
+2020-09
+2020-10
+2020-11
+2020-12
+2021-01
+2021-02
+2021-03
+2021-04
+2021-05
+2021-06
+2021-07
+2021-08
+2021-09
+Year-Month
+0
+1000
+2000
+3000
+4000
+5000
+6000
+7000
+8000
+9000
+Frequency
+LULD Plan 
+fully in force 
+(May 12, 2014)
+LULD Plan 
+Amendment 10 in force 
+(Jul 18, 2016)
+LULD Plan
+Amendment 18 in force
+(Feb 24, 2020)
+Covid-19 Outbreak 
+(March 2020)
+Aug 24, 2015
+"Flash Crash"
+[-6, +6] months 
+close-up range
+Monthly LULD Trading Pauses, 2014-05-01 to 2021-09-30
+Trading Pauses
+Figure 1. Limit Up-Limit Down (LULD) Trading Pauses Frequency. Panel (a) plots the daily number of
+trading pauses in the U.S. stock market together with the involved stocks which experience trading pauses
+on that date. It covers the [-6, +6] calendar months window around Amendment 10 implementation on July
+18, 2016. The 5-day moving averages (MA) are also plotted to smooth out extreme variations and better
+reflect the trends. Panel (b) plots the monthly trading pauses count from May 1, 2015 to September 30, 2021.
+The time span in Panel (a) corresponds to the shaded area of the [-6, +6] months close-up range in Panel (b).
+51
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+Figure 2. Daily Average of Limit Up-Limit-Down Trading Pauses per Quarter-Hour. The top panel plots
+the daily average occurrence of trading pauses in each quarter hour during market hours, in the [-20, +20]
+trading days window, and in the [-6, +6] calendar months window, respectively, around Amendment 10
+implementation. For example, the “9:30” tick on the horizontal axis represents 9:30-9:45 a.m. The middle
+panel plots the same content as the top panel, but the time span is from May 12, 2014 (LULD Plan full
+implementation) to September 30, 2021, and the same period but without March 2020 (Covid-19 outbreak).
+The bottom panel plots the same content as in the middle panel, but singles out the March 2020 period.
+52
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+Panel A: Quoted Spread (%)
+LULD  TP
+0
+.03
+.06
+.09
+.12
+.15
+.18
+Quoted Spread(0.01=1%), Cross−Sectional Mean
+−60
+−55
+−50
+−45
+−40
+−35
+−30
+−25
+−20
+−15
+−10
+−5
+0
+5
+10
+15
+20
+25
+30
+35
+40
+45
+50
+55
+60
+[−60, +60] 1−Minute Bins around LULD TP
+Period 1: Pre−A10
+5−min MA
+Period 2: Post−A10
+5−min MA
+Quoted Spread(0.01=1%), Cross−Sectional Mean
+LULD  TP
+0
+.03
+.06
+.09
+.12
+.15
+.18
+Quoted Spread(0.01=1%), Cross−Sectional Median
+−60
+−55
+−50
+−45
+−40
+−35
+−30
+−25
+−20
+−15
+−10
+−5
+0
+5
+10
+15
+20
+25
+30
+35
+40
+45
+50
+55
+60
+[−60, +60] 1−Minute Bins around LULD TP
+Period 1: Pre−A10
+5−min MA
+Period 2: Post−A10
+5−min MA
+Quoted Spread(0.01=1%), Cross−Sectional Median
+Panel B: Quoted Spread ($)
+LULD  TP
+0
+.3
+.6
+.9
+1.2
+1.5
+Quoted Spread(USD), Cross−Sectional Mean
+−60
+−55
+−50
+−45
+−40
+−35
+−30
+−25
+−20
+−15
+−10
+−5
+0
+5
+10
+15
+20
+25
+30
+35
+40
+45
+50
+55
+60
+[−60, +60] 1−Minute Bins around LULD TP
+Period 1: Pre−A10
+5−min MA
+Period 2: Post−A10
+5−min MA
+Quoted Spread(USD), Cross−Sectional Mean
+LULD  TP
+0
+.3
+.6
+.9
+1.2
+1.5
+Quoted Spread(USD), Cross−Sectional Median
+−60
+−55
+−50
+−45
+−40
+−35
+−30
+−25
+−20
+−15
+−10
+−5
+0
+5
+10
+15
+20
+25
+30
+35
+40
+45
+50
+55
+60
+[−60, +60] 1−Minute Bins around LULD TP
+Period 1: Pre−A10
+5−min MA
+Period 2: Post−A10
+5−min MA
+Quoted Spread(USD), Cross−Sectional Median
+Figure 3. Mean and Median of Liquidity Measure: Quoted Spread. This figure plots the minute-byminute evolution of the cross-sectional mean and median of the liquidity measure Quoted Spread in the
+[-60, +60] minute bins before and after trading pauses. The 5-minute moving averages (MA) are also included to capture the trend and smooth out extreme variations. Grey color connected-scatters correspond
+to Quoted Spread around trading pauses in the 20 trading days pre-Amendment 10 while the blue ones are
+for Quoted Spread around trading pauses in 20 trading days post-Amendment 10. Panel (a) is for Quoted
+Spread in percentage, while Panel (b) uses Quoted Spread in dollar value.
+53
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+LULD  TP
+0
+20
+40
+60
+80
+100
+120
+140
+160
+HighLow(HS2013, bps), Cross−Sectional Mean
+−60
+−55
+−50
+−45
+−40
+−35
+−30
+−25
+−20
+−15
+−10
+−5
+0
+5
+10
+15
+20
+25
+30
+35
+40
+45
+50
+55
+60
+[−60, +60] 1−Minute Bins around LULD TP
+Period 1: Pre−A10
+5−min MA
+Period 2: Post−A10
+5−min MA
+HighLow(HS2013, bps), Cross−Sectional Mean
+LULD  TP
+0
+20
+40
+60
+80
+100
+120
+140
+160
+HighLow(HS2013, bps), Cross−Sectional Median
+−60
+−55
+−50
+−45
+−40
+−35
+−30
+−25
+−20
+−15
+−10
+−5
+0
+5
+10
+15
+20
+25
+30
+35
+40
+45
+50
+55
+60
+[−60, +60] 1−Minute Bins around LULD TP
+Period 1: Pre−A10
+5−min MA
+Period 2: Post−A10
+5−min MA
+HighLow(HS2013, bps), Cross−Sectional Median
+Figure 4. Mean and Median of Short-Term Volatility Measure: HighLow. This figure plots the minuteby-minute evolution of the cross-sectional mean and median of the short-term volatility measure HighLow
+in the [-60, +60] minute bins before and after trading pauses. The values are in basis point. The 5-minute
+moving averages (MA) are also included to capture the trend and smooth out extreme variations. Grey color
+connected scatters correspond to HighLow around trading pauses in the 20 trading days pre-Amendment
+10 while the blue ones are for HighLow around trading pauses in the 20 trading days post-Amendment 10.
+54
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+-60 -55 -50 -45 -40 -35 -30 -25 -20 -15 -10 -5
+0
+5 10 15 20 25 30 35 40 45 50 55 60
+[-60, +60] Minute Bins around Trading Pause
+0
+50
+100
+150
+200
+250
+300
+350
+400
+High-Frequency Quote Updates
+LULD TP
+Mean of High-Frequency Quote Updates
+Post- vs. Pre-Amendment 10 (Interval: [-20, +20] Trading Days)
+Pre-A10
+Post-A10
+-60 -55 -50 -45 -40 -35 -30 -25 -20 -15 -10 -5
+0
+5 10 15 20 25 30 35 40 45 50 55 60
+[-60, +60] Minute Bins around Trading Pause
+0
+5
+10
+15
+20
+25
+30
+35
+40
+45
+50
+55
+60
+65
+High-Frequency Quote Updates
+LULD TP
+Median of High-Frequency Quote Updates
+Post- vs. Pre-Amendment 10 (Interval: [-20, +20] Trading Days)
+Pre-A10
+Post-A10
+Figure 5.
+Mean and Median of High-Frequency Activity Measure: HFQU. This figure plots the the
+minute-by-minute evolution of the cross-sectional mean (as in the top panel) and median (as in the bottom panel) of the high-frequency quotation activity measure HFQU in the [-60, +60] minute bins before
+and after trading pauses. The grey color connected scatters correspond to HFQU around trading pauses in
+the 20 trading days pre-Amendment 10 while the blue ones are for HFQU around trading pauses in the 20
+trading days post-Amendment 10.
+55
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+-60 -55 -50 -45 -40 -35 -30 -25 -20 -15 -10
+-5
+0
+5
+10
+15
+20
+25
+30
+35
+40
+45
+50
+55
+60
+[-60, +60] Minute Bins around Trading Pause
+−15
+−10
+−5
+0
+5
+10
+Coeﬃcient
+LULD TP
+Quoted Spread (%) Regression
+Pre-Amendment 10 (Interval: 20 Trading Days), Single Diﬀerence
+p < 1%
+p < 5%
+p < 10%
+Base Bin
+-60 -55 -50 -45 -40 -35 -30 -25 -20 -15 -10
+-5
+0
+5
+10
+15
+20
+25
+30
+35
+40
+45
+50
+55
+60
+[-60, +60] Minute Bins around Trading Pause
+−15
+−10
+−5
+0
+5
+10
+Coeﬃcient
+LULD TP
+Quoted Spread (%) Regression
+Post-Amendment 10 (Interval: 20 Trading Days), Single Diﬀerence
+p < 1%
+p < 5%
+p < 10%
+Base Bin
+-60 -55 -50 -45 -40 -35 -30 -25 -20 -15 -10
+-5
+0
+5
+10
+15
+20
+25
+30
+35
+40
+45
+50
+55
+60
+[-60, +60] Minute Bins around Trading Pause
+−15
+−10
+−5
+0
+5
+10
+Coeﬃcient
+LULD TP
+Quoted Spread (%) Regression
+Post- vs. Pre-Amendment 10 (Interval: [-20, +20] Trading Days), Diﬀerence-in-Diﬀerences
+p < 1%
+p < 5%
+p < 10%
+Base Bin
+Figure 6. Quoted Spread (%) Bin-Level Differences Regressions. The top and middle panels of this figure
+plot the estimated coefficients
+ βτ + βTP
+τ
+
+as in the single difference Eq. (9) for each 1-minute bin in the
+[-60, +60] minutes window around Limit Up-Limit Down trading pauses (LULD TP) in the pre- and postAmendment 10 periods respectively. The coefficients capture on average how different the Quoted Spread at
+each 1-minute bin are from the base level 60 minutes before trading pauses. The bottom panel plots the estimated coefficients βTP
+A10,τ as in the difference-in-differences Eq. (10). The coefficients capture the differences
+between the post-Amendment 10 and pre-Amendment 10 bin-level differences of Quoted Spread relative to
+their base levels 60 minutes before trading pauses. Darker colors correspond to stricter significance levels
+(or smaller p-values) as shown in the graph legend. The vertical axis values are in percentage (%).
+56
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+-60 -55 -50 -45 -40 -35 -30 -25 -20 -15 -10
+-5
+0
+5
+10
+15
+20
+25
+30
+35
+40
+45
+50
+55
+60
+[-60, +60] Minute Bins around Trading Pause
+−20
+0
+20
+40
+60
+80
+100
+120
+140
+Coeﬃcient
+LULD TP
+HighLow (bps) Regression
+Pre-Amendment 10 (Interval: 20 Trading Days), Single Diﬀerence
+p < 1%
+p < 5%
+p < 10%
+Base Bin
+-60 -55 -50 -45 -40 -35 -30 -25 -20 -15 -10
+-5
+0
+5
+10
+15
+20
+25
+30
+35
+40
+45
+50
+55
+60
+[-60, +60] Minute Bins around Trading Pause
+−20
+0
+20
+40
+60
+80
+100
+120
+140
+Coeﬃcient
+LULD TP
+HighLow (bps) Regression
+Post-Amendment 10 (Interval: 20 Trading Days), Single Diﬀerence
+p < 1%
+p < 5%
+p < 10%
+Base Bin
+-60 -55 -50 -45 -40 -35 -30 -25 -20 -15 -10
+-5
+0
+5
+10
+15
+20
+25
+30
+35
+40
+45
+50
+55
+60
+[-60, +60] Minute Bins around Trading Pause
+−20
+0
+20
+40
+60
+80
+100
+120
+140
+Coeﬃcient
+LULD TP
+HighLow (bps) Regression
+Post- vs. Pre-Amendment 10 (Interval: [-20, +20] Trading Days), Diﬀerence-in-Diﬀerences
+p < 1%
+p < 5%
+p < 10%
+Base Bin
+Figure 7. HighLow Bin-Level Differences Regressions. The top and middle panels of this figure plot the
+estimated coefficients
+ βτ + βTP
+τ
+
+as in the single difference Eq. (9) for each 1-minute bin in the [-60, +60]
+minutes window around Limit Up-Limit Down trading pauses (LULD TP) in the pre- and post-Amendment
+10 periods respectively. The coefficients capture on average how different the short-term volatility measure
+HighLow at each 1-minute bin are from the base level 60 minutes before trading pauses. The bottom panel
+plots the estimated coefficients βTP
+A10,τ as in the difference-in-differences Eq. (10). The coefficients capture
+the differences between the post-Amendment 10 and pre-Amendment 10 bin-level differences of HighLow
+relative to their base levels 60 minutes before trading pauses. The darker colors correspond to stricter
+significance levels (or smaller p-values) as shown in the graph legend. The vertical axis values are in basis
+points (bps).
+57
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+-60 -55 -50 -45 -40 -35 -30 -25 -20 -15 -10
+-5
+0
+5
+10
+15
+20
+25
+30
+35
+40
+45
+50
+55
+60
+[-60, +60] Minute Bins around Trading Pause
+−100
+−50
+0
+50
+100
+150
+200
+250
+Coeﬃcient
+LULD TP
+High-Frequency Quote Updates Regression
+Pre-Amendment 10 (Interval: 20 Trading Days), Single Diﬀerence
+p < 1%
+p < 5%
+p < 10%
+Base Bin
+-60 -55 -50 -45 -40 -35 -30 -25 -20 -15 -10
+-5
+0
+5
+10
+15
+20
+25
+30
+35
+40
+45
+50
+55
+60
+[-60, +60] Minute Bins around Trading Pause
+−100
+−50
+0
+50
+100
+150
+200
+250
+Coeﬃcient
+LULD TP
+High-Frequency Quote Updates Regression
+Post-Amendment 10 (Interval: 20 Trading Days), Single Diﬀerence
+p < 1%
+p < 5%
+p < 10%
+Base Bin
+-60 -55 -50 -45 -40 -35 -30 -25 -20 -15 -10
+-5
+0
+5
+10
+15
+20
+25
+30
+35
+40
+45
+50
+55
+60
+[-60, +60] Minute Bins around Trading Pause
+−100
+−50
+0
+50
+100
+150
+200
+250
+Coeﬃcient
+LULD TP
+High-Frequency Quote Updates Regression
+Post- vs. Pre-Amendment 10 (Interval: [-20, +20] Trading Days), Diﬀerence-in-Diﬀerences
+p < 1%
+p < 5%
+p < 10%
+Base Bin
+Figure 8. High-Frequency Quote Updates Bin-Level Differences Regressions. The top and middle panels
+of this figure plot the estimated coefficients
+ βτ + βTP
+τ
+
+as in the single difference Eq. (9) for each 1-minute
+bin in the [-60, +60] minutes window around Limit Up-Limit Down trading pauses (LULD TP) in the preand post-Amendment 10 periods respectively. The coefficients capture on average how different the HFQU
+at each 1-minute bin are from the base level 60 minutes before trading pauses. The bottom panel plots
+the estimated coefficients βTP
+A10,τ as in the difference-in-differences Eq. (10). The coefficients capture the
+differences between the post-Amendment 10 and pre-Amendment 10 bin-level differences of HFQU relative
+to their base levels 60 minutes before trading pauses. The darker colors correspond to stricter significance
+levels (or smaller p-values) as shown in the graph legend.
+58
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+-60 -55 -50 -45 -40 -35 -30 -25 -20 -15 -10
+-5
+0
+5
+10
+15
+20
+25
+30
+35
+40
+45
+50
+55
+60
+[-60, +60] Minute Bins around Trading Pause
+−6
+−5
+−4
+−3
+−2
+−1
+0
+1
+Coeﬃcient (×100)
+LULD TP
+Quotes Spread(%) – High-Frequency Quote Updates Regression
+Pre-Amendment 10 (Interval: 20 Trading Days)
+p < 1%
+p < 5%
+p < 10%
+p ≥10%
+-60 -55 -50 -45 -40 -35 -30 -25 -20 -15 -10
+-5
+0
+5
+10
+15
+20
+25
+30
+35
+40
+45
+50
+55
+60
+[-60, +60] Minute Bins around Trading Pause
+−6
+−5
+−4
+−3
+−2
+−1
+0
+1
+Coeﬃcient (×100)
+LULD TP
+Quotes Spread(%) – High-Frequency Quote Updates Regression
+Post-Amendment 10 (Interval: 20 Trading Days)
+p < 1%
+p < 5%
+p < 10%
+p ≥10%
+Figure 9. Liquidity and High-Frequency Quoting Regression. The top panel plots the estimated regression coefficients when regressing Quoted Spread on HFQU for each 1-minute bin in the [-60, +60] minutes
+window around Limit Up-Limit Down trading pauses (LULD TP) in the 20 trading days pre-Amendment
+10. The bottom panel plots those estimated coefficients in the 20 trading days post-Amendment 10. The estimated coefficients are scaled up by a multiplier of 100, along the vertical axis. The darker colors correspond
+to stricter significance levels (or smaller p-values) as shown in the graph legend.
+59
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+-60 -55 -50 -45 -40 -35 -30 -25 -20 -15 -10
+-5
+0
+5
+10
+15
+20
+25
+30
+35
+40
+45
+50
+55
+60
+[-60, +60] Minute Bins around Trading Pause
+−0.3
+−0.2
+−0.1
+0.0
+0.1
+0.2
+0.3
+Coeﬃcient (×100)
+LULD TP
+HighLow – High-Frequency Quote Updates Regression
+Pre-Amendment 10 (Interval: 20 Trading Days)
+p < 1%
+p < 5%
+p < 10%
+p ≥10%
+-60 -55 -50 -45 -40 -35 -30 -25 -20 -15 -10
+-5
+0
+5
+10
+15
+20
+25
+30
+35
+40
+45
+50
+55
+60
+[-60, +60] Minute Bins around Trading Pause
+−0.3
+−0.2
+−0.1
+0.0
+0.1
+0.2
+0.3
+Coeﬃcient (×100)
+LULD TP
+HighLow – High-Frequency Quote Updates Regression
+Post-Amendment 10 (Interval: 20 Trading Days)
+p < 1%
+p < 5%
+p < 10%
+p ≥10%
+Figure 10.
+Short-Term Volatility and High-Frequency Quoting Regression.
+The top panel plots the
+estimated regression coefficients when regressing HighLow on HFQU for each 1-minute bin in the [-60,
++60] minutes window around Limit Up-Limit Down trading pauses (LULD TP) in the 20 trading days
+pre-Amendment 10.
+The bottom panel plots those estimated coefficients in the 20 trading days postAmendment 10. The estimated coefficients are scaled up by a multiplier of 100, along the vertical axis.
+The darker colors correspond to stricter significance levels (or smaller p-values) as shown in the graph
+legend.
+60
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+APPENDIX
+0
+10
+20
+30
+40
+Market Volatility/Uncertainty Index (%)
+2016-01-19
+2016-02-04
+2016-02-23
+2016-03-10
+2016-03-29
+2016-04-14
+2016-05-02
+2016-05-18
+2016-06-06
+2016-06-22
+2016-07-11
+2016-07-27
+2016-08-12
+2016-08-30
+2016-09-16
+2016-10-04
+2016-10-20
+2016-11-07
+2016-11-23
+2016-12-12
+2016-12-29
+2017-01-18
+Date
+0
+20
+40
+60
+80
+100
+120
+140
+160
+180
+Trading Pauses Frequency
+LULD Plan 
+Amendment 10 in force 
+(Jul 18, 2016)
+[-20, +20] 
+trading days window 
+around 
+Amendment 10 date
+[-60, +60]
+trading days window
+around Amendment 10 date
+Jun 23, 2016
+Brexit Referendum
+Nov 8, 2016
+U.S. Presidential Election
+Daily LULD Trading Pauses & Market Volatility/Uncertainty
+VIX 5-Day MA
+EMU 5-Day MA
+Daily Trading Pauses
+Trading Pauses 5-Day MA
+Figure A.1. Daily Limit Up-Limit-Down Trading Pauses and Market Volatility / Uncertainty. This figure
+plots the daily number of trading pauses in the U.S. stock market together with the involved stocks which
+experience trading pauses on that date. It covers the [-6, +6] calendar months window around Amendment
+10 implementation on July 18, 2016. The 5-day moving averages (MA) are also plotted to smooth out
+extreme variations and better reflect the trends. The magnitude of trading pauses frequency is indicated on
+the left hand side axis. This figure also plots the 5-day moving averages (MA) of the VIX and Equity Market
+Uncertainty (EMU). Their magnitudes are shown along the right hand side axis. This figure supplements
+Figure 1 Panel (a).
+61
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed
+
+2014-05
+2014-06
+2014-07
+2014-08
+2014-09
+2014-10
+2014-11
+2014-12
+2015-01
+2015-02
+2015-03
+2015-04
+2015-05
+2015-06
+2015-07
+2015-08
+2015-09
+2015-10
+2015-11
+2015-12
+2016-01
+2016-02
+2016-03
+2016-04
+2016-05
+2016-06
+2016-07
+2016-08
+2016-09
+2016-10
+2016-11
+2016-12
+2017-01
+2017-02
+2017-03
+2017-04
+2017-05
+2017-06
+2017-07
+2017-08
+2017-09
+2017-10
+2017-11
+2017-12
+2018-01
+2018-02
+2018-03
+2018-04
+2018-05
+2018-06
+2018-07
+2018-08
+2018-09
+2018-10
+2018-11
+2018-12
+2019-01
+2019-02
+2019-03
+2019-04
+2019-05
+2019-06
+2019-07
+2019-08
+2019-09
+2019-10
+2019-11
+2019-12
+2020-01
+2020-02
+2020-03
+2020-04
+2020-05
+2020-06
+2020-07
+2020-08
+2020-09
+2020-10
+2020-11
+2020-12
+2021-01
+2021-02
+2021-03
+2021-04
+2021-05
+2021-06
+2021-07
+2021-08
+2021-09
+Year-Month
+0
+10
+20
+30
+40
+50
+60
+70
+80
+90
+100
+Market Volatility/Uncertainty Index (%)
+LULD Plan 
+fully in force 
+(May 12, 2014)
+LULD Plan 
+Amendment 10 in force 
+(Jul 18, 2016)
+LULD Plan
+Amendment 18 in force
+(Feb 24, 2020)
+Covid-19 Outbreak 
+(March 2020)
+Aug 24, 2015
+"Flash Crash"
+[-6, +6] months 
+close-up range
+Monthly Market Volatility and Uncertainty, 2014-05-01 to 2021-09-30
+VIX
+EMV
+Infectious Disease EMV
+EMU
+Figure A.2. Monthly Market Volatility and Uncertainty Indices. This figure plots the monthly evolution of
+market volatility and uncertainty indices from May 2014 to September 2021. They are used for comparison
+with monthly trading pauses as in Figure 1 Panel (b). The vertical axis values are in percentage. The shaded
+area of the [-6, +6] months close-up range around Amendment 10 implementation corresponds to the entire
+time span as in Figure 1 Panel (a) and also in Figure A.1.
+62
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5084288
+Preprint not peer reviewed

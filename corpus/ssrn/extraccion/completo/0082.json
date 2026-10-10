@@ -1,0 +1,60 @@
+{
+  "doc_id": 82,
+  "titulo": "Decimalization, Realized Volatility, and Market Microstructure Noise",
+  "resumen_operativo": "El paper analiza el impacto de la decimalización del NYSE (el cambio al tick size de 1 centavo en 2001) sobre la volatilidad verdadera y la varianza del ruido de microestructura utilizando estimadores no paramétricos de alta frecuencia (Realized Kernel, TSRV, MSRV). Encuentran que la decimalización disminuyó significativamente la varianza del ruido, especialmente en datos de transacciones (trades), incrementando la relación señal-ruido. Sin embargo, controlando por valores atípicos y saltos, la volatilidad verdadera subyacente no experimentó un cambio estructural significativo, confirmando que la reducción observada en la volatilidad 'cruda' se debe a la atenuación del rebote bid-ask por la reducción del tick size.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "decimalization",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Transición del mercado NYSE a precios en incrementos de 1 centavo, reduciendo el tick size previo y afectando el ruido de microestructura.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "market microstructure noise"}
+      ],
+      "cita_textual": "The New York Stock Exchange (NYSE) completed its long anticipated change from fractional pricing to decimal pricing on January 29, 2001."
+    },
+    {
+      "nombre": "market microstructure noise",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Componente transitorio observado en los precios, atribuido al bid-ask bounce, discreción de precios y asimetría de información. Su varianza se redujo significativamente con la decimalización.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "observed volatility"},
+        {"tipo": "MIDE", "objeto": "bid-ask bounce"}
+      ],
+      "cita_textual": "The noise term includes transient factors such as the bid-ask bounce, price discreteness, inventory effects, and so on."
+    },
+    {
+      "nombre": "Realized Kernel",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Estimador de volatilidad (KERN) robusto al ruido y capaz de acomodar dependencia entre la volatilidad real y el ruido de microestructura, útil en alta frecuencia.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "true volatility"}
+      ],
+      "cita_textual": "The realized kernel (KERN) estimator is arguably the most flexible of the three advanced volatility estimators... allows for some dependence between true volatility and noise"
+    },
+    {
+      "nombre": "Two-scale realized volatility",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Estimador (TSRV) consistente y asintóticamente insesgado de la volatilidad integrada bajo el supuesto de ruido independiente e idénticamente distribuido (IID).",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "true volatility"}
+      ],
+      "cita_textual": "The two-scale realized volatility (TSRV) estimator is the easiest to use and define... consistent and (asymptotically) unbiased if the noise component is independent and identically distributed (IID)."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "La decimalización redujo la varianza observada de la volatilidad al disminuir drásticamente el ruido de la microestructura del mercado, incrementando por ende el ratio señal/ruido, especialmente para acciones muy transadas.",
+      "mercado": "NYSE (acciones DJIA, y otras de control)",
+      "periodo": "2000-2001",
+      "magnitud": "La varianza del ruido disminuyó marcadamente en el grupo de prueba (Dow Jones) mientras que el ratio señal/ruido (SNR) aumentó.",
+      "condiciones": "Uso de datos TAQ intradía, estimadores KERN/TSRV/MSRV y test pareados controlando por saltos atípicos (Jan 3, 2001).",
+      "robustez": "alta",
+      "cita_textual": "decimalization decreased observed volatility by decreasing noise variance and, consequently, increased the significance of the true signal especially in trade price data for the highly active Dow Jones stocks."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "Aunque analiza datos históricos del NYSE, metodologías de reducción de ruido (Realized Kernel, TSRV) para separar señal/tendencia del bid-ask bounce en tick data pueden ser aplicadas al análisis de la microestructura del futuro S&P 500 (ES) en alta frecuencia."
+  }
+}

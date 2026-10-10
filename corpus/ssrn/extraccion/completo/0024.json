@@ -1,0 +1,237 @@
+{
+  "doc_id": 24,
+  "titulo": "A Rigorous Exploration of the Black-Scholes-Merton Model: Quantitative Finance Fundamentals",
+  "resumen_operativo": "Es un trabajo académico de tipo tutorial/diario de aprendizaje de un estudiante que repasa la derivación clásica del modelo Black-Scholes-Merton (GBM, Ito, valuación neutral al riesgo, PDE, fórmula cerrada, Greeks, métodos numéricos) sin ningún experimento ni backtest propio. Su utilidad para un trader-quant es puramente de referencia conceptual/pedagógica sobre pricing de opciones, no aporta evidencia empírica ni ideas nuevas de estrategia.",
+  "calidad_paper": "baja",
+  "conceptos": [
+    {
+      "nombre": "Black-Scholes-Merton model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo de valuación de opciones europeas que da una solución cerrada bajo supuestos de volatilidad constante, sin fricciones y difusión continua; es la base de la mayoría de los modelos de pricing de derivados posteriores.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "geometric Brownian motion"},
+        {"tipo": "USA", "objeto": "risk-neutral valuation"},
+        {"tipo": "MEJORA_A", "objeto": "naive option pricing"},
+        {"tipo": "REQUIERE", "objeto": "constant volatility"}
+      ],
+      "cita_textual": "The Black-Scholes-Merton model, published in 1973 by Fischer Black, Myron Scholes, and Robert Merton, revolutionized option pricing by providing a closed-form solution for European-style options."
+    },
+    {
+      "nombre": "geometric Brownian motion",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Proceso estocástico usado como supuesto dinámico del precio del subyacente en BSM; el precio evoluciona con drift y volatilidad proporcionales al nivel actual, generando una distribución lognormal.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Black-Scholes-Merton model"},
+        {"tipo": "USA", "objeto": "Wiener process"}
+      ],
+      "cita_textual": "The Stochastic Differential Equation (SDE) for Geometric Brownian Motion is: dSt = µSt dt + σSt dWt"
+    },
+    {
+      "nombre": "Wiener process",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Movimiento browniano estándar con incrementos independientes normales de media cero y varianza igual al paso temporal; es el bloque básico de los modelos de precios en tiempo continuo.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "geometric Brownian motion"}
+      ],
+      "cita_textual": "Definition: Wt with W0 = 0, independent increments, and Wt −Ws ∼N(0, t −s)"
+    },
+    {
+      "nombre": "lognormal distribution",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Distribución que sigue el precio del activo bajo el supuesto de GBM, consecuencia de que el logaritmo del precio es normal.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "geometric Brownian motion"}
+      ],
+      "cita_textual": "ln St is normally distributed with: ... Therefore, St ∼Lognormal(. . . )."
+    },
+    {
+      "nombre": "Ito's Lemma",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Regla de diferenciación estocástica que agrega un término de segundo orden proveniente de la varianza del proceso de Wiener; es la herramienta que permite derivar la dinámica de funciones del precio (como el log-precio o el valor de una opción).",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Black-Scholes-Merton model"},
+        {"tipo": "USA", "objeto": "Wiener process"}
+      ],
+      "cita_textual": "For V (t, Xt), Ito’s Lemma states: dV = (∂V/∂t + a ∂V/∂X + 1/2 b2 ∂2V/∂X2) dt + b ∂V/∂X dWt."
+    },
+    {
+      "nombre": "risk-neutral valuation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica de valuar un derivado como el valor esperado descontado de su payoff bajo una medida de probabilidad Q en la que el drift del activo es la tasa libre de riesgo, eliminando la necesidad de conocer las preferencias de riesgo de los agentes.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Girsanov's theorem"},
+        {"tipo": "PARTE_DE", "objeto": "Black-Scholes-Merton model"}
+      ],
+      "cita_textual": "The key idea is to price a derivative by taking the expected value of its discounted payoff under a risk-neutral measure Q."
+    },
+    {
+      "nombre": "Girsanov's theorem",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Resultado que justifica el cambio de la medida de probabilidad real P a la medida neutral al riesgo Q, bajo la cual el drift del activo pasa a ser la tasa libre de riesgo r.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "risk-neutral valuation"}
+      ],
+      "cita_textual": "Girsanov’s Theorem changes the measure from the real-world measure P to the riskneutral measure Q."
+    },
+    {
+      "nombre": "martingale property",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Propiedad de que el precio del activo descontado a la tasa libre de riesgo no tiene drift bajo la medida neutral al riesgo Q, lo que garantiza ausencia de arbitraje.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "risk-neutral valuation"}
+      ],
+      "cita_textual": "Under Q, ˜St evolves with zero drift (martingale property): d˜St = e−rtσSt dW Q t."
+    },
+    {
+      "nombre": "Black-Scholes PDE",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Ecuación diferencial parcial obtenida vía un argumento de cobertura delta-neutral y ausencia de arbitraje, que gobierna el valor de cualquier derivado europeo sobre una acción que no paga dividendos.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Ito's Lemma"},
+        {"tipo": "REQUIERE", "objeto": "no-arbitrage"},
+        {"tipo": "EQUIVALE_A", "objeto": "heat equation"}
+      ],
+      "cita_textual": "∂V/∂t + r St ∂V/∂S + 1/2 σ2S2t ∂2V/∂S2 −r V = 0."
+    },
+    {
+      "nombre": "delta hedging",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Argumento de cobertura que consiste en tomar una posición corta de ∆=∂V/∂S unidades del subyacente para eliminar la exposición de primer orden al movimiento del precio y construir un portafolio libre de riesgo.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Black-Scholes PDE"},
+        {"tipo": "REQUIERE", "objeto": "continuous hedging"}
+      ],
+      "cita_textual": "Choose ∆= ∂V/∂S to eliminate exposure to dSt at first order."
+    },
+    {
+      "nombre": "heat equation",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Forma de difusión a la que se transforma la PDE de Black-Scholes mediante un cambio de variables (tiempo a vencimiento y log-precio), lo que permite aplicar métodos de solución conocidos de la física.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "Black-Scholes PDE"}
+      ],
+      "cita_textual": "Heat conduction in physics ↔Option price diffusion in finance."
+    },
+    {
+      "nombre": "Black-Scholes closed-form solution",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Fórmula analítica para el precio de una call/put europea en función de S0, K, r, σ, T y las funciones N(d1), N(d2) de la normal estándar acumulada.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Black-Scholes-Merton model"},
+        {"tipo": "USA", "objeto": "lognormal distribution"}
+      ],
+      "cita_textual": "C0 = S0 N(d1) −K e−rT N(d2)"
+    },
+    {
+      "nombre": "Greeks",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Conjunto de sensibilidades del valor de la opción (Delta, Gamma, Vega, Theta, Rho) respecto a sus parámetros (precio del subyacente, volatilidad, tasa de interés, tiempo); se usan para gestionar riesgo y ajustar coberturas.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "Black-Scholes closed-form solution"},
+        {"tipo": "USA", "objeto": "delta hedging"}
+      ],
+      "cita_textual": "Purpose: Measure how the option value V changes with respect to parameters: S0 (underlying price), σ (volatility), r (interest rate), and t (time)."
+    },
+    {
+      "nombre": "implied volatility",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Volatilidad que, insertada en la fórmula de Black-Scholes, reproduce el precio de mercado observado de una opción; los traders la usan para ajustar el modelo a la realidad y como forma de cotizar opciones.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "constant volatility"},
+        {"tipo": "USA", "objeto": "Black-Scholes closed-form solution"}
+      ],
+      "cita_textual": "The concept of implied volatility fascinates me. It’s clever how traders use it to reverse-engineer market prices and adjust the model."
+    },
+    {
+      "nombre": "volatility smile",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Patrón empírico observado en mercados reales donde la volatilidad implícita varía con el strike y el vencimiento, contradiciendo el supuesto de volatilidad constante de Black-Scholes.",
+      "relaciones": [
+        {"tipo": "CONTRADICE_A", "objeto": "constant volatility"},
+        {"tipo": "MITIGA", "objeto": "local volatility model"}
+      ],
+      "cita_textual": "In reality, volatility changes and depends on strike prices and expirations, creating volatility smiles and skews."
+    },
+    {
+      "nombre": "constant volatility",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Supuesto central de Black-Scholes de que la volatilidad del activo permanece fija en el tiempo; el paper lo señala como la limitación más importante frente a mercados reales.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "volatility smile"},
+        {"tipo": "MITIGA", "objeto": "stochastic volatility model"}
+      ],
+      "cita_textual": "The model assumes that volatility stays the same over time."
+    },
+    {
+      "nombre": "transaction costs",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Costos de operar (comisiones, bid-ask spread, slippage) que el modelo Black-Scholes ignora, pero que pueden ser significativos en mercados reales, especialmente en alta volatilidad o baja liquidez.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "mispricing"}
+      ],
+      "cita_textual": "The model assumes trading has no costs—no fees, bid–ask spreads, or slippage."
+    },
+    {
+      "nombre": "continuous hedging",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Supuesto de que el operador puede rebalancear su cobertura de forma continua y sin costos; en la práctica el hedging ocurre a intervalos discretos, generando riesgo residual y costos.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "mispricing"}
+      ],
+      "cita_textual": "It assumes traders can rebalance their positions continuously without any delays."
+    },
+    {
+      "nombre": "jump-diffusion model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Extensión de Black-Scholes que agrega saltos discretos al proceso de precios (p. ej. modelo de Merton) para capturar movimientos abruptos por noticias o eventos inesperados que el modelo base no contempla.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "Black-Scholes-Merton model"},
+        {"tipo": "MITIGA", "objeto": "no jumps in prices"}
+      ],
+      "cita_textual": "Models like the Merton Jump-Diffusion Model include sudden price jumps along with regular price changes to handle unexpected events better."
+    },
+    {
+      "nombre": "stochastic volatility model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Extensión de Black-Scholes (p. ej. modelo de Heston) donde la volatilidad sigue su propia ecuación diferencial estocástica, permitiendo capturar el smile/skew de volatilidad no explicado por el modelo base.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "Black-Scholes-Merton model"},
+        {"tipo": "MITIGA", "objeto": "constant volatility"}
+      ],
+      "cita_textual": "Heston Model: Volatility follows its own SDE ... Addresses vol smile/skew not captured by constant σ."
+    },
+    {
+      "nombre": "local volatility model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Extensión donde la volatilidad es función determinista del precio del subyacente y del tiempo, calibrada con datos de mercado para dar pricing más preciso que el supuesto de volatilidad constante.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "Black-Scholes-Merton model"}
+      ],
+      "cita_textual": "These use market data to adjust volatility based on the stock price and time, providing more accurate pricing."
+    },
+    {
+      "nombre": "Monte Carlo simulation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Método numérico que simula trayectorias aleatorias del precio bajo la medida neutral al riesgo para aproximar el valor de derivados sin solución cerrada, especialmente útiles en opciones exóticas.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "optimal execution"},
+        {"tipo": "USA", "objeto": "risk-neutral valuation"}
+      ],
+      "cita_textual": "Simulate random paths under the risk-neutral measure ... Calculate payoff for each path, discount, and average."
+    },
+    {
+      "nombre": "finite difference method",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica numérica que discretiza la PDE de Black-Scholes en tiempo y precio del subyacente, usando esquemas explícitos, implícitos o Crank-Nicolson para resolver el valor de la opción cuando no hay solución cerrada.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Black-Scholes PDE"}
+      ],
+      "cita_textual": "Discretize the Black–Scholes PDE in time and stock-price space. Schemes: Explicit, Implicit, Crank–Nicolson."
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "Es un repaso teórico de pricing de opciones sin datos ni backtests; a lo sumo sirve como referencia de fórmulas (Greeks, volatilidad implícita) si en el futuro se incorpora un módulo de opciones sobre ES al ecosistema, pero no aporta nada directamente testeable para las estrategias intradía actuales."
+  }
+}

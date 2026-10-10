@@ -1,0 +1,59 @@
+{
+  "doc_id": 263,
+  "titulo": "Order Book Dynamics with Liquidity Fluctuations: Limit Theorems and Large Deviations",
+  "resumen_operativo": "Propone modelos estocásticos para la dinámica del LOB con distintos tipos de liquidez, enfocándose en regímenes donde el spread disminuye uniformemente (procesos poblacionales con catástrofes uniformes). Demuestra LLN, CLT y grandes desviaciones (LD) para el modelo. Explica cómo la volatilidad y las tendencias locales de precios están determinadas por los valores típicos del bid-ask spread. Usa el modelo para mostrar cómo ocurren grandes desviaciones en spread y precios, como las observadas en flash crashes. Identifica tres regímenes de baja liquidez: altamente competitivo, no competitivo, y baja liquidez con gaps.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "Liquidity Fluctuations (Liquidity Wells)",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Disminuciones severas e intermitentes en la capacidad del LOB para absorber market orders, causando aumentos del spread, tendencias locales de precios y eventos extremos como flash crashes.",
+      "relaciones": [{"tipo": "CAUSA", "objeto": "Flash Crash"}, {"tipo": "CAUSA", "objeto": "Spread Widening"}],
+      "cita_textual": "severe intermittencies in liquidity affect the order book dynamics... significant and intermittent decreases in the OB's ability to absorb market orders"
+    },
+    {
+      "nombre": "Population Process with Uniform Catastrophes",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Modelo Markoviano donde el spread (como población) crece por incrementos unitarios y decrece por catástrofes uniformes (saltos hacia valores más bajos según distribución uniforme), capturando la dinámica de reversión del spread.",
+      "relaciones": [{"tipo": "EQUIVALE_A", "objeto": "Spread Dynamics Model"}, {"tipo": "PARTE_DE", "objeto": "Highly Competitive Regime"}],
+      "cita_textual": "belonging to the class of processes known as a population processes with uniform catastrophes"
+    },
+    {
+      "nombre": "Large Deviations (Flash Crash Mechanism)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Teoría de grandes desviaciones aplicada al modelo para caracterizar trayectorias óptimas que conducen a eventos raros de spread extremo, proporcionando una explicación mecanicista de flash crashes y mini flash crashes.",
+      "relaciones": [{"tipo": "EXPLICA", "objeto": "Flash Crash Dynamics"}, {"tipo": "USA", "objeto": "Optimal Trajectories"}],
+      "cita_textual": "we present these large deviations in the form of 'optimal trajectories' that give us relevant information about their occurrence"
+    },
+    {
+      "nombre": "Three Liquidity Regimes (HC, NC, LLG)",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Taxonomía de regímenes de baja liquidez: Highly Competitive (spread cierra rápido, un tick a la vez), Non-Competitive (spread cierra gradualmente), Low Liquidity with Gaps (spread puede abrirse múltiples ticks por gaps en el LOB).",
+      "relaciones": [{"tipo": "PARTE_DE", "objeto": "Liquidity Fluctuations Framework"}],
+      "cita_textual": "we consider three low liquidity regimes: Highly competitive, Non-competitive and Low liquidity with gaps"
+    },
+    {
+      "nombre": "Micro-Jumps and Local Price Trends",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Relación entre micro-saltos de precios de corto plazo y tendencias locales de más largo plazo, mediada por el spread. El modelo muestra que la tendencia local y la volatilidad son funciones de los parámetros de los micro-saltos y del spread típico.",
+      "relaciones": [{"tipo": "CAUSA", "objeto": "Local Price Trends"}, {"tipo": "MIDE", "objeto": "Spread-Price Relationship"}],
+      "cita_textual": "our model successfully explains the local trends in the prices and the volatility around these trends expressed as function of parameters of the micro-jumps of the prices"
+    },
+    {
+      "nombre": "Law of Large Numbers (LLN) for LOB",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Resultado asintótico que establece que el comportamiento promedio del spread y precios converge a una dinámica determinista gobernada por los parámetros medios del order flow en el régimen de alta frecuencia de eventos.",
+      "relaciones": [{"tipo": "PARTE_DE", "objeto": "Limit Theorems"}],
+      "cita_textual": "The law of large numbers (LLN), central limit theorem (CLT) and large deviations (LD) are proved for our model"
+    },
+    {
+      "nombre": "Bid-Ask Bounce",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Fenómeno de microestructura donde los precios de transacción alternan entre bid y ask generando volatilidad espuria. El modelo reproduce esta característica empírica documentada por Roll (1984).",
+      "relaciones": [{"tipo": "PARTE_DE", "objeto": "Market Microstructure Noise"}],
+      "cita_textual": "our model reproduces relevant empirical characteristics observed in our data as well as documented in the literature such as the famous bid-ask bounce"
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "Modelo diseñado para datos intradía de alta frecuencia con regímenes de baja liquidez; el análisis de grandes desviaciones proporciona señales de alerta temprana para flash crashes; aplicable a monitoreo de riesgo de liquidez en tiempo real."}
+}

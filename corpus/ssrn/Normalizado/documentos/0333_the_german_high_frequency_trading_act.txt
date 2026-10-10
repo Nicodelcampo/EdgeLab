@@ -1,0 +1,2533 @@
+The German High-Frequency Trading Act: Implications for
+Market Quality
+Martin Haferkorn and Kai Zimmermann
+Chair of e-Finance
+Goethe University Frankfurt
+Abstract
+With the introduction of the High-Frequency Trading (HFT) Act in May
+2013, Germany has become the ﬁrst country that regulates securities
+trading ﬁrms based on their infrastructure and order book activity characteristics.
+In order to increase the transparency of HFT ﬁrms and to
+facilitate market integrity, all non-regulated proprietary trading ﬁrms that
+rely on low latency connections, high intraday trading message volumes
+and autonomous decision making systems are required to be authorized by
+German regulators and fulﬁll a variety of organizational obligations. This
+study analyzes the impact of this act by identifying whether a change in
+daily trading messages was observable and how this change impacted order
+book liquidity levels. We ﬁnd that the German HFT Act has successfully
+reduced the amount of intraday trading messages leaving trade executions
+only marginally aﬀected. However, a large fraction of those messages lost
+were providing high quality liquidity at competitive limits and thereby
+decreasing implicit transaction costs, which results in increased bid-ask
+spreads after the introduction.
+But as those messages were of negligible
+sizes, the overall liquidity supply to the order book, measured by the order
+book depth level, remains unaﬀected. Therefore, consequences originating
+from the absence of unregulated HFT could be considered marginal for
+securities markets quality.
+Keywords: Germany, High-Frequency Trading, High-Frequency Trading
+Act, Liquidity, Securities Markets, Market Quality, Regulation
+Electronic copy available at: https://ssrn.com/abstract=2514334
+
+THE GERMAN-HIGH FREQUENCY TRADING ACT
+2
+Introduction
+Over the past decades, the activity of High-Frequency Trading (HFT) ﬁrms around
+the world has dramatically increased and shaped the modern securities trading environment. Although the ﬁrst emergence of highly automated trading desks and fully electronic
+securities markets can be dated back several years already, academics, politicians and trading ﬁrms still argue over the direct and indirect consequences of this development. Is HFT
+responsible for the reduction in transaction costs? Has HFT increased overall market liquidity? Does HFT make markets more fragile? Although many of those questions could
+partly be answered by academic studies, the tensions and disagreements among debaters
+seem to be steadily fostered by every new piece of evidence being released on this topic.
+Especially in the light of the U.S. Flash Crash, the sharp increase in overall intraday trading message volume in the recent past as well as the spectacular software failure of Knight
+Capital (a major U.S. HFT), the inherent risks of such activity became apparent and raised
+concerns among regulators world-wide who are forced to react in order to prevent potential
+future failures and retain market integrity.
+On February 28th 2013, the German Bundestag approved the Act for the Prevention of Risks and the Abuse of High-Frequency Trading (German High Frequency Trading
+Act, 2013) and pioneered a regulation of HFT ﬁrms within the German ﬁnancial services
+sector. The act introduces an authorization requirement as well as further organizational
+obligations for unregulated HFT ﬁrms in order to increase transparency of their overall
+trading activity as well as their market impact. Although this law is applicable to market participants active in German securities and derivatives markets only, the German
+HFT Act actually preempts similar HFT regulation proposed in the MiFID II (Markets in
+Financial Instruments Directive) that will be applicable on a European level in 2017. Subsequently, the scope of operation for HFT ﬁrms is getting increasingly restricted although
+consequences of such steps are yet to be assessed. The last couple of years already showed
+several national attempts in the European area to regulate HFT. In 2012 the French and
+in 2013 the Italian government passed resolutions to introduce a national taxation of ﬁnancial transactions (FTT). Both taxes inherit the taxation of HFT based on a cancellation
+to transaction ratio greater than 60%. It is non trivial to disentangle the HFT tax eﬀect
+from the FTT eﬀect, especially as both taxes allow for various exemptions, e.g., the daily
+net inventory position as taxable amount (Coelho, 2014). Coelho (2014) indicates a sharp
+lock-in eﬀect especially by HFT participants that relinquish trading in the presence of the
+FTT and the additional HFT tax. However, as consequences for overall market quality can
+be attribute to the FTT as well as to the HFT taxation, we still do not know whether and
+how HFT ﬁrms aﬀected market quality directly. The German HFT Act can therefore be
+seen as a natural experiment that could give deeper and unbiased insights on the impact
+of HFT regulation on trading behavior and market quality.
+Within this paper, we analyze the structural change in trading and order book message activity originating from the introduction of the German HFT Act in May 2013. Most
+Electronic copy available at: https://ssrn.com/abstract=2514334
+
+THE GERMAN-HIGH FREQUENCY TRADING ACT
+3
+important, since no HFT ﬁrm (German or non-German) applied for the authorization of
+the German Federal Financial Services Supervisory Authority (BaFin) to act as HFT under the new regulation (German Bundestag, 2014), the are only two possible options how
+German securities trading is aﬀected by this act. First, the BaFin criteria that deﬁne HFT
+ﬁrms where not fulﬁlled by any trading participant in advance. Therefore, no participant
+has altered their trading behavior or migrated towards other non-regulated markets. In
+this case, no speciﬁc change is expected at German exchanges due to the introduction
+of the law. Second, trading ﬁrms actually falling under the BaFin criteria have adapted
+their trading behavior or migrated towards other non-regulated markets in order to avoid
+a BaFin authorization. In this case, overall trading behavior and, most of all, overall intraday trading message volume should have declined. In order to evaluate both options, we
+propose a very intuitive way to estimate the amount of intraday trading message volume
+with focus on order submission and modiﬁcation messages, which is characteristic for the
+activity of HFT ﬁrms. This way, we are able to answer whether and how this regulation
+actually aﬀects trading and order book characteristics. In particular, we are able to give
+a very detailed assessment on how the absence of these trading messages are aﬀecting the
+respective limit order book by determining the change in the order book liquidity supply
+distribution. Further, we test whether the missing amount of intraday trading message volume has changed the quality of securities markets in terms of several order book liquidity
+dimensions.
+Our results clearly indicate that the German HFT Act has succeeded in dampening
+the total volume of intraday trading messages in securities trading within a short time
+range. We therefore conclude that several HFT ﬁrms have adapted their trading behavior, migrated towards non-regulated trading venues or simply quit trading to avoid being
+authorized by BaFin. We observe a sharp decline in the number of daily order submission
+and modiﬁcations while the turnover and number of trades only showed a marginal decline. However, by decomposing the change in the trading message traﬃc, we ﬁnd that a
+signiﬁcant amount of these missing messages were providing high quality liquidity supply.
+These messages were located at the top of the respective order book, i.e., at the best bid
+and best ask limit, or even further, were reducing the bid-ask spread directly. Thus, the
+average bid-ask spreads increase after the application of the German HFT Act. In comparison, we ﬁnd top order book depth levels not aﬀected at all and therefore conclude that
+although the missing messages posted competitive limit prices, their actual volumes where
+negligible. In addition, the results further indicate that the larger fraction of the messages
+missing after the introduction of the HFT Act where beyond the best bid and best ask and
+therefore considered less relevant for immediate liquidity supply.
+The German HFT Act
+Following the approval of the German HFT Act on February 28th 2013, the ﬁnal
+introduction was scheduled to May 15th 2013. The act involves a authorization requirement
+Electronic copy available at: https://ssrn.com/abstract=2514334
+
+THE GERMAN-HIGH FREQUENCY TRADING ACT
+4
+for unregulated HFT ﬁrms. Therefore, the act stipulates transitional periods of 6 months,
+until November 14th 2013, for ﬁrms domiciled in Germany as well as 9 months, until
+February 14th 2014, for ﬁrms that are not domiciled in Germany (German High Frequency
+Trading Act, 2013). These transitional periods allow trading participants to adapt towards
+the new legal requirements by granting a transition authorization for this period only in
+the case they actual apply for authorization. In order to be required for authorization
+a ﬁrm has to fall under the deﬁnition of the German HFT Act criteria. Comparable to
+the deﬁnition proposed by the European Council within the ﬁnal version of the MiFID
+revision (MiFID 2) in 2014 (European Commission, 2014), the German HFT Act deﬁnes
+HFT trading ﬁrms based on several infrastructural and activity characteristics. Therefore,
+a trading ﬁrm that engages directly or indirectly, i.e., via a broker, in a sale or purchase
+of a ﬁnancial instrument for its own account in a German regulated market or multilateral
+trading facility falls under the license requirement of the the German HFT Act, if the ﬁrm
+applies (I) infrastructures to minimize latency, (II) decision systems that create, transmit or
+execute orders autonomously without human intervention and (III) a high intraday trading
+message volume caused by submissions, quotes or cancellations (German High Frequency
+Trading Act, 2013).
+Subsequently, all ﬁrms not already owning a BaFin registered physical oﬃce in Germany are subject to the license obligation if they meet all criteria. Foreign HFT ﬁrms
+without German subsidiary can rely on a license granted by another member state of
+the European Economic Area (EU passport) if this license allows for proprietary trading.
+Otherwise these ﬁrms must apply for a BaFin license and will be supervised as ﬁnancial
+services institutions under the German Banking Act. Next to signiﬁcant minimum capital
+requirements and a permanent German subsidiary, this regulation requires comprehensive
+organizational obligations as well as numerous reporting and disclosure requirements that
+must be fulﬁlled after the respective transitional periods. E.g., the trading system applied
+by the ﬁrm must ensure suﬃcient reliability to limit a possible software failure and prevent
+market impact. The submission of erroneous orders as well as the creation or continuation
+of a disorderly market environment must be prevented. The trading system must not be
+used for trading strategies that violate the market-abuse directives. Further algorithmic
+ﬂagging is introduced, i.e., each HFT order must carry a tag which allows the identiﬁcation
+of the algorithm that created the order as well as the respective strategy. The HFT Act
+also introduces a number of provisions aimed at regulating certain trading behavior, including an adequate ratio between the submission, modiﬁcation and deletion of orders and
+actual transactions (order-to-trade ratio). Trading venues determine the order-to-trade
+ratio individually and must charge additional fees for trading behavior which exhibits an
+excessive message volume (German High Frequency Trading Act, 2013).
+In order to determine the eﬀects of the German HFT Act we therefore analyze the
+most obvious pattern observable in trading data that is addressed in the act, the amount of
+intraday trading messages. Most of the academic literature identify high intraday message
+rates as key characteristic for the tradings activity of HFT ﬁrms (Hagstrmer & Nordn,
+Electronic copy available at: https://ssrn.com/abstract=2514334
+
+THE GERMAN-HIGH FREQUENCY TRADING ACT
+5
+2013) (Hendershott & Riordan, 2013). A fact that has been also taken into account by
+recent regulatory frameworks e.g. MiFID II (European Commission, 2014; Art.4). An
+extensive adjustment of HFT strategies due to the German HFT Act should therefore
+imply a systematic shift in the amount of intraday trading messages. Thus, our two main
+research question are: Can we observe a systematic change in the trading and order book
+message activity caused by the German HFT Act? How does this change in order book
+message activity aﬀect market quality levels in terms of liquidity provision to the order
+book?
+Data & Methodology
+Dataset & Sample Selection
+Since the German HFT Act was adopted domestically, a possible data sample is
+restricted to the act’s legislative scope. In particular, the German HFT Act is only applicable to all trading ﬁrms active in German securities and derivatives markets regardless
+of a ﬁrms’ physical location. This implies that HFT ﬁrms active in German cross-listed
+stocks traded at foreign markets like multilateral trading facilities (MTFs) are not aﬀected
+by this act, i.e., the HFTs active at these venues do not need a German HFT authorization. Subsequently, this situation yields a control group setup by comparing the time-series
+development of identical, across-listed stocks traded on aﬀected and non-aﬀected markets.
+Given the exclusion of market-speciﬁc confounding events, stock pattern and trading characteristics should be comparable between both markets before the implementation of the
+law as prices and volumes are closely linked by arbitrage strategies. The highest fragmented stocks in Germany are blue chip stocks of the German DAX 30 blue chip index
+mostly traded on the electronic trading system Xetra of Deutsche Boerse AG. Since the
+introduction of MiFID in 2007, many European MTFs have claimed a stake of the overall
+trading volume of the DAX 30 stocks providing candidates for a suitable control group. The
+most dominant competitor in terms of trading volumes for German blue chips stocks is the
+London-based BATS Chi-X Europe regulated by the FSA, the U.K. Financial Services Authority. However, in May 2013, close to the ﬁrst implementation date of the German HFT
+Act, BATS Chi-X Europe MTF received the status of a Recognised Investment Exchange
+(RIE) by the FSA (BATS CHi-X Europe, 2014). This event could very likely confound
+the eﬀects caused by the introduction of the German HFT Act, especially if we benchmark changes in Xetra trading characteristics only to BATS Chi-X Europe. Therefore,
+we benchmark against the next biggest competitor in terms of traded volume, Turquoise
+MTF, and further apply BATS Chi-X Europe RIE as robustness check. For the stocks
+traded on Xetra and Turquoise, we rely on data retrieved from the Thomson Reuters Tick
+History (TRTH) which covers times and sales tick by tick as well as order book tick data.
+We exclude stocks with stock splits and missing data on TRTH. These selection criteria
+leave 26 DAX stocks traded on both markets in the ﬁnal sample (excluded constituents are
+Commerzbank AG, Deutsche Post AG, Henkel AG & Co. KGaA , Volkswagen AG).
+Electronic copy available at: https://ssrn.com/abstract=2514334
+
+THE GERMAN-HIGH FREQUENCY TRADING ACT
+6
+We collect daily trading statistics as well as market quality measures 30 days before
+and after each event date, i.e., May 15th 2013, November 14th 2013, as well as February 14th
+2014. As stated in the previous section, the introduction was scheduled to May 15th 2013.
+Only if market participants applied for authorization, a transitional period was granted.
+Otherwise, ﬁrms must quit or change their trading activity on May 15th 2013, to avoid the
+application for the BaFin license. Therefore, the ﬁrst event date is of utter importance in
+this study. Although no trading ﬁrm has applied for authorization, it is very likely that a
+few HFTs exhausted the transitional periods by intending to apply for a license but never
+do so. We therefore further analyze the second and third event date respectively. Especially
+the third event date is of importance. Currently, the European passport initially introduced
+by the Investment Services Directive (ISD) allows ﬁrms supervised by domestic regulators
+to operate in other European markets although this might be limited by diﬀerences in
+domestic supervision categories. Many ﬁrms were therefore anticipating that, by holding a
+local license with other EU regulators, they would be exempted from having to obtain an
+additional license with BaFin. On January 22nd 2014, BaFin announced that in general
+this would not be the case. In particular, provided their license does not include proprietary
+trading authorization as deﬁned in Annex I A 3 of the MiFID, these ﬁrms are still subject
+to the German license requirement (Financial News, 2014). Given the late clariﬁcation,
+it can be assumed that many foreign ﬁrms quickly adapted their trading behavior or quit
+trading after February 14th 2014.
+Deﬁning the event window is crucial for the explanatory power of an event study.
+Therefore, we follow event windows of similar studies by providing a short term 10 days
+symmetrical pre-, and post baseline analysis. To further add robustness to our analysis
+and to capture short-term and medium-term eﬀects separately, we additionally focus on
+30 days windows before and after the respective events. These observation periods do not
+overlap and therefore provide an unbiased analysis of each event day. However, we are not
+able to further extent the medium-term windows as on April 1st 2014, Deutsche Boerse
+AG updated the exchange infrastructure to allow the ﬂagging of orders and trades initiated
+by algorithmic trading systems stipulated by the German HFT Act (Deutsche Boerse AG,
+2014). Following April 1st 2014 , we observe a tremendous increase in the overall intraday
+trading message volume that indicates a systematic shift in the way intraday messages
+are sent to Thomson Reuters. We observe no comparable eﬀect on our control exchanges.
+This confounding eﬀect would signiﬁcantly bias our results as this increase would falsely be
+captured by our event dummy, therefore we rely on the 30 day event window. Within the
+next section, we highlight the applied market quality parameters as well as a description
+on how we measure submissions and modiﬁcations to the order book.
+Trading Message Volume & Market Quality Indicators
+In our analysis we follow a two-step approach: ﬁrst we analyze trading and order
+book activity before and after the introduction of the German HFT Act.
+Secondly, if
+we observe changes, we further assess impacts for order book activity and market quality
+Electronic copy available at: https://ssrn.com/abstract=2514334
+
+THE GERMAN-HIGH FREQUENCY TRADING ACT
+7
+on a ﬁner level. Consequently we focus on the three respective event dates which were
+announced by the German BaFin (BaFin, 2014).
+The ﬁrst step in our analysis is to evaluate the eﬀect on trading and order book
+activity. Thus, we apply established measures to quantify trading activity, i.e., the number of executed trades and the natural logarithm of the Euro denoted turnover per day.
+Academia has shown that HFT activity is connected to a high intraday message volume
+(Hagstrmer & Nordn, 2013) (Hendershott & Riordan, 2013), we therefore expect that a
+possible retreat of HFT materializes in a change in the amount of messages being sent to
+the exchange. Subsequently, we further capture the amount of messages submitted to the
+order book of the analyzed exchanges. However, as Thomson Reuters does not disclose
+the messages it receives from market participants on a tick by tick level, we use a modiﬁed proxy introduced and tested by Haferkorn, Zimmermann, and Siering (2013). Like
+Haferkorn et al. (2013), we use tick-by-tick order book snapshot data supplied by TRTH
+to estimate the number of messages. TRTH provides data snapshots up to ten order book
+price limits (level 1 - level 10) starting from the best bid and best ask limit respectively.
+Every time the order book is updated by either a message of a trader (submission, modiﬁcation or deletion) or a trade, a new snapshot is generated. Snapshot-wise, we compare
+all respective bid and ask limits between the previous order book situation (t−1) and the
+present order book situation (t0) as well as the creation or discontinuation of a limit level.
+A submission of a new order to the order book at a prevailing limit price in (t−1) or a
+modiﬁcation of a resting order in (t−1) is therefore indicated by an increase in shares at
+the same limit price in (t0). Likewise, a decrease in the number of shares from (t−1) to (t0)
+would indicate a trade execution, a deletion or a modiﬁcation of a resting order. However,
+since a trade execution may theoretically aﬀect multiple limit levels, we cannot just sum
+all increases and decreases and subtract the number of trades. This approach would clearly
+overestimate the number of deletions and hence the number of messages. We therefore only
+concentrate on a respective increase in the number of shares. Therefore our message proxy
+only comprises order submissions as well as order modiﬁcations that lead to an increase
+in the number of shares. Respectively, we add the number of newly emerged limit levels
+in (t0) that were not available at (t−1). In this approach, we have to carefully control for
+displacements in the order book. E.g., in the case a limit order at position level 11 just
+moved up to the levels we observe (level 1 - level 10) because of a execution at the top
+level, is not counted as new submission or modiﬁcation. For further clariﬁcation we show
+this process in a two example situations in table 1.
+Therefore, every increase in shares at a prevailing limit, counts as one single order
+book message. In the second step of our analysis we turn to a ﬁner resolution of the order
+book characteristics, giving a more detailed view on market quality changes. In particular
+we focus on liquidity quantiﬁed by several measures in order to capture changes in various
+order book dimensions (Harris, 2003). Previous studies have found that HFT has an impact
+on the bid-ask spread, e.g. Malinova, Park, and Riordan (2013) and (Hendershott, Jones,
+and Menkveld (2011)) ﬁnd that (algorithmic trading) HFT decreases the bid-ask spread.
+Electronic copy available at: https://ssrn.com/abstract=2514334
+
+THE GERMAN-HIGH FREQUENCY TRADING ACT
+8
+Table 1: Example for our calculation of messages between two order-book situations.
+Bid
+Spread
+Ask
+BLimit(3)
+Vol.(3)
+BLimit(2)
+Vol.(2)
+BLimit(1)
+Vol.(1)
+Alimit(1)
+Vol.(1)
+Alimit(2)
+Vol.(2)
+Alimit(3)
+Vol.(3)
+t−1
+10.01
+320
+10.02
+100
+10.03
+80
+10.05
+70
+10.07
+320
+10.08
+500
+t0
+10.02
+120
+10.03
+80
+10.04
+50
+10.05
+100
+10.06
+20
+10.07
+600
+Message
+1
+0
+1
+1
+1
+1
+Explanation
+Increase 100 to 120
+No change
+Increase 0 to 50
+Increase 70 to 100
+Increase 0 to 20
+Increase 320 to 600
+The spread is also a measure for the implicit trading costs, whereas low trading costs allow
+the capital to be allocated more eﬃciently and is therefore an important indicator for
+market quality. To capture these dimensions in our study we utilize the relative bid-ask
+spread as follow:
+RelativeBid −AskSpreadt =
+BestAskt −BestBidt
+1
+2 ∗(BestAskt + BestBidt)
+(1)
+As previous research suggests that HFT are heavily involved on market making strategies
+(Menkveld, 2013), we expect that a retreat of HFT would result in a decrease in order
+volume at the top order book level.
+Consequently, we capture the average amount of
+volume that is available at the top of the order book and therefore provides immediate
+liquidity to all market participants. We apply a modiﬁed version of the Depth(X) measure
+introduced by Degryse, Jong, and Kervel (2011). The Depth(X) measure quantiﬁes the
+respective stock volume around the midpoint whereas X deﬁnes distance in basis points
+from the corresponding midpoint. As the measure itself is driven by development of the
+bid-ask spread (e.g. if the bid-ask spread rises the Depth(X) decreases) we exclude the
+bid-ask spread from our calculation. Thus we measure the stock volume, but starting from
+the best bid and best ask level to the deﬁned basis points of the order book midpoint. The
+detailed calculation is as follow:
+DepthAsk(X) =
+J
+X
+j=1
+QuantityAsk
+j
+| (PriceAsk
+j
+< PriceAsk
+1
+∗(1 + X)),
+DepthBid(X) =
+J
+X
+j=1
+QuantityBid
+j
+| (PriceBid
+j
+> (PriceBid
+1
+∗(1 −X)),
+Depth(X) = DepthAsk(X) + DepthBid(X)
+(2)
+Where DepthAsk(X) (DepthBid(X)) is the Depth(X) at the ask (bid) side of the order
+book, X is the number of basis points and PriceBid
+j
+the limit at level j in the order
+book. In order to focus on the liquidity at the top of the order book ,i.e., close to the
+Electronic copy available at: https://ssrn.com/abstract=2514334
+
+THE GERMAN-HIGH FREQUENCY TRADING ACT
+9
+best bid and best ask limit, we calculate Depth(3), i.e., three basis points. Applying both
+measures allows for a two-dimensional analysis of the top of the order book, that is the
+implicit transaction cost measured by the bid-ask spread as well as the quantity of liquidity
+provision measured by the depth measure. Next to these indicators, we also recalculate
+order book messages to determine their location in the order book. This time we only focus
+on messages sent to the top of the order book in order to distinguish between high quality
+messages that provide immediate liquidity and competitively reduce the bid-ask spread
+which is in line with our depth measure. Therefore, all messages aﬀecting the best bid and
+best ask limits, or creating a new limit that reduced the bid-ask spread, are accumulated
+in this measure. This way, we are able to distinguish what messages are inﬂuenced by the
+German HFT Act. A descriptive aggregation of the respective sub samples at each event
+date is given in the appendix in tables 4 to 9.
+Methodology
+We apply a control group setup to disentangle the event eﬀect of the German HFT
+Act from concurring time eﬀects that may apply to both stock samples, the control and
+treatment group.
+Diﬀerence-in-diﬀerences analysis has become widespread in empirical
+research determining the eﬀects of political events or medical treatments. In the simplest
+possible setup outcomes are observed for two groups and two time periods. One of the
+groups is exposed to a treatment in the second period but not in the ﬁrst period. The
+second group is not exposed to the treatment in either periods. Systematic diﬀerences
+within the ﬁrst period removes confounding biases between the treatment and control
+group within the second period and therefore yields the unbiased event eﬀect (Wooldridge,
+2002). This concept is easily extended to a setup, where multiple treatment and control
+entities are observed over pre- and post-event time series and thus allows for additional
+robustness checks within the time and entity dimension. Our methodology is guided by
+the following regression equation:
+Yi,t = a1Xi + a2Tt + a3Xi ∗Tt +
+n
+X
+j=4
+ajCi,t + ϵi,t
+(3)
+Yi,t captures each dependent market quality parameters introduced in the previous
+section for all German DAX 30 stocks traded on Xetra and simultaneously on Turquoise
+in our sample. Index i denotes the respective stock and t the respective observation day.
+Xi applies for the indicator variable switching to the value one if the individual is in the
+treatment group (respective zero if it is in the control group). Tt is a indicator variable
+tracking the post- (one) as well as pre-treatment (zero) period. The interaction between
+both indicator variables therefore indicates the unbiased event eﬀect. We further include
+a full set of time eﬀects and additionally controls for a stock’s price level, the daily price
+Electronic copy available at: https://ssrn.com/abstract=2514334
+
+THE GERMAN-HIGH FREQUENCY TRADING ACT
+10
+movement and price variability as well as trade characteristic like average trade volume
+and volume variability (Pn
+j=4 ajCi,t). ϵit equals the idiosyncratic, normal distributed error
+term.
+Regression estimations are derived via ﬁxed eﬀects estimators using the demeaned
+equation to eliminate time-constant, unobserved eﬀects as proposed by Wooldridge (2002).
+Subsequently, Xi is removed and can not be estimated. We apply the Huber-White sandwich standard errors to allow for intra-group correlation, relaxing the requirement that the
+observations are independent within stocks (Wooldridge, 2009). We start the analysis by
+determining changes within the overall market activity (trading and order book activity)
+for all event days separately. For each event that shows a systematic change in the activity
+level, we provide an in depth analysis of the message traﬃc change as well as the impact
+on order book quality in the following section.
+Results
+All changes to the market quality characteristics and order book composition occurring due to the introduction of the German HFT act should be highlighted by a change in
+the intraday order book message volume, which is characteristic for HFT driven strategies.
+We therefore start by analyzing shifts to the trading and order book activity characteristics
+after each respective event date. Subsequently, we provide a follow up in-depth analysis of
+these events that showed a structural change. Table 1 aggregates estimation results of the
+change in daily number of trade executions (Trades), of the natural logarithm of the daily
+Euro turnover (Turnover) and the daily number of submissions and modiﬁcations to the
+order book (Messages) after each event date respectively.
+Regarding the ﬁrst event date, May 15th 2013, our results indicate a very distinct
+market reaction. Within 10 days after the introduction of the German HFT Act, although
+the number of trades and turnovers show no distinct change compared to the time-series
+development of the same stocks traded at Turquoise, the number of order book submissions
+and modiﬁcations experience a sharp decline of about 10,900 messages. Compared to the
+time eﬀect, that is the systematic diﬀerence between the pre- and the post-period on both
+markets, both markets show a strong increase in order book messages 10 day after the event,
+which is indicated by the time-series illustration over all stocks in Figure 2. The stocks
+traded on Xetra however, have experienced a smaller increased compared to Turquoise
+over the same time horizon. After 30 days the abnormal diﬀerence at Xetra becomes also
+apparent in the number of trades and turnovers. In terms of order book messages, the initial
+eﬀect shows a slight reversion after those additional 20 days. After 30 days the decline in
+order book messages is reduced to about 7,700, or about 71% of the initial 10 days eﬀect.
+If we compare these eﬀects to the average number of trades and submission we observe 30
+days before and 30 days after the event at Xetra, we can translate these number into a 10%
+drop in the number of trades and a drop of approximately 13% in order book submissions
+and modiﬁcations after 30 days. Focusing on the second event day, November 14th 2013, we
+Electronic copy available at: https://ssrn.com/abstract=2514334
+
+THE GERMAN-HIGH FREQUENCY TRADING ACT
+11
+Table 2: ORDER BOOK AND TRADING ACTIVITY CHANGES AFTER THE GERMAN HFT ACT
+Regression estimates on the market activity changes induced by the German HFT Act on the three proposed event dates on Xetra in comparison to
+Turquoise. Endogenous variables are: The daily number of trade executions (Trades), the natural logarithm of the daily Euro turnover (Turnover)
+and the daily number of submissions and modiﬁcations to the order book (Messages). Depicted are estimated coeﬃcients on Tt (Time Eﬀect) as well
+as the indication variable interaction Xi*Tt (HFT Act Eﬀect) based on equation (1). Regressions are performed on a 10 days pre- and post-event
+window as well as a 30 days pre- and post-event window separately. To improve the readability controls are not reported. Values in parenthesis
+indicate respective P-values. We apply robust variance estimates following the Huber-White sandwich standard errors.
+May 15th 2013
+November 14th 2013
+February 14th 2014
+10 days pre- and post-event window
+Trades
+Turnover
+Messages
+Trades
+Turnover
+Messages
+Trades
+Turnover
+Messages
+TimeEffect
+621.2
+0.0091
+24,346.6
+-462.0
+-0.1590
+-13,495.0
+-448.9
+-0.0709
+-13,811.9
+(0.0089)
+(0.8696)
+(0.0000)
+(0.0244)
+(0.0096)
+(0.0000)
+(0.1111)
+(0.3104)
+(0.0000)
+HFTActEffect
+-524.6
+-0.0137
+-10,912.4
+-424.9
+0.0002
+621.8
+-1,389.8
+-0.0811
+-16,149.8
+(0.1095)
+(0.8047)
+(0.0000)
+(0.0532)
+(0.6818)
+(0.6655)
+(0.0002)
+(0.1618)
+(0.0000)
+Number of Obs.
+1,040
+1,040
+1,040
+1,040
+1,040
+1,040
+1,040
+1,040
+1,040
+R2
+0.339
+0.685
+0.559
+0.441
+0.564
+0.554
+0.430
+0.568
+0.663
+30 days pre- and post-event window
+Trades
+Turnover
+Messages
+Trades
+Turnover
+Messages
+Trades
+Turnover
+Messages
+TimeEffect
+146.3
+0.1500
+-8,283.4
+-483.9
+-0.6150
+-17,954.5
+-22.66
+-0.0176
+18,076.5
+(0.6371)
+(0.0280)
+(0.0009)
+(0.0500)
+(0.0000)
+(0.0000)
+(0.9181)
+(0.8130)
+(0.0000)
+HFTActEffect
+-520.4
+-0.0746
+-7,764.6
+-29.74
+0.0820
+3842.7*
+-738.2
+-0.244
+-13,433.4
+(0.0067)
+(0.0968)
+(0.0075)
+(0.7995)
+(0.0553)
+(0.0578)
+(0.0001)
+(0.0000)
+(0.0000)
+Number of Obs.
+3,120
+3,120
+3,120
+3,120
+3,120
+3,120
+3,120
+3,120
+3,120
+R2
+0.344
+0.553
+0.532
+0.425
+0.577
+0.451
+0.395
+0.549
+0.458
+Electronic copy available at: https://ssrn.com/abstract=2514334
+
+THE GERMAN-HIGH FREQUENCY TRADING ACT
+12
+cannot conﬁrm a signiﬁcant additional impact. Although Xetra indicates a reduction in the
+number of trades after 10 days, we do not see a comparable eﬀect on the turnover or order
+book messages. Results remain also valid after 30 day of the event date. These ﬁndings are
+in line with our assumptions, as the second date may only be relevant if German HFT’s
+had systematically exhausted the transitional period. Based on our results, this was not
+the case. At last, the third event date, February 14th 2014, conﬁrms the ﬁndings on the
+ﬁrst date and also presents the most distinct change to the market activity levels. After
+10 days, turnover declines and the number of trades deteriorate by approximately 1,400.
+Simultaneously, order book messages, i.e., the number of submissions and modiﬁcations,
+decline by about 16,000 on average. Although we observe a similar decline at Turquoise
+over the course of these 10 days, the additional eﬀect at Xetra is more than twice as
+strong. After 30 days, comparable to the ﬁndings at the ﬁrst event date, we can conﬁrm
+that these eﬀects are declining over time. The number of trades recover to a decline of 730
+or 53% of the initial 10 day eﬀect, while the reduction on the order book messages remain
+at approximately 83% of the initial 10 days eﬀect.
+Again, if we compare these eﬀects
+to the average number of trades and submission we observe 30 days before and 30 days
+after the event at Xetra, we can translate these number into a 15% drop in the number
+of trades and a drop of approximately 22% in the number of order book submissions and
+modiﬁcations after 30 days. These results indicate that market participants retreat or at
+least adapt their trading strategies to avoid a BaFin regulation. As the eﬀects seem to be
+much more severe on the third event date, it is reasonable to assume that the late BaFin
+announcement, that local licenses are not suﬃcient to circumvent regulation, triggered
+many foreign markets participates to quickly adapt or quit trading at German exchanges.
+Therefore, the German HFT Act succeeded in reducing the amount of order book message
+volume to relief exchange system workload. Given that the number of trades experienced
+a smaller event eﬀect, we can conclude that foremost submission or modiﬁcations that did
+not frequently result in trade executions vanished. We analyze the quality of the missing
+messages in more detail.
+Within our second step, we analyze the change in the order book structure itself
+by determining the location of the lost order book messages and their impact on overall
+market quality. We repeat the diﬀ-in-diﬀestimation by applying the order book characteristics and market quality proxies as dependent variables. At ﬁrst we therefore separate
+the submissions and modiﬁcations by their message eﬃciency. High quality order book
+messages are therefore all submissions and modiﬁcations that enter the order book at the
+respective best bid or best ask level, or likewise reduce the relative bid-ask spread by adding
+a new limit that relieves the prevailing best bid or best ask limit. These messages provide
+liquidity in a very competitive and eﬃcient level. They are immediately executable and
+reduced the cost of trading, i.e., the bid-ask spread. We therefore analyze, how may of
+these high quality messages actually displace after the introduction of the German HFT
+Act, especially in comparison to the drop in all messages. Subsequently, we analyze order
+book liquidity and quality changes directly. As outlined in the previous section, we anaElectronic copy available at: https://ssrn.com/abstract=2514334
+
+THE GERMAN-HIGH FREQUENCY TRADING ACT
+13
+lyze changes to the relative bid-ask spread as well as the order book liquidity levels 3 basis
+points around the best bid and best ask limit. Both measures account for the liquidity at
+the top of the order book. Furthermore, we are able to analyze liquidity supply changes in
+diﬀerent dimensions. Again, we compare our results based on a 10 days short time window
+and a 30 days medium time window. In this stage, we concentrate merely on the ﬁrst and
+third event date, since the second was not aﬀected by the act.
+Table 3 depicts the results on the second stage analysis. Again, we start with the
+results of the ﬁrst event date. We ﬁnd that a signiﬁcant amount of the vanished order book
+messages (as shown in our ﬁrst stage analysis) were located at the top of the order book.
+After 10 days approximately 3,700 of the overall 10,900 vanished messages, or 34% where
+considered high quality order book messages. Thus, as indicated by the high quality order
+book messages to overall messages ratio, the larger amount of these messages were located
+deeper down in the order book and therefore were not immediately executable. After 30
+days and consistent with the recovery of the overall number of messages, only about 1,900,
+or still 25% of the vanished messages could be considered high quality. Thus, the messages
+to the top of the order book recovered considerably faster than the rest. In line with this
+decline in competition at the top of the order book, we observe that the average bid-ask
+spread increases signiﬁcantly. This eﬀect is distinct and remains stable after 10 as well as
+after 30 days. Since order book depth levels remain unchanged in both observation periods,
+we can conclude that those submissions and modiﬁcations were actually of negligible sizes,
+but, due to the impact on the bid-ask spread, of superior precision. By focusing on the
+third event date eﬀects, results seem to be slightly diﬀerent. After 10 days of the last
+transitional period, almost non of the displaced order book messages touched the order
+book at the best bid or best ask level or even higher. Putting it the other way around,
+the time series drop of high quality messages visible at Turquoise was aﬀecting Xetra in
+a very comparable way (time eﬀect). Therefore, average bid-ask spreads only increased
+marginally. As of order book depth levels, comparable to the ﬁrst event date, no eﬀect
+is observable.
+Only after 30 days, the decline in messages aﬀects the top of the order
+book. About 4,400, or 33% of the displaced messages were located here. Thus the eﬀect
+on the average relative bid-ask spread becomes much clearer in the medium term analysis.
+Comparable to the ﬁrst event date however, the displacing of those messages does not aﬀect
+liquidity depth and therefore again indicates that the volumes of those messages were of
+negligible sizes.
+Robustness & Discussion
+Turquoise MTF is not the closest competitor of Xetra in terms of traded volumes. In
+order to increase the robustness of our results and to indicate the independence from the
+chosen control, we repeat the analysis by applying BATS Chi-X CXE as control sample.
+With about 20% venue market share, BATS Chi-X’s CXE trading platform aggregates more
+than twice the volume traded on Turquoise (8%, Fidessa (2014)). Comparing the time series
+Electronic copy available at: https://ssrn.com/abstract=2514334
+
+THE GERMAN-HIGH FREQUENCY TRADING ACT
+14
+Table 3: MARKET QUALITY CHANGES AFTER THE GERMAN HFT ACT
+Regression estimates on the market quality changes induced by the loss in the order book and trading activity on Xetra in comparison to Turquoise.
+Endogenous variables are: The daily number daily number of order book submissions and modiﬁcations that enter the order book at the best bid or
+best ask level, or reduce the order book bid-ask spread (Top), the High quality order book messages (Top) to Messages ratio (Ratio), the average daily
+relative bid-ask spread (Bid-Ask Spread), the average order book volume depth three basis point around the best bid and best ask (Depth). Depicted are
+estimated coeﬃcients on Tt (Time Eﬀect) as well as the indication variable interaction Xi*Tt (HFT Act Eﬀect) based on equation (1). Regressions
+are performed on a 10 days pre- and post-event window as well as a 30 days pre- and post-event window separately. To improve the readability
+controls are not reported. Values in parenthesis indicate respective P-values. We apply robust variance estimates following the Huber-White sandwich
+standard errors.
+May 15th 2013
+February 14th 2014
+10 days pre- and post-event window
+Top
+Ratio
+Bid-Ask
+Spread
+Depth
+Top
+Ratio
+Bid-Ask
+Spread
+Depth
+TimeEffect
+8,434.6
+-0.0098
+-0.0001
+-368.6
+-5,268.5
+-0.0159
+-0.0006
+-84.71
+(0.0000)
+(0.3863)
+(0.2743)
+(0.0150)
+(0.0000)
+(0.0000)
+(0.1099)
+(0.6785)
+HFTActEffect
+-3,728.1
+0.0096
+0.0002
+40.72
+-497.2
+0.0304
+0.0002
+89.54
+(0.0000)
+(0.3063)
+(0.0795)
+(0.8401)
+(0.5124)
+(0.0001)
+(0.0895)
+(0.6269)
+Number of Obs.
+1,040
+1,040
+1,040
+1,040
+1,040
+1,040
+1,040
+1,040
+R2
+0.417
+0.031
+0.282
+0.190
+0.572
+0.172
+0.108
+0.332
+30 days pre- and post-event window
+Top
+Ratio
+Bid-Ask
+Spread
+Depth
+Top
+Ratio
+Bid-Ask
+Spread
+Depth
+TimeEffect
+-1,351.7
+0.0018
+-0.0002
+73.13
+5,416.1
+-0.0350
+0.0000
+96.55
+(0.1295)
+(0.8571)
+(0.0371)
+(0.6794)
+(0.0000)
+(0.0005)
+(0.6229)
+(0.6989)
+HFTActEffect
+-1,968.3
+0.0370
+0.0003
+233.8
+-4,394.0
+0.0180
+0.0002
+-273.8
+(0.0090)
+(0.0012)
+(0.0007)
+(0.2368)
+(0.0000)
+(0.0112)
+(0.0125)
+(0.2680)
+Number of Obs.
+3,120
+3,120
+3,120
+3,120
+3,120
+3,120
+3,120
+3,120
+R2
+0.356
+0.139
+0.321
+0.134
+0.382
+0.125
+0.120
+0.179
+Electronic copy available at: https://ssrn.com/abstract=2514334
+
+THE GERMAN-HIGH FREQUENCY TRADING ACT
+15
+development, BATS Chi-X’s CXE, likewise Turquoise, shares strong similarities in trading
+activity but also in market quality parameters as of the 30 days comparison windows (see
+Appendix). However, as noted in the sample selection subsection, the recognition of BATS
+Chi-X as RIE may bias the results of the ﬁrst event window and should therefore be treated
+with caution. Appendix tables 10 and 11 comprise the results on the analysis based on
+equation (1). The results remain highly comparable to our initial analysis and only divert in
+their actual eﬀect size. Again, the ﬁrst and third event date show reasonable evidences that
+HFT traders adapt their strategies or quit trading. The most crucial diﬀerence between
+both control groups, in case of BATS Chi-X CXE only a marginal recovery of the initial
+eﬀect can be recognized after 30 days. Most notably, the eﬀect at the third event day,
+February 14th 2014, distinctively peaks after 30 days. In contrast, after 10 days no eﬀects
+within the volume of intraday messages is observable, which in in line with the results on
+order book liquidity at Turquoise. After 30 days however, we observe that a larger fraction
+of displaced order book messages, or about 43% the ones vanished, were actually located
+at the top of the order book. So dependent upon the respective benchmark the amount of
+high quality order book messages lost varies between 33% and 43% percent on February
+14th 2014. Further, although the direct comparison between Xetra and Turquoise suggests
+that the eﬀect on the third event date could be considered much more severe, we do not
+ﬁnd evidences for this result in the BATS Chi-X control case. Given a possible bias at the
+ﬁrst event date at BATS Chi-X a clear predicate is not possible.
+Long Term Eﬀects
+The analysis so far does not exceed a medium-term 30 days observation window. Because of the change in Deutsche Boerse message reporting following April 2014, a tremendous increase in the amount of order book messages would bias the analysis of the third
+event date in case of a larger observation window. Since this represents a systematic bias
+in all stocks traded at Xetra, our interaction term will largely underestimate the actual
+event eﬀect. However, the ﬁrst event date, May 15th 2014, does allow for a longer time
+period observation and therefore for a additional level of robustness. We therefore repeat
+the analysis within a 60 days pre- and post event window, doubling the number of observed days compared to the medium term interval. In addition, we drop the initial 10
+days following May 15th 2014 in order to omit the initial short-term eﬀect. As seen in
+the results section above, the eﬀect on the ﬁrst event date distinctly peaks within the ﬁrst
+10 days followed by a period of recovery. By excluding these days, the mean long-term
+eﬀect will not be aggravated by the initial peak but only concentrate on the prevailing
+long-term eﬀects of the German HFT Act after the recovery. Again, the calculations are
+done based on the BATS Chi-X Europe CXE and the Turquoise control sample. Regression
+estimation follows equation (1). Appendix table 12 comprise the results on the analysis.
+Although the results on the long-term estimation remain comparable between both control
+groups, table 12 indicates that after the initial peak especially order book messages recover.
+Still, the number of trades remain signiﬁcantly declined after 60 days, but the order book
+Electronic copy available at: https://ssrn.com/abstract=2514334
+
+THE GERMAN-HIGH FREQUENCY TRADING ACT
+16
+message volume has largely recovered. Although the coeﬃcients remain highly negative
+(-3,270 (TQ); -4,325 (CXE)), the considerable variation indicates that these eﬀects could
+also have happened by chance. The same holds true for the order book messages at the
+top of the order book. Based on our results these submissions and modiﬁcation entirely
+recover after 60 days. In contrast however, the results on order book liquidity levels, that
+are the relative bid-ask spread, show no recovery eﬀect and results remain comparable to
+the 30 days window. It remains questionable if full recovery also applies after the third
+event date, but given the long-term results following the initial introduction date, we can
+conclude that although market participant plug the gaps in order book traﬃc left behind
+by the vanished HFT ﬁrms, they are not able to also plug the gaps in order book liquidity.
+Conclusion
+The stepwise introduction of HFT in securities trading has been the most deﬁning,
+extensive and likewise controversial innovation in modern securities trading. Contentious
+debates have been held about market fairness versus revenues from investments in IT infrastructure, individual risk management opportunities versus systemic risk, immediate
+liquidity provision versus cream-skimming as well as the overall beneﬁt of HFT for the
+economy. For many of today’s market participants, politicians and regulators these numerous questions can be broken down to one fundamental question: Are we better oﬀ
+without HFT? Within the last years, national policy makers introduced the ﬁrst indirect
+measures for HFT regulation via the implementation of national transaction taxes. As
+many side-eﬀects arise with the introduction of a transaction tax the observed eﬀects can
+not be attributed to HFT solely. We overcome this limitation by analyzing the most recent
+case, a direct regulation of HFT ﬁrms in Germany by the introduction of the German HFT
+Act in 2013. Our research aims at a deeper academic understanding of the phenomena
+HFT but also provide guidance for regulators. The latter one is especially crucial as a
+similar regulation will soon be introduced on an European-wide level and therefore heavily
+aﬀect the way securities are traded within European markets.
+We exploit the fact that the regulation is only applicable within German securities
+markets to benchmark the development in market quality at Deutsche Boerse’s Xetra trading system against the Turquoise MTF with a diﬀerence-in-diﬀerences analysis. Our results
+indicate that the need for authorization of HFT ﬁrms results in a adaption of prevailing
+trading strategies that largely aﬀect trading and order book message characteristics. However, the overall eﬀect on market quality is manageable. In particular we observe signiﬁcant
+changes in the order book activity levels in two out of three relevant dates. By further
+analyzing both dates, we observe a strong decline in the number of order book messages
+accompanied by a weak reduction in the number of trades and turnovers at Xetra. This
+initial drop does not fully recover after 30 days, especially after February 14th 2014, a
+signiﬁcant fraction of order book messages remain permanently absent. By evaluating the
+characteristics of the missing order book messages, we ﬁnd that a considerable amount of
+Electronic copy available at: https://ssrn.com/abstract=2514334
+
+THE GERMAN-HIGH FREQUENCY TRADING ACT
+17
+those messages provided immediate liquidity at competitive limit prices at the top of the
+order book, eﬀectively reducing implicit transaction costs. On the other hand, our analysis
+also provides evidence, that these messages were mainly of smaller volumes, so the German
+HFT Act did not aﬀect order book depth levels at the top of the order book. In particular,
+the average amount of volume depth at the top of the order book (3 basis points from the
+best bid or best ask limit) remained unaﬀected. Concerning the long-term eﬀects of the
+German HFT Act, our results stay mixed. After the introduction date May 15th 2014, we
+observe a recovery eﬀect in the number of messages sent to the order book. Subsequently,
+after 60 days no prevailing eﬀect is measurable anymore. In contrast, liquidity levels remain
+deteriorated even after dropping the initial 10 peak days. Given that the eﬀect distinctly
+peaks after 30 day at the third event date, February 14th 2014, it remains questionable if
+the third event date is also followed by a equally strong recovery. Putting all together, a
+prevailing long-term eﬀect is existent but readily comprehensible.
+Our contributions are as follows. (I) We show that many HFT ﬁrms operating in an
+unregulated fashion prefer to adapt their trading strategies rather to be regulated and to
+bear the organizational requirements of such authorization. (II) Even though the German
+HFT Act applies to a very small fraction of the overall HFT participants, their impact
+on securities markets is perceptible in the order book message traﬃc and market quality
+levels. Considering that major HFT ﬁrms as well as most market makers that rely on
+such technologies are already authorized before the act and were therefore not aﬀected,
+the impact on market quality levels is manageable.
+Based on our results, these ﬁrms
+falling under the authorization requirement did not operate with high volumes but with
+considerable high precision at a cost of high message volumes. (III) Given an Europeanwide implementation of a similar authorization by MiFID 2, we provide ﬁrst evidences on
+possible consequences of a direct HFT regulation. We add to the recent debate within
+Germany whether the German HFT Act had an inﬂuence on securities trading by showing
+distinctive eﬀects of market quality.
+However it is important to note that we are also
+aﬀected by limitations as the short-term and medium-term analysis might not be suﬃcient.
+We overcome this limitation by utilizing a second benchmark to gain additional robustness
+and provide a long-term analysis of the ﬁrst introduction event.
+As we only focus on
+trading in blue chips securities, conclusions for derivative markets, for small- and midcap securities can not be drawn so far. Finally, we conclude that the German HFT act
+successfully stipulated the scope for HFT ﬁrms in Germany.
+Electronic copy available at: https://ssrn.com/abstract=2514334
+
+THE GERMAN-HIGH FREQUENCY TRADING ACT
+18
+References
+BaFin.
+(2014).
+Frequently
+asked
+questions
+relating
+to
+the
+High-frequency
+Trading
+Act
+(Hochfrequenzhandelsgesetz).
+Retrieved
+Septemebr
+30,
+2014,
+from
+http://www.baﬁn.de/EN/DataDocuments/FAQ/HFT-Gesetz/hft-gesetznode.html.
+BATS
+CHi-X
+Europe.
+(2014).
+BATS
+Chi-X
+Europe
+-
+A
+Pan-European
+Exchange
+.
+http://www.batstrading.co.uk/about/.
+Coelho, M. (2014). Dodging robin hood: Responses to france and italy’s ﬁnancial transaction taxes.
+Working Paper.
+Degryse, H., Jong, F. de, & Kervel, V. van. (2011). Equity market fragmentation and liquidity:
+the impact of miﬁd. Working Paper.
+Deutsche Boerse AG. (2014). Kennzeichnung von handelsalgorithmen im rahmen des deutschen
+hftgesetzes: Sicherstellung der eindeutigen kennzeichnung bei nutzung mehrerer softwarevendoren. Xetra Information Paper.
+European Commission. (2014). Directive on markets in ﬁnancial instruments. Retrieved September
+30, 2014, from http://ec.europa.eu/internalmarket/securities/isd/mifid2/indexen.htm.
+Fidessa.
+(2014).
+Fidessa Fragmentation Index.
+Retrieved Septemebr 30,
+2014,
+from
+http://fragmentation.ﬁdessa.com/.
+Financial News.
+(2014).
+HFT ﬁrms face German slowdown after rules change.
+Retrieved
+September 30, 2014, from http://www.eﬁnancialnews.com/story/2014-02-03/high-frequencytraders-germany-rule-change-baﬁn.
+German
+Bundestag.
+(2014).
+Kleine
+Anfrage:
+Aufsicht
+ueber
+in
+Deutschland
+taetige
+Hochfrequenzhaendler.
+Retrieved
+September
+30,
+2014,
+from
+http://dipbt.bundestag.de/extrakt/ba/WP18/612/61220.html.
+German High Frequency Trading Act.
+(2013).
+Gesetz zur Vermeidung von Gefahren
+und
+Missbruchen
+im
+Hochfrequenzhandel
+in
+der
+Fassung
+der
+Bekanntmachung
+vom
+14.5.2014.
+Retrieved September 30, 2014, http://www.eurexchange.com/blob/exchangeen/455384/496300/2/data/German-HFT-Bill.pdf.
+Haferkorn, M., Zimmermann, K., & Siering, M.
+(2013).
+The Impact of IT-Based Trading on
+Securities Markets. In: Proceedings of the International Conference on Wirtschaftsinformatik
+2013.
+Hagstrmer, B., & Nordn, L. (2013). The diversity of high-frequency traders. Journal of Financial
+Markets, 16, 741–770.
+Harris, L. (2003). Trading and exchanges: Market microstructure for practitioners. New York, US:
+Oxford University Press.
+Hendershott, T., Jones, C. M., & Menkveld, A. J.
+(2011).
+Does algorithmic trading improve
+liquidity? Journal of Finance, 66(1), 1-33.
+Hendershott, T., & Riordan, R. (2013, 8). Algorithmic trading and the market for liquidity. Journal
+of Financial and Quantitative Analysis, 48, 1001–1024.
+Malinova, K., Park, A., & Riordan, R. (2013). Do retail traders suﬀer from high frequency traders?
+Working Paper.
+Menkveld, A. J. (2013). High frequency trading and the new market makers. Journal of Financial
+Markets, 16(4), 712-740.
+Wooldridge, J. M. (2002). Econometric analysis of cross section and panel data. Massachusetts
+London, England: The MIT Press Cambridge.
+Electronic copy available at: https://ssrn.com/abstract=2514334
+
+THE GERMAN-HIGH FREQUENCY TRADING ACT
+19
+Wooldridge, J. M. (2009). Introductory econometrics: A modern approach. USE: South-Western
+College Publishing.
+Electronic copy available at: https://ssrn.com/abstract=2514334
+
+THE GERMAN-HIGH FREQUENCY TRADING ACT
+20
+Appendix
+Table 4: SUMMARY STATISTCS 30 DAYS, MAY 15th, 2013 (TURQUOISE MTF)
+Variable
+Mean
+Std. Dev.
+Min.
+Max.
+Number of Trades
+2,019
+1,406
+221
+27,502
+Mean Price Level
+63.059
+39.327
+5.427
+156.577
+Turnover
+11,670,097
+9,824,260
+785,022
+215,000,000
+Mean Relative Bid-Ask Spread
+0.0008
+0.0006
+0.0001
+0.0168
+Mean Depth(3bps)
+1,524.161
+1,925.803
+119.361
+11,948.175
+Order Book Message
+48,282
+28,310
+7,578
+190,022
+Top Order Book Messages
+22,048
+12,955
+3,251
+88,272
+N
+1,560
+Table 5: SUMMARY STATISTCS 30 DAYS, MAY 15th, 2013 (XETRA)
+Variable
+Mean
+Std. Dev.
+Min.
+Max.
+Number of Trades
+4,929
+3,034
+532
+36,226
+Mean Price Level
+63.054
+39.321
+5.422
+156.579
+Turnover
+84,088,076
+68,735,498
+6,300,000
+850,000,000
+Mean Relative Bid-Ask Spread
+0.0006
+0.0005
+0.0001
+0.0009
+Mean Depth(3bps)
+5,330.04
+5,902.526
+696.055
+44,817.746
+Order Book Messages
+63,578
+27,702
+13,496
+177,998
+Top Order Book Messages
+13,059
+4,362
+4,147
+31,423
+N
+1,560
+Table 6: SUMMARY STATISTCS 30 DAYS, NOV 14th, 2013 (TURQUOISE MTF)
+Variable
+Mean
+Std. Dev.
+Min.
+Max.
+Number of Trades
+1,439
+808
+141
+7,303
+Mean Price Level
+68.005
+43.803
+6.84
+161.515
+Turnover
+8,141,539
+5,794,785
+483,074
+51,000,000
+Mean Relative Bid-Ask Spread
+0.0010
+0.0007
+0.0003
+0.0109
+Mean Depth(3bps)
+1,525.692
+1,429.841
+203.567
+9,087.406
+Order Book Messages
+32,572
+21,528
+2,360
+147,848
+Top Order Book Messages
+14,259
+8,703
+1,306
+55,861
+N
+1,560
+Electronic copy available at: https://ssrn.com/abstract=2514334
+
+THE GERMAN-HIGH FREQUENCY TRADING ACT
+21
+Table 7: SUMMARY STATISTCS 30 DAYS, NOV 14th, 2013 (XETRA)
+Variable
+Mean
+Std. Dev.
+Min.
+Max.
+Number of Trades
+3,806
+2,498
+310
+28,299
+Mean Price Level
+67.997
+43.796
+6.823
+161.527
+Turnover
+68,337,756
+54,597,424
+3,600,000
+510,000,000
+Mean Relative Bid-Ask Spread
+0.0005
+0.0002
+0.0001
+0.0012
+Mean Depth(3bps)
+6,978.398
+6,613.118
+655.224
+39,729.984
+Order Book Messages
+49,675
+18,964
+7,918
+143,023
+Top Order Book Messages
+10,185
+3,340
+2,444
+31,203
+N
+1,560
+Table 8: SUMMARY STATISTCS 30 DAYS, FEB 14th, 2014 (TURQUOISE MTF)
+Variable
+Mean
+Std. Dev.
+Min.
+Max.
+Number of Trades
+1,718
+997
+231
+11,858
+Mean Price Level
+70.89
+45.69
+7.310
+181.251
+Turnover
+10,791,519
+8,089,621
+796,865.375
+92,500,000
+Mean Relative Bid-Ask Spread
+0.0009
+0.0006
+0.0002
+0.0138
+Mean Depth(3bps)
+1,522.162
+1,582.38
+250.483
+10,001.714
+Order Book Messages
+35,846
+29,710
+4,254
+243,411
+Top Order Book Messages
+15,955
+13,060
+1,930
+112,763
+N
+1,560
+Table 9: SUMMARY STATISTCS 30 DAYS, FEB 14th, 2014 (XETRA)
+Variable
+Mean
+Std. Dev.
+Min.
+Max.
+Number of Trades
+4,910
+3,235
+737
+24,158
+Mean Price
+70.881
+45.684
+7.314
+180.927
+Turnover
+90,875,641
+71,094,241
+9,000,000
+540,000,000
+Mean Relative Bid-Ask Spread
+0.0005
+0.0001
+0.0002
+0.0009
+Mean Depth(3bps)
+6,828.35
+6,763.886
+640.716
+42,014.16
+Order Book Messages
+60,812
+25,309
+16,561
+175,322
+Top Order Book Messages
+12,034
+4,724
+2,854
+34,793
+N
+1,560
+Electronic copy available at: https://ssrn.com/abstract=2514334
+
+THE GERMAN-HIGH FREQUENCY TRADING ACT
+22
+Table 10: ORDER BOOK AND TRADING ACTIVITY CHANGES AFTER THE GERMAN HFT ACT (BATS CHI-X)
+Regression estimates on the market activity changes induced by the German HFT Act on the three proposed event dates on Xetra in comparison to
+Bats Chi-X. Endogenous variables are: The daily number of trade executions (Trades), the natural logarithm of the daily Euro turnover (Turnover)
+and the daily number of submissions and modiﬁcations to the order book (Messages). Depicted are estimated coeﬃcients on Tt (Time Eﬀect) as well
+as the indication variable interaction Xi*Tt (HFT Act Eﬀect) based on equation (1). Regressions are performed on a 10 days pre- and post-event
+window as well as a 30 days pre- and post-event window separately. To improve the readability controls are not reported. Values in parenthesis
+indicate respective P-values. We apply robust variance estimates following the Huber-White sandwich standard errors.
+May 15th 2013
+November 14th 2013
+February 14th 2014
+10 days pre- and post-event window
+Trades
+Turnover
+Messages
+Trades
+Turnover
+Messages
+Trades
+Turnover
+Messages
+Time Eﬀect
+968.1
+0.0565
+31,438.8
+-867.1
+-0.263
+-18,638.7
+-1,212.5
+-0.130
+-38,654.3
+(0.0100)
+(0.2374)
+(0.0000)
+(0.0135)
+(0.0000)
+(0.0000)
+(0.0037)
+(0.0159)
+(0.0000)
+HFT Act Eﬀect
+-644.9
+-0.1000
+-16,837.7
+17.70
+0.0432
+10,005.1
+-712.7
+-0.107
+-6,594.6
+(0.0810)
+(0.0332)
+(0.0000)
+(0.9529)
+(0.4145)
+(0.0008)
+(0.1304)
+(0.0526)
+(0.2388)
+Number of Obs.
+1,040
+1,040
+1,040
+1,040
+1,040
+1,040
+1,040
+1,040
+1,040
+R2
+0.439
+0.731
+0.437
+0.545
+0.538
+0.483
+0.476
+0.607
+0.547
+30 days pre- and post-event window
+Trades
+Turnover
+Messages
+Trades
+Turnover
+Messages
+Trades
+Turnover
+Messages
+Time Eﬀect
+-3,408.0
+0.380
+60,953.1
+-1,787.9
+-0.787
+-52,755.4
+548.0
+0.0010
+25,537.7
+(0.0000)
+(0.0000)
+(0.0000)
+(0.0000)
+(0.0000)
+(0.0000)
+(0.1193)
+(0.9890)
+(0.0001)
+HFT Act Eﬀect
+-831.4
+-0.1530
+-14,551.5
+475.6
+0.160
+16,937.9
+-748.3
+-0.1330
+-9,305.9
+(0.0003)
+(0.0007)
+(0.0028)
+(0.0060)
+(0.0000)
+(0.0001)
+(0.0018)
+(0.0031)
+(0.0026)
+Number of Obs.
+3,120
+3,120
+3,120
+3,120
+3,120
+3,120
+3,120
+3,120
+3,120
+R2
+0.406
+0.601
+0.418
+0.502
+0.622
+0.433
+0.476
+0.578
+0.464
+Electronic copy available at: https://ssrn.com/abstract=2514334
+
+THE GERMAN-HIGH FREQUENCY TRADING ACT
+23
+Table 11: MARKET QUALITY CHANGES AFTER THE GERMAN HFT ACT (BATS CHI-X)
+Regression estimates on the market quality changes induced by the loss in the order book and trading activity on Xetra in comparison to Bats Chi-X.
+Endogenous variables are: The daily number daily number of order book submissions and modiﬁcations that enter the order book at the best bid or
+best ask level, or reduce the order book bid-ask spread (Top), the High quality order book messages (Top) to Messages ratio (Ratio), the average
+daily relative bid-ask spread (Spread), the average order book volume depth three basis point around the best bid and best ask (Depth). Depicted are
+estimated coeﬃcients on Tt (Time Eﬀect) as well as the indication variable interaction Xi*Tt (HFT Act Eﬀect) based on equation (1). Regressions
+are performed on a 10 days pre- and post-event window as well as a 30 days pre- and post-event window separately. To improve the readability
+controls are not reported. Values in parenthesis indicate respective P-values. We apply robust variance estimates following the Huber-White sandwich
+standard errors.
+May 15th 2013
+February 14th 2014
+10 days pre- and post-event window
+Top
+Ratio
+Bid-Ask
+Spread
+Depth
+Top
+Ratio
+Bid-Ask
+Spread
+Depth
+Time Eﬀect
+9,001.4
+-0.0045
+-0.0000
+-100.0
+-10,373.5
+0.0143
+-0.0002
+283.5
+(0.0000)
+(0.3825)
+(0.9245)
+(0.4490)
+(0.0000)
+(0.343)
+(0.0233)
+(0.2548)
+HFT Act Eﬀect
+-5,609.7
+0.0031
+0.0001
+-454.2
+4,215.7
+-0.0112
+0.0001
+-105.5
+(0.0000)
+(0.5759)
+(0.0058)
+(0.0501)
+(0.0359)
+(0.2020)
+(0.1849)
+(0.6183)
+Number of Obs.
+1,040
+1,040
+1,040
+1,040
+1,040
+1,040
+1,040
+1,040
+R2
+0.366
+0.079
+0.249
+0.242
+0.483
+0.114
+0.153
+0.356
+30 days pre- and post-event window
+Top
+Ratio
+Bid-Ask
+Spread
+Depth
+Top
+Ratio
+Bid-Ask
+Spread
+Depth
+Time Eﬀect
+15,381.2
+-0.0304
+0.0001
+-661.0
+9,099.7
+-0.000
+0.0000
+45.77
+(0.0000)
+(0.0002)
+(0.0014)
+(0.0020)
+(0.0001)
+(0.9421)
+(0.9731)
+(0.8636)
+HFT Act Eﬀect
+-4,085.6
+0.0145
+0.0001
+-100.6
+-3,957.6
+-0.0102
+0.0001
+-245.4
+(0.0258)
+(0.0076)
+(0.0067)
+(0.6730)
+(0.0009)
+(0.0310)
+(0.0210)
+(0.3315)
+Number of Obs.
+3,120
+3,120
+3,120
+3,120
+3,120
+3,120
+3,120
+3,120
+R2
+0.289
+0.181
+0.223
+0.193
+0.389
+0.155
+0.081
+0.186
+Electronic copy available at: https://ssrn.com/abstract=2514334
+
+THE GERMAN-HIGH FREQUENCY TRADING ACT
+24
+Table 12: LONG-TERM ANALYSIS OF THE GERMAN HFT ACT
+Regression estimates on order book and trading activity and market quality changes on Xetra in comparison to Turquoise MTF and BATS Chi-X
+CXE. Endogenous variables are: The daily number of trade executions (Trades), the natural logarithm of the daily Euro turnover (Turnover) and
+the daily number of submissions and modiﬁcations to the order book (Messages). The daily number daily number of order book submissions and
+modiﬁcations that enter the order book at the Best Bid or Best Ask level, or reduce the order book Bid-Ask spread (Top), the High quality order book
+messages (Top) to Messages ratio (Ratio), the average daily relative bid-ask spread (Spread), the average order book volume depth three basis point
+around the Best Bid and Best Ask (Depth). Depicted are estimated coeﬃcients on Tt (Time Eﬀect) as well as the indication variable interaction
+Xi*Tt (HFT Act Eﬀect) based on equation (1). Regressions are performed on a 60 days pre- and post-event window with 10 days following May 15th
+2013 omitted to exclude the initial peak. To improve the readability controls are not reported. Values in parenthesis indicate respective P-values. We
+apply robust variance estimates following the Huber-White sandwich standard errors.
+May 15th 2013
+60 days pre- and post-event window - Turquoise MTF
+Trades
+Turnover
+Messages
+Top
+Ratio
+Bid-Ask
+Spread
+Depth
+Time Eﬀect
+1,060.2
+0.129
+11,894.3
+3,518.8
+-0.0186
+-0.0004
+-248.6
+(0.0000)
+(0.0454)
+(0.0008)
+(0.0056)
+(0.1966)
+(0.0420)
+(0.5260)
+HFT Act Eﬀect
+-589.9
+-0.157
+-3,270.1
+202.0
+0.0409
+0.0005
+590.7
+(0.0014)
+(0.0074)
+(0.3176)
+(0.8327)
+(0.0018)
+(0.0420)
+(0.0630)
+Number of Obs.
+5,772
+5,772
+5,772
+5,772
+5,772
+5,772
+5,772
+R2
+0.414
+0.497
+0.420
+0.253
+0.115
+0.390
+0.253
+60 days pre- and post-event window - BATS Chi-X CXE
+Trades
+Turnover
+Messages
+Top
+Ratio
+Bid-Ask
+Spread
+Depth
+Time Eﬀect
+-407.8
+-0.231
+-17,944.0
+-3,025.2
+0.0215
+-0.0001
+525.2
+(0.2748)
+(0.0024)
+(0.0006)
+(0.1387)
+(0.0156)
+(0.6249)
+(0.0495)
+HFT Act Eﬀect
+-1,003.3
+-0.210
+-4,325.4
+-115.8
+0.0190
+0.0001
+347.0
+(0.009)
+(0.0001)
+(0.2738)
+(0.9441)
+(0.0250)
+(0.0105)
+(0.0495)
+Number of Obs.
+5,772
+5,772
+5,772
+5,772
+5,772
+5,772
+5,772
+R2
+0.294
+0.435
+0.343
+0.239
+0.109
+0.211
+0.173
+Electronic copy available at: https://ssrn.com/abstract=2514334
+
+THE GERMAN-HIGH FREQUENCY TRADING ACT
+25
+03.04.2013
+13.04.2013
+23.04.2013
+03.05.2013
+13.05.2013
+23.05.2013
+02.06.2013
+12.06.2013
+22.06.2013
+0
+2,000
+4,000
+6,000
+8,000
+Xetra
+03.04.2013
+13.04.2013
+23.04.2013
+03.05.2013
+13.05.2013
+23.05.2013
+02.06.2013
+12.06.2013
+22.06.20130
+1,000
+2,000
+3,000
+4,000
+Turquoise
+Figure 1.
+Daily Number of Trades for event one (May 15th 2013).
+11.10.2013
+21.10.2013
+31.10.2013
+10.11.2013
+20.11.2013
+30.11.2013
+10.12.2013
+20.12.2013
+30.12.2013
+0
+2,000
+4,000
+6,000
+8,000
+Xetra
+11.10.2013
+21.10.2013
+31.10.2013
+10.11.2013
+20.11.2013
+30.11.2013
+10.12.2013
+20.12.2013
+30.12.2013
+0
+1,000
+2,000
+3,000
+4,000
+Turquoise
+Figure 2.
+Daily Number of Trades for event two (November 14th 2013).
+08.01.2014
+18.01.2014
+28.01.2014
+07.02.2014
+17.02.2014
+27.02.2014
+09.03.2014
+19.03.2014
+0
+2,000
+4,000
+6,000
+8,000
+Xetra
+08.01.2014
+18.01.2014
+28.01.2014
+07.02.2014
+17.02.2014
+27.02.2014
+09.03.2014
+19.03.2014
+0
+1,000
+2,000
+3,000
+4,000
+Turquoise
+Figure 3.
+Daily Number of Trades for event three (February 14th 2014).
+Electronic copy available at: https://ssrn.com/abstract=2514334
+
+THE GERMAN-HIGH FREQUENCY TRADING ACT
+26
+03.04.2013
+13.04.2013
+23.04.2013
+03.05.2013
+13.05.2013
+23.05.2013
+02.06.2013
+12.06.2013
+22.06.2013
+0
+2 · 107
+4 · 107
+6 · 107
+8 · 107
+1 · 108
+Xetra
+03.04.2013
+13.04.2013
+23.04.2013
+03.05.2013
+13.05.2013
+23.05.2013
+02.06.2013
+12.06.2013
+22.06.20130
+5 · 106
+1 · 107
+1.5 · 107
+Turquoise
+Figure 4.
+Daily Turnover (denoted in e) for event one (May 15th 2013).
+11.10.2013
+21.10.2013
+31.10.2013
+10.11.2013
+20.11.2013
+30.11.2013
+10.12.2013
+20.12.2013
+30.12.2013
+0
+5 · 107
+1 · 108
+Xetra
+11.10.2013
+21.10.2013
+31.10.2013
+10.11.2013
+20.11.2013
+30.11.2013
+10.12.2013
+20.12.2013
+30.12.2013
+0
+5 · 106
+1 · 107
+Turquoise
+Figure 5.
+Daily Turnover (denoted in e) for event two (November 14th 2013).
+08.01.2014
+18.01.2014
+28.01.2014
+07.02.2014
+17.02.2014
+27.02.2014
+09.03.2014
+19.03.2014
+0
+5 · 107
+1 · 108
+Xetra
+08.01.2014
+18.01.2014
+28.01.2014
+07.02.2014
+17.02.2014
+27.02.2014
+09.03.2014
+19.03.2014
+0
+5 · 106
+1 · 107
+1.5 · 107
+Turquoise
+Figure 6.
+Daily Turnover (denoted in e) for event three (February 14th 2014).
+Electronic copy available at: https://ssrn.com/abstract=2514334
+
+THE GERMAN-HIGH FREQUENCY TRADING ACT
+27
+03.04.2013
+13.04.2013
+23.04.2013
+03.05.2013
+13.05.2013
+23.05.2013
+02.06.2013
+12.06.2013
+22.06.2013
+0
+20,000
+40,000
+60,000
+80,000
+1 · 105
+Xetra
+03.04.2013
+13.04.2013
+23.04.2013
+03.05.2013
+13.05.2013
+23.05.2013
+02.06.2013
+12.06.2013
+22.06.20130
+20,000
+40,000
+60,000
+80,000
+Turquoise
+Figure 7.
+Daily Number of Messages for event one (May 15th 2013).
+11.10.2013
+21.10.2013
+31.10.2013
+10.11.2013
+20.11.2013
+30.11.2013
+10.12.2013
+20.12.2013
+30.12.2013
+0
+20,000
+40,000
+60,000
+Xetra
+11.10.2013
+21.10.2013
+31.10.2013
+10.11.2013
+20.11.2013
+30.11.2013
+10.12.2013
+20.12.2013
+30.12.2013
+0
+20,000
+40,000
+60,000
+Turquoise
+Figure 8.
+Daily Number of Messages for event two (November 14th 2013).
+08.01.2014
+18.01.2014
+28.01.2014
+07.02.2014
+17.02.2014
+27.02.2014
+09.03.2014
+19.03.2014
+0
+20,000
+40,000
+60,000
+80,000
+1 · 105
+Xetra
+08.01.2014
+18.01.2014
+28.01.2014
+07.02.2014
+17.02.2014
+27.02.2014
+09.03.2014
+19.03.2014
+0
+20,000
+40,000
+60,000
+80,000
+Turquoise
+Figure 9.
+Daily Number of Messages for event three (February 14th 2014).
+Electronic copy available at: https://ssrn.com/abstract=2514334
+
+THE GERMAN-HIGH FREQUENCY TRADING ACT
+28
+03.04.2013
+13.04.2013
+23.04.2013
+03.05.2013
+13.05.2013
+23.05.2013
+02.06.2013
+12.06.2013
+22.06.2013
+1 · 10−3
+2 · 10−3
+Xetra
+Turquoise
+Figure 10.
+Average Bid-Ask Spread for event one (May 15th 2013).
+08.01.2014
+18.01.2014
+28.01.2014
+07.02.2014
+17.02.2014
+27.02.2014
+09.03.2014
+19.03.2014
+5 · 10−4
+1 · 10−3
+1.5 · 10−3
+Xetra
+Turquoise
+Figure 11.
+Average Bid-Ask Spread for event three (February 14th 2014).
+Electronic copy available at: https://ssrn.com/abstract=2514334
+
+THE GERMAN-HIGH FREQUENCY TRADING ACT
+29
+03.04.2013
+13.04.2013
+23.04.2013
+03.05.2013
+13.05.2013
+23.05.2013
+02.06.2013
+12.06.2013
+22.06.2013
+0
+2,000
+4,000
+6,000
+8,000
+10,000
+Xetra
+03.04.2013
+13.04.2013
+23.04.2013
+03.05.2013
+13.05.2013
+23.05.2013
+02.06.2013
+12.06.2013
+22.06.20130
+1,000
+2,000
+3,000
+Turquoise
+Figure 12.
+Average Depth(3) for event one (May 15th 2013).
+08.01.2014
+18.01.2014
+28.01.2014
+07.02.2014
+17.02.2014
+27.02.2014
+09.03.2014
+19.03.2014
+0
+2,000
+4,000
+6,000
+8,000
+10,000
+Xetra
+08.01.2014
+18.01.2014
+28.01.2014
+07.02.2014
+17.02.2014
+27.02.2014
+09.03.2014
+19.03.2014
+0
+1,000
+2,000
+3,000
+Turquoise
+Figure 13.
+Average Depth(3) for event three (February 14th 2014).
+Electronic copy available at: https://ssrn.com/abstract=2514334
+
+THE GERMAN-HIGH FREQUENCY TRADING ACT
+30
+03.04.2013
+13.04.2013
+23.04.2013
+03.05.2013
+13.05.2013
+23.05.2013
+02.06.2013
+12.06.2013
+22.06.2013
+0
+2,000
+4,000
+6,000
+8,000
+Xetra
+03.04.2013
+13.04.2013
+23.04.2013
+03.05.2013
+13.05.2013
+23.05.2013
+02.06.2013
+12.06.2013
+22.06.20130
+2,000
+4,000
+6,000
+8,000
+Chi-X
+Figure 14.
+Daily Number of Trades for Event one (May 15th 2013).
+11.10.2013
+21.10.2013
+31.10.2013
+10.11.2013
+20.11.2013
+30.11.2013
+10.12.2013
+20.12.2013
+30.12.2013
+0
+2,000
+4,000
+6,000
+8,000
+Xetra
+11.10.2013
+21.10.2013
+31.10.2013
+10.11.2013
+20.11.2013
+30.11.2013
+10.12.2013
+20.12.2013
+30.12.2013
+0
+2,000
+4,000
+6,000
+8,000
+Chi-X
+Figure 15.
+Daily Number of Trades for Event two (November 14th 2013).
+08.01.2014
+18.01.2014
+28.01.2014
+07.02.2014
+17.02.2014
+27.02.2014
+09.03.2014
+19.03.2014
+0
+2,000
+4,000
+6,000
+8,000
+Xetra
+08.01.2014
+18.01.2014
+28.01.2014
+07.02.2014
+17.02.2014
+27.02.2014
+09.03.2014
+19.03.2014
+0
+2,000
+4,000
+6,000
+8,000
+Chi-X
+Figure 16.
+Daily Number of Trades for Event three (February 14th 2014).
+Electronic copy available at: https://ssrn.com/abstract=2514334
+
+THE GERMAN-HIGH FREQUENCY TRADING ACT
+31
+03.04.2013
+13.04.2013
+23.04.2013
+03.05.2013
+13.05.2013
+23.05.2013
+02.06.2013
+12.06.2013
+22.06.2013
+0
+2 · 107
+4 · 107
+6 · 107
+8 · 107
+1 · 108
+Xetra
+03.04.2013
+13.04.2013
+23.04.2013
+03.05.2013
+13.05.2013
+23.05.2013
+02.06.2013
+12.06.2013
+22.06.20130
+2 · 107
+4 · 107
+6 · 107
+8 · 107
+Chi-X
+Figure 17.
+Daily Turnover (denoted in e) for Event one (May 15th 2013).
+11.10.2013
+21.10.2013
+31.10.2013
+10.11.2013
+20.11.2013
+30.11.2013
+10.12.2013
+20.12.2013
+30.12.2013
+0
+5 · 107
+1 · 108
+Xetra
+11.10.2013
+21.10.2013
+31.10.2013
+10.11.2013
+20.11.2013
+30.11.2013
+10.12.2013
+20.12.2013
+30.12.2013
+0
+2 · 107
+4 · 107
+6 · 107
+8 · 107
+1 · 108
+Chi-X
+Figure 18.
+Daily Turnover (denoted in e) for Event two (November 14th 2013).
+08.01.2014
+18.01.2014
+28.01.2014
+07.02.2014
+17.02.2014
+27.02.2014
+09.03.2014
+19.03.2014
+0
+5 · 107
+1 · 108
+Xetra
+08.01.2014
+18.01.2014
+28.01.2014
+07.02.2014
+17.02.2014
+27.02.2014
+09.03.2014
+19.03.2014
+0
+5 · 107
+1 · 108
+Chi-X
+Figure 19.
+Daily Turnover (denoted in e) for Event three (February 14th 2014).
+Electronic copy available at: https://ssrn.com/abstract=2514334
+
+THE GERMAN-HIGH FREQUENCY TRADING ACT
+32
+03.04.2013
+13.04.2013
+23.04.2013
+03.05.2013
+13.05.2013
+23.05.2013
+02.06.2013
+12.06.2013
+22.06.2013
+0
+20,000
+40,000
+60,000
+80,000
+1 · 105
+Xetra
+03.04.2013
+13.04.2013
+23.04.2013
+03.05.2013
+13.05.2013
+23.05.2013
+02.06.2013
+12.06.2013
+22.06.20130
+50,000
+1 · 105
+1.5 · 105
+Chi-X
+Figure 20.
+Daily Number of Messages for Event one (May 15th 2013).
+11.10.2013
+21.10.2013
+31.10.2013
+10.11.2013
+20.11.2013
+30.11.2013
+10.12.2013
+20.12.2013
+30.12.2013
+0
+20,000
+40,000
+60,000
+Xetra
+11.10.2013
+21.10.2013
+31.10.2013
+10.11.2013
+20.11.2013
+30.11.2013
+10.12.2013
+20.12.2013
+30.12.2013
+0
+50,000
+1 · 105
+Chi-X
+Figure 21.
+Daily Number of Messages for Event two (November 14th 2013).
+08.01.2014
+18.01.2014
+28.01.2014
+07.02.2014
+17.02.2014
+27.02.2014
+09.03.2014
+19.03.2014
+0
+20,000
+40,000
+60,000
+80,000
+1 · 105
+Xetra
+08.01.2014
+18.01.2014
+28.01.2014
+07.02.2014
+17.02.2014
+27.02.2014
+09.03.2014
+19.03.2014
+0
+50,000
+1 · 105
+1.5 · 105
+Chi-X
+Figure 22.
+Daily Number of Messages for Event three (February 14th 2014).
+Electronic copy available at: https://ssrn.com/abstract=2514334
+
+THE GERMAN-HIGH FREQUENCY TRADING ACT
+33
+03.04.2013
+13.04.2013
+23.04.2013
+03.05.2013
+13.05.2013
+23.05.2013
+02.06.2013
+12.06.2013
+22.06.2013
+5 · 10−4
+6 · 10−4
+7 · 10−4
+Xetra
+Chi-X
+Figure 23.
+Average Bid-Ask Spread for Event one (May 15th 2013).
+08.01.2014
+18.01.2014
+28.01.2014
+07.02.2014
+17.02.2014
+27.02.2014
+09.03.2014
+19.03.2014
+4 · 10−4
+6 · 10−4
+8 · 10−4
+Xetra
+Chi-X
+Figure 24.
+Average Bid-Ask Spread for Event three (February 14th 2014).
+Electronic copy available at: https://ssrn.com/abstract=2514334
+
+THE GERMAN-HIGH FREQUENCY TRADING ACT
+34
+03.04.2013
+13.04.2013
+23.04.2013
+03.05.2013
+13.05.2013
+23.05.2013
+02.06.2013
+12.06.2013
+22.06.2013
+0
+2,000
+4,000
+6,000
+8,000
+10,000
+Xetra
+03.04.2013
+13.04.2013
+23.04.2013
+03.05.2013
+13.05.2013
+23.05.2013
+02.06.2013
+12.06.2013
+22.06.20130
+2,000
+4,000
+6,000
+8,000
+10,000
+Chi-X
+Figure 25.
+Average Depth(3) for Event one (May 15th 2013).
+08.01.2014
+18.01.2014
+28.01.2014
+07.02.2014
+17.02.2014
+27.02.2014
+09.03.2014
+19.03.2014
+0
+2,000
+4,000
+6,000
+8,000
+10,000
+Xetra
+08.01.2014
+18.01.2014
+28.01.2014
+07.02.2014
+17.02.2014
+27.02.2014
+09.03.2014
+19.03.2014
+0
+2,000
+4,000
+6,000
+8,000
+10,000
+Chi-X
+Figure 26.
+Average Depth(3) for Event three (February 14th 2014).
+Electronic copy available at: https://ssrn.com/abstract=2514334

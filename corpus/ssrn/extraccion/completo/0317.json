@@ -1,0 +1,53 @@
+{
+  "doc_id": 317,
+  "titulo": "Statistical Arbitrage in the U.S. Equities Market",
+  "resumen_operativo": "Estudia estrategias de arbitraje estadístico model-driven en acciones de EE.UU. Genera señales de trading de dos formas: usando Principal Component Analysis (PCA) y usando ETFs sectoriales. En ambos casos modela los residuos como procesos mean-reverting generando señales contrarian. Backtesting 1997-2007: estrategias PCA logran Sharpe ratio anualizado de 1.44 (mejor pre-2003: 0.9 post-2003), ETFs logran 1.1. Introduce 'trading time' basado en volumen diario que mejora señales ETF a Sharpe 1.51 (2003-2007). Relaciona el desempeño con el ciclo de mercado y valida la teoría de 'unwinding' de Khandani y Lo (2007) para el drawdown de quant funds de agosto 2007.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "PCA-Based Statistical Arbitrage",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia que descompone retornos accionarios en componentes sistemáticos (PCA) e idiosincráticos (residuos). Los residuos se modelan como procesos mean-reverting (Ornstein-Uhlenbeck) generando señales contrarian: long en residuos negativos, short en positivos. Portafolio market-neutral resultante.",
+      "relaciones": [{"tipo": "MEJORA_A", "objeto": "Sector ETF Strategy"}, {"tipo": "USA", "objeto": "Ornstein-Uhlenbeck Process"}],
+      "cita_textual": "Trading signals are generated in two ways: using Principal Component Analysis and using sector ETFs. In both cases, we consider the residuals and model them as a mean-reverting process."
+    },
+    {
+      "nombre": "ETF-Based Statistical Arbitrage",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia donde cada acción se regresa contra el ETF de su sector (ej. BBH para biotech). Los residuos de la regresión son la señal: residuo negativo = acción barata (long), residuo positivo = acción cara (short). Generalización natural del pairs trading.",
+      "relaciones": [{"tipo": "EQUIVALE_A", "objeto": "Generalized Pairs Trading"}, {"tipo": "USA", "objeto": "Sector ETF Benchmark"}],
+      "cita_textual": "Generalized pairs-trading, or trading groups of stocks against other groups of stocks, is a natural extension of pairs-trading. We perform a regression/cointegration analysis for each stock with respect to a benchmark sector index."
+    },
+    {
+      "nombre": "Trading Time (Volume-Based Signals)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Uso de tiempo de trading (basado en volumen) en lugar de tiempo calendario para generar señales. Mejora significativamente el desempeño de estrategias basadas en ETFs: Sharpe ratio sube de 1.1 a 1.51 (2003-2007) al incorporar información de volumen diario.",
+      "relaciones": [{"tipo": "MEJORA_A", "objeto": "Calendar Time Signals"}, {"tipo": "USA", "objeto": "Daily Trading Volume"}],
+      "cita_textual": "We introduce a method to take into account daily trading volume information in the signals (using 'trading time' as opposed to calendar time), and observe significant improvements in performance."
+    },
+    {
+      "nombre": "Quant Fund Unwinding Theory",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Teoría de Khandani y Lo (2007) sobre el drawdown de quant funds en agosto 2007: liquidación forzosa de posiciones por parte de fondos cuantitativos generó un ciclo de retroalimentación negativa. El paper valida esta teoría con datos de desempeño de estrategias PCA y ETF.",
+      "relaciones": [{"tipo": "CAUSA", "objeto": "August 2007 Quant Drawdown"}, {"tipo": "APLICA_A", "objeto": "Liquidity Crisis 2007"}],
+      "cita_textual": "We obtain results which are consistent with Khandani and Lo (2007) and validate their 'unwinding' theory for the quant fund drawdown of August 2007."
+    }
+  ],
+  "hallazgos": [
+    {"afirmacion": "Estrategias PCA: Sharpe ratio anualizado promedio 1.44 (1997-2007), con desempeño mucho más fuerte pre-2003; post-2003 el Sharpe promedio fue solo 0.9. Estrategias ETF: Sharpe 1.1 (1997-2007) con degradación similar post-2002.",
+      "mercado": "U.S. Equities (broad universe)", "periodo": "1997-2007",
+      "magnitud": "PCA: Sharpe 1.44 (1997-2007), 0.9 (2003-2007). ETF: Sharpe 1.1 (1997-2007)",
+      "condiciones": "Backtesting con costos de transacción; estrategias market-neutral",
+      "robustez": "alta",
+      "cita_textual": "PCA-based strategies have an average annual Sharpe ratio of 1.44 over the period 1997 to 2007... during 2003-2007, the average Sharpe ratio was only 0.9."
+    },
+    {"afirmacion": "Estrategias ETF con volumen: Sharpe ratio de 1.51 (2003-2007), mejora sustancial respecto al 0.9 de PCA y al 1.1 de ETF sin volumen en el mismo período.",
+      "mercado": "U.S. Equities", "periodo": "2003-2007",
+      "magnitud": "Sharpe 1.51 con volumen vs 1.1 sin volumen vs 0.9 PCA",
+      "condiciones": "Trading time basado en volumen diario; ETF sectoriales como benchmarks",
+      "robustez": "alta",
+      "cita_textual": "ETF strategies which use volume information achieve a Sharpe ratio of 1.51 from 2003 to 2007."
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "Paper seminal de stat arb con señales diarias; holding periods desde segundos hasta días. Metodología PCA/ETF adaptable a datos intradiarios de alta frecuencia."}
+}

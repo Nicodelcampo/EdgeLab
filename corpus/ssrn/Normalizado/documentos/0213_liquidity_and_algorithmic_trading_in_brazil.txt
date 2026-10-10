@@ -1,0 +1,531 @@
+Liquidity and Algorithmic Trading in Brazil
+Henrique Pinto Ramos1,, Marcelo S. Perlin1
+Abstract
+This paper provides evidence of the eﬀect of algorithmic trading (AT) in the liquidity
+of the Brazilian equity market. A wide debate on the literature asserts that AT may be
+both beneﬁcial and harmful to market quality. The results of our econometric estimates for
+a sample of 47 stocks through mid-2017 to mid-2018 show that when a larger horizon is
+analyzed (20 minutes), the lagged eﬀect of AT reduces market quality. However, the lagged
+eﬀect of one-minute AT activity reduces both spreads and price impact. Still, the eﬀect of
+AT on market quality is sensitive to the horizon which is being analyzed.
+JEL: G11, C58
+Keywords:
+Liquidity, Algorithmic trading, Spreads, Market microstructure.
+1. Introduction
+Liquidity is a fundamental variable because the entire notion of a ﬁnancial market is that
+it is a place (physical or virtual) where agents can easily trade ﬁnancial assets. Negotiating
+illiquid assets can increase both explicit and implicit transaction costs, therefore reducing
+proﬁts. However, this variable is safely assumed to be systematically increasing in capital
+markets. Financial integration between diﬀerent countries, new regulations and technology
+improvements have made access to ﬁnancial markets easier (Evans and Hnatkovska, 2014).
+One channel through liquidity is increasing is the advent of algorithmic trading (AT) and
+high-frequency traders (HFT). These traders can easily detect order imbalances or transitory
+arbitrage opportunities, therefore acting as voluntary market makers (Holden et al., 2014).
+As O’Hara (2015) describes, “markets are diﬀerent now, transformed by technology and
+high-frequency trading”. The image of a broker sending orders in behalf of his clients has
+been replaced by computers matching orders in frequencies not distinguishable by human
+eyes. Regarding this, Hendershott et al. (2011) provide ﬁrst evidence of AT/HFT increasing
+liquidity in the transaction costs and depth dimensions in the US market. Also, other studies
+show AT/HFT increasing market quality (Benos and Sagade, 2016; Brogaard et al., 2014).
+Although access to information and computing power has become facilitated, the overall
+impact of AT/HFT is still uncertain. On one hand, AT/HFT has been related to facilitating
+price discovery (Benos and Sagade, 2016; Brogaard et al., 2014) and increasing liquidity
+∗Corresponding author. Email: hpramos4@gmail.com.
+Preprint submitted to SSRN
+July 1, 2019
+Electronic copy available at: https://ssrn.com/abstract=3413130
+
+(Hendershott et al., 2011; Hendershott and Riordan, 2013). On the other hand, models
+where HFT may potentially harm other investors are present in the literature (Budish et al.,
+2015). Biais et al. (2015) and Foucault et al. (2017) provide theory that fast traders may
+cause negative externalities originated from adverse selection costs to non-HFT traders1.
+Cartea et al. (2019) provide evidence that ultra-fast traders reduce intraday market
+quality. Since high frequency traders can receive information and learn about order ﬂow
+incredibly fast, these agents may act as informed traders in the spirit of Glosten and Milgrom
+(1985).
+Empirically, Hirschey (2018) provides evidence of anticipatory trading of HFT,
+potentially increasing non-HFT trading costs. Thus, informed traders should dry liquidity
+from the market, since they are expected to trade aggressively in order to anticipate price
+movements.
+However, HFT are also documented to act as voluntary market makers by
+placing limit orders and hence, adding liquidity (Hendershott et al., 2011). In short, fast
+traders may act both as demanding and as supplying liquidity, which could be respectively
+negative and positive to the market. One diﬃculty lies in the fact that even in detailed
+databases, there is no way to ascertain which trading strategy a HFT is engaging to.
+Most of the previous research in the subject is centered in North America and Europe,
+where detailed data are available. Studies regarding AT/HFT in emerging markets have
+been partially made only by Boehmer et al. (2018), who investigate the eﬀects of co-location
+on market liquidity of 42 trading venues. Although ﬁnancial volume in emerging markets
+is much lower than in developed economies, returns can be signiﬁcantly high and liquidity
+relatively low (Lesmond, 2005). Additionally, emerging markets may present more price
+ineﬃciencies (Hull and McGroarty, 2014) and may be more dependent from foreign capital
+ﬂows. This may draw attention of HFT searching for transitory arbitrage opportunities.
+On the other hand, many of the studies presented before allege that the proﬁtability of
+HFT comes from market fragmentation, since HFT should engage in low-latency arbitrage
+strategies by taking advantage of spread diﬀerences between trading venues2. This is not
+present in the Brazilian market, so one could think whether HFT are present in this market
+and in what extent they contribute for liquidity.
+The present research provides ﬁrst evidence of the eﬀect of algorithmic trading (AT)
+activity in the Brazilian equities market. Using one year of data through mid-2017 to mid2018, we show through VAR estimates that the eﬀect of 20 minutes of AT activity increases
+realized spreads and the high-frequency Amihud (2002) measure. Our panel data approach
+using 2SLS yields similar results. Although the debate on the eﬀect of AT on liquidity is
+still at large, the evidence provided in this study supports the idea of AT reducing market
+quality in a longer horizon (20 minutes). However, in the short run (1 minute) our results
+support the idea of AT activity increasing market quality.
+The Brazilian case is an interesting market to be studied since there is only one trading
+venue for equities. Additionally, research on emerging markets may be hampered by the lack
+1Hoﬀmann (2014) provides theory with similar conclusions for order-driven markets.
+2These type of strategies aim to proﬁt from the time diﬀerence between order arrivals in diﬀerent trading
+venues for the same asset. For details, see SEC (2010) and Foucault et al. (2017).
+2
+Electronic copy available at: https://ssrn.com/abstract=3413130
+
+of available data, which is not the case for the Brazilian exchange. Also, few studies approach
+liquidity in the high-frequency world in Brazil (Gomes Victor et al., 2013; Perlin, 2013). In
+2010 the equities segment of BM&FBovespa started to rent co-location spaces within the
+exchange data center. Although the use of HFT/algorithmic trading is not documented in
+Brazil, it is expected that the reduced latency time provided by co-location attract the use
+of fast traders within recent years as the use of this type of trading is trending in developed
+markets.
+The paper proceeds as follows: section 2 describes the data and the methodological
+approach and section 3 presents our results. The ﬁnal section concludes the paper with our
+remarks and directions for future work.
+2. Data and methodology
+Until 2008 the Brazilian ﬁnancial market was concentrated in two main exchanges:
+Bovespa (S˜ao Paulo Stock Exchange), which traded mainly equities, and BM&F (Brazilian
+Mercantile and Futures Exchange), which negotiated commodities, futures and derivatives.
+In 2008, Bovespa and BM&F merged on BM&FBovespa. Later, on 2017, BM&FBovespa
+merged with the clearing house CETIP, forming the B3 company, one of the largest exchanges
+in Latin America. According to B3’s website, at March 2019 there were 430 companies listed
+on the stock market. Before the merge with CETIP, BM&FBovespa’s 2016 Annual Report
+shows an average daily trading value of R$ 7.4 bn on equities and equities derivatives with
+an average market capitalization of R$ 2.2 tn3. Most of the daily traded volume in this
+market comes from two types of investors: foreign (52%) and local institutional (24%). A
+small share of the market is held by retail investors (17%) and the remaining percentage
+refers to private companies and ﬁnancial institutions (BM&FBovespa, 2016).
+The B3 exchange provides open access to trade and order data.
+For each day and
+market (equities, odd lot equities, options and futures), there are two main categories of
+ﬁles hosted at the B3 FTP: the ﬁrst category reports all trades within a speciﬁc market
+at the nanosecond time stamp4. The second category of ﬁles provides the limit order book
+(LOB) for the given day for a given side of the LOB. For example, there is one ﬁle for
+the buy-side order book and one ﬁle for the sell-side order book. These ﬁles report order
+changes, submissions, cancels and trades. Every order is reported within an unique code for
+identiﬁcation. The ﬁles are downloaded and organized through the GetHFData package of
+Perlin and Ramos (2017).
+Even with increasing computer power and tools to handle high-frequency data, recent
+related studies use samples with small time frames in research about HFT activity5. Our
+sample spans one year of trading data from 2017-07-24 to 2018-07-30 (250 trading sessions)
+for 47 stocks traded at the B3 exchange. A stock is included in the estimations if:
+3R$ denotes Brazilian Reals.
+4File Transfer Protocol.
+5For example, Hirschey (2018) uses a dataset of one year (2016). Hasbrouck and Saar (2013) use two
+samples of one month each. Upson and Van Ness (2017) analyzes three months of trading data.
+3
+Electronic copy available at: https://ssrn.com/abstract=3413130
+
+• it is a common or a preferred stock (excluding other classes such as units, REITs and
+Brazilian Depositary Receipts),
+• its closing price is higher than R$ 5.00 for all the sample period,
+• its number of trades is higher than the median for all stocks available in the sample
+period,
+• it is negotiated in all trading sessions through the sample.
+These ﬁlters are required since many stocks lack of liquidity and therefore may bias the
+results. When both common and preferred stocks passed the ﬁlters for the same company,
+we selected the stock with the highest mean traded volume through the sample.
+The proxy for AT activity will be calculated as in Hendershott et al. (2011).
+The
+authors calculate the traded volume (in hundreds) per messages (new order submissions,
+cancellations and trades):
+ATitd = −R$100.00 of trading volumeitd
+number of messagesitd
+,
+(1)
+where the number of messages refers to the sum of new order submissions, cancellations and
+trades of stock i at time t of day d. The time interval t is set to one minute. The nominator
+is equal to the total volume traded at time t divided by R$ 100.00 so the measure can be
+comparable between stocks. We take the negative sign for the measure so higher values
+(closer to zero) reﬂect an increase in algorithmic trading activity.
+In order to investigate the eﬀect of AT activity, measures for liquidity are calculated.
+We deﬁne the Realized Spread as in Goyenko et al. (2009):
+RealizedSpreadit =
+(
+2(ln(Pitd) −ln(Pit+jd)), if the trade at t is a buy
+2(ln(Pit+jd) −ln(Pitd)), if the trade at t is a sell.
+(2)
+Where ln refers to the natural logarithm, Pitd refers to the traded price of stock i at
+time t of day d. In this case, the spread is measured by the price diﬀerence between trades
+in a j interval. As AT activity should be time-sensitive, j is set to 5 minutes.
+For the depth proxy, we use the high-frequency Amihud (2002) price impact proxy:
+Amihuditd =
+|Ritd|
+V olumeitd
+,
+(3)
+where Ritd is the log-return of traded prices for stock i at time t of day d,. V olumeitd accounts
+for the sum of traded volume for stock i in the t time interval of day d. All variables have
+their top (bottom) 1% of observations removed.
+4
+Electronic copy available at: https://ssrn.com/abstract=3413130
+
+Figure 1 shows the daily equally-weighted averages of the main variables. Panels a), b)
+and c) report AT, RealizedSpread and Amihud, respectively. One can note that AT is highly
+volatile during the year sample therefore not presenting a trending behavior. RealizedSpread
+presents spikes at the end of the sample (between June and July of 2018). The high-frequency
+Amihud (2002) measure also presents an increase during June and July of 20186.
+Table 1 reports descriptive statistics for the variables previously deﬁned. The average
+number of messages per R$ 100.00 (AT) amounts to 7.96 with an median value of 5.301,
+showing a skewed behavior of the variable. As conﬁrmed by Figure 1, a standard deviation of
+12.951 evidences the dispersion of AT. As AT is constructed through the number of messages
+(Msg) this variable presents similar statistics with its mean (275.09 per minute) higher than
+its median (200). Diﬀerence between ﬁrst and third quartiles of both AT and Msg suggests
+signiﬁcant diﬀerences among the stocks in our sample. RealizedSpread presents a symmetric
+distribution where mean equals median (0.1%).
+The small variability of spreads may be explained through the sampling process, as
+only stocks with high volume are included in the sample. Although it may raise questions
+of a liquidity bias, Brazilian stocks overall present small liquidity. Therefore, including thin
+traded stocks may severely inﬂuence the results. The Amihud measure is reported with
+mean (0.01) higher than its median (0.005).
+Table 1: Descriptive statistics
+The table reports descriptive statistics for AT activity, number of messages per minute, realized spreads and the high-frequency
+Amihud (2002) measure. Sample period spans from 2017-07-24 to 2018-07-30 (250 trading sessions) for 47 selected stocks. Q1
+(Q3) denotes to the ﬁrst (third) quartile and Sd denotes standard deviation. Outliers are removed for the top (bottom) 1% of
+observations.
+Mean
+Median
+Q1
+Q3
+Sd
+AT
+-7.96
+-5.301
+-8.956
+-3.233
+12.951
+Msg
+275.09
+200
+115
+343
+271.248
+Realized Spread
+0.001
+0.001
+0.001
+0.002
+0.001
+Amihud
+0.01
+0.005
+0.003
+0.012
+0.013
+Table 2 presents time series correlations of our variables. AT is negatively correlated
+to RealizedSpread (−0.200). Evidence in the literature suggests endogeneity in this relationship, as higher algorithmic trading activity may aﬀect spreads or, higher spreads may
+repel AT activity. Even though AT is constructed through Msg, both variables are little
+correlated (−0.035). Msg presents a positive correlation with RealizedSpread (0.399) and
+Amihud has little correlation with AT (0.090). Price impact and spreads (Amihud and
+RealizedSpread) are positively correlated (0.196), which is expected through these liquidity
+dimensions. Amihud and Msg are negatively correlated (−0.242).
+Simple correlation estimates does not allow to infer causation between these variables.
+6Unit root tests were conducted for these variables. The results (available under request) suggests no
+existence of unit roots.
+5
+Electronic copy available at: https://ssrn.com/abstract=3413130
+
+Figure 1: Temporal dynamics of AT activity, Realized Spreads and high-frequency Amihud (2002).
+The ﬁgure shows the AT activity (a), Realized Spreads (b) and high-frequency Amihud (2002) (c) over the sample period. Daily
+averages are calculated across the 47 selected stocks.
+(a) AT activity
+(b) Realized Spreads
+(c) Amihud
+6
+Electronic copy available at: https://ssrn.com/abstract=3413130
+
+Table 2: Time series correlations
+The table reports time series correlations for AT activity, number of messages per minute, realized spreads and the highfrequency Amihud (2002) measure. Sample period spans from 2017-07-24 to 2018-07-30 (250 trading sessions) for 47 selected
+stocks.
+AT
+Msg
+Spreads
+Amihud
+AT
+1
+-0.035
+-0.200
+0.090
+Msg
+-0.035
+1
+0.399
+-0.242
+Realized Spread
+-0.200
+0.399
+1
+0.196
+Amihud
+0.090
+-0.242
+0.196
+1
+After constructing both the liquidity and AT activity proxies, Vector Autoregressions (VAR)
+are estimated for each stock previously selected7. Equations 4 and 5 describe the restricted
+VAR model:
+LIQk
+it = α0 +
+P
+X
+p=1
+αpLIQk
+it−p +
+P
+X
+p=1
+βpATit−p + vit
+(4)
+ATit = β0 +
+P
+X
+p=1
+βpATit−p +
+P
+X
+p=1
+αpLIQj
+it−p + eit
+(5)
+Where LIQk
+it refers to each one of k liquidity measures (RealizedSpread and Amihud),
+ATit refers to the AT activity proxy described at equation 1 for asset i at time t. The number
+of p lags is set to 20. Therefore, the ﬁrst 20 observations for each day are set to zero. Data
+for each asset is pooled through the sample and all variables are zero-centered (demeaned
+and divided by its standard deviation).
+In order to understand the cross-sectional eﬀect of AT over liquidity, we estimate a ﬁxed
+eﬀects panel regression as in equation 6:
+LIQk
+it = α0 + β1ATit + δX + ϵit
+(6)
+Where LIQk
+it and ATit are were previously deﬁned and X refers to two control variables:
+Rit, the 1-minute return for asset i, and V olatit, the squared Retit, accounting for volatility.
+As Mestel et al. (2018) notes, AT can be considered an endogenous variable, as the level
+7Chaboud et al. (2014) estimate similar VAR systems on the AT activity and arbitrage opportunities in
+the foreign exchange market.
+7
+Electronic copy available at: https://ssrn.com/abstract=3413130
+
+of AT is somehow dependent on market conditions in general. Therefore, we use a 2SLS
+approach following Hasbrouck and Saar (2013) and Mestel et al. (2018). First, we consider
+AT it as the equally-weighted mean ATit excluding stock i. Auxiliary regressions in the form
+ATit = α + βAT it + ϵit evidence the β coeﬃcient as positive and statistically signiﬁcant for
+all 47 stocks8.
+3. Results
+Table 3 reports the VAR estimates of equations 4 and 5 using RealizedSpread as the
+liquidity variable.
+The table describes the mean sum of coeﬃcients, the mean ﬁrst lag
+coeﬃcient and the mean p-value for the Granger Causality test across the 47 stocks. Columns
+indicate the dependent variable of the VAR system. The ﬁrst rows of the table evidence the
+autoregressive behavior of RealizedSpread at the ﬁrst column. The sum of 20 coeﬃcients
+has an average of 0.73 across stocks, while the coeﬃcient for the ﬁrst lag has a mean of 0.302,
+evidencing that liquidity is persistent (Acharya and Pedersen, 2005).
+The eﬀect of lagged AT on RealizedSpread is positive for 20 lags (sum of coeﬃcients 0.053) and signiﬁcant at the 1% level. Therefore, an increase in AT activity raise
+RealizedSpreads up to 20 minutes. This may be related to aggressive trading strategies
+conducted by agents using algorithms. Mean Granger causality tests shows that lagged AT
+contains information on the prediction of RealizedSpreads. However, the mean coeﬃcient
+on the ﬁrst lag eﬀect of AT on RealizedSpreads is negative (−0.027). This suggests that
+AT activity at the past one minute can reduce spreads but overall AT activity (in the past
+20 minutes) increase RealizedSpreads.
+The second column of Table 3 reports the results of equation 5, in which the dependent variable is AT. The mean sum of coeﬃcients of RealizedSpread is positive (0.030),
+with mean Granger causality p-value smaller than the usual 0.01 value. As many studies
+concerns about the endogeneity between these variables (Hendershott et al., 2011; Mestel
+et al., 2018), we conﬁrm this in the Brazilian market. The eﬀect of mean ﬁrst lag coeﬃcient
+of RealizedSpreads on AT is negative (−0.069), suggesting that when spreads are low, AT
+increase in the forward minute. The last rows of the second column of Table 3 reports the
+eﬀect of lagged AT on current values. Both the mean sum of coeﬃcients and the mean ﬁrst
+lag coeﬃcient are positive (0.770 and 0.227, respectively).
+Table 5 reports the VAR estimates of equations 4 and 5 using Amihud as the liquidity
+variable. The ﬁrst column and the ﬁrst rows evidence the autoregressive behavior of Amihud,
+with the mean sum of coeﬃcients of 0.841 for 20 lags and mean coeﬃcient of 0.256 for the
+ﬁrst lag. The mean sum of coeﬃcients on the eﬀect of lagged AT on Amihud is positive
+(0.037), presenting a mean Granger-causality p-value lower than the usual 0.01 cutoﬀ. This
+provides evidence that algorithmic trading increases price impact over the period of 20
+minutes. Similar to the results of Table 3, the mean coeﬃcient on eﬀect of the ﬁrst lag of
+AT on Amihud is negative. This suggests that the short-term (1 minute) eﬀect of AT is
+negative, therefore AT activity contributes to reduce price impact in the 1-minute horizon.
+8Results are available under request.
+8
+Electronic copy available at: https://ssrn.com/abstract=3413130
+
+Table 3: AT activity and Spreads - VAR estimates
+This table presents the results for the reduced-form VAR estimations for equations 4 and 5 when the liquidity measure is the
+Realized Spread (equation 2). Sample period spans from 2017-07-24 to 2018-07-30 (250 trading sessions). Columns show the
+dependent variable of the VAR system. Sum coef refers to the average sum of coeﬃcients for 20 lags across the 47 stocks
+selected. T statistics are reported in brackets. 1st lag refers to the average coeﬃcient on the ﬁrst lag across the 47 stocks
+selected. Mean p-value refers to the average p-value for the Granger Causality tests estimated for each stock during the sample
+period. ∗∗∗, ∗∗and ∗denotes signiﬁcance at the 1%, 5% and 10% levels, respectively. Outliers are removed for the top (bottom)
+1% of observations.
+Realized Spread
+AT
+RealizedSpread
+Sum coef
+0.730∗∗∗[124.6]
+0.030∗∗∗[7.892]
+1st lag
+0.302∗∗∗[64.181]
+-0.069∗∗∗[-7.234]
+Mean p-value
+<0.01
+AT
+Sum coef
+0.053∗∗∗[16.317]
+0.770∗∗∗[166.261]
+1st lag
+-0.027∗∗∗[-18.978]
+0.227∗∗∗[43.486]
+Mean p-value
+<0.01
+Table 4: AT activity and Price Impact - VAR estimates
+PImpact
+AT
+Sum.coef
+NA[]
+NA[]
+X1st.lag
+NA[]
+NA[]
+Mean.p.value
+<0.01
+Sum.coef.1
+0[NaN]
+0.151[1]
+X1st.lag.1
+0[NaN]
+0.062[1]
+Mean.p.value.1
+<0.01
+9
+Electronic copy available at: https://ssrn.com/abstract=3413130
+
+The second column of Table 5 reports the results of equation 5, in which the dependent
+variable is AT. Results are similar to those reported on Table 3 when spreads are used instead
+of a price impact measure. The mean sum of coeﬃcients of Amihud is positive (0.022), with
+mean Granger causality p-value smaller the usual 0.01 value. The eﬀect of mean ﬁrst lag
+coeﬃcient of Amihud on AT is negative (−0.06), suggesting that when price impact is low,
+AT increase in the forward minute. The last rows of the second column of Table 5 reports
+the eﬀect of lagged AT on current values. Values are similar to those reported on Table 3.
+Results of Tables 3 and 5 evidence that the mean eﬀect of AT on liquidity is positive, i.e.
+improves liquidity when the ﬁrst lag is analyzed (1 minute), although the overall impact (20
+minutes) is negative, i.e. liquidity is worsened. Although literature provides evidence that
+AT would be beneﬁcial to the markets, many of these studies investigate only contemporaneous eﬀects of AT on liquidity (Hendershott et al., 2011; Hendershott and Riordan, 2013;
+Mestel et al., 2018) or use daily data (Boehmer et al., 2018). Although markets analyzed
+are diﬀerent, it is possible that the long run eﬀect of AT on liquidity was not addressed in
+these studies.
+Table ?? reports the coeﬃcients for the ﬁxed eﬀects estimation on equation 6. The eﬀect
+of AT at time t on RealizedSpread is negative and statistically signiﬁcant (−0.057) thus
+higher AT activity reduces spreads on contemporaneous periods. Besides distinct methods,
+the result is in line with those on Table 3 for the ﬁrst lagged value of AT. As expected, return
+volatility has a positive and statistically signiﬁcant eﬀect on RealizedSpreads (coeﬃcient:
+0.377). The coeﬃcient on Ret is positive though not signiﬁcant. Adjusted R2 is 0.119. The
+second column of Table ?? reports the results when LIQk is deﬁned as the high-frequency
+Amihud measure. AT has a positive and signiﬁcant coeﬃcient of 0.026. Therefore, AT activity has an impact on the price impact dimension of liquidity at concurrent times. V olat is
+positive and signiﬁcant (0.017), though the coeﬃcient is smaller than in the RealizedSpread
+equation. The eﬀect of Ret on Amihud is positive and signiﬁcant (0.001). Adjusted R2 is
+relatively small, 0.03.
+Table 5: AT activity and Price Impact - VAR estimates
+PImpact
+AT
+Sum.coef
+NA[]
+NA[]
+X1st.lag
+NA[]
+NA[]
+Mean.p.value
+<0.01
+Sum.coef.1
+0[NaN]
+0.151[1]
+X1st.lag.1
+0[NaN]
+0.062[1]
+Mean.p.value.1
+<0.01
+4. Concluding remarks
+The present research provides ﬁrst evidence of the eﬀect of algorithmic trading (AT)
+activity in the Brazilian equities market. Using one year of data through mid-2017 to mid10
+Electronic copy available at: https://ssrn.com/abstract=3413130
+
+2018, we show through VAR estimates that the eﬀect of 20 minutes of AT activity increases
+realized spreads and the high-frequency Amihud (2002) measure. Our panel data approach
+using 2SLS yields similar results. Although the debate on the eﬀect of AT on liquidity is
+still at large, the evidence provided in this study supports the idea of AT reducing market
+quality in a longer horizon (20 minutes). However, in the short run (1 minute) our results
+support the idea of AT activity increasing market quality.
+Further research may explore whether diﬀerent brokerage ﬁrms aﬀect diﬀerently market
+quality. In this sense, brokerage ﬁrms who oﬀer co-location services to its clients may present
+higher impact on market quality.
+References
+Acharya, V. V., Pedersen, L. H., 2005. Asset pricing with liquidity risk. Journal of ﬁnancial
+Economics 77 (2), 375–410.
+Amihud, Y., 2002. Iliquidity and stock returns: cross-section ant time series eﬀects. Journal
+of Financial Markets 5, 31–56.
+Benos, E., Sagade, S., 2016. Price discovery and the cross-section of high-frequency trading.
+Journal of Financial Markets 30, 54–77.
+Biais, B., Foucault, T., Moinas, S., 2015. Equilibrium fast trading. Journal of Financial
+Economics 116 (2), 292–313.
+BM&FBovespa, 2016. Annual report - 2016. http://ir.bmfbovespa.com.br/enu/3258/RA2016
+˙BMFBOVESPA˙EN.PDF, last accessed on Mar 13, 2019.
+Boehmer, E., Fong, K. Y., Wu, J. J., 2018. Algorithmic trading and market quality : international evidence. Working Paper.
+Brogaard, J., Hendershott, T., Riordan, R., 2014. High-frequency trading and price discovery.
+The Review of Financial Studies 27 (8), 2267–2306.
+Budish, E., Cramton, P., Shim, J., 2015. The high-frequency trading arms race: Frequent
+batch auctions as a market design response. The Quarterly Journal of Economics 130 (4),
+1547–1621.
+Cartea, ´A., Payne, R., Penalva, J., Tapia, M., 2019. Ultra-fast activity and intraday market
+quality. Journal of Banking & Finance 99, 157–181.
+Chaboud, A. P., Chiquoine, B., Hjalmarsson, E., Vega, C., 2014. Rise of the machines:
+Algorithmic trading in the foreign exchange market. The Journal of Finance 69 (5), 2045–
+2084.
+Evans, M. D., Hnatkovska, V. V., 2014. International capital ﬂows, returns and world ﬁnancial integration. Journal of International Economics 92 (1), 14–33.
+11
+Electronic copy available at: https://ssrn.com/abstract=3413130
+
+Foucault, T., Kozhan, R., Tham, W. W., 2017. Toxic arbitrage. The Review of Financial
+Studies 30 (4), 1053–1094.
+Glosten, L. R., Milgrom, P. R., 1985. Bid, ask and transaction prices in a specialist market
+with heterogeneously informed traders. Journal of Financial Economics 14 (1), 71–100.
+Gomes Victor, F., Scherer Perlin, M., Mastella, M., 2013. Commonalities in liquidity –
+evidence and intraday patterns in the brazilian market. Brazilian Review of Finance 11 (3).
+Goyenko, R. Y., Holden, C. W., Trzcinka, C. A., 2009. Do liquidity measures measure
+liquidity? Journal of Financial Economics 92 (2), 153 – 181.
+Hasbrouck, J., Saar, G., 2013. Low-latency trading. Journal of Financial Markets 16 (4),
+646–679.
+Hendershott, T., Jones, C. M., Menkveld, A. J., 2011. Does algorithmic trading improve
+liquidity? The Journal of Finance 66 (1), 1–33.
+Hendershott, T., Riordan, R., 2013. Algorithmic trading and the market for liquidity. Journal
+of Financial and Quantitative Analysis 48 (4), 1001–1024.
+Hirschey, N., 2018. Do high-frequency traders anticipate buying and selling pressure? Working Paper.
+Hoﬀmann, P., 2014. A dynamic limit order market with fast and slow traders. Journal of
+Financial Economics 113 (1), 156–169.
+Holden, C. W., Jacobsen, S., Subrahmanyam, A., et al., 2014. The empirical analysis of
+liquidity. Foundations and Trends in Finance 8 (4), 263–365.
+Hull, M., McGroarty, F., 2014. Do emerging markets become more eﬃcient as they develop?
+long memory persistence in equity indices. Emerging Markets Review 18, 45–61.
+Lesmond, D. A., 2005. Liquidity of emerging markets. Journal of Financial Economics 77 (2),
+411–452.
+Mestel, R., Murg, M., Theissen, E., 2018. Algorithmic trading and liquidity: Long term
+evidence from austria. Finance Research Letters 26, 198–203.
+O’Hara, M., 2015. High frequency market microstructure. Journal of Financial Economics
+116 (2), 257–270.
+Perlin, M., 2013. The eﬀects of the introduction of market makers in the brazilian equity
+market. Brazilian Review of Finance 11 (2).
+Perlin, M. S., Ramos, H. P., 2017. Gethfdata: A r package for downloading and aggregating
+high frequency trading data from bovespa. Brazilian Review of Finance 14 (3), 443–478.
+SEC, 2010. Concept release on equity market structure. Concept Release 34-61358 File S702-10, 3594–3614.
+12
+Electronic copy available at: https://ssrn.com/abstract=3413130
+
+Upson, J., Van Ness, R. A., 2017. Multiple markets, algorithmic trading, and market liquidity. Journal of Financial Markets 32, 49–68.
+13
+Electronic copy available at: https://ssrn.com/abstract=3413130

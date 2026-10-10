@@ -1,0 +1,1602 @@
+Trading Rules Over Fundamentals:
+A Stock Price Formula for High Frequency Trading,
+Bubbles and Crashes
+Godfrey Cadogan ∗
+Working Paper
+Comments welcome
+January 18, 2012
+∗Corresponding address: Information Technology in Finance, Institute for Innovation and Technology
+Management, Ted Rogers School of Management, Ryerson University, 575 Bay, Toronto, ON M5G 2C5;
+Tel: 786-324-6995; e-mail: godfrey.cadogan@ryerson.ca. I am grateful to Oliver Martin, Ali Akansu,
+Philip Obazee, John A. Cole, Christopher Faille, and Jan Kmenta for their comments on an earlier draft of
+the paper which improved its readability, and led to consideration of market microstructure effects. I thank
+Sam Cadogan for his research assistance. Research support from the Institute for Innovation and Technology
+Management is gratefully acknowledged. This version of the paper clariﬁes application of van der Corput’s
+Lemma for oscillatory integrals to capital gains (in lieu of stock price) from [informed] trading, and includes
+new subsections on econometric speciﬁcation of cost of carry for HFT, proﬁtable trade strategies, and a case
+study of Nanex graphics for high frequency trading of natural gas (NG) index futures on the NYMEX. All
+errors which may remain are my own.
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+Abstract
+In this paper we present a simple closed form stock price formula, which captures empirical regularities of high frequency trading (HFT), based on two factors: (1) exposure to hedge factor; and
+(2) hedge factor volatility. Thus, the parsimonious formula is not based on fundamental valuation.
+For applications, we ﬁrst show that in tandem with a cost of carry model, it allows us to use exposure to and volatility of E-mini contracts to estimate dynamic hedge ratios, and mark-to-market
+capital gains on contracts. Second, we show that for given exposure to hedge factor, and suitable
+speciﬁcation of hedge factor volatility, HFT stock price has a closed form double exponential representation. There, in periods of uncertainty, if volatility is above historic average, a relatively
+small short selling trade strategy is magniﬁed exponentially, and the stock price plummets when
+such strategies are phased locked for a sufﬁcient large number of traders. Third, we demonstrate
+how asymmetric response to news is incorporated in the stock price by and through an endogenous
+EGARCH type volatility process for past returns; and ﬁnd that intraday returns have a U-shaped
+pattern inherited from HFT strategies. Fourth, we show that for any given sub-period, capital gains
+from trading is bounded from below (crash), i.e. ﬂight to quality, but not from above (bubble), i.e.
+conﬁdence, when phased locked trade strategies violate prerequisites of van der Corput’s Lemma
+for oscillatory integrals. Fifth, we provide a taxonomy of trading strategies which reveal that
+high HFT Sharpe ratios, and proﬁtability, rests on exposure to hedge factor, trading costs, volatility thresholds, and algorithm ability to predict volatility induced by bid-ask bounce or otherwise.
+Thus, extant regulatory proposals to control price dynamics of select stocks, i.e., pause rules such
+as ”limit up/limit down” bands over 5-minute rolling windows, may mitigate but not stop future
+market crashes or price bubbles from manifesting in underlying indexes that exhibit HFT stock
+price dynamics.
+Keywords: high frequency trading, hedge factor volatility, price reversal, market crash, price bubbles, fundamental valuation, van der Corput’s Lemma, Sharpe ratio, cost of carry
+JEL Classiﬁcation Codes: C02, G11, G12, G13
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+Contents
+1
+Introduction
+3
+2
+The Model
+10
+2.1
+Trade strategy representation of alpha in single factor CAPM . . .
+13
+3
+High Frequency Trading Stock Price Formula
+16
+4
+Applications
+18
+4.1
+Implications for cost of carry models and optimal hedge ratio . . .
+19
+4.2
+The impact of stochastic volatility on HFT stock prices . . . . . .
+22
+4.3
+Implications for intraday return patterns and volatility . . . . . . .
+24
+4.4
+van der Corput’s lemma and phase locked capital gains . . . . . .
+29
+4.5
+Proﬁtable HFT trade strategies . . . . . . . . . . . . . . . . . . .
+34
+4.5.1
+A case study of Nanex charts for high frequency trading
+in natural gas futures on NYMEX June 8, 2011 . . . . . .
+37
+5
+Conclusion
+39
+6
+Appendix: Nanex graphics for NYMEX natural gas index futures
+41
+References
+53
+List of Figures
+1
+Monotone increasing amplitude of oscillatory integrals for capital
+gains ˆIM
+N (σX)
+. . . . . . . . . . . . . . . . . . . . . . . . . . . .
+42
+2
+Comonotone bid-ask spread and trade size . . . . . . . . . . . . .
+43
+3
+Price plunge from phase locked short sell strategy . . . . . . . . .
+44
+4
+Marketmaker response to phased lock short sell: Decreased bidask spread and trade size . . . . . . . . . . . . . . . . . . . . . .
+45
+5
+Adverse selection: Marketmaker buys at the high and takes loss
+.
+46
+6
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+47
+7
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+48
+8
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+49
+9
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+50
+1
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+10
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+51
+2
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+1
+Introduction
+”A theory is a good theory if it satisﬁes two requirements: It must accurately describe a large class of observations on the basis of a model
+that contains only a few arbitrary elements, and it must make deﬁnite
+predictions about the results of future observations”. Stephen Hawkins,
+A Brief History of Time.
+Recent studies indicate that high frequency trading (HFT) accounts for about 77%
+of trade volume in the UK1 and upwards of 70% of trading volume in U.S. equity markets, and that ”[a]bout 80% of this trading is concentrated in 20% of the
+most liquid and popular stocks, commodities and/or currencies”2. Thus, at any
+given time an observed stock price in that universe reﬂects high frequency trading
+rules over price fundamentals3. In fact, a recent report by the Joint CFTC-SEC
+Advisory Committee summarizes emergent issues involving the impact of HFT
+on market microstructure and stock price dynamics4. This suggests the existence
+of stock price formulae for HFT, different from the class of Gordon5 dividend
+based fundamental valuation6 and present value models popularized in the litera1(Sornette and Von der Becke, 2011, pg. 4)
+2Whitten (2011). By deﬁnition, these statistics do not include dark pools or over the counter trades that are used to
+circumvent price impact on ”lit” exchanges dominated by HFT.
+3(Zhang, 2010, pg. 5) characterizes algorithmic trading rules thusly: ” HFT is a subset of algorithmic trading, or
+the use of computer programs for entering trading orders, with the computer algorithm deciding such aspects of the
+order as the timing, price, and order quantity. However, HFT distinguishes itself from general algorithmic trading in
+terms of holding periods and trading purposes”.
+4See (Joint Advisory Committee on Emerging Regulatory Issues, 2011, pg. 2) (”The Committee believes that the
+September 30, 2010 Report of the CFTC and SEC Staffs to our Committee provides an excellent picture into the new
+dynamics of the electronic markets that now characterize trading in equity and related exchange traded derivatives”.)
+(emphasis added).
+5Gordon (1959)
+6See e.g., Tobin (1984). Compare (Campbell et al., 1997, Chapter 3.2) (bid-ask spreads due to market microstruc3
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+ture7. This paper provides such a formula by establishing stochastic equivalence
+between recent continuous time trade strategy and alpha representation theories
+introduced in Jarrow and Protter (2010), Jarrow (2010) and Cadogan (2011).
+Evidently, high frequency traders quest for alpha, and their concomitant
+trade strategies are the driving forces behind short term stock price dynamics. In
+fact, a back of the envelope calculation by (Infantino and Itzhaki, 2010, pp. 10-11),
+using the Information Ratio (IR) metric popularized by (Grinold and Kahn, 2000,
+pg. 28), report that a high frequency trader who trades every 100 seconds can be
+13,000 times less accurate than a star portfolio manager who trades about once
+per day, and still generate the same alpha. In that case, let (Ω,{F}t≥0,F,P) be a
+ﬁltered probability space, S(t,ω) be a realized stock price deﬁned on that space,
+X(t,ω) be a realized hedge factor, βX(t,ω) be a trade strategy factor, i.e. exposure
+to hedge factor, σX(t,ω) be hedge factor stochastic volatility, Q be a probability
+measure absolutely continous with respect to P, and ˜BX(u,ω) be a P-Brownian
+bridge or Q-Brownian motion that captures background driving stochastic process8 for price reversal strategies9. We claim that the stock price representation
+ture distorts fundamental price and cause serial correlation in transaction prices).
+7See e.g., Shiller (1989), and Shiller and Beltratti (1992) who used annual returns, in a variant of Gordon’s model of
+fundamental valuation for stock prices, and reject rational expectations present value models. But compare, (Madhavan, 2011, pp 4-5) who reports that ”The futures market did not exhibit the extreme price movements seen in equities,
+which suggest that the Flash Crash [of May 6, 2010] might be related to the speciﬁc nature of the equity market
+structure”.
+8Christensen et al. (2011) report that granular tick by tick data reveal that jump variation account for at most 1% of
+price jumps, and that volatility drives ultra high frequency trading. Thus, Brownian motion without jumps is consistent
+with empirical regularities of HFT. We take notice of the importance of volatility for pricing futures contracts in an
+econometric speciﬁcation
+rF(t) = −(i−d)+h(t)
+σ2
+F(t)
+σS(t)
+
++∆η(t)
+for cost of carry, motivated by the formula, in subsection 4.1 on page 19, infra.
+9(Kirilenko et al., 2011, pg. 3) (”[N]et holdings of HFT ﬂuctuate around zero”)
+4
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+for high frequency trading is given by
+S(t,ω) = S(t0)exp
+Z t
+t0
+σX(u,,ω)βX(u,ω)d ˜BX(u,ω)
+
+(1.1)
+For instance, this formula allows us to use exposure (βX) to and volatility (σX) of
+E-mini contracts (X) to predict movements in an underlying index (S)10. In fact,
+we show that the for a dyadic partition t(n)
+j , j = 0,···,2n −1, of the interval [t0,t],
+for risk free rate rf, the HFT Sharpe ratio is given by
+Sratio(t,ω) =
+ 
+βX(t,ω)˜εX(t,ω)−rf
+σX(t,ω)
+!
+exp
+ 
+2n−1
+∑
+j=0
+past observations
+z
+}|
+{
+σX(t(n)
+j ,ω)βX(t(n)
+j ,ω)˜εX(t(n)
+j ,ω)
+!
+(1.2)
+where ˜εX corresponds to news11 or market sentiment. For given exposure βX if
+traders algorithmic forecasts about the direction of news (or market sentiment), i.e.
+sgn(˜εX(t,ω)) are accurate, then the Sharpe ratio will be high12 when βX ˜εX > rf
+and
+2n−1
+∑
+j=0
+past observations
+z
+}|
+{
+σX(t(n)
+j ,ω)βX(t(n)
+j ,ω)˜εX(t(n)
+j ,ω) > 0
+because of the multiplicative exponential term that depends on past observations13.
+10This is indeed the case. See e.g. Kaminska (2011)
+11See e.g. (Engle and Ng, 1993, pg. 1751) who interpret sgn(˜εX) > 0 as good news, i.e., unexpected increase in
+price, and sgn(˜εX) < 0 as bad news, i.e., unexpected decrease in price.
+12(Brogaard, 2010, pg. 2) estimated a Sharpe ratio of 4.5 for HFT.
+13See (Brogaard, 2010, pg. 2) (”I ﬁnd past returns are important and so perform a logit regression analysis on
+past returns for different HFTs buying/selling and liquidity providing/demanding activities. The results suggest HFTs
+engage in a price reversal strategy. In addition, the results are strongest for past returns that are associated with a
+buyer-seller order imbalance.”).
+5
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+Suppose that ”X-factor” volatility has a continuous time GARCH(1,1) representation given by
+dσ2
+X(t,ω) = θ(η −σ2
+X(t,ω))dt +ξσ2
+X(t,ω)dWσX(t,ω)
+(1.3)
+where θ is the rate of reversion to mean volatility η, ξ is a scale parameter, and
+WσX is a background driving Brownian motion for stochastic volatility σX. After
+applying Girsanov’s Theorem to remove the drift in 1.3, and then substituting
+the resultant expression in 1.1, we get the double exponential local martingale
+representation of the stock price given by
+S(t,ω) =
+S(t0)exp(exp(−1
+2 ξ ˜WσX(t0)))exp
+Z t
+t0
+βX(u,ω)exp(1
+2 ξ ˜WσX(u,ω))d ˜BX(u,ω)
+
+(1.4)
+Further details on derivation of the formula, and description of variables are presented in the sequel.
+As indicated above, our parsimonious formula is closed form and it is
+based on two factors: (1) exposure to hedge factor, and (2) hedge factor volatility.
+The formula plainly shows that for given exposure, βX(u,ω), to the ”X-factor”,
+if uncertainty in the market is such that volatility is above historic average, i.e.,
+σ2
+X(t,ω) > η is relatively high, a portfolio manager might want to reduce exposure in order to stabilize the price of S(t,ω). However, if βX(u,ω) is reduced to
+6
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+the point where it is negative, i.e. there is short selling, then the price of S(t,ω)
+will be in an exponentially downward spiral if volatility continues to increase14.
+Thus, feedback effects15 between S(t,ω), the ”X-factor” and exposure control or
+trade strategy βX(u,ω) determines the price of S16. In this setup, so called market fundamentals do not determine the price. In fact, we show in Proposition 4.7
+that HFT proﬁtability rests on trader exposure to hedge factor, and ability to read
+market signals that portend accurate volatility forecasts.
+One of the key results of our paper is the introduction of an admissible
+lower bound of zero (crash), and unbounded upper limit (bubble) for capital gains
+in high frequency trading environments. The analytics for that result are based
+on violation of van der Corput’s Lemma for oscillatory integrals17, and they produced a taxonomy of proﬁtable trade strategies in the sequel. Recent proposals by
+the Joint Advisory Committee on Emerging Regulatory Issues include so called
+”Pause rules” extended to limit up\ limit down bands for the price of select stocks
+over rolling 5-minute windows18. Assuming without deciding that such recom14This prediction is supported by (Kirilenko et al., 2011, pg. 3) who observed:
+During the Flash Crash, High Frequency Traders initially bought contracts from Fundamental Sellers.
+After several minutes, HFTs proceeded to sell contracts and compete for liquidity with Fundamental
+Sellers. In this sense, the trading of HFTs, appears to have exacerbated the downward move in prices.
+In addition, HFTs appeared to rapidly buy and sell contracts from one another many times, generating
+a hot potato effect before Fundamental Buyers were attracted by the rapidly falling prices to step in and
+take these contracts off the market.
+15See (Øksendal, 2003, pg. 237) for taxonomy of admissible [feedback] control functions. See also, de Long et al.
+(1990) (positive feedback trading by noise traders increase market volatility).
+16For instance, (Madhavan, 2011, pg. 5) distinguishes between rules based algorithmic trading, and comparatively
+opaque high frequency trading in which traders play a signal jamming game of quote stufﬁng. There, large orders
+are posted and immediately canceled, i.e. reversed. See McTague (2010). This price reversal strategy is captured by
+βX(u,ω) and embedded in our stock price.
+17See e.g., (Stein, 1993, pg. 332).
+18See e.g. (Joint Advisory Committee on Emerging Regulatory Issues, 2011, Recommendation #3, pg. 5)
+7
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+mendations would mitigate order imbalances that may trigger excess volatility, its
+unclear how pause rules would affect the behaviour of an underlying basket of
+stocks or derivatives that may not be covered by the recommendation. In which
+case, an underlying stock index (comprised of stocks not covered by the recommendation) priced by our formula remains vulnerable to crashes and bubbles. The
+efﬁcacy of our formula is supported by recent research on HFT which we review
+next.
+An empirical study by Zhang (2010) found that high frequency trading
+(HFT) increases stock price volatility. In particular, ”the positive correlation between HFT and volatility is stronger when market uncertainty is high, a time when
+markets are especially vulnerable to aggressive to HFT”19 A result predicted by
+our formula. Further, he used earnings surprise and analysts forecast as proxies
+for news and ﬁrm fundamentals to examine HFT response to price shocks. He
+found that ”the incremental price reaction associated with HFT are almost entirely
+reversed in the subsequent period”20. That ﬁnding is consistent with the price reversal strategy predicted by our theory. And the response to news is captured by
+our continuous time GARCH(1,1) speciﬁcation21 to hedge factor volatility incorporated in our closed form formula in an example presented in the sequel.
+(Jarrow and Protter, 2011, pg. 2) presented a continuous time signalling
+model in which HFT ”trades can create increased volatility and mispricings” when
+19(Zhang, 2010, pg. 3).
+20Ibid.
+21See e.g., (Engle, 2004, pg. 408).
+8
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+high frequency traders observe a common signal. This is functionally equivalent
+to the trade strategy factor embedded in our closed form formula. However, those
+authors suggests that ”predatory aspects of high frequency trading” stem from the
+speed advantage of HFT, and that perhaps policy analysts should focus on that
+aspect. By contrast, our formula suggests that limit on short sales would mitigate
+the problem while still permitting the status quo.
+A tangentially related paper22 by Madhavan (2011) used a market segmentation theory, based on application of the Herﬁndahl Index, of market microstructure to explain the Flash Crash of May 6, 2010. Of relevance to us is (Madhavan,
+2011, pg. 4) observation, that the recent joint SEC and CFTC report on the Flash
+Crash identiﬁed a trader’s failure to set a price limit on a large E-mini futures contract, used to hedge an equity position, as the catalyst for the crash23. There, stock
+price movements were magniﬁed by a feedback loop. An event predicted by, and
+embedded in, our stock price formula for high frequency trading as indicated in
+subsubsection 4.5.1. (Madhavan, 2011, pg. 6) also provides a taxonomy of high
+frequency trading strategies from papers he reviewed.
+The rest of the paper proceeds as follows. In section 2 we introduce the
+model. In section 3 we derive the HFT stock price formula. The main result
+there is Proposition 3.3. In section 4, we brieﬂy discuss the formula’s implications for econometric estimation of optimal hedge ratio in cost of carry models in
+22See also, (Sornette and Von der Becke, 2011, pp. 4-5) who argue that volume is not the same thing as liquidity,
+and that HFT reduces welfare of the real economy.
+23Some analysts believe that algorithmic trading and or HFT is responsible for as much as a 10-fold decrease in
+market depth for S&P 500 E-mini contracts. See Kaminska (2011).
+9
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+subsection 4.1. Next we apply the formula in the context of stochastic volatility in Lemma 4.1; characterize intraday return patterns in in Lemma 4.2; and
+the impact of phase locked high frequency trading strategies on capital gains in
+Proposition 4.6. Proposition 4.7 characterizes proﬁtable HFT strategies. In subsubsection 4.5.1 we apply our theory to some graphics generated by Nanex to see
+if it explains observed trade phenomenon in natural gas index futures. In section 5
+we conclude with perspectives on the implications of the formula for trade cycles
+in the context of quantum cognition.
+2
+The Model
+We begin by stating the alpha representation theorems of Cadogan (2011); Jarrow
+and Protter (2010) in seriatim on the basis of the assumptions in Jarrow (2010).
+Then we show that the two theorems are stochastically equivalent–at least for a
+single factor–and provide some analytics from which the HFT stocp price formula
+is derived.
+Assumption 2.1. Asset markets are competitive and frictionless with continuous
+trading of a ﬁnite number of assets.
+Assumption 2.2. Asset prices are adapted to a ﬁltration of background driving
+Brownian motion.
+Assumption 2.3. Prices are ex-dividend.
+10
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+Theorem 2.4 (Trading strategy representation. Cadogan (2011)).
+Let (Ω,Ft,F,P) be a ﬁltered probability space, and Z = {Zs,Fs; 0 ≤s < ∞} be
+a hedge factor matrix process on the augmented ﬁltration F. Furthermore, let
+a(i,k)(Zs) be the (i,k)-th element in the expansion of the transformation matrix
+(ZT
+s Zs)−1ZT
+s , and B = {B(s),Fs; s ≥0} be Brownian motion adapted to F such
+that B(0) = x. Assuming that B is the background driving Brownian motion for
+high frequency trading, the hedge factor sensitivity process, i.e. trading strategy,
+γ = {γs,Fs;0 ≤s < ∞} generated by portfolio manager market timing for Brownian motion starting at the point x ≥0 has representation
+dγ(i)(t,ω) =
+j
+∑
+k=1
+a(i,k)(Zt)
+ x
+1−t
+
+dt −
+j
+∑
+k=1
+a(i,k)(Zt)dB(t,ω), x ≥0
+for the i-th hedge factor i = 1,..., p, and 0 ≤t ≤1.
+□
+Proof. See (Cadogan, 2011, Thm. 4.6).
+Remark 2.1. (Cadogan, 2011, §2.2) presented a data mining algorithm based on
+martingale system equations to identify excess returns and describe high frequency
+trade strategy.
+□
+Cadogan (2011) computes an alpha vector α(t,ω) = Zγ(t,ω) where Z is a matrix of hedge factors and γ(t,ω) is a vector of hedge factor sensitivity that con11
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+stitutes the active portfolio manager’s trading strategy. This parametrization is
+consistent with hedge factor models24 such as Fama and French (1993).
+Theorem 2.5 ((Jarrow and Protter (2010))).
+Given no arbitrage, there exist K portfolio price processes {X1(t),...,XK(t)} such
+that an arbitrary security’s excess return with respect to the default free spot interest rate, i.e. risk free rate, rt can be written
+dSi(t)
+Si(t) −rtdt =
+K
+∑
+k=1
+βik(t)
+dXi(t)
+Xi(t) −rtdt
+
++δi(t)dεi(t)
+(2.1)
+where εi(t) is a Brownian motion under (P,Ft) independent of Xk(t) for k =
+1,...,K and δi(t) = ∑d
+k=K+1σ2
+ik(t)
+□
+Proof. See (Jarrow and Protter, 2010, Thm. 4).
+In contrast to Cadogan (2011) endogenous alpha, (Jarrow, 2010, pg. 18) surmised that ”[i]n active portfolio management, an econometrician would add a constant αi(t)dt to [the right hand side of] this model”. So Cadogan (2011) alpha is
+adaptive, whereas Jarrow (2010) alpha is exogenous. Without loss of generality
+we assume that the ﬁltration in each model is with respect to background driving
+Brownian motion.
+24See Noehel et al. (2010) for a review.
+12
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+2.1
+Trade strategy representation of alpha in single factor CAPM
+If our trade strategy representation theory is well deﬁned, then it should shed light
+on the behavior of alpha in a single factor model like CAPM where there is no
+hedge factor. In particular, for cumulative alpha A(t) let25
+A(t) = Zγ(t)
+(2.2)
+where Z is a hedge factor matrix, and γ(t) is a trade strategy vector. Thus, for
+some vector α(t) we have
+d{A(t)|Z} = α(t)dt = Zdγ(t). Let
+(2.3)
+Z = 1{n}
+(2.4)
+So that
+(ZTZ)−1ZT = n−11T
+{n} and a(1,k)(Zs) = n−1, k = 1,...,n
+(2.5)
+Substitution of these values in Theorem 2.4 gives us, by abuse of notation, the
+scalar equation for trade strategy alpha
+−α(t)dt = −dγ(1)(t) = −x
+1−t dt +dB(t)
+(2.6)
+25See (Christopherson et al., 1998, pp. 121-122) for representation of alpha conditioned on a Z-matrix of economic
+information.
+13
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+That is the equation of a Brownian bridge starting at B(0) = x on the interval [0,1].
+See (Karlin and Taylor, 1981, pg. 268). So that trade strategy alpha is given by
+dγ(1)(t) = −dBbr(t)
+(2.7)
+γ(1)(t) = Bbr(0)−Bbr(t)
+(2.8)
+However, there is more. According to Girsanov’s formula in (Øksendal, 2003,
+pg. 162), we have an equivalent probability measure Q based on the martingale
+transform
+M(t,ω) = exp
+Z t
+0
+x
+1−sdB(s,ω)−
+Z t
+0
+
+x
+1−s
+2
+ds
+
+(2.9)
+dQ(ω) = M(T,ω)dP(ω),
+0 ≤t ≤T ≤1
+(2.10)
+Furthermore, we have the Q-Brownian motion
+ˆB(t) = −
+Z t
+0
+x
+1−sds+B(t),
+and
+(2.11)
+dγ(1)(t) = −d ˆB(t) = −dBbr(t)
+(2.12)
+In other words, γ(1) is a Q-Brownian motion–in this case a Brownian bridge–that
+reverts to the origin starting at x. We note that
+dγ(1)(t)
+dt
+= −dBbr(t)
+dt
+= ˜εt
+(2.13)
+14
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+Hence the ”residual(s)” ˜εt, associated with rate of change of Jensen’s alpha, have
+an approximately skewed U-shape pattern on [0,1]. Additionallly, (Karlin and
+Taylor, 1981, pg. 270) show that the Brownian bridge can be represented by the
+Gaussian process
+G(t) = (1−t)B
+
+t
+1−t
+
+(2.14)
+EQ[G(s1)G(s2)] =
+
+
+
+
+
+
+
+s1(1−s2)
+s1 < s2
+s2(1−s1)
+s2 < s1
+(2.15)
+This is the so called Doob transformation, see (Doob, 1949, pp. 394-395), and
+B(t) = (1+t)B
+
+t
+1+t
+
+(2.16)
+(Karatzas and Shreve, 1991, pg. 359) also provide further analytics which show
+that we can write the trade strategy alpha as
+dγ(1)(t) = 1−γ(1)
+1−t dt +dB(t);
+0 ≤t ≤1, γ(1) = 0
+(2.17)
+M(t) =
+Z t
+0
+dB(s)
+1−s
+(2.18)
+T(s) = inf{t| < M >t> s}
+(2.19)
+G(t) = B<M>T(t)
+(2.20)
+where < M >t is the quadratic variation26 of the local martingale M.
+26See (Karatzas and Shreve, 1991, pg. 31).
+15
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+3
+High Frequency Trading Stock Price Formula
+We use a single factor representation of Theorem 2.4 and Theorem 2.5 with K = 1
+to derive the stock price formula as follows27. Using (Jarrow, 2010, eq(5), pg. 18)
+formulation, let
+α(t)dt = dS(t)
+S(t) −rtdt −β1(t)
+dX1(t)
+X1(t) −rtdt
+
+−σdB(t)
+(3.1)
+= dS(t)
+S(t) −β1(t)dX1(t)
+X1(t) −rt(1−β1(t))dt −σdB(t)
+(3.2)
+Comparison with 2.6 suggests that the two alphas are equivalent if the following
+identifying restrictions are imposed
+dγ(1)(t) ≡α(t)dt
+(3.3)
+⇒dS(t)
+S(t) −β1(t)dX1(t)
+X1(t) = 0
+(3.4)
+σ = 1
+(3.5)
+x
+1−t = (β1(t)−1)rt
+(3.6)
+So that
+−dγ(1) = −(β1(t)−1)rtdt +dB(t)
+(3.7)
+27(Jarrow and Protter, 2010, pg. 12, eq. (12)) refer to the ensuing as a ’regression equation” for which an econometrican tests the null hypothesis H0 : α(t)dt = 0. However, (Cadogan, 2011, eq. 2.1) applied asymptotic theory
+to econometric speciﬁcation of a canonical multifactor linear asset pricing model augmented with portfolio manager
+trading strategy to identify portfolio alpha.
+16
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+In fact, if for some constant drift µX, volatility σX, and P-Brownian motion BX we
+specify the ”hedge factor” dynamics
+dX1(t)
+X1(t) = µXdt +σXdBX(t)
+(3.8)
+then after applying Girsanov’s change of measure to 3.8, and by abuse of notation
+[and without loss of generality] setting βX(t,ω) = β1(t), we can rewrite 3.4 as
+dS(t)
+S(t) = βX(t,ω)σXd ˜BX(t)
+(3.9)
+for some Q-Brownian motion ˜BX. These restrictions, required for functional equivalence between the two models, are admissible and fairly mild. We summarize the
+forgoing in the following
+Proposition 3.1 (Stochastic equivalence of alpha in single factor models.). Assume that asset prices are determined by a single factor linear asst pricing model.
+Then the Jarrow and Protter (2010) return model is stochastically equivalent to
+Cadogan (2011) trading strategy representation model.
+□
+Corollary 3.2 (Jarrow (2010) trade strategy drift factor).
+{β1(t)}t∈[0,T] in Jarrow (2010) is a trade strategy [drift] factor.
+□
+Equation 3.9 plainly shows that the closed form expression for the stock
+17
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+price over some interval [t0,t] is now:
+d{ln(S(t,ω))} = βX(t,ω)σXd ˜BX(t,ω)
+(3.10)
+⇒
+Z t
+t0
+d{ln(S(t,ω))} = σX
+Z t
+t0
+βX(u,ω)d ˜BX(u,ω)
+(3.11)
+⇒S(t,ω) = S(t0)exp
+Z t
+t0
+σX
+|{z}
+volatility
+βX(u,ω)
+|
+{z
+}
+exposure
+d ˜BX(u,ω)
+|
+{z
+}
+news
+
+(3.12)
+This formula allows us to use E-mini futures contracts to predict movements in an
+underlying index. For constant volatility σX, this gives us the following
+Proposition 3.3 (High Frequency Trading Stock Price Formula).
+Let (Ω,F,F,P) be a probability space with augmented ﬁltration with respect to
+Brownian motion B = {B(t,ω);0 ≤t < ∞}. Let S be a stock price, and X be a
+hedge factor with volatility σX, adapted to the ﬁltration; and βX be the exposure
+of S to X. Then the stock price over the interval [t0,t] is given by
+S(t,ω) = S(t0)exp
+Z t
+t0
+σXβX(u,ω)d ˜BX(u,ω)
+
+□
+4
+Applications
+We provide ﬁve applications of our stock price representation theory in seriatim
+in the sequel. First, we consider the implications of our formula for cost of carry
+models, including but not limited to estimation of dynamic hedge ratios. Sec18
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+ond, we consider the case of stochastic volatility when σX has continuous time
+GARCH(1,1) representation28. We use Girsanov’s Theorem to extend the formula
+to the case of double exponential representation of HFT stock price. correlated
+background driving processes. Third, we consider the case of intraday return patterns generated by our formula, and show how it has EGARCH features. There,
+we show how news is incorporated in the HFT stock price. And we provide a
+Sharpe ratio estimator for HFT. Fourth, we present bounds of capital gains arising
+from phase locked processes. There, we use van der Corput’s Lemma29 for phase
+functions to motivate our result. Fifth, we characterize cost and volatility structures, and derive proﬁtable trade strategies for HFT. Whereupon we close with
+application of the formula to a case study of Nanex graphics for high frequency
+trading of natural gas index futures on NYMEX.
+4.1
+Implications for cost of carry models and optimal hedge ratio
+Proposition 3.3 has implications for the cost of carry model popularized in pricing
+futures. Speciﬁcally, let i and d be short term interest rate and dividend yield for
+stocks in an index S(t) over a given horizon [0,T] for a hedge factor, i.e. futures
+price, F(t,T) at time t. The cost of carry model posits that at time t ∈[0,T] the
+spot price S(t) of the index is S(t) = F(t,T)exp(−(i −d)(T −t)). By equating
+28 In practice we would use the implied volatility of the ”X-factor”. Furthermore, there are several different speciﬁcations for stochastic volatility popularized in the literature. See Shephard (1996) for a review. However, ”[t]he
+GARCH(1,1) speciﬁcation is the workhorse of ﬁnancial applications,” (Engle, 2004, pg. 408).
+29See (Stein, 1993, Prop. 2, pg. 332)
+19
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+this to our formula we ﬁnd
+F(t,T)exp(−(i−d)(T −t)) = S(0)exp
+Z t
+0 σF(u,ω)βF(u,ω)d ˜BF(u,ω)
+
+(4.1)
+βF(u,ω) = h(u,ω)σF(u,ω)
+σS(u,ω)
+(4.2)
+where σS(u,ω) is volatility of spot index and h(u,ω) = NF(u,ω)
+NS(u,ω) is a hedge ratio,
+i.e. Markov control variable, for amount of futures contracts to stock index, as
+indicated in (Hull, 2006, pg. 73). After taking logs of both sides of the incipient equation, and discretizing the stochastic integral term we get the following
+admissible parametrization
+ln(F(t,T)) = ln(S(0))+(i−d)(T −t)+
+t
+∑
+k=1
+βF(k)σF(k)+η(t)
+(4.3)
+During a time interval [s+,t], the mark-to-market capital gains of the futures contract is given by
+ln(F(t,T))−ln(F(s+,T)) = −(i−d)(t −s+)+
+t
+∑
+k=s+
+βF(k)σF(k)+η(t)−η(s+)
+(4.4)
+= −(i−d)(t −s+)+
+t
+∑
+k=s+
+h(k)σ2
+F(k)
+σS(k) +η(t)−η(s+)
+(4.5)
+20
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+By setting s = t −1, where ”1” is an appropriate time scale in milliseconds, we get
+the returns
+ln(F(t,T))−ln(F(t −1,T)) = rF(t) = −(i−d)+βF(t)σF(t)+∆η(t)
+(4.6)
+⇒rF(t) = −(i−d)+h(t)
+σ2
+F(t)
+σS(t)
+
++ε(t)
+(4.7)
+where rF is log-returns on futures, σF(t) and σS(t) have GARCH type dynamics,
+η is assumed stationary so that ε(t) = ∆η(t) is a ”news” term, and h(t) is a rough
+estimate of time varying optimal hedge ratio. We use s+ to highlight the fact
+that the unit of measurement is in milliseconds. According to results reported in
+Christensen et al. (2011) the speciﬁcation above is consistent with the notion that
+ultra-HFT is driven by volatility with negligible price jumps, and that traders get
+in and out of positions quite rapidly to capture mark-to-market capital gains in
+(4.4). For example, 0 < ε > i −d is ”good news”–the asset is relatively under
+priced. Whereas 0 > ε < (i −d) is ’bad news”–the asset is relatively overpriced.
+Price volatility may be generated by HFT gaming the bid-ask spread through order
+ﬂow to capitalize on bid-ask bounce, since transaction prices tend to be higher at
+the bid and lower at the sell30. In other words, a marketmaker may be subject
+to quote stufﬁng to extract a desired price. If a trader has high latency trading
+technology and [s]he is able to predict the direction of prices between bid-ask
+spreads, then [s]he can make a miniscule proﬁt on each trade31. Multiplied by
+30Aldridge (2011) demonstrated that that is easier said than done.
+31See (Campbell et al., 1997, Chapter 3.2) for details on inner workings of market microstructure.
+21
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+millions of trades, that number can be signiﬁcant. Moreover, it is consistent with
+price reversal strategies predicated on mean reverting stationary processes η(t)
+which may be due to serial correlation induced by bid-ask spread. In fact, (4.4)
+answers the question about derivation of the price signal ε posed by Avellaneda
+and Lee (2010) relative value pricing equation (3). In order not to overload the
+paper we do not address the independently important econometric issues arising
+from that speciﬁcation of futures prices. Cf. MacKinlay and Ramaswamy (1988);
+and Stoll and Whaley (1990).
+4.2
+The impact of stochastic volatility on HFT stock prices
+This speciﬁcation of the model permits extension to representation(s) of stochastic
+volatility for the ”X-factor” to mitigate potential simultaneity bias. For exposition,
+and analytic tractability we specify a GARCH(1,1) representation for σX.
+dσ2
+X(t,ω) = θ(η −σ2
+X(t,ω))dt +ξσ2
+X(t,ω)dWσX(t,ω)
+(4.8)
+22
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+where θ is the rate of reversion to mean volatility η, ξ is a scale parameter, and
+WσX is a background driving Brownian motion. Girsanov change of measure formula, see e.g. (Øksendal, 2003, Thm. II, pg. 164), posits the existence of a QBrownian motion ˜WσX(t,ω) and local martingale representation
+dσ2
+X(t,ω) = ξσ2
+X(t,ω)d ˜WσX(t,ω)
+(4.9)
+⇒σ2
+X(t,ω) = exp
+
+ξ
+Z t
+t0
+d ˜WσX(u)
+
+(4.10)
+⇒σX(t,ω) = exp
+
+1
+2ξ( ˜WσX(u)−˜WσX(t0))
+
+(4.11)
+Substitution in 3.12 gives us the double exponential representation
+S(t,ω) = S(t0)exp
+Z t
+t0
+exp(1
+2ξ( ˜WσX(u,ω)−˜WσX(t0)))βX(u,ω)d ˜BX(u,ω)
+
+(4.12)
+= S(t0)exp(exp(−1
+2 ξ ˜WσX(t0)))
+exp
+Z t
+t0
+βX(u,ω)exp(1
+2 ξ ˜WσX(u,ω))d ˜BX(u,ω)
+
+(4.13)
+The formula plainly shows that for given stock price exposure, βX, to the ”Xfactor”, if uncertainty in the market is such that volatility is above historic average,
+i.e., σ2
+X(t,ω) > η because uncertainty about the news ˜WσX is relatively high, a
+portfolio manager might want to reduce exposure in order to stabilize the price
+of S. However, if βX is reduced to the point where it is negative, i.e. there is
+short selling, then the price of S will be in an exponentially downward spiral if
+23
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+volatility continues to increase. In the face of monotone phase locked strategies
+presented in subsection 4.4 this leads to a market crash of the stock price. Thus,
+feedback effects between S, the ”X-factor” and exposure control or trade strategy
+βX determines the price of S. In this setup, so called market fundamentals do not
+determine the price. We present this representation in the following
+Lemma 4.1 (Double exponential HFT stock price representation).
+When stochastic volatility follows a continuous time GARCH(1,1) process, the
+high frequency trading stock price has a double exponential representation given
+in 4.13.
+□
+4.3
+Implications for intraday return patterns and volatility
+In this subsection we derive the corresponding formula for intraday returns rHFT(t,ω)
+for HFT stock price formula. Assuming that σX is stochastic in Proposition 3.3
+we have
+ln(S(t,ω)) = ln(S(t0))+
+Z t
+t0
+σX(u,ω)βX(u,ω)d ˜BX(u,ω) (4.14)
+24
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+Consider the dyadic partition ∏(n) of [t0,t] such that
+t(n)
+j
+= t0 + j.2−n(t −t0)
+(4.15)
+d ln(S(t,ω)) = dS(t,ω)
+S(t,ω) dt =
+σX(t,ω)βX(t,ω)d ˜BX(t,ω)
+S(t0)exp
+R t
+t0 σX(u,ω)βX(u,ω)d ˜B(u,ω)
+
+(4.16)
+The discretized version of that equation, where we write d ˜BX(t,ω)
+dt
+≈˜εX(t,ω), suggests that HFT intraday returns is given by
+rHFT(t,ω) =
+σX(t,ω)βX(t,ω)˜εX(t,ω)S(t0)−1
+exp
+
+−
+2n−1
+∑
+j=0
+σX(t(n)
+j ,ω)βX(t(n)
+j ,ω)˜εX(t(n)
+j ,ω)
+|
+{z
+}
+past observations
+
+(4.17)
+Examination of the latter equation shows that it inherits the U-shaped pattern from
+2.13 by and through ˜εX(t,ω). This theoretical U-shape result is supported by Admati and Pﬂeiderer (1988) in the context of intraday trade volume and optimal
+decisions of liquidity traders and informed traders. Moreover, assuming S(t0) = 1,
+an admissible decomposition of HFT returns in the context of an ARCH speciﬁ25
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+cation is:
+rHFT(t,ω) = σHFT(t,ω)˜εHFT(t,ω), where
+(4.18)
+σHFT(t,ω) = σX(t,ω)exp
+
+−
+2n−1
+∑
+j=0
+σX(t(n)
+j ,ω)βX(t(n)
+j ,ω)˜εX(t(n)
+j ,ω)
+
+(4.19)
+˜εHFT(t,ω) = βX(t,ω)˜εX(t,ω)
+(4.20)
+The Sharpe ratio for HFT returns for given risk free rate rf is given by
+Sratio(t,ω) = rHFT(t,ω)−rf
+σHFT(t,ω)
+(4.21)
+= βX(t,ω)˜εX(t,ω)
+σHFT(t,ω)
+−
+rf
+σHFT(t,ω)
+(4.22)
+=
+ 
+βX(t,ω)˜εX(t,ω)−rf
+σX(t,ω)
+!
+exp
+ 
+2n−1
+∑
+j=0
+σX(t(n)
+j ,ω)βX(t(n)
+j ,ω)˜εX(t(n)
+j ,ω)
+!
+(4.23)
+Examination of 4.19 shows that it admits an asymmetric response to news ˜εX(t(n)
+j ,ω)
+about and exposure to the hedge factor X. This is functionally equivalent to Nelson
+(1991) EGARCH speciﬁcation. And it may help explain why Busse (1999) found
+weak evidence of volatility timing in daily returns for active portfolio management
+in a sample of mutual funds based on his EGARCH speciﬁcation. Equation 4.20
+shows that high frequency traders response ˜εHFT(t,ω) to news ˜εX(t,ω) about the
+”X-factor” is controlled by stock price exposure βX(t,ω). Also, for given HFT
+volatility, (4.23) shows that Sharpe ratio depends on exposure to hedge factor, and
+26
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+ability to interpret ˜εX(t,ω), i.e., predict sgn(˜εX(t,ω)), since rf is relatively constant over short periods. This is tantamount to predicting the direction of ˜εX(t,ω)
+by and through market sentiment, which lends itself to algorithmic trading from
+data mining. We summarize this result in the following
+Lemma 4.2 (Intraday HFT return behaviour).
+The volatility of HFT returns depends on contemporaneous hedge factor volatility
+and asymmetrically on historic news about and exposure to hedge factors. Intraday HFT returns exhibit EGARCH features, and inherit U-shaped patterns from
+price reversal strategies of high frequency traders.
+□
+Lemma 4.3 (HFT Sharpe ratios).
+HFT Sharpe ratio in (4.23) depends on trader ability to forecast the direction of
+hedge factor prices with algorithmic trading and data mining.
+□
+We next extend the analysis to correlation between the background driving processes for hedge factor and hedge factor volatility.
+Let the X-factor be a forward rate. The stochastic alpha beta rho (SABR)
+27
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+model32 for X-dynamics posits:
+dX(t,ω) = σX(t,ω)Xβ(t,ω)dBX(t,ω), 0 ≤β ≤1
+(4.24)
+dσX(t,ω) = ασX(t,ω)dWσX(t,ω), α ≥0
+(4.25)
+BX(t,ω) = ρWσX(t,ω), |ρ| < 1
+(4.26)
+where BX and WσX are background driving Brownian motions as indicated. Assuming without deciding that the SABR model is the correct one to specify the
+dynamics of X, the double exponential representation in 4.13 plainly shows that
+it includes the background driving Brownian motions in 4.26. In which case we
+extend the representation to
+S(t,ω) =
+= S(t0)exp(exp(−1
+2 ξ ˜WσX(t0)))
+exp
+
+ρ
+Z t
+t0
+βX(u,ω)exp(1
+2 ξ ˜WσX(u,ω))d ˜WσX(u,ω)
+
+(4.27)
+That representation plainly shows that now the stock price depends on background
+driving dynamics of hedge factor volatility, and its correlation with underlying
+hedge factor dynamics. This suggests that for applications the implied volatility
+of hedge factor and or some variant of the VIX volatility index should be factored
+in HFT stock price formulae. Here again, the nature of the correlation coefﬁcient
+ρ, i.e. whether its positive or negative for given exposure βX, determines how the
+32See Zhang (2011) for a recent review.
+28
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+stock price responds to short selling. We close with the following
+Lemma 4.4 (HFT stock price as a function of background driving processes). HFT
+stock price dynamics depends on the background driving process for hedge factor
+stochastic volatility, and its correlation with the background driving process for
+hedge factor dynamics.
+Remark 4.1. This lemma implies the existence of a Hidden Markov Model to capture the latent dynamics in hight frequency trading. In order not to overload the
+paper we will not address that issue.
+□
+4.4
+van der Corput’s lemma and phase locked capital gains
+Before we examine the impact of phased locked trade strategies on HFT stock
+prices, we need the following
+Proposition 4.5 (van der Corput’s Lemma). (Stein, 1993, pg. 332)
+Suppose φ is real valued and smooth in (a,b), and that |φ(k)(x)| ≥1 for all x ∈
+(a,b). Then |
+R b
+a exp(iλφ(x))dx| ≤ckλ −1
+k holds when:
+i. k ≥2, or
+ii. k = 1 and φ′(x) is monotonic
+The bounds ck is independent of φ and λ.
+□
+29
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+Let
+φ j(t,ω) =
+Z t
+t0
+β j
+X(u,ω)d ˜BX(u)
+(4.28)
+be a local martingale for the j-th high frequency trader. Furthermore, consider the
+complex valued stock price function
+ˆS(t,ω) = S(t0)exp
+
+iσXφ j(t)
+
+(4.29)
+For simplicity, let
+S(t0) = 1
+(4.30)
+Deﬁne the oscillatory integrals over some interval t0 < a < t < b for the stochastic
+phase function φ j(t,ω)
+I j(σX,ω) =
+Z b
+a S(t,ω)dt =
+Z b
+a exp
+
+σXφ j(t,ω)
+
+dt
+(4.31)
+ˆI j(σX,ω) =
+Z b
+a
+ˆS(t,ω)dt =
+Z b
+a exp
+
+iσXφ j(t,ω)
+
+dt
+(4.32)
+Here, I j(σX,ω) and ˆI j(σX,ω) can be interpreted as capital gains over the interval
+a < t < b. Consider the differential
+φ j′(t,ω) = β j
+X(t,ω)d ˜BX(t)
+(4.33)
+30
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+Let β j
+X(t,ω) be a monotone trade strategy over the trading horizon under consideration. Without loss of generality assume that ˜BX is Q-Brownian motion, so
+that
+|φ j′(t,ω)| ≥1 ⇒|φ j′(t,ω)|2 ⇒β j2(t,ω)dt ≥1
+(4.34)
+These are the restrictions that must be imposed on trade strategy for Proposition
+4.5 to hold. However, the proposition also suggests that if φ j is real valued and
+smooth, i.e. differentiable, and φ j′ is monotonic over the interval (a,b), then the
+amplitude of the oscillatory integral has estimate
+|ˆI j(σX,ω)| ≤ckσ
+−1
+k
+X
+(4.35)
+From the outset we note that when |φ j′| < 1, the conditions of Proposition 4.5 are
+violated so that
+ˆI j(σX,ω) > ckσ
+−1
+k
+X
+(4.36)
+Furthermore, the conditions above are violated because φ j(t,ω) is a Brownian
+functional which oscillates rapidly near 0 so it is not differentiable there33. Specifically, φ j(t,ω) is a function of trade strategy, i.e., exposure to hedge factor, which
+ﬂuctuates very rapidly near zero because HFT gets in and out of hedge positions
+33The ”0” can be translated to another time t0 say and the rapid oscillation holds by virtue of the strong Markov
+property of Brownian motion. See (Karatzas and Shreve, 1991, pg. 86). For empirical evidence see (Kirilenko et al.,
+2011, pg. 3) (”We ﬁnd that on May 6, the 16 trading accounts that we classify as HFTs traded over 1,455,000 contracts,
+accounting for almost a third of total trading volume on that day. Yet, net holdings of HFTs ﬂuctuated around zero so
+rapidly that they rarely held more than 3,000 contracts long or short on that day”).
+31
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+very rapidly.
+The oscillatory integral ˆI j(σX,ω) inherits the rapid ﬂuctuations
+which are magniﬁed exponentially. Thus, in a market with a ﬁnite number of
+traders N, say, we have
+N
+∑
+j=1
+|ˆI j(σX,ω)| ≥Nckσ
+−1
+k
+X
+(4.37)
+From 4.31, 2.6 and 4.36 we have
+|I j(σX,ω)| ≥ˆI j(σX)
+(4.38)
+⇒
+N
+∑
+j=1
+|I j(σX,ω)| ≥
+N
+∑
+j=1
+|ˆI j(σX)| > Nckσ
+−1
+k
+X
+(4.39)
+⇒¯IN(σX) = 1
+N
+N
+∑
+j=1
+|I j(σX,ω)| > ckσ
+−1
+k
+X
+(4.40)
+Equation 4.31 represents the impact of the j-th trader’s strategy, β j
+X, on capital
+gains I j(σX,ω). However, 4.39 shows that in the best case when volatility grows
+no slower than O(N), the cumulative effect of high frequency traders strategies
+{β 1
+X,...,β N
+X } is unbounded from above. Moreover, 4.40 represents the phased
+locked, or average trade strategy effect on capital gains, which is also unbounded
+from above. Thus we proved the following
+Proposition 4.6 (Phased locked stock price).
+Let {β 1
+X,...,β N
+X } be the distribution of high frequency traders [monotone] strategies over a given trading horizon in a market with N traders. Let I j(σX,ω) in 4.31
+32
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+be the capital gain impact of the j-th trade strategy induced by the stock price
+S(t,ω) = S(t0)exp
+Z t
+t0
+σXβ j
+X(u,ω)d ˜BX(u,ω)
+
+Let
+¯IN(σX,ω) = 1
+N
+N
+∑
+j=1
+|I j(σX,ω)| > ckσ
+−1
+k
+X
+be the average capital gain induced by phase locked high frequency trading strategies. Then capital gains are bounded from below, but not from above. In which
+case, the lower bound constitutes capital gains when the market crashes at ck = 0.
+When ck > 0 capital gains are unbounded from above, and determined by high
+frequency trading strategies with admissible price bubbles.
+□
+Remark 4.2. The path characteristics of the Brownian functional φ j(t,ω) are such
+that ck = 0 corresponds to very rapid ﬂuctuations, i.e. large jumps, in φ j′(t,ω)
+in 4.33 at or near t. In other words, volatility in the stock is extremely high and
+there aren’t enough buyers for the phased locked short sales strategies. According
+to Kaminska (2011) arbitrageurs, and some high frequency traders withdraw from
+the market in the face of this kind of uncertainty. Thus, markets breakdown as
+there is a ﬂight to quality and or liquidity in the sense of Akerlof (1970). Some
+analysts believe that to be the case in the Flash Crash of May 6, 2010. For ”regular” φ j′(t,ω), i.e. there is more conﬁdence and markets are bullish, ck > 0 and we
+get potential price bubbles from phase locked strategies.
+33
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+Remark 4.3. Technically, 4.40 is bounded from above by N(b−a) when φ j(t,ω) =
+0. However, this corresponds to βX(t,ω) = 0 and φ j′(t,ω) is undeﬁned at 0, i.e.
+jumps in φ j′(t,ω) are inﬁnitely large. In effect, the upper bound is illusionary
+because the conditions of Proposition 4.5 are still violated.
+4.5
+Proﬁtable HFT trade strategies
+Let C(σX) be the cost per trade. Assume that the average trader makes M
+trades. So that the average proﬁt for the N traders be given by
+¯ΠN(σX,ω) = ¯IN(σX,ω)−MC(σX)
+(4.41)
+The average proﬁt per trade is given by
+¯ΠM
+N (σX) = ¯IM
+N (σX,ω)−C(σX), where
+(4.42)
+¯IM
+N (σX,ω) =
+¯IN(σX,ω)
+M
+(4.43)
+This proﬁt is characterized by the behaviour of the phase function φ j(t,ω) in 4.28.
+To see that, for given volatility σX, let
+sgn(d ˜BX(t,ω)) > 0
+(4.44a)
+sgn(d ˜BX(t,ω)) < 0
+(4.44b)
+Christensen et al. (2011) report that examination of ultra high frequency data reveal that jump variation accounts for about 1% of price movements for ultra high
+34
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+frequency trading (UHFT). So that volatility, not price jumps, drives UHFT. In
+which case (4.44a) and (4.44b) represent ”bullish” and ”bearish” uncertainty, respectively. In that milieu, the average trade reports a proﬁt when
+¯ΠM
+N (σX,ω) > 0 ⇒¯IM
+N (σX,ω) > max{ckσ
+−1
+k
+X
+, C(σX)}
+(4.45a)
+⇒β j
+X(t,ω) < 0 and sgn(d ˜BX(t,ω)) < 0, or
+(4.45b)
+β j
+X(t,ω) > 0 and sgn(d ˜BX(t,ω)) > 0
+(4.45c)
+Equation 4.37 and (4.32) imply that34 for
+∆t = b−a
+(4.46)
+ckσ
+−1
+k
+X
+≤S(t0)∆t
+(4.47)
+Equating the terms in the maximand in (4.45a), and substituting in the equation
+above gives us the cost structure
+C(σX)
+S(t0) ≤∆t
+(4.48)
+⇒σX ≥
+
+ck
+S(t0)∆t
+k
+(4.49)
+where k is the order of differentiability of the phase function. Since the latency
+of high frequency trades is in the order of milliseconds, the time interval ∆t is
+quite small. So (4.48) suggests that the cost per trade must be extremely low in
+comparison to the price of the stock at the beginning of the trading period. Thus,
+34Recall that we set S(t0) = 1. It is being reintroduced here for expository purposes.
+35
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+proﬁtable trade strategies include short sell when volatility signals (market sentiment) bearish market in (4.45b), buy and hold when volatility signals bullish
+market in (4.45c), and trading cost per unit of time and volatility thresholds are as
+in (4.48) and (4.49), respectively. As the number of trades increase, i.e. M ↑, the
+average proﬁt per trade decreases, i.e. ¯ΠM
+N (σX,ω) ↓. In practice, given the narrowness of bid ask spreads, and the serial correlation in price changes attributable to
+those spreads, a trader need only predict volatility caused by the bid-ask bounce.
+Given the dependence of cost and proﬁts on volatility, and narrow spreads, the
+trade strategy above is consistent with the observation that high frequency traders
+make fractions of a penny on an intra-spread dollar35, but execute such a large
+volume of trades that they are able to make a proﬁt36.
+Alternatively, the average trade reports a loss when
+¯ΠM
+N (σX,ω) < 0 ⇒¯IM
+N (σX,ω) < C(σX)
+(4.50a)
+⇒β j
+X(t,ω) < 0 and sgn(d ˜BX(t,ω)) > 0, or
+(4.50b)
+β j
+X(t,ω) > 0 and sgn(d ˜BX(t,ω)) < 0
+(4.50c)
+So traders incur losses when they misread the market: they short sell when volatility signals are bullish in (4.50b), or buy and hold when volatility signals are bearish
+in (4.50c). The foregoing strategies are summarized in
+35(Brogaard, 2010, pg. 2) (”HFTs generate around $2.8 billion in gross annual trading proits and on a per $100
+traded earn three-fourths of a penny”).
+36(Kirilenko et al., 2011, pg. 3) report that on the day of the Flash Crash, May 6, 2010, HFT traded over 1,455,000
+[futures] contracts.
+36
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+Proposition 4.7 (Proﬁts of high frequency traders).
+Let ¯IM
+N (σX,ω) be the average capital gain per trade for M trades, in a market with
+N high frequency traders, over a time interval a < t < b, for given hedge factor
+volatility σX. Let C(σX) be the unit cost of a trade. Let ¯ΠM
+N (σX,ω) = ¯IM
+N (σX,ω)−
+C(σX) be the average proﬁt per trade, and βX(t,ω) be exposure to hedge factor
+X. Then ¯ΠM
+N (σX,ω) ≷0 according as volatility signals or market sentiment is
+measured by the direction βX(t,ω)sgn(d ˜BX(t,ω) ≷0 for the strategies in (4.45)
+and (4.50); and cost and volatility structure in (4.48) and (4.49).
+□
+Remark 4.4. This proposition underscores the importance of CBOE VIX signals,
+the so called investor fear gauge37 for market sentiment for comparatively low
+trade frequency.
+4.5.1
+A case study of Nanex charts for high frequency trading in natural gas futures on
+NYMEX June 8, 2011
+This subsection applies our theory to some graphics of high frequency trading in
+natural gas index futures on June 8, 2011 according to Hunsader (2011). From the
+outset we note that the quantity σ
+−1
+k
+X
+in (4.36) is a measure of precision about the
+hedge factor38. That is, smaller hedge factor volatility implies greater precision,
+i.e. more information, and larger amplitude, i.e. σX ↓⇒ˆI j(σX,ω) ↑. The increasing amplitude depicted by the Nanex graphics for the NYMEX Natural Gas index
+37Whaley (2000).
+38See (DeGroot, 1970, pg. 38) for deﬁnition.
+37
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+futures (NG), i.e. hedge factor, in Figure 1 and Figure 2 suggest that traders were
+using information against market makers, i.e. the adverse selection effect was in
+play. The harmonic bid-ask spread proxies for capital gains from trade represented
+by ˆI j(σX,ω) in (4.36). Figure 3 depicts phase locked short sell price strategies, i.e.
+a sell off, and natural gas prices plunge. Market makers subsequently tightened the
+spread, and the volume of trade decreased in Figure 4. However, marketmakers
+were forced to buy at the high end, and take a loss as depicted in Figure 5. The
+text of the annotated graphics for FIGURES 6 to 10, as described by Nanex reads:
+The following charts show trade, trade volume, and depth of book prices
+and relative sizes for the July 2011 Natural Gas futures trading on NYMEX.
+Depth of book data is color coded by color of the rainbow (ROYGBIV), with red representing high bid/ask size and violet representing
+low bid/ask size. In this way, we can easily see changes in size to the
+depth of the trading book for this contract.
+Depth of book is 10 levels of bid prices and 10 levels of ask prices.
+The bid levels start with the best (highest) bid, and drop in price 10
+levels. Ask levels start with the best (lowest) ask, and increase in price
+10 levels. The different in price between levels is not always the same.
+It depends on traders submitting bids and offers. In other words, depth
+of book shows the 10 best bid prices, and 10 best ask prices.
+In a normal market, prices move lower when the number of contracts at
+the top level bid are executed. The next highest bid level then becomes
+the top level, and the 3rd level becomes the second and so forth. A new
+level is then added below the previous lowest level. On our our depth
+charts display, you would see this behavior as a change in color of the
+top level bid from the red end of the spectrum towards the violet end.
+On June 8, 2011, starting at 19:39 Eastern Time, trade prices began oscillating almost harmonically along with the depth of book. However,
+prices rose as bid were executed, and prices declined when offers were
+38
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+executed – the exact opposite of a market based on supply and demand.
+Notice that when the prices go up, the color on the ask side remains
+mostly unchanged, but the color on the bid side goes from red to violet. When prices go down, the color on the bid side remains mostly
+unchanged, but the color on the ask side goes from red to violet. This is
+highly unusual.
+Upon closer inspection, we ﬁnd that price oscillates from low to high
+when trades are executing against the highest bid price level. After
+reaching a peak, prices then move down as trades execute against the
+highest ask price level. This is completely opposite of normal market
+behavior.
+The amplitude (difference between the highest price and lowest price) of
+each oscillation slowly increases, until a ﬁnal violent downward swing
+on high volume. There also appears to be 3 groups of these oscillations or perhaps two intervals separating these oscillations. It’s almost
+as if someone is executing a new algorithm that has it’s buying/selling
+signals crossed. Most disturbing to us is the high volume violent sell
+off that affects not only the natural gas market, but all the other trading
+instruments related to it.
+5
+Conclusion
+This paper synthesized the continuous time asset pricing models in Cadogan (2011)
+(trade strategy representation theorem), and Jarrow and Protter (2010) (K-factor
+model for portfolio alpha), to produce a simple stock price formula that captures several empirical regularities of stock price dynamics attributable to high
+frequency trading–according to emergent literature. The model presented here
+does not address fundamental valuation of stock prices. Nor does it explain what
+causes a high frequency trader to decide to sell [or buy] in periods of uncertainty.
+39
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+However, recent quantum cognition theories show that subjects emit a behavioural
+quantum wave in decision making when faced with uncertainty. Thus, further research in that direction may help explain underlying trade cycles. Additionally, the
+double exponential representation of HFT stock prices suggests that some kind of
+exponential heteroskedasticity correction factor, i.e. EGARCH, should be used for
+performance evaluation of active portfolio management. And that HFT proﬁtability depends on trader ability to predict market volatility by and through market
+sentiment factors like CBOE VIX for low frequency trade, and ability to predict
+volatility induced by the bid-ask bounce for ultrahigh frequency trades. The stock
+price formula also has independently important econometric implications for cost
+of carry models popularized in the futures pricing literature, and suggests future
+research in that direction.
+40
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+6
+Appendix: Nanex graphics for NYMEX natural gas index
+futures
+41
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+Figure 1: Monotone increasing amplitude of oscillatory integrals for capital gains ˆIM
+N (σX)
+42
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+Figure 2: Comonotone bid-ask spread and trade size
+43
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+Figure 3: Price plunge from phase locked short sell strategy
+44
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+Figure 4: Marketmaker response to phased lock short sell: Decreased bid-ask spread and trade size
+45
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+Figure 5: Adverse selection: Marketmaker buys at the high and takes loss
+46
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+Figure 6:
+47
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+Figure 7:
+48
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+Figure 8:
+49
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+Figure 9:
+50
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+Figure 10:
+51
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+52
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+References
+Admati, A. and P. Pﬂeiderer (1988). A Theory of Intraday Patterns: Volume and
+Price Variability. Review of Financial Studies 1(1), 3–40.
+Akerlof, G. A. (1970, Aug.). The Market for ”Lemons”: Quality Uncertainty and
+the Market Mechanism. Quarterly Journal of Economics 84(3), 488–500.
+Aldridge, I. (2011, Sept.). How fast Can You Really Trade? Futures Magazine.
+Avellaneda, M. and J.-H. Lee (2010). Statistical arbitrage in the US equities Market. Quantitative Finance 10(7), 761–782.
+Brogaard, J. A. (2010, Nov.).
+High Frequency Trading and Its Impact
+On Market Quality.
+Working Paper, Kellog School of Management, Department of Finance, Northwestern University. Available at SSRN eLibrary
+http://ssrn.com/abstract=1641387.
+Busse, J. A. (1999). Volatility Timing in Mutual Funds: Evidence From Daily
+Returns. Review of Financial Studies 12(5), 1009–1041.
+Cadogan, G. (2011). Alpha Representation For Active Portfolio Management and
+High Frequency Trading In Seemingly Efﬁcient Markets. In Proceedings of
+Joint Statistical Meeting (JSM), Volume CD-ROM, Alexandria, VA, pp. 673–
+687. Business and Economic Statistics Section: American Statistical Association.
+Campbell, J. Y., A. W. Lo, and A. C. MacKinlay (1997). The Econometrics of
+Financial Markets. Princeton, NJ: Princeton University Press.
+Christensen, K., R. C. Oomen, and M. Podolskij (2011, May).
+Fact or
+Friction:
+Jumps at Ultra High Frequency.
+SSRN eLibrary.
+Available at
+http://ssrn.com/paper=1848774.
+Christopherson, J. A., W. A. Ferson, and D. A. Glassman (1998, Spring). Conditional Manager Alphas On Economic Information: Another Look At The Persistence Of Performance. Review of Financial Studies 11(1), 111–142.
+de Long, B., A. Shleifer, L. H. Summers, and R. J. Waldman (1990, June). Positive
+Feedback Investment Strategies and Destabilizing Rational Speculation. Journal
+of Finance 45(2), 379–395.
+53
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+DeGroot, M. (1970). Optimal Statistical Decisions. New York, N.Y.: McGrawHill, Inc.
+Doob, J. L. (1949). Heuristic Appproach to The Kolmogorov-Smirnov Theorems.
+Ann. Math. Statist. 20(3), 393–403.
+Engle, R. (2004, June). Risk and Volatility: Econometric Models and Financial
+Practice. American Economic Review 94(3), 405–420.
+Engle, R. F. and V. K. Ng (1993, Dec.). Measuring and Testing The Impact of
+News on Volatility. Journal of Finance 48(5), 1749–1778.
+Fama, E. and K. French (1993). Common Risk Factors in the Return on Bonds
+and Stocks. Journal of Financial Economics 33(1), 3–53.
+Gordon, M. (1959, May).
+Dividends, Earnings, and Stock Prices.
+Review of
+Economics and Statistics 41(2), 99–105.
+Grinold, R. C. and R. N. Kahn (2000). Active Portfolio Management: A Quantitative Approach for Providing Superior Returns and Controlling Risk (2nd ed.).
+New York: McGraw-Hill, Inc.
+Hull, J. (2006). Options, Futures, and Other Derivatives (6th ed.). New Jersey:
+Prentice-Hall, Inc.
+Hunsader, E. S. (2011, August).
+NANEX Graphics for NYNEX Natural
+Gas
+Index
+Futures
+June
+8,
+2011.
+Webpage.
+Available
+at
+http://www.nanex.net/StrangeDays/06082011.html.
+Infantino, L. R. and S. Itzhaki (2010, June). Developing High Frequency Equities
+Trading Models. Master’s thesis, MIT Sloan, Cambridge, MA. Available at
+http://dspace.mit.edu/handle/1721.1/59122.
+Jarrow, R. and P. Protter (2010, April). Positive Alphas, Abnormal Performance,
+and Illusionary Arbitrage. Johnson School Research Paper #19-2010, Dept. Finance, Cornell Univ. Available at http://ssrn.com/abstract=1593051. Forthcoming, Mathematical Finance.
+Jarrow, R. A. (2010, Summer). Active Portfolio Manageement and Positiive Alphas: Fact or fantasy? Journal of Portfolio Management 36(4), 17–22.
+54
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+Jarrow, R. A. and P. Protter (2011).
+A Dysfunctional Role of High Frequency Trading in Electronic Markets.
+SSRN eLibrary.
+Available at
+http://ssrn.com/paper=1781124.
+Joint Advisory Committee on Emerging Regulatory Issues (2011, Feb.). Recommendations Regarding Regulatory Responses to the Market Events of May 6,
+2010: Summary Report of the Joint CFTC-SEC Advisory Committee on Emerging Regulatory Issues (Feb. 18, 2011). Joint CFTC-SEC Advisory Committee on
+Emerging Regulatory Issues. FINRA Conference May 23, 2011. Available at
+http://www.sec.gov/spotlight/sec-cftcjointcommittee/021811-report.pdf.
+Kaminska, I. (2011, August). ”HFT is killing the emini,” says Nanex. Financial Times. Available at http://ftalphaville.ft.com/blog/2011/08/08/646276/hftis-killing-the-emini-says-nanex/.
+Karatzas, I. and S. E. Shreve (1991). Brownian Motion and Stochastic Calculus
+(2nd ed.). Graduate Text in Mathematics. New York, N. Y.: Springer-Verlag.
+Karlin, S. and H. M. Taylor (1981). A Second Course in Stochastic Processes.
+New York, NY: Academic Press, Inc.
+Kirilenko, A. A., A. P. S. Kyle, M. Samadi, and T. Tuzun (2011, May). The Flash
+Crash: The Impact of High Frequency Trading on an Electronic Market. SSRN
+eLibrary. Available at http://ssrn.com/abstract=1686004.
+MacKinlay, A. and K. Ramaswamy (1988). Index-futures arbitrage and the behavior of stock index futures prices. Review of Financial Studies 1(2), 137–158.
+Madhavan, A. (2011). Exchange-Traded Funds, Market Structure and the Flash
+Crash. SSRN eLibrary. Available at http://ssrn.com/paper=1932925.
+McTague, J. (2010, Aug.). Was The Flash Crash Rigged? Barron’s. Available at
+http://online.barrons.com/article/SB50001424052970204304404575449930920336058.html
+Nelson, D. (1991, March). Conditional Heteroskedasticity in Asset Pricing: A
+New Approach. Econommetrica 59(2), 347–370.
+Noehel, T., Z. J. Wang, and J. Zheng (2010). Side-by-Side Management of Hedge
+Funds and Mutual Funds. Review of Financial Studies 23(6), 2342–2373.
+Øksendal, B. (2003). Stochastic Differential Equations: An IntroductionWith Applications (6th ed.). Universitext. New York: Springer-Verlag.
+55
+Electronic copy available at: https://ssrn.com/abstract=1977561
+
+Shephard, N. (1996). Time Series Models in Econometrics, Finance and Other
+Fields, Chapter Statistical Aspects of ARCH and Stochastic Volatility, pp. 1–
+67. London: Chapman & Hall.
+Shiller, R. (1989). Comovement in Stock Prices and Comovement in Dividends.
+Journal of Finance 44(2), 719–729.
+Shiller, R. J. and A. E. Beltratti (1992). Stock prices and bond yields: Can their comovements be explained in terms of present value models? Journal of Monetary
+Economics 30(1), 25 – 46.
+Sornette, D. and S. Von der Becke (2011). Crashes and High Frequency Trading.
+SSRN eLibrary. Available at http://ssrn.com/paper=1976249.
+Stein, E. M. (1993). Harmonic Analysis: Real Variable Methods, Orthogonality,
+and Oscillatory Integrals. Princeton, NJ: Princeton Univ. Press.
+Stoll, H. R. and R. E. Whaley (1990). The dynamics of stock index and stock
+index futures returns. Journal of Financial and Quantitative Analysis 25(04),
+441–468.
+Tobin, J. (1984, Fall). A mean variaance approach to fundamental valuation. Journal of Portfolio Management, 26–32.
+Whaley, R. E. (2000). The Investor Fear Gauge: Explication of the CBOE VIX.
+Journal of Portfolio Management 26(3), 12–17.
+Whitten,
+D.
+(2011,
+August
+17).
+Has
+High
+Frequency
+Trading,
+Futures,
+Derivatives,
+etc.,
+Rigged
+The
+Game
+Against
+Individual
+Investors?
+Not
+Really.
+iStockAnalyst.com.
+Available
+at
+http://www.istockanalyst.com/ﬁnance/story/5364511/has-high-frequencytrading-futures-derivatives-etc-rigged-the-game-against-individual-investorsnot-really.
+Zhang, F. (2010). High-Frequency Trading, Stock Volatility, and Price Discovery.
+SSRN eLibrary. Available at http://ssrn.com/paper=1691679.
+Zhang, N. (2011, June).
+Properties of the SABR Model.
+Working Paper, Dep’t of Mathematics, Uppasala Uviv. Available at http:// uu.divaportal.org/smash/get/diva2:430537/FULLTEXT01.
+56
+Electronic copy available at: https://ssrn.com/abstract=1977561

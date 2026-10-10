@@ -1,0 +1,463 @@
+500 C++ programs
+for quantitative ﬁnance
+Quasar Chunawala
+quasar.chunawala@gmail.com
+Abstract
+I have put together a compendium of over 500 C++ programs, discussing a plethora of topics spanning from modern C++ programming style, the standard template library(STL) containers and algorithms, numerical linear algebra, using Quantlib, to creating data structures and solvers commonly
+found in quantitative ﬁnance. The programs are intended to be descriptive and pedagogical.
+1. Modern C++ programming
+Listing 1 - Hello World!
+//This program prints the message "Hello World!"
+//This line instructs the preprocess to include the declarations
+//of the standard stream IO facilities found in iostream file.
+#include <iostream>
+int main()
+{
+//The insertion operator writes its second argument onto
+//the first. In this case, the string literal "Hello World\n"
+//is written onto the global object cout - that is a static
+//object representing the standard output stream. This
+//object is an instance of std::ostream class. The std::
+//specifies that the name cout is to be found in the
+//standard-library namespace.
+std::cout << "Hello World\n";
+}
+Listing 2 - Dividing your program into functions
+//All executable code is placed in functions and called directly
+//or indirectly from main().
+#include <iostream>
+double square(double x)
+{
+return x * x;
+}
+Preprint submitted to Elsevier
+June 22, 2019
+Electronic copy available at: https://ssrn.com/abstract=3408248
+
+void print_square(double x)
+{
+std::cout << "The square of x = " << square(x) << "\n";
+}
+int main()
+{
+print_square(1.234);
+return 0;
+}
+Listing 3 - Types variables and arithmetic
+///Every identifier and every expression has a data type that
+//determines the operations that may be performed on it.
+//Stroustroup's book defines -
+//Declaration - A declaration is a statement that introduces an
+//identifier into the program. It specifies a data-type for the
+//identifier.
+//Data-type - A types defines the domain of the definition of
+//the set of possible values and the legal operations on it.
+//Object - An object is some memory that holds a value of some
+//type.
+//Value - A value is a set of bits interpreted according to a
+//type.
+//Variable - A variable is a named object.
+//C++ offers a variety of fundamental data types. For example,
+//bool, char, int, float and double.
+//The size of a data-type is implementation defined (it can vary
+//among different machines) and can be obtained by the sizeof()
+//operator.
+#include <iostream>
+int main()
+{
+int x = 4.0;
+int y = 8.0;
+std::cout << "x = " << x << "\n";
+std::cout << "y = " << y << "\n";
+//Arithmetic operators.
+2
+Electronic copy available at: https://ssrn.com/abstract=3408248
+
+std::cout << "\n" << x + y;
+//plus
+std::cout << "\n" << +x;
+//Unary plus
+std::cout << "\n" << x - y;
+//Minus
+std::cout << "\n" << -x;
+//Unary minus
+std::cout << "\n" << x * y;
+//Multiply
+std::cout << "\n" << x / y;
+//Divide
+std::cout << "\n" << x % y;
+//Remainder (modulus)
+//Comparison operators.
+std::cout << "\n" << (x==y);
+//equals
+std::cout << "\n" << (x!=y);
+//not equal
+std::cout << "\n" << (x<y);
+//less than
+std::cout << "\n" << (x>y);
+//greater than
+std::cout << "\n" << (x<=y);
+//less than or equals
+std::cout << "\n" << (x>=y);
+//greater than or equals
+//Note. = is the assignment operator and == tests equality.
+return 0;
+}
+Listing 4 - Initialization
+//Traditional C style and curly brace delimited initializations
+#include <iostream>
+#include <vector>
+#include <cmath>
+int main()
+{
+double pi = 3.14159; //Traditional C style initialization
+double eulers_constant = {2.71828}; //the = is optional
+double G {6.674e-11}; //the general {}-list form
+double rate_1Y = 0.10;
+double T = 1.0;
+double df = exp(-rate_1Y * 1);
+std::cout << "\nDiscount factor (1Y) = " << df;
+return 0;
+}
+Listing 5 - auto keyword
+//When defining a variable, auto keyword causes the compiler
+//to deduce the type from the initializer.
+#include <iostream>
+int main()
+3
+Electronic copy available at: https://ssrn.com/abstract=3408248
+
+{
+auto b = true;
+//a bool
+auto ch = 'x';
+//a char
+auto i = 123;
+//an int
+auto f = 3.14f;
+//a float
+auto d = 3e8;
+//a double, the speed of light
+return 0;
+}
+Listing 6 - More operators
+//In addition to the conventional operators, C++ offers more
+//specific operators for modifying variables.
+#include <iostream>
+int main()
+{
+int x = 4;
+int y = 8;
+std::cout << "\n" << "x = " << x;
+std::cout << "\n" << "y = " << y;
+x += y;
+//x = x + y
+std::cout << "\nx+=y," << " x = " << x << " y = " << y;
+++x; //increment, x = x + 1
+std::cout << "\n++x," << " x = " << x << " y = " << y;
+x-=y; //x = x - y
+std::cout << "\nx-=y," << " x = " << x << " y = " << y;
+--x; //Decrement, x = x - 1
+std::cout << "\n--x," << " x = " << x << " y = " << y;
+x*=y; //Scaling, x = x * y;
+std::cout << "\nx*=y," << " x = " << x << " y = " << y;
+x/=y; //Scaling, x = x / y;
+std::cout << "\nx/=y," << " x = " << x << " y = " << y;
+x%=y; //Modulo, x = x % y;
+std::cout << "\nx%=y," << " x = " << x << " y = " << y;
+return 0;
+}
+4
+Electronic copy available at: https://ssrn.com/abstract=3408248
+
+Listing 7 - Constants
+//const keyword - const keyword is used to declare a named
+//Constants in C++. A const declaration roughly means, a
+//promise not to modify the value of this variable.
+//#define is a preprocessor macro that simply
+//does text replacement. The const variable is
+//a real variable. Unlike #define, where
+//#define INTEGER_FACTOR 3.14 is a valid
+//pre-processor instruction, the const variable is a typed
+//variable and it enforces type safety.
+//A calling function can pass data to a called function without
+//the fear of it being modified in the routine, by passing
+//it as a const.
+//constexpr. An expression whose value is strictly evaluated
+//at compile time. It allows the placement of data in read-only
+//memory where it is unlikely to be corrupted.
+#include <iostream>
+#include <cmath>
+#include <vector>
+double sum(const std::vector<double>& v)
+{
+double total = 0.0;
+for (double x : v)
+total += x;
+return total;
+}
+int main()
+{
+const int x = 17;
+//named constant x
+float z = 5;
+//z is not const
+constexpr float my_equation_1 = 1.4142 * x; //Okay
+//constexpr float my_equation_2 = 1.4142 * z;
+//z is not usable in a constant expression.
+//This cannot be evaluated at compile-time, since the value
+//of the variable z could be anything at runtime.
+const float my_equation_3 = 1.4142 * z;
+//Okay, maybe evaluated at run-time.
+std::vector<double> v = {1.0,2.0,3.0,4.0,5.0,6.0};
+const double my_sum = sum(v);
+//Okay, its evaluated at run-time.
+5
+Electronic copy available at: https://ssrn.com/abstract=3408248
+
+std::cout << "\nSum = " << my_sum;
+//constexpr double my_sum2 = sum(v);
+//Error, sum(v) is not a constant expression.
+return 0;
+}
+Listing 8 - If Else and Selection
+#include <iostream>
+#include <cmath>
+#include <vector>
+//Example of a simple if-else construct
+void is_even(int n)
+{
+if(n % 2 == 0)
+{
+std::cout << "\n" << n << " is even";
+}
+else
+{
+std::cout << "\n" << n << " is odd";
+}
+}
+//Example of a selection statement - switch
+enum class Month{
+JAN = 1,
+FEB = 2,
+MAR = 3,
+APR = 4,
+MAY = 5,
+JUN = 6,
+JUL = 7,
+AUG = 8,
+SEP = 9,
+OCT = 10,
+NOV = 11,
+DEC = 12
+};
+int main()
+{
+int n = 0;
+std::cout << "\nEnter an integer n : ";
+std::cin >> n;
+is_even(n);
+int m;
+6
+Electronic copy available at: https://ssrn.com/abstract=3408248
+
+std::cout << "\n\nEnter a (Numeric)month of the year" ;
+std::cout << "\nJAN - 1, FEB - 2,..., DEC - 12 : ";
+std::cin >> m;
+Month month = static_cast<Month>(m);
+switch(month)
+{
+case (Month::JAN):
+std::cout << "\nNumber of days = 31";
+break;
+case (Month::FEB):
+std::cout << "\nNumber of days = 28";
+break;
+case (Month::MAR):
+std::cout << "\nNumber of days = 31";
+break;
+case (Month::APR):
+std::cout << "\nNumber of days = 30";
+break;
+case (Month::MAY):
+std::cout << "\nNumber of days = 31";
+break;
+case (Month::JUN):
+std::cout << "\nNumber of days = 30";
+break;
+case (Month::JUL):
+std::cout << "\nNumber of days = 31";
+break;
+case (Month::AUG):
+std::cout << "\nNumber of days = 31";
+break;
+case (Month::SEP):
+std::cout << "\nNumber of days = 30";
+break;
+case (Month::OCT):
+std::cout << "\nNumber of days = 31";
+break;
+case (Month::NOV):
+std::cout << "\nNumber of days = 30";
+break;
+case (Month::DEC):
+std::cout << "\nNumber of days = 31";
+break;
+}
+return 0;
+}
+7
+Electronic copy available at: https://ssrn.com/abstract=3408248
+
+Listing 9 - Arrays and loops basics
+//Create a simple array of dates(schedule), access it
+//using a loop.
+#include <iostream>
+#include <boost/date_time/gregorian/gregorian.hpp>
+int main()
+{
+using namespace boost::gregorian;
+date PV_date(2019, Jan, 01);
+//Tenor = 6M
+months tenor(6);
+const int n_periods = 6;
+date schedule[6];
+date date_i{ PV_date };
+for (int i = 0; i < n_periods; ++i)
+{
+schedule[i] = date_i;
+date_i += tenor;
+}
+for (int i = 0; i < n_periods; ++i)
+{
+std::cout << "\n" << schedule[i];
+}
+return 0;
+}
+Listing 10 - Structs
+//C++ fundamental types are called the built-in types. C++'s set of
+//built-in types and operations are rich, but low-level. C++ augments
+//the built-in data-types with a sophisticated set of abstraction
+//mechanisms out of which programmers can design commonly used
+//mathematical finance objects such DateTime, DiscountCurve, Solver etc.
+#include<iostream>
+#include<boost/date_time/gregorian/gregorian.hpp>
+using namespace boost::gregorian;
+//The first step in building a new type is often to organize the
+//elements it needs into a data structure.
+8
+Electronic copy available at: https://ssrn.com/abstract=3408248
+
+//The first version of a discount_curve might consist of
+//a set of zero rates corresponding to key tenors, and additionally
+//keeping track of today & the total number points.
+struct discount_curve
+{
+date *t;
+double* rate;
+int n_points;
+date today;
+};
+//A variable of the type discount curve can be defined as
+//discount_curve disc;
+//However, by itself that is not of much use, because disc's
+//t and rate pointers do not point to anything. To be useful, we
+//must give disc some elements to point to. For example, we can construct
+//a discount_curve like this:
+void init_discount_curve(discount_curve& d, int n, date today)
+{
+d.n_points = n;
+d.today = today;
+d.t = new date[n];
+d.rate = new double[n];
+}
+//That is, disc's t member gets a pointer to the memory allocated for
+//the block of dates by the new operator. Likewise for rate.
+//n_points member is initialized to the number of points n. today
+//member is initialized to today's date.
+//The new operator allocates member from an area called the free store.
+//A simple routine to input the key zero rates for various dates
+//looks like this:
+void read_input(discount_curve& d)
+{
+d.rate[0] = 0.0;
+d.t[0] = d.today;
+std::string s;
+for (int i = 1; i < d.n_points; ++i)
+{
+std::cin >> s;
+d.t[i] = from_string(s);
+std::cin >> d.rate[i];
+}
+}
+double linear_interpolation(date x1, date x2, date x,
+double y1, double y2)
+9
+Electronic copy available at: https://ssrn.com/abstract=3408248
+
+{
+double theta = (x - x1).days() / (x2 - x1).days();
+double y = y1 + theta * (y2 - y1);
+return y;
+}
+//Assumptions : Basis = actual/365
+//Interpolation : Linear on zero rates
+double disc_factor(discount_curve& d, date from_date, date to_date)
+{
+date a, b, x, y;
+double r_a, r_b, r_x, r_y;
+if (to_date == from_date)
+return 1.0;
+//Search the tenor bucket [a,b) of the from_date
+for (int i = 1; i < d.n_points; ++i)
+{
+if (from_date >= d.t[i - 1] && from_date < d.t[i])
+{
+a = d.t[i - 1];
+b = d.t[i];
+r_a = d.rate[i - 1];
+r_b = d.rate[i];
+break;
+}
+}
+//Search the tenor bucket [x,y) of the to_date
+for (int i = 1; i < d.n_points; ++i)
+{
+if (to_date >= d.t[i - 1] && to_date < d.t[i])
+{
+x = d.t[i - 1];
+y = d.t[i];
+r_x = d.rate[i - 1];
+r_y = d.rate[i];
+break;
+}
+}
+double r1 = linear_interpolation(d.today, b, from_date, r_a, r_b);
+double r2 = linear_interpolation(d.today, y, to_date, r_x, r_y);
+double T1 = (from_date - d.today).days()/365;
+double df1 = 1 / pow((1 + r1), T1);
+double T2 = (to_date - d.today).days()/365;
+10
+Electronic copy available at: https://ssrn.com/abstract=3408248
+
+double df2 = 1 / pow((1 + r2), T2);
+double T = (to_date - from_date).days()/365;
+double fwd = (1 / T) * (df1 / df2 - 1);
+double fdf = 1 / (pow((1 + fwd), T));
+return fdf;
+}
+int main()
+{
+discount_curve disc;
+init_discount_curve(disc, 6, date(2019, Jan, 01));
+std::cout << "\nEnter key dates(YYYY/MM/DD) and the "<<
+"corresponding zero rate :";
+std::cout << "\n";
+read_input(disc);
+double df = disc_factor(disc, date(2019, Jan, 01),
+date(2020, Jan, 01));
+std::cout << "\nDiscount factor = " << df;
+return 0;
+}
+11
+Electronic copy available at: https://ssrn.com/abstract=3408248

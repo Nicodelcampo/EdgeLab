@@ -1,0 +1,69 @@
+{
+  "doc_id": 248,
+  "titulo": "Pairs Trading in the Land Down Under",
+  "resumen_operativo": "Evalúa empíricamente tres métodos de pairs trading (distancia, cointegración y stochastic spread) sobre 12 años de datos diarios del Australian Stock Exchange (ASX, 1996-2010). Los tres métodos generan retornos excedentes estadísticamente significativos de 5% a 12% anual antes de costes de transacción. Sin embargo, al incorporar costes de transacción del 0.15% por operación, dos métodos dejan de ser rentables y el restante genera beneficio mínimo, demostrando el valor práctico limitado de estas estrategias en el mercado australiano.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "Distance Method (Pairs Trading)",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Método que selecciona pares minimizando la suma de diferencias al cuadrado entre series de precios normalizadas durante el período de formación, y abre posiciones cuando el spread excede 2 desviaciones estándar históricas.",
+      "relaciones": [{"tipo": "USA", "objeto": "Minimum SSD Pair Selection"}, {"tipo": "PARTE_DE", "objeto": "Pairs Trading Taxonomy"}],
+      "cita_textual": "the distance method used by Gatev et al."
+    },
+    {
+      "nombre": "Stochastic Spread Method",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Método de pares propuesto por Elliott, van der Hoek y Malcolm que modela el spread como un proceso estocástico de reversión a la media con parámetros estimados, siendo el único que propone una estrategia de salida completa (stop-loss).",
+      "relaciones": [{"tipo": "MEJORA_A", "objeto": "Distance Method"}, {"tipo": "REQUIERE", "objeto": "Stop-Loss Rules"}],
+      "cita_textual": "only the stochastic spread method proposes a detailed exit strategy - a complete set of rules for winning and losing cases"
+    },
+    {
+      "nombre": "Transaction Cost Impact on Pairs Trading",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Los costes de transacción (0.15% por operación) eliminan o reducen drásticamente la rentabilidad de estrategias de pairs trading que son rentables antes de costes, destacando su importancia crítica en la viabilidad práctica.",
+      "relaciones": [{"tipo": "CAUSA", "objeto": "Strategy Unprofitability"}, {"tipo": "MITIGA", "objeto": "Excess Returns"}],
+      "cita_textual": "after accounting for the transaction costs, two methods became unprofitable, and one earned minimal profit"
+    },
+    {
+      "nombre": "Market Neutrality (Dollar-Neutral Portfolio)",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Propiedad del portfolio donde las posiciones largas y cortas se compensan en valor, haciendo la estrategia inmune a movimientos direccionales del mercado. Confirmada por betas de mercado cercanas a cero y correlación negativa baja con el benchmark.",
+      "relaciones": [{"tipo": "MIDE", "objeto": "Strategy Hedging"}, {"tipo": "SE_OPONE_A", "objeto": "Directional Market Risk"}],
+      "cita_textual": "Market neutrality makes pairs trading extremely attractive for institutional investors such as superannuation funds, insurance companies and risk averse hedge funds"
+    },
+    {
+      "nombre": "Value-Weighted Mark-to-Market Returns",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Método de cálculo de retorno donde cada par contribuye ponderado por su valor acumulado, con pesos que evolucionan según los flujos de caja diarios. Usa leverage 2:1 (1$ largo + 1$ corto por par).",
+      "relaciones": [{"tipo": "USA", "objeto": "Performance Evaluation"}],
+      "cita_textual": "calculate value-weighted daily market-to-market cash flows from each pair which are considered as excess return"
+    },
+    {
+      "nombre": "ASX Liquidity Filtering",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Procedimiento de dos pasos para seleccionar acciones con liquidez suficiente: (1) máximo 5 días sin negociación en el período de calibración, (2) percentil 50 superior por volumen diario negociado en dólares. Reduce el universo de 3500 a 55-300 acciones.",
+      "relaciones": [{"tipo": "REQUIERE", "objeto": "Pairs Trading Execution"}],
+      "cita_textual": "the stock should not have more than 5 non-trading days during the history period... the stock should be in the top 50% of the stocks... by the average daily dollar-valued trading volume"
+    },
+    {
+      "nombre": "Global Financial Crisis (GFC) Effect on Pairs Trading",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "El período de la Crisis Financiera Global benefició al pairs trading como estrategia contrarian, aprovechando la alta volatilidad e incertidumbre del mercado para generar más oportunidades de trading.",
+      "relaciones": [{"tipo": "CAUSA", "objeto": "Higher Pairs Trading Returns"}],
+      "cita_textual": "Pairs trading as a contrarian strategy greatly benefited from uncertainty and high volatility of the stock market during GFC"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Los tres métodos de pairs trading generan retornos excedentes mensuales estadísticamente significativos entre 5% y 12% anual antes de costes de transacción. El método de distancia con 20 pares genera ~12% anual.",
+      "mercado": "Australian Stock Exchange (ASX)",
+      "periodo": "Enero 1996 - Noviembre 2010 (3455 días; trading: enero 1998 - mayo 2010)",
+      "magnitud": "5% a 12% anual antes de costes; tras costes 0.15%/trade: sólo método distancia marginalmente rentable (p-value 0.10)",
+      "condiciones": "Datos diarios de cierre; 12 meses formación / 6 meses trading; top 5 y top 20 pares; filtro de liquidez",
+      "robustez": "media",
+      "cita_textual": "All three methods demonstrate statistically significant excess returns from 5% to 12% per year. However, after accounting for the transaction costs, two methods became unprofitable, and one earned minimal profit"
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "baja", "nota": "Estudio con datos diarios; menciona la relevancia de pasar a frecuencias intradía pero no lo implementa. Las conclusiones sobre costes de transacción son transferibles a entornos HFT."}
+}

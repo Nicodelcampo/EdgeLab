@@ -1,0 +1,4079 @@
+Algorithmic Trading and Information Dynamics Around 
+Unscheduled Corporate Events 
+ 
+ 
+ 
+Michael Coccia 
+macoccia@olemiss.edu 
+The University of Mississippi 
+ 
+ 
+ 
+Kathleen Fuller 
+kfuller@olemiss.edu 
+The University of Mississippi 
+ 
+ 
+ 
+Robert A. Van Ness 
+rvanness@olemiss.edu 
+The University of Mississippi 
+ 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+Algorithmic Trading and Information Dynamics Around Unscheduled
+Corporate Events
+This Draft: April 2026
+Abstract
+Prior work establishes that algorithmic trading (AT) deters information acquisition around scheduled
+events, but whether this extends to unscheduled corporate events is unknown. Using a sample
+of unexpected special dividend announcements, we find that abnormal AT activity (measured as
+deviations from firm-specific baselines) widens pre-announcement informational gaps. To measure
+the informational asymmetries, we develop a standardized price jump measure which allows us to
+preserve over 50% of observations that would be discarded using prior price jump approaches. Our
+findings indicate that aggregate AT activity declines for approximately 20 trading days following
+special dividend announcements, persisting longer than that observed around regular dividend
+benchmarks. This withdrawal pattern suggests that AT strategies profit from information asymmetry
+rather than information processing; when information asymmetries are publicly resolved, AT activity
+appears to decline.
+JEL Codes: G10, G14
+Keywords: Algorithmic Trading, Corporate Announcements, Price Jump, Event Study, Special
+Dividends, Abnormal Returns
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+1
+Introduction
+Technological advancements continuously introduce new dynamics into the trading process
+in financial markets. For example, algorithmic trading (AT) has transformed market dynamics by
+influencing liquidity, volatility, and price discovery. Although some studies argue that AT enhances
+market efficiency by accelerating the impounding of available information into prices (Brogaard et al.,
+2014), others suggest that it may deter information acquisition by diminishing the incentives for
+informed traders to produce new information (Korajczyk and Murphy, 2019; Yang and Zhu, 2020). The
+dual role of AT, facilitating rapid price adjustment to readily available information while potentially
+stifling the acquisition of new information (Weller, 2018), raises questions about its broader impact on
+market dynamics.
+How AT affects the price discovery process surrounding corporate signals remains an open
+question.
+Signaling theory predicts that informed agents use costly signals to transmit private
+information to the market when the benefits exceed the costs (Akerlof, 1978; Spence, 1973; Ross,
+1977). Dividends are a natural example of such a signal. Firms may pay dividends to bind managers
+and reduce the cash flow available for wasteful spending, thus providing information to the market
+(Easterbrook, 1984; Jensen, 1986). Alternatively, firms may pay dividends to signal managers’ private
+information regarding firms’ future earnings (Bhattacharya, 1979; John and Williams, 1985; Miller,
+1985). Regardless of the reason for the dividend signal, dividends are costly as they are double taxed
+and reduce available investment opportunities for firms.
+To explore the intersection of AT and corporate signaling events, we investigate the information
+dynamics surrounding special dividends. Special dividends are unscheduled and should be unexpected,
+as opposed to earnings announcements or regular dividend payments which occur on a fixed schedule.
+Other unexpected corporate events may have a more ambiguous signal such as a merger or acquisition.
+Announcement returns from mergers and acquisitions contain information about the bidder, the target,
+1
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+and the deal (Fuller et al., 2002). Our empirical framework requires an unexpected corporate signal
+that has an unambiguous expected return such that informed traders will desire to generate private
+information and trade on this information.1 Previous research consistently finds that special dividends
+are a valuable unexpected corporate signal as they are typically associated with a positive market
+reaction (Howe et al., 1992; Jayaraman and Shastri, 1988). By observing AT activity around special
+dividends, we gain insight into how AT can detect informed trading activity (and potentially deter it),
+devoid of any calendar-based strategies.
+We leverage the empirical framework of Weller (2018) to determine if AT is related to preannouncement information acquisition and extend it to test if AT increases the speed at which prices
+reflect the information disseminated by a special dividend announcement. Weller (2018) develops
+a price jump measure that reflects information incorporation into stock prices before an earnings
+announcement. This measure can produce uninformative values when returns in the pre- and postannouncement windows are similar in magnitude but opposite in sign (reversals) and Weller (2018)
+truncates the sample to exclude these observations. Our measure can accommodate all return patterns,
+retaining 50% more observations than we would retain under Weller’s truncation. We show these
+observations are statistically different from the retained sample, characterized by higher volatility,
+higher volume, tighter spreads, and larger announcement returns. The standardized price jump is a
+tool that researchers may use for studying return dynamics around any corporate event.2
+Using a sample of 865 unexpected special dividends announced between 2012 and 2024 and four
+proxies for AT using data from SEC MIDAS, we find AT is positively associated with the standardized
+price jump at the announcement of an unexpected special dividend. This finding implies that AT in
+1An expected return direction is required for our setting. We leverage the tension between informed trader activity in
+the pre-event window and the market response in the contemporaneous event window. There needs to be an information
+asymmetry which is resolved for us to measure the proportion of information that was acquired and incorporated by
+informed traders. If the corporate signal is ambiguous and does not resolve an asymmetry, we would be measuring
+aggregate speculation activity as opposed to informed trading activity.
+2The unstandardized price jump measure while relatively new has been used in top finance and accounting journals,
+and we hope that researchers will elect to use our measure to improve estimation accuracy and retain a larger sample of
+observations (McClure et al., 2025; Brogaard and Pan, 2022).
+2
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+the pre-announcement window of an unexpected special dividend can deter traders from acquiring
+private information on a firm pre-announcement. While this is consistent with the findings of Weller
+(2018), our setting critically removes any calendar-based timing strategies. Our findings are stable
+across industry and year fixed effects specifications and robust to placebo tests, permutation tests,
+bootstrapped standard errors, and alternative baseline AT windows. A crucial component to our
+analysis is that there must be an information asymmetry resolved by the special dividend. We motivate
+this notion by providing evidence of an information gap in the pre-announcement window, as hidden
+trading levels are higher in the pre-announcement window and significantly higher on the days directly
+preceding the announcement.
+The literature has found that AT can be beneficial for markets as it is associated with
+incorporating information into prices (Brogaard et al., 2014).
+Our paper corroborates this with
+the finding that AT increases the immediate incorporation of information following a special dividend
+announcement. Despite this positive attribute of AT activity, we find that AT activity sharply declines
+following the announcement of a special dividend. To benchmark this finding, we compare the decline
+in AT activity to regular dividend increases, and find the decline is stronger and more persistent around
+special dividends as opposed to regular increases. Since AT is found to detect informed trading activity
+(Weller, 2018) and erode the economic rents of the informed traders, AT profits from an information
+asymmetry. A possible mechanism for the decline in AT when a special dividend is announced is that
+once the information gap is tightened by the dissemination of the signal, this eliminates any asymmetry
+and may deter AT activity.
+Although special dividends are infrequent, they are well-suited to our setting: they are one of
+the few truly unexpected corporate events, they remain large in size (consistently 5 to 10 times larger
+than regular dividends (Figure 1, Panel B)), and they are associated with large positive abnormal
+returns. The market reaction is strongest in firms that are not regular-dividend payers, consistent with
+the signal being more valuable for firms that are more opaque.
+3
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+The remainder of this paper is organized as follows. Section 2 reviews the related literature.
+Section 3 describes our data. Section 4 develops our hypotheses and describes our empirical methodology.
+Section 5 presents our results. Section 6 discusses robustness tests. Section 7 concludes.
+2
+Related Literature
+2.1
+Dividend Signaling
+Lintner (1956) lays the foundation for the dividend signaling literature with his observation
+that firms are reluctant to cut dividends and only gradually increase dividends if firms believe they
+can sustain the dividends. Miller and Modigliani (1961) argue dividend irrelevance yet concede that
+with irrational participants in the market, dividends may act as a signal of higher future earnings from
+the firm. Bhattacharya (1979) models how tax rate differences between dividends and capital gains
+can generate investor preferences and shows that dividends serve as a costly but credible signal of
+future cash flows. Miller (1985) demonstrates that dividends are a costly signal as dividends reduce
+the firms’ internal financing (slack). Alternatively, Easterbrook (1984) suggests that paying dividends
+reduces informational asymmetries and agency costs. Jensen (1986) also hypothesizes that managers
+pay dividends to reduce their free cash and align managers’ and shareholders’ interests. Our analysis is
+agnostic about the specific information being signaled (increased future earnings or reduction of free
+cash) as what matters is that dividends contain information that is a valuable signal to the market.
+Empirically, Allen and Michaely (2003) note that despite the absence of a clear consensus
+on whether dividends signal future earnings or a reduction of free cash, there is information content
+in dividends. Sant and Cowan (1994) find that following dividend omissions, firms’ future earnings
+become more unpredictable. Fuller and Goldstein (2011) present evidence that dividend-paying stocks
+outperform non-dividend paying stocks in declining markets, demonstrating that dividend payments
+provide investors with information.
+4
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+Fuller (2003) finds that informed traders possess private information about the firm before it is
+publicly conveyed through the signal. Therefore, in the presence of more informed traders the reaction
+to a dividend will be less pronounced as the information is already incorporated leading up to the
+announcement despite the announcement itself being unknown. In our study we examine whether in
+the presence of higher AT, informed traders are unable to extract economic rents from their private
+information. Without economic incentives, traders are not enticed to pursue private information and
+this reduction in informed trading leading up to the special dividend announcement would cause a
+greater market reaction to the announcement as information is not incorporated into the price.
+2.2
+Special Dividends
+Special dividends are unexpected one-time payments that firms make to shareholders. DeAngelo
+et al. (2000) examine special dividends announced between 1926 and 1995 to find that special dividends
+were once commonplace but have become more infrequent, and the occurrence of large special dividends
+has increased. Special dividends are associated with positive market reactions ranging from 1.85% to
+3.44% cumulative abnormal returns (Brickley, 1983; Jayaraman and Shastri, 1988; Howe et al., 1992;
+Gombola and Liu, 1999; Lie, 2000). Jayaraman and Shastri (1988) find that recurring special dividends
+command a lower market reaction than non-recurring. Lie (2000) finds that firms which declare a
+special dividend have accumulated excess funds but generate fewer funds ex-post. The literature
+reaches a consensus that special dividends provide a sufficient informational shock. We contribute to
+the special dividend literature by investigating the impact of AT on the information dynamics of the
+signal originating from the special dividend, and whether insiders or sophisticated traders influence the
+return dynamics surrounding the unexpected announcements.
+5
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+2.3
+Algorithmic Trading
+AT or High-Frequency Trading (HFT) plays an increasingly important role in how information
+is incorporated into asset prices (Brogaard et al., 2014; Weller, 2018; Zhang, 2018). In this study,
+we focus on the broad set of AT strategies, which encompass any type of trading that relies on
+computerized execution.3 AT increases the incorporation of readily available information into prices,
+which discourages participants from acquiring private information (Weller, 2018). This finding is
+corroborated by the theoretical model of Yang and Zhu (2020) who demonstrate that traders who
+only trade on past order flows and who possess no innate trading motivations can erode the profits
+of a trader who is trading on private information by trading in the same direction as the informed
+trader’s order.4 If the profits of the informed trader are decreased, this reduces the incentive for a
+trader to “become informed.” Weller (2018) relies on proxies to detect overall market level AT activity,
+but Korajczyk and Murphy (2019), as well as Van Kervel and Menkveld (2019) find direct evidence of
+computerized traders trading in the same direction as institutional traders while using data with trader
+identities. The key distinction of our setting, compared to prior work, is that the unscheduled nature
+of a special dividend announcement allows us to disentangle calendar-based strategies from continuous
+order flow monitoring.
+3
+Data
+3.1
+Special Dividends
+We use Center for Research in Securities Pricing (CRSP) data to identify all special dividends
+paid from 1996–2024 by common stocks (share code 10 or 11). We start at 1996 as 1995 is the final year
+of DeAngelo et al. (2000). We identify special dividend amounts, regular dividend amounts, declaration
+3HFT and AT are commonly used interchangeably, however, HFT is a subset of AT, with participants primarily acting
+as market makers (Menkveld, 2013).
+4The process of trading in the same direction as an inferred institutional (informed) trade is known as back-running.
+6
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+dates, and ex-dividend dates.5 From CRSP we also collect stock information; daily price, volume,
+returns, market capitalization (price × shares outstanding), daily ask close and daily bid close. We
+use the daily return series for a symbol to construct a volatility measure which is the 40-day rolling
+standard deviation of daily returns. We construct a liquidity proxy denoted as spread which is the daily
+closing ask minus the bid. Summary statistics are presented in Table 2, Panel B; summary statistics are
+computed over days [−250, +40] relative to the announcement and ex-dividend dates.6 For computing
+abnormal returns surrounding special dividends we estimate the Fama and French (2015) five-factor
+model and include momentum (Jegadeesh and Titman, 1993).7
+In Figure 1, panel A we plot yearly special dividend frequency along with the percentage of
+special dividend payers relative to firms which pay a regular dividend (or a special). We find that
+among firms which pay a regular dividend, specials appear to remain rare, with the percentage of
+firms which pay a regular dividend paying a special dividend in the same year ranging from 5–18%.
+The changes in this percentage appear to be driven by increases in special dividend frequency, not a
+change in the composition of dividend paying firms who pay a special as well. There was an influx
+in special dividend frequency in 2012 as a response to changes in individual tax rates (Hanlon and
+Hoopes, 2014).8
+Special dividends have also remained large in size. Table 1 follows DeAngelo et al. (2000) and
+tabulates the number of special dividends for each four-year bin along with how many special dividends
+meet distribution thresholds of 5%, 10%, and 18.6% of equity value. DeAngelo et al. (2000) choose
+18.6% as the final threshold as Dann (1981) finds that repurchases are 18.6% of pre-announcement
+5Regular dividend codes are 1222, 1232, 1242, 1252 and special dividends are 1262 and 1272.
+6Volatility has fewer observations as we require a minimum of 10 previous trading dates to compute the standard
+deviation of returns. We do not use these early event window dates in regressions; they are simply to describe the firms in
+our sample.
+7We use the factor data provided by Dr. Kenneth French on his website and thank Dr. French for providing the data:
+https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html.
+8The Jobs and Growth Tax Relief Reconciliation act had lowered the personal tax rate on dividends but was set to
+expire on December 30, 2010. It was extended for two years and set to expire on December 30, 2012, in addition, there
+was a 3.8% raise from the Patent Protection and Affordable Care Act of 2012. Therefore, an increase in special dividends
+was a mechanism for firms to distribute their earnings before the higher tax rates took effect in 2013.
+7
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+equity value. While we still find that special dividends are rare, their cash distribution is large in
+value, suggesting that these distributions convey a strong signal. Figure 1, panel B plots the time series
+of special dividend size relative to a firm’s most recent regular dividend conditional on the regular
+dividend occurring in one year before the special announcement. Special dividends are consistently 5
+to 20 times larger than their regular counterparts, which is suggestive that market participants will
+interpret a special dividend as a stronger signal than a regular dividend increase or maintenance.
+3.2
+Algorithmic Trading
+Weller (2018) constructs four proxies to measure algorithmic trading activity. These proxies
+are constructed using the Market Information Data Analytics System (MIDAS), provided by the
+U.S. Securities and Exchange Commission (SEC). MIDAS offers summary statistics at the stock-dayexchange level. Since Weller (2018) states that a higher cancel-to-trade ratio and odd-lot ratio indicate
+an increase in AT activity, whereas a lower trade-to-order ratio and trade size indicate more AT activity,
+we construct the same four proxies to measure AT activity:
+• Trade-to-order ratio (TTO): Total trade volume divided by order volume.
+• Cancel-to-trade ratio (CTT): Number of cancellations divided by the number of trades.
+• Odd-lot ratio (OLR): Odd-lot (trades which execute in a quantity less than the round-lot size,
+which is typically 100 shares) volume divided by round-lot volume.
+• Trade Size (TS): Total trade volume divided by number of trades.
+Since the SEC began reporting this data in 2012, we construct our AT proxies using data from
+2012 to 2024. For our analysis of AT trading in relation to special dividends, we limit our sample of
+special dividends to those announced between July 1, 2012 and October 21, 2024. We begin on July
+1, 2012 as we require an estimation period of the AT proxies before announcement date to construct
+the abnormal AT proxies. We also run placebo tests before the event window. We end our sample on
+October 21, 2024 as we need enough trading days in the post-announcement window. As shown in
+8
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+Table 3 we started with 1,778 special dividends announced between 2012 and 2024 for common stocks.
+We remove 680 special dividends which are “expected” based on the firm’s history of paying special
+dividends.9 We exclude 11 events coinciding with other non-dividend corporate announcements on the
+same date, 80 events lacking sufficient CRSP and MIDAS data over the event window [−253, +40],
+and 135 events due to zero trading volume on one or more days. We also require that symbols have at
+least 287 out of 290 trading days populated in both CRSP and MIDAS; all firms satisfy this criterion.
+After removing 7 additional events for miscellaneous reasons such as ticker changes, we are left with a
+final sample of 865 special dividend events.
+4
+Hypothesis Development and Methodology
+4.1
+Standardized Price Jump
+The price jump measure of Weller (2018) – hereafter referred to as Weller’s PJ – captures
+the information incorporation into the stock price before an event. Intuitively it is the ratio of the
+information revealed around the event relative to the total information of the event which includes the
+pre- and post-announcement windows. The price jump ratio is formally defined as:
+PJ (a, b)
+i,t
+=
+CAR(T−1, T+b)
+i,t
+CAR(T−a, T+b)
+i,t
+(1)
+where CARi,t is the cumulative abnormal return for stock i at time t, T is the event date, a is the length
+of the pre-announcement window, and b is the length of the post-announcement window. The price
+jump ratio can be interpreted as the percentage of the total information revealed at announcement
+relative to the total information that was acquirable. In the presence of an informed trader with perfect
+9Our method for determining whether a special dividend is “expected” is based on whether a firm paid a special
+dividend within two of the three prior calendar years, if so, the dividend is expected. Our results are robust to an
+alternative decay-based surprise filter where we keep a count for each firm and increment it by one every time a firm pays
+a special dividend, the count is decreased by one every 400 calendar days, special dividends where the count is below 2
+are classified as a surprise.
+9
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+private information trading without detection (Kyle, 1985) there would be a smooth incorporation of
+the information and no price jump.
+Weller (2018) bounds his price jump ratio between 0 and 1.
+A price jump of 0 implies
+all information that was acquirable has been incorporated and a price jump of 1 implies that no
+information which was acquirable was incorporated pre-announcement. This metric is subject to
+limitations pertaining to CARs in the pre- and post-announcement windows being similar in magnitude
+but opposite in sign (reversals). The price jump can yield values that are informative, but lie outside
+of (0,1).10 We contend that observations lying outside of (0,1) can be valuable and present tail cases,
+that when not included can distort estimations and confound inference.
+We propose a more robust price jump measure which can accommodate all return dynamics.
+Before presenting the measure, we identify five desirable properties that any generalized price jump
+measure should satisfy:
+1. Universal domain. The measure should be defined for all return patterns, including reversals
+where pre- and post-announcement CARs have opposite signs, and near-zero denominator cases.
+2. Monotonicity.
+The measure should be monotonically increasing in the magnitude of the
+informational gap resolved at announcement. Events where less information is incorporated
+pre-announcement should produce larger price jumps.
+3. Concordance. In the well-behaved region where both measures are defined, the generalized measure
+should be concordant with the original price jump, preserving the economic interpretation.
+4. Continuity. The measure should vary continuously with the underlying return dynamics; it should
+not require sample truncation that introduces a discontinuity between retained and discarded
+observations.
+5. Non-negativity. The measure should be bounded below by zero, as a price jump of zero has a
+natural interpretation: all acquirable information was incorporated pre-announcement.
+Weller’s price jump satisfies properties (2), (3), and (5) within its admissible domain [0, 1], but fails
+properties (1) and (4): Any observations outside [0, 1] must be discarded, and this truncation is
+10Consider a stock which has a significant information asymmetry between the firm and the market. Assume there is a
+CAR of -2% in the days leading up to an event (days T-a to T-1). Now assume that the firm has positive information but
+has not been able to convey this through a signal. The firm then conveys this information through a costly signal and
+the market reacts extremely positively and surrounding the event window there is a CAR of 2.1% (days T-1 to T+b).
+The unstandardized price jump would be computed as PJ =
+0.021
+0.021+(−0.020) = 2.1. Therefore, this observation would be
+excluded. Similarly, if the signs of the two windows were reversed, the PJ would be computed as PJ =
+−0.021
+−0.021+0.020 = −2.1,
+also excluded. Examples from the data are provided in Appendix A.
+10
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+non-random (Appendix A.1). However, the standardized price jump, defined below, satisfies all five
+properties.
+Formally:
+PJ stan
+i,t
+=
+kCAR(T−1, T+b)
+i,t
+−kCAR(T−a, T−2)
+i,t
+ ·
+
+kCAR(T−1, T+b)
+i,t
+2
+
+kCAR(T−a, T−2)
+i,t
+2
++
+
+kCAR(T−1, T+b)
+i,t
+2
++
+
+CAR(T−1, T+b)
+i,t
+CAR(T−a, T+b)
+i,t
+
+(2)
+We follow the notation of Weller (2018) but also introduce k, where k = 100 and expresses cumulative
+abnormal returns in percentage points.11 Intuitively, the first term measures the magnitude of the
+announcement surprise, weighted by the announcement window’s dominance in total return variation.
+The second term captures the relative share of pre-announcement price movement, ensuring the measure
+remains informative when pre- and announcement-window returns are similar in magnitude. Critically,
+the standardized price jump allows us to retain 50% of observations that would be cut if we were
+to employ the regular price jump instead. PJ stan can still produce large values around events with
+particularly unusual return dynamics; we therefore winsorize at the 99% level. For PJ stan we validate
+properties (1)–(3) empirically in Figures 2–3 and Appendix A. Properties (4) and (5) are satisfied by
+the construction of the measure, as the standardized PJ cannot produce negative values and any return
+dynamics will produce an informative value which measures the information disseminated surrounding
+an announcement.
+We prefer the use of the standardized price jump for several reasons. First, Figure 2 displays
+the distributions of both Weller’s price jump and the standardized price jump. The raw distribution
+of Weller’s measure (Panel A) exhibits a considerable amount of observations residing outside the
+[0, 1] range, making it necessary to truncate the sample to obtain a well-behaved measure; we also
+remove observations which are extreme outliers for presentability. This truncation discards nearly
+11k is not a tuned constant, it converts returns to percentage points to manage interactions with the squared terms.
+Our main estimates hold under a log-transformation of PJstan.
+11
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+half the observations, reducing the sample from N = 865 to N = 433 (Panel C). In contrast, the raw
+standardized measure (Panel B) is right-skewed but naturally bounded, the events which lie toward the
+right tail represent considerable asymmetries resolved by the signal from the special dividend (Panel D).
+Second, in Figure 3 we rank observations by each measure and overlay the other to illustrate
+their correspondence and divergence. In Panel A, events are ranked by the standardized price jump,
+with Weller’s price jump measure overlaid where it lies in [0, 1]. The two measures track each other
+closely for “market non-events” where both windows exhibit similar return patterns. However, the
+standardized measure assigns meaningfully different values for events with return reversals. Events
+associated with large standardized price jumps are not quantified significantly differently using the
+regular price jump. In Panel B when the truncated sample is ranked by the regular price jump, the
+standardized price jump generally increases as well. However, there is some disagreement towards
+the right tail, which are events with a large asymmetry, often accompanied with a reversal. Panel C
+shows the ranking for standardized price jumps again with the untruncated regular price jump where
+red markers indicate observations where Weller’s untruncated measure falls outside [0, 1], yet the
+standardized measure produces informative values for these events. Panel D clearly shows that the
+tails of the regular price jump metric are unable to effectively quantify the informational asymmetry
+resolved, whereas the standardized can.
+Third, Panel A of Table 2 reports the distributional properties of both measures. Weller’s
+unrestricted price jump has a mean of −0.302 and a standard deviation of 17.031, reflecting the extreme
+values generated by near-zero denominators. When restricted to [0, 1], the sample is reduced to 433
+observations – a loss of 49.9% of the sample. The standardized price jump, after winsorizing, has a
+mean of 3.743 and a standard deviation of 5.556 across all 865 observations.
+12
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+4.2
+Information Acquisition
+We contend that while AT and its relation to information dynamics around scheduled events
+has been studied, our setting is fundamentally different due to the unexpected nature of special
+dividends. In an event such as an earnings announcement (Weller, 2018) where the content is unknown,
+but the timing is known, AT can prepare or alter behavior ex-ante. In the case of an unexpected
+special dividend, the timing and the content are both unknown variables. Weller (2018) finds that
+AT deters information acquisition; the mechanism is that AT detects informed trading, trades in the
+same direction, and lowers the extractable rents that informed traders can generate from their private
+information. If the deterioration of economic rents of informed traders exceeds the cost of acquiring the
+information, then sophisticated traders are not incentivized to acquire this information. This causes
+there to be a price jump at announcement date as there was no private information incorporated into
+prices beforehand.
+Where our study differs is that, by removing calendar timing effects, we test whether informed
+traders are still detected by ATs and are deterred from acquiring information preceding an unexpected
+event, or whether informed traders may better capitalize on their private information when there is no
+predetermined date of information dissemination. A critical component of our hypothesis is that the
+private information must be acquirable; the event cannot be so unexpected that no market participant
+can obtain inside information. Special dividends are well-suited to this setting. Though Lie (2000)
+finds that prior to special dividend announcements, firms have a buildup of funds, this connection is
+ambiguous. Opler et al. (1999) suggest that firms with strong growth opportunities and riskier cash
+flows have greater holdings of cash. These are the exact firms that do not pay dividends (Fama and
+French, 2001).
+We state that an impending special dividend may be ambiguous, for our hypothesis it is not
+essential that an informed trader “predict” a special dividend. Rather our setting requires that there is
+13
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+an information asymmetry between the firm and the market, and whether or not a trader collects costly
+information without the knowledge that there is an impending announcement that will reconcile the
+information asymmetry. In Figure 4 we plot the hidden volume (HVR) and hidden trade ratios (HTR)
+along with the pre and post mean levels of the two metrics. A sophisticated trader can use hidden
+trades for a variety of strategies, such as concealing private information. Hidden trading activity is
+elevated in the pre-event period as opposed to the post-event period. While the figure is somewhat
+noisy, we also find that the days immediately preceding the announcement have statistically significantly
+higher hidden trading activity, as displayed in Table IA1. While it is possible that the increased
+hidden trading could reflect other trading strategies (such as market making) besides concealing private
+information, it seems unlikely there would be a statistically significant spike in the days immediately
+prior to an unscheduled announcement from any other source besides informed trading. In summary,
+the figure provides suggestive evidence of an informational asymmetry that is unexpectedly resolved by
+the special dividend announcement, along with the footprints of informed trading.
+This leads to our formal hypothesis: if algorithms are always active in detecting informed
+trading order flow, this will deter traders from collecting private information prior to an unscheduled
+event. Stated formally as:
+H1: Abnormal algorithmic trading activity is associated with wider informational gaps before special
+dividend announcements, consistent with AT detecting and deterring informed trading.
+4.3
+Information Incorporation
+Fama (1970) proposed that in an efficient market, prices should fully reflect all available
+information, and new information should be rapidly incorporated into prices.
+Yet, violations of
+market efficiency are found, as the market frequently overreacts or underreacts to new information
+(De Bondt and Thaler, 1985; Jegadeesh and Titman, 1993; La Porta, 1996; Hirshleifer et al., 2009).
+Baldauf and Mollner (2020) demonstrate that high-frequency traders (HFTs) can deter information
+14
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+acquisition through their rapid incorporation of already available information. The finding that AT
+reduces information acquisition is typically viewed in a negative light. To our knowledge, no paper
+has investigated whether the presence of elevated AT can facilitate a more complete price response to
+the signal originating from an unexpected corporate event. Thus, the market may interpret the signal
+content of a special dividend more efficiently in the presence of higher AT activity.12
+H2: Algorithmic trading accelerates the speed at which the market interprets and incorporates the signal
+from a special dividend announcement.
+In summary, our setting is an event in which there is an information asymmetry, which is
+partially or fully resolved by the signal transmitted by an unexpected corporate announcement. The
+informational asymmetry is supported by Figure 4. We are effectively testing if AT activity deters
+informed traders from resolving this information asymmetry despite there being no public knowledge
+of an impending announcement, as well as whether or not AT activity allows the market to process the
+signal at a faster rate.
+4.4
+Abnormal Algorithmic Trading
+Algorithmic trading intensity varies across firms due to structural factors such as liquidity,
+institutional ownership, and index membership. These cross-sectional differences are orthogonal to
+event-specific information dynamics and, if left unaddressed, may confound inference. To isolate whether
+AT changes around a specific special dividend announcement, we construct abnormal AT measures
+by differencing each firm’s event-window AT from its own baseline, analogous to the construction of
+abnormal returns in standard event studies.
+12The direction of the market reaction to a special dividend is irrelevant in our paper. It could be the firm is signaling
+positive information (e.g., excess earnings) or be signaling negative information (e.g., lack of investment opportunities).
+We test whether the market reaches a conclusion about its reaction faster in the presence of high AT activity or whether
+AT delays the formation of market consensus regarding the event.
+15
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+Formally, for each AT proxy j and firm i, we define abnormal AT as:
+AbnormalATj,i = AT [T-21, T-1]
+j,i
+−AT [T-61, T-22]
+j,i
+(3)
+where AT [T-21, T-1]
+j,i
+is the mean of the AT proxy j for firm i over the 21 trading days preceding the
+announcement and AT [T-61, T-22]
+j,i
+is the mean over a 40-day baseline window sufficiently distant from
+the event to avoid contamination. The baseline window remains within the same quarter, balancing
+the stability of the estimate against proximity to the event.13
+This within-firm differencing approach is analogous to the construction of abnormal returns in
+standard event studies and is a natural way to remove the endogenous cross-sectional variation in AT
+activity. If a firm structurally attracts high AT due to omitted variables, this level effect is differenced
+out; the remaining variation captures whether AT activity deviates from the firm’s own norm in the
+period surrounding the announcement. As an empirical validation, we conduct placebo tests in which
+we randomly assign pseudo-announcement dates drawn from outside the event window and calculate
+abnormal AT using identical methodology. All placebo coefficients are statistically insignificant (Table 7,
+Panel A), confirming that our measure captures event-specific dynamics rather than persistent firm
+characteristics.14
+5
+Results
+5.1
+Signal Content of Special Dividends
+This subsection confirms that special dividends generate sufficient informational shocks to test
+AT dynamics. We document market reactions and their cross-sectional determinants before turning to
+13We examine robustness to alternative baseline windows of [−80, −41] and [−120, −61] in Table IA10 and the results
+are qualitatively similar.
+14Firm fixed effects and time fixed effects could potentially control for this; however, for most firms we only have
+one observation. Furthermore, if a firm’s baseline AT activity varies through time differently than that of other firms,
+time fixed effects would fail to capture this. Our abnormal measure effectively de-means AT activity for both time and
+firm-varying effects. We also estimate placebo tests without fixed effects in Table IA14.
+16
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+AT analysis.
+In Table 4 we compute abnormal returns and cumulative abnormal returns centered on the
+special dividend declaration date. We find no evidence of significant information leakage before the
+announcement, as abnormal returns are statistically insignificant in the pre-event period. On the
+announcement date (day 0), abnormal returns are significantly positive at 0.64%, and CARs reach
+3.67% over the 11-day window [−5, +5], significant at the 1% level. The magnitude of these returns
+confirms that special dividends convey economically meaningful information to the market.
+We partition the sample into firms that also pay regular dividends (dividend-paying firms,
+N = 647) and those that do not (non-dividend-paying firms, N = 218). Non-dividend-paying firms
+exhibit substantially larger announcement returns: a day 0 abnormal return of 1.28% compared to
+0.42% for dividend payers. This difference is consistent with the signal of the special dividend being
+more informative for firms that are more opaque to the market. For firms that regularly pay dividends,
+the market already has a periodic information channel but a special dividend from a non-dividendpaying firm reveals more information. Cumulative abnormal returns centered around the ex-dividend
+date are positive in the pre-event window, but become insignificant by the end of the window.
+Since we seek to identify which aspect of the special dividend incites the market response, we
+estimate cross-sectional regressions of the form:
+CAR[−1,+5]
+i
+= α + β1 divamti + β2 ratioi + β3 (ratioi × divamti) + γ Xi + εi
+(4)
+where divamt is the special dividend amount per share, ratio is the special-to-regular dividend ratio
+of the firm’s most recent regular dividend, and X is a vector of firm-level controls (price, volume,
+volatility, size, spread), all in log units and measured as event-window averages over [−21, −1].
+Table 5 reports the cross-sectional regressions of cumulative abnormal returns on special
+dividend characteristics and firm controls. The dollar amount of the special dividend is positively and
+17
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+significantly associated with CARs (ˆβ = 0.0167, p < 0.01), indicating that larger distributions elicit
+stronger market reactions. The ratio of the special dividend to the most recent regular dividend is
+significant in a univariate specification but is subsumed by the dollar amount in multivariate models.
+The interaction between dollar amount and ratio is statistically insignificant. The key takeaway is
+that it is the absolute size of the distribution, not the relative size, that drives the market response.
+Among the control variables, price is negatively associated with CARs, consistent with smaller firms
+generating larger announcement reactions, while volatility is positively associated with CARs.
+Having established that special dividends generate economically significant and persistent
+market reactions, we now examine whether algorithmic trading affects the information dynamics
+surrounding these events.
+5.2
+Information Acquisition
+First we examine whether abnormal AT activity widens the informational gap preceding the
+announcement. To do so, we estimate cross-sectional regressions of the pre-announcement price jump
+on AT proxies, first using raw AT levels (Panel A of Table 6), then using abnormal AT measures
+(Panel B of Table 6), followed by placebo validation (Table 7).
+The baseline specification takes the form:
+PJ i = α + β AT j
+i + γ Xi + δt + δk + εi
+(5)
+where PJ i is either Weller’s price jump (restricted to [0, 1]) or the standardized price jump for firm i,
+AT j
+i is one of four AT proxies j ∈{TS, OLR, TTO, CTT} averaged over the pre-announcement window
+[−21, −1], Xi is a vector of firm-level controls (log price, log volume, log market capitalization, volatility,
+and spread), and δt and δk denote year and Fama–French 12 industry fixed effects, respectively. Each
+18
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+AT proxy is entered separately to avoid multicollinearity among the four measures.15 In Panel B, we
+replace AT j
+i with AbnormalAT j
+i, the abnormal AT measure constructed as described in Equation 3.
+5.2.1
+Raw AT Levels
+Panel A of Table 6 reports estimates of Equation 5 using raw AT levels. With Weller’s price
+jump as the dependent variable (N = 433), only TTO is marginally significant (p < 0.10). Using the
+standardized price jump (N = 865), the coefficients are larger in magnitude but remain statistically
+insignificant across all four proxies. The lack of explanatory power is unsurprising: raw AT levels
+largely reflect persistent structural characteristics – liquidity, institutional ownership, index membership
+– rather than event-specific dynamics. A firm with structurally high AT will register as “high AT”
+regardless of whether an information event is imminent. We estimate placebo tests of Equation 5
+without fixed effects in Table IA14 and find three of the four AT proxies are statistically significant
+while none of the abnormal measures are, implying that a firm’s baseline AT outside of the event
+window is correlated with price dynamics, but the abnormal AT activity in the event window does
+capture event dynamics and is not a spurious relation.
+5.2.2
+Abnormal AT Levels
+Panel B of Table 6 re-estimates the same specification replacing AT levels with abnormal AT.
+The results sharpen considerably. For the standardized price jump, the abnormal coefficients are
+estimated as follows: Abnormal TS a coefficient of −3.32 (p < 0.05), Abnormal OLR a coefficient of
+2.90 (p < 0.01), Abnormal TTO a coefficient of −1.35 (p < 0.05), and Abnormal CTT a coefficient of
+1.11 (p < 0.10). The coefficient signs are internally consistent: proxies that increase with AT activity
+(OLR, CTT) enter positively, while proxies that decrease with AT activity (TS, TTO) enter negatively.
+All four proxies point in the direction of higher abnormal AT in the pre-announcement being associated
+15We report a horse race specification with all four proxies entered simultaneously in Table IA6; no individual proxy
+retains significance due to high variance inflation.
+19
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+with a larger price jump at announcement, indicating a wider informational gap.
+To put these estimates in economic terms, a one-standard-deviation increase in Abnormal OLR
+is associated with a 0.60-unit increase in the standardized price jump (0.11σ), equivalent to 44% of the
+median price jump. Across all four proxies, the estimated effect of a one-standard-deviation change
+ranges from 25% to 44% of the median, with internally consistent signs. This magnitude is economically
+meaningful and suggests that the deterrence of information acquisition documented by Weller (2018)
+for scheduled earnings announcements extends to settings where there is no publicly known event date.
+For Weller’s price jump restricted to [0, 1], the abnormal AT measures likewise improve relative
+to Panel A: Abnormal OLR, Abnormal TTO, and Abnormal CTT are each statistically significant
+(p < 0.10), though the sample is limited to the 433 observations satisfying the [0, 1] bound. The weaker
+results likely reflect Weller’s price jump not effectively capturing the information dynamics of our
+sample, where a significant asymmetry is resolved and return patterns often involve large magnitudes
+or reversals. The central takeaway from Panel B is that it is abnormal AT — not the level of AT
+— that predicts pre-announcement information gaps and within-firm deviations isolate event-specific
+dynamics that cross-sectional levels cannot capture.
+5.2.3
+Placebo Tests
+Table 7 reports placebo tests designed to validate that the Panel B results capture announcementspecific dynamics. We randomly assign pseudo-announcement dates drawn uniformly from [−120, −60]
+days before the actual event. At these pseudo-dates, we calculate AT and abnormal AT at the placebo
+window, and use price jump from the true window. If the relationship in Table 6 were driven by
+omitted firm characteristics that are correlated with both AT and return dynamics, these correlations
+would appear at non-event dates as well.
+Panel B of Table 7 reports the placebo results. All abnormal AT coefficients are small in
+magnitude and statistically insignificant across both price jump measures. The placebo tests confirm
+20
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+that the abnormal AT–price jump relationship is specific to the actual announcement window and not
+an artifact of persistent firm characteristics.
+5.3
+Information Incorporation
+Second, we examine whether AT accelerates the incorporation of information following the
+announcement. To do so, we estimate cross-sectional regressions of post-announcement price dynamics
+on AT proxies, using three complementary dependent variables: an information incorporation ratio
+(Panel A of Table 8), the post-announcement standardized price jump (Panel B of Table 8), and a
+return reversal indicator (Panel C of Table 8).
+The baseline specification takes the form:
+Yi = α + β AT j
+i + γ Xi + δt + δk + εi
+(6)
+where Yi is one of three dependent variables defined below, AT j
+i is one of four AT proxies j ∈
+{TS, OLR, TTO, CTT} averaged over the post-announcement window [0, +2], Xi is the same vector
+of firm-level controls as in Equation 5 (log price, log volume, log market capitalization, volatility, and
+spread), and δt and δk denote year and Fama–French 12 industry fixed effects, respectively. As before,
+each AT proxy is entered separately, and we estimate the specification using both raw AT levels and
+post announcement abnormal AT measures. A distinction we make in this setting is that abnormal AT
+is defined differently. Formally, for each AT proxy j and firm i, we define abnormal AT as:
+AbnormalATi = AT [T, T+2]
+i
+−AT [T-61, T-22]
+i
+(7)
+where AT [T, T+2]
+i
+is the mean of one of the four AT proxies for firm i over the event date and the
+two trading days following the announcement and AT [T-61, T-22]
+i
+is the mean over the 40-day baseline
+21
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+window. In this specification, we examine whether AT activity following the special dividend signal is
+associated with faster price adjustment, thus we measure abnormal AT using observed AT on days
+(0,2) as opposed to (-21,-1).
+5.3.1
+Incorporation Ratio
+Panel A of Table 8 reports estimates of Equation 6 where the dependent variable is the
+incorporation ratio, defined as CAR[0,+2]/CAR[0,+5]. This ratio captures the fraction of the five-day
+post-announcement cumulative abnormal return that is incorporated within the first two trading days.
+If the incorporation ratio is close to one, there is rapid information incorporation. No AT proxy
+whether measured in raw levels or as abnormal is significantly associated with the incorporation ratio
+(N = 865). However, the incorporation ratio suffers from similar issues as does Weller’s price jump
+measure since it is mechanically unstable when CAR[0,+5] approaches zero, as small denominator values
+amplify noise. Thus, we estimate another incorporation ratio with an alternative window, specifically
+CAR[0,+2]/CAR[0,+10]. The results are stronger, but the extended window may capture dynamics
+beyond information incorporation, therefore we lean on the original (0,5) window for our main inference
+(Table IA11).
+5.3.2
+Post-Announcement Standardized Price Jump
+Panel B of Table 8 re-estimates Equation 6 using the post-announcement standardized price
+jump as a complementary dependent variable. This measure, computed as the standardized price jump
+over [0, +2] relative to [0, +5], captures how much of the total five-day price discovery is concentrated
+in the initial two-day window without the denominator instability of the incorporation ratio.
+Using raw AT levels, no proxy is statistically significant. However, replacing AT levels with
+abnormal AT sharpens the results considerably. The abnormal coefficients are estimated as follows:
+Abnormal TS a coefficient of −1.71 (p < 0.05), Abnormal TTO a coefficient of −0.62 (p < 0.05),
+22
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+and Abnormal CTT a coefficient of 0.55 (p < 0.05). The coefficient signs are internally consistent:
+proxies that decrease with AT activity (TS, TTO) enter negatively, while the proxy that increases with
+AT activity (CTT) enters positively. All three significant proxies indicate that higher abnormal AT
+corresponds to a larger fraction of the total five-day response being concentrated in the initial [0, +2]
+window.
+Our results suggest that only abnormal measures combined with the standardized price jump
+are valid for estimating any relation between AT and information incorporation. This parallels the
+information acquisition results in Table 6, where the distinction between raw and abnormal AT proved
+decisive.
+5.3.3
+Return Reversals
+Panel C of Table 8 estimates a linear probability model of Equation 6 where the dependent
+variable is a return reversal indicator, equal to one if the sign of CAR[0,+2] differs from the sign of
+CAR[0,+5], and zero otherwise. A return reversal indicates that the market’s initial interpretation
+of the announcement was subsequently revised; approximately 15% of events in our sample exhibit
+such reversals. If the signal was processed efficiently then the signal should theoretically be processed
+completely on the event date. The (0,+2) window allows for a buffer.
+Using raw AT levels, no proxy is significantly associated with the probability of a reversal. With
+abnormal AT, the TTO ratio (−0.083, p < 0.01) and CTT ratio (0.090, p < 0.01) significantly predict
+reversal probability, suggesting that AT accelerates the initial price response but does not necessarily
+improve its accuracy. However, the abnormal AT and reversal windows are contemporaneous, making
+reverse causality difficult to rule out.
+Overall, the incorporation results suggest that abnormal AT activity can increase the incorporation
+of information originating from a corporate event into prices. While taken together with the finding that
+AT deters information acquisition, the overall welfare becomes nuanced. Firms which have significant
+23
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+internal private information may need to consider the AT levels in their common stock. A firm with a
+large information asymmetry and high levels of AT activity may have more motivation to engage in a
+signaling event as AT levels will deter traders from pursuing this private information on their own, as
+well as accelerate the market interpretation of the signal.
+5.4
+Algorithmic Trading Withdrawal
+Our most striking finding is that aggregate AT activity declines following special dividend
+announcements and remains depressed for approximately 20 trading days. This pattern is documented
+in Figure 5 and formally tested in Table IA8. This creates a tension: AT facilitates information
+incorporation, yet withdraws precisely when new information arrives.
+Figure 5 plots abnormal AT proxies in event time [−20, +20] for both special dividends and
+regular dividend increases announced by the same firms. We include regular dividend increases as a
+reference, as they can also be used as corporate signals. For special dividends, all four AT proxies
+exhibit a sharp shift at the announcement date: TS increases (less AT), OLR declines (less AT), TTO
+increases (less AT), and CTT declines (less AT). The direction of each proxy consistently indicates a
+reduction in AT activity. This decline persists for approximately 20 trading days before reverting toward
+baseline levels. The same pattern exists with regular dividends but the magnitude and persistence of
+the withdrawal is not as large.16
+Table IA8 formalizes this visual evidence. For each day in [0, +20], we compute the crosssectional mean of abnormal AT and test whether it differs from zero. All four proxies show statistically
+significant declines on the announcement day and this significant decline persists through day 20 for
+most proxies. The decline is strongest in the first two days and gradually attenuates.
+The AT withdrawal pattern is puzzling: AT has been found to accelerate the incorporation of
+available information in the empirical literature and in our study (Table 8, Panel B). Yet we find that
+16We run a difference-in-differences analysis in Table IA4 which confirms that the AT response to special dividends is
+statistically different from the response to regular dividends.
+24
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+aggregate AT declines post-announcement (Table IA8). We reconcile these findings as AT strategies
+profit from information asymmetry, specifically, from detecting and trading alongside informed order
+flow. When a special dividend publicly reveals previously private information, the profitable edge
+from order flow detection dissipates. Algorithms withdraw until normal information asymmetries
+re-establish.
+To our knowledge, this sustained post-announcement withdrawal of AT activity around an
+unscheduled corporate event has not been previously documented. The pattern has implications for
+understanding the economic function of AT: rather than serving as a pure information-processing
+technology that should activate more intensely when new information arrives, AT activity decreases
+when the information asymmetry is resolved.
+6
+Robustness
+We subject our main findings to a battery of robustness tests that we will summarize here. A
+detailed discussion of each test is provided in Appendix B.
+Fixed effects and window sensitivity. The information acquisition results are stable across four
+fixed effects specifications (none, year only, industry only, both; Table IA2). Results are also robust to
+alternative baseline windows ([−80, −41], [−120, −61]) and shorter pre-event windows, though shorter
+windows reduce statistical significance (Table IA10).
+Statistical inference. Bootstrap confidence intervals (10,000 replications) exclude zero for three
+of four AT proxies, and permutation p-values are uniformly smaller than OLS p-values (Table IA3).
+Power analysis confirms adequate power for Abnormal OLR; the remaining proxies are individually
+underpowered, though permutation and placebo tests argue against spurious inference.
+Instrumental variables. Following Weller (2018), we estimate 2SLS using log price as an instrument
+(Table IA5). The instrument captures structural cross-sectional variation in AT related to price.
+25
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+Our abnormal AT construction already isolates event-specific variation by demeaning across firms.
+Instrumenting abnormal AT directly yields weak first stages, confirming the price-level instrument does
+not generate useful variation beyond what our abnormal measure already captures.
+Cross-event gradient. A gradient analysis across four event types (surprise specials, non-surprise
+specials, regular increases, regular decreases) confirms the strongest AT–price jump relationship for
+surprise special dividends (Table IA9).
+Multiple testing and multicollinearity. After Benjamini-Hochberg correction at 5%, three of four
+proxies (Abnormal TS, OLR, TTO) remain significant (Table IA7). A horse race regression with all
+four proxies entered simultaneously yields no individual significance due to high VIFs (3.02–8.89),
+consistent with the proxies capturing overlapping variation (Table IA6).
+Additional tests. Abnormal hidden trading ratios (HTR, HVR) are insignificant when substituted for
+AT proxies, implying that AT activity rather than informed trading activity drives results. Information
+incorporation regressions are robust to dropping fixed effects and to logistic estimation of the reversal
+indicator (Table IA15). Higher AT is associated with the probability but not the magnitude of return
+reversals (Table IA12).
+7
+Conclusion
+This paper investigates whether algorithmic trading affects information dynamics around
+unscheduled corporate events. Using a sample of 865 special dividend announcements from 2012 to
+2024 and four AT proxies constructed using SEC MIDAS data, we examine whether AT deters preannouncement information acquisition and accelerates post-announcement information incorporation.
+We find that aggregate AT activity declines for approximately 20 trading days following a special
+dividend announcement and remains depressed relative to firm-specific baselines. This withdrawal
+persists longer and with greater magnitude than the AT response to regular dividend increases by the
+26
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+same firms. The pattern is inconsistent with a view of AT as a pure information-processing technology
+that becomes more active when new information arrives. Instead, it suggests that AT strategies profit
+from information asymmetry; when a special dividend publicly resolves that asymmetry, algorithms
+withdraw.
+We also find that abnormal AT activity measured as deviations from firm-specific baselines is
+positively associated with the pre-announcement price jump. Higher abnormal AT in the weeks preceding
+a special dividend predicts a wider informational gap at announcement, consistent with AT detecting
+and deterring informed traders from incorporating private information into prices before the event.
+This finding extends the literature demonstrating that the information deterrence channel operates even
+when there is no publicly known event date for algorithms to target. Since AT incorporates information
+into prices in the pre-event period, we test if it accelerates the signal processing ability of the market
+in the post-event window. The evidence for post-announcement information incorporation is weaker:
+abnormal AT is associated with faster initial price convergence as measured by the standardized price
+jump, but not by a raw incorporation ratio. Higher abnormal AT also relates to a greater probability
+of reversals, with the possibility of reverse causality being high.
+As a methodological contribution, we develop a standardized price jump measure that accommodates
+all return patterns, including events where pre- and post-announcement returns are similar in magnitude
+but opposite in sign. The regular price jump measure (Weller, 2018) requires truncating observations
+outside of [0, 1], which would eliminate approximately 50% of our sample. The standardized price jump
+retains these observations and is applicable to any corporate event study in which researchers wish to
+measure pre-announcement information incorporation.
+Our findings carry practical implications. The 20-day AT decline suggests a temporary period
+of reduced liquidity provision from algorithmic traders following major announcements, which may be
+relevant for timing subsequent corporate actions. The widening of an informational gap preceding nonscheduled corporate signaling announcements suggests that firms may need to assess their AT levels
+27
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+when considering engaging in a costly signal. For regulators, the results underscore that while AT’s
+positive social value is attributed to improving price discovery, if AT withdraws its participation when
+it is not favorable, there could be adverse social effects. For investors, abnormal patterns in AT proxies
+and hidden trading activity can provide inference on information asymmetry between a firm and the
+market.
+28
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+References
+Akerlof, G. A. (1978). The market for “lemons”: Quality uncertainty and the market mechanism. In
+Uncertainty in economics, pp. 235–251. Elsevier.
+Allen, F. and R. Michaely (2003). Payout policy. Handbook of the Economics of Finance 1, 337–429.
+Baldauf, M. and J. Mollner (2020). High-frequency trading and market performance. The Journal of
+Finance 75(3), 1495–1526.
+Benjamini, Y. and Y. Hochberg (1995). Controlling the false discovery rate: a practical and powerful
+approach to multiple testing. Journal of the Royal statistical society: series B (Methodological) 57(1),
+289–300.
+Bhattacharya, S. (1979). Imperfect information, dividend policy, and” the bird in the hand” fallacy.
+The bell journal of economics, 259–270.
+Brickley, J. A. (1983). Shareholder wealth, information signaling and the specially designated dividend:
+An empirical study. Journal of Financial Economics 12(2), 187–209.
+Brogaard, J., T. Hendershott, and R. Riordan (2014). High-frequency trading and price discovery. The
+Review of Financial Studies 27(8), 2267–2306.
+Brogaard, J. and J. Pan (2022). Dark pool trading and information acquisition. The Review of
+Financial Studies 35(5), 2625–2666.
+Dann, L. Y. (1981). Common stock repurchases: An analysis of returns to bondholders and stockholders.
+Journal of financial economics 9(2), 113–138.
+De Bondt, W. F. and R. Thaler (1985). Does the stock market overreact? The Journal of finance 40(3),
+793–805.
+DeAngelo, H., L. DeAngelo, and D. J. Skinner (2000). Special dividends and the evolution of dividend
+signaling. Journal of Financial Economics 57(3), 309–354.
+Easterbrook, F. H. (1984). Two agency-cost explanations of dividends. The American Economic
+Review 74(4), 650–659.
+Fama, E. F. (1970). Efficient capital markets: A review of theory and empirical work. The journal of
+Finance 25(2), 383–417.
+Fama, E. F. and K. R. French (2001). Disappearing dividends: changing firm characteristics or lower
+propensity to pay? Journal of Financial economics 60(1), 3–43.
+Fama, E. F. and K. R. French (2015).
+A five-factor asset pricing model.
+Journal of financial
+economics 116(1), 1–22.
+Fuller, K., J. Netter, and M. Stegemoller (2002). What do returns to acquiring firms tell us? evidence
+from firms that make many acquisitions. The journal of finance 57(4), 1763–1793.
+Fuller, K. P. (2003). The impact of informed trading on dividend signaling: a theoretical and empirical
+examination. Journal of Corporate Finance 9(4), 385–407.
+Fuller, K. P. and M. A. Goldstein (2011). Do dividends matter more in declining markets? Journal of
+Corporate Finance 17(3), 457–473.
+29
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+Gombola, M. J. and F.-Y. Liu (1999). The signaling power of specially designated dividends. Journal
+of Financial and Quantitative Analysis 34(3), 409–424.
+Hanlon, M. and J. L. Hoopes (2014). What do firms do when dividend tax rates change? an examination
+of alternative payout responses. Journal of Financial Economics 114(1), 105–124.
+Hirshleifer, D., S. S. Lim, and S. H. Teoh (2009). Driven to distraction: Extraneous events and
+underreaction to earnings news. The journal of finance 64(5), 2289–2325.
+Howe, K. M., J. He, and G. W. Kao (1992). One-time cash flow announcements and free cash-flow
+theory: Share repurchases and special dividends. The Journal of Finance 47(5), 1963–1975.
+Jayaraman, N. and K. Shastri (1988). The valuation impacts of specially designated dividends. Journal
+of Financial and Quantitative Analysis 23(3), 301–312.
+Jegadeesh, N. and S. Titman (1993). Returns to buying winners and selling losers: Implications for
+stock market efficiency. The Journal of finance 48(1), 65–91.
+Jensen, M. C. (1986). Agency costs of free cash flow, corporate finance, and takeovers. The American
+Economic Review 76(2), 323–329.
+John, K. and J. Williams (1985). Dividends, dilution, and taxes: A signalling equilibrium. The Journal
+of Finance 40(4), 1053–1070.
+Korajczyk, R. A. and D. Murphy (2019). High-frequency market making to large institutional trades.
+The Review of Financial Studies 32(3), 1034–1067.
+Kyle, A. S. (1985). Continuous auctions and insider trading. Econometrica: Journal of the Econometric
+Society, 1315–1335.
+La Porta, R. (1996). Expectations and the cross-section of stock returns. The Journal of Finance 51(5),
+1715–1742.
+Lie, E. (2000). Excess funds and agency problems: an empirical study of incremental cash disbursements.
+The Review of Financial Studies 13(1), 219–248.
+Lintner, J. (1956). Distribution of incomes of corporations among dividends, retained earnings, and
+taxes. The American economic review 46(2), 97–113.
+McClure, C. G., S. X. Shi, and E. M. Watts (2025).
+Information acquisition costs and price
+informativeness: global evidence: Cg mcclure et al. Review of Accounting Studies 30(3), 2468–2507.
+Menkveld, A. J. (2013). High frequency trading and the new market makers. Journal of financial
+Markets 16(4), 712–740.
+Miller, Merton H, K. R. (1985). Dividend policy under asymmetric information. The Journal of
+Finance 40(4), 1031–1051.
+Miller, M. H. and F. Modigliani (1961). Dividend policy, growth, and the valuation of shares. the
+Journal of Business 34(4), 411–433.
+Opler, T., L. Pinkowitz, R. Stulz, and R. Williamson (1999). The determinants and implications of
+corporate cash holdings. Journal of financial economics 52(1), 3–46.
+Ross, S. A. (1977). The determination of financial structure: the incentive-signalling approach. The
+Bell Journal of Economics 8(1), 23–40.
+30
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+Sant, R. and A. R. Cowan (1994). Do dividends signal earnings? the case of omitted dividends. Journal
+of Banking & Finance 18(6), 1113–1133.
+Spence, M. (1973). Job market signaling. The Quarterly Journal of Economics 87(3), 355–374.
+Van Kervel, V. and A. J. Menkveld (2019). High-frequency trading around large institutional orders.
+The Journal of Finance 74(3), 1091–1137.
+Weller, B. M. (2018). Does algorithmic trading reduce information acquisition?
+The Review of
+Financial Studies 31(6), 2184–2226.
+Yang, L. and H. Zhu (2020). Back-running: Seeking and hiding fundamental information in order flows.
+The Review of Financial Studies 33(4), 1484–1533.
+Zhang, S. S. (2018). Need for speed: Hard information processing in a high-frequency world. Journal
+of Futures Markets 38(1), 3–21.
+31
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+Figures
+2000
+2005
+2010
+2015
+2020
+Year
+0
+5
+10
+15
+Special payers % of Regular
+% of regular payers
+# special payers
+50
+100
+150
+200
+250
+Special Payer Count
+(a) Special Dividend Frequency
+2000
+2005
+2010
+2015
+2020
+Year
+0
+5
+10
+15
+20
+25
+30
+Ratio of Special to Regular
+(b) Special-to-Regular Dividend Ratio
+0
+2
+4
+6
+8
+10
+Event Day
+0
+1
+2
+3
+4
+5
+CAR (%)
+(c) Cumulative Abnormal Returns
+Figure 1: Descriptive Overview: Special Dividends and Market Reaction. Panel (a) plots the number of firms paying special dividends (dashed line, right axis)
+and special dividend payers as a percentage of regular dividend payers (solid line, left axis) for each year from 1996 to 2024. The 2012 spike reflects the anticipated
+increase in dividend tax rates under the American Taxpayer Relief Act. Panel (b) plots the mean ratio of the special dividend amount to the most recent regular
+dividend amount for each year; special dividends are consistently 5–10 times larger than the corresponding regular dividend. Panel (c) plots mean cumulative abnormal
+returns (CARs) from event day 0 through day 10 relative to the special dividend declaration date; the shaded region denotes the 95% confidence interval.
+32
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+10.0
+7.5
+5.0
+2.5
+0.0
+2.5
+5.0
+Weller Price Jump
+0
+50
+100
+150
+200
+250
+Frequency
+18 obs outside
+display range
+0
+1
+(a) Weller PJ — Untruncated
+0
+20
+40
+60
+80
+100
+120
+140
+Standardized Price Jump
+0
+100
+200
+300
+400
+500
+600
+Frequency
+(b) Standardized PJ — Raw
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+Weller Price Jump
+0
+5
+10
+15
+20
+25
+Frequency
+(c) Weller PJ — Restricted [0, 1]
+0
+5
+10
+15
+20
+25
+30
+Standardized Price Jump (Winsorized)
+0
+100
+200
+300
+400
+Frequency
+(d) Standardized PJ — Winsorized 1%/99%
+Figure 2: Price Jump Measure Distributions. This figure compares the distributional properties of Weller’s (2018) price jump ratio and
+our standardized price jump measure across special dividend events. Panel (a) shows Weller’s PJ untruncated, we omit some of the large
+outlier variables for interpretability and scaling. Panel (b) shows the raw standardized PJ. Panel (c) restricts Weller’s PJ to the unit interval
+[0, 1]. Panel (d) shows the standardized PJ winsorized at the 1st and 99th percentiles.
+33
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+0
+200
+400
+600
+800
+Rank (ordered by Standardized PJ)
+0
+25
+50
+75
+100
+125
+Price Jump Value
+Standardized PJ
+Weller PJ (where defined)
+(a) Ranked by Standardized PJ
+0
+100
+200
+300
+400
+Rank (ordered by Weller PJ)
+0
+5
+10
+15
+20
+25
+30
+Price Jump Value
+Weller PJ
+Standardized PJ
+(b) Ranked by Weller PJ (Restricted [0, 1])
+0
+200
+400
+600
+800
+Rank (ordered by Standardized PJ)
+0
+5
+10
+15
+Price Jump Value
+Standardized PJ
+Weller PJ (red = outside [0,1], N=432)
+(c) Full Sample Ranked by Standardized PJ (Weller Uncensored)
+0
+200
+400
+600
+800
+Rank (ordered by Weller PJ, untruncated)
+0
+5
+10
+15
+Price Jump Value
+Standardized PJ
+Weller PJ (red = outside [0,1], N=432)
+(d) Full Sample Ranked by Weller PJ (Untruncated)
+Figure 3: Ranked Comparison of Price Jump Measures. Panel (a) orders all events by their standardized price jump value (filled
+circles) and overlays Weller’s PJ (crosses) where defined in [0, 1]. Panel (b) orders the subset of events with valid Weller PJ by that measure
+and overlays the standardized PJ. Panel (c) ranks all events by standardized PJ and overlays the full (uncensored) Weller PJ; red markers
+indicate Weller values outside [0, 1]. Panel (d) ranks by the full untruncated Weller PJ.
+34
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+40
+30
+20
+10
+0
+10
+20
+30
+40
+Event Day
+1.75
+1.70
+1.65
+1.60
+Mean HVR (Hidden Volume Ratio)
+Pre mean: -1.670
+Post mean: -1.690
+(a) Hidden Volume Ratio (HVR)
+40
+30
+20
+10
+0
+10
+20
+30
+40
+Event Day
+1.75
+1.70
+1.65
+1.60
+Mean HTR (Hidden Trade Ratio)
+Pre mean: -1.673
+Post mean: -1.700
+(b) Hidden Trade Ratio (HTR)
+Figure 4: Hidden Trading Activity in Event Time. Each panel plots the mean daily level of a hidden trading measure over event days
+[−40, +40] relative to the special dividend declaration date. The solid line is the cross-sectional mean; the shaded region denotes the 95%
+confidence interval. Horizontal lines represent the pre-event mean (dash-dot) and post-event mean (dotted). HVR is the log ratio of hidden
+order volume to total volume for hidden-eligible trades. HTR is the log ratio of hidden trades to total hidden-eligible trades.
+35
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+20
+10
+0
+10
+20
+Event Day
+0.4
+0.3
+0.2
+0.1
+0.0
+Abnormal CTT
+Special Div
+Regular Div
+(a) Cancel-to-Trade Ratio (CTT)
+20
+10
+0
+10
+20
+Event Day
+0.05
+0.00
+0.05
+0.10
+Abnormal TS
+Special Div
+Regular Div
+(b) Trade Size (TS)
+20
+10
+0
+10
+20
+Event Day
+0.15
+0.10
+0.05
+0.00
+0.05
+Abnormal OLR
+Special Div
+Regular Div
+(c) Odd-Lot Ratio (OLR)
+20
+10
+0
+10
+20
+Event Day
+0.0
+0.2
+0.4
+Abnormal TTO
+Special Div
+Regular Div
+(d) Trade-to-Order Ratio (TTO)
+Figure 5: Algorithmic Trading Response: Special vs. Regular Dividends. Each panel compares mean daily abnormal AT around
+special dividend announcements (solid line) vs. regular dividend increase announcements (dashed line) by the same firms over event days
+[−20, +20]. Abnormal AT is computed as the daily value minus the firm-specific baseline mean over [−61, −22]. Shaded regions denote 95%
+confidence intervals.
+36
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+Tables
+Table 1: Size Classification of Special Dividends by Period
+Count Exceeding
+Percent Exceeding
+Period
+N
+5%
+10%
+18.6%
+5%
+10%
+18.6%
+1996–1999
+363
+76
+60
+43
+20.94
+16.53
+11.85
+2000–2003
+260
+46
+30
+24
+17.69
+11.54
+9.23
+2004–2007
+525
+134
+88
+52
+25.52
+16.76
+9.90
+2008–2011
+398
+144
+69
+33
+36.18
+17.34
+8.29
+2012–2015
+682
+212
+99
+53
+31.09
+14.52
+7.77
+2016–2019
+464
+109
+55
+30
+23.49
+11.85
+6.47
+2020–2024
+680
+170
+60
+32
+25.00
+8.82
+4.71
+Total
+3,372
+891
+461
+267
+26.42
+13.67
+7.92
+Notes: This table reports the number and percentage of special dividends
+exceeding various thresholds of the firm’s equity value. Special dividends
+are identified from CRSP (distribution codes 1262 and 1272) for common
+stocks (share codes 10 and 11) over 1996–2024. The thresholds of 5%, 10%,
+and 18.6% follow DeAngelo et al. (2000). The 18.6% corresponds to the
+average value of repurchases from Dann (1981).
+37
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+Table 2: Summary Statistics
+Variable
+N
+Mean
+Std. Dev.
+Min
+P1
+P25
+Median
+P75
+P99
+Max
+Panel A: Price Jump Measures
+Weller PJ (Full)
+865
+−0.302
+17.031
+−472.936
+−10.293
+−0.084
+0.238
+0.784
+6.561
+90.038
+Weller PJ [0,1]
+433
+0.396
+0.278
+0.001
+0.006
+0.153
+0.326
+0.622
+0.970
+0.992
+Standardized PJ
+865
+4.023
+8.096
+0.414
+0.538
+0.993
+1.361
+3.730
+32.929
+140.874
+Std. PJ (Winsorized)
+865
+3.743
+5.556
+0.414
+0.538
+0.993
+1.361
+3.730
+32.165
+32.929
+Panel B: Event and Firm Characteristics
+Special Dividend ($)
+865
+2.011
+3.851
+0.003
+0.020
+0.250
+1.000
+2.000
+20.000
+43.400
+Log Price
+262,354
+3.183
+1.064
+−1.619
+0.470
+2.573
+3.155
+3.820
+6.185
+7.590
+Log Volume
+262,354
+12.145
+2.082
+0.000
+7.159
+10.760
+12.154
+13.573
+16.744
+19.747
+Log Market Cap
+262,354
+13.846
+1.767
+7.770
+10.049
+12.544
+13.737
+14.969
+18.119
+19.616
+Log Volatility
+254,569
+−3.857
+0.489
+−6.805
+−4.878
+−4.186
+−3.877
+−3.561
+−2.553
+−0.399
+Log Spread
+262,354
+−3.587
+1.283
+−9.211
+−4.606
+−4.605
+−3.912
+−2.996
+0.507
+3.042
+Panel C: Algorithmic Trading Proxies
+Trade Size (TS)
+244,802
+4.287
+0.636
+0.000
+2.414
+3.944
+4.381
+4.650
+5.867
+8.915
+Odd-Lot Ratio (OLR)
+244,443
+−1.780
+0.917
+−9.722
+−4.505
+−2.312
+−1.663
+−1.101
+−0.163
+0.000
+Trade-to-Order (TTO)
+244,802
+−3.655
+0.772
+−12.145
+−6.025
+−4.041
+−3.585
+−3.181
+−2.013
+0.961
+Cancel-to-Trade (CTT)
+244,802
+3.009
+0.726
+−0.757
+1.571
+2.531
+2.922
+3.391
+5.227
+10.138
+Hidden Volume Ratio (HVR)
+243,999
+−1.699
+0.635
+−9.603
+−3.284
+−2.103
+−1.689
+−1.267
+−0.283
+0.000
+Hidden Trade Ratio (HTR)
+244,001
+−1.706
+0.625
+−5.282
+−3.128
+−2.147
+−1.704
+−1.265
+−0.311
+0.000
+Notes: This table reports summary statistics for the special dividend sample. Panel A compares price jump measures. Weller PJ (Full) is the
+unrestricted price jump ratio from Weller (2018); Weller PJ [0,1] restricts to observations with values in the unit interval. Standardized PJ is our
+proposed measure that accommodates all return patterns including reversals; Std. PJ (Winsorized) clips at the 99th percentile. Panel B presents
+event-level and firm-level characteristics computed across all firm-day observations within the estimation and event windows. Panel C reports
+daily algorithmic trading proxy values from MIDAS. All AT proxies are log-transformed ratios. TS is average trade size (tradevol/trades), OLR is
+odd-lot volume ratio, TTO is trade-to-order ratio, CTT is cancel-to-trade ratio, HVR is hidden volume ratio, and HTR is hidden trade ratio.
+38
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+Table 3: Sample Construction
+Step
+Description
+Removed
+Remaining
+1
+Special dividends (2012–2024, SHRCD 10/11)
+—
+1,778
+2
+Surprise-spacing filter
+680
+1,098
+3
+Same-day non-dividend announcement exclusion
+11
+1,087
+4
+Edge-day completeness filter
+80
+1,007
+5
+Minimum observations (>287 days)
+0
+1,007
+6
+Zero-volume exclusion
+135
+872
+7
+Manual ticker exclusions
+7
+865
+Notes: This table details the sequential filters applied to construct the final sample of special
+dividend events. The initial universe comprises all special dividends (CRSP distribution codes
+1262 and 1272) declared between July 1st 2012 and December 31st 2024 by common stocks
+(share codes 10 and 11). Step 2 removes events that fail the surprise-spacing filter, which
+excludes firms with recurring special dividends within the prior calendar year. Step 3 drops
+events coinciding with other non-dividend corporate announcements on the same day. Step 4
+requires complete MIDAS data on the boundary days of the event window. Step 5 requires
+the CRSP data be present and nonmissing for at least 287 out of the 290 days; we allow a
+slight buffer to retain observations given the small sample size. Step 6 excludes firm-days with
+zero trading volume. Step 7 removes manually identified tickers with data anomalies such as
+duplicate tickers and share code switches. The final sample contains 865 special dividend events.
+39
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+Table 4: Abnormal Returns Around Special Dividend Events
+Declaration Date
+Ex-Dividend Date
+All Events
+Dividend Payers
+Non-Dividend Payers
+All Events
+Day
+AR (%)
+CAR (%)
+AR (%)
+CAR (%)
+AR (%)
+CAR (%)
+AR (%)
+CAR (%)
+−5
+0.07
+0.07
+0.12
+0.12
+−0.05
+−0.05
+0.36∗∗∗
+0.36∗∗∗
+−4
+0.06
+0.13
+0.05
+0.17
+0.06
+0.01
+0.30∗∗∗
+0.66∗∗∗
+−3
+−0.02
+0.11
+−0.04
+0.13
+0.04
+0.05
+0.16∗
+0.81∗∗∗
+−2
+−0.14∗∗
+−0.03
+−0.06
+0.07
+−0.38∗∗
+−0.33
+0.22∗∗∗
+1.03∗∗∗
+−1
+−0.06
+−0.10
+−0.09
+−0.02
+0.01
+−0.33
+0.23∗∗∗
+1.27∗∗∗
+0
+0.64∗∗∗
+0.54∗∗∗
+0.42∗∗∗
+0.40∗∗
+1.28∗∗∗
+0.95∗
+0.05
+1.32∗∗∗
+1
+1.83∗∗∗
+2.37∗∗∗
+1.57∗∗∗
+1.97∗∗∗
+2.63∗∗∗
+3.58∗∗∗
+−0.18∗
+1.13∗∗∗
+2
+0.45∗∗∗
+2.83∗∗∗
+0.41∗∗∗
+2.38∗∗∗
+0.57
+4.15∗∗∗
+−0.43∗∗∗
+0.70∗∗∗
+3
+0.17∗
+3.00∗∗∗
+0.14
+2.52∗∗∗
+0.28
+4.42∗∗∗
+−0.24∗∗∗
+0.47∗
+4
+0.31∗∗∗
+3.31∗∗∗
+0.28∗∗∗
+2.80∗∗∗
+0.39∗
+4.81∗∗∗
+−0.01
+0.46∗
+5
+0.36∗∗∗
+3.67∗∗∗
+0.28∗∗∗
+3.08∗∗∗
+0.60∗∗
+5.41∗∗∗
+−0.09
+0.37
+N
+865
+647
+218
+865
+Notes: This table reports mean daily abnormal returns (AR) and cumulative abnormal returns
+(CAR) around special dividend events. The first six columns use the announcement date as the
+event date; we report separately for all events, firms that also pay regular dividends (Dividend
+Payers), and firms that do not (Non-Dividend Payers). The last two columns report returns
+around the ex-dividend date for all events. Abnormal returns are computed using the Fama and
+French (2015) five-factor model plus momentum (Jegadeesh and Titman, 1993), estimated over
+days [−250, −41] relative to each event date. ∗∗∗, ∗∗, and ∗denote significance at the 1%, 5%, and
+10% levels based on cross-sectional t-tests.
+40
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+Table 5:
+Cross-Sectional Regressions of Cumulative
+Abnormal Returns
+(1)
+(2)
+(3)
+(4)
+Intercept
+0.2431∗∗∗
+0.1297∗∗
+0.2224∗∗∗
+0.2224∗∗∗
+(0.0539)
+(0.0571)
+(0.0852)
+(0.0853)
+divamt
+0.0167∗∗∗
+0.0250∗∗
+0.0250∗∗
+(0.0028)
+(0.0099)
+(0.0099)
+ratio
+0.0133∗∗∗
+−0.0064
+−0.0064
+(0.0022)
+(0.0074)
+(0.0074)
+ratio×divamt
+−0.0000
+(0.0010)
+price
+−0.0374∗∗∗
+−0.0308∗∗∗
+−0.0504∗∗∗
+−0.0504∗∗∗
+(0.0086)
+(0.0091)
+(0.0151)
+(0.0151)
+volume
+−0.0080
+−0.0150∗∗∗
+−0.0119∗∗∗
+−0.0119∗∗∗
+(0.0055)
+(0.0045)
+(0.0044)
+(0.0044)
+volatility
+0.0252∗∗∗
+0.0191∗∗
+0.0174∗
+0.0174∗
+(0.0091)
+(0.0094)
+(0.0090)
+(0.0091)
+size
+0.0101
+0.0180∗∗∗
+0.0165∗∗∗
+0.0165∗∗∗
+(0.0067)
+(0.0051)
+(0.0050)
+(0.0050)
+spread
+0.0106∗∗
+0.0060
+0.0089∗∗
+0.0089∗∗
+(0.0044)
+(0.0044)
+(0.0044)
+(0.0045)
+Observations
+865
+647
+647
+647
+R2
+0.113
+0.104
+0.137
+0.137
+Notes: This table reports OLS cross-sectional regressions of cumulative
+abnormal
+returns
+(CAR[−1, +5])
+on
+special
+dividend
+and
+firm
+characteristics. Abnormal returns are estimated using the Fama and French
+(2015) five-factor model plus momentum (Jegadeesh and Titman, 1993)
+over the estimation window [−250, −41]. divamt is the special dividend
+amount per share. ratio is the special-to-regular dividend ratio (available
+only for firms that also pay regular dividends; N = 647 in columns 2–4).
+price, volume, size, volatility, and spread are in log units and measured
+as event-window averages [-21,-1]. Column (4) includes an interaction
+term between ratio and divamt. Heteroskedasticity-robust (HC1) standard
+errors in parentheses. ∗∗∗p < 0.01, ∗∗p < 0.05, ∗p < 0.10.
+41
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+Table 6: Information Acquisition: Algorithmic Trading and Pre-Announcement Price Jumps
+TS
+OLR
+TTO
+CTT
+TS
+OLR
+TTO
+CTT
+Panel A: AT Levels
+DV: Weller’s Price Jump
+DV: Standardized Price Jump
+AT Proxy
+0.0678
+−0.0483
+−0.0558∗
+0.0562∗
+0.4107
+0.2256
+−0.3483
+0.2601
+(0.0649)
+(0.0393)
+(0.0322)
+(0.0327)
+(1.1923)
+(0.6367)
+(0.4408)
+(0.4536)
+N
+433
+433
+433
+433
+865
+865
+865
+865
+R2
+0.065
+0.066
+0.070
+0.069
+0.133
+0.133
+0.133
+0.133
+Controls
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Year & Industry FE
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Panel B: Abnormal AT
+DV: Weller’s Price Jump
+DV: Standardized Price Jump
+Ab. AT Proxy
+−0.1151
+0.1163∗
+−0.0834∗∗
+0.0820∗
+−3.3159∗∗
+2.8945∗∗∗
+−1.3541∗∗
+1.1112∗
+(0.0938)
+(0.0627)
+(0.0380)
+(0.0441)
+(1.4539)
+(0.9520)
+(0.6297)
+(0.6481)
+N
+433
+433
+433
+433
+865
+865
+865
+865
+R2
+0.066
+0.071
+0.072
+0.070
+0.140
+0.143
+0.139
+0.136
+Controls
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Year & Industry FE
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Notes: This table reports OLS regressions of price jump measures on algorithmic trading (AT) proxies around special dividend announcements.
+Each column represents a separate regression with one AT proxy as the independent variable. Panel A uses AT levels averaged over the preannouncement window [−21, −1]. Panel B uses abnormal AT, constructed as the difference between the pre-event mean ([−21, −1]) and the baseline
+mean ([−61, −22]). Weller’s Price Jump is the price jump ratio from Weller (2018), restricted to [0, 1]. Standardized Price Jump is our proposed
+measure, winsorized at the 99th percentile. AT proxies are: TS (log trade size), OLR (log odd-lot ratio), TTO (log trade-to-order ratio), and CTT
+(log cancel-to-trade ratio). Controls include log price, log volume, log market capitalization, volatility, and spread. All specifications include Fama–
+French 12 industry and year fixed effects. HC1 standard errors in parentheses. ∗∗∗p < 0.01, ∗∗p < 0.05, ∗p < 0.10.
+42
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+Table 7: Placebo Tests: Algorithmic Trading at Non-Event Dates
+TS
+OLR
+TTO
+CTT
+TS
+OLR
+TTO
+CTT
+Panel A: AT Levels
+DV: Weller’s Price Jump
+DV: Standardized Price Jump
+AT Proxy
+0.1015∗
+−0.0714∗∗
+0.0137
+−0.0065
+1.1064
+−0.6551
+0.2376
+−0.1555
+(0.0563)
+(0.0351)
+(0.0319)
+(0.0313)
+(1.0077)
+(0.6372)
+(0.3925)
+(0.3995)
+N
+433
+433
+433
+433
+864
+864
+864
+864
+R2
+0.069
+0.071
+0.063
+0.063
+0.135
+0.135
+0.133
+0.133
+Controls
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Year & Industry FE
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Panel B: Abnormal AT
+DV: Weller’s Price Jump
+DV: Standardized Price Jump
+Ab. AT Proxy
+0.0057
+0.0307
+−0.0118
+0.0044
+−2.4030
+0.2720
+−0.0919
+−0.3146
+(0.1056)
+(0.0668)
+(0.0396)
+(0.0439)
+(1.9426)
+(1.1014)
+(0.6294)
+(0.6167)
+N
+433
+433
+433
+433
+862
+862
+862
+862
+R2
+0.063
+0.063
+0.063
+0.063
+0.136
+0.133
+0.133
+0.133
+Controls
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Year & Industry FE
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Notes: This table reports placebo tests using pseudo-announcement dates drawn uniformly from [−120, −60] relative to the actual special dividend
+declaration date. The dependent variables are the actual price jump measures computed at the true event date. Panel A uses AT levels averaged over
+[pseudo −21, pseudo −1]. Panel B uses abnormal AT, constructed as the difference between the pseudo pre-event mean and the pseudo baseline mean
+([pseudo −61, pseudo −22]). Weller’s Price Jump is restricted to [0, 1]. Standardized Price Jump is winsorized at the 99th percentile. AT proxies are:
+TS (log trade size), OLR (log odd-lot ratio), TTO (log trade-to-order ratio), and CTT (log cancel-to-trade ratio). Controls include log price, log
+volume, log market capitalization, volatility, and spread. All specifications include Fama–French 12 industry and year fixed effects. HC1 standard
+errors in parentheses. ∗∗∗p < 0.01, ∗∗p < 0.05, ∗p < 0.10.
+43
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+Table
+8:
+Information
+Incorporation
+and
+PostAnnouncement Dynamics
+TS
+OLR
+TTO
+CTT
+Panel A: Incorporation Ratio
+AT Levels, days [0, +2]
+AT Proxy
+−0.3786
+0.2436
+−0.0430
+0.0995
+(0.3181)
+(0.1818)
+(0.1927)
+(0.2012)
+Abnormal AT, days [0, +2]
+Ab. AT Proxy
+0.0922
+−0.2930
+−0.1363
+0.2927
+(0.3765)
+(0.2976)
+(0.1743)
+(0.2024)
+N
+865
+865
+865
+865
+Controls
+Yes
+Yes
+Yes
+Yes
+Year & Industry FE
+Yes
+Yes
+Yes
+Yes
+Panel B: Post-Announcement Standardized Price Jump
+AT Levels, days [0, +2]
+AT Proxy
+−0.0080
+0.0982
+−0.3358∗
+0.4710∗∗
+(0.4875)
+(0.2790)
+(0.2025)
+(0.2101)
+Abnormal AT, days [0, +2]
+Ab. AT Proxy
+−1.7091∗∗
+0.5523
+−0.6198∗∗
+0.5524∗∗
+(0.7011)
+(0.4051)
+(0.2552)
+(0.2451)
+N
+865
+865
+865
+865
+Controls
+Yes
+Yes
+Yes
+Yes
+Year & Industry FE
+Yes
+Yes
+Yes
+Yes
+Panel C: Post-Announcement Return Reversals (LPM)
+AT Levels, days [0, +2]
+AT Proxy
+0.0100
+−0.0248
+−0.0538∗∗
+0.0726∗∗
+(0.0538)
+(0.0315)
+(0.0262)
+(0.0282)
+Abnormal AT, days [0, +2]
+Ab. AT Proxy
+−0.0872
+0.0500
+−0.0831∗∗∗
+0.0903∗∗∗
+(0.0608)
+(0.0455)
+(0.0267)
+(0.0289)
+N
+865
+865
+865
+865
+Controls
+Yes
+Yes
+Yes
+Yes
+Year & Industry FE
+Yes
+Yes
+Yes
+Yes
+Notes: This table examines whether AT accelerates post-announcement
+information incorporation and or is associated with return reversals, with
+Fama–French 12 industry and year fixed effects. Each column represents
+a separate regression with one AT proxy. Panel A uses the incorporation
+ratio, CAR[0, 2]/CAR[0, 5], as the dependent variable. Panel B uses the
+standardized price jump computed over the post-announcement window.
+Panel C reports linear probability model (LPM) regressions where the
+dependent variable equals one if the sign of CAR[0, 2] differs from the sign
+of CAR[0, 5] (approximately 15% of events).
+AT proxies are measured
+over [0, +2] for levels or differenced from [−61, −22] for abnormal measures.
+Controls include log price, log volume, log market capitalization, log volatility,
+and log spread. All specifications include Fama–French 12 industry and year
+fixed effects. Heteroskedasticity-robust standard errors are in parentheses.
+∗∗∗p < 0.01, ∗∗p < 0.05, ∗p < 0.10.
+44
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+Appendix A
+Standardized Price Jump: Worked Examples and Sample
+Comparison
+This appendix provides additional support for the standardized price jump measure introduced
+in Section 4. First, we present four worked examples from the sample that illustrate the step-bystep computation of both measures under different return dynamics. Second, we characterize the
+observations that Weller’s [0, 1] truncation discards and show that they differ systematically from the
+retained sample. Third, we present a subsample regression comparison that isolates the effects of the
+measure choice versus the sample restriction.
+A.1
+Worked Examples
+We illustrate the computation of both price jump measures using four observations from our
+sample. In each case, CAR[−21,−2] denotes the pre-announcement cumulative abnormal return and
+CAR[−1,+1] the announcement-window cumulative abnormal return, both in percentage points.
+Example 1: Normal Agreement — AEO (September 12, 2012)
+American Eagle Outfitters announced a special dividend with CAR[−21,−2] = 3.14% and
+CAR[−1,+1] = 2.15%. Both windows have the same sign, so Weller’s measure is well-behaved:
+PJ Weller =
+2.15
+2.15 + 3.14 = 2.15
+5.29 = 0.406.
+The standardized price jump is computed in two parts. The first term captures the announcement
+surprise weighted by the announcement window’s dominance:
+First term = |2.15 −3.14| × 2.152
+3.142 + 2.152
+= 0.99 × 4.62
+9.86 + 4.62 = 0.316.
+45
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+The second term captures the relative share of pre-announcement movement:
+Second term =
+|3.14|
+|3.14| + |2.15| = 3.14
+5.29 = 0.593.
+Thus PJ stan = 0.316 + 0.593 = 0.910. Both measures agree: there was a moderate informational
+gap but a majority of information was acquired and incorporated pre-announcement. This example
+illustrates the baseline correspondence between the two measures.
+Example 2: Reversal — COST (January 30, 2015)
+Costco’s special dividend announcement was preceded by a negative drift, with CAR[−21,−2] =
+−2.98% and CAR[−1,+1] = 4.41%. The opposite signs create a reversal:
+PJ Weller =
+4.41
+4.41 + (−2.98) = 4.41
+1.43 = 3.082 /∈[0, 1],
+so this observation would be discarded under Weller’s truncation. The standardized measure handles
+the reversal:
+First term = |4.41 −(−2.98)| × 4.412
+2.982 + 4.412
+= 7.39 × 19.45
+8.88 + 19.45 = 5.07,
+Second term =
+| −2.98|
+| −2.98| + |4.41| = 2.98
+7.39 = 0.403,
+yielding PJ stan = 5.07 + 0.40 = 5.48.
+The negative pre-event drift was reversed by a positive
+announcement reaction – consistent with a meaningful information asymmetry being resolved by the
+signal. The standardized measure captures this moderate asymmetry; Weller’s measure discards it
+entirely.
+46
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+Example 3: Magnitude — SIGA (March 12, 2024)
+SIGA Technologies announced a special dividend with CAR[−21,−2] = 3.00% and CAR[−1,+1] =
+32.01% — a massive announcement-window reaction. Both CARs are positive, so Weller’s measure is
+well-defined:
+PJ Weller =
+32.01
+32.01 + 3.00 = 32.01
+35.01 = 0.914 ∈[0, 1].
+A value near 1 suggests a large informational gap. However what it does not account for is the
+magnitude of the informational gap. This same value of 0.914 could be acheived by a minor return
+pattern with a similar ratio. The standardized measure, however, reflects the event’s magnitude:
+First term = |32.01 −3.00| × 32.012
+3.002 + 32.012
+= 29.01 × 1024.64
+9.00 + 1024.64 = 28.76,
+Second term =
+|3.00|
+|3.00| + |32.01| = 3.00
+35.01 = 0.086,
+yielding PJ stan = 28.76 + 0.09 = 28.84. Where Weller’s ratio compresses this into [0, 1] alongside far
+smaller events, the standardized measure recognizes the substantial informational gap that was resolved
+at announcement. This distinction matters for cross-sectional regressions: the standardized measure
+allows the econometric specification to differentiate between events with large and small information
+asymmetries, even when both have Weller values near unity.
+Example 4: Denominator Collapse — AMSF (February 27, 2014)
+Amerisafe Inc.
+experienced a near-symmetric reversal, with CAR[−21,−2] = −9.71% and
+CAR[−1,+1] = 9.82%. The denominator of Weller’s measure approaches zero:
+CAR[−1,+1] + CAR[−21,−2] = 9.82 + (−9.71) = 0.11 ≈0,
+47
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+PJ Weller = 9.82
+0.11 = 90.04.
+This value is economically meaningless and would be discarded. The standardized measure uses a
+sum-of-squares denominator that is bounded away from zero whenever either CAR is nonzero:
+First term = |9.82 −(−9.71)| × 9.822
+9.712 + 9.822
+= 19.53 × 96.43
+94.28 + 96.43 = 9.87,
+Second term =
+| −9.71|
+| −9.71| + |9.82| = 9.71
+19.53 = 0.497,
+yielding PJ stan = 9.87 + 0.50 = 10.37.
+The pre-event price drift was almost entirely offset by
+the announcement reaction, indicating a substantial resolution of information asymmetry. Weller’s
+denominator collapse produces 90.04 – nearly ninety times the theoretical maximum – while the
+standardized measure assigns a moderate value that correctly reflects the magnitude of the reversal.
+48
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+A.2
+Characteristics of Dropped Observations
+Weller’s [0, 1] truncation discards nearly half the sample: 432 of 865 observations fall outside the
+admissible range. Table A1 compares the mean characteristics of the retained and dropped subsamples.
+Dropped observations have significantly higher trading volume, marginally higher volatility, tighter
+spreads, and larger absolute announcement-window CARs. The last difference is especially consequential:
+the events discarded by Weller’s truncation are precisely those with the strongest announcement
+reactions, meaning the truncation systematically removes the most informative observations from
+the cross-section. Size, price, dividend amount, and absolute pre-announcement CARs do not differ
+significantly between the two groups. These results indicate that the [0, 1] restriction does not remove
+observations at random; rather, it selectively eliminates higher-activity, higher-information events,
+which may bias cross-sectional regressions that rely on the truncated sample.
+Table A1: Characteristics of Observations Dropped by Weller’s [0, 1] Truncation
+Variable
+Kept (N=433)
+Dropped (N=432)
+Diff (D–K)
+t-stat
+p-value
+Size (log mktcap)
+13.848
+13.967
+0.119
+−0.989
+0.323
+Price (log)
+3.265
+3.209
+−0.055
+0.764
+0.445
+Volume (log)
+11.920
+12.197
+0.276
+−1.991
+0.047
+**
+Volatility (log)
+−3.955
+−3.895
+0.060
+−1.933
+0.054
+*
+Spread (log)
+−3.447
+−3.612
+−0.165
+2.097
+0.036
+**
+Dividend Amt. ($)
+2.137
+1.886
+−0.251
+0.957
+0.339
+|CAR[−21,−2]| (%)
+6.523
+7.005
+0.483
+−0.880
+0.379
+|CAR[−1,+1]| (%)
+3.995
+5.414
+1.419
+−2.723
+0.007
+***
+Notes: This table compares mean characteristics of events retained vs. discarded by Weller’s [0, 1] price
+jump restriction. “Kept” observations (N = 433) have PJ W eller ∈[0, 1]; “Dropped” (N = 432) fall
+outside this range. Diff is Dropped minus Kept. Welch Satterthwaite t-statistics are presented. *, **, ***
+denote significance at the 10%, 5%, and 1% levels.
+49
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+A.3
+Subsample Regression Comparison
+A natural question is whether the stronger results in our main analysis arise because the
+standardized price jump is a mechanically different measure or because it retains the 432 observations
+that Weller’s truncation discards. To disentangle these two channels, Table A2 reports three parallel
+regressions for each abnormal AT proxy: (1) Weller’s price jump on the truncated subsample (N = 433),
+(2) the standardized price jump on the same truncated subsample (N = 433), and (3) the standardized
+price jump on the full sample (N = 865). Comparing rows (1) and (2) isolates the effect of the measure
+while holding the sample constant; comparing rows (2) and (3) isolates the effect of restoring the
+dropped observations while holding the measure constant.
+On the truncated subsample, switching from Weller’s measure to the standardized price jump
+does not materially improve inference. Weller’s measure yields marginal significance for Abnormal
+OLR (p = 0.064) and Abnormal CTT (p = 0.063), while the standardized price jump on the same
+433 observations produces no significant coefficients. The key improvement comes from restoring the
+full sample. Moving from row (2) to row (3), Abnormal OLR strengthens from insignificant to highly
+significant (p = 0.002), Abnormal TS from insignificant to significant (p = 0.023), and Abnormal TTO
+from insignificant to significant (p = 0.032), with Abnormal CTT becoming marginally significant
+(p = 0.086). This pattern indicates that the statistical power of our main results derives primarily from
+retaining the observations that Weller’s truncation discards – the higher-activity, higher-information
+events documented in subsection A.2 – rather than from a mechanical difference between the two
+measures themselves. The standardized price jump’s contribution is not that it rescales the dependent
+variable, but that it produces well-defined values for all return patterns, thereby preserving the full
+cross-section for estimation.
+50
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+Table A2: Subsample Regression Comparison: Weller
+PJ vs. Standardized PJ
+Sample
+IV
+Coef.
+SE
+t
+p
+N
+Weller N=433
+aolr
+0.1163
+0.0627
+1.855
+0.0636*
+433
+StdPJ N=433
+aolr
+1.1658
+0.7159
+1.628
+0.1035
+433
+StdPJ N=865
+aolr
+2.8945
+0.9520
+3.040
+0.0024***
+865
+Weller N=433
+ats
+-0.1151
+0.0938
+-1.228
+0.2196
+433
+StdPJ N=433
+ats
+-1.1042
+1.0161
+-1.087
+0.2772
+433
+StdPJ N=865
+ats
+-3.3159
+1.4539
+-2.281
+0.0226**
+865
+Weller N=433
+atto
+-0.0834
+0.0380
+-2.192
+0.0284**
+433
+StdPJ N=433
+atto
+-0.5490
+0.3800
+-1.445
+0.1485
+433
+StdPJ N=865
+atto
+-1.3541
+0.6297
+-2.150
+0.0315**
+865
+Weller N=433
+actt
+0.0820
+0.0441
+1.859
+0.0630*
+433
+StdPJ N=433
+actt
+0.3496
+0.4587
+0.762
+0.4459
+433
+StdPJ N=865
+actt
+1.1112
+0.6481
+1.715
+0.0864*
+865
+Notes: Each row reports the coefficient on the abnormal AT proxy from
+a univariate PJ regression with controls (log price, volume, volatility, size,
+spread) and year and Fama–French 12 industry fixed effects. “Weller
+N=433” uses PJ W eller as the DV on the [0, 1]-restricted subsample.
+“StdPJ N=433” uses PJ stan (winsorized) on the same subsample. “StdPJ
+N=865” uses PJ stan (winsorized) on the full sample. *, **, *** denote
+significance at the 10%, 5%, and 1% levels.
+51
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+Appendix B
+Detailed Robustness Discussion
+This appendix provides extended discussion of the robustness tests summarized in Section 6.
+B.1
+Fixed Effects Specifications
+Table IA2 re-estimates the information acquisition regressions (Table 6, Panel B) under four
+fixed effects specifications: no fixed effects, year fixed effects only, industry fixed effects only (Fama–
+French 12 industries), and both year and industry fixed effects. The coefficients on abnormal AT are
+stable across specifications. In Tables IA13 and IA14 we report the information acquisition and placebo
+regressions without fixed effects; the results are similar across specifications.
+B.2
+Window Sensitivity
+To address concerns that our estimations using abnormal AT depend on the baseline and preevent window specifications, Table IA10 presents a matrix of results across five pre-event windows
+([−21, −1], [−15, −1], [−10, −1], [−5, −1], [−3, −1]) and three baseline windows ([−61, −22], [−80, −41],
+[−120, −61]). The results are not particularly sensitive to the baseline window, but shorter pre-event
+windows reduce statistical significance while the coefficient signs remain similar.
+B.3
+Bootstrap, Permutation, and Power Analysis
+Table IA3 addresses concerns about the distributional assumptions underlying OLS inference.
+The first panel reports alternative inference based on 10,000 paired bootstrap replications and 10,000
+permutation iterations in which abnormal AT is randomly reassigned across events. Three of four
+AT proxies produce bootstrap 95% confidence intervals that exclude zero – Abnormal CTT’s interval
+narrowly includes it ([−0.026, 2.648]) – reinforcing the OLS significance levels. The permutation pvalues are uniformly smaller than the OLS p-values (e.g., 0.003 vs. 0.004 for Abnormal OLR; 0.005 vs.
+0.015 for Abnormal TS), indicating that the observed associations are unlikely to arise from chance
+52
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+reassignment of AT across events.
+The second panel evaluates statistical power. At 80% power and a 5% two-sided significance level,
+the minimum detectable effect (MDE) for Abnormal OLR (2.62) falls below the observed coefficient
+(2.71), confirming adequate power for this proxy. For Abnormal TS, TTO, and CTT, the MDEs exceed
+the observed effects (e.g., 4.03 vs. 3.50 for TS), indicating that the sample is underpowered for these
+measures individually. Importantly, the permutation and placebo tests both argue against spurious
+inference: the permutation p-values confirm that the AT–price jump associations are non-spurious,
+and the placebo regressions show no relation between abnormal AT and pre-announcement returns at
+non-event dates.
+B.4
+Instrumental Variables
+Following Weller (2018), we estimate 2SLS regressions using log price over [−42, −22] as an
+instrument for AT activity (Table IA5). The instrument captures structural cross-sectional variation
+in AT related to price. Our abnormal AT construction already isolates event-specific variation by
+demeaning across firms, effectively serving as its own identification strategy. Instrumenting abnormal
+AT directly yields weak first stages, confirming that the price-level instrument does not generate useful
+variation beyond what our abnormal measure already captures. We therefore rely on our placebo
+tests (Table 7), cross-event gradient analysis (Table IA9), and bootstrap and permutation inference
+(Table IA3) for identification.
+B.5
+Cross-Event Gradient and Additional Tests
+Table IA9 compares the AT–price jump relationship across four event types: surprise special
+dividends, non-surprise special dividends, regular dividend increases, and regular dividend decreases.
+Special dividends exhibit the largest effect, consistent with conveying the strongest signal. Regular
+dividend increases show a relation to abnormal TTO and CTT, but the magnitudes are smaller.
+53
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+Abnormal hidden trading ratios (HTR, HVR) are insignificant when substituted for AT proxies
+in the information acquisition specification, implying that it is AT activity rather than informed trading
+activity driving results. After Benjamini-Hochberg FDR correction at 5% (Table IA7), Abnormal TS,
+OLR, and TTO remain significant while CTT does not. A horse race regression with all four proxies
+entered simultaneously (Table IA6) yields no individual significance due to high variance inflation
+factors (VIFs range from 3.02 to 8.89), consistent with the four AT proxies capturing overlapping
+variation from MIDAS data.
+Table IA15 reports the information incorporation regressions without fixed effects, as well as
+estimating the reversal indicator using logistic regression. The results are qualitatively consistent with
+Table 8. Table IA12 examines whether AT predicts the magnitude of return reversals among reversal
+events (N = 150). No significant relationship emerges, suggesting that while AT predicts the probability
+of a reversal, it does not predict its severity.
+54
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+Internet Appendix Tables
+Table IA1:
+Daily Abnormal Hidden
+Trading
+Around
+Special
+Dividend
+Announcements
+Ab. HVR
+Ab. HTR
+Day
+Mean
+t-stat
+Mean
+t-stat
+−5
+0.001
+0.08
+0.027∗∗
+2.16
+−4
+0.001
+0.07
+0.005
+0.41
+−3
+0.007
+0.50
+0.000
+0.03
+−2
+0.030∗
+1.93
+0.033∗∗∗
+2.66
+−1
+0.030∗∗
+2.05
+0.043∗∗∗
+3.41
+0
+0.049∗∗∗
+3.19
+0.057∗∗∗
+4.51
+1
+0.061∗∗∗
+4.11
+0.062∗∗∗
+4.81
+2
+0.039∗∗
+2.46
+0.047∗∗∗
+3.78
+3
+−0.007
+−0.41
+0.005
+0.43
+4
+−0.001
+−0.04
+0.002
+0.18
+5
+−0.019
+−1.29
+−0.021
+−1.61
+Notes: This table reports mean daily abnormal
+hidden trading measures for event days −5 through
++5 relative to the special dividend declaration
+date. Abnormal hidden trading is computed as
+the daily hidden trading proxy minus the firmspecific baseline mean over [−61, −22]. HVR is the
+log hidden volume ratio (hidden volume relative
+to total volume). HTR is the log hidden trade
+ratio (hidden trades relative to total trades). Both
+measures are constructed from SEC MIDAS data.
+Significance is assessed via cross-sectional t-tests.
+∗∗∗p < 0.01, ∗∗p < 0.05, ∗p < 0.10.
+55
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+Table IA2: Robustness: Fixed Effects Specifications
+None
+Year FE
+Industry FE
+Year + Industry FE
+Ab. OLR
+2.7130∗∗∗
+2.7133∗∗∗
+2.7854∗∗∗
+2.8952∗∗∗
+(0.9366)
+(0.9453)
+(0.9500)
+(0.9519)
+Ab. TS
+−3.4998∗∗
+−3.1416∗∗
+−3.6433∗∗
+−3.3162∗∗
+(1.4394)
+(1.4448)
+(1.4538)
+(1.4538)
+Ab. TTO
+−1.5090∗∗
+−1.2461∗
+−1.6076∗∗
+−1.3543∗∗
+(0.6579)
+(0.6495)
+(0.6461)
+(0.6297)
+Ab. CTT
+1.2834∗
+1.0475
+1.3528∗∗
+1.1113∗
+(0.6815)
+(0.6707)
+(0.6652)
+(0.6481)
+N
+865
+865
+865
+865
+Controls
+Yes
+Yes
+Yes
+Yes
+Notes: This table re-estimates the Table 6 Panel B specification (standardized
+price jump on abnormal AT) under alternative fixed effects structures. Each
+cell reports the coefficient on the indicated abnormal AT proxy from a separate
+regression. Column 1 reproduces the baseline with no fixed effects. Columns 2–
+4 add year fixed effects, Fama–French 12 industry fixed effects, and both,
+respectively. Controls include log price, log volume, log market capitalization,
+log volatility, and log spread. Standard errors are in parentheses. ∗∗∗p < 0.01,
+∗∗p < 0.05, ∗p < 0.10.
+56
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+Table IA3: Robustness: Bootstrap, Permutation Inference, and Statistical Power
+Bootstrap and Permutation Inference
+Statistical Power
+AT Metric
+Coef.
+OLS p
+Boot. SE
+Bootstrap 95% CI
+Perm. p
+N
+MDE (80%)
+Obs. Effect
+Detectable?
+N
+Ab. OLR
+2.7130∗∗∗
+0.004
+0.9338
+[0.905, 4.578]
+0.003
+865
+2.624
+2.713
+Yes
+865
+Ab. TS
+−3.4998∗∗
+0.015
+1.4599
+[−6.362, −0.613]
+0.005
+865
+4.033
+3.500
+No
+865
+Ab. TTO
+−1.5090∗∗
+0.022
+0.6530
+[−2.800, −0.243]
+0.005
+865
+1.843
+1.509
+No
+865
+Ab. CTT
+1.2834∗
+0.060
+0.6794
+[−0.026, 2.648]
+0.033
+865
+1.909
+1.283
+No
+865
+Notes: This table combines alternative inference (left panel) and statistical power analysis (right panel) for the information acquisition regressions
+(standardized price jump on abnormal AT). Left panel: Coefficients from an OLS regression and OLS p reproduce the baseline estimates. Bootstrapped
+SE and Bootstrap 95% CI are from 10,000 paired bootstrap replications. Perm. p is from a permutation test that randomly shuffles the abnormal AT
+variable across events (10,000 iterations). Right panel: The minimum detectable effect (MDE) at 80% power and a 5% two-sided significance level is
+computed as 2.802 × SE. Controls include log price, log volume, log market capitalization, log volatility, and log spread. ∗∗∗p < 0.01, ∗∗p < 0.05,
+∗p < 0.10 based on OLS p-values.
+57
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+Table IA4: Difference-in-Differences: AT Response to Special vs.
+Regular Dividends
+Pooled OLS
+Event FE
+SD (ˆβ1)
+Post (ˆβ2)
+SD×Post (ˆβ3)
+Post (ˆβ2)
+SD×Post (ˆβ3)
+TS
+0.1987∗∗∗
+0.0010
+0.0352∗∗∗
+−0.0002
+0.0363∗∗∗
+(8.51)
+(0.38)
+(5.56)
+(−0.07)
+(5.75)
+OLR
+−0.2821∗∗∗
+−0.0010
+−0.0497∗∗∗
+0.0007
+−0.0491∗∗∗
+(−9.04)
+(−0.28)
+(−5.74)
+(0.20)
+(−5.74)
+TTO
+0.1090∗∗∗
+0.0506∗∗∗
+0.1011∗∗∗
+0.0514∗∗∗
+0.1003∗∗∗
+(4.84)
+(7.61)
+(7.11)
+(7.71)
+(7.05)
+CTT
+−0.0356
+−0.0479∗∗∗
+−0.0789∗∗∗
+−0.0494∗∗∗
+−0.0774∗∗∗
+(−1.61)
+(−8.18)
+(−6.34)
+(−8.43)
+(−6.22)
+N
+246,503
+Notes: This table reports difference-in-differences regressions comparing AT dynamics
+around special vs. regular dividend announcements by the same firms. The specification
+is: ATit = α+ ˆβ1SDi + ˆβ2Postit + ˆβ3(SDi ×Postit)+εit. SDi = 1 for special dividends,
+0 for regular dividend increases. Postit = 1 for event days [0, +40], 0 for [−40, −1].
+The coefficient of interest is ˆβ3, which captures the differential AT response to special
+dividends. Event FE absorbs SDi. t-statistics from event-clustered standard errors in
+parentheses. ∗∗∗p < 0.01, ∗∗p < 0.05, ∗p < 0.10.
+58
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+Table IA5: Instrumental Variables (2SLS) Estimates
+Raw AT Levels
+Abnormal AT
+TS
+OLR
+TTO
+CTT
+Ab. TS
+Ab. OLR
+Ab. TTO
+Ab. CTT
+Panel A: First Stage
+Log Price (IV)
+−0.3186∗∗∗
+0.5321∗∗∗
+−0.0472
+0.0418
+0.0167∗
+−0.0342∗∗
+0.0721∗∗∗
+−0.0710∗∗∗
+(0.0269)
+(0.0413)
+(0.0322)
+(0.0341)
+(0.0095)
+(0.0140)
+(0.0209)
+(0.0182)
+First-stage F
+241.22
+173.16
+70.94
+53.84
+4.86
+4.66
+5.88
+4.69
+Panel B: Second Stage (DV: Standardized PJ)
+c
+AT
+2.9321∗∗
+−1.7555∗∗
+19.8069
+−22.3721
+−55.9844
+27.3550∗
+−12.9591∗∗
+13.1663∗∗
+(1.3096)
+(0.7842)
+(16.3948)
+(20.6572)
+(36.9687)
+(14.1945)
+(6.2933)
+(6.2196)
+Controls
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+N
+865
+865
+865
+865
+865
+865
+865
+865
+Notes: This table reports two-stage least squares (2SLS) estimates following Weller (2018). The instrument for algorithmic trading
+activity is the log of the average stock price over event days [−42, −22]. Left panel: Raw AT levels are instrumented directly. Right panel:
+Abnormal AT proxies (event-window AT minus pre-event baseline) are instrumented with the same price-level instrument. Controls
+include log market cap, log volume, volatility, and bid-ask spread (log price excluded from second stage). HC1 standard errors in
+parentheses. ∗∗∗p < 0.01, ∗∗p < 0.05, ∗p < 0.10.
+59
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+Table IA6:
+Horse Race:
+Joint Regression and
+Multicollinearity Diagnostics
+Joint Regression
+Diagnostics
+Variable
+Coef
+SE
+t-stat
+VIF
+Panel A: AT Proxies
+Ab. OLR
+−0.3641
+(3.0677)
+−0.119
+3.02
+Ab. TS
+−5.3741
+(6.6415)
+−0.809
+4.37
+Ab. TTO
+0.0541
+(2.9786)
+0.018
+8.89
+Ab. CTT
+1.8983
+(2.8890)
+0.657
+7.06
+Panel B: Controls
+Log Price
+−1.4656∗∗
+(0.6035)
+−2.429
+4.09
+Log Mkt Cap
+0.1651
+(0.3556)
+0.464
+9.63
+Log Volume
+−0.2838
+(0.3606)
+−0.787
+8.60
+Volatility
+2.6768∗∗∗
+(0.6597)
+4.058
+1.32
+Spread
+−0.0589
+(0.3844)
+−0.153
+3.36
+N
+865
+Notes:
+This
+table
+reports
+a
+single
+OLS
+regression
+of
+the
+standardized price jump (winsorized) on all four abnormal AT proxies
+simultaneously and standard controls (columns 1–3), together with
+variance inflation factors (VIF, column 4).
+Controls include log
+price, log volume, log market capitalization, log volatility, and log
+spread. Standard errors are in parentheses. ∗∗∗p < 0.01, ∗∗p < 0.05,
+∗p < 0.10.
+60
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+Table
+IA7:
+Benjamini–Hochberg
+FDR
+Correction:
+Information Acquisition (Abnormal Activity)
+AT Metric
+DV
+Coef
+Raw p
+BH p
+Sig (BH)
+Ab. TS
+PJ Stan
+−5.3744∗∗
+0.0224
+0.0448
+Yes
+Ab. TS
+PJ Stan (wins)
+−3.4998∗∗
+0.0150
+0.0448
+Yes
+Ab. OLR
+PJ Stan
+3.2033∗∗
+0.0145
+0.0448
+Yes
+Ab. OLR
+PJ Stan (wins)
+2.7130∗∗∗
+0.0038
+0.0448
+Yes
+Ab. TTO
+PJ Stan
+−2.4504∗∗
+0.0189
+0.0448
+Yes
+Ab. TTO
+PJ Stan (wins)
+−1.5090∗∗
+0.0218
+0.0448
+Yes
+Ab. CTT
+PJ Stan
+2.1136∗∗
+0.0406
+0.0697
+No
+Ab. CTT
+PJ Stan (wins)
+1.2834∗
+0.0597
+0.0895
+No
+Ab. HVR
+PJ Stan
+2.0519
+0.1989
+0.2386
+No
+Ab. HVR
+PJ Stan (wins)
+1.6475
+0.1460
+0.1946
+No
+Ab. HTR
+PJ Stan
+−0.4739
+0.7445
+0.7445
+No
+Ab. HTR
+PJ Stan (wins)
+−0.5276
+0.6408
+0.6990
+No
+Notes: This table applies the Benjamini and Hochberg (1995) false discovery
+rate (FDR) correction to the information acquisition tests from Table 6 Panel B
+regressions. Each row reports the coefficient on one abnormal activity variable
+from a separate regression, using either the raw standardized price jump (PJ
+Stan) or the winsorized version (PJ Stan wins) as the dependent variable.
+The BH p-value is the adjusted p-value controlling the FDR at 5%. Controls
+include log price, log volume, log market capitalization, log volatility, and log
+spread. ∗∗∗p < 0.01, ∗∗p < 0.05, ∗p < 0.10 (based on raw p-values).
+61
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+Table IA8: Post-Announcement Decline in
+Algorithmic Trading Activity
+Day
+Ab. TS
+Ab. OLR
+Ab. TTO
+Ab. CTT
+0
+0.020∗
+−0.038∗∗
+0.156∗∗∗
+−0.145∗∗∗
+1
+0.115∗∗∗
+−0.144∗∗∗
+0.431∗∗∗
+−0.349∗∗∗
+2
+0.095∗∗∗
+−0.119∗∗∗
+0.345∗∗∗
+−0.267∗∗∗
+3
+0.095∗∗∗
+−0.105∗∗∗
+0.301∗∗∗
+−0.230∗∗∗
+4
+0.093∗∗∗
+−0.111∗∗∗
+0.305∗∗∗
+−0.239∗∗∗
+5
+0.097∗∗∗
+−0.129∗∗∗
+0.317∗∗∗
+−0.239∗∗∗
+6
+0.091∗∗∗
+−0.115∗∗∗
+0.283∗∗∗
+−0.209∗∗∗
+7
+0.077∗∗∗
+−0.095∗∗∗
+0.229∗∗∗
+−0.173∗∗∗
+8
+0.057∗∗∗
+−0.059∗∗∗
+0.222∗∗∗
+−0.185∗∗∗
+9
+0.053∗∗∗
+−0.063∗∗∗
+0.207∗∗∗
+−0.169∗∗∗
+10
+0.033∗∗∗
+−0.042∗∗∗
+0.131∗∗∗
+−0.106∗∗∗
+11
+0.028∗∗
+−0.028∗∗
+0.111∗∗∗
+−0.093∗∗∗
+12
+0.050∗∗∗
+−0.056∗∗∗
+0.152∗∗∗
+−0.112∗∗∗
+13
+0.035∗∗∗
+−0.043∗∗∗
+0.114∗∗∗
+−0.086∗∗∗
+14
+0.043∗∗∗
+−0.046∗∗∗
+0.148∗∗∗
+−0.124∗∗∗
+15
+0.033∗∗∗
+−0.041∗∗∗
+0.115∗∗∗
+−0.092∗∗∗
+16
+0.045∗∗∗
+−0.038∗∗
+0.135∗∗∗
+−0.103∗∗∗
+17
+0.022∗∗
+−0.022
+0.137∗∗∗
+−0.120∗∗∗
+18
+0.023∗∗
+−0.025
+0.141∗∗∗
+−0.127∗∗∗
+19
+0.020∗
+−0.021
+0.095∗∗∗
+−0.086∗∗∗
+20
+0.023∗∗
+−0.027
+0.079∗∗∗
+−0.062∗∗∗
+Notes:
+This
+table
+reports
+mean
+daily
+abnormal
+algorithmic trading activity for event days 0 through
+20 relative to the special dividend declaration date.
+Abnormal AT is computed as the daily AT proxy value
+minus the firm-specific baseline mean over [−61, −22].
+Significance is assessed via cross-sectional t-tests against
+the null of zero abnormal AT. AT proxies are:
+TS
+(trade size), OLR (odd-lot ratio), TTO (trade-to-order
+ratio), and CTT (cancel-to-trade ratio) all in log units.
+∗∗∗p < 0.01, ∗∗p < 0.05, ∗p < 0.10.
+62
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+Table IA9: Gradient Analysis: Abnormal AT Across Dividend
+Event Types
+Ab. OLR
+Ab. TS
+Ab. TTO
+Ab. CTT
+Surprise Specials
+2.7130∗∗∗
+−3.4998∗∗
+−1.5090∗∗
+1.2834∗
+(0.9366)
+(1.4394)
+(0.6579)
+(0.6815)
+Non-Surprise Specials
+−0.0690
+0.6174
+−0.2298
+0.2449
+(1.0081)
+(1.0590)
+(0.4067)
+(0.4264)
+Dividend Increases
+0.2072
+−0.6039
+−0.4786∗∗∗
+0.6340∗∗∗
+(0.3322)
+(0.3681)
+(0.1809)
+(0.2169)
+Dividend Decreases
+−1.5618
+1.3560
+−0.1482
+0.6866
+(1.1867)
+(1.6830)
+(0.7303)
+(0.8672)
+Notes: This table reports the coefficient on each abnormal AT proxy from
+separate regressions of the standardized price jump (winsorized) on abnormal
+AT and controls across four dividend event samples. Surprise specials are
+the main sample from Table 6 Panel B. Non-surprise specials are special
+dividends by firms with recurring special dividend history. Controls include
+log price, log volume, log market capitalization, log volatility, and log spread.
+Dividend increases and decreases are regular dividend changes by the same
+firms. Standard errors are in parentheses. ∗∗∗p < 0.01, ∗∗p < 0.05, ∗p < 0.10.
+63
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+Table IA10: Robustness: Alternative Pre-Event and Baseline Windows
+Ab. TS
+Ab. OLR
+Pre-Event Window
+[−61, −22]
+[−80, −41]
+[−120, −61]
+[−61, −22]
+[−80, −41]
+[−120, −61]
+[−21, −1] (Main)
+−3.4998∗∗
+−2.1964∗
+−1.7940
+2.7130∗∗∗
+1.6040∗
+1.0347
+(1.4394)
+(1.2789)
+(1.2109)
+(0.9366)
+(0.8718)
+(0.7455)
+[−15, −1]
+−3.6150∗∗
+−2.5880∗∗
+−2.2543∗∗
+2.9720∗∗∗
+2.0774∗∗
+1.4947∗
+(1.4408)
+(1.2825)
+(1.1296)
+(1.0344)
+(0.9513)
+(0.8001)
+[−10, −1]
+−3.3663∗∗
+−2.6787∗∗
+−2.3611∗∗
+2.8238∗∗∗
+2.1552∗∗
+1.6139∗∗
+(1.3298)
+(1.2470)
+(1.0867)
+(0.9632)
+(0.8859)
+(0.7712)
+[−5, −1]
+−2.2331∗
+−1.7968∗
+−1.6077∗
+1.6852∗∗
+1.3156∗
+0.9621
+(1.1608)
+(1.0584)
+(0.9578)
+(0.8564)
+(0.7729)
+(0.7121)
+[−3, −1]
+−1.1833
+−0.9120
+−0.7777
+0.5192
+0.2748
+0.0755
+(1.2146)
+(1.1182)
+(1.0263)
+(0.7146)
+(0.6880)
+(0.6149)
+Ab. TTO
+Ab. CTT
+Pre-Event Window
+[−61, −22]
+[−80, −41]
+[−120, −61]
+[−61, −22]
+[−80, −41]
+[−120, −61]
+[−21, −1] (Main)
+−1.5090∗∗
+−1.3817∗∗∗
+−0.8563∗∗
+1.2834∗
+1.1661∗∗
+0.7317
+(0.6579)
+(0.5073)
+(0.4321)
+(0.6815)
+(0.5216)
+(0.5228)
+[−15, −1]
+−1.2196∗
+−1.1953∗∗
+−0.7521∗
+0.8296
+0.8290∗
+0.4851
+(0.6285)
+(0.4933)
+(0.4171)
+(0.6370)
+(0.4951)
+(0.4999)
+[−10, −1]
+−1.1370∗
+−1.1283∗∗
+−0.7508∗
+0.7533
+0.7541
+0.4637
+(0.5931)
+(0.4775)
+(0.4135)
+(0.5952)
+(0.4681)
+(0.4659)
+[−5, −1]
+−0.6604
+−0.7061
+−0.4356
+0.2566
+0.3122
+0.0984
+(0.5721)
+(0.4613)
+(0.4105)
+(0.5529)
+(0.4327)
+(0.4276)
+[−3, −1]
+−0.3364
+−0.4070
+−0.1995
+0.0263
+0.1010
+−0.0768
+(0.5341)
+(0.4437)
+(0.4097)
+(0.4852)
+(0.4032)
+(0.3998)
+N
+865
+865
+865
+865
+865
+865
+Controls
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Notes: This table reports the coefficient on each abnormal AT proxy from regressions of the standardized price
+jump (winsorized) on abnormal AT and controls. Each cell represents a separate regression. Rows vary the preevent window over which AT activity is averaged; columns vary the baseline window used to construct abnormal
+AT. The main specification uses a pre-event window of [−21, −1] and a baseline of [−61, −22]. Controls include
+log price, log volume, log market capitalization, log volatility, and log spread. Standard errors are in parentheses.
+∗∗∗p < 0.01, ∗∗p < 0.05, ∗p < 0.10.
+64
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+Table
+IA11:
+Alternative
+Information
+Incorporation Regressions
+AT Metric
+Coef
+SE
+t-stat
+p-value
+Ab. TS
+0.8276∗∗∗
+(0.3056)
+2.708
+0.0068
+Ab. OLR
+−0.5351∗∗
+(0.2350)
+−2.277
+0.0228
+Ab. TTO
+0.2240∗
+(0.1185)
+1.890
+0.0587
+Ab. CTT
+−0.1828
+(0.1267)
+−1.443
+0.1491
+Notes:
+This table reports OLS regressions where the
+dependent variable is the ratio CAR[0, 2]/CAR[0, 10], which
+captures the fraction of the total 10-day post-announcement
+return that is realized within the first two trading days.
+Each row represents a separate regression of the CAR
+fraction on one abnormal AT proxy and the standard
+controls. Abnormal AT is computed as the pre-event mean
+[−21, −1] minus the baseline mean [−61, −22]. Controls
+include log price, log volume, log market capitalization, log
+volatility, and log spread. Standard errors are in parentheses.
+∗∗∗p < 0.01, ∗∗p < 0.05, ∗p < 0.10.
+65
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+Table
+IA12:
+Reversal
+Magnitude
+Regressions (Reversal Firms Only)
+AT Metric
+Coef
+SE
+t-stat
+p-value
+Raw AT Levels
+TS
+−0.0103
+(0.0064)
+−1.605
+0.1085
+OLR
+0.0075∗
+(0.0039)
+1.896
+0.0580
+TTO
+−0.0044
+(0.0041)
+−1.081
+0.2798
+CTT
+0.0047
+(0.0044)
+1.055
+0.2915
+HVR
+0.0026
+(0.0058)
+0.450
+0.6527
+HTR
+0.0048
+(0.0059)
+0.802
+0.4228
+Abnormal AT
+Ab. TS
+−0.0124
+(0.0133)
+−0.933
+0.3510
+Ab. OLR
+0.0034
+(0.0073)
+0.470
+0.6382
+Ab. TTO
+−0.0044
+(0.0050)
+−0.875
+0.3817
+Ab. CTT
+0.0044
+(0.0053)
+0.835
+0.4035
+Ab. HVR
+−0.0082
+(0.0075)
+−1.101
+0.2710
+Ab. HTR
+−0.0111
+(0.0104)
+−1.068
+0.2855
+Notes:
+This table restricts the sample to events
+exhibiting price reversals (where the pre-event and eventwindow CARs are opposite in sign, N = 150) and
+regresses the absolute magnitude of the reversal on AT
+proxies and controls. Each row represents a separate
+regression. The upper panel uses raw AT levels; the lower
+panel uses abnormal AT. Controls include log price, log
+volume, log market capitalization, log volatility, and log
+spread. Standard errors are in parentheses. ∗∗∗p < 0.01,
+∗∗p < 0.05, ∗p < 0.10.
+66
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+Table IA13: Information Acquisition Without Fixed Effects
+TS
+OLR
+TTO
+CTT
+TS
+OLR
+TTO
+CTT
+Panel A: AT Levels
+DV: Weller’s Price Jump
+DV: Standardized Price Jump
+AT Proxy
+−0.0430
+0.0208
+−0.0310
+0.0013
+−1.8721∗∗∗
+1.4557∗∗∗
+−0.1368
+−0.7278∗
+(0.0384)
+(0.0262)
+(0.0280)
+(0.0252)
+(0.5813)
+(0.3745)
+(0.3786)
+(0.3765)
+N
+433
+433
+433
+433
+865
+865
+865
+865
+R2
+0.010
+0.008
+0.009
+0.007
+0.082
+0.086
+0.067
+0.071
+Controls
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Panel B: Abnormal AT
+DV: Weller’s Price Jump
+DV: Standardized Price Jump
+Ab. AT Proxy
+−0.1085
+0.1106∗
+−0.0669∗
+0.0704∗
+−3.4993∗∗
+2.7122∗∗∗
+−1.5087∗∗
+1.2833∗
+(0.0873)
+(0.0592)
+(0.0354)
+(0.0403)
+(1.4394)
+(0.9366)
+(0.6579)
+(0.6815)
+N
+433
+433
+433
+433
+865
+865
+865
+865
+R2
+0.010
+0.014
+0.013
+0.013
+0.075
+0.076
+0.075
+0.071
+Controls
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Notes: This table replicates Table 6 without fixed effects. OLS regressions of price jump measures on algorithmic trading (AT) proxies
+around special dividend announcements. Each column represents a separate regression with one AT proxy as the independent variable.
+Panel A uses AT levels averaged over the pre-announcement window [−21, −1]. Panel B uses abnormal AT, constructed as the difference
+between the pre-event mean ([−21, −1]) and the baseline mean ([−61, −22]). Weller’s Price Jump is the price jump ratio from Weller (2018),
+restricted to [0, 1]. Standardized Price Jump is our proposed measure, winsorized at the 99th percentile. Controls include log price, log
+volume, log market capitalization, volatility, and spread. No fixed effects are included. HC1 standard errors in parentheses. ∗∗∗p < 0.01,
+∗∗p < 0.05, ∗p < 0.10.
+67
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+Table IA14: Placebo Tests Without Fixed Effects
+TS
+OLR
+TTO
+CTT
+TS
+OLR
+TTO
+CTT
+Panel A: AT Levels
+DV: Weller’s Price Jump
+DV: Standardized Price Jump
+AT Proxy
+−0.0204
+0.0042
+0.0152
+−0.0324
+−1.4675∗∗∗
+0.9599∗∗
+0.4751
+−1.0126∗∗∗
+(0.0384)
+(0.0248)
+(0.0286)
+(0.0240)
+(0.5496)
+(0.3935)
+(0.3567)
+(0.3383)
+N
+433
+433
+433
+433
+864
+864
+864
+864
+R2
+0.007
+0.007
+0.007
+0.010
+0.076
+0.077
+0.069
+0.076
+Controls
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Panel B: Abnormal AT
+DV: Weller’s Price Jump
+DV: Standardized Price Jump
+Ab. AT Proxy
+0.0450
+0.0102
+−0.0001
+−0.0055
+−2.4976
+0.4305
+−0.2034
+−0.1628
+(0.1004)
+(0.0629)
+(0.0384)
+(0.0434)
+(2.0373)
+(1.2195)
+(0.6559)
+(0.6260)
+N
+433
+433
+433
+433
+862
+862
+862
+862
+R2
+0.007
+0.007
+0.007
+0.007
+0.071
+0.067
+0.067
+0.067
+Controls
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Notes: This table replicates Table 7 without fixed effects. Placebo tests using pseudo-announcement dates drawn uniformly from [−120, −60]
+relative to the actual special dividend declaration date. The dependent variables are the actual price jump measures computed at the true
+event date. Panel A uses AT levels averaged over [pseudo −21, pseudo −1]. Panel B uses abnormal AT, constructed as the difference between
+the pseudo pre-event mean and the pseudo baseline mean ([pseudo −61, pseudo −22]). Controls include log price, log volume, log market
+capitalization, volatility, and spread. No fixed effects are included. HC1 standard errors in parentheses. ∗∗∗p < 0.01, ∗∗p < 0.05, ∗p < 0.10.
+68
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed
+
+Table
+IA15:
+Information
+Incorporation
+and
+PostAnnouncement Dynamics Without Fixed Effects
+TS
+OLR
+TTO
+CTT
+Panel A: Incorporation Ratio
+AT Levels, days [0, +2]
+AT Proxy
+−0.1337
+0.0994
+0.0010
+0.0474
+(0.2236)
+(0.1449)
+(0.1984)
+(0.1969)
+Abnormal AT, days [0, +2]
+Ab. AT Proxy
+0.0435
+−0.2876
+−0.0549
+0.1566
+(0.3614)
+(0.2900)
+(0.1838)
+(0.2068)
+N
+865
+865
+865
+865
+Controls
+Yes
+Yes
+Yes
+Yes
+Panel B: Post-Announcement Standardized Price Jump
+AT Levels, days [0, +2]
+AT Proxy
+−0.6861∗∗
+0.4541∗∗
+−0.3488∗∗
+0.2111
+(0.2807)
+(0.1866)
+(0.1735)
+(0.1828)
+Abnormal AT, days [0, +2]
+Ab. AT Proxy
+−1.6201∗∗
+0.6883
+−0.6569∗∗∗
+0.6482∗∗∗
+(0.7161)
+(0.4317)
+(0.2322)
+(0.2164)
+N
+865
+865
+865
+865
+Controls
+Yes
+Yes
+Yes
+Yes
+Panel C: Post-Announcement Return Reversals (Logistic)
+AT Levels
+AT Proxy
+−0.0917
+0.0188
+−0.3368∗
+0.3761∗∗
+(0.2492)
+(0.1608)
+(0.1730)
+(0.1753)
+Abnormal AT
+Ab. AT Proxy
+−0.7156
+0.4993∗
+−0.6566∗∗∗
+0.7199∗∗∗
+(0.4701)
+(0.3017)
+(0.1898)
+(0.2063)
+N
+865
+865
+865
+865
+Controls
+Yes
+Yes
+Yes
+Yes
+Notes: This table examines whether AT accelerates post-announcement
+information incorporation and/or is associated with return reversals.
+Each column represents a separate regression with one AT proxy. Panel A
+uses the incorporation ratio, CAR[0, 2]/CAR[0, 5], as the dependent
+variable.
+Panel B uses the standardized price jump computed over
+the post-announcement window. Panel C reports logistic regressions
+where the dependent variable equals one if the sign of CAR[0, 2] differs
+from the sign of CAR[0, 5] (approximately 15% of events). AT proxies
+are measured over [0, +2] for levels or differenced from [−61, −22] for
+abnormal measures. Controls include log price, log volume, log market
+capitalization, log volatility, and log spread.
+Standard errors are in
+parentheses. ∗∗∗p < 0.01, ∗∗p < 0.05, ∗p < 0.10.
+69
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6711814
+Preprint not peer reviewed

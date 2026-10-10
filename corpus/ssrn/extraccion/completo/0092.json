@@ -1,0 +1,127 @@
+{
+  "doc_id": 92,
+  "titulo": "Diversified Statistical Arbitrage: Dynamically combining mean reversion and momentum investment strategies",
+  "resumen_operativo": "El paper propone combinar una estrategia de reversión a la media en acciones (usando PCA) con una de momentum en ETFs sectoriales (cruces de medias móviles), asignando capital dinámicamente mediante optimización cuadrática. Demuestra que el momentum sectorial actúa como cobertura en caídas del mercado, mejorando significativamente el ratio de Sharpe fuera de muestra, aunque advierte sobre drawdowns en puntos de giro (suelos de mercado).",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "statistical arbitrage",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategias cuantitativas basadas en reglas que buscan minimizar el riesgo al mantener un perfil neutral al mercado y aprovechar oportunidades de valor relativo.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "mean reversion"},
+        {"tipo": "USA", "objeto": "momentum"}
+      ],
+      "cita_textual": "Statistical arbitrage focuses on quantitative rule based trading strategies that are often market neutral. The strategy seeks to minimize risk and provide near risk free return."
+    },
+    {
+      "nombre": "mean reversion",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia que asume que la rentabilidad idiosincrásica de una acción regresará a su media tras una desviación, modelada usando reversión rápida (menor a 20 días).",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "momentum"},
+        {"tipo": "USA", "objeto": "principal component analysis"}
+      ],
+      "cita_textual": "The mean reversion strategy decomposes stock returns into market and idiosyncratic return components using principal component analysis."
+    },
+    {
+      "nombre": "momentum",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia aplicada a ETFs sectoriales que compra o vende basándose en la tendencia de corto plazo, utilizando el cruce de medias móviles exponenciales de 5 y 60 días.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "mean reversion"}
+      ],
+      "cita_textual": "The momentum strategy uses technical trading rules to trade momentum at the industry sector level."
+    },
+    {
+      "nombre": "principal component analysis",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica multivariada usada para descomponer los retornos de las acciones en componentes sistemáticos y aislar el residuo idiosincrásico para operar.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "eigenportfolio"}
+      ],
+      "cita_textual": "Principal Component Analysis is an eigenvector based multivariate analysis. The purpose of the analysis is to reveal the internal structure of the data to help best explain the variance."
+    },
+    {
+      "nombre": "eigenportfolio",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Carteras construidas a partir de los vectores propios de la matriz de correlación de los retornos, que representan los factores de riesgo sistemático del mercado.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "principal component analysis"}
+      ],
+      "cita_textual": "For each index, j, we analyze the corresponding eigenportfolio... These values help explain the variance in the data"
+    },
+    {
+      "nombre": "dynamic portfolio optimization",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Optimización cuadrática periódica usada para rebalancear las ponderaciones del portafolio, maximizando el Sharpe esperado bajo restricciones lineales y de límite.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "Sharpe ratio"}
+      ],
+      "cita_textual": "Dynamic portfolio optimization is utilized to rebalance exposures as the market environment evolves."
+    },
+    {
+      "nombre": "transaction costs",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Penalización fija (10 bps por trade en el paper) descontada de los retornos brutos para aproximar el costo de operar (spread, slippage, comisiones).",
+      "relaciones": [],
+      "cita_textual": "There is 10 bps deducted for each trade to account for slippage and transaction costs."
+    },
+    {
+      "nombre": "drawdown",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Caída del valor del portafolio desde un pico, ocurrida en períodos como la crisis quant de agosto 2007 o en el suelo del mercado de marzo 2009.",
+      "relaciones": [],
+      "cita_textual": "The diversified portfolio had a significant drawdown starting on March 9, 2009. This was the market bottom... and the momentum strategies were positioned short."
+    },
+    {
+      "nombre": "Sharpe ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida de desempeño ajustada por riesgo, usada como objetivo a maximizar en la optimización del portafolio combinado.",
+      "relaciones": [],
+      "cita_textual": "The goal of the optimization process was to maximize the Sharpe ratio of the diversified portfolio with a penalty for marginal risk contribution."
+    },
+    {
+      "nombre": "pairs trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "La forma más simple de arbitraje estadístico, basada en la asunción de que dos acciones seguirán un proceso de reversión al spread medio tras descontar beta del mercado.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "statistical arbitrage"}
+      ],
+      "cita_textual": "Pairs trading is the simplest form of Statistical Arbitrage investing. The strategy is made under the assumption that two stocks... will follow some process of tracking one another once accounting for market beta."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "La estrategia diversificada combinando reversión a la media con PCA y momentum de cruce de EMAs en sectores, ajustada dinámicamente, logró triplicar el ratio de Sharpe de las estrategias individuales fuera de muestra.",
+      "mercado": "US equities (S&P 500 y ETFs sectoriales)",
+      "periodo": "2007-2009",
+      "magnitud": "Sharpe 2.27 OOS vs 0.75 (solo MR) y 1.06 (mejor momentum), Retorno anualizado 39.15%",
+      "condiciones": "Out-of-sample, incluyendo costos de 10 bps por trade, sin penalizar rebalanceo de pesos en optimización",
+      "robustez": "media",
+      "cita_textual": "The Sharpe ratio of the diversified program was very high at 2.27 (1 month T-bill is the risk free rate) indicating that the portfolio optimization helped immensely with the diversified returns."
+    },
+    {
+      "afirmacion": "Las estrategias basadas únicamente en momentum actúan de forma perjudicial durante rebotes abruptos desde suelos de mercado debido al tiempo necesario para que las medias móviles ajusten sus señales.",
+      "mercado": "US equities (S&P 500 y ETFs sectoriales)",
+      "periodo": "Marzo 2009",
+      "magnitud": "-16.93% drawdown en 13 días",
+      "condiciones": "Rebote tras mínimos en mercado bajista, posiciones fuertemente cortas en ETFs.",
+      "robustez": "media",
+      "cita_textual": "The diversified portfolio had a significant drawdown starting on March 9, 2009. This was the market bottom... and the momentum strategies were positioned short. As a result, the diversified fund was down 16.9% peak to trough"
+    },
+    {
+      "afirmacion": "En el evento de liquidación quant de agosto 2007, la estrategia pura de reversión a la media experimentó pérdidas agudas a mitad de mes pero se recuperó parcialmente antes del cierre.",
+      "mercado": "US equities (S&P 500)",
+      "periodo": "Agosto 2007",
+      "magnitud": "-7.12% de drawdown (6-17 agosto), cierre mensual de -4.9%",
+      "condiciones": "Muestra del shock de liquidez quant de 2007.",
+      "robustez": "alta",
+      "cita_textual": "The drawdown in the mean reversion strategy was large given the time period, but the strategy recovered in the second half of the month and was down only 4.9% during August."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "El concepto de aislar un componente idiosincrásico o sistemático podría usarse a nivel intradía con componentes del Nasdaq/S&P o combinando reversión (en barras pequeñas) con momentum de nivel mayor."
+  }
+}

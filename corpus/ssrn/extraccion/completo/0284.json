@@ -1,0 +1,152 @@
+{
+  "titulo": "Quantitative Trading Algorithm",
+  "resumen_operativo": "Trabajo exploratorio de investigacion escolar que desarrolla 5 versiones incrementales de un algoritmo de trading sobre SPY (2021-2026). Version 1 (solo moving average): Sharpe -0.27. Version 5 (sentiment AI + leverage): Sharpe 3.32, max DD -5.43%. Cada version agrega filtros de volatilidad, RSI, position sizing dinamico, Monte Carlo con Markov chains, y LLM para analisis de sentimiento. Los resultados son prometedores pero deben interpretarse con cautela por posibles sesgos de backtesting.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "Moving Average Crossover",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Senal de compra cuando MA de 20 dias cruza por encima de MA de 50 dias; senal de venta en sentido opuesto.",
+      "relaciones": [
+        {
+          "tipo": "PARTE_DE",
+          "objeto": "Technical Analysis"
+        }
+      ],
+      "cita_textual": "When the shorter moving average crosses the longer one from above, a buy signal is generated"
+    },
+    {
+      "nombre": "Dynamic Position Sizing",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Tamano de posicion inversamente proporcional a la volatilidad: position_size = 0.01/volatility; mantiene exposicion al riesgo consistente.",
+      "relaciones": [
+        {
+          "tipo": "MITIGA",
+          "objeto": "Volatility Risk"
+        }
+      ],
+      "cita_textual": "the position of the trade was tailored after the current volatility and risk"
+    },
+    {
+      "nombre": "Monte Carlo Simulation with Markov Chains",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Simulacion de 300 escenarios futuros basados en patrones historicos y probabilidades de transicion entre regimenes de mercado.",
+      "relaciones": [
+        {
+          "tipo": "MIDE",
+          "objeto": "Strategy Robustness"
+        }
+      ],
+      "cita_textual": "Monte Carlo simulation with Markov chains enables a better overview of the probability of future outcomes"
+    },
+    {
+      "nombre": "LLM Sentiment Analysis",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Large Language Model que analiza noticias financieras cada 5-10 dias generando score de sentimiento entre -1 y +1 para ajustar leverage.",
+      "relaciones": [
+        {
+          "tipo": "USA",
+          "objeto": "Leverage Adjustment"
+        }
+      ],
+      "cita_textual": "the AI model analyzed financial news and generated a sentimental value between -1 and +1"
+    },
+    {
+      "nombre": "Sentiment-Based Leverage",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Leverage variable: >0.3 sentimiento -> 6x long; 0-0.3 -> 3x long; negativo -> 2x short con bear-certificate.",
+      "relaciones": [
+        {
+          "tipo": "PARTE_DE",
+          "objeto": "LLM Sentiment Analysis"
+        }
+      ],
+      "cita_textual": "sentiment > 0.3 -> 6x long... sentiment < 0 -> 2x short via bear-certificate"
+    },
+    {
+      "nombre": "Overfitting in Backtesting",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Riesgo de que el modelo aprenda a describir el pasado en lugar de identificar patrones generalizables; especialmente relevante en version 5 con LLM.",
+      "relaciones": [
+        {
+          "tipo": "MITIGA",
+          "objeto": "Monte Carlo Simulation"
+        }
+      ],
+      "cita_textual": "the results should be used as an indicator of potential, not as a given"
+    },
+    {
+      "nombre": "Look-Ahead Bias",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Error analitico donde informacion futura se usa en backtesting; riesgo particular en el analisis de sentimiento con noticias.",
+      "relaciones": [
+        {
+          "tipo": "CONTRADICE_A",
+          "objeto": "LLM Sentiment Analysis"
+        }
+      ],
+      "cita_textual": "There is a risk for look ahead bias which is hard to eliminate when back testing"
+    },
+    {
+      "nombre": "RSI (Relative Strength Index)",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Indicador que mide si un activo esta sobrecomprado o sobrevendido basado en la evolucion del precio.",
+      "relaciones": [
+        {
+          "tipo": "PARTE_DE",
+          "objeto": "Technical Analysis"
+        }
+      ],
+      "cita_textual": "RSI indicator prevented the algorithm to buy when it considered the market overvalued"
+    },
+    {
+      "nombre": "Volatility Filter",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Filtro que evita operar en condiciones de volatilidad extrema; senales solo se generan en volatilidad baja con momentum positivo.",
+      "relaciones": [
+        {
+          "tipo": "MITIGA",
+          "objeto": "Volatility Risk"
+        }
+      ],
+      "cita_textual": "The filter worked by generating trade signals when the volatility was really high, high, low and really low respectively"
+    },
+    {
+      "nombre": "Logarithmic Returns",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Retornos logaritmicos para medir cambios diarios de precio; son aditivos en el tiempo y mas realistas que cambios porcentuales simples.",
+      "relaciones": [
+        {
+          "tipo": "USA",
+          "objeto": "Time Series Analysis"
+        }
+      ],
+      "cita_textual": "logarithmic returns to measure daily price changes, which is more realistic as it is additive over time"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Version 5 con LLM sentiment y leverage: Sharpe 3.32, max DD -5.43%, Monte Carlo VaR 5%: 3.43x capital inicial.",
+      "mercado": "SPY (S&P 500 ETF)",
+      "periodo": "2021-2026",
+      "magnitud": "Sharpe 3.32, max DD -5.43%, VaR 5% = 3.43x",
+      "condiciones": "LLM sentiment analysis cada 5-10 dias; leverage variable; sin costos de transaccion",
+      "robustez": "baja",
+      "cita_textual": "A Sharpe quote of 3.319 shows a high yield in proportion to the taken risk"
+    },
+    {
+      "afirmacion": "Version 1 (solo moving average): Sharpe -0.27, max DD -44.52%; mejora consistente con cada version adicional.",
+      "mercado": "SPY",
+      "periodo": "2021-2026",
+      "magnitud": "v1: Sharpe -0.27, DD -44.52%; v2: Sharpe 1.07, DD -12.89%; v3: Sharpe 2.35, DD -5.07%",
+      "condiciones": "Iteraciones incrementales agregando filtros",
+      "robustez": "media",
+      "cita_textual": "The algorithms results followed a linear improvement with every new iteration"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "Usa datos diarios; trabajo exploratorio estudiantil sin diseno para aplicacion intradia real."
+  },
+  "doc_id": 284
+}

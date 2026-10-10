@@ -1,0 +1,200 @@
+{
+  "doc_id": 169,
+  "titulo": "High-frequency trading in the Bund futures market",
+  "resumen_operativo": "El paper analiza detalladamente el impacto de las estrategias de HFT en el mercado de futuros del Bund utilizando datos con precisión de microsegundos. Demuestra que los HFTs direccionales explotan la velocidad en anuncios macroeconómicos capturando arbitraje de información, mejorando el price discovery pero inyectando severa volatilidad transitoria. Simultáneamente evidencia que los HFTs market makers retiran masivamente la liquidez (cancelando órdenes) justo antes de eventos programados o picos inesperados de volatilidad para eludir selección adversa.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "high-frequency trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Subcategoría de trading algorítmico intensivo que utiliza ventajas en latencia y tecnológica para enviar, modificar o cancelar órdenes en fracciones de milisegundo.",
+      "relaciones": [],
+      "cita_textual": "high-frequency traders (HFTs) typically invest in technological infrastructure that allows them to process a variety of trading signals and send orders to marketplaces in a fraction of a second."
+    },
+    {
+      "nombre": "liquidity taking",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Operativa agresiva en la que se consume la liquidez disponible ejecutando inmediatamente contra las posturas en espera del order book.",
+      "relaciones": [
+        {
+          "tipo": "SE_OPONE_A",
+          "objeto": "liquidity provision"
+        }
+      ],
+      "cita_textual": "The liquidity taker is the market participant that enters the marketable order. The order of the liquidity taker is immediately executed when it enters the order book."
+    },
+    {
+      "nombre": "liquidity provision",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Estrategia pasiva en la que un participante ofrece liquidez enviando órdenes limitadas que descansan en el libro a la espera de un contraparte.",
+      "relaciones": [
+        {
+          "tipo": "USA",
+          "objeto": "limit order book"
+        }
+      ],
+      "cita_textual": "I deﬁne the liquidityproviding part of the transaction as being the limit order in the order book that was hit by a marketable order"
+    },
+    {
+      "nombre": "momentum",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Enfoque direccional operando a favor de los retornos recientes. Los HFT activos lo emplean profusamente en regímenes de alta volatilidad exacerbando la tendencia intradiaria.",
+      "relaciones": [
+        {
+          "tipo": "SE_OPONE_A",
+          "objeto": "mean reversion"
+        }
+      ],
+      "cita_textual": "active HFTs tend to follow momentum strategies, implying that they trade in the direction of the market return, which can increase intraday price movements."
+    },
+    {
+      "nombre": "price discovery",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Proceso mediante el cual el flujo de órdenes y la cotización asimilan la nueva información, de forma acelerada por el HFT activo durante los anuncios macro.",
+      "relaciones": [],
+      "cita_textual": "HFT plays an important role in the price discovery process on a microperspective. Through their advantage in speed that enables them to react faster to news compared to other traders, HFT trading improves price eﬃciency."
+    },
+    {
+      "nombre": "adverse selection",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Riesgo enfrentado por los quants más lentos cuyas limit orders estáticas son barridas por los traders de alta frecuencia reaccionando ante shocks de información.",
+      "relaciones": [
+        {
+          "tipo": "CAUSA",
+          "objeto": "order deletion"
+        }
+      ],
+      "cita_textual": "NHFTs cannot withdraw their limit orders as fast as HFTs react to the news; this is called adverse selection risk."
+    },
+    {
+      "nombre": "market microstructure noise",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Componente efímero de la varianza total de la cotización que proviene de fricciones de trading u overshooting, dominado estadísticamente por la furia reactiva del HFT.",
+      "relaciones": [],
+      "cita_textual": "HFT trades add a large amount to noise, which is about 33% after 10 ticks... indicating that HFTs’ fast trading after the news release contributes much more to transitory volatility than to information."
+    },
+    {
+      "nombre": "permanent volatility",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Métrica extraída tras descomponer la variación de los retornos, correspondiendo a los saltos direccionales informados y perdurables anclados en los fundamentales.",
+      "relaciones": [
+        {
+          "tipo": "MIDE",
+          "objeto": "price discovery"
+        }
+      ],
+      "cita_textual": "active HFTs contribute a much higher share to permanent volatility than NHFTs, whose contribution is basically zero."
+    },
+    {
+      "nombre": "news trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Explotación del componente sorpresivo de anuncios pre-calendarizados a través del disparo de órdenes de forma automatizada e inmediata.",
+      "relaciones": [
+        {
+          "tipo": "USA",
+          "objeto": "high-frequency trading"
+        }
+      ],
+      "cita_textual": "HFTs following news trading strategies. Since this requires fast and aggressive trading according to the surprise component of the news, HFT trades amplify both the beneﬁcial and the harmful determinants of price volatility"
+    },
+    {
+      "nombre": "fleeting order",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Puntas limitadas con un lapso de vida sumamente corto (a menudo inferior a dos segundos) que se cancelan si no son llenadas rápido.",
+      "relaciones": [],
+      "cita_textual": "over one-third of limit orders are canceled within two seconds in the US equity market and name those “ﬂeeting orders”. The calculated median deletion time of 2.5 seconds is close to their ﬁndings."
+    },
+    {
+      "nombre": "information arbitrage",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Beneficio capturado gracias a un desequilibrio de velocidad donde un trader rápido golpea el libro de posturas lentas antes de que éstas ajusten sus precios post-noticia.",
+      "relaciones": [
+        {
+          "tipo": "REQUIERE",
+          "objeto": "high-frequency trading"
+        }
+      ],
+      "cita_textual": "As soon as slower market participants also react to the news announcement by selling futures contracts... HFTs buy back the contracts at a much lower price and realize short-term trading gains. This eﬀect is called information arbitrage."
+    },
+    {
+      "nombre": "order deletion",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Rechazo o cancelación intencional de órdenes limitadas activas, el cual aumenta de manera significativa por parte del HFT anticipándose a saltos de riesgo.",
+      "relaciones": [
+        {
+          "tipo": "MITIGA",
+          "objeto": "adverse selection"
+        }
+      ],
+      "cita_textual": "passive HFTs tend to delete more limit orders as soon as market volatility rises suddenly... already withdraw from markets several minutes before the event due to the risk of being adversely selected."
+    },
+    {
+      "nombre": "signed net order flow",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Desbalance calculado como el volumen originado por los compradores menos el volumen originado por los vendedores dentro de una misma franja del tiempo intradiario.",
+      "relaciones": [
+        {
+          "tipo": "PREDICE",
+          "objeto": "short-term returns"
+        }
+      ],
+      "cita_textual": "signed net order ﬂow (buyerinitiated minus seller-initiated volume)"
+    },
+    {
+      "nombre": "realized variance",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Indicador que suma retornos microestructurales al cuadrado en intervalos pre-definidos, evaluando la turbulencia efectiva del instrumento analizado.",
+      "relaciones": [],
+      "cita_textual": "realized variance, which is the sum of squared incremental returns. Zhang, Mykland, and Ait-Sahalia (2005) propose a method to estimate the realized variance consistently for predeﬁned subsamples"
+    },
+    {
+      "nombre": "order-to-trade ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Razón fundamental entre volumen cotizado y el que realmente se completa vía transacciones, la cual suele estar disparada en algoritmos de market making veloces.",
+      "relaciones": [],
+      "cita_textual": "order-to-trade ratio, which reﬂects the overall quoted volume divided by all real transactions."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Los HFTs orientados a tomar liquidez emplean intensamente momentum a ultra-corto plazo cuando detectan tensión en el mercado, dominando numéricamente a los proveedores pasivos y amplificando la volatilidad intradiaria real.",
+      "mercado": "Bund futures",
+      "periodo": "Marzo y Junio 2014",
+      "magnitud": "Ratio de Momentum positivo en HFT activos (0.5541 en la semana de alta volatilidad)",
+      "condiciones": "Muestra separada por umbral de volatilidad exógeno (VDAX) computada sobre ventanas de 1 minuto.",
+      "robustez": "media",
+      "cita_textual": "active HFTs tend to follow momentum strategies, implying that they trade in the direction of the market return, which can increase intraday price movements."
+    },
+    {
+      "afirmacion": "En el lapso de escasos milisegundos posterior a la emisión de una novedad macroeconómica clave, la contribución del algoritmo rápido (HFT) al descubrimiento de precios domina al grueso de participantes del mercado.",
+      "mercado": "Bund futures",
+      "periodo": "Julio 2013 a Junio 2014",
+      "magnitud": "Impacto residual vía funciones de impulso-respuesta al décimo tick de ~0.607 (HFT) vs 0.120 (NHFT).",
+      "condiciones": "Modelo Vectorial Autorregresivo de ordenamientos tick a tick anclado en datos de empleo y tasas BCE.",
+      "robustez": "alta",
+      "cita_textual": "The impulse response function for HFTs after 10 ticks is around ﬁve times as high as for NHFTs. This implies that an innovation in HFT trading induces a 400% greater price change than an innovation in NHFT trading"
+    },
+    {
+      "afirmacion": "A pesar de integrar información valiosa, el violento 'information arbitrage' del HFT genera altísimo ruido transitorio; los tics de estas ráfagas sobre-corrigen produciendo una varianza ruidosa que erosiona la eficiencia al cortísimo plazo.",
+      "mercado": "Bund futures",
+      "periodo": "Julio 2013 a Junio 2014",
+      "magnitud": "HFTs imponen 33.4% a la varianza transitoria vs apenas un 9.2% en el factor permanente a los 10 ticks (ratio < 1).",
+      "condiciones": "Descomposición ortogonal asintótica (Hasbrouck, 1993) aplicada al componente direccional neto y retornos.",
+      "robustez": "alta",
+      "cita_textual": "HFT trades add a large amount to noise, which is about 33% after 10 ticks... indicating that HFTs’ fast trading after the news release contributes much more to transitory volatility than to information."
+    },
+    {
+      "afirmacion": "Los participantes rápidos pasivos extraen proactivamente una masiva cantidad de liquidez (mediante cancelaciones de órdenes directas) inmediatamente antes de releases calendarizados o tras repuntes abruptos de volatilidad para sortear exposición adversa.",
+      "mercado": "Bund futures",
+      "periodo": "Julio 2013 a Junio 2014 (eventos) y Marzo/Junio 2014",
+      "magnitud": "Incremento de cancelaciones sostenido que duplica holgadamente la inactividad natural durante los cinco minutos previos al anuncio NFP.",
+      "condiciones": "Filtro de ratio de deleción en exceso respecto al nivel promedio diario para eventos determinísticos y choques aleatorios.",
+      "robustez": "alta",
+      "cita_textual": "passive HFTs increasingly cancel limit orders already several minutes before the data are released and scale back their order submission activity at the same time due to the known risk of being adversely selected."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "alta",
+    "nota": "Insta contundentemente a codificar reglas de suspensión de liquidez (order deletions obligatorias) antes de anuncios macro relevantes como el NFP en el ES y resalta el momentum algorítmico post-noticia."
+  }
+}

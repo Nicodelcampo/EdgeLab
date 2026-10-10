@@ -1,0 +1,110 @@
+{
+  "doc_id": 295,
+  "titulo": "Research Methods in Quantitative Finance",
+  "resumen_operativo": "Revisión exhaustiva de métodos de investigación en finanzas cuantitativas abarcando diseños experimentales, cross-seccionales, cuasi-experimentales, pre-experimentales, diseño muestral, modelos econométricos y simulaciones estocásticas. Analiza fortalezas y limitaciones de cada método según el framework de Frankfort-Nachmias y Nachmias (2008) para diseños de investigación y Wooldridge (2009) para econometría. Incluye comparación de métodos de muestreo para simulaciones Monte Carlo (Halton, Faure, Sobol, Hypercube) y su convergencia respecto al generador uniforme de MATLAB.",
+  "calidad_paper": "baja",
+  "conceptos": [
+    {
+      "nombre": "Experimental Design",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Diseño de investigación con cuatro componentes: comparación, manipulación, control y generalización. Es el método más potente para establecer causalidad pero puede comprometer la validez externa. Incluye cinco tipos: experimentación controlada, Solomon four-group, post-test-only, efectos temporales y diseño factorial.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "Random Assignment"},
+        {"tipo": "USA", "objeto": "Control Group"}
+      ],
+      "cita_textual": "Controlled experimentation is the strongest method of establishing causation but external validity can be compromised."
+    },
+    {
+      "nombre": "Cross-Sectional Design",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Diseño basado en encuestas donde se recolectan datos de una muestra aleatoria en un punto del tiempo. Menos potente que el experimental porque no permite comparaciones antes-después. Útil en finanzas conductuales pero inadecuado para finanzas cuantitativas puras.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Survey Research"},
+        {"tipo": "SE_OPONE_A", "objeto": "Experimental Design"}
+      ],
+      "cita_textual": "Cross-section designs are not as powerful of a research tool as traditional experimental designs because before-and-after comparisons are not possible."
+    },
+    {
+      "nombre": "Simultaneous Equation Models (SEM)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Sistema de ecuaciones donde variables dependientes de una ecuación aparecen como explicativas en otra. Requiere condiciones de identificación (orden y rango) y exclusion restrictions. Esencial para modelar sistemas económicos complejos con endogeneidad.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "Exclusion Restriction"},
+        {"tipo": "APLICA_A", "objeto": "Dynamic Stochastic General Equilibrium"}
+      ],
+      "cita_textual": "Simultaneous equation models (SEM) are important in understanding complex dynamic systems."
+    },
+    {
+      "nombre": "Unit Root Testing",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Prueba de raíz unitaria (Dickey-Fuller simple y aumentado) para determinar si una serie temporal es estacionaria o tiene deriva (random walk con o sin drift). Si ρ=1 y α=0 la serie es random walk sin drift; con α≠0 es random walk con drift.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Augmented Dickey-Fuller Test"},
+        {"tipo": "APLICA_A", "objeto": "Time Series Stationarity"}
+      ],
+      "cita_textual": "If α=0 and ρ=1 then the time series is a random walk without drift, but when α≠0 and ρ=1 the time series is a random walk with drift."
+    },
+    {
+      "nombre": "Monte Carlo Simulation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Simulación computacional que determina trayectorias evolutivas de precios u otras métricas usando procesos estocásticos. Esencial para problemas no-lineales sin solución analítica. Genera conos de probabilidad para rangos de precios mediante iteraciones repetidas.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "Stochastic Process"},
+        {"tipo": "USA", "objeto": "Random Vector Generation"}
+      ],
+      "cita_textual": "Monte Carlo simulations are very important analytical tools in quantitative finance. Since non-linear dynamic systems are very difficult to determine through an analytical solution a researcher needs to rely on numerical instruments."
+    },
+    {
+      "nombre": "Quasi-Experimental Design",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Diseño que permite selección aleatoria de la población pero no asignación aleatoria a grupos de comparación, reduciendo la validez interna. Incluye cuatro tipos: contrasted-groups, planned variation, panels/time-series y control-series.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "Experimental Design"},
+        {"tipo": "USA", "objeto": "Control-Series Design"}
+      ],
+      "cita_textual": "A quasi-experimental design allows for random selection from the population but does not require the random assignment to comparison groups, reducing the internal validity compared to classical experimental designs."
+    },
+    {
+      "nombre": "Sobol Sequence",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Secuencia de muestreo determinístico construida a partir de Van Der Corput en forma binaria con polinomios primitivos. Converge más rápido que MATLAB, Halton y Faure en altas dimensiones y mantiene eficiencia computacional en problemas multidimensionales.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "Halton Sequence"},
+        {"tipo": "MEJORA_A", "objeto": "Faure Sequence"}
+      ],
+      "cita_textual": "Sobol sequencing might be a better method to implement in the Monte Carlo simulation [for computational efficiency and faster convergence]."
+    },
+    {
+      "nombre": "Ordinary Least Squares (OLS) Assumptions",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Supuestos para estimadores OLS insesgados en regresión múltiple: linealidad en parámetros, muestreo aleatorio, no colinealidad perfecta y media condicional cero del error. Violaciones generan sesgo. La homocedasticidad asegura eficiencia adicional.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "Zero Conditional Mean"},
+        {"tipo": "SE_OPONE_A", "objeto": "Endogenous Explanatory Variable"}
+      ],
+      "cita_textual": "The assumptions for a multiple factor linear regression are the following: (1) linear in parameters, (2) random sampling, (3) no perfect collinearity, and (4) zero conditional mean for the error term."
+    },
+    {
+      "nombre": "Hypercube Sampling",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Muestreo completamente aleatorio (no determinístico) que divide cada dimensión en N secciones y genera una variable uniforme aleatoria en cada sección. En dimensiones bajas tiene distribución similar a MATLAB con homogeneidad ligeramente superior.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "Sobol Sequence"},
+        {"tipo": "EQUIVALE_A", "objeto": "Latin Hypercube Sampling"}
+      ],
+      "cita_textual": "Hypercube sampling differs from the previous sequencing methods by being completely random, whereas the other sequencing methods were deterministic through the use of the Van Der Corput sequences."
+    },
+    {
+      "nombre": "Infinite Distributed Lag (IDL) Model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo donde la variable dependiente está definida por valores actuales y todos los pasados de las variables independientes. La estimación requiere restricciones como la distribución de rezagos de Koyck, que reduce los coeficientes a solo dos parámetros.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "Koyck Distribution Lag"},
+        {"tipo": "APLICA_A", "objeto": "Rational Distribution Lag"}
+      ],
+      "cita_textual": "An infinite distributed lag (IDL) model is when the dependent variable is defined by current and all past values of the independent variables."
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {"nivel": "nula", "nota": "Paper puramente metodológico sin aplicación empírica a datos de mercado ni estrategias de trading."}
+}

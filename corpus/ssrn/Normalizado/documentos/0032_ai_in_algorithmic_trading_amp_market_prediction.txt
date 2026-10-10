@@ -1,0 +1,329 @@
+ 
+236
+ 
+www.internationalmaronitejournal.com 
+ 
+International Maronite Journal 
+Volume: 1, No: 26, Pp 236-242 
+ISSN: Online 
+www.internationalmaronitejournal.com 
+ 
+AI in Algorithmic Trading & Market Prediction 
+Author: Gio Moussa1 
+ 
+Affiliation: CIRAME Research Center, Business School 
+Holy Spirit University of Kaslik, P.O Box 446, Jounieh, Lebanon 
+Abstract:  
+This paper examines the growing role of artificial intelligence in algorithmic trading and market 
+prediction. The study is motivated by the rapid increase in financial data, the spread of automated 
+trading systems, and the limits of traditional forecasting models when markets become nonlinear, 
+volatile, and information-rich. Building on the initial project question, the paper reviews how 
+machine learning, deep learning, reinforcement learning, and natural language processing are 
+being used to generate trading signals, forecast short-term price movements, optimize execution, 
+and support portfolio decisions. It also compares AI-based approaches with classical statistical 
+frameworks such as regression, ARIMA, and volatility models. The review shows that AI can 
+improve pattern recognition and adapt more quickly to changing data structures, especially when 
+large structured and unstructured datasets are available. However, the literature also shows that 
+forecasting success does not automatically translate into consistent abnormal returns once 
+transaction costs, regime shifts, overfitting, and market impact are considered. To address these 
+issues, the paper proposes a transparent empirical methodology based on walk-forward testing, 
+benchmark comparison, and risk-adjusted evaluation. Overall, AI appears to be a powerful 
+enhancement to algorithmic trading, but not a guaranteed replacement for sound financial theory, 
+robust validation, and effective risk control. 
+Keywords:  
+Artificial intelligence, algorithmic trading, machine learning, market prediction, financial markets 
+ 
+ 
+
+ 
+237
+ 
+www.internationalmaronitejournal.com 
+ 
+Introduction: "The What & Why" 
+Financial markets today operate at a speed and complexity never witnessed before. Millions of 
+transactions occur every second across global exchanges, influenced by economic indicators, 
+geopolitical events, investor sentiment, central bank communication, and technological change. 
+Traditional trading strategies, which rely heavily on human judgment and classical statistical 
+assumptions, are increasingly challenged by the scale, frequency, and heterogeneity of financial 
+data generated in real time. 
+Artificial intelligence, particularly machine learning and deep learning, has emerged as a major 
+force in modern finance. AI-driven trading systems can process large historical and live datasets, 
+identify nonlinear relationships, and execute decisions within milliseconds. Unlike many 
+conventional models that depend on fixed assumptions about distributions and relationships, AI 
+systems can be trained to adapt to evolving data patterns and complex market structures. This has 
+made them especially attractive to hedge funds, investment banks, proprietary trading firms, and 
+fintech platforms seeking speed, scalability, and an informational edge. 
+At the same time, the rise of AI in trading raises an important research question: can AI-based 
+algorithmic trading models consistently predict market movements and outperform traditional 
+strategies in realistic market conditions? This question matters because predictive accuracy alone 
+does not guarantee economic profitability. Financial markets remain noisy, partially efficient, and 
+vulnerable to unexpected shocks. A model may perform well in backtests yet fail in live markets 
+because of overfitting, transaction costs, slippage, structural breaks, or crowding by competing 
+algorithms. 
+Accordingly, this paper investigates the role and effectiveness of AI in algorithmic trading and 
+market prediction. It combines a literature-based discussion with a proposed empirical framework 
+that can later be implemented using market and textual data. The goal is not only to assess whether 
+AI can improve forecasting, but also to determine under what conditions such improvement 
+remains economically meaningful and operationally stable. 
+The study pursues the following objectives: 
+Explain the evolution of algorithmic trading and its integration with AI technologies. 
+Compare traditional statistical forecasting models with AI-based prediction models. 
+Analyze the predictive accuracy and practical usefulness of machine learning techniques in 
+financial markets. 
+Evaluate the risks associated with AI-driven trading systems, including overfitting, model opacity, 
+and market instability. 
+Assess whether AI-based strategies can generate abnormal returns once benchmark indices, 
+transaction costs, and risk-adjusted measures are considered. 
+Discuss the regulatory and ethical implications of increasingly automated financial markets. 
+ 
+Literature Review: "The story so far " 
+ 
+The academic basis of market prediction studies is still the Efficient Market Hypothesis (EMH) 
+that asserts that assets promptly reflect the information accessible and thus constrain the prospect 
+of systematically outperforming the market (Fama, 1970). In that sense, all trading models, both 
+human and machine, should be in formidable competition and dwindling profit prospects. 
+Subsequent research like the Adaptive Markets Hypothesis proposes that the concept of market 
+
+ 
+238
+ 
+www.internationalmaronitejournal.com 
+ 
+efficiency is not constant, but rather varies with time as traders, technologies, and strategies 
+adapt (Lo, 2004). This adaptive perspective generates conceptual room to AI-based systems: 
+when market conditions, behavior, and informational frictions change over time then 
+dynamically learned models can temporarily track patterns that can be exploited. 
+The initial growth of algorithmic trading was in rule-based systems that automated order 
+execution, arbitrage and market making. During that earlier phase, strategies were commonly 
+constructed by using technical indicators, econometric forecasts and hand-crafted rules. With the 
+growth of computing power, and the availability of larger datasets, machine learning methods 
+started to substitute or complement such fixed rules. As Goodell, Kumar, Lim, and Pattnaik 
+(2021) demonstrate, AI and ML studies in finance have gained ground significantly in the last 
+few years, with several significant groups of studies centered around forecasting, portfolio 
+construction, valuation, fraud detection, and sentiment analysis. This general transformation is an 
+expression of a more fundamental transformation in finance: prediction is becoming more and 
+more a data-driven task of classification or optimization, as opposed to a purely theoretical 
+econometric task. 
+In the context of forecasting research, supervised learning algorithms like support vector 
+machines, random forests, gradient boosting and neural networks have been extensively 
+compared to the traditional benchmark. The deep learning has been given special attention due to 
+its capacity to represent nonlinear and time-dependent features. An example is Fischer and 
+Krauss (2018) which use long short-term memory networks on S&P 500 constituents and out-ofsample tests demonstrate better predictive performance than a list of memory-free benchmarks. 
+Similarly, Sirignano and Cont (2019) demonstrate that deep learning models that are trained on 
+large-scale order book data can model the long-term patterns of price formation across stocks, 
+indicating that some predictive structure is present in the most competitive markets. 
+Daily price prediction is not the only AI study in the trading field. Market microstructure 
+research is concerned with the high-frequency data like order book imbalance, quote dynamics, 
+and transaction flow. Machine learning is employed in this region to predict future directional 
+changes, liquidity, and optimum execution behavior in the short horizon. Kearns and Nevmyvaka 
+(2013) explain how machine learning can be used to solve problems of market microstructure 
+and high-frequency trading, and Tsantekidis et al. (2017) show that limit order book data can be 
+used by convolutional neural networks to predict short-term price changes. The significance of 
+these studies lies in the fact that the area where AI can consistently be robust is not necessarily in 
+long-run macro forecasting, but in identifying local trends to dense and rapidly changing data. 
+A second large literature is on the optimization of a portfolio and a decision process. The field of 
+reinforcement learning is particularly applicable in this case since trading is not a one-shot 
+prediction problem, but a repeated decision making process that involves actions, rewards, 
+constraints and feedback loops. Jiang, Xu, and Liang (2017) introduce a model of deep 
+reinforcement learning in managing a portfolio and demonstrate that model-free methods can be 
+used to estimate allocation policies based on market data. More recent attempts also incorporate 
+natural language processing into trading pipelines by transforming news headlines, earnings 
+calls, and social-media sentiment into numeric features that are correlated with price and volume 
+information. 
+Although these have been made, the literature is skeptical of the practical claims of enduring 
+outperformance. Financial time series are non-stationary, regime-depending and noisy. A model 
+that works in one sample might fail on a shift in volatility regime, when structural shifts or shifts 
+in the number of participants in the market occur, or when everyone uses the same signals. Lopez 
+
+ 
+239
+ 
+www.internationalmaronitejournal.com 
+ 
+de Prado (2018) discusses the danger of backtest overfitting in financial machine learning and 
+regulatory authorities have cautioned that AI systems can exacerbate operational, governance 
+and market conduct risks in case they are not carefully regulated. The IOSCO (2021), ESMA 
+(2023), and the Financial Stability Board (2024) also have some issues regarding data quality, 
+explainability, outsourcing, model monitoring, and the possible systemic impact. 
+This is where the present study falls. The paper does not presume that AI automatically kills 
+traditional finance, instead of viewing AI as a sophisticated yet fallible toolkit. The gap in the 
+research is not that AI can identify patterns - most studies indicate that it can - but that these 
+patterns stand up to realistic assessment, including transaction costs, walk-forward tests, market 
+shocks, and risk-adjusted measures of performance. Thus, this project makes its contributions by 
+putting AI trading success into a framing of a joint question of prediction, execution, and 
+robustness. 
+ 
+Methodology: "The how we did it " 
+It is a description of the precise nature of how the research was conducted or how the empirical 
+phase is to be applied in this instance so that the research can be duplicated. 
+This research takes the quantitative research design. Since the current draft is being extended on 
+the basis of an introductory project, and not an empirical dataset that has already been 
+implemented, the methodology below is a comprehensive empirical blueprint to be implemented. 
+It is planned to render the final study completely replicable after data will have been collected and 
+models will have been run. 
+Popular publicly available financial data, like Yahoo Finance, Nasdaq Data Link, or similar 
+databases should be used to gather data. An appropriate initial sample would encompass 
+observations on daily observations of 2015 to 2025 of representative equity indices and liquid 
+stocks, as well as other relevant explanatory variables. Some of the core structured variables would 
+be open, high, low, close, adjusted close, trading volume, log returns, rolling volatility, moving 
+averages, momentum indicators and other technical characteristics. Provided there is an 
+opportunity, a longer version of the study can also have unstructured inputs in the form of 
+sentiment scores based on financial news or macroeconomic announcements. 
+The paper must involve a comparison of classical benchmark models, and AI-based models. The 
+benchmark group can consist of linear regression, directional prediction using logistic regression, 
+time-series forecast using ARIMA and volatility behavior using GARCH-type models. An AI team 
+is to have at least one tree-based model like random forest or XGBoost, one deep learning- based 
+architecture like LSTM, and one sequential decision model like a reinforcement-based trading or 
+portfolio allocation. The design will enable the study to test the addition of more complex models 
+as adding real value as compared to known statistical baselines. 
+ 
+To prevent look-ahead bias, it is preferable that data is divided in train-validation-test format in a 
+chronological order instead of it being randomly shuffled. A rolling or walk forward model is 
+advisable to ensure that the model is retrained repeatedly on previous data and tested on new 
+observations which would be more relevant to actual trading circumstances. The only metric that 
+should be used to evaluate the model performance is prediction accuracy. Rather, precision, recall, 
+F1-score, RMSE where appropriate, cumulative return, Sharpe ratio, maximum drawdown, hit 
+
+ 
+240
+ 
+www.internationalmaronitejournal.com 
+ 
+ratio, and turnover-adjusted after-tax and slippage profitability should also be calculated in the 
+study. 
+ 
+Realistic trading rules should be involved in backtesting. As an illustration, a model can produce 
+long, short or hold signals depending on the anticipated returns or direction in the next period. The 
+assumptions in the trade execution, the position sizing, the stop-loss or exposure limits should be 
+established. Moreover, the robustness tests are to be conducted under various market regimes 
+including high volatility periods, crisis periods and periods of calmer markets. Sensitivity analysis 
+can also be used to test whether the results are sensitive to a single asset, a single horizon or model 
+architecture. 
+ 
+The empirical hypotheses to be used during the final implementation are as follows: AI-based 
+models will be expected to be superior to traditional benchmarks in the directional prediction 
+accuracy; hybrid models that use both structured data and textual data will be expected to be 
+superior to price-only models; and the apparent superiority of AI will be expected to diminish 
+when transaction costs, regime instability, and robust out-of-sample validation are imposed. These 
+hypotheses are in line with mixed yet encouraging evidence that has been reported in the literature. 
+ 
+Table 1. Core empirical design 
+Component 
+Examples 
+Purpose 
+Data 
+Prices, returns, volume, volatility, 
+technical indicators, optional news 
+sentiment 
+Build structured and unstructured 
+predictors 
+Benchmarks 
+Regression, logistic regression, 
+ARIMA, GARCH 
+Provide conventional comparison 
+models 
+AI models 
+Random forest/XGBoost, LSTM, 
+reinforcement learning 
+Test nonlinear forecasting and 
+adaptive decision rules 
+Evaluation 
+Accuracy, RMSE, Sharpe ratio, 
+drawdown, transaction-cost-adjusted 
+return 
+Judge both statistical and economic 
+performance 
+ 
+ 
+Results: "The facts " 
+ 
+The project is currently at the point of having a finished research question, a systematic literature 
+review, and a complete empirical methodology, but the numerical estimation and backtesting 
+step is still yet to be implemented. That is why no original statistics, charts or performance tables 
+are included in this draft. This is not by chance: empirical values that are not produced and 
+proved should not be reported in a research paper. 
+This section ought to have four sets of outputs when the empirical stage is complete. Descriptive 
+statistics of the selected assets and features should first summarize the data environment, such as 
+mean returns, volatility, skewness, kurtosis and regime variation. Second, the comparison of 
+traditional models and AI models on out-of-sample directional accuracy and error measures 
+
+ 
+241
+ 
+www.internationalmaronitejournal.com 
+ 
+should be forecasted on the tables. Third, cumulative returns, Sharpe ratios, drawdowns, and 
+effects of the transaction costs should be displayed in trading-performance charts. Fourth, 
+robustness tests must report the performance of models to be robust across time, assets, and 
+volatility regimes. 
+ 
+As per the above literature, the most reasonable assumption is that AI models can be better at 
+simpler baselines across the chosen prediction tasks, particularly in those cases when nonlinear 
+interactions or high-frequency patterns are involved. The true test of success is, however, whether 
+such predictive returns will be found to have economic significance after realistic backtesting. That 
+is, the final verdict of this project will not be a high headline accuracy alone but a demonstration 
+of consistent, risk-adjusted performance which passes out-of-sample and evolving market regimes. 
+ 
+Discussion and conclusion: "The so what ? "  
+ 
+The So What? - Gives the definition of what the project is, provides the answer to the main question 
+of the project as far as it is possible now, and indicates further research. 
+The purpose of this paper was to analyze whether artificial intelligence can be used to make 
+algorithmic trading and market prediction better than the traditional methods. Review indicates 
+that AI has evidently increased the analytical boundary of finance. Machine learning, deep 
+learning, and reinforcement learning can work with bigger data sets, identify nonlinear structure, 
+and be more flexible than many traditional forecasting methods. That way, AI is not a fringe 
+benefit, but it is a significant change in the methodology of the way financial decision-making can 
+be undertaken. 
+Simultaneously, the literature cannot be used to draw a simplistic conclusion that AI can always 
+prevail in the market regardless of the circumstances. The predictive success of academic models 
+frequently falters in the presence of transaction costs, structural discontinuity, market crowding 
+and unstable regimes. Consequently, the most justifiable response to the research question is 
+conditional: AI can improve algorithmic trading and market prediction, yet, its value is determined 
+by the design of the model, data quality, the discipline of the validation, assumptions related to the 
+execution, and risk governance. 
+To investors and institutions, this implies that AI is more of an advanced decision-support and 
+signal-generation framework and not an automatic assurance of abnormal returns. The increase of 
+AI-based trading makes the regulators convinced about the necessity of powerful controls 
+associated with transparency, surveillance, resilience, governance, and market integrity. All these 
+issues are even more critical when autonomous systems are communicating with one another at 
+greater speeds and at greater scale. 
+The subsequent phase of this project must then be aimed at the implementation of the suggested 
+empirical design, production of original findings and the ability to test whether the literature-based 
+expectations are observed in a reproducible sample. It is also possible to compare asset classes, 
+incorporate sentiment and macro variables, or explore explainable AI methods that maintain the 
+predictive power but enhance transparency in future research. In such a last form, the paper can 
+shift towards a sound conceptual paper to a completely acceptable empirical input. 
+ 
+ 
+ 
+ 
+
+ 
+242
+ 
+www.internationalmaronitejournal.com 
+ 
+References 
+Fama, E. F. (1970). Efficient capital markets: A review of theory and empirical work. The Journal 
+of Finance, 25(2), 383-417. 
+Financial Stability Board. (2024). The financial stability implications of artificial intelligence. 
+FSB. 
+Fischer, T., & Krauss, C. (2018). Deep learning with long short-term memory networks for 
+financial market predictions. European Journal of Operational Research, 270(2), 654-669. 
+Goodell, J. W., Kumar, S., Lim, W. M., & Pattnaik, D. (2021). Artificial intelligence and machine 
+learning in finance: Identifying foundations, themes, and research clusters from bibliometric 
+analysis. Journal of Behavioral and Experimental Finance, 32, 100577. 
+International Organization of Securities Commissions. (2021). The use of artificial intelligence 
+and machine learning by market intermediaries and asset managers: Final report. 
+Jiang, Z., Xu, D., & Liang, J. (2017). A deep reinforcement learning framework for the financial 
+portfolio management problem. arXiv. https://arxiv.org/abs/1706.10059 
+Lo, A. W. (2004). The adaptive markets hypothesis: Market efficiency from an evolutionary 
+perspective. The Journal of Portfolio Management, 30(5), 15-29. 
+López de Prado, M. (2018). Advances in financial machine learning. Wiley. 
+Sirignano, J., & Cont, R. (2019). Universal features of price formation in financial markets: 
+Perspectives from deep learning. Quantitative Finance, 19(9), 1449-1459. 
+Tsantekidis, A., Passalis, N., Tefas, A., Kanniainen, J., Gabbouj, M., & Iosifidis, A. (2017). 
+Forecasting stock prices from the limit order book using convolutional neural networks. In 
+2017 IEEE 19th Conference on Business Informatics (Vol. 2, pp. 7-12). 

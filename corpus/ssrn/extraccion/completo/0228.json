@@ -1,0 +1,107 @@
+{
+  "doc_id": 228,
+  "titulo": "Mathematical Problems in Algorithmic Trading and Financial Regulation",
+  "resumen_operativo": "Tesis doctoral (Oxford, 2019) con tres contribuciones: (1) estrategia de market making que incorpora momentum del midprice usando datos de alta frecuencia de Nasdaq; (2) modelo de spoofing del LOB donde un inversor manipula el volume imbalance con órdenes límite falsas para mejorar ingresos al liquidar una posición, mostrando que penalizaciones suficientemente altas disuaden el spoofing; (3) análisis del Minimum Resting Time (MRT) y su efecto sobre spreads, profundidad y ganancias de market makers.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Market Making with Momentum",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia de provisión de liquidez que incorpora el momentum observado en el midprice, donde buy market orders ejercen presión alcista transitoria y sell MOs presión bajista, usando datos de alta frecuencia de Nasdaq para estimar parámetros.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "midprice momentum"},
+        {"tipo": "APLICA_A", "objeto": "Limit Order Book"}
+      ],
+      "cita_textual": "We show how a market maker employs information about the momentum in the price of the asset to design liquidity provision strategies."
+    },
+    {
+      "nombre": "Spoofing",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia de manipulación donde un trader envía órdenes límite falsas (spoof LOs) sin intención de ejecución para distorsionar el volume imbalance del LOB, creando una ilusión de presión compradora que mejora el precio de ejecución de sus ventas reales.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Volume Imbalance"},
+        {"tipo": "SE_OPONE_A", "objeto": "Market Abuse Regulation"}
+      ],
+      "cita_textual": "The strategy employs, in addition to sell limit orders and sell market orders, a large number of spoof buy LOs to manipulate the volume imbalance of the LOB."
+    },
+    {
+      "nombre": "Minimum Resting Time (MRT)",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Tiempo mínimo que una orden límite debe permanecer en el LOB antes de poder ser cancelada, propuesto como herramienta regulatoria. A mayor MRT, mayor bid-ask spread porque los market makers aumentan profundidad para protegerse.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "wider bid-ask spread"},
+        {"tipo": "CAUSA", "objeto": "higher market maker profits"}
+      ],
+      "cita_textual": "The bid-ask spread increases as the MRT increases because market makers increase the depth of their LOs to protect them from being picked off by other traders."
+    },
+    {
+      "nombre": "Volume Imbalance",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Diferencia entre el volumen en el lado bid y ask del LOB, usado por el spoofer como variable de estado. El LOB se clasifica en tres regímenes: buy-heavy (1), neutral (2), sell-heavy (3), determinando la estrategia óptima.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Spoofing"},
+        {"tipo": "MIDE", "objeto": "directional book pressure"}
+      ],
+      "cita_textual": "The volume imbalance is constructed from the volumes of limit orders at the best bid and best ask prices."
+    },
+    {
+      "nombre": "Spoofing Penalty",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Parámetro φf ≥ 0 en la función de valor del inversor que representa la multa por spoofing detectado. Existe un punto crítico donde las ganancias del spoofing son superadas por la penalización, haciendo óptimo no spoofear.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "Spoofing"},
+        {"tipo": "CAUSA", "objeto": "reduced spoof LO usage"}
+      ],
+      "cita_textual": "There is a critical point where the gains from spoofing are outweighed by the financial penalty, so it is optimal not to spoof the LOB."
+    },
+    {
+      "nombre": "Hamilton-Jacobi-Bellman Quasi-Variational Inequality",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Formulación matemática de control óptimo impulsivo combinado con control continuo para resolver el problema del inversor que elige cuándo spoofear y cuándo enviar market orders de venta.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "Spoofing"},
+        {"tipo": "REQUIERE", "objeto": "impulse control"}
+      ],
+      "cita_textual": "The value function is the unique viscosity solution of the Hamilton-Jacobi-Bellman quasi-variational inequality (HJBQVI)."
+    },
+    {
+      "nombre": "Almgren-Chriss Model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo fundacional de ejecución óptima que diferencia impacto temporal y permanente del precio debido a la demanda de liquidez, usado como marco de referencia para los problemas de trading algorítmico en la tesis.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "optimal execution"}
+      ],
+      "cita_textual": "An optimal trading schedule based on a convex total transaction cost curve was formulated by Almgren and Chriss using a market impact model that differentiates temporary and permanent adverse price movement."
+    },
+    {
+      "nombre": "Cartea-Jaimungal Model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo de market making y ejecución óptima basado en control estocástico con penalización de inventario, usado como segundo marco de referencia en la tesis.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "Market Making with Momentum"}
+      ],
+      "cita_textual": "The Cartea-Jaimungal model provides a framework for optimal execution and market making under inventory penalties."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "La estrategia de spoofing aumenta considerablemente los ingresos por liquidar una posición en comparación con una estrategia sin spoof LOs. El spoof emplea en promedio menos sell MOs y genera ingresos adicionales por roundtrip trades iniciados por spoof buy LOs ejecutados inadvertidamente.",
+      "mercado": "Simulación de LOB con parámetros calibrados",
+      "periodo": "Simulaciones numéricas",
+      "magnitud": "Aumento considerable de ingresos (cualitativo); menos sell MOs en promedio; punto crítico de penalización donde spoofing deja de ser óptimo",
+      "condiciones": "Modelo con regímenes de volume imbalance (3 estados), probabilidad de ejecución de spoof LOs dependiente del régimen, cota superior de inventario Q̄",
+      "robustez": "media",
+      "cita_textual": "Our results show that spoofing considerably increases the revenues from liquidating a position. The spoof strategy employs, on average, fewer sell MOs than a strategy without spoof LOs."
+    },
+    {
+      "afirmacion": "El bid-ask spread aumenta con el Minimum Resting Time porque los market makers incrementan la profundidad de sus LOs para protegerse. Las ganancias esperadas de los MMs aumentan con MRT: aunque LOs son más propensos a ejecutarse a pérdida, la mayor profundidad reduce la probabilidad de ser pickeados, con efecto neto positivo.",
+      "mercado": "Modelo teórico de LOB con MRT regulatorio",
+      "periodo": "Análisis teórico",
+      "magnitud": "Spread creciente con MRT; ganancias esperadas de MMs crecientes con MRT; profundidad creciente con volatilidad y arrival rate de MOs",
+      "condiciones": "Modelo de market making con llegada de MOs vía procesos de Poisson, profundidad de LOs como variable de control",
+      "robustez": "media",
+      "cita_textual": "The expected profits of the MMs increase when the MRT increases ... The net effect is that a longer MRT leads to a higher expected profit."
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "Estrategias de market making y spoofing modeladas explícitamente para entornos intradiarios de alta frecuencia con datos de Nasdaq y simulaciones calibradas."}
+}

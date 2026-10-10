@@ -1,0 +1,229 @@
+{
+  "doc_id": 31,
+  "titulo": "AI as Pricing Law: From Arbitrage-Free Valuation to QIS Innovation",
+  "resumen_operativo": "Propone una arquitectura de red neuronal 'finance-native' donde cada neurona representa un estado de mercado y las funciones de activación (Markovian Activation Functions) fuerzan transiciones consistentes con el Primer Teorema Fundamental de las Finanzas, eliminando arbitraje por construcción. Se aplica a un portafolio real de 210 QIS de swaptions para calibrar dinámica de tasas y simular escenarios XVA (HVA, reverse stress testing) mucho más rápido que Monte Carlo. Es más relevante para pricing/riesgo de derivados de tasas que para trading intradía de futuros, pero aporta ideas de arquitectura para simulación rápida de escenarios y diagnóstico de riesgo."
+,
+  "calidad_paper": "baja",
+  "conceptos": [
+    {
+      "nombre": "Markovian Activation Function",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Función de activación de la red neuronal definida como una puerta de transición markoviana consistente con las ecuaciones de Chapman-Kolmogorov, que reemplaza las activaciones deterministas de las redes convencionales por probabilidades de transición entre estados de mercado.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Chapman-Kolmogorov equations"},
+        {"tipo": "REQUIERE", "objeto": "de Finetti coherence"},
+        {"tipo": "APLICA_A", "objeto": "no-arbitrage pricing"},
+        {"tipo": "MEJORA_A", "objeto": "Monte Carlo simulation"}
+      ],
+      "cita_textual": "We introduce Markovian Activation Function (MAFs), a class of transition gates consistent with Chapman–Kolmogorov dynamics and governed by local Markovian generators."
+    },
+    {
+      "nombre": "First Fundamental Theorem of Finance",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Teorema que exige que los precios admitan una representación libre de arbitraje y consistente con una medida de probabilidad, independiente de la información pasada; se usa como restricción computacional dura dentro de la arquitectura de red neuronal.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "no-arbitrage pricing"},
+        {"tipo": "USA", "objeto": "Markovian Activation Function"}
+      ],
+      "cita_textual": "The First Fundamental Theorem of Finance (FFTF, [6]) requires prices to admit an arbitragefree, measure-consistent representation, independent of past information."
+    },
+    {
+      "nombre": "no-arbitrage pricing",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Principio de que los precios descontados de activos deben evolucionar como martingalas bajo una medida neutral al riesgo; se impone como restricción de capa en el backward pass de la red.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "economic hallucination"}
+      ],
+      "cita_textual": "in the absence of arbitrage, there exists a risk-neutral measure under which discounted asset prices evolve as martingales"
+    },
+    {
+      "nombre": "economic hallucination",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Distorsión de valuación, cobertura y riesgo que surge cuando modelos de IA aprenden patrones en vez de leyes económicas, generando señales anticipatorias erróneas y arbitrajes espurios.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "spurious arbitrage"}
+      ],
+      "cita_textual": "AI learns patterns, not laws, and that is where economic hallucination arises, distorting valuation, hedging, and risk."
+    },
+    {
+      "nombre": "spurious arbitrage",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Señales de arbitraje aparentes pero falsas que emergen en modelos de IA convencionales entrenados sin restricciones estructurales de no-arbitraje.",
+      "relaciones": [],
+      "cita_textual": "Anticipatory signals are mistaken for edge, spurious arbitrage emerges, and distorted risk exposures materialize"
+    },
+    {
+      "nombre": "Chapman-Kolmogorov equations",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Ecuaciones que rigen la composición de transiciones de probabilidad en procesos markovianos multi-paso; se usan para calcular transiciones de largo plazo (MAF) como producto de transiciones de un paso.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Markovian Activation Function"}
+      ],
+      "cita_textual": "For transitions from ti to tj with j > i, the long-step MAF is defined recursively... as in the Chapman–Kolmogorov equations."
+    },
+    {
+      "nombre": "Courant-Friedrichs-Lewy condition",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Condición de estabilidad numérica que acota el paso temporal de la red en función de la máxima intensidad de transición del generador markoviano, garantizando que las probabilidades de transición permanezcan válidas.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "numerical instability"},
+        {"tipo": "REQUIERE", "objeto": "Markovian Activation Function"}
+      ],
+      "cita_textual": "The CFL condition bounds the time step (i.e. the granularity of all layers) to ensure transition probabilities remain valid, preventing numerical instability."
+    },
+    {
+      "nombre": "risk-neutral measure",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Medida de probabilidad bajo la cual los precios de activos descontados son martingalas; el paper implementa el cambio hacia otras medidas (física o custom) mediante un derivado de Radon-Nikodym aplicado sobre el MAF.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Radon-Nikodym derivative"}
+      ],
+      "cita_textual": "MAFQ denotes the risk-neutral measure associated with the MAF"
+    },
+    {
+      "nombre": "Radon-Nikodym derivative",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Factor usado para transformar el kernel de transición neutral al riesgo en una medida física o custom, permitiendo reponderar probabilidades sin resimular trayectorias.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "likelihood ratio method"}
+      ],
+      "cita_textual": "Transitioning from a risk-neutral kernel... to a physical or custom measure... requires a Radon–Nikodym derivative"
+    },
+    {
+      "nombre": "likelihood ratio method",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica para reponderar trayectorias simuladas bajo una medida distinta a la original sin resimular, multiplicando el payoff por el ratio de verosimilitud acumulado a lo largo de la trayectoria.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "Monte Carlo simulation"}
+      ],
+      "cita_textual": "For path-dependent securities, rather than re-simulating paths, we use the likelihood ratio method to reweight them."
+    },
+    {
+      "nombre": "attention mechanism",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Interpretado en este marco como un cambio de medida de probabilidad; permite redistribuir dinámicamente la masa de probabilidad entre clusters de riesgo, análogo al mecanismo de atención de deep learning.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "risk-neutral measure"},
+        {"tipo": "USA", "objeto": "Radon-Nikodym derivative"}
+      ],
+      "cita_textual": "Attention, interpreted as a change of measure in finance, enables coherent redistribution of probability mass."
+    },
+    {
+      "nombre": "Quantitative Investment Strategy",
+      "tipo": "dato",
+      "definicion_en_contexto": "Cartera de estrategias sistemáticas de tasas (straddles de swaption ATM) usada como caso de estudio real de un banco para calibrar y simular la red MAF.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Markovian Activation Function"},
+        {"tipo": "APLICA_A", "objeto": "Hedging Valuation Adjustment"}
+      ],
+      "cita_textual": "We consider a bank managing a portfolio of 210 QIS in the U.S. Fixed Income space."
+    },
+    {
+      "nombre": "Hedging Valuation Adjustment",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Ajuste XVA que cuantifica el valor esperado de las ineficiencias de cobertura como la expectativa descontada de la diferencia entre el valor del portafolio QIS y el valor de la cobertura a lo largo de trayectorias neuronales forward.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "hedge under-replication"},
+        {"tipo": "USA", "objeto": "Markovian Activation Function"}
+      ],
+      "cita_textual": "HVA quantifies the expected value of hedging inefficiencies across the neural state space."
+    },
+    {
+      "nombre": "hedge under-replication",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Situación en la que la cobertura no replica completamente la exposición del portafolio, generando fugas de P&L; el paper encuentra que el portafolio QIS analizado está sistemáticamente sub-cubierto.",
+      "relaciones": [],
+      "cita_textual": "HVA0 > 0: hedge under-replicates (exposed)"
+    },
+    {
+      "nombre": "Reverse Stress Testing",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Mecanismo que identifica las trayectorias neuronales con mayor contribución marginal a la sub-replicación de cobertura y las proyecta de vuelta a estados de mercado, señalando neuronas de alto riesgo.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Hedging Valuation Adjustment"},
+        {"tipo": "PREDICE", "objeto": "hedge under-replication"}
+      ],
+      "cita_textual": "RST thus becomes a forward-consistent mechanism that pinpoints high-risk neurons, and their economic semantic, from within the network's own learned dynamics."
+    },
+    {
+      "nombre": "gamma exposure",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Sensibilidad de segundo orden del portafolio de swaptions que determina si vender o comprar gamma exacerba o alivia la fuga de P&L de cobertura, según el análisis de HVA marginal.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "hedge under-replication"}
+      ],
+      "cita_textual": "Selling gamma exacerbates P&L leakage; buying gamma alleviates it."
+    },
+    {
+      "nombre": "Monte Carlo simulation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Método estándar de simulación estocástica usado como benchmark de comparación de runtime y precisión frente a la arquitectura MAF NN propuesta.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "Markovian Activation Function"}
+      ],
+      "cita_textual": "Table 1 contrasts the performance of the proposed MAF NN engine against a standard Monte Carlo (MC) implementation."
+    },
+    {
+      "nombre": "calibration",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Proceso de aprendizaje de los parámetros del generador markoviano minimizando el error cuadrático medio entre volatilidades implícitas de mercado y las implícitas por la red, dentro de una estructura que preserva no-arbitraje.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Markovian Activation Function"},
+        {"tipo": "MITIGA", "objeto": "economic hallucination"}
+      ],
+      "cita_textual": "We learn the generator parameters θ by minimizing the mean squared error between market-implied volatilities M0 and network-implied volatilities V0"
+    },
+    {
+      "nombre": "Cox-Ingersoll-Ross model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Generador markoviano local de tipo CIR usado para construir la estructura MAF bidimensional que modela la dinámica de la tasa corta como composición de dos factores latentes.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Markovian Activation Function"}
+      ],
+      "cita_textual": "Neural transitions follow a two-dimensional MAF structure, governed by Cox–Ingersoll–Ross local Markovian generators over the neuron space"
+    },
+    {
+      "nombre": "black-box model",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Rasgo de las redes neuronales convencionales entrenadas sin priors estructurales, que carecen de semántica económica y requieren detección y corrección ex post de violaciones de arbitraje.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "economic hallucination"},
+        {"tipo": "SE_OPONE_A", "objeto": "Markovian Activation Function"}
+      ],
+      "cita_textual": "Trained without structural priors, they require post hoc arbitrage detection and correction and remain opaque, lacking the economic semantics required for interpretability and trust."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "La red MAF calibrada sobre 210 volatilidades de swaptions alcanza precisión de calibración equivalente a Monte Carlo pero en tiempos muchísimo menores.",
+      "mercado": "USD swaption straddle QIS (renta fija US)",
+      "periodo": "no especificado (dataset de mercado 2024-2025, hardware MacBook Pro 2024)",
+      "magnitud": "RMSE de calibración de 1.5 bps en ambos métodos; MAF NN corre 100.000 escenarios en 80 segundos sobre 800 capas/pasos vs 8 horas de Monte Carlo en un cluster Kubernetes de 128 vCPUs; aprendizaje completo en 8 minutos",
+      "condiciones": "Comparación de runtime y RMSE de calibración in-sample sobre datos de mercado; no se reporta validación out-of-sample de performance de trading ni costos de transacción",
+      "robustez": "baja",
+      "cita_textual": "Figure 1 reports learning accuracy across 210 swaption volatilities, a task completed in eight minutes with a Root Mean Squared Error (RMSE) of 1.5 bps."
+    },
+    {
+      "afirmacion": "El portafolio de QIS analizado está sistemáticamente sub-cubierto (bajo-replicado), generando una fuga de cobertura significativa como porcentaje del nocional anual.",
+      "mercado": "USD swaption straddle QIS (renta fija US)",
+      "periodo": "no especificado",
+      "magnitud": "fuga de cobertura anualizada de aproximadamente 3.9% del nocional del portafolio",
+      "condiciones": "Resultado derivado de simulación forward de 100.000 trayectorias neuronales sobre el portafolio real del banco, sin especificar costos de transacción ni validación fuera de muestra",
+      "robustez": "baja",
+      "cita_textual": "The identified systematic under-hedging represents approximately 3.9% of portfolio notional in annualized hedging leakages."
+    },
+    {
+      "afirmacion": "La fuga de cobertura (HVA) está altamente concentrada en un subconjunto pequeño de estrategias del portafolio, y la estrategia más expuesta genera una fuga mensual muy grande.",
+      "mercado": "USD swaption straddle QIS (renta fija US)",
+      "periodo": "no especificado",
+      "magnitud": "21% de las estrategias explica el 53% del HVA total del portafolio; la estrategia más expuesta alcanza aproximadamente 956.30 bps mensuales",
+      "condiciones": "Análisis de concentración sobre simulación forward de 100.000 trayectorias; sin backtest histórico ni comparación con benchmark de trading",
+      "robustez": "baja",
+      "cita_textual": "concentration analysis shows that 21% of strategies account for 53% of total HVA. High-gamma exposures generate substantial projected hedging leakages, with the most exposed strategy reaching ≈956.30 bps monthly."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "nula",
+    "nota": "El paper trata pricing y cobertura de derivados de tasas (swaptions/XVA) con una arquitectura de red neuronal propietaria; no aporta señales, microestructura ni metodología de validación aplicable directamente al trading intradía de futuros ES."
+  }
+}

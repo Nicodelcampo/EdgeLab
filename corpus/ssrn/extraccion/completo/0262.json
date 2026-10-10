@@ -1,0 +1,59 @@
+{
+  "doc_id": 262,
+  "titulo": "Order Book Dynamics in Liquid Markets: Limit Theorems and Diffusion Approximations",
+  "resumen_operativo": "Propone un modelo para la dinámica del LOB en mercados líquidos y deriva un teorema central del límite funcional para las colas bid y ask. Cuando la frecuencia de llegada de órdenes es alta, la dinámica intradía del LOB puede aproximarse por un proceso de salto-difusión Markoviano en el ortante positivo, cuyas características se expresan explícitamente en términos de propiedades estadísticas del order flow subyacente. Esto permite obtener aproximaciones analíticas tratables para la probabilidad de subida de precio y la distribución de la duración hasta el próximo movimiento de precio, condicionadas al estado del LOB.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Functional Central Limit Theorem for LOB",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Teorema que establece que, en el límite de heavy traffic (alta frecuencia de órdenes), el proceso de colas del LOB converge a una difusión Markoviana con deriva y volatilidad determinadas por momentos del order flow.",
+      "relaciones": [{"tipo": "USA", "objeto": "Heavy Traffic Limit"}, {"tipo": "APLICA_A", "objeto": "Queueing Systems"}],
+      "cita_textual": "we derive a functional central limit theorem for the joint dynamics of the bid and ask queues"
+    },
+    {
+      "nombre": "Jump-Diffusion Approximation (Heavy Traffic Limit)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Aproximación donde el LOB se modela como un proceso de salto-difusión en el ortante positivo R²₊, con deriva (tendencia neta de order flow) y volatilidad (variabilidad del order flow) derivadas de las propiedades estadísticas de las órdenes entrantes.",
+      "relaciones": [{"tipo": "EQUIVALE_A", "objeto": "LOB Continuum Limit"}, {"tipo": "REQUIERE", "objeto": "Separation of Time Scales"}],
+      "cita_textual": "the intraday dynamics of the limit order book may be approximated by a Markovian jump-diffusion process in the positive orthant, whose characteristics are explicitly described in terms of the statistical properties of the underlying order flow"
+    },
+    {
+      "nombre": "Separation of Time Scales",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Argumento central: la escala de tiempo de eventos de microestructura (~1-10ms) es órdenes de magnitud menor que la escala de interés para trading (~1-100s), justificando la aproximación asintótica por difusión.",
+      "relaciones": [{"tipo": "REQUIERE", "objeto": "Heavy Traffic Limit"}, {"tipo": "EXPLICA", "objeto": "Diffusion Approximation Validity"}],
+      "cita_textual": "it is relevant to consider heavy-traffic limits in which the rate of arrival of orders is large for studying the dynamics of order books in liquid markets"
+    },
+    {
+      "nombre": "Probability of Price Increase (Conditional on LOB State)",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Probabilidad de que el próximo movimiento de precio sea al alza, condicionada al estado actual de las colas bid y ask. Se deriva analíticamente de la aproximación de difusión.",
+      "relaciones": [{"tipo": "USA", "objeto": "Diffusion Approximation"}, {"tipo": "PARTE_DE", "objeto": "Price Dynamics in Heavy Traffic"}],
+      "cita_textual": "tractable analytical approximations for various quantities of interest, such as the probability of a price increase or the distribution of the duration until the next price move"
+    },
+    {
+      "nombre": "Reduced-Form LOB Representation",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Representación simplificada del LOB que solo considera los volúmenes en el mejor bid y ask, tratando las llegadas de órdenes como procesos puntuales con propiedades estadísticas generales (no necesariamente Poisson).",
+      "relaciones": [{"tipo": "MEJORA_A", "objeto": "Poisson LOB Models"}, {"tipo": "INCORPORA", "objeto": "Non-Poisson Order Flow"}],
+      "cita_textual": "A reduced-form representation of a limit order book"
+    },
+    {
+      "nombre": "Wentzell Boundary Conditions",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Condiciones de frontera integro-diferenciales que describen cómo el proceso de difusión del LOB salta al interior del ortante cuando una de las colas se vacía (cambio de precio), preservando la propiedad de Feller del semigrupo.",
+      "relaciones": [{"tipo": "PARTE_DE", "objeto": "Markovian Limit Process"}, {"tipo": "REQUIERE", "objeto": "Feller Semigroup"}],
+      "cita_textual": "This is a Wentzell boundary condition which corresponds to a jump to the interior whenever the process reaches the boundary of the quadrant"
+    },
+    {
+      "nombre": "Non-Poisson Order Flow Robustness",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Los resultados de la aproximación de difusión son robustos a desviaciones de los supuestos Poisson (dependencia temporal, heterogeneidad de tamaños, autocorrelación de duraciones), superando una limitación clave de modelos Markovianos previos.",
+      "relaciones": [{"tipo": "MEJORA_A", "objeto": "Cont-Stoikov-Talreja (2010) Model"}, {"tipo": "APLICA_A", "objeto": "Self-Exciting Point Processes"}],
+      "cita_textual": "it is indeed possible to restore analytical tractability without imposing restrictive assumptions on the order arrival process, by exploiting the separation of time scales involved in the problem"
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "Diseñado para datos ultra-high-frequency; la probabilidad de subida de precio condicionada al LOB es computable en tiempo real y directamente aplicable a market making, ejecución óptima y predicción de movimientos de precio de corto plazo."}
+}

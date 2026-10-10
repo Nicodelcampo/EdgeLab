@@ -1,0 +1,1759 @@
+Testing the eﬀect of technical analysis
+on market quality and order book dynamics
+Paolo Mazzaa
+Mikael Petitjeanb
+June 27, 2018
+Abstract
+We ﬁnd empirical support for the theoretical ﬁnding in agent-based models of limit
+order book markets that the eﬀect of technical trading on market quality is not positive.
+When signals occur, technical traders lower liquidity as proxied by the relative spread,
+the eﬀective spread, the realized spread, the dispersion and the slope in the order book.
+Technical trading is also found to be accompanied by rising volatility. There is overall
+strong empirical support against the hypothesis that technical trading has no eﬀect on
+order book dynamics.
+JEL Classiﬁcation: G14, D82, C5
+Keywords: Agent-based model, Liquidity, Technical Analysis, Limit Order Market
+a Paolo Mazza, I´ESEG School of Management (LEM - CNRS UMR 9221), 3 rue de la Digue, 59000 Lille
+(France), corresponding author. E-mail: p.mazza@ieseg.fr.
+b Mikael Petitjean, I´ESEG School of Management (LEM - CNRS UMR 9221), Lille (France); Louvain School
+of Management (LFIN Pole of IMMAQ, UCLouvain), Mons, Belgium. E-mail: m.petitjean@ieseg.fr.
+We are grateful to NYSE Euronext in Paris for providing the data. We also thank Alexis Cellier, Catherine
+D’Hondt, Rudy De Winne, and Christophe Majois for their early work on the dataset, without forgetting various
+seminar participants for their useful suggestions. Any remaining errors are the responsibility of the authors.
+Electronic copy available at: https://ssrn.com/abstract=3769103
+
+1
+Introduction
+With a recent focus on uninformed traders, agent-based models have been rising to the challenge of designing realistic microstructure models of limit order book markets. Still, much
+work remains to be done to determine what traders can exactly learn from market information
+in these markets (Chiarella et al., 2015). This is especially true given the lack of empirical
+evidence for a large set of agent-based models. We attempt to ﬁll this gap by using a unique
+tick-by-tick Euronext 100 stock dataset to evaluate Chiarella and Ladley (2016)’s agent-based
+model into which the eﬀect of technical analysis (TA) on order book dynamics is studied. We
+zoom in on this model because of its use of a numerical technique to identify a Markov perfect
+equilibrium and hence determine the optimal trading strategies followed by technical traders.
+TA is about the use of information contained in past market data to predict future returns. A variety of tools based on data analysis and visualization techniques is employed. TA
+includes the use of moving averages, break out rules, and technical indicators, such as the
+Moving Average Convergence/Divergence (MACD), the Relative Strength Index (RSI) or the
+Stochastic Oscillator (STOCH). Once signals are identiﬁed, technical traders take positions in
+the predicted direction to beneﬁt from future price movements.
+Although there is rather strong evidence that TA strategies are not eﬀective in generating
+abnormal returns (Duvinage et al., 2013; Bajgrowicz and Scaillet, 2012; Park and Irwin, 2007;
+Marshall et al., 2006; Allen and Karjalainen, 1999), these strategies are still used by retail
+investors. Hoﬀmann and Shefrin (2014) show that retail investors who employ TA perform
+much worse than the other investors: not only is their trading activity higher but they also
+take higher risks. According to Etheber et al. (2014), moving averages are used by around
+10% of the retail investors and overall trading activity increases by 30% on days for which
+there are trading signals based on moving averages.
+TA strategies are also widely implemented by professional investors, such as fund managers
+(Menkhoﬀ, 2010) and forex traders (Cheung et al., 2004). In Wang et al. (2012), trading activity by institutional investors is estimated to increase around signals based on the Stochastic
+Oscillator. Allen and Taylor (1990) and Taylor and Allen (1992) ﬁnd that 90% of traders
+employed TA tools, at short horizons in particular. Schulmeister (2009) conﬁrm that TA is
+increasingly used at the intra-day level. This has coincided with shifts in the market landscape where algorithmic trading is now the dominating strategy. According to Brogaard et al.
+1
+Electronic copy available at: https://ssrn.com/abstract=3769103
+
+(2014), high-frequency traders would even be able to predict price changes several seconds in
+advance.
+Despite the shortening of timescales over which TA may be used, there is still very little
+empirical work considering the eﬀect of technical traders in a microstructure context. In this
+paper, we test Chiarella and Ladley (2016)’s theoretical predictions of the impact of TA on
+order books by using a unique tick-by-tick Euronext 100 stock dataset. We focus on three
+technical indicators: the MACD, the RSI, and the STOCH. These three indicators all depend
+on the use of moving averages that Chiarella et al. (2006) view as critical tools. We perform
+an intraday event study around technical trading signals sent by the MACD, the RSI, and the
+STOCH. Our median-based event study methodology enables us to zoom in on the eﬀect of
+technical analysis on market quality precisely when the technical signals may be exploited by
+market participants. To the best of our knowledge, no intraday event study has been carried
+out to analyze the link between intraday market quality dynamics and properly identiﬁed
+technical trading signals. We complement this non-parametric study with a panel data model
+in which we control for the diﬀerences in trading strategy observed between technical traders,
+informed traders, and liquidity traders.
+Finally, we test whether technical trading causes
+liquidity dynamics in the sense of Granger causality.
+We validate most of Chiarella and Ladley (2016)’s theoretical ﬁndings. In particular, we
+validate Chiarella and Ladley (2016)’s main conclusion that the overall eﬀect of technical
+trading on market quality is not positive and much more ambiguous than previously thought.
+We ﬁnd that technical trading at the time of the signals lowers liquidity as estimated by the
+relative spread, the eﬀective spread, the realized spread, the dispersion and slope of the order
+book. We also ﬁnd additional negative impact of technical trading on market quality, most
+notably in terms of rising volatility. Finally, we ﬁnd strong empirical support against the
+hypothesis that technical trading has no eﬀect on order book dynamics.
+2
+Model and hypotheses
+Chiarella and Ladley (2016)’s model on which we focus in this paper has been derived from the
+extent literature on agent-based models. We start from Chiarella et al. (2009)’s model in which
+traders’ order submission strategies are speciﬁed by distinguishing (uninformed) chartists and
+(informed) fundamentalists. Although the paper does not rely on any analytical solution, it
+still assumes arbitrary behavior of technical traders, as traders randomly select a price inside
+2
+Electronic copy available at: https://ssrn.com/abstract=3769103
+
+a range and then submit an order based on the relationship between this random price, the
+best quotes and the target price at which the agent would be pleased to close the position.
+To allow traders to determine their order submission endogenously according to market
+conditions, Chiarella et al. (2015) introduce a genetic algorithm (GA) learning with a classiﬁer
+system into an agent-based model of limit order markets. It examines how traders deal with
+market information and learn from it. It shows that uninformed traders pay more attention
+to technical rules and that more learning by uninformed traders enhances market eﬃciency,
+which is not necessarily the case when informed traders learn. Opposite to the learning of
+informed traders, learning makes uninformed traders submit less aggressive limit orders and
+more market orders. It also shows that private values can have signiﬁcant impact in the short
+run, but not in the long run. One implication is that the probability of informed trading (PIN)
+is positively related to the volatility and the bid-ask spread.
+To implement realistic strategies and sound order submission rules, Chiarella and Ladley
+(2016) identify optimal strategies for technical traders by using a numerical technique originally
+employed by Goettler et al. (2005) who extended the analytical model of Parlour (1998). To
+identify a Markov perfect equilibrium and to analyze the behavior of the market, Goettler et al.
+(2005) could only model a single type of trader who had a ﬁxed distribution of valuations and
+could not modify orders after they were submitted.
+In Goettler et al. (2009) the analytical framework is extended to the case of asymmetric
+information and traders may cancel and resubmit orders over time.
+As a result of these
+changes, the Markov perfect equilibrium requirement could not be met anymore: for the model
+to be numerically tractable, the current order book could not incorporate all the information
+contained in the recent history of order submissions. However, the optimization process leads
+to a stable set of strategies which were optimal given the available information.
+Chiarella and Ladley (2016) use this approach to model the interaction between technical
+and informed traders in an order book. They focus on technical traders who use momentum
+based rules. They are able to derive optimal strategies in the sense that both groups of traders
+submit and modify their orders in order to maximize their expected payoﬀ, conditional on the
+state of the market.
+The main ﬁndings of Chiarella and Ladley (2016) is that the presence of technical traders
+has an ambiguous eﬀect on the market quality. They write that: ‘The [quoted] spread decreases but at the same time the number of orders in the book falls. The eﬀective spread for
+informed traders increases indicating higher transaction costs. Price eﬃciency increases, i.e.
+3
+Electronic copy available at: https://ssrn.com/abstract=3769103
+
+the market price tracks the fundamental more accurately and volatility goes down. Analysis
+of the strategies of technical traders shows that they predominantly act as liquidity suppliers,
+i.e. using limit order more frequently, and market orders less frequently, than informed traders
+with the same valuations when technical traders are not present. These results contrast with
+the ﬁndings of Hendershott et al. (2011) [about] high frequency traders, many of whom use
+momentum based strategies, increase liquidity within markets. Whilst technical traders within
+our model do supply liquidity their overall eﬀect is ambiguous.’ Based on these theoretical
+ﬁndings, we state the following hypotheses.
+H1: Technical trading has no eﬀect on ex ante and ex post liquidity.
+H2: Technical trading has no eﬀect on adverse selection costs.
+H3: Technical trading has no eﬀect on price eﬃciency.
+H4: Technical trading has no eﬀect on order book dynamics.
+To test these hypotheses, we perform an intraday event study around technical trading
+signals sent by the MACD, the RSI, and the STOCH. Our median-based event study methodology enables us to zoom in on the eﬀect of technical analysis on market quality precisely when
+the technical signals may be exploited by market participants. To the best of our knowledge,
+no intraday event study has been carried out to analyze the link between intraday market
+quality dynamics and properly identiﬁed technical trading signals.
+To complement our nonparametric event study, we also implement a parametric analysis
+through a panel data model to check the link between intraday market quality and technical
+analysis on average, i.e. by analyzing the behavior of technical traders in general (before and
+after the occurrence of trading signals). To improve our understanding of Chiarella and Ladley
+(2016)’s model, we create ﬁve categories of traders based on their proﬁle and strategies. The
+ﬁrst category includes aggressive technical traders (ATT) who submit market and marketable
+limit orders in the direction suggested by a technical signal. They do not submit any aggressive
+order in the direction opposed to the signal. Second, patient technical traders (PTT) follow
+the same process but they submit limit orders instead of liquidity-taking orders. Those traders
+do not pay the spread for immediacy and compete with other limit orders to gain price and
+time priority.
+The third category is for impatient informed traders (IIT) who are trading
+aggressively in the dominant direction assessed through trade imbalance. They submit market
+and marketable limit orders at the buy side when the signed trade imbalance is bigger than
+4
+Electronic copy available at: https://ssrn.com/abstract=3769103
+
+40%1 and at the sell side when the signed trade imbalance is lower than -40%. Patient informed
+traders (PIT) constitute the fourth category and follow the same process, except that they do
+not accept to pay for immediacy. They only submit limit orders in the direction of the signed
+trade imbalance. Finally, the last category is for liquidity traders (LT) who submit only limit
+orders on both sides of the order book when the trade imbalance is larger than 40% in absolute
+value.
+In our empirical analysis, we also assign each submitted order to a category in order to
+allow market members to change their behavior through time, as proposed by Chiarella et al.
+(2015) in their theoretical model.
+In the empirical application, we focus on three mainstream technical analysis indicators: Moving Average Convergence/Divergence (MACD), Relative Strength Index (RSI) and
+Stochastics oscillator (STOCH). The MACD oscillator is obtained from exponential moving
+averages (EMA) of the price curve. It is computed as follows:
+Difft = EMA12(price)t −EMA26(price)t,
+Signalt = EMA9(Diff)t,
+MACD = Difft −Signalt,
+(2.1)
+where Difft is also called the MACD curve, Signalt, the signal line and MACD, the
+MACD histogram. The MACD histogram is an oscillator around the zero line. When the
+histogram is above (below) zero, the market is bullish (bearish). Orders are usually submitted
+when the histogram crosses the zero line, i.e., a buy (sell) order when the histogram becomes
+positive (negative).
+The RSI is a strength oscillator evaluating the power of the current momentum and it is
+computed as follows:
+RSt = EMAnt(U)
+EMAnt(D)
+RSIt = 100 −
+100
+1+RSt ,
+(2.2)
+where EMAn(U) is the exponential moving averages of the upward price changes over the
+n periods preceding t, EMAn(D) is the exponential moving averages of the downward price
+changes over the n periods preceding t. n is usually set to 14. By construction, the oscillator
+1In preliminary analyzes, we have simulated the process on a set of arbitrary thresholds. The results remain
+unchanged if we consider 50% or 60%.
+5
+Electronic copy available at: https://ssrn.com/abstract=3769103
+
+has values comprised in [0,100]. Signals generated by the RSI are assessed by comparison
+with two constant lines. When the RSI is bigger than 70, the asset is overbought and a price
+reversal is most likely to occur. When the RSI crosses the 30 line down, the asset is oversold
+and a price reversal is also likely to happen. Traders usually submit sell (buy) orders when
+the RSI crosses up (down) the 70 (30) line.
+The stochastics oscillator is computed as follows:
+%Kt = 100 × Closet−LLn
+HHn−LHn
+%Dt = SMAd(%Kt),
+(2.3)
+where LLn, HHn and LHn denote the lowest low price, the highest high price and the
+lowest high price over the n periods preceding t, respectively. n and d are usually set to 14
+and 3, respectively. The mechanics are mostly similar to RSI but the levels for the two curves
+are set to 80 and 20 for the overbought and oversold conditions, respectively.
+3
+Data and market quality proxies
+3.1
+Data
+We use tick-by-tick data for the Euronext 100 Index for 61 trading days from February 1,
+2006 to April 30, 2006. The use of this dataset presents two key advantages. First, we have
+information on the full order book, including undisclosed data on market members’ ID. By
+using market members’ ID, we are able to disentangle buyer-initiated and seller-initiated trades
+without any error margin. In many market microstructure studies, the Lee and Ready (1991)
+algorithm is used to categorize buyer and seller-initiated trades. Although this algorithm has
+proved to be relatively eﬃcient, misclassiﬁcation still occurs. In our dataset, there is none since
+we know the order that initiates the transaction. Second, we avoid the volume shift and market
+fragmentation that have been occurring since the implementation phase of MiFID. As today’s
+trading environment is much more decentralized than before, more recent datasets are often
+less representative and less reliable. In a number of recent studies, there is often insuﬃcient
+information on the level of trading activity that prevails on the competing Multilateral Trading
+Facilities (MTFs) and dark pools. This exhaustive dataset allows us to calculate a large set of
+market quality proxies.
+6
+Electronic copy available at: https://ssrn.com/abstract=3769103
+
+3.2
+Market Quality Proxies
+Market quality is associated with liquidity, transaction costs and market eﬃciency. It refers
+to “a market’s ability to meet its dual goals of liquidity and price discovery” (O’Hara and Ye,
+2011). Eﬃcient and liquid markets should therefore exhibit a high market quality. Although
+these concepts are well known, there is no consensus on the best way to measure them and,
+when there is one, the data are not always available.
+In order to evaluate market quality across all its dimensions, we compute a large set of
+proxies.
+The ﬁrst set of measures relate to the spread - the eﬀective spread (ES), the realized spread
+(RealS) and the relative quoted spread (RS). All of these spread measures proxy for the cost of
+immediacy which is an important dimension of market quality. The formulae used to compute
+these proxies for a trade i in stock j at time t are given by:
+ESi,j = 2abs(pi,j −mi,j,t),
+RealSi,j = 2abs(pi,j −mi,j,t+1),
+RSj,t = (aj,t −bj,t)/mi,j,t,
+(3.1)
+where pi,j denotes the average execution price of trade i occurring on stock j, bj,t, aj,t and mj,t
+respectively correspond to the bid, ask and mid prices prevailing at time t for stock j, which
+is the last reporting time before the execution of trade i, and t + 1 denotes the ﬁrst reported
+record after trade i. The ﬁrst two proxies are ex-post spread measures computed essentially
+from trade data while the last one is computed from quotes and is therefore related to ex-ante
+liquidity and market quality. These variables are computed each time a trade occurs. We then
+aggregate the data on a 15-minute basis by computing the mean of these proxies for each stock
+separately.
+As outlined by Hendershott and Moulton (2011), the eﬀective spread (ES) captures the
+diﬀerence between the current transaction price and the quote midpoint which is an estimate
+of the true value of the security. The realized spread is a similar measure but points to a
+spread that has been caused by the occurrence of the trade. The relative spread is a measure
+of the current bid-ask spread and captures the direct cost of immediacy for small quantities.
+Adverse selection cost is another component of transaction costs and, as a result, also
+constitutes a component of market quality. As previously presented and as Hendershott and
+Moulton (2011) argue, the eﬀective spread can be decomposed into a permanent and transitory
+7
+Electronic copy available at: https://ssrn.com/abstract=3769103
+
+component. The transitory component is estimated through the realized spread. The percentage price impact is a proxy for the permanent portion and hence reﬂects adverse selection. We
+compute the percentage price impact of a trade i for stock j at time t as follows:
+PPIi,t = 2qi,t(mi,j,t+5 −mi,j,t)/mi,j,t,
+(3.2)
+where qi,t is a variable that reﬂects trade direction, i.e. it equals 1 for buyer-initiated trades
+and -1 otherwise. As for spreads, the percentage price impact is computed for each transaction
+and averaged over 15-minute intervals to create a unique estimate for each interval.
+Beside these measures for immediacy and adverse selection, we examine Amihud (2002)’s
+illiquidity ratio. Amihud (2002)’s illiquidity ratio is the price response to a one-unit volume.
+The lower the return for a given volume, the higher the liquidity. Amihud (2002)’s illiquidity
+ratio is computed as:
+ILt = |rt|
+vt
+,
+(3.3)
+where rt is the return and vt is the volume, both associated with time interval t for a given
+stock.
+Our dataset also encompasses depth proxies. Depth is computed by summing the quantities
+on each side of the book at the Best Bid and Oﬀer (BBO) and for the ﬁve best limits.
+We measure liquidity at the end of each trading interval, which enables us to measure
+the direct relation between the event and liquidity. We ﬁrst calculate the traditional liquidity
+proxies such as relative spread, depths (displayed and hidden, in number of shares) and order
+imbalances (at diﬀerent order book levels). We also use dispersion and slope measures which
+are respectively presented in Kang and Yeo (2008) and Naes and Skjeltorp (2006). Then,
+we compute trading activity measures as buyer and seller-initiated trades and imbalances, in
+number of trades.2 Finally, we evaluate volatility using the High-Low measure for each time
+interval.
+2These measures are computed with the sum over each interval.
+8
+Electronic copy available at: https://ssrn.com/abstract=3769103
+
+We also include two proxies capturing the density of the order book. We ﬁrst compute the
+dispersion proxy proposed by Kang and Yeo (2008), i.e., how limits are far from each other or
+from the quoted midpoint.
+Dispersioni,t = 1
+2
+Pn
+j=1 wBid
+i,j,tDstBid
+i,j,t
+Pn
+j=1 wBid
+i,j,t
++
+Pn
+j=1 wAsk
+i,j,tDstAsk
+i,j,t
+Pn
+j=1 wAsk
+i,j,t
+
+,
+(3.4)
+where, for security i and interval t, wi,j,t are the weights which are equal to quantities,
+oﬀer and bid sizes, at the jth price limit normalized by the total depth of the ﬁve best limits,
+DstBid
+i,j,t = (PriceBid
+i,j−1,t −PriceBid
+i,j,t) and, DstAsk
+i,j,t = (PriceAsk
+i,j,t −PriceAsk
+i,j−1,t). The midquote is
+used for the distance of the ﬁrst best limits.
+We then use the slope of the book following Naes and Skjeltorp (2006), that is:
+SLOPEi,t = DEi,t + SEi,t
+2
+,
+(3.5)
+where DEi,t and SEi,t are the demand and supply elasticities respectively and are computed
+as:
+DEi,t = 1
+5
+
+vB
+1
+|pB
+1 /p0 −1| +
+4
+X
+τ=1
+vB
+τ+1/vB
+τ −1
+|pB
+τ+1/pB
+τ −1|
+
+,
+(3.6)
+SEi,t = 1
+5
+
+vA
+1
+pA
+1 /p0 −1 +
+4
+X
+τ=1
+vA
+τ+1/vA
+τ −1
+pA
+τ+1/pAτ −1
+
+.
+(3.7)
+pB
+τ and pA
+τ are the prices, respectively at the bid and at the ask, appearing at the quote τ.
+p0 denotes the quoted midpoint. Finally, vB
+τ and vA
+τ are the natural logarithm of accumulated
+total share volume at the limit τ respectively for the bid and the ask.3
+In order to calculate trade imbalances, we compute the total number of trades and quantities respectively for buyer and seller-initiated trades. With these variables, we compute the
+imbalance as follows:
+ImbalanceNi,t =
+NTradesBuy
+i,t
+−NTradesSell
+i,t
+NTradesBuy
+i,t
++ NTradesSell
+i,t
+(3.8)
+3By accumulated, we mean the sum of the quantities outstanding at that limit and the sum of all quantities
+outstanding at each better quote.
+9
+Electronic copy available at: https://ssrn.com/abstract=3769103
+
+where NTradesBuy
+i,t
+is the number of buyer-initiated trades occurring at the tth interval for
+stock i and NTradesSell
+i,t
+is the number of seller-initiated trades occurring at the tth interval
+for stock i.
+Market quality is also directly inﬂuenced by price eﬃciency and volatility. In order to take
+into account these components of market quality, we include in our full analysis one measure
+of market eﬃciency and two proxies for volatility.
+We estimate price eﬃciency using the absolute value of the return autocorrelation. As
+suggested by Hendershott and Moulton (2011), we base the calculation on quote midpoint
+returns in order to avoid issues induced by the bid-ask bounce. We compute 1-minute returns
+and calculate the autocorrelation on a 15-minute basis. In the initial idea of price eﬃciency,
+if prices follow a random walk, the return autocorrelation should equal zero.
+We use the
+absolute value in order to measure the extent to which prices deviate from a random walk
+process, meaning that the measure is inversely related to price eﬃciency. 4
+Our volatility proxy includes the realized volatility, computed by aggregating all tick-bytick movements over a 15-minute interval.
+Finally, we also address order submission behavior by including in our analysis the percentage of limit, marketable limit, and market orders submitted at each interval for each stock.
+We also include the percentage of completely executed, cancelled, and modiﬁed orders.
+4
+Empirical analyses
+4.1
+Event Study
+We perform intraday event studies of market quality around the technical signals explained in
+Section 2. This original median-based event study methodology has been initially proposed
+by Boudt and Petitjean (2014). Mazza (2015), Mazza and Petitjean (2016), and Mazza and
+Petitjean (2018) then apply the technique to a larger set of liquidity proxies, including those
+presented in the current paper.
+An event corresponds to the identiﬁcation of a technical
+4Hendershott and Moulton (2011) also examined two other price eﬃciency proxies: the 5/30-min variance
+ratio and the pricing error. We argue against the use of the ﬁrst one since the proxy does not bring new elements
+in the analysis. The latter is based on Hasbrouck (1993) which uses a vector autoregressive representation (VAR)
+to evaluate market quality and price eﬃciency. This model grounds on quote revisions after trades and on the
+informational content of trades. We choose not to use this proxy for several reasons that are also invoked by
+O’Hara and Ye (2011).
+10
+Electronic copy available at: https://ssrn.com/abstract=3769103
+
+signal, meaning that the signal has occurred during the interval preceding the event. The
+null hypothesis states that the occurrence of a technical signal is not related to a change in
+market quality. The alternative hypothesis postulates that the occurrence of a technical signal
+is related to a positive or negative change in market quality. We focus on an event window of [-
+3,+3] containing seven observations: three observations before the signal, the time of the signal
+and three observations after the signal. This leads us to consider market quality behavior 45
+minutes before and after the apparition of the event. Following Boudt and Petitjean (2014),
+we compute the abnormal measures in the following ways.
+For imbalances, percentage price impact and autocorrelation coeﬃcients, we compute the
+abnormality as follows:
+Abnormali,t,p = Proxyi,t,p −MedianNE
+i,t,p,
+(4.1)
+where Proxyi,t,p is the analyzed proxy p for stock i for the time interval t and MedianNE
+i,t,p is
+the median of the proxy p for stock i across all non-events occurring during the time interval
+t.
+For the other measures, the calculation method is:
+Abnormali,t,p =
+Proxyi,t,p −MedianNE
+i,t,p
+MedianNE
+i,t,p
+,
+(4.2)
+where Proxyi,t,p is the analyzed proxy for stock i for the time interval t and MedianNE
+i,t,p is the
+median of the proxy p for stock i across all non-events occurring during the time interval t.
+We need to separate these two categories of variables as imbalances, percentage price impact
+and autocorrelation coeﬃcients may be negative. We apply these processes separately for each
+market quality measure. We then aggregate the results obtained for each stock to form median
+patterns of market quality behavior around each event and for each proxy. Our abnormal
+measure deals with the intraday pattern of market quality that has been well documented in
+the literature (T´oth et al., 2009; Mu et al., 2010; Mazza, 2015; Mazza and Petitjean, 2016,
+2018). We choose the median as it is a more robust measure of central tendency, compared to
+the mean, as the distributions of market quality proxies are heavily skewed. We analyze these
+patterns to check whether the abnormality is signiﬁcantly diﬀerent from zero. For this purpose,
+we use a standard non parametric sign test that does not require any assumptions about the
+shape of the distribution. Our null hypothesis postulates that the median of the abnormal
+11
+Electronic copy available at: https://ssrn.com/abstract=3769103
+
+measure equals zero. The alternative hypothesis postulates the opposite. The statistic M is
+computed as follows:
+M = N+ −N−
+2
+,
+(4.3)
+where M follows a binomial distribution, N+ is the number of positive values and N−is the
+number of negative values. Values equal to zero are discarded.
+We then analyze the p-values of each time interval of the window and check whether the
+diﬀerences are signiﬁcant or not. If the p-value at the event interval is signiﬁcant, the technical
+signal is associated to a particular change of market quality. This signal may thus lead to a
+given conﬁguration of the limit order book or a new dynamic in trading behavior. If p-values
+are signiﬁcant before the signal, the signal may be a response to a particular state of market
+quality. If p-values are signiﬁcant after the signal, a change in market quality may correspond
+to a response to the signal.
+Let us turn to the empirical results regarding the ﬁve hypotheses derived from the theoretical ﬁndings of Chiarella and Ladley (2016).
+H1: Technical trading has no eﬀect on ex ante and ex post liquidity.
+We clearly reject this null hypothesis. Most liquidity proxies go in the same direction:
+technical trading at the time of the signals lowers liquidity. With respect to the ﬁrst dimension
+of liquidity (as measured by width), market liquidity is indeed worsened by the occurrence of
+technical trading signals. Both ex ante and ex post trading costs increase. Figure 1 points
+to a signiﬁcant increase in the relative (quoted) spread, which measures ex-ante liquidity and
+the direct cost of immediacy for small quantities. Figure 2 shows that the eﬀective spread
+widens as well. Finally, the realized spread, which is a enhanced measure of ex-post trading
+costs, shows a signiﬁcant peak around the trading signals, as shown on Figure 3. The spread
+diﬀerence during these intervals is also economically signiﬁcant.
+Although no clear pattern can be observed for the second dimension of liquidity (as measured by depth, on Figures 4 and 5), we nevertheless observe that depth at the ask seems to
+drop before buy signals and that it seems to peak before sell signals. Both of these patterns
+occur with low resiliency.
+12
+Electronic copy available at: https://ssrn.com/abstract=3769103
+
+Figure 1:
+(a) Relative Spread - MACD (Buy) (b) Relative Spread - MACD (Sell)
+(c) Relative Spread - RSI (Buy)
+(d) Relative Spread - RSI (Sell)
+(e) Relative
+Spread
+-
+STOCH
+(Buy)
+(f) Relative Spread - STOCH (Sell)
+These ﬁgures show the intra-window pattern for the relative spread. The window encompasses
+7 observations: 3 intervals before the signal, the signal and 3 intervals after the signals. Squares
+(□), triangles (△), and circles (◦) indicate a rejection of the null hypothesis respectively at the
+99%, 95% and 90% conﬁdence levels.
+Figure 2:
+(a) Eﬀective Spread - MACD (Buy) (b) Eﬀective Spread - MACD (Sell)
+(c) Eﬀective Spread - RSI (Buy)
+(d) Eﬀective Spread - RSI (Sell)
+(e) Eﬀective
+Spread
+-
+STOCH
+(Buy)
+(f) Eﬀective Spread - STOCH (Sell)
+These ﬁgures show the intra-window pattern for the eﬀective spread. The window encompasses
+7 observations: 3 intervals before the signal, the signal and 3 intervals after the signals. Squares
+(□), triangles (△), and circles (◦) indicate a rejection of the null hypothesis respectively at the
+99%, 95% and 90% conﬁdence levels.
+13
+Electronic copy available at: https://ssrn.com/abstract=3769103
+
+Figure 3:
+(a) Realized Spread - MACD (Buy) (b) Realized Spread - MACD (Sell)
+(c) Realized Spread - RSI (Buy)
+(d) Realized Spread - RSI (Sell)
+(e) Realized
+Spread
+-
+STOCH
+(Buy)
+(f) Realized Spread - STOCH (Sell)
+These ﬁgures show the intra-window pattern for the realized spread. The window encompasses
+7 observations: 3 intervals before the signal, the signal and 3 intervals after the signals. Squares
+(□), triangles (△), and circles (◦) indicate a rejection of the null hypothesis respectively at the
+99%, 95% and 90% conﬁdence levels.
+Figure 4:
+(a) Depth 5 Best Ask - MACD
+(Buy)
+(b) Depth 5 Best Ask - MACD
+(Sell)
+(c) Depth 5 Best Ask - RSI (Buy)
+(d) Depth 5 Best Ask - RSI (Sell)
+(e) Depth 5 Best Ask - STOCH
+(Buy)
+(f) Depth 5 Best Ask - STOCH
+(Sell)
+These ﬁgures show the intra-window pattern for the quantities displayed at the ﬁve best quantities
+at the ask side. The window encompasses 7 observations: 3 intervals before the signal, the signal
+and 3 intervals after the signals. Squares (□), triangles (△), and circles (◦) indicate a rejection
+of the null hypothesis respectively at the 99%, 95% and 90% conﬁdence levels.
+14
+Electronic copy available at: https://ssrn.com/abstract=3769103
+
+Figure 5:
+(a) Depth 5 Best Bid - MACD
+(Buy)
+(b) Depth 5 Best Bid - MACD
+(Sell)
+(c) Depth 5 Best Bid - RSI (Buy)
+(d) Depth 5 Best Bid - RSI (Sell)
+(e) Depth 5 Best Bid - STOCH
+(Buy)
+(f) Depth 5 Best Bid - STOCH
+(Sell)
+These ﬁgures show the intra-window pattern for the quantities displayed at the ﬁve best quantities
+at the bid side. The window encompasses 7 observations: 3 intervals before the signal, the signal
+and 3 intervals after the signals. Squares (□), triangles (△), and circles (◦) indicate a rejection
+of the null hypothesis respectively at the 99%, 95% and 90% conﬁdence levels.
+Figure 6:
+(a) Dispersion - MACD (Buy)
+(b) Dispersion - MACD (Sell)
+(c) Dispersion - RSI (Buy)
+(d) Dispersion - RSI (Sell)
+(e) Dispersion - STOCH (Buy)
+(f) Dispersion - STOCH (Sell)
+These ﬁgures show the intra-window pattern for the dispersion measure. The window encompasses
+7 observations: 3 intervals before the signal, the signal and 3 intervals after the signals. Squares
+(□), triangles (△), and circles (◦) indicate a rejection of the null hypothesis respectively at the
+99%, 95% and 90% conﬁdence levels.
+15
+Electronic copy available at: https://ssrn.com/abstract=3769103
+
+Figure 7:
+(a) Slope - MACD (Buy)
+(b) Slope - MACD (Sell)
+(c) Slope - RSI (Buy)
+(d) Slope - RSI (Sell)
+(e) Slope - STOCH (Buy)
+(f) Slope - STOCH (Sell)
+These ﬁgures show the intra-window pattern for the slope measure. The window encompasses 7
+observations: 3 intervals before the signal, the signal and 3 intervals after the signals. Squares
+(□), triangles (△), and circles (◦) indicate a rejection of the null hypothesis respectively at the
+99%, 95% and 90% conﬁdence levels.
+Figure 8:
+(a) Amihud - MACD (Buy)
+(b) Amihud - MACD (Sell)
+(c) Amihud - RSI (Buy)
+(d) Amihud - RSI (Sell)
+(e) Amihud - STOCH (Buy)
+(f) Amihud - STOCH (Sell)
+These ﬁgures show the intra-window pattern for the Amihud illiquidity measure. The window
+encompasses 7 observations: 3 intervals before the signal, the signal and 3 intervals after the
+signals. Squares (□), triangles (△), and circles (◦) indicate a rejection of the null hypothesis
+respectively at the 99%, 95% and 90% conﬁdence levels.
+16
+Electronic copy available at: https://ssrn.com/abstract=3769103
+
+When we look at the density of the order book, we also conclude that ex-ante liquidity is
+lower around technical signals. First, the dispersion in the order book rises at the time of the
+signal or just after (Figure 6). Dispersion tend to increase when competition among traders is
+lower and traders do not try to gain price priority. By not ﬁghting for price priority, market
+members increase the spread and the distance between each price limit, decreasing the density
+of the order book. Second, the slope falls down quite sharply (Figure 7). In fact, the slope
+tends to be positively related to liquidity and negatively correlated with volatility. Therefore,
+a more gentle slope indicates that volumes in the order book are less concentrated around a
+given price limit: because traders do not agree about the value of the security, accumulated
+depth quickly decreases when a small price variation occurs (low elasticity). So, accumulated
+depth only increases for larger price variations because traders have diﬀerent views on the
+price of the security.
+Finally, the Amihud illiquidity ratio leads to the same conclusion (Figure 8): At the time
+of the signal, illiquidity increases signiﬁcantly at a 1% level for all signals, either buy or sell,
+and then signiﬁcantly drops in t + 1.
+H2: Technical trading has no eﬀect on adverse selection costs.
+As shown on Figure 9, we can also reject this hypothesis since the percentage price impact
+of a trade increases, with some degree of anticipation. As a proxy for adverse selection, the
+rise in the percentage price impact may be the reason behind the rise in the eﬀective spread,
+which is also derived from the Chiarella and Ladley (2016) model.
+H3: Technical trading has no eﬀect on price eﬃciency.
+The autocorrelation in midquote returns signiﬁcantly peaks for the MACD and the stochastics (Figure 10). For the RSI, it peaks with some anticipation (at t −1). Consistent with the
+previous results, the realized volatility also increases (Figure 11).
+Overall, price eﬃciency
+seems to decrease around the occurrence of a technical signal.
+H4: Technical trading has no eﬀect on order book dynamics.
+This hypothesis is clearly rejected for several reasons. First, the number of limit orders
+increases at the time of the signals (Figure 12). Second, this rise is accompanied by a fall in
+the number of market orders (Figure 13) and marketable limit orders (Figure 14). Following
+Bloomﬁeld et al. (2005), we conjecture that informed traders tend to become less aggressive
+and provide more liquidity around technical signals which they typically disregard when determining the fair value: They become more patient and avoid to pay the wider spread. It
+17
+Electronic copy available at: https://ssrn.com/abstract=3769103
+
+Figure 9:
+(a) Percentage
+Price
+Impact
+-
+MACD (Buy)
+(b) Percentage
+Price
+Impact
+-
+MACD (Sell)
+(c) Percentage Price Impact - RSI
+(Buy)
+(d) Percentage Price Impact - RSI
+(Sell)
+(e) Percentage
+Price
+Impact
+-
+STOCH (Buy)
+(f) Percentage
+Price
+Impact
+-
+STOCH (Sell)
+These ﬁgures show the intra-window pattern for the percentage price impact. The window encompasses 7 observations: 3 intervals before the signal, the signal and 3 intervals after the signals.
+Squares (□), triangles (△), and circles (◦) indicate a rejection of the null hypothesis respectively
+at the 99%, 95% and 90% conﬁdence levels.
+Figure 10:
+(a) Autocorr - MACD (Buy)
+(b) Autocorr - MACD (Sell)
+(c) Autocorr - RSI (Buy)
+(d) Autocorr - RSI (Sell)
+(e) Autocorr - STOCH (Buy)
+(f) Autocorr - STOCH (Sell)
+These ﬁgures show the intra-window pattern for the autocorrelation coeﬃcient.
+The window
+encompasses 7 observations: 3 intervals before the signal, the signal and 3 intervals after the
+signals. Squares (□), triangles (△), and circles (◦) indicate a rejection of the null hypothesis
+respectively at the 99%, 95% and 90% conﬁdence levels.
+18
+Electronic copy available at: https://ssrn.com/abstract=3769103
+
+Figure 11:
+(a) Realized
+Volatility
+-
+MACD
+(Buy)
+(b) Realized Volatility - MACD
+(Sell)
+(c) Realized Volatility - RSI (Buy) (d) Realized Volatility - RSI (Sell)
+(e) Realized Volatility - STOCH
+(Buy)
+(f) Realized Volatility - STOCH
+(Sell)
+These ﬁgures show the intra-window pattern for the realized volatility. The window encompasses
+7 observations: 3 intervals before the signal, the signal and 3 intervals after the signals. Squares
+(□), triangles (△), and circles (◦) indicate a rejection of the null hypothesis respectively at the
+99%, 95% and 90% conﬁdence levels.
+Figure 12:
+(a) Number of limit orders - MACD
+(Buy)
+(b) Number of limit orders - MACD
+(Sell)
+(c) Number of limit orders - RSI
+(Buy)
+(d) Number of limit orders - RSI
+(Sell)
+(e) Number
+of
+limit
+orders
+-
+STOCH (Buy)
+(f) Number
+of
+limit
+orders
+-
+STOCH (Sell)
+These ﬁgures show the intra-window pattern for the number of limit orders. The window encompasses 7 observations: 3 intervals before the signal, the signal and 3 intervals after the signals.
+Squares (□), triangles (△), and circles (◦) indicate a rejection of the null hypothesis respectively
+at the 99%, 95% and 90% conﬁdence levels.
+19
+Electronic copy available at: https://ssrn.com/abstract=3769103
+
+Figure 13:
+(a) Number
+of
+market
+orders
+-
+MACD (Buy)
+(b) Number of market orders -
+MACD (Sell)
+(c) Number of market orders - RSI
+(Buy)
+(d) Number of market orders - RSI
+(Sell)
+(e) Number
+of
+market
+orders
+-
+STOCH (Buy)
+(f) Number
+of
+market
+orders
+-
+STOCH (Sell)
+These ﬁgures show the intra-window pattern for the number of market orders.
+The window
+encompasses 7 observations: 3 intervals before the signal, the signal and 3 intervals after the
+signals. Squares (□), triangles (△), and circles (◦) indicate a rejection of the null hypothesis
+respectively at the 99%, 95% and 90% conﬁdence levels.
+Figure 14:
+(a) Number of marketable limit orders - MACD (Buy)
+(b) Number of marketable limit orders - MACD (Sell)
+(c) Number of marketable limit orders - RSI (Buy)
+(d) Number of marketable limit orders - RSI (Sell)
+(e) Number of marketable limit orders - STOCH (Buy)
+(f) Number of marketable limit orders - STOCH (Sell)
+These ﬁgures show the intra-window pattern for the number of marketable limit orders. The
+window encompasses 7 observations: 3 intervals before the signal, the signal and 3 intervals after
+the signals. Squares (□), triangles (△), and circles (◦) indicate a rejection of the null hypothesis
+respectively at the 99%, 95% and 90% conﬁdence levels.
+20
+Electronic copy available at: https://ssrn.com/abstract=3769103
+
+Figure 15:
+(a)
+Number
+of
+buyer-initiated
+trades - MACD (Buy)
+(b)
+Number
+of
+buyer-initiated
+trades - MACD (Sell)
+(c)
+Number
+of
+buyer-initiated
+trades - RSI (Buy)
+(d)
+Number
+of
+buyer-initiated
+trades - RSI (Sell)
+(e)
+Number
+of
+buyer-initiated
+trades - STOCH (Buy)
+(f)
+Number
+of
+buyer-initiated
+trades - STOCH (Sell)
+These ﬁgures show the intra-window pattern for the number of buyer-initiated trades.
+The
+window encompasses 7 observations: 3 intervals before the signal, the signal and 3 intervals after
+the signals. Squares (□), triangles (△), and circles (◦) indicate a rejection of the null hypothesis
+respectively at the 99%, 95% and 90% conﬁdence levels.
+Figure 16:
+(a)
+Number
+of
+seller-initiated
+trades - MACD (Buy)
+(b)
+Number
+of
+seller-initiated
+trades - MACD (Sell)
+(c)
+Number
+of
+seller-initiated
+trades - RSI (Buy)
+(d)
+Number
+of
+seller-initiated
+trades - RSI (Sell)
+(e)
+Number
+of
+seller-initiated
+trades - STOCH (Buy)
+(f) Number of seller-initiated trades
+- STOCH (Sell)
+These ﬁgures show the intra-window pattern for the number of seller-initiated trades. The window
+encompasses 7 observations: 3 intervals before the signal, the signal and 3 intervals after the
+signals. Squares (□), triangles (△), and circles (◦) indicate a rejection of the null hypothesis
+respectively at the 99%, 95% and 90% conﬁdence levels.
+21
+Electronic copy available at: https://ssrn.com/abstract=3769103
+
+Figure 17:
+(a) Trade
+Imbalance
+-
+MACD
+(Buy)
+(b) Trade Imbalance - MACD (Sell)
+(c) Trade Imbalance - RSI (Buy)
+(d) Trade Imbalance - RSI (Sell)
+(e) Trade
+Imbalance
+-
+STOCH
+(Buy)
+(f) Trade
+Imbalance
+-
+STOCH
+(Sell)
+These ﬁgures show the intra-window pattern for the trade imbalance. The window encompasses
+7 observations: 3 intervals before the signal, the signal and 3 intervals after the signals. Squares
+(□), triangles (△), and circles (◦) indicate a rejection of the null hypothesis respectively at the
+99%, 95% and 90% conﬁdence levels.
+Figure 18:
+(a) 5
+Best
+Limits
+Imbalance
+-
+MACD (Buy)
+(b) 5
+Best
+Limits
+Imbalance
+-
+MACD (Sell)
+(c) 5 Best Limits Imbalance - RSI
+(Buy)
+(d) 5 Best Limits Imbalance - RSI
+(Sell)
+(e) 5
+Best
+Limits
+Imbalance
+-
+STOCH (Buy)
+(f) 5
+Best
+Limits
+Imbalance
+-
+STOCH (Sell)
+These ﬁgures show the intra-window pattern for the 5 best limits imbalance. The window encompasses 7 observations: 3 intervals before the signal, the signal and 3 intervals after the signals.
+Squares (□), triangles (△), and circles (◦) indicate a rejection of the null hypothesis respectively
+at the 99%, 95% and 90% conﬁdence levels.
+22
+Electronic copy available at: https://ssrn.com/abstract=3769103
+
+seems to be a wise strategy since the total number of trades increase as well, as indicated by
+the rise in both the number of buyer-initiated trades when the signal is bullish and the number
+of seller-initiated trades when the signal is bearish (Figures 15 and 16).
+Trade imbalance clearly shows that the technical signals are heavily screened by traders
+as the variation is perfectly in line with the expected trading dynamics implied by the signals
+(Figures 17). The results further indicate that post-signal resiliency is rather slow. Order
+imbalance points in the same direction (Figures 18), although evidence is weaker with no clear
+pattern for MACD.
+Finally, the occurrence of technical signals leads to some clear changes in the order submission strategies followed by market participants. The monitoring of existing orders is clearly
+dynamic since the number of modiﬁed and canceled orders signiﬁcantly increases at t = 0
+(Figures 19 and 20).
+4.2
+Panel regressions
+As a robustness check, we also follow a parametric methodology and run the following ﬁxedeﬀect panel model :
+∆Mi,t = β0 + β1MACDBuy
+i,t
++ β2MACDSell
+i,t
++ β1STOCHBuy
+i,t
++ β2STOCHSell
+i,t +
+β1RSIBuy
+i,t
++ β2RSISell
+i,t
++ P5
+k=1
+ 
+α1,i,kMOBuy
+i,t,k + α2,i,kMOSell
+i,t,k
+!
++
+P5
+k=1
+ 
+α3,i,kLOBuy
+i,t,k + α4,i,kLOSell
+i,t,k
+!
++ P5
+k=1
+ 
+α5,i,kMLOBuy
+i,t,k + α6,i,kMLOSell
+i,t,k
+!
++
+P5
+k=1
+ 
+α7,i,kEXEBuy
+i,t,k + α8,i,kEXESell
+i,t,k
+!
++ P5
+k=1
+ 
+α9,i,kCANBuy
+i,t,k + α10,i,kCANSell
+i,t,k
+!
++
+P5
+k=1
+ 
+α11,i,kModifBuy
+i,t,k + α12,i,kModifSell
+i,t,k
+!
++ P89
+i=2 γiSi + νi,t,
+(4.4)
+where Mi,t is the market quality proxy measured at interval t for stock i, and ∆indicates
+the percentage change of the variable, i.e. ∆Mi,t = Mi,t−Mi,t−1
+Mi,t−1
+. All the explanatory variables
+are deﬁned in the previous sections. MACDBuy
+i,t
+is a dummy variable which equals 1 when
+a buying signal for the MACD has been identiﬁed for stock i at time interval t. MACDSell
+i,t ,
+STOCHBuy
+i,t
+, STOCHSell
+i,t , RSIBuy
+i,t
+and, RSISell
+i,t
+follow the same logic. Regarding the control
+23
+Electronic copy available at: https://ssrn.com/abstract=3769103
+
+Figure 19:
+(a) Number of modiﬁed orders -
+MACD (Buy)
+(b) Number of modiﬁed orders -
+MACD (Sell)
+(c) Number of modiﬁed orders - RSI
+(Buy)
+(d) Number of modiﬁed orders -
+RSI (Sell)
+(e) Number of modiﬁed orders -
+STOCH (Buy)
+(f) Number of modiﬁed orders -
+STOCH (Sell)
+These ﬁgures show the intra-window pattern for the number of modiﬁed orders. The window
+encompasses 7 observations: 3 intervals before the signal, the signal and 3 intervals after the
+signals. Squares (□), triangles (△), and circles (◦) indicate a rejection of the null hypothesis
+respectively at the 99%, 95% and 90% conﬁdence levels.
+Figure 20:
+(a) Number of cancelled orders -
+MACD (Buy)
+(b) Number of cancelled orders -
+MACD (Sell)
+(c) Number of cancelled orders -
+RSI (Buy)
+(d) Number of cancelled orders -
+RSI (Sell)
+(e) Number of cancelled orders -
+STOCH (Buy)
+(f) Number of cancelled orders -
+STOCH (Sell)
+These ﬁgures show the intra-window pattern for the number of cancelled orders. The window
+encompasses 7 observations: 3 intervals before the signal, the signal and 3 intervals after the
+signals. Squares (□), triangles (△), and circles (◦) indicate a rejection of the null hypothesis
+respectively at the 99%, 95% and 90% conﬁdence levels.
+24
+Electronic copy available at: https://ssrn.com/abstract=3769103
+
+variables. k under the summation symbol refers to the diﬀerent categories of traders that have
+been identiﬁed previously. MOBuy
+i,t,k , LOBuy
+i,t,k , MLOBuy
+i,t,k , EXEBuy
+i,t,k , CANBuy
+i,t,k , and ModifBuy
+i,t,k
+respectively denote the percentage of market orders, limit orders, marketable limit order,
+executed orders, cancelled orders and modiﬁed orders submitted at the bid side by the members
+belonging to category k for stock i during interval t. A similar process is applied to sell orders.
+The n −1 Si dummies denote the stocks’ ﬁxed eﬀects that are present in the sample. As
+outlined in Chordia et al. (2000), we use ﬁrst diﬀerences in order to deal with econometric
+issues that aﬀect market quality variables, such as high persistence and/or non-stationarity.
+We estimate the model by using the clustered standard errors approach that is described
+in Petersen (2009) to correct for the bias in the OLS standard errors that arises for panel estimation. The standard errors produced by this method are robust to within cluster correlation.
+As outlined by Petersen (2009), this method produces unbiased standard errors when there
+is a ﬁrm-speciﬁc eﬀect and is superior to White, Newey-West, and Fama-MacBeth correction
+methods in such a case.
+Most of the empirical ﬁndings conﬁrm the non-parametric event study, as indicated in
+Table 1.5
+H1: Technical trading has no eﬀect on ex ante and ex post liquidity.
+We reject this hypothesis, as it was the case in the event study.
+First, the technical
+dummies exhibit positive and statistically signiﬁcant coeﬃcient estimates in all the spread
+equations. Second, technical signals are rather associated with lower depth. Third, liquidity is
+also negatively associated with technical signals when dispersion and slope are used as liquidity
+proxies: in accordance with the event study, coeﬃcient estimates are negative (and statistically
+signiﬁcant) in the slope equation and positive (and statistically signiﬁcant) in the dispersion
+equation. Nevertheless, we do not ﬁnd any signiﬁcant relationship between technical indicators
+and the Amihud ratio.
+H2: Technical trading has no eﬀect on adverse selection costs.
+We fail to reject the null since the coeﬃcient estimates related to the technical indicators
+are not statistically signiﬁcant. We fail to conﬁrm the non-parametric analysis which pointed
+to a rise in adverse selection costs,
+H3: Technical trading has no eﬀect on price eﬃciency.
+5To save space, we only report the dummies related to the three technical indicators, with separate buy and
+sell signals.
+25
+Electronic copy available at: https://ssrn.com/abstract=3769103
+
+We reject the null hypothesis, although evidence in the event study was stronger. While
+autocorrelation in the miquote returns is unaﬀected by technical trading, realized volatility
+increases signiﬁcantly.
+26
+Electronic copy available at: https://ssrn.com/abstract=3769103
+
+Table 1: Technical trading, market quality and order book dynamics
+Variables
+Relative Spread
+Eﬀective Spread
+Realized Spread
+5 Best Bid
+5 Best Ask
+Dispersion
+Slope
+MACD buy
+0.077∗∗∗
+4.23E8∗∗
+5.71E8∗∗
+−0.017∗∗
+−0.004
+0.035∗∗∗
+−0.026∗∗∗
+MACD sell
+0.050∗∗∗
+6.37E8∗∗
+5.22E8∗∗
+−0.004
+−0.020∗∗∗
+0.022∗∗∗
+−0.032∗∗∗
+RSI buy
+0.048∗∗∗
+2.54E8∗
+5.09E+08
+0.018
+−0.042∗∗∗
+0.031∗∗∗
+−0.033∗∗∗
+RSI sell
+0.032∗∗
+3.54E8∗∗∗
+2.77E8∗∗
+0.229
+0.006
+0.021∗∗∗
+−0.027∗∗∗
+STOCH buy
+0.069∗∗∗
+5.07E8∗∗∗
+3.04E+08
+−0.011∗∗
+−0.021∗∗∗
+0.030∗∗∗
+−0.040∗∗∗
+STOCH sell
+0.071∗∗∗
+2.67E+08
+2.80E+08
+−0.061∗∗
+−0.020∗∗∗
+0.034∗∗∗
+−0.039∗∗∗
+Variables
+Amihud
+Percentage Price Impact
+Autocorrelation
+Realized Vol.
+N. limit
+N. market
+N. marketable limit
+MACD buy
+3.81E+12
+1.12E+13
+4.46E+22
+0.183∗∗∗
+0.002
+−0.092∗∗∗
+0.039∗∗∗
+MACD sell
+9.05E+12
+1.65E+13
+1.30E+23
+0.165∗∗∗
+0.015∗∗∗
+−0.094∗∗∗
+−0.038∗∗∗
+RSI buy
+−2.91E10∗∗
+4.74E+12
+6.00E+22
+−0.056∗∗∗
+0.004
+0.053
+−0.052∗∗∗
+RSI sell
+−6.07E+12
+7.84E+11
+3.65E+22
+−0.018
+0.017∗∗∗
+0.045
+−0.103∗∗∗
+STOCH buy
+7.56E+11
+2.87E+13
+6.78E+22
+0.159∗∗∗
+0.013∗∗∗
+−0.078∗∗∗
+−0.035∗∗∗
+STOCH sell
+1.07E+13
+−7.11E+12
+7.32E+22
+0.133∗∗∗
+0.018∗∗∗
+−0.075∗∗∗
+−0.053∗∗∗
+Variables
+N buy
+N sell
+Trade Imbalance
+Order Imbalance
+N. modiﬁed
+N. cancelled
+N. executed
+MACD buy
+0.286∗∗∗
+0.090∗∗∗
+−0.111∗∗
+0.042∗∗∗
+0.061∗∗∗
+0.030∗∗∗
+−0.006
+MACD sell
+0.079∗∗∗
+0.198∗∗∗
+0.119∗∗
+0.046∗∗∗
+0.057∗∗∗
+0.033∗∗∗
+−0.009∗
+RSI buy
+−0.044
+−0.446∗∗∗
+−0.392∗∗∗
+−0.018
+0.02
+−0.005
+−0.039∗∗∗
+RSI sell
+−0.445∗∗∗
+0.072∗∗
+−0.547∗∗∗
+−0.035∗∗
+0.024∗
+0.031∗∗
+−0.043∗∗∗
+STOCH buy
+0.136∗∗∗
+−0.070∗∗∗
+0.176∗∗
+0.021∗∗∗
+0.078∗∗∗
+0.038∗∗∗
+−0.047∗∗∗
+STOCH sell
+−0.076∗∗∗
+0.175∗∗∗
+−0.079
+0.014∗
+0.076∗∗∗
+0.027∗∗∗
+−0.036∗∗∗
+27
+Electronic copy available at: https://ssrn.com/abstract=3769103
+
+H4: Technical trading has no eﬀect on order book dynamics.
+We conﬁrm the rejection of this hypothesis. As in the event study, the technical signals
+are associated - all else equal- with a higher number of limit orders, a lower number of market
+orders and marketable limit orders.
+There are nevertheless some diﬀerences found in comparison to the event study.
+The
+total number of trades increase only when the signals are sent by the MACD, and not across
+all signals. Trade imbalance is always signiﬁcantly impacted by technical trading, but the
+direction of the impact depends on the technical indicator. It is also rather the case for the
+order imbalance.
+Finally, we conﬁrm all the ﬁndings of the event study with respect to the changes observed
+in the order submission strategies followed by market participants when technical signals occur.
+There is obviously a clear dynamic monitoring of orders since the number of modiﬁed and
+canceled orders signiﬁcantly increases when the three technical indicators are sending a signal.
+4.3
+Granger Causality
+We conclude the empirical analysis by testing the Granger causality between each market
+quality proxy and each technical indicator. The indicators are computed using the standard
+rules. These tests enable us to check whether changes in the indicator is a cause or consequence
+of a change in market quality or both of these relationships (Bidirectional causality).
+Toda and Yamamoto (1995) present a procedure to produce eﬃcient and unbiased estimators of VAR models when the processes are integrated. This methodology helps to produce
+unbiased Granger causality tests, as it is similar to testing zero-restrictions on a given set
+parameters of a VAR speciﬁcation. Their ﬁrst step suggests that we check for the order of
+integration of the time series. We use stationarity tests, ADF and Phillips-Perron statistics,
+and conclude that all our time series were stationary. In this case, the Wald test statistic
+may be directly used instead of going through the process presented in Toda and Yamamoto
+(1995).
+Our unrestricted VAR models are speciﬁed as follows:
+It = α0 + α1It−1 + α2It−2 + ... + αpIt−p
++β1Mt−1 + β2Mt−2 + ... + βpMt−p + ut,
+(4.5)
+28
+Electronic copy available at: https://ssrn.com/abstract=3769103
+
+Mt = α0 + α1Mt−1 + α2Mt−2 + ... + αpMt−p
++β1It−1 + β2It−2 + ... + βpIt−p + ut,
+(4.6)
+where Mt denotes one of the liquidity proxies that is investigated, p denotes the number of
+lags and ut is an error term. The optimal lag length, p, is determined through an optimization
+process based on Akaike’s Information Criterion (AIC).
+The null hypothesis of Granger Causality tests characterizes non-causality, i.e. “Mt does
+not Granger-cause It” for the ﬁrst VAR model and “It does not Granger-cause Mt” for the
+second one. This test consists in testing that all the βi of the models equal 0.
+Tables 2 to 4 present the results of the Granger causality tests, based on the asymptotically
+equivalent statistic. The ﬁrst column indicates the p-value of the causality from market quality
+to the technical signals while the second one displays the p-value from the signals to market
+quality.
+Table 2: Granger causality tests - MACD
+Mt
+It
+M →I
+I →M
+Relative Spread
+MACD
+0.00063
+0.99726
+Depth 5 Best Bid
+MACD
+0.99926
+0.80093
+Depth 5 Best Ask
+MACD
+0.99699
+0.88561
+5 limits Imbalance
+MACD
+0.12686
+0.60938
+Dispersion
+MACD
+0.95798
+0.02222
+Slope
+MACD
+0.31055
+0.35428
+Eﬀective Spread
+MACD
+<0.0001
+0.20251
+Realized Spread
+MACD
+<0.0001
+0.17525
+Percentage Price Impact
+MACD
+0.00068
+0.04534
+Realized Volatility
+MACD
+0.00004
+0.6046
+Amihud IR
+MACD
+0.97918
+0.98993
+Autocorrelation
+MACD
+0.65866
+0.79587
+Number of buyer-initiated trades
+MACD
+<0.0001
+<0.0001
+Number of seller-initiated trades
+MACD
+<0.0001
+0.00003
+Trade Imbalance
+MACD
+<0.0001
+<0.0001
+Number of market orders
+MACD
+0.45897
+0.2094
+Number of limit orders
+MACD
+0.40798
+<0.0001
+Number of marketable limit orders
+MACD
+0.22315
+<0.0001
+Number of executed orders
+MACD
+0.0088
+0.06139
+Number of modiﬁed orders
+MACD
+0.00018
+0.0253
+Number of cancelled orders
+MACD
+0.2618
+0.5665
+This table presents the results of the Granger causality tests conducted for both directions. Column M →I shows the
+p-values returned by the asymptotically equivalent test for market quality proxies Granger-causing the technical analysis
+indicator. Column I →M presents the p-values in the opposite direction.
+29
+Electronic copy available at: https://ssrn.com/abstract=3769103
+
+Table 3: Granger causality tests - STOCH
+Mt
+It
+M →I
+I →M
+Relative Spread
+Stochastics
+0.0005
+0.24181
+Depth 5 Best Bid
+Stochastics
+0.00051
+<0.0001
+Depth 5 Best Ask
+Stochastics
+0.42728
+0.00012
+Imb 5
+Stochastics
+0.91141
+0.04132
+Dispersion
+Stochastics
+0.14557
+0.01014
+Slope
+Stochastics
+0.00021
+<0.0001
+ES
+Stochastics
+0.00208
+0.00262
+RealizedS
+Stochastics
+0.00235
+0.0028
+PriceImpact
+Stochastics
+<0.0001
+0.00524
+sumvolume
+Stochastics
+0.05348
+0.19658
+RV
+Stochastics
+0.00001
+0.00268
+Amihud
+Stochastics
+0.71844
+0.16339
+STDMQR1
+Stochastics
+<0.0001
+<0.0001
+AR
+Stochastics
+<0.0001
+<0.0001
+Number of buyer-initiated trades
+Stochastics
+<0.0001
+<0.0001
+Number of seller-initiated trades
+Stochastics
+<0.0001
+<0.0001
+Trade Imbalance
+Stochastics
+<0.0001
+<0.0001
+Number of market orders
+Stochastics
+<0.0001
+<0.0001
+Number of limit orders
+Stochastics
+<0.0001
+<0.0001
+Number of marketable limit orders
+Stochastics
+<0.0001
+<0.0001
+Number of executed orders
+Stochastics
+0.00007
+<0.0001
+Number of modiﬁed orders
+Stochastics
+<0.0001
+<0.0001
+Number of cancelled orders
+Stochastics
+<0.0001
+<0.0001
+This table presents the results of the Granger causality tests conducted for both directions. Column M →I shows the
+p-values returned by the asymptotically equivalent test for market quality proxies Granger-causing the technical analysis
+indicator. Column I →M presents the p-values in the opposite direction.
+Table 4: Granger causality tests - RSI
+Mt
+It
+M →I
+I →M
+Relative Spread
+RSI
+0.00009
+0.00295
+Depth 5 Best Bid
+RSI
+0.00563
+0.51641
+Depth 5 Best Ask
+RSI
+0.92301
+0.17618
+5 Limits Imbalance
+RSI
+<0.0001
+<0.0001
+Dispersion
+RSI
+0.90059
+0.02436
+Slope
+RSI
+<0.0001
+<0.0001
+Eﬀective Spread
+RSI
+<0.0001
+<0.0001
+Realized Spread
+RSI
+<0.0001
+<0.0001
+Percentage Price Impact
+RSI
+<0.0001
+<0.0001
+Realized Volatility
+RSI
+<0.0001
+<0.0001
+Amihud IR
+RSI
+0.38077
+0.85375
+Autocorrelation
+RSI
+<0.0001
+<0.0001
+Number of buyer-initiated trades
+RSI
+<0.0001
+<0.0001
+Number of seller-initiated trades
+RSI
+<0.0001
+<0.0001
+Trade Imbalance
+RSI
+<0.0001
+<0.0001
+Number of market orders
+RSI
+<0.0001
+<0.0001
+Number of limit orders
+RSI
+<0.0001
+<0.0001
+Number of marketable limit orders
+RSI
+0.11704
+<0.0001
+Number of executed orders
+RSI
+0.00562
+<0.0001
+Number of modiﬁed orders
+RSI
+<0.0001
+<0.0001
+Number of cancelled orders
+RSI
+<0.0001
+<0.0001
+This table presents the results of the Granger causality tests conducted for both directions. Column M →I shows the
+p-values returned by the asymptotically equivalent test for market quality proxies Granger-causing the technical analysis
+indicator. Column I →M presents the p-values in the opposite direction.
+30
+Electronic copy available at: https://ssrn.com/abstract=3769103
+
+The results show that Granger causality is mainly bidirectional. Technical trading does
+inﬂuence liquidity, but the opposite is true as well. Bi-directionality is particularly obvious
+for the STOCH indicator. When signiﬁcant p-values are found, they are signiﬁcant in both
+directions in all cases but one only. The MACD and RSI indicators are also drivers of liquidity
+dynamics, while being driven by it at the same time. The only cases where technical trading
+seems to have a unidirectional impact on liquidity, are when we consider dispersion, the number
+of limit orders and the number of marketable limit orders. Otherwise, results are very similar
+than in the case of the STOCH indicator.
+5
+Conclusion
+Technical traders are often modeled as uninformed traders who are subject to herding behavior.
+They tend to act as noise traders in the sense of Black (1986) and Shleifer and Summers
+(1990). In the past, trading based on technical analysis was found to have a positive eﬀect on
+market quality. However, theoretical evidence in agent-based models has recently evolved and
+the eﬀect of technical traders on market quality is viewed as ambiguous, at best. Contrary
+to Kyle (1985) and Glosten and Milgrom (1985), Chiarella and Ladley (2016) do not ﬁnd
+that noise trading, under the form of technical trading, leads to reduced spreads. Despite
+primarily acting as liquidity providers, Chiarella and Ladley (2016) ﬁnd out that technical
+traders increase trading costs.
+Using tick-by-tick data, we ﬁnd empirical evidence in support of the theoretical ﬁnding in
+agent-based models of limit order markets that the eﬀect of technical trading on market quality
+is not positive. We ﬁnd that technical trading at the time of the signals lowers liquidity as
+proxied by the relative spread, the eﬀective spread, the realized spread, the dispersion and slope
+of the order book. We also ﬁnd empirical support indicating that technical traders can have
+negative eﬀects on price eﬃciency when arbitrage is limited. We also ﬁnd additional negative
+impact of technical trading on market quality, most notably in terms of rising volatility. We
+indeed ﬁnd that realized volatility increases with technical trading, as in Foucault et al. (2011)
+where noise traders have a positive eﬀect on volatility. Finally, we ﬁnd strong empirical support
+against the hypothesis that technical trading has no eﬀect on order book dynamics.
+We join Chiarella and Ladley (2016) when they conclude that the eﬀect of technical traders
+on the market is more ambiguous than previously thought. There may be underestimated
+negative consequences in terms of market quality that further research needs to corroborate
+or invalidate.
+31
+Electronic copy available at: https://ssrn.com/abstract=3769103
+
+References
+Allen, F. and R. Karjalainen (1999). Using genetic algorithms to ﬁnd technical trading rules1.
+Journal of Financial Economics 51(2), 245 – 271.
+Allen, H. and M. P. Taylor (1990). Charts, noise and fundamentals in the london foreign
+exchange market. The Economic Journal 100(400), 49–59.
+Amihud, Y. (2002). Illiquidity and stock returns: Cross-section and time-series eﬀects. Journal
+of Financial Markets 5, 31–56.
+Bajgrowicz, P. and O. Scaillet (2012). Technical trading revisited: False discoveries, persistence
+tests, and transaction costs. Journal of Financial Economics 106(3), 473 – 491.
+Black, F. (1986). Noise. The Journal of Finance 41(3), 528–543.
+Bloomﬁeld, R., M. O’Hara, and G. Saar (2005). The ’make or take’ decision in an electronic
+market: Evidence on the evolution of liquidity.
+Journal of Financial Economics 75(1),
+165–199.
+Boudt, K. and M. Petitjean (2014). Intraday liquidity dynamics and news releases around
+price jumps: Evidence from the DJIA stocks. Journal of Financial Markets 17, 121–149.
+Brogaard, J., T. Hendershott, and R. Riordan (2014).
+High-frequency trading and price
+discovery. The Review of Financial Studies 27(8), 2267.
+Cheung, Y.-W., M. D. Chinn, and I. W. Marsh (2004). How do uk-based foreign exchange
+dealers think their market operates? International Journal of Finance & Economics 9(4),
+289–306.
+Chiarella, C., X.-Z. He, and C. Hommes (2006). A dynamic analysis of moving average rules.
+Journal of Economic Dynamics and Control 30(9 - 10), 1729 – 1753.
+Chiarella, C., X.-Z. He, and L. Wei (2015). Learning, information processing and order submission in limit order markets. Journal of Economic Dynamics and Control 61, 245 – 268.
+Chiarella, C., G. Iori, and J. Perelli (2009). The impact of heterogeneous trading rules on the
+limit order book and order ﬂows. Journal of Economic Dynamics and Control 33(3), 525 –
+537.
+Chiarella, C. and D. Ladley (2016). Chasing trends at the micro-level: The eﬀect of technical
+trading on order book dynamics. Journal of Banking and Finance 72, S119 – S131.
+32
+Electronic copy available at: https://ssrn.com/abstract=3769103
+
+Chordia, T., R. Roll, and A. Subrahmanyam (2000). Commonality in liquidity. Journal of
+Financial Economics 56, 3–28.
+Duvinage, M., P. Mazza, and M. Petitjean (2013). The intraday performance of market timing
+strategies and trading systems based on Japanese candlesticks. Quantitative Finance 13(7),
+1059–1070.
+Etheber, T., A. Hackethal, and S. Meyer (2014). Trading on noise: Moving average trading
+heuristics and private investors. Working paper, Available at SSRN 2520346, 49. Empirical
+Behavioral Finance.
+Foucault, T., D. Sraer, and D. J. Thesmar (2011). Individual investors and volatility. The
+Journal of Finance 66(4), 1369–1406.
+Glosten, L. R. and P. R. Milgrom (1985). Bid, ask and transaction prices in a specialist market
+with heterogeneously informed traders. Journal of Financial Economics 14(1), 71 – 100.
+Goettler, R. L., C. A. Parlour, and U. Rajan (2005). Equilibrium in a dynamic limit order
+market. The Journal of Finance 60(5), 2149–2192.
+Goettler, R. L., C. A. Parlour, and U. Rajan (2009). Informed traders and limit order markets.
+Journal of Financial Economics 93(1), 67 – 87.
+Hasbrouck, J. (1993).
+Assessing the quality of a security market:
+A new approach to
+transaction-cost measurement. Review of Financial Studies 6(1), 191–212.
+Hendershott, T., C. M. Jones, and A. J. Menkveld (2011). Does algorithmic trading improve
+liquidity? The Journal of Finance 66(1), 1–33.
+Hendershott, T. and P. C. Moulton (2011). Automation, speed, and stock market quality:
+The NYSE’s hybrid. Journal of Financial Markets 14(4), 568 – 604.
+Hoﬀmann, A. O. and H. Shefrin (2014). Technical analysis and individual investors. Journal of
+Economic Behavior & Organization 107, Part B, 487 – 511. Empirical Behavioral Finance.
+Kang, W. and W. Y. Yeo (2008). Liquidity beyond the best quote: A study of the NYSE limit
+order book. Working Paper, National University of Singapore.
+Kyle, A. S. (1985). Continuous auctions and insider trading. Econometrica 53(6), 1315–1335.
+Lee, C. M. C. and M. J. Ready (1991). Inferring trade direction from intraday data. Journal
+of Finance 46(2), 733–746.
+33
+Electronic copy available at: https://ssrn.com/abstract=3769103
+
+Marshall, B. R., M. R. Young, and L. C. Rose (2006). Candlestick technical trading strategies:
+Can they create value for investors? Journal of Banking & Finance 30(8), 2303 – 2323.
+Mazza, P. (2015). Price dynamics and market liquidity: An intraday event study on euronext.
+The Quarterly Review of Economics and Finance 56, 139–153.
+Mazza, P. and M. Petitjean (2016). On the usefulness of intraday price ranges to gauge liquidity
+in cap-based portfolios. Economic Modelling 54, 67–81.
+Mazza, P. and M. Petitjean (2018). Implicit transaction cost management using intraday price
+dynamics. Applied Economics 50(39), 4264–4274.
+Menkhoﬀ, L. (2010). The use of technical analysis by fund managers: International evidence.
+Journal of Banking & Finance 34(11), 2573 – 2586.
+Mu, G.-H., W.-X. Zhou, W. Chen, and J. Kert´esz (2010). Order ﬂow dynamics around extreme
+price changes on an emerging stock market. New Journal of Physics 12(7), 075037.
+Naes, R. and J. A. Skjeltorp (2006). Order book characteristics and the volume-volatility
+relation: Empirical evidence from a limit order market. Journal of Financial Markets 9(4),
+408–432.
+O’Hara, M. and M. Ye (2011). Is market fragmentation harming market quality? Journal of
+Financial Economics 100(3), 459 – 474.
+Park, C.-H. and S. H. Irwin (2007). What do we know about the proﬁtability of technical
+analysis? Journal of Economic Surveys 21(4), 786–826.
+Parlour, C. A. (1998).
+Price dynamics in limit order markets.
+The Review of Financial
+Studies 11(4), 789.
+Petersen, M. A. (2009). Estimating standard errors in ﬁnance panel data sets: Comparing
+approaches. Review of Financial Studies 22(1), 435–480.
+Schulmeister, S. (2009). Proﬁtability of technical stock trading: Has it moved from daily to
+intraday data? Review of Financial Economics 18(4), 190 – 201.
+Shleifer, A. and L. H. Summers (1990). The noise trader approach to ﬁnance. The Journal of
+Economic Perspectives 4(2), 19–33.
+Taylor, M. P. and H. Allen (1992).
+The use of technical analysis in the foreign exchange
+market. Journal of International Money and Finance 11(3), 304 – 314.
+34
+Electronic copy available at: https://ssrn.com/abstract=3769103
+
+Toda, H. Y. and T. Yamamoto (1995). Statistical inference in vector autoregressions with
+possibly integrated processes. Journal of Econometrics 66, 225–250.
+T´oth, B., J. Kert´esz, and J. D. Farmer (2009, Sep). Studies of the limit order book around
+large price changes. The European Physical Journal B 71(4), 499.
+Wang, Z.-M., C. Chiao, and Y.-T. Chang (2012). Technical analyses and order submission
+behaviors: Evidence from an emerging market. International Review of Economics & Finance 24, 109 – 128.
+35
+Electronic copy available at: https://ssrn.com/abstract=3769103

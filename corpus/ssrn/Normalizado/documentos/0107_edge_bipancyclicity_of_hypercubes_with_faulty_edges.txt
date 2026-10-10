@@ -1,0 +1,1347 @@
+Exploring Temporal Graphs with Frequent and Regular
+1
+Edges
+2
+Duncan Adamsona
+3
+aDepartment of Computer Science, University of St Andrews, North Haugh, KY18
+9SX, United Kingdom
+Abstract
+4
+Temporal graphs are a class of graphs defined by a constant set of vertices and
+5
+a changing set of edges, each of which is known as a timestep. These graphs
+6
+are well motivated in modelling real-world networks, where connections may
+7
+change over time. One such example, itself the primary motivation for this
+8
+paper, are public transport networks, where vertices represent stops and
+9
+edges the connections available at some given time. Exploration problems
+10
+are one of the most studied problems for temporal graphs, asking if an agent
+11
+starting at some given vertex v can visit every vertex in the graph.
+12
+In this paper, we study two primary classes of temporal graphs. First,
+13
+we study temporal graphs with frequent edges, temporal graphs where each
+14
+edge e is active at least once every fe timesteps, called the frequency of the
+15
+edge. Second, temporal graphs with regular edges, graphs where each edge e
+16
+is active at any timestep t where t ≡se mod re, with se being the start time
+17
+of the edge, and re the regularity.
+18
+We show that graphs with frequent edges can be explored in O(Fn)
+19
+timesteps, where F = maxe∈E fe, and that graphs with regular edges can
+20
+be explored in O(Rn) timesteps, where R = maxe∈E re.
+We provide ad21
+ditional results for public transport graphs, temporal graphs formed by the
+22
+union of several routes, corresponding to the schedules of some modes of
+23
+transit, for sequential connection graphs, temporal graphs in which each ver24
+tex has a single active in-edge per timestep, iterating over the set of edges in
+25
+some order, and for broadcast networks, a representation of communication
+26
+within distributed networks where each vertex broadcasts a message either
+27
+to all vertices, or none at each timestep.
+28
+Preprint submitted to Theoretical Computer Science
+July 22, 2025
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5450373
+Preprint not peer reviewed
+
+1. Introduction
+29
+In many real world settings, networks are not static objects but instead
+30
+have unstable connections that vary with time. Such examples include public
+31
+transport networks [1] and infection control [2]. Temporal graphs provide
+32
+a model for such time-varying networks. Formally, a temporal graph G is
+33
+a generalisation of (static) graphs containing a common vertex set V and
+34
+ordered sequence of T edge sets (E1, E2, . . . , ET), each called a timestep (also
+35
+known as a snapshot), with the lifetime of the graph defined by the number
+36
+of edge sets. Unlike some models of dynamic graphs, we assume that we have
+37
+full knowledge of the graph, i.e. that we are given every edge set as part of
+38
+the input.
+39
+Much work on temporal graphs has focused on the problem of exploration
+40
+of temporal graphs. In this problem, some agent (or set of agents) must
+41
+visit every vertex in a temporal graph.
+The agent is restricted in being
+42
+allowed only a single move per timestep, thus as the graph changes, the agent
+43
+movement may become restricted. This was motivated by extending the well
+44
+known Travelling Salesman to temporal graphs by Michail and Spirakis
+45
+[3]. Since then, there has been a broad span of work covering reachability
+46
+[4, 5, 6] and exploration [1, 3, 7, 8, 9, 10, 11, 12, 13].
+47
+The decision version of TEXP in which one has to decide if at least one
+48
+exploration schedule exists in a given temporal graph from a given starting
+49
+vertex is an NP-complete problem [3]. Indeed, this problem remains NP50
+complete even if the underlying graph has pathwidth 2 and every snapshot
+51
+is a tree [14], or if the underlying graph is a star and the exploration has to
+52
+start and end at the center of the star [15].
+53
+In the optimisation version of this problem, we ask for the quickest ex54
+ploration of a given temporal graph, that being the schedule ending at the
+55
+earliest timestep, formally defied in Section 2.
+56
+On the positive side, we mention the landmark paper by Erlebach et. al.
+57
+[10], who show that any always connected temporal graphs (temporal graphs
+58
+where each timestep is connected) can be explored in O(n2) timesteps, where
+59
+n is the number of vertices. For graphs where the underlying graph (the
+60
+static graph corresponding to the union over all edge sets) is planar, they
+61
+reduce this to O(n1.8 log n) timesteps, strengthened by Adamson et al. [7]
+62
+to O(n1.75 log n) timesteps. If the underlying graph has treewidth at most k
+63
+then the temporal graph can be explored in O(k1.5n1.5 log n) timesteps, later
+64
+strengthened to O(kn1.5 log n) timesteps [7].
+If the underlying graph is a
+65
+2
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5450373
+Preprint not peer reviewed
+
+2×n grid then the temporal graph can be explored in O(n log3 n) timesteps.
+66
+Finally that if the underlying graph is a cycle or a cycle with a single chord,
+67
+then the temporal graph can be explored in O(n) timesteps, later generalised
+68
+by Alamouti [16] to exploring temporal graphs with an underlying graph as
+69
+a cycle with k-chords, giving an O(k2k!ekn) upper bound on exploration,
+70
+strengthed by Adamson et al. [7] to an upper bound of O(kn).
+71
+Moving to other classes of temporal graphs, Erlebach and Spooner [12]
+72
+showed that k-edge-deficient temporal graphs, temporal graphs in which each
+73
+timestep has at most k-edges removed from the underlying graph, can be ex74
+plored in O(kn log n) timesteps, or O(n) when only a single edge is removed.
+75
+On the negative side, we have, by Erlebach et al. [10], that there exists
+76
+a class of always connected temporal graphs requiring Ω(n2) timesteps to
+77
+explore, and that there exists temporal graphs with an underlying planar
+78
+graph of degree at most 4 that cannot be explored faster than in Ω(n log n)
+79
+timesteps. Further, in [12] Erlebach and Spooner showed that there exist
+80
+some k-edge-deficient temporal graphs that cannot be explored faster than
+81
+in Ω(n log k) timesteps.
+82
+In this paper, we focus on the exploration of temporal graphs with fre83
+quent and regular edges. We define such graphs by how often each edge
+84
+appears and, more importantly in this work, the maximum number of con85
+secutive timesteps such that a given edge is not active. More formally, given
+86
+a edge, e, we define the frequency of e, fe, as the smallest value such that
+87
+∀t ∈[1, T −fe], e ∈S
+t′∈[t,t+fe] Et′, with T being the lifetime of the graph.
+88
+The regularity of an edge, e, is defined as the smallest value, re such that
+89
+∀t ∈[1, T −re], e ∈Et iff e ∈Et+re. We are motivated primarily by public
+90
+transport networks, where an edge represents a connection between stations.
+91
+In such systems we assume, or hope, see [1], that the connections between
+92
+stations in the system have some known frequency or preferably regularity.
+93
+The notions of frequency and regularity, by our definitions, have been
+94
+studied previously with a particular focus on graph properties [17, 10, 18,
+95
+19, 20], Cops and Robber games[21, 22]. Of particular relevance to us are
+96
+the papers by Bellitto et al. [23] and Erlebach et al. [10]. In [10], the authors
+97
+study a similar definition where each edge has a known, constant, frequency,
+98
+and there exists a constant c such that every cut contains at least one edge
+99
+every c timesteps. The authors show that there exists an exploration schedule
+100
+requiring at most O(m) timesteps, where m is the number of edges in the
+101
+underlying graph, and further that this holds even if the graph is unknown
+102
+in advance. In [23], Bellitto et al. study restless exploration, a restriction of
+103
+3
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5450373
+Preprint not peer reviewed
+
+exploration where the agent must move every timestep if possible, of periodic
+104
+temporal graphs.
+The authors show that determining if the graph has a
+105
+restless exploration is solvable in polynomial time if the graph has a period
+106
+of 2, equivalent to a regularity of 2 in our model, and NP-Hard if the period
+107
+is greater than 2.
+108
+Our Results. We show that graphs where each edge has a frequency of at
+109
+most f can be explored in f(2n −3) timesteps, and that graphs where each
+110
+edge has a regularity of at most r can be explored in r(2n −3) timesteps.
+111
+We note that is generalises the result of Erlebach et al. [10] by removing the
+112
+requirement that the frequency is a constant, or that the edges in the cuts
+113
+appear at least once per constant number of rounds, at the cost of potentially
+114
+slower exploration, particularly for sparse graphs. Further, as our definition
+115
+of regularity generalises the definition of periodicity for temporal graphs given
+116
+in [23] and of edge periodicity given in [22], thus can be directly applied to
+117
+these settings.
+118
+Further, we explicitly introduce and study the following sets of temporal
+119
+graphs, applying our main results to each in order to get an upper bound on
+120
+the exploration time:
+121
+• Public Transportation Graphs: A class of temporal graphs defined by
+122
+a given set of (temporal) walks, with the edges active at timestep t
+123
+corresponding exactly to the edges in the walks used in that timestep.
+124
+We show that every edge in these graphs has a period of at most the
+125
+length of the longest walk, L, and thus can be explored in L(2n −3)
+126
+timesteps.
+127
+• Sequential Connection Graphs: A class of temporal graphs where each
+128
+vertex activates exactly one in-edge at each time step, following a given
+129
+permutation of the in-edges. We show that these graphs can be ex130
+plored in at most 4|E| timesteps, where E is the set of edges in the
+131
+underlying graph.
+132
+• Broadcast Networks: A class of temporal graphs where the set of out133
+edges from each vertex are either all active, or all inactive at a given
+134
+timestep, with the additional constraint that all in-edges to a given
+135
+vertex must be active between each activation of the out-edges. We
+136
+show that such graphs can be explored in O(dn2) timesteps, where d is
+137
+diameter of the graph and, further, in O(δn) timesteps if the graph is
+138
+4
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5450373
+Preprint not peer reviewed
+
+always connected, where δ is the minimum degree of any vertex in the
+139
+graph.
+140
+2. Preliminaries
+141
+We first define the notation used in this paper. Let [i, j] = i, i + 1, . . . , j
+142
+denote the (ordered) set of integers between some pair i, j ∈N, where N is
+143
+the set of natural numbers. Note that if i = j, then [i, j] = {i}, and if i > j,
+144
+[i, j] = ∅.
+145
+We define a graph G = (V, E) by a set of vertices, by convention V =
+146
+(v1, v2, . . . , vn), and set of edges, by convention E ⊆V × V , each a tuple
+147
+of vertices. Note that we may write the edge e between the vertices vi and
+148
+vj as either e = (vi, vj) or e = (vj, vi). When an edge is given explicitly as
+149
+(vi, vj), we call vi the start point and vj the end point. A walk in a graph
+150
+is an ordered sequence of edges W = (vi1, vi2)(vi2, vi3) . . . (vim−1,vim), where
+151
+the end point the the jth edge is the start point of the (j + 1)th edge. The
+152
+start point of the first edge in a given walk is the start point of the first
+153
+edge in the walk and, analogously, the end point of the walk is the end point
+154
+of the last edge in the walk. The length of a walk W, denoted |W| is the
+155
+number of edges in the walk.
+A graph G = (V, E) is connected if there
+156
+exists, for every pair of vertices v, u ∈V a walk starting at v and ending
+157
+at u. Note that a single walk W may contain multiple copies of the same
+158
+edge without contradiction. The distance between two vertices v, u ∈V in
+159
+a graph, denoted dist(v, u) is the value such there exists some walk W of
+160
+length dist(v, u) with the start point v, the end point u and ∀W ′ ∈{W ′′ is a
+161
+walk in G starting at v and ending at u}, |W ′| ≥dist(v, u). The diameter of
+162
+a graph G is the maximum distance between any pair of points in the graph,
+163
+formally the value maxv,u∈V dist(v, u).
+164
+The neighbourhood of a vertex v, denoted N(v) is the set of vertices
+165
+N(v) = {u ∈V | (v, u) ∈E}. The degree of a vertex v, denoted ∆(v) is the
+166
+number of vertices in the neighbourhood of v, formally, ∆(v) = |N(v)|.
+167
+A directed graph is a graph where each edge has an orientation, with a
+168
+fixed start point and end point. Thus, the edge (vi, vj) is not equivalent to
+169
+(vj, vi). A walk on a directed graph is defined in the same way as a walk on an
+170
+undirected graph. In this paper, we restrict ourselves to symmetric directed
+171
+graphs. A directed graph G = (V, E) is symmetric if the edge (vi, vj) ∈E
+172
+iff (vj, vi) ∈E. The in-edges of a vertex v is the set of edges in E with the
+173
+end point v, formally, in(v) = {(u, v) ∈E}. Analogously, the out-edges of a
+174
+5
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5450373
+Preprint not peer reviewed
+
+vertex v is the set of edges in out(v) = {(v, u) ∈E}, i.e. the set of vertices
+175
+with the start point v.
+176
+An edge-weighted graph (resp., edge-weighted directed graph) is a graph
+177
+equipped with a weighting function F : E 7→N, associating some integer
+178
+cost to each edge in the graph.
+179
+A graph of n-vertices is a tree if the graph contains n −1 edges and
+180
+is connected.
+Given a graph G = (V, E), a spanning tree of G is a tree
+181
+T = (V, E′) over the same set of vertices as V with an edge set E′ ⊆E.
+182
+The weight of a spanning tree T = (V, E′) on the graph G weighted by the
+183
+function F is P
+e∈E′ F(e). A minimum weight spanning tree of a weighted
+184
+graph G weighted by the function F, is a spanning tree T = (V, E′) such
+185
+that, letting T = {(V, E1), (V, E2), . . . , (V, Eτ)} be the set of all spanning
+186
+trees of G, P
+e∈E′ F(e) ≤P
+e′∈H F(e′), ∀(V, H) ∈T .
+187
+Temporal Graphs. A temporal graph is a generalisation of a graph, herein
+188
+called a static graph whenever confusion may otherwise arise, where, rather
+189
+than having a single edge set, the graph contains an ordered sequence of
+190
+timesteps, by convention E1, E2, . . . , ET, while maintaining a shared set of
+191
+vertices. We call each edge set a timestep (also known as a snapshot). An
+192
+edge e is active at timestep t if e ∈Et. We assume, without loss of generality,
+193
+that each timestep contains at least one active edge. In our definition, an
+194
+edge e may be active in any number of timesteps.
+195
+By default, we assume that the temporal graph is undirected, with a
+196
+temporal graph referred to as a directed temporal graph if the edge sets are
+197
+directed. We assume that either every edge set is directed, or none are. Given
+198
+a temporal graph G the lifetime of the graph is the number of timesteps, thus,
+199
+if G = (V, E1, E2, . . . , ET), then the lifetime of the graph is T.
+200
+The underlying graph of a temporal graph G = (V, E1, E2, . . . , ET), de201
+noted U(G), is the static graph U(G) = (V, S
+t∈[1,T] Et), i.e. the static graph
+202
+formed with the edge set corresponding to the union of all timesteps in the
+203
+graph. A temporal graph is a symmetric directed temporal graph if the under204
+lying graph is a symmetric directed graph. In general, given some property
+205
+X of a static graph, a temporal graph has the property X if the underlying
+206
+graph satisfies the property. A temporal graph always satisfies a given prop207
+erty X if the static graphs G1 = (V, E1), G2 = (V, E2), . . . , GT = (V, ET)
+208
+also satisfy this property. Notably, a static graph G = (V, E) is connected if,
+209
+for each pair of vertices vi, vj ∈V , there exists some walk starting at vi and
+210
+ending at vj. Therefore, a temporal graph G = (V, E1, E2, . . . , ET) is an al211
+6
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5450373
+Preprint not peer reviewed
+
+ways connected temporal graph if the static graph Gt = (V, Et) is connected,
+212
+for every t ∈[1, T], where T is the lifetime of G.
+213
+The frequency of an edge e, denoted fe, is the minimum number of
+214
+timesteps such that e is active at least once every fe timesteps. Formally,
+215
+fe satisfies ∀t ∈[1, T + 1 −fe], e ∈S
+t′∈[t,t+fe−1] Et′ and, ∀f ′ ∈[1, fe −1],
+216
+∃t ∈[1, T + 1 −f ′] such that e /∈S
+t′∈[t,t+f′−1] Et′.
+A temporal graph is
+217
+f-frequent if fe ≤f, ∀e ∈E.
+218
+An edge e is r-regular if given any t ∈[r + 1, T −r], either e is active in
+219
+all of Et−r, Et, and Et+r, or e is inactive in all of Et−r, Et, and Et+r. The
+220
+regularity of an edge e, denoted re, is the value such that e is re regular and,
+221
+∀r′ ∈[1, re −1], e is not r′ regular. A temporal graph is r-regular if re ≤r,
+222
+∀e ∈E. Observe that re ≥fe. Therefore, every x-regular temporal graph is
+223
+an x-frequent temporal graph.
+224
+A temporal walk is an set of edge-timestep tuples, W = ((vi1, vi2), t1),
+225
+((vi2, vi3), t2), . . . , ((vim−1, vim), tm−1) such that:
+226
+• (vi1,i2)(vi2, vi3) . . . (vim−1,vim) form a walk in the underlying graph U(G),
+227
+• the edge (vij, vij+1) is active in timestep tj, and,
+228
+• t1 < t2 < · · · < tm−1.
+229
+The length of a temporal walk W, denoted |W| is the timestep tm−1 associated
+230
+with the final edge. We refer to the ith tuple of a temporal walk as the ith
+231
+step in the walk.
+232
+Exploration. An exploration of a static graph is a walk W such that there
+233
+exists, for every vertex v ∈V at least one edge in W containing v. Analo234
+gously, an exploration of a temporal graph is a temporal walk W such that
+235
+there exists, every vertex v ∈V , at least one edge in W containing v.
+236
+Problem 1 (Temporal Graph Exploration Problem). Given a temporal graph,
+237
+G = (V, E1, E2, . . . , ET), a vertex v ∈V and length ℓ∈[1, T], does there exist
+238
+a temporal walk W starting at v with a length less than ℓ?
+239
+We can rewrite this as an optimisation problem as:
+240
+Problem 2 (Fastest Temporal Graph Exploration Problem). Given a tem241
+poral graph, G = (V, E1, E2, . . . , ET), a vertex v ∈V what is the temporal
+242
+walk W starting at v and exploring G such that, for any alternative walk W′
+243
+either W′ does not explore G or |W| ≤|W′|?
+244
+7
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5450373
+Preprint not peer reviewed
+
+As noted in the introduction, both problems are known to be NP-hard.
+245
+Therefore, this paper focuses on providing upper bounds for several classes
+246
+of graphs such that every graph has a walk exploring it in f(G) timesteps for
+247
+some stated function f.
+248
+3. Frequent and Regular Edges
+249
+In this section, we provide our primary algorithmic results, covering the
+250
+our algorithms for exploring f-frequent temporal graphs and r-regular tem251
+poral graphs. At a high level, our approach is as follows. We build a minium
+252
+weight spanning tree on the edge-weighted static graph corresponding to the
+253
+underlying graph, with the weight on each edge corresponding to the fre254
+quency of the edge in the temporal graph. First, we provide technical results
+255
+on determining the frequency of each edge.
+256
+Lemma 1. Given a temporal graph G = (V, E1, E2, . . . , ET), with the un257
+derlying graph U(G) = (V, E), the frequency fe of the edge e ∈E can be
+258
+determined in O(T) time.
+259
+Proof. Note that fe corresponds to the number of timesteps in the longest
+260
+consecutive number of timesteps that do not contain e, plus one. To de261
+termine this value, we take a brute force approach, checking each timestep
+262
+in order, while maintaining a pair of variables corresponding to the longest
+263
+gap without a timestep containing e, and the number of timesteps since the
+264
+last timestep containing e. Formally, let ℓbe the largest number of consec265
+tutive timesteps not containing e found so far, and let C be the number of
+266
+timesteps since the last time e was active, with both initialy set to 0. For
+267
+each t ∈[1, T], in order from 1 to T, we do one of the following:
+268
+• if e /∈Et, we increment the value of C, setting it to C + 1, then update
+269
+the value of ℓto max(ℓ, C).
+270
+• otherwise, if e ∈Et, we reset C to 0.
+271
+Once this proccess has completed, note the ℓmust contain the length of the
+272
+longest consecutive sequence of timesteps not containing e, formally, the value
+273
+such that ∃t ∈[1, T −ℓ+1] s.t. e /∈S
+t′∈[t,t+ℓ−1] Et′ and, for any t ∈[1, T −ℓ],
+274
+e ∈S
+t′∈[t,t+ℓ] Et′. Therefore, the frequency of e is ℓ+1, giving the algorithm.
+275
+See Algorithm 1 for pseudocode corresponding to this algorithm.
+276
+8
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5450373
+Preprint not peer reviewed
+
+Algorithm 1 Algorithm for computing the frequency of the edge e in the
+temporal graph G = (V, E1, E2, . . . , ET) following Lemma 1.
+procedure
+ComputeEdgeFrequency(Temporal
+Graph
+(V, E1, E2, . . . , ET), edge e ∈S
+t∈[1,T] Et)
+ℓ←0
+C ←0
+for t ∈[1, T] do
+▷We assume t iterates over the set [1, T] in order.
+if e ∈Et then
+C ←0
+else
+C ←C + 1
+ℓ←max(ℓ, C)
+end if
+end for
+▷Note that ℓis the longest run of timesteps
+not containing e. Therefore, the frequency of e is ℓ+ 1, as e must appear
+at least once every ℓ+ 1 timesteps.
+return ℓ+ 1
+end procedure
+Corollary 1. Given a temporal graph G = (V, E1, E2, . . . , ET), let F be an
+277
+array over the edge set E = S
+t∈T Et such that given some e ∈E, F[e] is
+278
+the frequency of the edge e in G. Then, the array F may be computed in
+279
+O(|E| · T) time.
+280
+We now show how to explore temporal graphs using weighted spanning
+281
+trees as a basis. Informally, we construct a minimum weight spanning tree
+282
+over the static graph formed by weighting each edge on the underlying graph
+283
+by the frequency of the edge in the temporal graph. This tree is used to
+284
+devise an exploration schedule by finding a walk exploring this tree, with
+285
+the total weight of this walk corresponding to the maximum length of the
+286
+exploration of the temporal graph.
+287
+Lemma 2 ([24]). A minimum weight spanning tree on the weighted static
+288
+graph G = (V, E) can be constructed in O(|E| log |V |) time.
+289
+Given a temporal graph G = (V, E1, E2, . . . , Et), let FW(G) = (V, E, W)
+290
+(read Frequency Weighted) be the edge-weighted static graph such that
+291
+9
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5450373
+Preprint not peer reviewed
+
+Timestep 1 (E1)
+Timestep 2 (E2)
+Timestep 3 (E3)
+2
+3
+3
+2
+3
+1
+1
+3
+1
+2
+3
+3
+2
+1
+1
+1
+2
+3
+3
+2
+1
+1
+1
+1
+1
+FW(G)
+Minium Weight Spanning Tree
+Exploration of G
+on FW(G)
+Figure
+1:
+Overview
+of
+the
+exploration
+of
+the
+temporal
+graph
+G
+with
+G
+=
+(V, E1, E2, E3, E1, E2, E3, . . . , E1, E2, E3), i.e.
+the temporal graph formed by repeating
+the edge sets E1, E2 and E3 some number of times.
+10
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5450373
+Preprint not peer reviewed
+
+V, E = U(G) and W : E 7→[1, T] is the weighting function over E with
+292
+W(e) = fe, where fe is the frequency of the edge e ∈E.
+293
+Lemma 3 (Folklore). Given a tree T with n vertices, there exists a walk
+294
+exploring T of length at most 2n −3 starting at any vertex v. Further, this
+295
+walk can be found in O(n) time.
+296
+Theorem 1. Given some temporal graph G = (V, E1, E2, . . . , ET) with the
+underlying graph U(G) = (V, E), G can be explored, starting from any vertex v ∈V , in 2F timesteps, where F is the weight of the minimum weight
+spanning tree on FW(G). Further, this walk can be determined in
+O (T |E|)
+time.
+297
+Proof. First, we construct the minimum weight spanning tree T on the static
+298
+graph FW(G), and a walk, W = e1, e2, . . . , em, exploring T and starting at
+299
+v. We convert W into a temporal walk W as follows. Let t1 be the index of
+300
+first timestep in which e1 is active. Formally, e1 ∈Et1 and, ∀t′ ∈[1, t1 −1],
+301
+e1 /∈Et′. We set the tuple (e1, t1) as the first step in the walk W.
+302
+We determine the remaining steps on W in an iterative manner, using the
+303
+value of the (i −1)th step to determine the ith step. Formally, if the (i −1)th
+304
+tuple of W is (ei−1, ti−1), then the ith step is (ei, ti) where ti ∈[ti−1 + 1, T] is
+305
+the index such that ei ∈Eti and ∀t′ ∈[ti−1 + 1, ti −1], ei /∈Et′.
+306
+To determine the total length of this path, observe that, by definition, if
+307
+the edge ei is not active at timestep ti−1 + 1, the there must exist some ti ∈
+308
+[ti−1+2, ti−1+1+fei] such that ei is active. Therefore, tm ≤P
+e∈{e1,e2,...,em} fe.
+309
+Further, as the weight of the spanning tree F = P
+e∈{e1,e2,...,em} fe, we get
+310
+tm ≤2F.
+311
+To determine the time complexity, note first that U(G) can be computed
+312
+in O(P
+t∈[1,T] |Et|) time. Next, we can compute, by Corollary 1, the frequency
+313
+of each edge in O(|E|T) time.
+Further, we have, by Lemma 2, that the
+314
+spanning tree can be computed in O(|E| log(|V |)) time. From Lemma 3,
+315
+the walk W can be computed in O(|V |) time. Finally, noting that we can
+316
+determine if ei ∈Et in O(1) time, for any ei ∈E, t ∈[1, T], and at most
+317
+one such check is made per timestep, the temporal walk W can be computed
+318
+from W in O(T) time. Therefore, the total complexity is O(P
+t∈[1,T] |Et| +
+319
+|E|T + |E| log |V | + T) time. As |E|T ≥P
+t∈[1,T] |Et| ≥T and, in order to
+320
+11
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5450373
+Preprint not peer reviewed
+
+explore all |V | vertices T ≥|V |, we can simplify this to O (T |E|) time, giving
+321
+the statement.
+322
+We provide an overview of the process outlined in Theorem 1 in Figure 1,
+323
+and pseudocode in Algorithm 2. We can simplify this for f-frequent temporal
+324
+graphs to get the following simplified bounds.
+325
+Algorithm 2 Algorithm for computing a temporal walk exploring a temporal graph G = (V, E1, E2, . . . , ET) using the frequency of the edges as per
+Theorem 1.
+procedure
+ExploreTemporal(Temporal
+Graph
+G
+=
+(V, E1, E2, . . . , ET), Start Vertex v)
+G = FW(G)
+▷Make the frequency weighted static graph G of G.
+T = MWST(G)
+▷Find the minimum weight spanning tree T of G.
+e1, e2, . . . , eM ←Explore(T, v)
+▷Find a walk W exploring T
+starting at v with at most 2n −3 edges.
+W ←∅
+▷Set W as the temporal walk exploring G, initially empty.
+t ←1 ▷Variable to store the timestep of the next step in W, starting
+with the first.
+for e ∈e1, e2, . . . , em do
+▷Iterate over the edges in the walk W in
+order.
+while e /∈Et do
+▷Increment the value of t until we reach a
+timestep with e active.
+t ←t + 1
+end while
+Append (e, t)) to W
+▷Append the tuple (e, t) to the end of the
+walk W.
+t ←t + 1
+▷Increment t one last time to avoid adding multiple
+edges to W one the same timestep.
+end for
+return W
+end procedure
+Lemma 4. Any f-frequent temporal graph G = (V, E) with n vertices can be
+326
+explored, starting at any vertex v ∈V , in f(2n −3) timesteps and, further,
+327
+a temporal walk exploring G in O(|E|(log |V | + T)) time.
+328
+Proof. Utilising the same approach as Theorem 1, we construct the temporal
+329
+walk W exploring G. Note that each edge has a frequency of at most f, thus
+330
+12
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5450373
+Preprint not peer reviewed
+
+the weight of the minimum weight spanning tree is at most nf. Observing
+331
+that, by Lemma 3, we can explore this tree in O(2n −3) steps, the length of
+332
+the temporal walk W is at most f(2n −3), corresponding to waiting f −1
+333
+steps at each of the 2n −3 edges traversed in the walk, followed by one
+334
+timestep traversing the edge.
+335
+Corollary 2. Any f-frequent symmetric directed temporal graph G = (V, E)
+336
+with n vertices can be explored, starting at any vertex v ∈V , in f(2n −3)
+337
+timesteps and, further, a temporal walk exploring G in O(|E|(log |V | + T))
+338
+time.
+339
+Proof. Note that the same approach as in Lemma 4 can be applied directly to
+340
+f-frequent symmetric directed temporal graphs as, rather than traversing the
+341
+same f-frequent edge twice, we traverse two f-frequent edges once each.
+342
+Recalling that an edge with regularity re is, by definition, re frequent, we
+343
+get the following.
+344
+Corollary 3. Any r-regular temporal graph with n vertices can be explored
+345
+in r(2n −3) timesteps from any starting vertex.
+346
+Corollary 4. Any r-regular symmetric directed temporal graph with n ver347
+tices can be explored in r(2n −3) timesteps from any starting vertex.
+348
+We can contrast this against the natural lower bound, showing that there
+349
+exists an r-regular graph requiring r(2n −5) + 1 timesteps to explore.
+350
+Theorem 2. For any regularity r ∈N and number of vertices n ∈N, there
+351
+exists some r-regular temporal graph requiring r(2n −5) + 1 timesteps to
+352
+explore.
+353
+Proof. Consider the star graph Sn = (V, E), defined as the graph containing
+354
+the vertex set v1, v2, . . . , vn and the edge set E = {(v1, vi) | i ∈[2, n]}. Let
+355
+Sn = (V, E1, E2, . . . , Ef(2n−1)) be the temporal graph such that at timestep Et
+356
+either Et = E, if t mod r ≡1, or {v2, v1} otherwise. Further, let us assume
+357
+that the agent starts at the vertex v2. Observe that to explore this graph,
+358
+the agent must traverse all but two edges in the graph twice, those being
+359
+the edge (v2, v1) and some other edge (v1, vi). Note that we may assume,
+360
+without loss of generality, that the agent traverses the edge (v2, v1) in the
+361
+first timestep. Once the agent traverses an edge, it must wait r −1 timesteps
+362
+for this edge to reactivate.
+Thus, once the agent has reached the vertex
+363
+13
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5450373
+Preprint not peer reviewed
+
+v1 after traversing the edge (vi−1, v1), for some vi−1 ∈V \ {v1}, reaching
+364
+the vertex vi from v1 and returning requires 2r timesteps, corresponding to
+365
+r −1 timesteps waiting for (v1, vi) to become active, one timestep to traverse
+366
+(v1, vi), r −1 timesteps for (vi, v1) to become active, and one timestep to
+367
+traverse the edge. As there are n −2 such vertices, and recalling that we do
+368
+not need to return to v1 after reaching the last vertex in the exploration, we
+369
+get a total of 2r(n −3) + r + 1 = r(2n −5) + 1 timesteps needed to explore
+370
+this temporal graph.
+371
+Corollary 5. For any frequency f ∈N and number of vertices n ∈N, there
+372
+exists some f-frequent temporal graph requiring f(2n −5) + 1 timesteps to
+373
+explore.
+374
+4. Restricted classes with Frequent Edges
+375
+In this section, we provide a set of results on some subsets of temporal
+376
+graphs which may be reduced to temporal graphs with frequent edges.
+377
+4.1. Public Transport Graphs
+378
+We first consider public transport graphs. We use such temporal graphs to
+379
+model public transport timetables. Here, the temporal graph is composed of
+380
+a set of temporal walks, each representing some transport line with vertices
+381
+representing stops. For example, one may represent the bus stops and lines
+382
+in a city by the vertices and walks respectively. We assume that once a walk
+383
+is completed, it will be repeated immediately, noting that we can simulate a
+384
+delay by adding a self-loop at the end of the walk, active at an appropriate
+385
+timestep.
+386
+Formally, we define a public transport graph by the set of temporal walks
+387
+W1, W2, . . . , Wm over a common set of vertices V and given lifespan T.
+388
+Letting Li = |Wi| be the last timestep containing some edge in the ith walk,
+389
+and Wi[j] denote the jth edge in walk Wi[j], we have, at timestep t ∈[1, T],
+390
+the edge e ∈Et iff ∃i ∈[1, m], j ∈[1, |Wi|] s.t.
+e = Wi[j] and Ti[j] =
+391
+t mod Li. Informally, e is active in timestep t if there exists some Wi such
+392
+that e is active in timestep t (modulo the length of the walk). Note that an
+393
+edge may be used in multiple routes, possibly even in the same timestep.
+394
+Theorem 3. Given a public transport graph G = (V, E1, E2, . . . , ET) com395
+posed of the routes W1, W∈, . . . , Wm, such that U(G) is a single connected
+396
+component, there exists an exploration of G requiring (2n −3) maxi∈[1,m] Li
+397
+timesteps, where Li = |Wi|.
+398
+14
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5450373
+Preprint not peer reviewed
+
+Proof. Observe that, by construction, each edge must have frequency at least
+399
+Li. Therefore, using Theorem 1 and Lemma 4, we get the bound.
+400
+4.2. Sequential Connection Graphs
+401
+We now consider the class of graphs where each vertex activates the set of
+402
+incident edges in a fixed, repeating order. One can think of these as graphs in
+403
+which each vertex allows connections to one neighbour in turn. For example,
+404
+a radio receiver switching between a set of bands in a regular order.
+405
+Formally, a symmetric directed temporal graph G = (V, E1, E2, . . . , ET)
+406
+is a sequential connection graph if there exists, for every vertex v ∈V there
+407
+exists a permutation of the incoming edges to v, Pv = e1, e2, . . . , e∆(v), such
+408
+that at timestep t, Pv[t mod ∆(v)] ∈Et and, ∀e ∈in(v) \ {Pv[t mod ∆(v)]},
+409
+e /∈Et.
+410
+Theorem 4. Given a sequential connection graph G = (V, E1, E2, . . . , ET),
+411
+G can be explored in 2 P
+v∈V ∆(v) = 4|E| timesteps, where U(G) = (V, E).
+412
+Proof. Note that the frequency of the edge (vi, vj) is ∆(vj). Therefore, by
+413
+Theorem 1, we get the bound.
+414
+4.3. Broadcast Networks
+415
+In distributed computing, the broadcast model of communication is one
+416
+in which, at each communication round, every vertex either sends the same
+417
+message to every neighbour, or sends no message [25]. We can use a tem418
+poral graph to model communication in these networks by representing each
+419
+communication round as a timestep in the temporal graph, with messages
+420
+from vertex v to vertex u in timestep t represented by having the edge (v, u)
+421
+in Et. We call these graphs Broadcast Networks.
+422
+We have two additional restrictions on these temporal graphs. First, to
+423
+model the restrictions on the broadcast model, we require that each time a
+424
+vertex broadcasts a message, it does so to all neighbours. Formally, ∀v ∈
+425
+V, t ∈[1, T], either {(v, u) | u ∈N(v)} ⊆Et or {(v, u) | u ∈N(v)} ∩Et = ∅.
+426
+Second, we assume that a vertex will only send the next message once it
+427
+has received some sort of acknowledgement from every neighbour, either
+428
+in the form of a simple acknowledged message, or a full message from the
+429
+neighbour containing the round in which the neighbour has sent the message.
+430
+This avoids a desynchronisation of the network, where one vertex progresses
+431
+despite no follow-up information being given.
+To simplify the model, we
+432
+15
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5450373
+Preprint not peer reviewed
+
+assume that if two neighbours send a message on the same round, both are
+433
+consider in-sync, and thus do not have to wait for the other to send the next
+434
+message. Formally, we say that an edge (v, u) may be active in timesteps t1
+435
+and t2, where t1 < t2 iff there exists some t′ ∈[t1, t2 −1] where (u, v) ∈Et′.
+436
+For convenience, we say a vertex v is active in timestep Et iff {(v, u) |
+437
+u ∈N(v)} ⊆Et, and use the notation At to denote the set of vertices active
+438
+in timestep t. Thus, the second condition can be rewritten as v ∈At1 ∩At2
+439
+where t1 < t2 iff ∀u ∈N(v), ∃tu ∈[t1, t2 −1] s.t. u ∈Atu.
+440
+We combine these restrictions to derive the frequencies of the edges.
+441
+Lemma 5. Given a broadcast network G = (V, E1, E2, . . . , ET), the edge
+442
+(u, v) has a frequency of dn, where n is the number of vertices in V and d is
+443
+the diameter of U(G).
+444
+Proof. Let v be some vertex in the graph G that is active at timesteps t and
+445
+t′, where v /∈Ai, ∀i ∈[t + 1, t′ −1]. Observe that each vertex u ∈N(v) can
+446
+be active at most once in At+1, At+2, . . . , At′−1. Further, given some vertex
+447
+u′ ∈N(u) \ {v}, u′ can be active at most twice in At+1, At+2, . . . , At′−1, once
+448
+before u is active and once after.
+449
+Now, consider some vertex v′ at a distance ℓfrom v, and let u1, u2, . . . , uℓ−1
+450
+satisfy (v, u1) ∈E, (uℓ−1, v′) ∈E and (ui, ui+1) ∈E, ∀i ∈[1, ℓ−2], where
+451
+U(G) = (V, E). Further, let τx be the number of timesteps between t+1 and
+452
+t′ −1 in which the vertex x is active. Note that τu1 = 1, and τu2 ≤2. In
+453
+general τui ≤τui−1 + 1 as the vertex ui can be active once before ui−1, once
+454
+between each activation of ui−1, and once after. Therefore, τv′ ≤dist(v, v′).
+455
+As dist(v, v′) ≤d, ∀v′ ∈V , no vertex may be active more than d times
+456
+between t and t′. Hence, as there are n vertices in V , there can be at most dn
+457
+vertices activated between timesteps t and t′, thus t′ −t ≤dn. By extension,
+458
+the frequency of v is at most dn.
+459
+Corollary 6. Any broadcast network G = (V, E1, E2, . . . , ET) with a diame460
+ter d can be explored in dn(2n −3) timesteps.
+461
+Always Connected Broadcast Networks. We now consider the restriction to
+462
+broadcast networks where the temporal graph is connected at each timestep.
+463
+We show that these temporal graphs can be explored in (δ + 1)(2n −3)
+464
+timesteps where δ = minv∈V ∆(v), i.e. δ is the lowest degree of any vertex in
+465
+the underlying graph, with ∆(v) denoting the degree of v in the underlying
+466
+graph.
+467
+16
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5450373
+Preprint not peer reviewed
+
+For simplicity, in this section we use the term frequency with reference
+468
+to vertices, denoting the frequency of a vertex v by fv and defining fv as the
+469
+smallest value such that ∀t ∈[1, T + 1 −fv], v ∈S
+t′∈[t,t+fv−1] At′, i.e. the
+470
+smallest value such that v is active at least once every fv timesteps. Note
+471
+that this is analogous to the definition of edges and, indeed, in this model,
+472
+the frequency of the edge (v, u) is equal to the frequency of the vertex v.
+473
+Lemma 6. Given an always connected broadcast network G = (V , E1, E2,
+474
+. . . , Et) with underlying graph U(G) = (V, E), the edge e ∈E has frequency
+475
+δ + 1, where δ = minv∈V ∆(v).
+476
+Proof. Consider some vertex v ∈V that is active in timestep t. In order for
+477
+v to be connected, there must, at each time step, be some vertex u ∈N(v)
+478
+that is active, or v itself must be active. As each vertex in N(v) can be active
+479
+at most once before v is active, v must be active in at least one timestep in
+480
+[t+1, t+1+∆(v)]. Thus v has a frequency of ∆(v)+1. Now, consider some
+481
+pair (v, u) such that (v, u) ∈E. As v has a frequency of at most ∆(v) + 1
+482
+and u has a frequency of at most ∆(u) + 1, to satisfy the condition that
+483
+v is active at most once between activations of u (and u is active at most
+484
+once between the activations of v), v must also be active at least once every
+485
+∆(u) + 1 timesteps. Hence fv ≤min(∆(v), ∆(u)) + 1. Extrapolating this,
+486
+we have that fv ≤minu∈N(v) ∆(u) + 1 and fv ≤∆(v) + 1. Further, we have
+487
+by the same arguments, that fv ≤minu∈N(v) fu. Expanding this across the
+488
+temproal graph gives that fv ≤minu∈V \{v} fu ≤minu∈V \{v} ∆(u) + 1. Hence,
+489
+fv ≤minu∈V ∆(u) + 1 = δ + 1.
+490
+Theorem 5. Given an always connected broadcast network G = (V , E1,
+491
+E2, . . . , Et), G can be explored in (δ + 1)(2n −3) timesteps, where δ =
+492
+minv∈V ∆(v).
+493
+Proof. Follows from Theorem 1, Lemma 4, and Lemma 6
+494
+5. Conclusion
+495
+In this paper, we have studied the set of temporal graphs defined by
+496
+having frequent edges, both in the general case and in several motivating
+497
+settings, including public transport networks and the broadcast communica498
+tion model. The primary result of this paper is that any such graph with n
+499
+vertices, where each edge is active at least once every F timesteps, can be
+500
+explored in F(2n −3) timesteps.
+501
+17
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5450373
+Preprint not peer reviewed
+
+There are several obvious open questions following this paper. First is if
+502
+the lower and upper bounds for exploration of temporal graphs with frequent
+503
+edges can be closed, either through improving the exploration algorithm, or
+504
+by constructing a stronger worst case example.
+505
+Another interesting direction is the question of whether the current results
+506
+for broadcast networks are optimal. We conjecture that there exists an upper
+507
+bound of the form O(ndk) for some constant k. Alternatively, lower bounds
+508
+for this setting would be of great interest. Further, it is of interest as to if
+509
+these techniques can be applied to other settings.
+510
+References
+511
+[1] D. C. Kutner, A. Sommer, Better late, then? the hardness of choosing
+512
+delays to meet passenger demands in temporal graphs, in: SAND, Vol.
+513
+330 of LIPIcs, 2025, pp. 7:1–7:18.
+514
+[2] A.-S. Ruget, G. Rossi, P. T. Pepler, G. Beaun´ee, C. J. Banks, J. Enright,
+515
+R. R. Kao, Multi-species temporal network of livestock movements for
+516
+disease spread, Applied Network Science 6 (2021) 1–20.
+517
+[3] O. Michail, P. G. Spirakis, Traveling salesman problems in temporal
+518
+graphs, Theoretical Computer Science 634 (2016) 1–23.
+519
+[4] A. Deligkas, I. Potapov, Optimizing reachability sets in temporal graphs
+520
+by delaying, Inf. Comput. 285 (Part) (2022) 104890.
+521
+[5] J. Enright, K. Meeks, G. B. Mertzios, V. Zamaraev, Deleting edges
+522
+to restrict the size of an epidemic in temporal networks, Journal of
+523
+Computer and System Sciences 119 (2021) 60–77.
+524
+[6] K. Meeks, Reducing reachability in temporal graphs: Towards a more re525
+alistic model of real-world spreading processes, in: Conference on Com526
+putability in Europe, Springer, 2022, pp. 186–195.
+527
+[7] D. Adamson, V. V. Gusev, D. Malyshev, V. Zamaraev, Faster explo528
+ration of some temporal graphs, in: SAND, 2022.
+529
+[8] E. Arrighi, F. V. Fomin, P. A. Golovach, P. Wolf, Kernelizing temporal
+530
+exploration problems, in: 18th International Symposium on Parameter531
+ized and Exact Computation, IPEC 2023, September 6-8, 2023, Ams532
+terdam, The Netherlands, Vol. 285 of LIPIcs, 2023, pp. 1:1–1:18.
+533
+18
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5450373
+Preprint not peer reviewed
+
+[9] K. Dogeas, T. Erlebach, F. Kammer, J. Meintrup, W. K. M. Jr., Ex534
+ploiting automorphisms of temporal graphs for fast exploration and ren535
+dezvous, in: 51st International Colloquium on Automata, Languages,
+536
+and Programming, ICALP 2024, July 8-12, 2024, Tallinn, Estonia, Vol.
+537
+297 of LIPIcs, 2024, pp. 55:1–55:18.
+538
+[10] T. Erlebach, M. Hoffmann, M. Kammer, On temporal graph exploration,
+539
+Journal of Computer and System Sciences 119 (2021) 1–18.
+540
+[11] T. Erlebach, F. Kammer, K. Luo, A. Sajenko, J. T. Spooner, Two moves
+541
+per time step make a difference, in: 46th International Colloquium on
+542
+Automata, Languages, and Programming (ICALP 2019), 2019.
+543
+[12] T. Erlebach, J. T. Spooner, Exploration of k-edge-deficient temporal
+544
+graphs, in:
+Algorithms and Data Structures, Springer International
+545
+Publishing, Cham, 2021, pp. 371–384.
+546
+[13] T. Erlebach, J. T. Spooner, Parameterised temporal exploration prob547
+lems, Journal of Computer and System Sciences 135 (2023) 73–88.
+548
+[14] H. L. Bodlaender, T. C. van der Zanden, On exploring always-connected
+549
+temporal graphs of small pathwidth, Information Processing Letters 142
+550
+(2019) 68–71.
+551
+[15] E. C. Akrida, G. B. Mertzios, P. G. Spirakis, C. Raptopoulos, The
+552
+temporal explorer who returns to the base, Journal of Computer and
+553
+System Sciences 120 (2021) 179–193.
+554
+[16] S. Taghian Alamouti, Exploring temporal cycles and grids, Ph.D. thesis,
+555
+Concordia University (2020).
+556
+[17] E. Arrighi, N. Gr¨uttemeier, N. Morawietz, F. Sommer, P. Wolf, Multi557
+parameter analysis of finding minors and subgraphs in edge-periodic
+558
+temporal graphs, in: International Conference on Current Trends in
+559
+Theory and Practice of Computer Science, Springer, 2023, pp. 283–297.
+560
+[18] T. Erlebach, N. Morawietz, P. Wolf, Parameterized algorithms for multi561
+label periodic temporal graph realization, in: SAND, 2024, pp. 12–1.
+562
+[19] G. B. Mertzios, H. Molter, N. Morawietz, P. G. Spirakis, Realizing tem563
+poral transportation trees, arXiv preprint arXiv:2403.18513 (2024).
+564
+19
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5450373
+Preprint not peer reviewed
+
+[20] G. B. Mertzios, H. Molter, N. Morawietz, P. G. Spirakis, Temporal
+565
+graph realization with bounded stretch, arXiv preprint arXiv:2504.14258
+566
+(2025).
+567
+[21] J.-L. De Carufel, P. Flocchini, N. Santoro, F. Simard, Cop numbers of
+568
+periodic graphs, in: Southeastern International Conference on Combi569
+natorics, Graph Theory, and Computing, Springer, 2023, pp. 161–187.
+570
+[22] T. Erlebach, N. Morawietz, J. T. Spooner, P. Wolf, A cop and rob571
+ber game on edge-periodic temporal graphs, Journal of Computer and
+572
+System Sciences 144 (2024) 103534.
+573
+[23] T. Bellitto, C. Conchon-Kerjan, B. Escoffier, Restless Exploration of
+574
+Periodic Temporal Graphs, in: SAND, Vol. 257 of Leibniz International
+575
+Proceedings in Informatics (LIPIcs), 2023, pp. 13:1–13:15.
+576
+[24] J. B. Kruskal, On the shortest spanning subtree of a graph and the
+577
+traveling salesman problem, Proceedings of the American Mathematical
+578
+society 7 (1) (1956) 48–50.
+579
+[25] J. H. Korhonen, J. Rybicki, Deterministic subgraph detection in broad580
+cast congest, in: 21st International Conference on Principles of Dis581
+tributed Systems, 2018.
+582
+20
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5450373
+Preprint not peer reviewed

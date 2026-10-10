@@ -1,0 +1,290 @@
+{
+  "doc_id": 18,
+  "titulo": "A Practical Guide To Quantitative Portfolio Trading",
+  "resumen_operativo": "Es un libro/eBook extenso (Daniel Bloch, 2014) que recorre de forma enciclopédica la teoría clásica de valuación de activos, la hipótesis de mercados eficientes, momentum/reversión, medidas de performance y riesgo, análisis de series de tiempo financieras y construcción de portafolios, apoyándose casi enteramente en literatura académica de terceros. Sirve como mapa conceptual y glosario riguroso de métricas y sesgos (Sharpe, Calmar, VaR, overfitting, data snooping) más que como fuente de resultados empíricos propios. Útil para un trader-quant como referencia de definiciones y de qué controlar al auditar un backtest, no como evidencia original de un edge.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "efficient market hypothesis",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Teoría según la cual los precios reflejan toda la información disponible, lo que llevaría a que los retornos no sean predecibles; el paper la usa como punto de partida que luego cuestiona con evidencia de momentum y reversión.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "momentum"},
+        {"tipo": "SE_OPONE_A", "objeto": "mean reversion"}
+      ],
+      "cita_textual": "putting into questions the well accepted capital asset pricing model (CAPM)"
+    },
+    {
+      "nombre": "momentum",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Estrategia/efecto basado en comprar ganadores pasados y vender perdedores pasados; el paper documenta su persistencia cross-sectional y en series de tiempo en múltiples mercados.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "mean reversion"},
+        {"tipo": "PREDICE", "objeto": "cross-sectional returns"},
+        {"tipo": "MITIGA", "objeto": "data snooping"}
+      ],
+      "cita_textual": "a momentum strategy is based on short selling past losers and buying past winners"
+    },
+    {
+      "nombre": "mean reversion",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Tendencia de precios/retornos a revertir tras movimientos extremos; el paper la asocia a estrategias contrarian de corto y de largo plazo (3-5 años).",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "momentum"},
+        {"tipo": "USA", "objeto": "return autocorrelation"}
+      ],
+      "cita_textual": "A contrarian strategy takes advantage of the negative autocorrelation of asset returns"
+    },
+    {
+      "nombre": "time-series momentum",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Anomalía de pricing basada en el retorno pasado propio de un activo (no cross-sectional); el paper cita a Moskowitz et al. mostrando su robustez y su relación con estrategias CTA de trend-following.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "momentum"},
+        {"tipo": "USA", "objeto": "trend following"},
+        {"tipo": "MEJORA_A", "objeto": "equity market portfolio"}
+      ],
+      "cita_textual": "yielding a Sharpe ratio greater than one on an annual basis, or roughly 2.5 times the Sharpe ratio for the equity market portfolio"
+    },
+    {
+      "nombre": "trend following",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia de comprar activos cuyo precio sube y vender los que bajan, identificada como el principal driver de los fondos CTA de futuros gestionados.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "time-series momentum"},
+        {"tipo": "APLICA_A", "objeto": "futures roll"}
+      ],
+      "cita_textual": "the main driver of many managed futures strategies pursued by CTAs is trend-following or momentum investing"
+    },
+    {
+      "nombre": "data snooping",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Sesgo de reutilizar los mismos datos para generar y testear hipótesis, que puede inflar espuriamente resultados; el paper remite a los tests de White (reality check) para controlarlo.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "backtest overfitting"},
+        {"tipo": "MITIGA", "objeto": "out-of-sample testing"}
+      ],
+      "cita_textual": "their original ﬁndings were not due to a data snooping bias"
+    },
+    {
+      "nombre": "backtest overfitting",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Ocurre cuando un modelo captura ruido además de estructura real, típicamente por exceso de parámetros relativo al tamaño de la muestra, generando buen ajuste in-sample y mal desempeño out-of-sample.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "spurious correlation"},
+        {"tipo": "MITIGA", "objeto": "out-of-sample testing"}
+      ],
+      "cita_textual": "it often results in good in-sample ﬁt but poor out-of-sample behaviour"
+    },
+    {
+      "nombre": "spurious correlation",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Relación estadística aparente entre variables sin vínculo causal real, ilustrada con el ejemplo humorístico de predecir el S&P 500 con producción de mantequilla, queso y población ovina.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "backtest overfitting"}
+      ],
+      "cita_textual": "achieved almost perfect prediction of annual values of the S&P 500 ﬁnancial index as a function of annual values from previous years for butter production, cheese production, and sheep populations"
+    },
+    {
+      "nombre": "out-of-sample testing",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Validación del modelo con datos no usados en su construcción, recomendada como la principal defensa contra overfitting y data snooping.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "backtest overfitting"},
+        {"tipo": "MITIGA", "objeto": "data snooping"}
+      ],
+      "cita_textual": "true out-of-sample studies of model performance should be conducted after the model has been fully developed"
+    },
+    {
+      "nombre": "Sharpe ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Retorno en exceso sobre la tasa libre de riesgo dividido por el desvío estándar de los retornos; el paper documenta una anomalía en la que puede ser arbitrariamente alto pese a pérdida casi total de capital.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "risk-adjusted return"},
+        {"tipo": "SE_OPONE_A", "objeto": "weak stochastic dominance"}
+      ],
+      "cita_textual": "making k large enough, we can make the Sharpe ratio Mpkq as large as we want, despite losing all the money over the k periods"
+    },
+    {
+      "nombre": "Sortino ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Variante del Sharpe ratio que penaliza solo la volatilidad a la baja; el paper muestra que sufre una anomalía análoga a la del Sharpe ratio bajo ciertas secuencias de retornos.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "Sharpe ratio"}
+      ],
+      "cita_textual": "this example leads to the same conclusions when the Sharpe ratio is replaced by the Sortino ratio"
+    },
+    {
+      "nombre": "weak stochastic dominance",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Axioma de utilidad según el cual, si la probabilidad de superar cualquier umbral de retorno es siempre mayor para la inversión A, A debería preferirse; el paper muestra un ejemplo donde el Sharpe ratio contradice este criterio.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "Sharpe ratio"}
+      ],
+      "cita_textual": "the SRs are not good metrics to use in the decision process on uncertain investments"
+    },
+    {
+      "nombre": "maximum drawdown",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Mayor caída desde un pico de equity hasta el valle subsiguiente; base de las razones tipo Calmar, Sterling y Burke que reemplazan el desvío estándar del Sharpe ratio por funciones del drawdown.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Calmar ratio"},
+        {"tipo": "MIDE", "objeto": "downside risk"}
+      ],
+      "cita_textual": "maximum drawdown: the highest point in equity to the subsequent lowest point in equity"
+    },
+    {
+      "nombre": "Calmar ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Razón de retorno anual promedio de los últimos 36 meses sobre el drawdown máximo del mismo período, usada para evaluar hedge funds.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "maximum drawdown"},
+        {"tipo": "EQUIVALE_A", "objeto": "drawdown ratio"}
+      ],
+      "cita_textual": "the average annual rate of return for the last 36 months is divided by the maximum drawdown for the same period"
+    },
+    {
+      "nombre": "value at risk",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida de riesgo de cola que cuantifica la pérdida máxima esperada a un nivel de confianza dado; el paper la presenta junto con variantes del Sharpe ratio ajustadas por VaR.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "tail risk"}
+      ],
+      "cita_textual": "Introducing the value at risk"
+    },
+    {
+      "nombre": "capital asset pricing model",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Modelo de un factor (beta de mercado) para el retorno esperado de un activo, presentado como la solución de Markowitz-Sharpe-Lintner al problema de asignación de portafolio, y luego criticado y extendido.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "factor models"},
+        {"tipo": "SE_OPONE_A", "objeto": "arbitrage pricing theory"}
+      ],
+      "cita_textual": "The Sharp-Lintner CAPM"
+    },
+    {
+      "nombre": "arbitrage pricing theory",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Modelo multifactor de precios de activos que generaliza al CAPM permitiendo varios factores de riesgo.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "capital asset pricing model"}
+      ],
+      "cita_textual": "APT: a multi-factor model"
+    },
+    {
+      "nombre": "growth optimal portfolio",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Portafolio que maximiza el crecimiento logarítmico esperado del capital (numeraire), comparado en el paper con el enfoque media-varianza y analizado en tiempo discreto y continuo.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "mean-variance optimization"}
+      ],
+      "cita_textual": "Time taken by the GOP to outperfom other portfolios"
+    },
+    {
+      "nombre": "volatility clustering",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Regularidad empírica por la cual la volatilidad muestra agrupamiento, asimetría, comovimiento entre activos y colas pesadas, incompatible con el movimiento browniano geométrico estándar.",
+      "relaciones": [
+        {"tipo": "CONTRADICE_A", "objeto": "geometric Brownian motion"}
+      ],
+      "cita_textual": "These measures of volatility show volatility clustering, asymmetry and mean reversion"
+    },
+    {
+      "nombre": "geometric Brownian motion",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Modelo estándar de precios de Bachelier que el paper señala como incapaz de reproducir los hechos estilizados de colas pesadas y clustering de volatilidad documentados por Mandelbrot.",
+      "relaciones": [
+        {"tipo": "CONTRADICE_A", "objeto": "volatility clustering"}
+      ],
+      "cita_textual": "Mandelbrot [1963] showed that the standard Geometric Brownian motion (gBm) proposed by Bachelier was unable to reproduce these stylised facts"
+    },
+    {
+      "nombre": "technical analysis",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Conjunto de indicadores basados en precio y volumen para generar señales de trading; el paper enumera las limitaciones estructurales de los indicadores de momentum.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "multiple time frame analysis"},
+        {"tipo": "CAUSA", "objeto": "backtest overfitting"}
+      ],
+      "cita_textual": "in general, momentum based indicators fail most of the time"
+    },
+    {
+      "nombre": "multiple time frame analysis",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica de análisis técnico que combina distintos horizontes temporales de muestreo de precios para confirmar soportes y resistencias entre marcos.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "technical analysis"}
+      ],
+      "cita_textual": "The multiple time frame approach has proven to be a fundamental advance in the ﬁeld of TA"
+    },
+    {
+      "nombre": "support and resistance",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Niveles de precio donde se espera reacción, usados en análisis técnico multi-timeframe para identificar coincidencias entre marcos temporales.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "multiple time frame analysis"}
+      ],
+      "cita_textual": "the trader can monitor what happens when the support and resistance lines of the different time frames coincide"
+    },
+    {
+      "nombre": "profit factor",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Razón entre la magnitud de las operaciones ganadoras y las perdedoras en dólares, usada como estadística estándar de evaluación de sistemas de trading.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "trading system performance"}
+      ],
+      "cita_textual": "proﬁt to loss ratio: it represents the magnitude of winning trade dollars to the magnitude of losing trade dollars"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Una estrategia de relative strength (momentum) que selecciona acciones por su retorno de los 6 meses previos y las mantiene 6 meses generó un retorno compuesto en exceso significativo en NYSE/AMEX.",
+      "mercado": "US equities (NYSE, AMEX)",
+      "periodo": "1965-1989",
+      "magnitud": "12.01% anual de retorno compuesto en exceso",
+      "condiciones": "cross-sectional, holding period 3-12 meses; los autores citados (Jegadeesh et al. 1993) muestran que la ganancia no se explica por riesgo sistemático ni por efectos lead-lag",
+      "robustez": "media",
+      "cita_textual": "a strategy selecting stocks based on their past 6-month returns and holds them for 6 months realised a compounded excess return of 12.01% per year on average"
+    },
+    {
+      "afirmacion": "Un portafolio diversificado de time-series momentum across asset classes obtuvo un Sharpe ratio muy superior al del portafolio de acciones (equity market), y su desempeño extra-fuerte se concentra en movimientos extremos de mercado, sin correlación relevante con benchmarks pasivos.",
+      "mercado": "multi-asset (futuros, incluye equities, bonos, FX, commodities)",
+      "periodo": "no especificado (estudio citado de Moskowitz et al. 2012)",
+      "magnitud": "Sharpe ratio > 1 anual, aproximadamente 2.5 veces el Sharpe ratio del portafolio de mercado de acciones",
+      "condiciones": "robusto a distintos subsamples, look-back y holding periods según el paper citado; no se especifica si incluye costos de transacción",
+      "robustez": "media",
+      "cita_textual": "yielding a Sharpe ratio greater than one on an annual basis, or roughly 2.5 times the Sharpe ratio for the equity market portfolio"
+    },
+    {
+      "afirmacion": "Estrategias de time-series momentum en futuros muestran fuerte continuación de retornos a través de distintas frecuencias de rebalanceo, con el Sharpe ratio de los portafolios de momentum superando un umbral relativamente alto.",
+      "mercado": "futuros (commodities y otros activos exchange-traded)",
+      "periodo": "no especificado (estudio citado de Baltas et al. 2012a)",
+      "magnitud": "Sharpe ratio del portafolio de momentum superior a 1.20",
+      "condiciones": "distintas frecuencias de trading; no se encontró evidencia de restricciones de capacidad en commodities según el estudio citado",
+      "robustez": "media",
+      "cita_textual": "documented strong return continuation patterns across different portfolio rebalancing frequencies with the Sharpe ratio of the momentum portfolios exceeding 1.20"
+    },
+    {
+      "afirmacion": "En estrategias contrarian de largo plazo (De Bondt y Thaler), las acciones perdedoras de los 3-5 años previos superaron a las ganadoras del mismo período en el subsiguiente período de 3-5 años por un margen amplio.",
+      "mercado": "US equities",
+      "periodo": "no especificado (estudio citado de De Bondt et al. 1985/1987)",
+      "magnitud": "losers superan a winners por casi 25% en los siguientes 3-5 años",
+      "condiciones": "ranking por retornos cumulados de 3-5 años, sin mención explícita de costos de transacción",
+      "robustez": "baja",
+      "cita_textual": "the losers outperformed the previous winners by nearly 25% in the subsequent 3 to 5 years"
+    },
+    {
+      "afirmacion": "El Sharpe ratio y el Sortino ratio pueden volverse arbitrariamente altos incluso cuando el inversor pierde casi todo su capital, si la secuencia de retornos incluye un período con retorno cercano a -100% seguido de suficientes períodos con retorno positivo pequeño.",
+      "mercado": "no aplica (resultado matemático/teórico)",
+      "periodo": "no especificado",
+      "magnitud": "Sharpe ratio M(k) puede crecer sin cota mientras el capital final P_N < 1 (pérdida total)",
+      "condiciones": "construcción analítica (Vovk 2011), no un backtest real; ilustra un caso límite patológico",
+      "robustez": "baja",
+      "cita_textual": "making k large enough, we can make the Sharpe ratio Mpkq as large as we want, despite losing all the money over the k periods"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "El libro es un compendio teórico de finanzas cuantitativas a nivel diario/mensual (CAPM, momentum, medidas de performance) sin datos de microestructura ni frecuencia intradía, por lo que aporta sobre todo vocabulario de métricas de riesgo/retorno y advertencias de overfitting aplicables a la validación de cualquier estrategia sobre ES, pero no señales directamente testeables intradía."
+  }
+}

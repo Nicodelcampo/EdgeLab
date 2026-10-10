@@ -1,0 +1,2810 @@
+0 
+ 
+ 
+ 
+In Search of Pairs using Firm Fundamentals:  
+Is Pairs Trading Profitable? 
+ 
+ 
+Sungju Hong# 
+Department of Economics,  
+Sungkyunkwan University, 
+Seoul, Korea  
+ 
+Soosung Hwang* 
+Department of Economics,  
+Sungkyunkwan University, 
+Seoul, Korea 
+Abstract 
+We investigate whether spurious pairs created by multiple hypothesis testing can be minimized 
+when firm characteristics are used to identify pairs. The results show that the portfolios of pairs 
+that have higher similarities in firm characteristics outperform those that are fundamentally less 
+similar by minimizing the non-convergence risk. The cost of trading spurious pairs is 
+significant despite the empirical results that the profitability of pairs trading has continued to 
+decline since 2003 and is not significant any more. Accounting information plays a crucial role 
+in identifying pairs rather than market trading data, and the importance of firm fundamentals 
+in pairs trading increases during market crises.  
+  
+Keywords: Elastic Net Regression; Multiple Hypothesis Testing Problem; Fundamental 
+Similarity; Disappearance of Pairs Trading 
+JEL Classification: G11, G12, G14 
+ 
+                                                          
+# Department of Quantitative Applied Economics, Sungkyunkwan University, 25-2 Sungkyunkwan-Ro, Jongnogu, Seoul 03063, South Korea, E-mail: sungjuhong0817@gmail.com, Tel: +82 (10) 8857 6301. 
+* Corresponding author. Department of Economics, Sungkyunkwan University, 25-2 Sungkyunkwan-Ro, Jongnogu, Seoul 03063, South Korea, E-mail: shwang@skku.edu, Tel: +82 (0)2 760 0489, Fax: +82 (0)2 744 5717.  
+Electronic copy available at: https://ssrn.com/abstract=3962867
+
+1 
+ 
+ 
+ 
+ 
+In Search of Pairs using Firm Fundamentals:  
+Is Pairs Trading Profitable? 
+ 
+ 
+ 
+ 
+ 
+ 
+Abstract 
+We investigate whether spurious pairs created by multiple hypothesis testing can be minimized 
+when firm characteristics are used to identify pairs. The results show that the portfolios of pairs 
+that have higher similarities in firm characteristics outperform those that are fundamentally less 
+similar by minimizing the non-convergence risk. The cost of trading spurious pairs is 
+significant despite the empirical results that the profitability of pairs trading has continued to 
+decline since 2003 and is not significant any more. Accounting information plays a crucial role 
+in identifying pairs rather than market trading data, and the importance of firm fundamentals 
+in pairs trading increases during market crises.  
+  
+Keywords: Elastic Net Regression; Multiple Hypothesis Testing Problem; Fundamental 
+Similarity; Disappearance of Pairs Trading 
+JEL Classification: G11, G12, G14
+Electronic copy available at: https://ssrn.com/abstract=3962867
+
+2 
+ 
+1. Introduction 
+Pairs trading, a type of statistical arbitrage strategy, is designed to exploit temporal price 
+deviation between two stocks that have a long-term relationship in their prices. Although the 
+concept of pairs trading is simple and easy to understand, an empirical implementation of pairs 
+trading is not. One important issue lies in identifying “pairs” that exhibit long-term relationship 
+among many stocks, because incorrectly identifying pairs can increase non-convergence risk 
+(Lin et al., 2006; Do and Faff, 2010, 2012; Caldeira and Moura, 2013; Papanicolaou and Yeo, 
+2017; Stübinger et al., 2018). 
+One reason that contributes to the non-convergence risk is the multiple hypothesis testing 
+problem (Harvey et al., 2018), i.e., the number of wrongly identified pairs exponentially 
+increases with the number of stocks, even though none of them have any long-term relationship. 
+The robustness of the co-integration test (Engle and Granger, 1987; Johansen, 1991) or any 
+other statistical tests becomes tarnished as the number of stocks to be tested increases. For 
+example, the number of pairs incorrectly identified as having long-term relationship is 
+𝑥𝑥
+𝑁𝑁(𝑁𝑁−1)
+2
+ for given significance level 𝑥𝑥 even if none of N stocks has any relationship with 
+others. This means that, for 1,000 stocks, the number of “spurious” pairs could be as large as 
+24,975 at the popular 5% significance level, or 4,995 at the stricter 1% significance level. 
+Although a higher level of significance can relieve the multiple hypothesis testing problem (i.e., 
+three standard deviations, as suggested by Harvey et al. (2018)), applying too strict criteria can 
+also increase type II error, that is, pairs with long-term relationship are rejected. 
+To overcome this problem, we identify pairs that have similar fundamentals in addition to 
+the conventional co-integration and minimum distance tests. For this purpose, we propose a 
+measure called ‘firm characteristics similarity’ (FCS) using a large number of firm-level 
+characteristics that are known to explain stock returns in the literature (Green et al., 2017). The 
+firm characteristics that we use in this study are a subset of the firm characteristics summarized 
+in Harvey et al. (2018), but they are sufficient for identifying firm fundamentals (Hwang and 
+Rubesam, 2021), considering close correlations between firm characteristics (Green et al., 
+2017). For the analysis of the large number of firm characteristics (independent variables) that 
+are possibly correlated, we adapt the elastic net regression because it can minimize overfitting 
+Electronic copy available at: https://ssrn.com/abstract=3962867
+
+3 
+ 
+and multicollinearity problems and also allows us to evaluate which firm characteristics matter 
+in pairs trading.1 
+Our empirical results in the US equity market indicate that FCS is an effective tool to 
+minimize the multiple hypothesis testing problem. The performance difference of pairs 
+between high and low FCS is significant and the fundamental closeness measured by FCS can 
+significantly reduce the non-convergence risk: the Sharpe ratios of portfolios with higher FCSs 
+are greater than those with lower FCSs. The difference between the two portfolios suggests that 
+forming pairs with higher similarities in their firm characteristics reduces the non-convergence 
+risk by eliminating spurious pairs as compared with the pairs that are formed using only market 
+data, such as price. 
+Despite the outperformance of the pairs with fundamental similarities, these pairs do not 
+show a significant alpha any more in the 2010s. As in Gatev et al. (2006), the profitability of 
+pairs trading continues to decrease because of active arbitrage trading and the changes in 
+trading environment and information (Green et al., 2016), and pairs trading does not seem to 
+be profitable any more in the US market. The results indicate that temporal price deviations 
+that can be exploited by arbitrage trading are less likely to arise in the future, and if any, these 
+pairs may be spurious.  
+Interestingly, the cost of trading spurious pairs is still significant in the 2010s despite the 
+poor performance of pairs trading since 2003. As the difference between high and low FCS 
+portfolios reflects the difference in the identification of spurious pairs, the performance 
+difference between these two portfolios can be interpreted as the cost that arbitrageurs bear in 
+trading spurious pairs if they do not consider fundamentals. The significance of the cost in the 
+2010s suggests that arbitragers still trade wrongly identified pairs and suffer losses although 
+most profit opportunities in pairs trading have disappeared. In fact, the cost reflects the multiple 
+hypothesis testing problem that arbitrageurs face in practice and shows that exogenous 
+variables such as firm characteristics that we use in this study would be useful to overcome the 
+problem. 
+Finally, we find that accounting information plays an important role in determining 
+fundamental closeness. Firm characteristics such as capital expenditures and inventory (Chen 
+and Zhang, 2010), current ratio (Ou and Penman,1989), financial statement score (Mohanram, 
+2005), leverage (Bhandari, 1988), and industry sales concentration (Hou and Robinson, 2006) 
+                                                          
+1 We have tested artificial neural networks and other methods using machine learning. However, the elastic net 
+regression appears to be the most useful for summarizing firm fundamentals. 
+Electronic copy available at: https://ssrn.com/abstract=3962867
+
+4 
+ 
+appear more important than market trading information, i.e., illiquidity (Amihud, 2002), 
+momentum (Jegadeesh and Titman, 1993), and size (Banz, 1981). In addition, the importance 
+of fundamental closeness increases during crises, i.e., the global financial crisis, the dot-com 
+bubble, and the Asian financial crisis. The relative importance of accounting information 
+during crises indicates that pairs identified with accounting variables are less likely to be 
+affected by sudden shocks in financial markets. On the other hand, pairs identified during crises 
+by market data such as prices are more likely to be spurious because prices are exposed to 
+behavioral biases such as sentiment or herding, the effects of which on prices become 
+significant during these periods (Kumar, 2009; Hwang et al., 2021).  
+While we can minimize the multiple hypothesis test problem using firm characteristics in 
+pairs trading in the equity market, there are some limitations in our study, which we leave for 
+future studies. For example, different results may be obtained for pairs trading in other asset 
+classes or in other countries. It is also possible that refined methods for identifying pairs may 
+be still profitable for arbitrageurs. We may have different conclusions when pairs are identified 
+with machine learning that can incorporate big data and nonlinearity. For some assets like 
+cryptocurrencies, it would be difficult to minimize non-convergence risk because their 
+fundamentals are not available.     
+Our study differs from others in several perspectives. A few studies have explored the use 
+of fundamental data as criteria for forming pairs to minimize spurious pairs. However, they 
+simply apply fragmentary classification using a few firm characteristics such as size or bookto-market ratio (Franco, 2014; Jakobsson, 2015). Recent studies, including Van der Have et al. 
+(2017), Yoshikawa (2020), Sarmento and Horta (2020), and Han et al. (2020), have explored 
+pair formation using machine learning techniques. However, these studies are prone to 
+overfitting because they do not consider the fundamental similarity within pairs. On the other 
+hand, we impose stricter restrictions for stocks that are used in the analysis to minimize these 
+problems, the details of which will be explained later.  
+This paper is structured as follows. In Section 2, we review previous studies on pairs 
+trading. In Section 3, we describe the data collected for empirical analysis and the 
+preprocessing method. In Section 4, we explain the basic pairs trading model and then present 
+a novel approach that considers firm characteristics. In Section 5, we compare quintile 
+portfolios based on FCS. Finally, we summarize the main findings, followed by a discussion 
+on their implications. 
+Electronic copy available at: https://ssrn.com/abstract=3962867
+
+5 
+ 
+2. Literature Review 
+Pairs trading has been widely used since its introduction by Morgan Stanley in the mid1980s. Early studies (Gatev et al., 2006; Rad et al., 2016; Chen et al., 2017) demonstrate that 
+pairs trading has a risk-adjust return which cannot be explained by Fama and French’s (1993) 
+three factors or the four factors of Carhart (1997).  
+Andrade et al. (2005) explain that temporal price divergence of pairs reflects noninformation shocks caused by noise traders, concluding that the profitability of pairs trading is 
+a compensation for providing liquidity for the long-term relationship between pairs. This 
+“Compensation for Providing Liquidity” hypothesis is supported by empirical evidence that 
+pairs trading performs better in bear markets when liquidity is low (Andrade et al., 2005; 
+Bowen and Hutchinson, 2014; Do and Faff, 2010; Jacobs and Weber, 2015; Jakobsson, 2015). 
+On the other hand, Gatev et al. (2006) suggest that the source of those abnormal returns is a 
+short-term violation of the “Law of One Price”. They document that although the risk-adjusted 
+return of pairs trading still exists, the profitability of pairs trading tends to decrease over time 
+by increased hedge fund activity, which is supported by other recent studies (Jakobsson, 2015, 
+Rad et al, 2016; Clegg and Krauss,2018).   
+Various approaches have been proposed for improving the profitability of pairs trading. 
+Some studies try to improve the profitability by increasing the number of trades per pair in a 
+constrained time by selecting pairs with high mean-reversion strength. For example, Do and 
+Faff (2010) select pairs with high reversal frequency during the pair formation period, while 
+Ramos-Requena et al. (2017) select pairs with the lowest Hurst exponent, which help to find 
+the more anti-persistent pairs. Papanicolaou and Yeo (2017) use Ornstein–Uhlenbeck process 
+for identifying pairs with high-speed mean reversion.  
+Others try to reduce non-convergence risk. In pairs trading, non-convergence risk occurs 
+when the price divergence of paired stocks does not converge. One reason for non-convergence 
+risk is incorrectly identified pairs because of the multiple hypothesis testing problem. For 
+example, when forming pairs, most studies adopt various statistical methods, such as distance 
+measures (Gatev et al., 2006; Do and Faff, 2010; Jacobs and Weber, 2015), co-integration test 
+(Vidyamurthy, 2004; Lin et al., 2006; Caldeira and Moura, 2013), or copula functions (Rad et 
+al., 2016; Stübinger et al., 2018). Regardless of test methods, the number of incorrectly 
+identified pairs increases exponentially with the number of stocks, even if none of them have 
+any long-term relationship.  
+Electronic copy available at: https://ssrn.com/abstract=3962867
+
+6 
+ 
+This is a serious problem in practice where an almost infinite number of pairs can be tested 
+for a large number of high-quality financial data (e.g., Harvey et al., 2018). To solve this 
+problem, some studies form pairs within industry groups. Dunis et al. (2010) divide stocks into 
+10 Bloomberg sector classifications. Do and Faff (2010) use the 48 industry groups identified 
+by the Fama and French (1997) industry classification. Others use firm characteristics besides 
+market data to form pairs. For example, Franco (2014) form pair with common risk factors, 
+such as size and value, and momentum as well as sector classifications. Jakobsson (2015) uses 
+the lasso model with firm characteristics to predict returns and trading days for pairs trading. 
+Test procedures have also been refined to reduce the non-convergence risk. Gupta and 
+Chatterjee (2020) add dynamic cross-correlation method, which considers the phenomenon of 
+‘lead-lag’ relationship between two time series, to the distance measures to identify pairs. 
+Figuerola-Ferretti et al. (2017) use the super-cointegration method, which combines the 
+Johansen (1991) and Engle–Granger co-integration tests (Engle and Granger, 1987), and set 
+the confidence level to 1% to minimize the number of spurious pairs, as suggested by Harvey 
+et al. (2018).  
+Another reason for non-convergence risk in pairs trading is the fact that long-term 
+relationships assumed from historical behavior are not always sustained into the future, which 
+lead to a dramatic loss in pairs trading. Clegg and Krauss (2018) utilize partial cointegration, 
+which distinguish between transient and permanent shocks to the long-term relationship, to 
+select the optimal threshold at which trades are entered. Many other studies investigate 
+structural changes in fundamentals to minimize the non-convergence risk. For example, 
+Papadakis and Wysocki (2007) suggest that the profitability of pairs trading can be improved 
+by limiting trading after accounting events. Engelberg et al. (2009) and Jacobs and Weber (2015) 
+find that the profitability of trades triggered by common shocks to a pair is greater than that 
+triggered by information-related shocks to only one stock in the pair. Mazo et al. (2016) show 
+that structural breaks in fundamental ratios of a pair can be used to improve the profitability of 
+pairs trading. Chang et al. (2020) apply the prediction test (Lütkepohl, 2005) to pairs trading, 
+which detect structural changes in vector autoregression process to test whether or not the 
+market-neutrality is still valid. 
+With the recent popularity in machine learning,2 several studies have adapted various 
+algorithms to improve the profitability of pairs trading. Some studies utilize unsupervised 
+                                                          
+2 Studies regarding machine learning have recently been conducted in various areas of finance. For example, Moritz 
+and Zimmermann (2016), Freyberger et al. (2020), and Gu et al. (2020) demonstrated that machine-learning techniques 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3962867
+
+7 
+ 
+machine learning algorithms to reduce non-convergence risk in forming pairs. Sarmento and 
+Horta (2020) utilize ordering points to identify pairs using market data, while Han et al. (2020) 
+apply density-based spatial clustering of applications with noise (DBSCAN), hierarchical, and 
+K-means clustering to identify pairs from the high-dimensional financial data structure. Others 
+try to optimize trading rules using machine learning. Kim and Kim (2019) explore a timevarying optimal threshold for pairs trading using reinforcement learning. Ospino et al. (2020) 
+improve the profitability of pairs trading using neural network techniques and fundamental 
+ratios. Guijarro-Ordonez et al. (2021) estimate optimal trading policies to maximize riskadjusted returns using a convolutional neural network and the transformer-based deep learning 
+model. Van der Have et al. (2017) and Yoshikawa (2020) select pairs using recurrent neural 
+networks and deep neural networks, respectively. 
+In summary, the studies in pairs trading suggest that identifying pairs with similar 
+fundamentals in the same industry is of the utmost importance. Testing similarities in terms of 
+price co-movements could yield spurious pairs. Moreover, increasing the significance level is 
+likely to reject true pairs. To overcome this multiple hypothesis testing problem, we use 
+numerous firm characteristics to identify pairs in addition to the conventional methods. With 
+these additional firm characteristics data, we can minimize the possibility of choosing spurious 
+pairs and rejecting true pairs. For the analysis, we employ the elastic net regression for the large 
+number of firm characteristics we use in this study.  
+3. Pairs Trading and Firm Characteristics Similarity 
+As any price deviation of a pair is more likely to disappear if two stocks in the pair have 
+similar fundamentals, it is important to check if potential pairs chosen from statistical methods 
+still feature similar fundamentals. In this section, we first describe pair selection criteria, 
+trading rules, and performance measurements, and then explain how we calculate firm 
+characteristics similarity (FCS) using firm characteristics. 
+3.1. Pair Identification and Trading Rules 
+We use the following three steps to identify pairs. Our first step is to use industry 
+classification because stocks in the same industry are more likely to be exposed to common 
+                                                          
+outperform conventional methodologies in predicting asset prices. These studies suggest that non-linearity and 
+big data are better handled by machine-learning techniques than conventional model-based asset pricing 
+methodologies. 
+Electronic copy available at: https://ssrn.com/abstract=3962867
+
+8 
+ 
+risk factors (Do and Faff, 2010). We assign stocks to 11 industry groups using the first two 
+digits of the SIC code, and then choose the following six sectors, i.e., (1) mining, (2) 
+manufacturing, (3) transportation and public utilities, (4) retail trade, (5) finance, insurance, 
+and real estate, and (6) services, each of which gives us 100 pairs to analyze the effects of FCS 
+on the performance of pairs.  
+As statistical test methods, we first calculate the distance between all possible 
+combinations of two stocks within industry, as in Gatev et al. (2006), and select pairs with 
+smaller sums of squared differences (SSD) as follows: 
+𝑆𝑆𝑆𝑆𝑆𝑆𝐴𝐴,𝐵𝐵= ∑
+(𝑃𝑃𝑡𝑡
+𝐴𝐴−𝑃𝑃𝑡𝑡
+𝐵𝐵)2
+𝑇𝑇
+𝑡𝑡=1
+ 
+ 
+ 
+ 
+(1) 
+where 𝑃𝑃𝑡𝑡
+𝐴𝐴 and 𝑃𝑃𝑡𝑡
+𝐵𝐵 represent the normalized prices of stocks 𝐴𝐴 and stock 𝐵𝐵, respectively, 
+during the pair formation period. We then test if these pairs are co-integrated using the 
+procedure proposed by Engle and Granger (1987): the log price of one stock in a pair is 
+regressed on that of the other stock, i.e., log(𝑃𝑃𝑡𝑡
+𝐴𝐴) is regressed on log(𝑃𝑃𝑡𝑡
+𝐵𝐵), and the residuals 
+are tested for stationarity using an augmented Dickey–Fuller (ADF) test. 
+To ensure that the number of cointegrated pairs in each sector is 100, we take a large 
+number of pairs that have small SSDs. Specifically, we sort the pairs according to their SSDs 
+and then select 100 pairs that are co-integrated at the 5% significance level. The combination 
+of SSD and co-integration significantly reduces the calculation time and the identification of 
+spurious pairs (Rad et al., 2016). The historical standard deviation (𝜎𝜎𝑆𝑆) of the spread (𝜖𝜖𝑡𝑡 = 
+𝑙𝑙𝑙𝑙𝑙𝑙(𝑃𝑃𝑡𝑡
+𝐴𝐴) −𝑐𝑐−𝛽𝛽𝑙𝑙𝑙𝑙𝑙𝑙(𝑃𝑃𝑡𝑡
+𝐵𝐵 ), where 𝛽𝛽= 1 as in Rad et al. (2016)) estimated during the pair 
+formation period is used as a trading criterion to determine whether any temporary price 
+discrepancy is large enough to trigger pairs trading. The pairs identification procedure is 
+performed using daily returns of the prior 12 months as in the previous studies, and is repeated 
+every month.  
+ 
+For the identified pairs, we follow the trading rules as in Gatev et al. (2006). Positions 
+are opened when the absolute value of the spread at time t (𝜖𝜖𝑡𝑡) exceeds two standard deviations 
+(𝜎𝜎𝑆𝑆 ) and are closed when the spread reaches the mean (zero). When the spread does not 
+converge until the end of the trading period (6 months), or when the stocks are no longer traded 
+because of delisting or mergers and acquisitions, the positions are closed. The trading rules are 
+applied as long as the trading conditions are satisfied during the trading period. Therefore, the 
+long–short position of a pair can be opened and closed at any time during the trading period. 
+The returns of pairs trading are calculated by taking long and short positions for underpriced and over-priced stocks, respectively. Trading of a pair may or may not occur multiple 
+Electronic copy available at: https://ssrn.com/abstract=3962867
+
+9 
+ 
+times in a given month; that is, the monthly return for pair i (𝑅𝑅𝑖𝑖,𝑡𝑡
+𝑝𝑝𝑝𝑝𝑝𝑝𝑝𝑝 ) is calculated by aggregating 
+the returns of all its trades during the month. We then calculate the portfolio return as follows: 
+𝑅𝑅𝑡𝑡
+𝑝𝑝𝑝𝑝𝑝𝑝𝑝𝑝=
+∑
+𝑅𝑅𝑖𝑖,𝑡𝑡
+𝑝𝑝𝑝𝑝𝑝𝑝𝑝𝑝  
+𝑛𝑛
+𝑖𝑖=1
+𝑛𝑛
+ 
+  
+ 
+ 
+ 
+(2) 
+where 𝑛𝑛 represents the number of pairs (e.g., 100 for each sector). Note that 10 bps is taken 
+for transaction costs on each side of trading. 
+Finally, we construct an overlapping portfolio using six portfolios (𝑅𝑅𝑡𝑡
+𝑝𝑝𝑝𝑝𝑝𝑝𝑝𝑝s) in order to 
+increase the power of our tests as in Jegadeesh and Titman (2001). Note that we have six 
+portfolios at any month because our trading period is set to six months after identification of 
+pairs. The monthly returns that we use in this study are calculated by equally weighting the 
+returns of the six portfolios following the identification months (Month 1 to Month 6). 
+3.2 Firm Characteristics Similarity 
+The multiple hypothesis testing problem is serious in pairs trading because the number 
+of pairs increases exponentially with the number of stocks even if there is no genuine pair. To 
+minimize spurious pairs and not to miss out the true pairs, we use firm characteristics to filter 
+out spurious pairs which are included in the pairs identified by the SSD and con-integration 
+tests.  
+We propose a measure for fundamental similarity (i.e., FCS) that shows the degree of 
+closeness between stocks in terms of their fundamentals. FCS is constructed to satisfy the 
+following criteria.  
+- 
+Firm characteristics of two stocks in a pair should be similar. 
+- 
+Firm characteristics should matter in pairs trading 
+- 
+Pairs with similar firm characteristics should increase the performance of pairs trading.  
+The first criterion is clear: if firm characteristic of any two stocks in a pair are similar, they 
+are fundamentally similar. The second one is required to find out which firm characteristics are 
+important in pairs trading. For example, even if the two stocks in a pair have similar firm 
+characteristics, some firm characteristics are not useful if they do not play any role in asset 
+pricing, in particular, in pairs trading. Finally, the third one is required such that the 
+performance of pairs trading increases when pairs have similar fundamentals because these 
+pairs are less likely to be spurious.  
+For the first criterion, we calculate the absolute difference in firm characteristic k 
+(𝐴𝐴𝐴𝐴𝐴𝐴𝐴𝐴𝑘𝑘
+𝑖𝑖) between two stocks as follows: 
+Electronic copy available at: https://ssrn.com/abstract=3962867
+
+10 
+ 
+𝐴𝐴𝐴𝐴𝐴𝐴𝐴𝐴𝑘𝑘= ห𝐹𝐹𝐶𝐶𝑘𝑘
+𝐴𝐴−𝐹𝐹𝐶𝐶𝑘𝑘
+𝐵𝐵ห 
+ 
+ 
+ 
+ (3)3 
+where 𝐹𝐹𝐶𝐶𝑘𝑘
+𝐴𝐴and 𝐹𝐹𝐶𝐶𝑘𝑘
+𝐵𝐵 represent firm characteristic 𝑘𝑘 of stocks of 𝐴𝐴 and 𝐵𝐵, respectively. All 
+firm characteristics (𝐹𝐹𝐹𝐹𝑘𝑘s) are cross-sectionally standardized to have mean zero and variance 
+one, and thus 𝐴𝐴𝐴𝐴𝐴𝐴𝐴𝐴𝑘𝑘
+𝑖𝑖s are comparable for difference firm characteristics. If 𝐴𝐴𝐴𝐴𝐴𝐴𝐴𝐴𝑘𝑘
+𝑖𝑖 is close 
+to zero, the two stocks are similar regarding firm characteristic 𝑘𝑘 . However, not all firm 
+characteristics matter in pairs trading. The closeness of the firm characteristics would not be 
+useful in pairs trading if 𝐴𝐴𝐴𝐴𝐴𝐴𝐴𝐴𝑘𝑘
+𝑖𝑖 does not contribute to the reduction of the non-convergence 
+risk. In other words, we need 𝐴𝐴𝐴𝐴𝐴𝐴𝐴𝐴𝑘𝑘
+𝑖𝑖s that matter in pairs trading.  
+Therefore, for the second criterion, we run regression of returns form pairs trading on 
+lagged 𝐴𝐴𝐴𝐴𝐴𝐴𝐴𝐴𝑘𝑘
+𝑖𝑖s to identify 𝐴𝐴𝐴𝐴𝐴𝐴𝐴𝐴𝑘𝑘
+𝑖𝑖s that are important in the performance of pairs trading:  
+𝑟𝑟𝑖𝑖,𝑡𝑡−6,𝑡𝑡
+𝑝𝑝𝑝𝑝𝑝𝑝𝑝𝑝 = 𝛼𝛼𝑘𝑘+ ∑
+𝛽𝛽𝑖𝑖,𝑘𝑘𝐴𝐴𝐴𝐴𝐴𝐴𝐴𝐴𝑘𝑘,𝑡𝑡−6
+𝑖𝑖
+ 
+81
+𝑘𝑘=1
++ 𝜖𝜖𝑘𝑘,𝑡𝑡 
+ 
+ 
+(4) 4 
+where 𝑟𝑟𝑖𝑖,𝑡𝑡−6,𝑡𝑡
+𝑝𝑝𝑝𝑝𝑝𝑝𝑝𝑝  represents the return for the six months (from 𝑡𝑡−6  to 𝑡𝑡 ) after the 
+identification of pair i at time 𝑡𝑡−6, and 𝐴𝐴𝐴𝐴𝐴𝐴𝐴𝐴𝑘𝑘,𝑡𝑡−6
+𝑖𝑖
+ represents 𝐴𝐴𝐴𝐴𝐴𝐴𝐴𝐴 of firm characteristic 
+k of pair i at time 𝑡𝑡−6. To avoid look-ahead bias, we use the past 5 years data to estimate the 
+model in (4). Note that equation (4) is estimated every month by rolling windows, and thus the 
+coefficient can be represented with time subscript as 𝛽𝛽𝑖𝑖,𝑘𝑘,𝑡𝑡 in the following equations. We use 
+the elastic net regression to avoid multicollinearity between ADFCs and remove any 
+unnecessary firm characteristics.5 
+For the third criterion, we need FCS to increase with the performance of pairs trading. 
+However, when ADFCs increases, the fundamental similarity of a pair decreases and the 
+performance of pairs trading is also expected to decrease because spurious pairs are not likely 
+to be filtered out. Therefore, we do not use ADFCs that are positively related to returns (i.e., 
+positive 𝛽𝛽𝑖𝑖,𝑘𝑘,𝑡𝑡s in equation (4)) because ADFCs with positive 𝛽𝛽𝑖𝑖,𝑘𝑘,𝑡𝑡s are inconsistent with our 
+argument that pairs with similar firm characteristics improve performance by reducing the nonconvergence risk. We also take absolute values for the negative 𝛽𝛽𝑖𝑖,𝑘𝑘,𝑡𝑡 s such that ห𝛽𝛽𝑖𝑖,𝑘𝑘,𝑡𝑡 ห 
+together with ADFC creates fundamental similarity that increases with the performance of pairs 
+trading. Therefore, we calculate FCS for each pair as follows: 
+                                                          
+3 Firm characteristics with missing values of more than 40% during a specific period are excluded from the 
+sample for that period. Consequently, firm characteristics are time varying. Additionally, if either 
+𝐹𝐹𝐶𝐶𝑘𝑘,𝑡𝑡−1
+𝑝𝑝1
+𝑜𝑜𝑜𝑜 𝐹𝐹𝐶𝐶𝑘𝑘,𝑡𝑡−1
+𝑝𝑝2
+ has missing values during preprocessing, 𝐴𝐴𝐴𝐴𝐴𝐴𝐴𝐴𝑘𝑘
+𝑖𝑖 is considered to be a missing value, which 
+is subsequently replaced by the mean. 
+4 The regression is estimated with approximately 6000 samples (60 months×100 pairs). 
+5 See Appendix I for additional details. 
+Electronic copy available at: https://ssrn.com/abstract=3962867
+
+11 
+ 
+𝐹𝐹𝐹𝐹𝐹𝐹𝑖𝑖,𝑡𝑡 = 
+1
+81 ∑
+(𝛽𝛽𝑖𝑖,𝑘𝑘,𝑡𝑡
+−
+× 𝐴𝐴𝐴𝐴𝐴𝐴𝐴𝐴𝑘𝑘,𝑡𝑡
+𝑖𝑖 )
+81
+𝑘𝑘=1
+ 
+ 
+ 
+  
+ (5) 
+ቊ
+ 𝛽𝛽𝑘𝑘,𝑡𝑡
+−= 0, 𝑖𝑖𝑖𝑖 𝛽𝛽𝑘𝑘,𝑡𝑡 ≥0
+𝛽𝛽𝑘𝑘,𝑡𝑡
+−= ห𝛽𝛽𝑘𝑘,𝑡𝑡 ห , 𝑂𝑂𝑂𝑂ℎ𝑒𝑒𝑒𝑒𝑒𝑒𝑒𝑒𝑒𝑒𝑒𝑒 
+ 
+We form quintile portfolios with this measure such that each portfolio has 20 pairs, and 
+then test whether the performance of these portfolios differs significantly. If our measure of 
+fundamental similarity performs as expected, the portfolio with higher FCSs to perform better 
+than that with lower FCSs, because the pairs in the former have stocks that are fundamentally 
+similar to each other and this closeness reduces the non-convergence rusk from spurious pairs. 
+4. Empirical Tests 
+4.1. Data 
+We use common shares (i.e., with a share code of 10 or 11) listed on the New York Stock 
+Exchange (NYSE), American Stock Exchange (AMEX), and Nasdaq that have been widely 
+investigated previously. In order to investigate the performance of pairs trading in practice, we 
+impose a strict restriction for the stocks that are included in our analysis. Stocks with a trading 
+volume less than the bottom 20% over the past 3 months, stocks with a price less than $1, and 
+stocks whose size is less than 20% of the NYSE are excluded from trading to eliminate illiquid 
+and non-short-selling stocks.  
+We use a large number of firm characteristics that are known to predict stock returns in 
+the literature. A total number of 81 firm characteristics of Green et al. (2017), which are listed 
+in Table 1, are used. To reduce the impact of outliers in firm characteristics and make them 
+comparable, we winsorize and then normalize each firm characteristic every month.  
+For the identification of pairs, we use monthly data. Once pairs are identified, we trade 
+them on a daily basis using daily returns from the Center for Research in Security Prices 
+(CRSP). Our sample period is from January 1980 to December 2018. 
+4.2. Performance of Pairs Trading 
+The performance of P1 (pairs with similar fundamentals) in Table 2 is significant at the 
+1% level for all sectors, but changes significantly for different sectors, i.e., from 1.08% per 
+month in the financial sector to 0.49% per month in the retail sector. However, Figures 1 and 2 
+show that most of these profits were possible in the 1980s and 1990s, and the profitability of 
+pairs trading has declined sharply since 2003. These results are consistent with Gatev et al. 
+(2006) and Rad et al. (2016).  
+Electronic copy available at: https://ssrn.com/abstract=3962867
+
+12 
+ 
+Our main concern is whether the performance of pairs trading improves when pairs are 
+identified considering fundamental similarity. The results in Table 2 indicate that portfolios 
+formed on FCS show a significant difference in returns in all six industries: pairs with high 
+FCS (P1) earn higher returns than those with low FCS (P5). For example, the returns difference 
+between P1 and P5 in the finance sector is 0.64% per month and its annual Sharpe ratio is 1.24, 
+which is statistically significant at the 5% level. The other sectors also show similar results. 
+What drives the performance of pairs that have fundamental similarity? The results in 
+Table 3 show that the performance of fundamentally similar pairs have a lower nonconvergence risk than that of fundamentally dissimilar pairs. For example, the average return 
+of non-converged pairs of P1 (Close) in the transportation and public utilities sector is only 
+−3.56%, while that of converged pairs is 6.72%. On the other hand, those of non-converged 
+and converged pairs of P5 (Remote) are -6.52% and 8.08%, respectively. Compared with P5 
+(Remote), the negative return of the non-converged pairs of P1 (Close) is much smaller than 
+the positive return of its converged pairs, i.e., -3.56% vs -6.52%. Moreover, the standard 
+deviations of the returns of pairs are significantly lower when the pairs are fundamentally 
+similar. Other statistics in Table 3 do not show any significant difference between P1 and P5: 
+i.e., there is little difference between the FCS of sorted portfolios in terms of convergence rate, 
+average number of trades, average number of traded pairs, average trading period, and level of 
+co-integration.6  
+These results support our main claim that the non-convergence risk can be reduced by 
+identifying the pairs that have similar fundamentals. The main difference in the performance 
+of portfolios formed on FCS arises from the difference in the returns of non-converging pairs. 
+Spurious pairs can be filtered out by FCS, reducing losses from non-convergence. The closer 
+the firm characteristics are in a pair, the more likely the price difference is to be temporal and 
+thus to converge. Therefore, we can identify more robust pairs by considering firm 
+characteristics rather than only market data. This implies that using firm characteristics enables 
+circumventing the multiple hypothesis testing problem by minimizing the number of spurious 
+pairs. 
+                                                          
+ 
+Electronic copy available at: https://ssrn.com/abstract=3962867
+
+13 
+ 
+4.3. The Cost of Spurious Pairs (COSP) 
+Our main results show that pairs trading is exposed to the non-convergence risk from 
+trading spurious pairs when they are identified with the conventional co-integration and SSD 
+tests without considering fundamental similarity. But how large is the difference?  
+We calculate the cost of trading spurious pairs from the difference between P1 and P5 
+because our results in Table 2 report that P5 (pairs with dissimilar fundamentals) suffers heavier 
+losses from trading spurious pairs than P1. Table 2 reports that all six industries show 
+significant difference in the performance of the two portfolios, ranging from 0.18% per month 
+in the Transportation to 0.64% per month in the financial sector.  
+Interestingly, the COSP does not disappear in the 2010s. Figure 3 shows the cumulative 
+return of COSP for each sector, indicating that the performance of COPS have still positive 
+returns after 2003. Following Green et al (2016), we divide the sample period into pre-2003 
+(the period ending Dec. 31, 2002) and post-2003 (the period starting Jan. 1, 2004). Table 4 
+confirms that the COSP is significant in most sectors during both the pre-2003 and the post2003 periods. For example, the COSP in Mining sector has increased slightly from 0.31% to 
+1.02% during the pre- and post-2003 periods, respectively. Note that the average result of pairs 
+trading with fundamental similarity (P1) in Mining sector has declined from 1.30% per month 
+during the pre-2003 to -0.17% during the post-2003.  
+According to Green et al. (2016), the changes in the trading environment and the 
+information during the period from July 2002 to June 2003 made it cheaper and technologically 
+more feasible to rapidly implement arbitrage trading, which caused the increase in the 
+efficiency of the stock market. For these reasons, the average returns of pairs trading also 
+seemingly have disappeared since 2003, which indicates that active arbitrage trading prevents 
+the temporal price deviation between stocks with similar fundamentals.  
+However, the non-convergence risk from trading spurious pairs are still significant. For 
+example, the COSP of the mining sector come from negative profit of pairs trading with 
+dissimilar fundamentals (P5) during post-2003 periods, which is statistically significant. 
+Arbitrageurs would suffer losses if they overlook fundamental similarity between stocks and 
+suffer the multiple hypothesis testing problem.  
+4.4. The Importance of Firm Characteristics and Time-varying Firm Characteristics 
+Similarity 
+Which firm characteristics should be considered for fundamental similarity in pairs 
+trading? In order to answer this question, we use the elastic net regression that can be used for 
+Electronic copy available at: https://ssrn.com/abstract=3962867
+
+14 
+ 
+parameter shrinkage and variable selection. The elastic net regression in Appendix I shows the 
+detailed explanation about how to estimate equation (4). Using the estimates, we investigate 
+the importance of firm fundamentals in two different ways: cross-comparison between many 
+firm characteristics and time-variation of FCS.  
+We first calculate the relative importance of firm characteristics with respect to the pairs 
+trading returns as follows: 
+𝑉𝑉𝑉𝑉𝑉𝑉𝑉𝑉𝑉𝑉𝑉𝑉𝑉𝑉𝑉𝑉 𝐼𝐼𝐼𝐼𝐼𝐼𝐼𝐼𝐼𝐼𝐼𝐼𝐼𝐼𝐼𝐼𝐼𝐼𝐼𝐼𝑘𝑘 = 
+1
+𝑇𝑇∑
+𝛽𝛽𝑘𝑘,𝑡𝑡
+−
+𝑇𝑇
+𝑡𝑡=1
+ 
+ 
+(6) 
+ቊ
+ 𝛽𝛽𝑘𝑘,𝑡𝑡
+−= 0, 𝑖𝑖𝑖𝑖 𝛽𝛽𝑘𝑘,𝑡𝑡 ≥0
+𝛽𝛽𝑘𝑘,𝑡𝑡
+−= ห𝛽𝛽𝑘𝑘,𝑡𝑡 ห , 𝑂𝑂𝑂𝑂ℎ𝑒𝑒𝑒𝑒𝑒𝑒𝑒𝑒𝑒𝑒𝑒𝑒, 
+ 
+where 𝛽𝛽𝑘𝑘,𝑡𝑡 is the coefficient on firm characteristic k in equation (4), which has been used for 
+the calculation of FCS in equation (5).  
+The results in Figure 4 show that accounting information appears important for 
+fundamental similarity. Firm characteristics such as capital expenditures and inventory (Chen 
+and Zhang, 2010), current ratio (Ou and Penman,1989), financial statement score (Mohanram, 
+2005), leverage (Bhandari, 1988), and industry sales concentration (Hou and Robinson, 2006) 
+are more important for determining fundamental similarity. On the other hand, the famous 
+illiquidity (Amihud, 2002), momentum (Jegadeesh and Titman, 1993), and size (Banz, 1981) 
+are less important. Other market trading data, such as price, volatility, and trading volume, 
+contribute little to FCS. The difference reflects the properties of accounting variables that do 
+not change during accounting year and thus are less likely to be affected by temporal shocks in 
+financial markets. 
+The importance of time-varying FCS for determining pairs trading returns is calculated 
+by summing the negative regression coefficients as follows: 
+𝐹𝐹𝐹𝐹𝐹𝐹 𝐼𝐼𝐼𝐼𝐼𝐼𝐼𝐼𝐼𝐼𝐼𝐼𝐼𝐼𝐼𝐼𝐼𝐼𝐼𝐼𝑡𝑡= 
+1
+81 ∑
+𝛽𝛽𝑘𝑘,𝑡𝑡
+−
+81
+𝑘𝑘=1
+  
+ 
+ 
+(7) 
+ቊ
+ 𝛽𝛽𝑘𝑘,𝑡𝑡
+−= 0, 𝑖𝑖𝑖𝑖 𝛽𝛽𝑘𝑘,𝑡𝑡 ≥0
+𝛽𝛽𝑘𝑘,𝑡𝑡
+−= ห𝛽𝛽𝑘𝑘,𝑡𝑡 ห , 𝑂𝑂𝑂𝑂ℎ𝑒𝑒𝑒𝑒𝑒𝑒𝑒𝑒𝑒𝑒𝑒𝑒. 
+Figure 5 shows that FCS becomes more important when uncertainty increases, such as the 
+global financial crisis, the dot-com bubble, and the Asian financial crisis.  
+These results indicate that many pairs may be spurious during crisis because comovement in prices may be driven by sentiment or herding (Hwang et al., 2021; Kumar, 2009). 
+During crisis, accounting information that do not change dramatically to market conditions 
+would be more important.  
+ 
+Electronic copy available at: https://ssrn.com/abstract=3962867
+
+15 
+ 
+4.5. Robustness of the Results 
+For the robustness of our results, we compare our main results with those under other 
+settings. First, when small and illiquid stocks are included, the performance of pairs trading 
+increases. Table 5 show that the performance of pairs trading improves in all sectors. In 
+particular, Figure 1 shows that pairs with high fundamental closeness appears profitable in the 
+2010s (P1 including micro stocks). However, in reality, price anomaly in small and illiquid 
+stocks are not easily exploitable due to their illiquidity and trading costs. Moreover, pairs 
+trading during the post-2003 is not as profitable as it was during the pre-2003.  
+Second, we compare the performance of the pairs we identify using the elastic net 
+regression with that using ordinary least squares (OLS) regression.7 Table 6 demonstrates that 
+pairs trading calculated with the elastic net regression outperform those determined by OLS in 
+all industries. This indicates that the elastic net selects firm characteristics more efficiently, the 
+results of which are consistent with the previous studies in machine learning (Gu et al, 2020). 
+Third, we investigate whether the returns of pairs trading are explained by Fama and 
+French’s (2015) five factors, momentum factor, and liquidity factor. Table 7 presents the 
+regression results of five pairs trading portfolios formed on FCS-based quintile portfolios when 
+100 pairs are selected regardless of sectors. The results indicate that a significant risk-adjusted 
+return exists even after controlling the seven factors. Further, our results confirm that 
+momentum has a negative effect on all quintile portfolios, which is largely consistent with the 
+previous literature, such as Gatev et al. (2006), Chen et al. (2017), and Rad et al. (2016). This 
+indicates that some part of the profitability of pairs trading is derived from the reversal effect. 
+More importantly, the results confirm that portfolios with similar firm characteristics earn 
+higher risk-adjusted returns: i.e., the alpha of P1 is 0.48% per month and is significant. 
+Finally, we have tested if our results are robust to the number of pairs in the portfolios. 
+Instead of 100 pairs, we have tried 50 and also 500 pairs, but the results change little.8  
+5. Conclusions 
+In this study, we explore whether firm characteristics known to explain stock returns can 
+be used to minimize spurious pairs caused by the multiple hypothesis testing problem in pairs 
+trading. Our empirical results show that pairs that are fundamentally close to each other 
+                                                          
+7 The OLS method estimates 𝛽𝛽̂𝑘𝑘,𝑡𝑡 by using ordinary least squares (OLS) instead of elastic net in Equation (4) 
+and then follows the empirical analysis methodology outlined in Section 2. 
+8 The results can be obtained from the authors upon request. 
+Electronic copy available at: https://ssrn.com/abstract=3962867
+
+16 
+ 
+perform better than pairs that are fundamentally dissimilar. We show that the significant 
+difference in performance between pairs with similar fundamentals and those with dissimilar 
+fundamentals comes from the difference in the returns of non-convergent pairs, which means 
+that fundamental closeness of pair reduces the non-convergence risk caused by multiple 
+hypothesis testing problem  
+Accounting information appears to play an important role in determining fundamental 
+closeness and that market trading data makes only limited contribution. Fundamental closeness 
+is found to play a crucial role during periods of uncertainty with high volatility, including the 
+global financial crisis, the dot-com bubble, and the Asian financial crisis. 
+Pairs trading is no longer profitable. Even if we consider fundamentals similarity, the 
+performance of pairs trading has significantly declined since 2003. This indicates that arbitrage 
+opportunities have disappeared as the market became more efficient. However, the cost of 
+trading spurious pairs is still significant despite the recent poor performance of pairs trading. 
+This means that fundamental is still important factor to identify reliable pairs and arbitrageurs 
+should identify spurious pairs using fundamentals. 
+However, the disappearance of the profit opportunities from pairs trading, which we report 
+in this study, might not be generalized for other asset classes or for other countries9. It is also 
+possible that refined methods for identifying pairs may produce profits for arbitrageurs. 
+However, considering our results, we argue that arbitrageurs should identify spurious pairs 
+using fundamentals. 
+ 
+                                                          
+9 Jacobs and Weber (2015) demonstrate that pairs trading in emerging markets, which be known to be more 
+inefficient than developed markets, yields returns that are about a quarter higher than in developed markets. 
+Electronic copy available at: https://ssrn.com/abstract=3962867
+
+17 
+ 
+References 
+A. David Bowen and C. Mark Hutchinson, Pairs trading in the UK equity market: Risk and 
+return, The European Journal of Finance 22(14), pp. 1363–1387. 
+Amihud, Y., 2002, Illiquidity and stock returns: Cross-section and time-series effects, Journal 
+of Financial Markets 5, pp. 31–56. 
+Andrade, S., di Pietro, V., and Seasholes, M., 2005, Understanding the profitability of pairs 
+trading. Working Paper, University of California, Berkeley, and Northwestern University. 
+Banz, R. W., 1981, The relationship between return and market value of common stocks, 
+Journal of Financial Economics 9, pp. 3–18. 
+Bhandari, L. C., 1988, Debt/equity ratio and expected stock returns: Empirical evidence, The 
+Journal of Finance 43, pp. 507–528. 
+Kumar, A., 2009, Who gambles in the stock market? Journal of Finance 64(4), 1889–1933. 
+Caldeira, J. F., and Moura, G. V., 2013, Selection of a portfolio of pairs based on co-integration: 
+A statistical arbitrage strategy, Brazilian Review of Finance 11, pp. 49–80. 
+Carhart, M. M., 1997, On persistence in mutual fund performance, The Journal of Finance 52, 
+pp. 57–82. 
+Chang, H. H., Dai, T.S., Wang, K. L., Chu, C. H., Wang, J. Z., 2020, Improving pair trading 
+performances with structural change detections and revised trading strategies, 
+International Conference on Pervasive Artificial Intelligence (ICPAI), pp. 105–109. 
+Chen, H., Chen, S., and Li, F., 2017, Empirical investigation of an equity pairs trading strategy, 
+Management Science 65, pp. 370–389. 
+Chen, L., and Zhang, L., 2010, A better three-factor model that explains more anomalies, The 
+Journal of Finance 65(2), pp. 563–595. 
+Clegg, M.,and Krauss, C., 2018, Pairs trading with partial cointegration, Quantitative Finance 
+18(1), pp 121–138. 
+Do, B., and Faff, R., 2010, Does simple pairs trading still work? Financial Analysts Journal 
+66, pp. 83–95. 
+Do, B., and Faff, R., 2012, Are pair trading profits robust to trading costs? The Journal of 
+Financial Research 35, pp. 261–287. 
+Dunis, C. L., Giorgioni, G., Laws, J., and Rudy, J., 2010, Statistical arbitrage and highfrequency data with an application to Eurostoxx 50 equities, Working Paper, Liverpool 
+Business School. 
+Electronic copy available at: https://ssrn.com/abstract=3962867
+
+18 
+ 
+Engelberg, J., Gao, P., and Jagannathan, R., 2009, An anatomy of pairs trading: The role of 
+idiosyncratic news, common information and liquidity, Third Singapore International 
+Conference on Finance 2009. 
+Engle, R. F., and Granger, C. W. J., 1987, Co-integration and error correction: Representation, 
+estimation and testing, Econometrica 55, pp. 251–276. 
+Fama, E. F., and French, K. R., 1993, Common risk factors in the returns on stocks and bonds, 
+Journal of Financial Economics 33, pp. 3–56. 
+Fama, E. F., and French, K. R., 2015, A five-factor asset pricing model, Journal of Financial 
+Economics 116, pp. 1–22. 
+Figuerola-Ferretti, I., Serrano, P., Tang, T., and Vaello, A., 2017, Supercointegrated, SSRN 
+Electronic Journal doi: 10.2139/ssrn.3005358 
+Franco, Sara, 2014, Pairs trading profitability and style investing, Católica Lisbon School of 
+Business & Economics doi: hdl.handle.net/10400.14/16664 
+Freyberger, J., Neuhierl, A., and Weber, M., 2020, Dissecting characteristics nonparametrically, 
+The Review of Financial Studies 33, pp. 2326–2377. 
+Gatev, E., Goetzmann, W. N., and Rouwenhorst, K., 2006, Pairs trading: Performance of a 
+relative-value arbitrage, The Review of Financial Studies 19, pp. 797–827. 
+Green, J., Hand, J. R., and Zhang, F., 2017, The characteristics that provide independent 
+information about average us monthly stock returns, The Review of Financial Studies 30, 
+pp. 4389–4436. 
+Gu, S., Kelly, B., and Xiu, D., 2020, Empirical asset pricing via machine learning, The Review 
+of Financial Studies 33, pp. 2223–2273. 
+Guijarro-Ordonez, J., Pelger, M., and Zanotti, G., 2021, Deep learning statistical arbitrage, 
+SSRN Electronic Journal doi: 10.2139/ssrn.3862004 
+Han, C., He, Z., and Alenson, J. W., 2020, Pairs trading via unsupervised learning, SSRN 
+Electronic Journal doi: 10.2139/ssrn.3835692 
+Harvey, C. R., Liu, Y., and Zhu, H., 2018, …and the cross-section of expected returns, The 
+Review of Financial Studies 29, pp. 5–68. 
+Hou, K., and Robinson, D. T., 2006, Industry concentration and average stock returns, The 
+Journal of Finance 61, pp. 1927–1956. 
+Hwang, S. and Rubesam, A., 2021, Bayesian selection of asset pricing factors using individual 
+stocks, Journal of Financial Econometrics 21, pp. 584-607.. 
+Electronic copy available at: https://ssrn.com/abstract=3962867
+
+19 
+ 
+Hwang, S., Rubesam, A., & Salmon, M., 2021, Beta herding through overconfidence: A 
+behavioral explanation of the low-beta anomaly, Journal of International Money and 
+Finance 111, pp. 102318-102337. 
+Jacobs, H., and Weber, M., 2015, On the determinants of pairs trading profitability, Journal of 
+Financial Markets 23, pp. 75–97. 
+Jakobsson, E., 2015, A new approach to pairs trading using fundamental data to find optimal 
+portfolios, Umeå University. 
+Jegadeesh, N., and Titman, S., 1993, Returns to buying winners and selling losers: Implications 
+for stock market efficiency, The Journal of Finance 48, pp. 65–91. 
+Jegadeesh, N., and Titman, S., 2001, Profitability of momentum strategies: An evaluation of 
+alternative explanations, The Journal of Finance 56, pp. 699–720. 
+Johansen, S., 1991, Estimation and hypothesis testing of co-integration vectors in gaussian 
+vector autoregressive models, Econometrica 59, pp. 1551–1580. 
+K. Gupta and N. Chatterjee, 2020, Selecting stock pairs for pairs trading while incorporating 
+lead–lag relationship, Physica A: Statistical Mechanics and Its Applications 551, pp. 
+124103. 
+Kim, T., and Kim, H. Y., 2019, Optimizing the pairs-trading strategy using deep reinforcement 
+learning with trading and stop-loss boundaries, Complexity, pp.1–20. 
+Lin, Y. X., Mccrae, M., and Gulati, C., 2006, Loss protection in pairs trading through minimum 
+profit bounds: A co-integration approach, Journal of Applied Mathematics and Decision 
+Sciences, pp. 1–14. 
+Lütkepohl, H., 2005, New introduction to multiple time series analysis, SpringerVerlag, Berlin. 
+Mazo, M., Vaquero, M. E., and Gimeno, R., 2016, Pairs trading strategy and idiosyncratic risk. 
+Evidence in Spain and Europe, SSRN Electronic Journal doi: 10.2139/ssrn.2807956 
+Mohanram, P. S., 2005, Separating winners from losers among low book-to-market stocks 
+using financial statement analysis, Review of Accounting Studies 10, pp. 133–170. 
+Moritz, B., and Zimmermann, T., 2016, Tree-based conditional portfolio sorts: The relation 
+between 
+past 
+and 
+future 
+stock 
+returns, 
+SSRN 
+Electronic 
+Journal 
+doi: 
+10.2139/ssrn.2740751 
+Ospino, J. F., Fernandez, L., and Carchano, O., 2020, Improving pairs trading using neural 
+network techniques and fundamentals ratios, SSRN Electronic Journal doi: 
+10.2139/ssrn.3653071 
+Ou, J. A., and Penman, S. H., 1989, Financial statement analysis and the prediction of stock 
+returns, Journal of Accounting & Economics 11, pp. 295–329. 
+Electronic copy available at: https://ssrn.com/abstract=3962867
+
+20 
+ 
+Papadakis, G., and Wysocki, P., 2007, Pairs trading and accounting information. Working 
+Paper, Boston University and MIT. 
+Papanicolaou, G., and Yeo, J., 2017, Risk control of mean-reversion time in statistical arbitrage, 
+Risk and Decision Analysis 6, pp. 263–290. 
+Rad, H., Low, R. K. Y., and Faff, R., 2016, The profitability of pairs trading strategies: Distance, 
+co-integration and copula methods, Quantitative Finance 16, pp. 1541–1558. 
+Ramos-Requena, J. P., Trinidad-Segovia, J. E, and Sánchez-Granero, M. A., 2017, Introducing 
+Hurst exponent in pair trading, Physica A: Statistical Mechanics and Its Applications 488, 
+pp. 39–45. 
+Sarmento, S. M., and Horta, N., 2020, Enhancing a pairs trading strategy with the application 
+of machine learning, Expert Systems with Applications 158, pp. 113–490. 
+Stübinger, J., Endres, S., 2018, Pairs trading with a mean-reverting jump-diffusion model on 
+high-frequency data, Quantitative Fina 18, pp. 1735–1751. 
+Stübinger, J., Mangold, B., and Krauß, C., 2018, Statistical arbitrage with vine copulas, 
+Quantitative Finance 18, pp. 1831–1849. 
+Van der Have, R., van Dijk, D. J. C., Kole, H. J. W. G., Eisma, I. H., and Diepen, G., 2017, 
+Pairs trading using machine learning: An empirical study, Erasmus School of Economics. 
+Vidyamurthy, G., 2004. Pairs trading, quantitative methods and analysis. (John Wiley & Sons, 
+Canada). 
+Yoshikawa, D., 2020, Pairs trading with deep learning, The 34th Annual Conference of the 
+Japanese Society for Artificial Intelligence doi: 10.11517/pjsai.JSAI2020.0_3I1GS1301 
+Zou, H., and Hastie, T., 2005, Regularization and variable selection via the elastic net, Journal 
+of the Royal Statistical Society: Series B (Statistical Methodology) 67, pp. 301–320.  
+Electronic copy available at: https://ssrn.com/abstract=3962867
+
+21 
+ 
+Appendix I: The Elastic Net Method 
+The elastic net methodology, which is a combination of the ridge and lasso penalties, was 
+suggested by Zou and Hastie (2005), which is as follows: 
+𝛽𝛽𝑘𝑘 
+෢≡𝑎𝑎𝑎𝑎𝑎𝑎𝑎𝑎𝑎𝑎𝑎𝑎
+𝛽𝛽
+(ฮ𝑟𝑟𝑖𝑖,𝑡𝑡−6,𝑡𝑡
+𝑝𝑝𝑝𝑝𝑝𝑝𝑝𝑝−𝐴𝐴𝐴𝐴𝐴𝐴𝐴𝐴𝑖𝑖,𝑘𝑘,𝑡𝑡−6 𝛽𝛽𝑘𝑘 ฮ
+2 + 𝜆𝜆2 ‖𝛽𝛽𝑘𝑘 ‖2 + 𝜆𝜆1‖𝛽𝛽𝑘𝑘 ‖1) 
+    (A.1) 
+where ฮ𝑟𝑟𝑖𝑖,𝑡𝑡−6,𝑡𝑡
+𝑝𝑝𝑝𝑝𝑝𝑝𝑝𝑝−𝐴𝐴𝐴𝐴𝐴𝐴𝐴𝐴𝑖𝑖,𝑘𝑘,𝑡𝑡−6𝛽𝛽𝑘𝑘 ฮ
+2and 𝜆𝜆2 ‖𝛽𝛽𝑘𝑘 ‖2 + 𝜆𝜆1‖𝛽𝛽𝑘𝑘 ‖1 are the loss functions for OLS 
+and the penalty function, respectively. Additionally, 𝜆𝜆2 ‖𝛽𝛽𝑘𝑘‖2 and 𝜆𝜆1‖𝛽𝛽𝑘𝑘‖1 are called the 
+ridge penalty and the lasso penalty, respectively. The lasso penalty shrinks dimensions by 
+converging unnecessary variables to zero, and the ridge penalty addresses multicollinearity by 
+grouping similar variables. The penalty function can be expressed as follows: 
+(1 −𝛼𝛼) ∑
+|𝛽𝛽𝑘𝑘|
+81
+𝑘𝑘=1
++ 𝛼𝛼∑
+|𝛽𝛽𝑘𝑘|2
+81
+𝑘𝑘=1
+≤ 𝑡𝑡 , 𝑤𝑤ℎ𝑒𝑒𝑒𝑒𝑒𝑒 0 ≤𝛼𝛼≤ 1 
+    (A.2) 
+If 𝛼𝛼 close to 0, then the estimate is highly influenced by 𝜆𝜆2. By contrast, if 𝛼𝛼 close to 1, then 
+the estimate is highly influenced by 𝜆𝜆1. Additionally, the degree of constraint is determined by 
+t.  In this study, we use 𝛼𝛼= 0.3, 𝑡𝑡= 0.3 obtained through greedy search.  
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3962867
+
+22 
+ 
+Tables 
+Table 1. List of firm characteristics 
+Acronym 
+Firm characteristic 
+Acronym 
+Firm characteristic 
+absacc 
+Absolute accruals 
+mom12m 
+12-month momentum 
+acc 
+Working capital accruals 
+mom1m 
+1-month momentum 
+aeavol 
+Abnormal earnings announcement volume 
+mom36m 
+36-month momentum 
+age 
+# years since first Compustat coverage 
+ms 
+Financial statement score 
+agr 
+Asset growth 
+mve 
+Size 
+baspread 
+Bid-ask spread 
+nanalyst 
+Number of analysts covering stock 
+beta 
+Beta 
+operprof 
+Operating Profitability 
+bm 
+Book-to-market 
+orgcap 
+Organizational capital 
+bm_ia 
+Industry-adjusted book to market 
+pchcapx_ia 
+Industry adjusted % change in capital expenditures 
+cash 
+Cash holdings 
+pchcurrat 
+% change in current ratio 
+cashdebt 
+Cash flow to debt 
+pchdepr 
+% change in depreciation 
+cashpr 
+Cash productivity 
+pchgm_pchsale 
+% change in gross margin - % change in sales 
+cfp 
+Cash flow to price ratio 
+pchsale_pchinvt 
+% change in sales - % change in inventory 
+cfp_ia 
+Industry-adjusted cash flow to price ratio 
+pchsale_pchrect 
+% change in sales - % change in A/R 
+chatoia 
+Industry-adjusted change in asset turnover 
+pchsale_pchxsga 
+% change in sales - % change in SG&A 
+chcsho 
+Change in shares outstanding 
+pchsaleinv 
+% change sales-to-inventory 
+chempia 
+Industry-adjusted change in employees 
+pctacc 
+Percent accruals 
+chfeps 
+Change in forecasted EPS 
+pricedelay 
+Price delay 
+chinv 
+Change in inventory 
+ps 
+Financial statements score 
+chmom 
+Change in 6-month momentum 
+realestate 
+Real estate holdings 
+chnanalyst 
+Change in number of analysts 
+retvol 
+Return volatility 
+chpmia 
+Industry-adjusted change in profit margin 
+roaq 
+Return on assets 
+chtx 
+Change in tax expense 
+roavol 
+Earnings volatility 
+cinvest 
+Corporate investment 
+roeq 
+Return on equity 
+currat 
+Current ratio 
+roic 
+Return on invested capital 
+depr 
+Depreciation / PP&E 
+rsup 
+Revenue surprise 
+disp 
+Dispersion in forecasted EPS 
+salecash 
+Sales to cash 
+ear 
+Earnings announcement return 
+saleinv 
+Sales to inventory 
+egr 
+Growth in common shareholder equity 
+salerec 
+Sales to receivables 
+ep 
+Earnings to price 
+sfe 
+Scaled earnings forecast 
+fgr5yr 
+Forecasted growth in 5-year EPS 
+sgr 
+Sales growth 
+gma 
+Gross profitability 
+sp 
+Sales to price 
+grcapx 
+Growth in capital expenditures 
+std_dolvol 
+Volatility of liquidity (dollar trading volume) 
+grltnoa 
+Growth in long term net operating assets 
+std_turn 
+Volatility of liquidity (share turnover) 
+herf 
+Industry sales concentration 
+stdcf 
+Cash flow volatility 
+hire 
+Employee growth rate 
+sue 
+Unexpected quarterly earnings 
+idiovol 
+Idiosyncratic return volatility 
+tang 
+Debt capacity/firm tangibility 
+ill 
+Illiquidity 
+tb 
+Tax income to book income 
+indmom 
+Industry momentum 
+turn 
+Share turnover 
+invest 
+Capital expenditures and inventory 
+zerotrade 
+Zero trading days 
+lev 
+Leverage 
+  
+  
+Note: This table lists the 81 firm characteristics used in this study. For the exact definition of each firm 
+characteristic, refer to Green et al. (2016). 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3962867
+
+23 
+ 
+Table 2. Performance of pairs trading portfolios formed using FCS 
+Portfolio 
+Ret. 
+T-stat. 
+Std. Dev. 
+Annualized 
+Skewness 
+Kurtosis 
+Sharp ratio 
+A. Mining 
+P1 (Close) 
+0.57% 
+4.3829*** 
+0.0259 
+0.7698 
+0.0458 
+1.3638 
+P2 
+0.42% 
+2.8434*** 
+0.0293 
+0.4994 
+-0.1793 
+1.9922 
+P3 
+0.51% 
+3.3766*** 
+0.03 
+0.5931 
+0.1083 
+0.8005 
+P4 
+0.14% 
+0.8106 
+0.0331 
+0.1424 
+-0.3671 
+1.0874 
+P5 (Remote) 
+-0.05% 
+-0.2576 
+0.0411 
+-0.0452 
+-1.0494 
+5.2139 
+COSP 
+0.63% 
+3.2861*** 
+0.0377 
+0.5772 
+1.0899 
+4.1233 
+All (100) 
+0.32% 
+2.4365** 
+0.0258 
+0.4279 
+-0.1129 
+1.527 
+B. Manufacturing 
+P1 (Close) 
+0.65% 
+8.6197*** 
+0.0149 
+1.5139 
+1.3429 
+7.6717 
+P2 
+0.55% 
+7.4423*** 
+0.0145 
+1.3071 
+0.769 
+2.8403 
+P3 
+0.46% 
+6.3001*** 
+0.0144 
+1.1065 
+0.4435 
+1.3896 
+P4 
+0.42% 
+5.4995*** 
+0.0151 
+0.9659 
+0.3207 
+2.2486 
+P5 (Remote) 
+0.36% 
+4.4078*** 
+0.016 
+0.7742 
+0.0829 
+1.5472 
+COSP 
+0.29% 
+3.4849*** 
+0.0166 
+0.6121 
+0.4528 
+1.9173 
+All (100) 
+0.49% 
+8.0004*** 
+0.012 
+1.4052 
+0.9225 
+4.2723 
+C. Transportation and Public Utilities 
+P1 (Close) 
+0.52% 
+8.2353*** 
+0.0124 
+1.4464 
+-0.1042 
+1.5989 
+P2 
+0.57% 
+9.0655*** 
+0.0124 
+1.5922 
+0.2263 
+1.8599 
+P3 
+0.49% 
+7.245*** 
+0.0133 
+1.2725 
+0.2461 
+1.0939 
+P4 
+0.50% 
+6.8645*** 
+0.0143 
+1.2057 
+0.2734 
+2.4975 
+P5 (Remote) 
+0.34% 
+4.0541*** 
+0.0166 
+0.7121 
+-0.2714 
+2.1766 
+COSP 
+0.18% 
+2.2662** 
+0.0155 
+0.398 
+0.2505 
+1.6648 
+All (100) 
+0.48% 
+8.2943*** 
+0.0115 
+1.4568 
+0.2104 
+1.9299 
+D. Retail Trade 
+P1 (Close) 
+0.49% 
+4.3123*** 
+0.0225 
+0.7574 
+0.1044 
+2.8197 
+P2 
+0.19% 
+1.6319 
+0.0227 
+0.2866 
+-0.4375 
+1.9913 
+P3 
+0.31% 
+2.4556** 
+0.0249 
+0.4313 
+-0.8653 
+10.9535 
+P4 
+0.09% 
+0.7424 
+0.0227 
+0.1304 
+-0.2579 
+4.1473 
+P5 (Remote) 
+-0.07% 
+-0.4989 
+0.0282 
+-0.0876 
+-0.1754 
+2.4752 
+COSP 
+0.56% 
+3.5705*** 
+0.0311 
+0.6271 
+-0.0823 
+1.2602 
+All (100) 
+0.20% 
+2.1734** 
+0.0182 
+0.3817 
+-0.4693 
+5.6269 
+E. Finance, Insurance, and Real Estate 
+P1 (Close) 
+1.08% 
+13.9598*** 
+0.0153 
+2.4519 
+0.452 
+5.2468 
+P2 
+1.00% 
+12.8908*** 
+0.0154 
+2.2641 
+0.7104 
+3.2358 
+P3 
+0.75% 
+9.2193*** 
+0.016 
+1.6192 
+0.2953 
+4.4783 
+P4 
+0.70% 
+8.8752*** 
+0.0155 
+1.5588 
+0.8061 
+2.4322 
+P5 (Remote) 
+0.44% 
+4.962*** 
+0.0174 
+0.8715 
+0.3444 
+2.4204 
+COSP 
+0.64% 
+7.0412*** 
+0.0181 
+1.2367 
+0.3769 
+1.7653 
+All (100) 
+0.79% 
+12.2545*** 
+0.0128 
+2.1523 
+0.6003 
+4.2545 
+F. Services 
+P1 (Close) 
+0.68% 
+6.6584*** 
+0.0201 
+1.1695 
+0.3792 
+1.1353 
+P2 
+0.43% 
+4.3792*** 
+0.0194 
+0.7691 
+0.7008 
+2.8042 
+P3 
+0.37% 
+3.4582*** 
+0.0213 
+0.6074 
+0.3509 
+2.3466 
+P4 
+0.23% 
+2.0931** 
+0.0221 
+0.3676 
+0.2789 
+1.3316 
+P5 (Remote) 
+0.13% 
+0.965 
+0.0273 
+0.1695 
+0.4444 
+9.1154 
+COSP 
+0.54% 
+3.6191*** 
+0.0297 
+0.6357 
+-0.1265 
+6.5746 
+All (100) 
+0.37% 
+4.3674*** 
+0.0167 
+0.7671 
+0.6505 
+2.2535 
+G. All Stocks Disregarding Sectors 
+P1 (Close) 
+0.43% 
+6.9175*** 
+0.0124 
+1.2134 
+-0.1821 
+3.398 
+P2 
+0.41% 
+6.9153*** 
+0.0117 
+1.213 
+0.1837 
+2.0415 
+P3 
+0.42% 
+6.5691*** 
+0.0126 
+1.1523 
+-0.0794 
+3.7778 
+P4 
+0.34% 
+4.9288*** 
+0.0138 
+0.8646 
+0.455 
+4.7003 
+P5 (Remote) 
+0.21% 
+2.7423*** 
+0.0149 
+0.481 
+-0.1464 
+4.3641 
+COSP 
+0.23% 
+2.7275*** 
+0.0164 
+0.4784 
+1.1575 
+10.741 
+All (100) 
+0.36% 
+7.3769*** 
+0.0097 
+1.294 
+0.2828 
+2.8759 
+Note: This table reports the performance of pairs trading portfolios formed using FCS. P1 (Close) is the portfolio of the 
+top 20 pairs with the closest firm characteristics, and P5 (Remote) is the portfolio of the bottom 20 pairs with the 
+remotest firm characteristics. COSP (cost of spurious pairings) represents the difference between P1 (Close) and P5 
+(Remote). All (100) represents the portfolio of 100 pairs in each sector. * significant at the 10% level; ** significant at 
+the 5% level; *** significant at the 1% level. 
+Electronic copy available at: https://ssrn.com/abstract=3962867
+
+24 
+ 
+Table 3. Properties of pairs trading portfolios formed using FCS 
+Portfolio 
+C.  
+N-C.  
+C.  
+N-C.  
+C  
+Number of  Average  
+Mean  
+Spread  
+Coint. 
+Ret. 
+Ret. 
+Std. Dev. 
+Std. Dev. 
+Ratio 
+Trading 
+Number of  
+Trading 
+Std. Dev.  
+ 
+ 
+ 
+ 
+ 
+ 
+Traded Pairs 
+Period 
+ 
+A. Mining 
+P1 (Close) 
+15.16% 
+-8.73% 
+0.075  
+0.190  
+44.47% 
+26.51  
+18.60  
+82.40  
+0.064  
+0.019 
+P2 
+16.51% 
+-11.04% 
+0.086  
+0.210  
+45.15% 
+26.93  
+18.77  
+82.64  
+0.070  
+0.019 
+P3 
+17.48% 
+-12.16% 
+0.100  
+0.233  
+46.68% 
+27.68  
+18.91  
+79.85  
+0.074  
+0.019 
+P4 
+18.47% 
+-15.32% 
+0.098  
+0.267  
+46.82% 
+28.01  
+18.93  
+80.10  
+0.078  
+0.019 
+P5 (Remote) 
+19.60% 
+-17.64% 
+0.146  
+0.300  
+46.28% 
+28.22  
+19.15  
+81.57  
+0.084  
+0.02 
+All(100) 
+17.44% 
+-12.98% 
+0.101  
+0.240  
+45.88% 
+137.35  
+18.87  
+81.31  
+0.074  
+0.019 
+B. Manufacturing 
+P1 (Close) 
+9.67% 
+-6.18% 
+0.044  
+0.113  
+52.44% 
+33.05  
+19.59  
+72.05  
+0.036  
+0.016 
+P2 
+10.11% 
+-7.51% 
+0.049  
+0.127  
+52.93% 
+33.68  
+19.66  
+72.18  
+0.038  
+0.016 
+P3 
+10.16% 
+-8.24% 
+0.048  
+0.134  
+53.09% 
+33.89  
+19.66  
+72.62  
+0.038  
+0.015 
+P4 
+10.32% 
+-8.80% 
+0.047  
+0.141  
+53.45% 
+34.68  
+19.72  
+71.62  
+0.038  
+0.014 
+P5 (Remote) 
+10.50% 
+-9.79% 
+0.060  
+0.155  
+54.29% 
+35.06  
+19.77  
+71.65  
+0.039  
+0.014 
+All (100) 
+10.15% 
+-8.10% 
+0.049  
+0.134  
+53.24% 
+170.36  
+19.68  
+72.02  
+0.038  
+0.015 
+C. Transportation and Public Utilities 
+P1 (Close) 
+6.72% 
+-3.56% 
+0.033  
+0.079  
+50.99% 
+30.14  
+18.91  
+72.77  
+0.026  
+0.016 
+P2 
+6.99% 
+-3.81% 
+0.035  
+0.086  
+52.18% 
+31.19  
+19.11  
+71.58  
+0.028  
+0.016 
+P3 
+7.34% 
+-4.43% 
+0.038  
+0.091  
+50.92% 
+31.15  
+19.21  
+72.61  
+0.029  
+0.016 
+P4 
+7.62% 
+-4.92% 
+0.042  
+0.106  
+52.26% 
+31.71  
+19.27  
+72.06  
+0.030  
+0.016 
+P5 (Remote) 
+8.08% 
+-6.52% 
+0.045  
+0.124  
+51.89% 
+32.13  
+19.43  
+72.59  
+0.032  
+0.016 
+All (100) 
+7.35% 
+-4.65% 
+0.039  
+0.097  
+51.65% 
+156.32  
+19.19  
+72.32  
+0.029  
+0.016 
+D. Retail Trade 
+P1 (Close) 
+15.23% 
+-10.20% 
+0.069  
+0.178  
+46.83% 
+28.80  
+19.14  
+79.88  
+0.060  
+0.019 
+P2 
+15.86% 
+-11.93% 
+0.086  
+0.200  
+46.14% 
+28.82  
+19.24  
+80.88  
+0.064  
+0.019 
+P3 
+16.63% 
+-12.39% 
+0.078  
+0.210  
+46.63% 
+29.38  
+19.36  
+80.37  
+0.065  
+0.019 
+P4 
+16.54% 
+-13.93% 
+0.102  
+0.222  
+47.06% 
+29.67  
+19.35  
+80.59  
+0.067  
+0.019 
+P5 (Remote) 
+16.99% 
+-15.73% 
+0.106  
+0.248  
+47.13% 
+29.88  
+19.52  
+80.49  
+0.069  
+0.018 
+All (100) 
+16.25% 
+-12.84% 
+0.088  
+0.212  
+46.76% 
+146.55  
+19.32  
+80.44  
+0.065  
+0.019 
+E. Finance, Insurance, and Real Estate 
+P1(Close) 
+8.98% 
+-4.93% 
+0.039  
+0.108  
+57.70% 
+35.66  
+19.55  
+64.63  
+0.033  
+0.014 
+P2 
+9.13% 
+-5.49% 
+0.042  
+0.109  
+57.31% 
+35.91  
+19.60  
+65.00  
+0.034  
+0.014 
+P3 
+9.17% 
+-6.34% 
+0.041  
+0.121  
+55.78% 
+35.40  
+19.67  
+67.68  
+0.034  
+0.014 
+P4 
+9.12% 
+-6.79% 
+0.044  
+0.126  
+55.75% 
+35.73  
+19.66  
+67.61  
+0.034  
+0.014 
+Remote 
+9.25% 
+-8.01% 
+0.049  
+0.142  
+54.90% 
+35.76  
+19.73  
+70.06  
+0.035  
+0.013 
+All (100) 
+9.13% 
+-6.31% 
+0.043  
+0.121  
+56.29% 
+178.46  
+19.64  
+67.00  
+0.034  
+0.014 
+F. Services 
+P1 (Close) 
+13.63% 
+-9.53% 
+0.072  
+0.174  
+50.26% 
+31.07  
+19.43  
+75.71  
+0.053  
+0.018 
+P2 
+14.11% 
+-11.02% 
+0.082  
+0.195  
+49.72% 
+30.76  
+19.48  
+77.46  
+0.055  
+0.018 
+P3 
+14.40% 
+-11.88% 
+0.094  
+0.210  
+49.93% 
+31.09  
+19.51  
+77.51  
+0.056  
+0.017 
+P4 
+14.69% 
+-13.13% 
+0.085  
+0.216  
+50.41% 
+31.61  
+19.59  
+77.21  
+0.057  
+0.017 
+P5 (Remote) 
+14.99% 
+-14.32% 
+0.086  
+0.247  
+50.84% 
+31.90  
+19.61  
+76.70  
+0.058  
+0.016 
+All (100) 
+14.36% 
+-11.98% 
+0.084  
+0.208  
+50.23% 
+156.43  
+19.52  
+76.92  
+0.056  
+0.017 
+G. All Stocks Disregarding Sectors 
+P1 (Close) 
+6.56% 
+-3.86% 
+0.031  
+0.078  
+50.56% 
+31.19  
+19.33  
+73.66  
+0.025  
+0.016 
+P2 
+6.64% 
+-4.26% 
+0.036  
+0.086  
+51.03% 
+31.72  
+19.22  
+72.69  
+0.025  
+0.015 
+P3 
+7.00% 
+-4.80% 
+0.035  
+0.090  
+52.35% 
+32.59  
+19.43  
+72.36  
+0.026  
+0.014 
+P4 
+7.16% 
+-5.35% 
+0.036  
+0.099  
+51.60% 
+32.92  
+19.51  
+72.68  
+0.027  
+0.015 
+P5 (Remote) 
+7.19% 
+-6.15% 
+0.038  
+0.120  
+51.95% 
+33.11  
+19.48  
+72.80  
+0.028  
+0.015 
+All (100) 
+6.91% 
+-4.88% 
+0.035  
+0.094  
+51.50% 
+161.53  
+19.39  
+72.84  
+0.026  
+0.015 
+Note: This table reports the properties of FCS-based quintile pairs trading portfolios. C. Ret. and C. Std. Dev. 
+represent the average monthly returns and the standard deviation of converged pairs during the trading period, 
+respectively. N-C. Ret. and N-C. Std. Dev. represent the average monthly returns and the standard deviation of 
+pairs that did not converge during the trading period, respectively. C. Ratio, Average Number of Trading, and 
+Average number of Traded Pairs represent the percentage of converged pairs, average number of trades, and 
+number of traded pairs in the portfolio (20 stocks), respectively. Average Trading Period, Spread Std. Dev., and 
+Coint. represent the average trading period per pair, average of the historical standard deviation of the spread over 
+the past year (i.e., the formation period), and p-value of the Engle–Granger co-integration test. 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3962867
+
+25 
+ 
+Table 4. Returns on FCS-based pairs trading portfolios pre-2003 versus post-2003 
+ 
+Entire Period 
+pre-2003 
+post-2003 
+ 
+Return 
+T-stat 
+Return 
+T-stat 
+Return 
+T-stat 
+A. Mining 
+ 
+ 
+ 
+ 
+ 
+ 
+P1(Close) 
+0.57% 
+4.3829*** 
+1.30% 
+7.5734*** 
+-0.17% 
+-0.8597 
+P5(Remote) -0.05% 
+-0.2576 
+0.99% 
+4.2203*** 
+-1.18% 
+-3.3898*** 
+COSP 
+0.63% 
+3.2861*** 
+0.31% 
+1.3145 
+1.02% 
+3.1527*** 
+B. Manufacturing 
+ 
+ 
+ 
+ 
+ 
+P1(Close) 
+0.65% 
+8.6197*** 
+0.95% 
+7.9973*** 
+0.31% 
+3.5844*** 
+P5(Remote) 0.36% 
+4.4078*** 
+0.62% 
+5.6859*** 
+0.07% 
+0.5637 
+COSP 
+0.29% 
+3.4849*** 
+0.34% 
+2.7061*** 
+0.24% 
+2.0639** 
+C. Transportation and Public Utilities 
+ 
+ 
+ 
+ 
+P1(Close) 
+0.52% 
+8.2353*** 
+0.80% 
+8.72*** 
+0.20% 
+2.4205** 
+P5(Remote) 0.34% 
+4.0541*** 
+0.57% 
+4.9609*** 
+0.07% 
+0.5211 
+COSP 
+0.18% 
+2.2662** 
+0.23% 
+2.1675** 
+0.13% 
+1.0976 
+D. Retail Trade 
+P1(Close) 
+0.49% 
+4.3123*** 
+0.83% 
+4.7529*** 
+0.14% 
+0.9365 
+P5(Remote) -0.07% 
+-0.4989 
+0.20% 
+0.9962 
+-0.36% 
+-1.6292 
+COSP 
+0.56% 
+3.5705*** 
+0.64% 
+2.7533*** 
+0.49% 
+2.1897** 
+E. Finance, Insurance, and Real Estate 
+ 
+ 
+ 
+ 
+P1(Close) 
+1.08% 
+13.9598*** 
+1.51% 
+14.5215*** 
+0.61% 
+5.5402*** 
+P5(Remote) 0.44% 
+4.962*** 
+0.78% 
+6.3529*** 
+0.08% 
+0.6168 
+COSP 
+0.64% 
+7.0412*** 
+0.73% 
+5.5914*** 
+0.53% 
+3.983*** 
+F. Services 
+ 
+ 
+ 
+ 
+ 
+ 
+P1(Close) 
+0.68% 
+6.6584*** 
+1.09% 
+6.6225*** 
+0.20% 
+1.9067* 
+P5(Remote) 0.13% 
+0.965 
+0.23% 
+1.006 
+-0.02% 
+-0.146 
+COSP 
+0.54% 
+3.6191*** 
+0.86% 
+3.3499*** 
+0.23% 
+1.476 
+G. All Stocks Disregarding Sectors 
+P1(Close) 
+0.43% 
+6.9175*** 
+0.65% 
+8.3755*** 
+0.19% 
+1.8545* 
+P5(Remote) 0.21% 
+2.7423*** 
+0.35% 
+3.2494*** 
+0.06% 
+0.5625 
+COSP 
+0.23% 
+2.7275*** 
+0.30% 
+2.6898*** 
+0.13% 
+0.9713 
+Note: This table reports the returns of pairs trading portfolios formed using FCS separately pre-2003 versus post2003, where pre-2003 is defined as the period ending Dec. 31, 2002 and post-2003 is defined as Jan. 1 2004. P1 
+(Close) is the portfolio of the top 20 pairs with the closest firm characteristics, and P5 (Remote) is the portfolio 
+of the bottom 20 pairs with the remotest firm characteristics. COSP (cost of spurious pairings) represents the 
+difference between P1 (Close) and P5 (Remote). * significant at the 10% level; ** significant at the 5% level; *** 
+significant at the 1% level. 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3962867
+
+26 
+ 
+Table 5. Performance of pairs trading portfolios formed using FCS non-micro stocks 
+versus all stocks 
+ 
+Portfolio 
+Ret. 
+T-stat. 
+Std. Dev. 
+Annualized Sharp ratio 
+A. Mining 
+  
+  
+P1 (Close) 
+0.68% 
+5.1883*** 
+0.026 
+0.9113 
+P2 
+0.67% 
+4.466*** 
+0.0294 
+0.7844 
+P3 
+0.58% 
+3.7286*** 
+0.0309 
+0.6549 
+P4 
+0.44% 
+2.6164*** 
+0.0334 
+0.4595 
+P5 (Remote) 
+0.43% 
+1.9789** 
+0.043 
+0.3476 
+COSP 
+0.25% 
+1.1972 
+0.0414 
+0.2103 
+All (100) 
+0.56% 
+4.2772*** 
+0.0259 
+0.7512 
+B. Manufacturing 
+  
+  
+P1 (Close) 
+0.66% 
+9.3816*** 
+0.0138 
+1.6477 
+P2 
+0.51% 
+6.9151*** 
+0.0146 
+1.2145 
+P3 
+0.43% 
+5.8348*** 
+0.0145 
+1.0248 
+P4 
+0.46% 
+6.4338*** 
+0.0141 
+1.13 
+P5 (Remote) 
+0.40% 
+4.5038*** 
+0.0176 
+0.791 
+COSP 
+0.25% 
+2.8174*** 
+0.0178 
+0.4948 
+All (100) 
+0.49% 
+8.3684*** 
+0.0116 
+1.4698 
+C. Transportation and Public Utilities 
+  
+  
+P1 (Close) 
+0.57% 
+9.151*** 
+0.0124 
+1.6073 
+P2 
+0.59% 
+8.8396*** 
+0.0132 
+1.5526 
+P3 
+0.53% 
+8.0556*** 
+0.0131 
+1.4149 
+P4 
+0.52% 
+7.4008*** 
+0.0138 
+1.2998 
+P5 (Remote) 
+0.36% 
+4.4511*** 
+0.0162 
+0.7818 
+COSP 
+0.21% 
+2.8058*** 
+0.0146 
+0.4928 
+All (100) 
+0.52% 
+8.9576*** 
+0.0114 
+1.5733 
+D. Retail Trade 
+  
+  
+P1 (Close) 
+0.41% 
+3.7642*** 
+0.0215 
+0.6611 
+P2 
+0.34% 
+2.896*** 
+0.0228 
+0.5086 
+P3 
+0.39% 
+3.4451*** 
+0.0225 
+0.6051 
+P4 
+0.25% 
+2.1527** 
+0.0227 
+0.3781 
+P5 (Remote) 
+0.23% 
+1.7251* 
+0.0263 
+0.303 
+COSP 
+0.18% 
+1.2167 
+0.0291 
+0.2137 
+All (100) 
+0.32% 
+3.6677*** 
+0.0174 
+0.6442 
+E. Finance, Insurance, and Real Estate 
+  
+  
+P1 (Close) 
+1.38% 
+18.2814*** 
+0.0149 
+3.2109 
+P2 
+1.18% 
+17.2381*** 
+0.0136 
+3.0276 
+P3 
+1.03% 
+14.1823*** 
+0.0143 
+2.4909 
+P4 
+0.76% 
+9.3744*** 
+0.0161 
+1.6465 
+P5 (Remote) 
+0.61% 
+7.5*** 
+0.016 
+1.3173 
+COSP 
+0.78% 
+8.4108*** 
+0.0182 
+1.4773 
+All (100) 
+0.99% 
+16.7625*** 
+0.0117 
+2.9441 
+F. Services 
+  
+  
+P1 (Close) 
+0.76% 
+7.4169*** 
+0.0203 
+1.3027 
+P2 
+0.49% 
+4.7724*** 
+0.0203 
+0.8382 
+P3 
+0.48% 
+4.3464*** 
+0.0216 
+0.7634 
+P4 
+0.40% 
+3.4389*** 
+0.023 
+0.604 
+P5 (Remote) 
+0.35% 
+2.7164*** 
+0.0257 
+0.4771 
+COSP 
+0.41% 
+3.0152*** 
+0.0268 
+0.5296 
+All (100) 
+0.50% 
+5.8936*** 
+0.0166 
+1.0351 
+G. All Stocks Disregarding Sectors 
+  
+  
+P1 (Close) 
+0.43% 
+6.6881*** 
+0.0126 
+1.1747 
+P2 
+0.43% 
+7.2594*** 
+0.0118 
+1.275 
+P3 
+0.41% 
+6.2609*** 
+0.0129 
+1.0997 
+P4 
+0.31% 
+4.447*** 
+0.0137 
+0.7811 
+P5 (Remote) 
+0.21% 
+2.9175*** 
+0.0143 
+0.5124 
+COSP 
+0.22% 
+2.6395*** 
+0.0161 
+0.4636 
+All (100) 
+0.36% 
+7.2436*** 
+0.0098 
+1.2722 
+Note: This table reports the performance of pairs trading portfolios formed using FCS, where Non-micro stocks 
+are stocks whose size is less than 20% of the NYSE. P1 (Close) is the portfolio of the top 20 pairs with the closest 
+firm characteristics, and P5 (Remote) is the portfolio of the bottom 20 pairs with the remotest firm characteristics. 
+COSP (cost of spurious pairings) represents the difference between P1 (Close) and P5 (Remote). All (100) 
+represents the portfolio of 100 pairs in each sector. * significant at the 10% level; ** significant at the 5% level; 
+*** significant at the 1% level. 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3962867
+
+27 
+ 
+ 
+Table 6. Performance of portfolios formed using FCS with Elastic Net and OLS 
+Portfolio 
+Ret. 
+T-stat. 
+Std. Dev. 
+Annualized  Skewness 
+Kurtosis 
+Sharpe ratio 
+A. Mining 
+P1 (Elastic Net) 
+0.57% 
+4.3829*** 
+0.0259 
+0.7698 
+0.0458 
+1.3638 
+P1 (OLS) 
+0.55% 
+4.1759*** 
+0.0260 
+0.7334 
+-0.0514 
+1.6035 
+E-O 
+0.03% 
+0.6281 
+0.0079 
+0.1103 
+0.7342 
+4.7010 
+B. Manufacturing 
+P1 (Elastic Net) 
+0.65% 
+8.6197*** 
+0.0149 
+1.5139 
+1.3429 
+7.6717 
+P1 (OLS) 
+0.65% 
+8.5726*** 
+0.0149 
+1.5057 
+1.2248 
+6.5055 
+E-O 
+0.00% 
+0.1393 
+0.0053 
+0.0245 
+-0.2394 
+0.3517 
+C. Transportation and Public Utilities 
+P1 (Elastic Net) 
+0.52% 
+8.2353*** 
+0.0124 
+1.4464 
+-0.1042 
+1.5989 
+P1 (OLS) 
+0.48% 
+7.7445*** 
+0.0121 
+1.3602 
+0.1100 
+2.1979 
+E-O 
+0.04% 
+1.7522* 
+0.0047 
+0.3078 
+0.0131 
+1.2961 
+D. Retail Trade 
+P1 (Elastic Net) 
+0.49% 
+4.3123*** 
+0.0225 
+0.7574 
+0.1044 
+2.8197 
+P1 (OLS) 
+0.47% 
+4.2534*** 
+0.0220 
+0.7471 
+0.2213 
+3.1912 
+E-O 
+0.02% 
+0.5022 
+0.0071 
+0.0882 
+-0.1375 
+1.1111 
+E. Finance, Insurance and Real Estate 
+P1 (Elastic Net) 
+1.08% 
+13.9598*** 
+0.0153 
+2.4519 
+0.4520 
+5.2468 
+P1 (OLS) 
+1.05% 
+13.1645*** 
+0.0158 
+2.3122 
+0.3645 
+7.4651 
+E-O 
+0.03% 
+1.3473 
+0.0044 
+0.2366 
+-0.0717 
+5.5951 
+F. Services 
+P1 (Elastic Net) 
+0.68% 
+6.6584*** 
+0.0201 
+1.1695 
+0.3792 
+1.1353 
+P1 (OLS) 
+0.66% 
+6.4535*** 
+0.0201 
+1.1335 
+0.3993 
+1.6730 
+E-O 
+0.02% 
+0.5569 
+0.0072 
+0.0978 
+0.0115 
+1.2451 
+G. All Stocks Disregarding Sectors 
+P1 (Elastic Net) 
+0.43% 
+6.9175*** 
+0.0124 
+1.2134 
+-0.1821 
+3.3980 
+P1 (OLS) 
+0.45% 
+7.4902*** 
+0.0118 
+1.3139 
+0.2643 
+2.2007 
+E-O 
+-0.01% 
+-0.4347 
+0.0064 
+-0.0763 
+0.1482 
+0.7120 
+Note: This table reports the summary statistics on the returns of the P1(Close) of FCS-based quintile pairs trading 
+portfolios for each sector obtained using the elastic net and OLS models. E-O represents the difference in returns 
+between P1 (Elastic) and P1 (OLS). * significant at the 10% level; ** significant at the 5% level; *** significant 
+at the 1% level. 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3962867
+
+28 
+ 
+ 
+Table 7. The risk exposure of Secor-neutral, FCS-based quintile portfolios 
+  
+Alpha 
+MKT 
+SMB 
+HML 
+RMW 
+CMA 
+MOM 
+LIQ 
+Adj R2 
+P1 (Close) 
+0.691 
+0.01 
+-0.03 
+0.022 
+-0.022 
+0.014 
+-0.099 
+0.087 
+0.300 
+ 
+(13.879)*** 
+(-0.79) 
+(-1.692)* 
+(-0.9) 
+(-0.921) 
+-0.399 
+(-8.778)*** 
+(5.691)*** 
+ 
+P2 
+0.552 
+0.019 
+-0.006 
+0.036 
+0.001 
+-0.02 
+-0.109 
+0.081 
+0.319 
+ 
+(10.757)*** 
+(-1.428) 
+(-0.315) 
+(-1.449) 
+(-0.053) 
+(-0.581) 
+(-9.407)*** 
+(5.153)*** 
+ 
+P3 
+0.497 
+0.011 
+0.003 
+0.038 
+0.027 
+-0.026 
+-0.12 
+0.121 
+0.374 
+ 
+(9.297)*** 
+(-0.781) 
+(-0.175) 
+(-1.467) 
+(-1.084) 
+(-0.713) 
+(-9.862)*** 
+(7.346)*** 
+ 
+P4 
+0.359 
+0.008 
+0.024 
+0.028 
+-0.009 
+0.01 
+-0.109 
+0.118 
+0.337 
+ 
+(6.628)*** 
+(-0.591) 
+(-1.231) 
+(-1.078) 
+(-0.371) 
+-0.274 
+(-8.842)*** 
+(7.094)*** 
+ 
+P5 (Remote) 
+0.212 
+0.012 
+0.025 
+0.05 
+-0.016 
+-0.023 
+-0.113 
+0.12 
+0.305 
+ 
+(3.425)*** 
+(-0.749) 
+(-1.139) 
+(1.653)* 
+(-0.563) 
+(-0.538) 
+(-8.05)*** 
+(6.314)*** 
+ 
+All (600) 
+0.462 
+0.012 
+0.003 
+0.035 
+-0.004 
+-0.009 
+-0.11 
+0.106 
+0.397 
+ 
+(9.964)*** 
+(-1.003) 
+(-0.199) 
+(-1.544) 
+(-0.173) 
+(-0.287) 
+(-10.451)*** (7.396)*** 
+ 
+COSP 
+0.48 
+-0.002 
+-0.055 
+-0.028 
+-0.005 
+0.036 
+0.014 
+-0.033 
+0.036 
+ 
+(8.916)*** 
+(-0.13) 
+(-2.876)*** 
+(-1.066) 
+(-0.206) 
+(-0.988) 
+(-1.123) 
+(-1.987)** 
+ 
+Note: This table reports the regression analysis of monthly returns of Sector-neutral FCS-based quintile portfolios against the Fama–French five factors, 
+momentum factor, and liquidity factor. Alpha, MKT, SMB, HML, RMW, CMA, MOM, and LIQ are risk-adjusted returns, market excess returns, company size, 
+book-to-market ratio, profitability, capital investment, momentum and liquidity, respectively. P1 (Close) is the portfolio composed the top 20 pairs with the 
+closest firm characteristics by sector, and P5 (Remote) is the portfolio composed the bottom 20 pairs with the remotest firm characteristics by sector. COSP 
+(cost of spurious pairings) represents the difference between P1 (Close) and P5 (Remote). All (600) represents the portfolio composed from P1(Close) to 
+P5(Remote). * significant at the 10% level; ** significant at the 5% level; *** significant at the 1% level. 
+Electronic copy available at: https://ssrn.com/abstract=3962867
+
+29 
+ 
+Figure 1. Cumulative Returns of Sector-neutral, FC-based Quintile Portfolios 
+ 
+Note: This figure shows the cumulative returns of sector neutral, FC−based quintile portfolios. P1 (Close) is the portfolio composed the top 20 pairs with the 
+closest firm characteristics by sector, and P5 (Remote) is the portfolio composed the bottom 20 pairs with the remotest firm characteristics by sector. COSP 
+(cost of spurious pairings) represents the difference between P1 (Close) and P5 (Remote). All (600) represents the portfolio composed from P1(Close) to 
+P5(Remote). 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3962867
+
+30 
+ 
+ 
+Figure 2. The Average Monthly Returns of Portfolios Formed Using FCS 
+ 
+Note: This figure shows that the average monthly returns of portfolios formed on FCS between July 1986 and June 2018. P1 (Close) is the portfolio composed 
+the top 20 pairs with the closest firm characteristics by sector, and P5 (Remote) is the portfolio composed the bottom 20 pairs with the remotest firm 
+characteristics by sector. COSP (cost of spurious pairings) represents the difference between P1 (Close) and P5 (Remote). All (600) represents the portfolio 
+composed from P1(Close) to P5(Remote). * significant at the 10% level; ** significant at the 5% level; *** significant at the 1% level. 
+  
+ 
+Electronic copy available at: https://ssrn.com/abstract=3962867
+
+31 
+ 
+Figure 3. Cumulaitve Retruns of Cost of Spurious Pairing Portfolios  
+ 
+Note: This figure shows the cumulative returns of COSP (cost of spurious pairings) portfolios for each sector between July 1986 and June 2018. Where COSP 
+(cost of spurious pairings) represents the difference between P1 (Close) and P5 (Remote). 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3962867
+
+32 
+ 
+ 
+Figure 4. The Importance of Firm Characteristics 
+ 
+Note: This figure shows relative cross-comparison of the importance of the firm characteristics with respect to the pairs trading returns. The importance is 
+calculated using Equation (6) for the period between July 1986 and June 2018.  
+ 
+Electronic copy available at: https://ssrn.com/abstract=3962867
+
+33 
+ 
+Figure 5. The Importance of Time-Varying FCS 
+ 
+Note: This figure shows the importance of FCS, which is calculated by summing the negative elastic net regression coefficients in Equation (7) for the period 
+between July 1986 and June 2018.  
+ 
+Electronic copy available at: https://ssrn.com/abstract=3962867

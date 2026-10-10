@@ -1,0 +1,59 @@
+{
+  "doc_id": 257,
+  "titulo": "Optimal VWAP Execution under Transient Price Impact",
+  "resumen_operativo": "Resuelve el problema de liquidación óptima con benchmark VWAP bajo el Transient Impact Model (TIM), donde el impacto de mercado es lineal y transitorio (decae en el tiempo). El marco es más general que estudios previos: Implementation Shortfall y Target Close emergen como casos particulares. Obtiene soluciones explícitas en tiempo continuo y discreto para inversores CARA risk-averse. Demuestra que, a diferencia de Implementation Shortfall, la solución óptima VWAP contiene tanto compras como ventas incluso cuando el kernel de decaimiento es convexo (condición que elimina manipulación de precios en IS).",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Transient Impact Model (TIM/Propagator Model)",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Modelo de impacto de mercado donde el efecto de un trade decae en el tiempo según un kernel G(t-s), siendo más fuerte inmediatamente después del trade y disminuyendo gradualmente. Más realista que el modelo Almgren-Chriss de impacto permanente + temporal.",
+      "relaciones": [{"tipo": "MEJORA_A", "objeto": "Almgren-Chriss Impact Assumptions"}, {"tipo": "REQUIERE", "objeto": "Decay Kernel G(t)"}],
+      "cita_textual": "market impact is transient, i.e. impact is strongest immediately after being triggered and then it decays in time, typically very slowly"
+    },
+    {
+      "nombre": "Generalized VWAP Benchmark Interval [T₁, T₂]",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Formulación unificada donde el intervalo de benchmark puede ser un subconjunto propio del intervalo de trading: Implementation Shortfall (T₁=T₂=0), Target Close (T₁=T₂=T), VWAP estándar (T₁=0, T₂=T), o interval VWAP (caso general).",
+      "relaciones": [{"tipo": "EQUIVALE_A", "objeto": "Unified Execution Benchmark Framework"}],
+      "cita_textual": "IS, TC, and VWAP are special cases of this general problem"
+    },
+    {
+      "nombre": "Buy and Sell Trades in Optimal VWAP",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Hallazgo contraintuitivo: bajo benchmark VWAP con TIM, la estrategia óptima de venta incluye compras intermedias, incluso cuando el kernel de decaimiento G es convexo. Esto contrasta con IS donde la convexidad de G garantiza ausencia de round-trip trades.",
+      "relaciones": [{"tipo": "CONTRADICE_A", "objeto": "IS No-Manipulation Condition"}, {"tipo": "CAUSA", "objeto": "VWAP-Specific Trading Behavior"}],
+      "cita_textual": "contrary to what is observed for Implementation Shortfall, the optimal VWAP solution contains both buy and sell trades also when the decay kernel is convex"
+    },
+    {
+      "nombre": "Integral Equation Formulation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Transformación del problema de maximización de utilidad CARA en una ecuación integral, análoga a la usada para el caso IS, permitiendo resolver el problema VWAP con TIM de forma matemáticamente tratable.",
+      "relaciones": [{"tipo": "EQUIVALE_A", "objeto": "CARA Utility Maximization"}, {"tipo": "USA", "objeto": "Transient Impact Model"}],
+      "cita_textual": "we solve the problem in continuous time, by transforming the problem of maximizing of the utility function to the one of solving an integral equation"
+    },
+    {
+      "nombre": "Discrete-Time Quadratic Optimization",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Formulación alternativa en tiempo discreto que transforma el problema en optimización cuadrática, permitiendo añadir restricciones adicionales (ej. máxima tasa de participación) sin aumentar significativamente la complejidad computacional.",
+      "relaciones": [{"tipo": "USA", "objeto": "Constrained Optimization"}, {"tipo": "MEJORA_A", "objeto": "Continuous-Time Solution"}],
+      "cita_textual": "the maximization of the utility function can be transformed in a quadratic optimization problem, to which additional constraints in a linear or even quadratic form can be added"
+    },
+    {
+      "nombre": "Convexity of Decay Kernel G",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Propiedad del kernel de decaimiento: si G es convexa, el modelo TIM no admite transaction-triggered price manipulation bajo IS. Sin embargo, bajo VWAP esta condición no es suficiente para prevenir round-trip trades en la solución óptima.",
+      "relaciones": [{"tipo": "CONTRADICE_A", "objeto": "IS Manipulation-Free Condition"}],
+      "cita_textual": "convexity of G is not anymore sufficient and indeed optimal solutions for a sell program contain both buy and sell trades"
+    },
+    {
+      "nombre": "Execution Cash Flow with VWAP Benchmark",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Diferencia entre el cash obtenido de la ejecución (∫ ẋ_t·S_t·dt) y el cash a devolver al cliente (q₀·VWAP). El broker con utilidad CARA maximiza E[-exp(-2γ(X_T - q₀·VWAP))].",
+      "relaciones": [{"tipo": "MIDE", "objeto": "Broker P&L"}, {"tipo": "PARTE_DE", "objeto": "CARA Objective"}],
+      "cita_textual": "the objective function for a strategy x is U[x] = E₀[-exp(-2γ(X_T - q₀·VWAP^{T₂}_{T₁}))]"
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "Diseñado para ejecución VWAP intradía con impacto transitorio; soluciones en tiempo discreto permiten implementación práctica con restricciones de tasa de participación; kernel de decaimiento calibrable con datos de mercado."}
+}

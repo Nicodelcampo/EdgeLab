@@ -1,0 +1,77 @@
+{
+  "doc_id": 181,
+  "titulo": "Zero-Fee Trading and Price Clustering in Cryptocurrency Pairs",
+  "resumen_operativo": "Este paper demuestra que la implementación de trading sin comisiones (zero-fee trading) en exchanges reduce significativamente el agrupamiento de precios (price clustering) en números redondos. Para un quant, esto subraya la necesidad de ajustar el ruteo de órdenes y los modelos de congestión de liquidez ante cambios en los costos transaccionales.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "price clustering",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Tendencia de los precios a agruparse en números específicos (ej. terminados en 00, 99 o 01), facilitando la negociación táctica pero distorsionando la distribución uniforme.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "transaction costs"}
+      ],
+      "cita_textual": "Studies have found similar price clustering patterns in Bitcoin markets [6–11], with prices clustering most at 00, followed by 99, 01, or 50."
+    },
+    {
+      "nombre": "zero-fee trading",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Estructura de mercado sin comisiones por transacción, lo cual altera el comportamiento de los participantes y disminuye los precios agrupados artificialmente.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "price clustering"}
+      ],
+      "cita_textual": "Results suggest that zerofee trading has a signiﬁcant impact on price clustering, highlighting the need to consider this factor in analyzing market dynamics."
+    },
+    {
+      "nombre": "transaction costs",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Tarifas de negociación que moldean el comportamiento del mercado y los puntos de congestión; su eliminación cambia cómo los algoritmos colocan órdenes.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "price clustering"}
+      ],
+      "cita_textual": "This indicates that transaction fees can signiﬁcantly impact trading behavior and price clustering in ﬁnancial markets."
+    },
+    {
+      "nombre": "strategic trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Colocación táctica de órdenes en niveles específicos de precio (ej. usando 99 en lugar de 00) para ganar prioridad en el limit order book o aprovechar zonas de liquidez.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "price clustering"}
+      ],
+      "cita_textual": "The presence of strategic trading [5] also plays a role in the occurrence of price clustering."
+    },
+    {
+      "nombre": "realized volatility",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Calculada como la diferencia entre el precio más alto y más bajo en intervalos de 1 minuto; el estudio halla que se correlaciona negativamente con el agrupamiento de precios.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "price clustering"}
+      ],
+      "cita_textual": "The study ﬁnds a signiﬁcant negative association between volatility and price clustering in all models, contrary to what is commonly observed in traditional ﬁnancial markets"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "La implementación de cero comisiones reduce significativamente el agrupamiento de precios (price clustering), acercando los cierres a una distribución uniforme.",
+      "mercado": "Binance BTCBUSD y BTCUSDT",
+      "periodo": "Enero 2022 - Enero 2023",
+      "magnitud": "Coeficientes probit de -0.2354 a -0.1109 en modelos 1-mes evaluando clustering de precios",
+      "condiciones": "Analizado mediante regresiones Probit usando un dummy para el régimen de cero tarifas y datos de cierre cada 1 minuto.",
+      "robustez": "media",
+      "cita_textual": "Furthermore, predicted probability of price clustering is found to be reduced signiﬁcantly due to the implementation of zero-fee trading."
+    },
+    {
+      "afirmacion": "En el mercado de Bitcoin, un incremento de la volatilidad intradiaria disminuye la probabilidad de agrupamiento de precios, mientras que mayores volúmenes operados la incrementan.",
+      "mercado": "Binance BTCBUSD y BTCUSDT",
+      "periodo": "Enero 2022 - Enero 2023",
+      "magnitud": "Coeficiente de volatilidad negativo (hasta -0.0862); coeficientes de volumen y nivel de precios positivos",
+      "condiciones": "Volatilidad medida como diferencia high-low a nivel de 1 minuto, volumen a nivel logarítmico, usando regresiones Probit.",
+      "robustez": "media",
+      "cita_textual": "The ﬁndings suggest that price level and trading volume have a positive correlation with predicted probability of price clustering, while volatility has a negative correlation."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "Útil para modelar cómo los cambios de fees modifican la concentración de liquidez en el ES alrededor de números redondos (00, 50) e impactan la rentabilidad del strategic trading."
+  }
+}

@@ -1,0 +1,2144 @@
+High-Frequency Trading and Price Discovery:
+The Role of Strategic Runs⋆
+Tino Cestonaroa,1
+aGoethe University Frankfurt, Theodor-W.-Adorno-Platz 4, 60323 Frankfurt, Germany
+Abstract
+Strategic runs are an outcome of high-frequency trading strategies that lead to alternating
+cycles of order submissions and cancellations within a short time interval. Examining granular limit order book data, we ﬁnd that submissions and cancellations resulting from these
+runs have less permanent price impact and contribute less to price discovery than similar
+trading activities not part of a strategic run. Once other market participants can recognize
+that an order belongs to a strategic run, its contribution to price discovery diminishes signiﬁcantly. Our ﬁndings indicate that such high-frequency trading activities do not enhance
+price discovery but rather dilute it by triggering a substantial number of orders with limited
+informational value.
+Keywords:
+High-frequency trading, strategic runs, price discovery, price impact, limit
+order book
+JEL: G10, G14, G15
+⋆I thank Micha Bender, James Brugler, Benjamin Clapham, Carole Comerton-Forde, Peter Gomber,
+Gideon Saar, and participants at the Annual Meeting of the Southern Finance Association, the European
+Conference of the Financial Management Association, the International Conference of the French Finance
+Association, and the International Conference on Forecasting Financial Markets for valuable comments. I
+gratefully acknowledge research support from eﬂ- the Data Science Institute. I also thank the Deutsche
+Börse Group for providing the data used in this study.
+1cestonaro@wiwi.uni-frankfurt.de
+February 3, 2026
+
+1. Introduction
+For more than a decade, high-frequency trading (HFT) has become a dominant aspect
+of equity markets, profoundly impacting them in various ways. According to the European
+Securities and Markets Authority (2021) (ESMA), HFT activity accounts for approximately
+60% of the total volume traded in European equity markets. Despite HFT being a wellestablished practice in equity markets, its implications for market quality remain a subject
+of ongoing debate in the literature. Contrary to the ﬁrst beliefs, the early empirical literature
+has demonstrated that HFT can have a positive impact on market quality. Studies of Carrion
+(2013) and Brogaard et al. (2014) provide evidence of the beneﬁcial impact of HFT activity
+on price discovery and price eﬃciency. Moreover, the literature also ﬁnds positive liquidity
+eﬀects due to HFT (Hasbrouck and Saar, 2013; Brogaard and Garriott, 2019). However, these
+studies are contrasted by various others demonstrating HFT’s negative impact on equity
+markets. Van Kervel and Menkveld (2019) and Hirschey (2021) show that high-frequency
+traders are able to detect informed order ﬂow of high-frequency traders and exploit this
+using their speed advantage at the cost of slower traders. Furthermore, Shkilko and Sokolov
+(2020) and Goldstein et al. (2023) provide evidence that the speed advantage of the fastest
+high-frequency traders is associated with higher trading costs and the crowding out of slower
+traders from the limit order book.
+The recent literature demonstrating the negative eﬀects of HFT suggests that at least
+some activities of these traders might not be beneﬁcial for certain aspects of market quality.
+In this study, we aim to contribute to this discussion by analyzing a speciﬁc outcome of HFT
+activity known as "strategic runs" and examining its impact on price discovery. Strategic
+2
+
+runs are a widespread phenomenon that accounts for a large fraction of all limit order
+book activity and predominantly results from HFT strategies rather than agency trading
+(Chakrabarty et al., 2023). The original deﬁnition of strategic runs (hereafter also referred
+to as runs) dates back to Hasbrouck and Saar (2013), who deﬁne runs as a sequence of linked
+order book events. According to the authors, a run starts with an order submission, followed
+by a cancellation of that order. Within a very short time interval, the algorithm resubmits
+the order on the same side and with the same order size. This sequence of order cancellations
+and resubmissions on the same side and with the same quantity continues in an alternating
+order until the initial order is fully executed or ﬁnally cancelled. While the algorithmic
+strategy and its parameters remain unobservable, the resulting order ﬂow suggests that the
+rapid submissions and cancellations aim to trigger interactions with other trading algorithms
+(Hasbrouck and Saar, 2013).
+Recent theoretical models on limit order markets provide only a few explanatory approaches to the phenomenon of strategic runs. Contrary to the traditional models, such as
+Glosten and Milgrom (1985), that consider market orders as the central source of information
+utilized by informed traders, new models highlight that both market and limit orders are
+used by uninformed as well as informed investors (Goettler et al., 2009; Riccó et al., 2020;
+Roşu, 2020). This implies that the limit price of a limit order may reﬂect the uninformed
+investor’s belief about the true value of the asset or the true value of the asset observable by
+the informed investor. While these models provide useful insights, the model of Bhattacharya
+and Saar (2021) is the ﬁrst that provides an explanation for the frequent revisions, i.e. numerous cancellations followed by resubmissions, that characterize a strategic run and are a
+stylized fact in limit order book markets. According to Bhattacharya and Saar (2021), infor3
+
+mation asymmetry in a limit order book market leads to frequent revisions, as uninformed
+investors adjust their beliefs in accordance with the information conveyed by the order ﬂow.
+This behaviour is fostered by the tremendous advancements in trading technology and the
+associated reduction in costs for monitoring, cancellation, and resubmission. The theoretical
+derivation is also in line with the empirical ﬁndings of Van Kervel and Menkveld (2019) who
+show that high-frequency traders learn from the informed order ﬂow of institutional investors
+and frequently revise their orders accordingly.
+While the model of Bhattacharya and Saar (2021) provides an explanation for the occurrence of strategic runs, it does not explain all patterns in those runs. In our data sample,
+we observe that almost half of all cancellations are followed by a limit order submission with
+an unchanged price limit.2 As the revision of a limit order might lead to the loss of time
+priority, it is not likely that such a resubmission comes from the same algorithm updating its
+bliefs. It appears more likely that such a resubmission comes from another HFT algorithm
+that was triggered by the cancellation. This aligns more to the hypothesis from the initial
+paper of Hasbrouck and Saar (2013) that those observations are the outcome of multiple
+trading algorithms interacting with each other.
+Putting both explanations together, the linked order book events within a strategic run
+may result from both high-frequency traders updating their beliefs and multiple algorithms
+reacting to each other’s actions. Note that both actions convey limited information to the
+market. While updating beliefs only relates to processing an existing information in the
+2In the original paper from Hasbrouck and Saar (2013), they ﬁnd the same pattern of unchanged price
+limits in the resubmitted order, but they do not report any numbers regarding the frequency of this sequence.
+4
+
+observed order ﬂow, the attempt to trigger other algorithms rather represents a search for
+information than providing new information to the market.
+As a consequence, we suppose that the informativeness of the order ﬂow generated by
+strategic runs is lower than non-strategic run order ﬂow, which partially consists of informed
+order ﬂow.
+Moreover, we conjecture that a resubmission with an unchanged price limit
+provides less information than a resubmission with an updated price limit, as the former
+suggests that multiple algorithms trying to trigger each other, while the latter is more related
+to high-frequency traders updating their beliefs in accordance with detected informed order
+ﬂow.
+To shed light into the informational value of strategic run order ﬂow, we examine the
+permanent price impact and the contribution to price discovery of limit order book events
+associated with strategic runs. Speciﬁcally, we investigate empirically whether limit order
+book events that are part of a strategic run diﬀer in terms of price impact and their contribution to price discovery from limit order book events that are not generated by a strategic
+run. Due to the widespread awareness of the phenomenon of strategic runs, we suppose that
+the contribution to price discovery of limit order book events declines when market participants are able to recognize that the event is part of a strategic run. Moreover, we examine
+whether changes in the aggressiveness of the resubmitted orders provide new information
+to the market and thus aﬀect the permanent price impact and the contribution to price
+discovery of these limit order book events.
+Our results show that limit order book events associated with strategic runs have less
+price impact and contribute relatively less to price discovery compared to non-strategic run
+events. Furthermore, we ﬁnd that the ﬁrst two events of a strategic run are more relevant for
+5
+
+price discovery than subsequent events in the run. Both results suggest that limit order book
+events triggered by a strategic run are less informative than non-strategic run events. The
+contribution to price discovery decreases signiﬁcantly as soon as other market participants
+can recognize the strategic run. In addition, we observe that resubmissions within a strategic
+run that increase its aggressiveness have a higher price impact than resubmissions that do not
+alter the run’s aggressiveness. Considering a decreasing aggressiveness within a run, we ﬁnd
+for two out of three event categories that the price impact is lower than for resubmissions
+that do not alter the aggressiveness.
+Since the price impact is higher for increases and
+lower for decreases, this suggests that high-frequency traders are adjusting their orders in
+line with future midpoint movements. This aligns with empirical ﬁndings of Van Kervel
+and Menkveld (2019) and the theory of Bhattacharya and Saar (2021) indicating that highfrequency traders are able to convey information from observed informed order ﬂow and
+update their beliefs accordingly. Thereby, these updates in terms of run’s aggressiveness
+provide more informational value and contribute more to price discovery than resubmissions
+that do not alter run’s aggressiveness.
+Our study enriches two research streams in the existing literature. On the one hand,
+our ﬁndings contribute to the mentioned literature on the impact of HFT on market quality. We provide further evidence that certain activities of high-frequency traders do not
+improve price discovery, but rather dilute it by submitting a substantial number of messages
+to equity markets that contain limited informational value. Speciﬁcally, revisions that do
+not alter the aggressiveness of a strategic run exhibit a low signal-to-noise ratio, calling into
+question the economic value of this order ﬂow. On the other hand, our evidence contributes
+to the growing body of research on price discovery at the level of individual limit order
+6
+
+book events. For instance, Brogaard et al. (2019) demonstrate the relevance of non-trading
+activity, such as limit order submissions and cancellations, for price discovery, while distinguishing also between HFT and non-HFT activity. Following up, Brugler and Hendershott
+(2023) disentangle HFT’s contribution to price discovery regarding the source of information. Additionally, Kwan et al. (2022) show that not only do the attributes of the limit order
+book event itself, such as aggressiveness and order size, determine the event’s contribution
+to price discovery, but the state of the limit order book, including factors like bid-ask spread
+and order book imbalance, also plays a crucial role. Adding to this literature, our study
+provides evidence that, besides the state of the limit order book and the explicit attributes
+of the limit order book event, implicit attributes also matter, such as the interconnection
+between multiple events and the attributes of these events. In particular, we are the ﬁrst to
+show that limit order book events linked through a strategic run, which essentially repeat
+the same signal, tend to provide less valuable information to the market. However, these
+events become more informative if they alter the aggressiveness of the strategic run.
+The remainder of the paper is structured as follows. Section 2 discusses the data used
+in this study, the identiﬁcation of strategic runs, and the applied methodology to estimate
+price impact and the contribution to price discovery of a limit order book event. Afterwards,
+we report the results of this study in Section 3. Section 4 concludes.
+2. Data and Methodology
+2.1. Data
+In this study, we rely on message data from Deutsche Börse’s A7 Analytics Platform.
+The data sample consists of the 10 largest German stocks in terms of trading volume traded
+7
+
+on XETRA. The sample period spans from January to March 2023. Market statistics such as
+trading volume, relative spread, and volatility for the 10 stocks in the sample are presented in
+Table A.1 in the Appendix. Furthermore, the table shows the average number of messages,
+market orders, limit orders, and cancellations per trading day. The average relative spread of
+2.60 to 3.67 basis points (bps) and the large number of messages suggest that these stocks are
+highly liquid instruments that are frequently traded. Furthermore, according to Chakrabarty
+et al. (2023), the number of messages and the number of cancellations highly correlate with
+algorithmic and HFT activity. The average number of messages and cancellations per stockday indicate that the stocks in the sample are actively traded stocks where large fractions
+of order ﬂow are generated by algorithmic and high-frequency traders.3
+The data itself consists of messages each describing the incremental change to the limit
+order book. Among other things, each message includes a template ID describing the message
+type (such as order submission, order cancellation, order modiﬁcation), the associated side
+of the limit order book (buy or sell), its price limit and quantity, and two timestamps, both
+with nanosecond precision: a priority timestamp associated with the order, and a timestamp
+for the limit order book observation. Using the priority timestamp, we can link an order
+cancellation with its initial submission. However, the data does not come with trader IDs.
+This means we cannot track whether two order submissions are generated by the same trader.
+3To put things into perspective, Brogaard et al. (2019) report an average daily number of messages of
+72,466, with HFT accounting for 53.43% of all messages. While the data sample is 10 years older than ours,
+it still indicates that the number of messages in our sample is substantial, suggesting HFT activity in the
+stocks.
+8
+
+Using this message stream, we reconstruct the limit order book.4
+We transform an
+order modiﬁcation into an order cancellation and a limit order submission occurring at the
+same time. We utilize the reconstructed limit order book to calculate midpoints that we
+subsequently use to determine the price impact of limit order book events. Finally, we only
+consider continuous trading and exclude the time periods 15 minutes before and after an
+auction to ensure that our results are not aﬀected by the auctions’ impact on liquidity. As
+there are three scheduled auctions at XETRA (opening, midday, and closing), we typically
+consider two trading phases per day: (1) from 15 minutes after the opening to 15 minutes
+before the midday auction, and (2) from 15 minutes after the midday to 15 minutes before
+the closing auction.
+2.2. Strategic runs
+Our deﬁnition of a strategic run aligns with the original deﬁnition proposed by Hasbrouck
+and Saar (2013). In their study, the authors deﬁne a strategic run as a sequence of linked
+limit order book events.
+A run begins with an order submission, which is subsequently
+canceled. This is followed by further submissions and subsequent cancellations, all on the
+same side of the book and with the same quantity as the initial submission. The outcome
+is an alternating cycle of limit order submissions and cancellations until the quantity of the
+initial order is either ﬁnally executed or deﬁnitively canceled. An example of a strategic run
+in our data sample is provided in Table A.2 in the Appendix. While we cannot observe the
+cause of these runs, it is likely that these runs are the result of algorithmic trading strategies
+4To validate our order book reconstruction, we compare it with the oﬃcial limit order book time series
+data from XETRA.
+9
+
+by high-frequency traders attempting to trigger or undercut other trading algorithms in the
+market (Hasbrouck and Saar, 2013).
+To identify strategic runs in our data sample, we follow the approach of Hasbrouck and
+Saar (2013). We iterate through each cancellation in the message stream and verify whether
+it is followed by a subsequent limit or market order. We consider the initial submission, the
+cancellation, and the subsequent resubmission as part of a strategic run if the resubmission is
+(1) on the same side, (2) submitted within 100ms after the cancellation, and (3) has (almost)
+the same quantity.5 If the resubmission is a market order that is fully executed or there is
+no resubmission after 100ms, the strategic run ends. When a resubmission is only partially
+executed, we follow the remaining quantity using the same principle. Messages that are
+already assigned to a strategic run cannot be linked to other runs. Finally, we divide our
+sample in runs that consist of 3 to 9 events and runs that have 10 or more events. In line
+with the original study (Hasbrouck and Saar, 2013) and other studies applying the same
+algorithm to more recent data samples (Chakrabarty et al., 2023), we predominantly focus
+on the latter group. The probability of 10 or more events with identical attributes randomly
+occurring within a short time period is very low. Hence, it is highly probable that these
+events are part of a strategic run and are accurately identiﬁed by the algorithm.
+Table 1 shows the average number of observations per asset-day when applying the algorithm to our data sample. On average, we identify 58,398 strategic runs per asset-trading
+5Regarding the quantity deﬁnition, we relax the requirement that the resubmission needs to have the
+exact same quantity by allowing deviations of one unit. We do this because, in our data sample, there exists
+a strong pattern where linked messages, in the sense of Hasbrouck and Saar (2013), sometimes deviate by one
+unit. We suppose that this is a minor attempt by high-frequency traders to camouﬂage their strategic runs.
+Table A.3 in the Appendix shows an additional example of a strategic run where the quantity is marginally
+adjusted by one unit throughout the run.
+10
+
+Table 1: Strategic run observations
+All panels show the average number of observations per trading-day and diﬀerentiate whether a message
+is not part of a strategic run (no SR), part of a strategic run with up to 9 linked events (SR 3 to 9) or
+part of a run that has more than 10 events. The ﬁrst panel displays the number of uniquely identiﬁed
+strategic runs per group. Moreover, it shows the number of messages is the sum of the number of market
+orders, limit orders, and cancellations. The percentage points refer to the share of the group to the total
+number of observations of that type. To highlight the diﬀerent aggressiveness among the three groups, Panel
+B shows the number of limit orders tackling levels deeper than the BBO (BBO - 1+ticks) and levels 5 or
+more ticks away from the BBO (BBO - 5+ticks). Here, the percentage points refer to the share of all limit
+orders within that group. Panel C shows how often a resubmission that is part of a strategic run improves
+(increase aggressiveness), worsens (decrease aggressiveness), or does not change the price limit compared
+to the previously cancelled order in the strategic run. Here, the percentage points refer to the share of all
+resubmitted orders within that group.
+Panel A: Number of observations
+Type
+no SR
+%
+SR 3 to 9
+%
+SR 10+
+%
+Total
+Strategic runs
+53 312
+91.3%
+5086
+8.7%
+58 398
+Messages
+220 547
+42.7%
+219 664
+42.6%
+75 886
+14.7%
+516 097
+Market orders
+3912
+93.0%
+274
+6.5%
+21
+0.5%
+4207
+Limit orders
+109 442
+42.5%
+110 016
+42.7%
+37 950
+14.7%
+257 408
+Cancellations
+107 193
+42.1%
+109 374
+43.0%
+37 915
+14.9%
+254 482
+Panel B: Limit order aggressiveness
+Aggressiveness
+no SR
+%
+SR 3 to 9
+%
+SR 10+
+%
+Total
+BBO - 1+ticks
+45 846
+41.9%
+54 696
+49.7%
+21 643
+57.0%
+122 185
+BBO - 5+ticks
+11 572
+10.6%
+24 457
+22.2%
+8438
+22.2%
+44 467
+Panel C: Changes in aggressiveness
+Aggressiveness
+no SR
+%
+SR 3 to 9
+%
+SR 10+
+%
+Total
+Increase
+20 626
+28.7%
+7493
+22.7%
+28 119
+No change
+30 268
+42.2%
+15 303
+46.3%
+45 571
+Decrease
+20 913
+29.1%
+10 235
+31.0%
+31 148
+Total
+71 807
+33 031
+104 838
+11
+
+day. Most of these runs (91.3%) are short runs, i.e., they consist of fewer than 10 linked
+events, while 8.7% have 10 or more events. In total, more messages are assigned to strategic runs than not. The longer runs (SR 10+) account for 14.7% of all messages within a
+trading day. Diﬀerentiating between the messages, we see that longer runs predominantly
+consists of non-aggressive order ﬂow. We only observe 21 market orders per asset-day, and
+approximately 38,000 limit order submissions and cancellations, respectively. The share of
+market orders is higher for short runs, while it is the highest in the non-strategic run group.
+Evaluating the aggressiveness of limit orders within a long run, we ﬁnd that 57.0% (22.2%)
+of all limit orders are submitted (ﬁve or more ticks) below the best bid and oﬀer (BBO).
+This share of passive order ﬂow is lower in the short run (49.7% and 22.2%) and the lowest
+in the non-strategic run group (41.9% and 10.6%). In sum, we ﬁnd that long run order ﬂow
+is less aggressive than short-run order ﬂow, while non-strategic run order ﬂow is the most
+aggressive. Finally, we observe how often the resubmissions within a strategic run improve,
+worsen, or do not change the price limit compared to the previously cancelled order in the
+strategic run. The data shows that both short and long runs tend to change their aggressiveness frequently, but short runs are more likely to increase the aggressiveness than long
+runs. This aligns with the general ﬁnding of long runs generating more passive order ﬂow.
+2.3. Classiﬁcation of limit order book events
+To evaluate whether limit order book events have a diﬀerent price impact when they
+belong to a strategic run, they need to be categorized ﬁrst. Our classiﬁcation of limit order
+book events is similar to the approach of Brogaard et al. (2019) who categorizes each event
+according to its aggressiveness and whether it is generated by a high-frequency trader or not.
+12
+
+We also categorize each event along two dimensions. Firstly, we categorize limit order book
+events based on their aggressiveness, measured by the distance to the BBO in ticks. Table
+2 shows how we classify all order book events according to this dimension.
+Table 2: Limit order book event classiﬁcation in terms of aggressiveness
+This table shows the classiﬁcation approach of limit order book events in terms of aggressiveness. Each of
+the nine classes is further divided into three classes: not being part of a strategic run, being part of short
+run, or part of a long run. This ﬁnally leads to 27 classes of limit order book events.
+Submission event
+Cancellation event
+Description
+Add market
+Submission of a market or a marketable limit order
+that leads to a trade.
+Add limit improve
+Cancel limit worsening
+Submission/cancellation of a limit order that improves/worsens the current best bid or oﬀer.
+Add limit at BBO
+Cancel limit at BBO
+Submission/cancellation of a limit order at the current best bid or oﬀer.
+The cancellation does not
+change the best bid or oﬀer.
+Add limit at BBO-1
+Cancel limit at BBO-1
+Submission/cancellation of a limit order one tick
+worse than the current best bid or oﬀer.
+Add limit at BBO-2+
+Cancel limit at BBO-2+
+Submission/cancellation of a limit order two or more
+ticks worse than the current best bid or oﬀer.
+In contrast to Brogaard et al. (2019), we do not diﬀerentiate between marketable orders
+(simply market orders hereafter) that consume all liquidity at the BBO, and those that do
+not. This decision stems from the low number of market orders generated by a long run, as
+shown by Table 1. Further segmenting market orders into two subclasses would reduce the
+number of observations, potentially leading to unreliable and imprecise parameter estimates
+and statistical inference. Consequently, all order book events are divided into 9 classes as
+illustrated by Table 2.
+Secondly, we additionally distinguish between limit order book events that are part of
+a short, long, or no strategic run. Consequently, each of the 9 events is divided into three
+classes: not being part of a strategic run, being part of short run, or part of a long run, resulting in a total of 27 classes of limit order book events. Applying this event categorization
+13
+
+to our data sample yields the relative frequencies displayed in Table 3. While this categorization approach will be utilized to examine whether events that are part of a strategic run
+are less relevant for price discovery, we will further subdivide certain events that belong to a
+long run into additional subclasses to investigate our other hypotheses. These more granular
+classiﬁcations are discussed in Section 3 when also discussing the model that is estimated.
+Table 3: Message frequencies
+This table shows the relative frequencies for each of the deﬁned limit order book events. The values are
+expressed in percentage points.
+Event
+no SR
+SR 3 to 9
+SR 10+
+Total
+Add market
+0.758
+0.053
+0.004
+0.815
+Add limit improve
+1.236
+0.700
+0.181
+2.117
+Cancel limit worsening
+0.832
+0.633
+0.187
+1.652
+Add limit at BBO
+11.087
+10.019
+2.978
+24.084
+Cancel limit at BBO
+10.947
+10.016
+3.345
+24.308
+Add limit at BBO-1
+3.198
+3.338
+1.560
+8.096
+Cancel limit at BBO-1
+2.992
+3.068
+1.262
+7.322
+Add limit at BBO-2+
+5.685
+7.260
+2.633
+15.578
+Cancel limit at BBO-2+
+5.999
+7.475
+2.553
+16.027
+Total
+42.734
+42.562
+14.703
+100.000
+Table 3 shows that the 516,097 messages per trading-day on average, mainly belong to
+the no SR and SR 3 to 9 group. In general, we see that almost half of the events, either
+order submission or cancellation, tackle the BBO. Events that may instantaneously shift
+the midpoint, i.e., market orders, improving limit orders, or worsening cancellations, only
+account for 4.6% of all order book events. Most of these events are triggered by non-SR
+activity. Compared to the values reported in Brogaard et al. (2019), our sample contains
+less market orders, but shows more activity at and one tick below the BBO. Interestingly, the
+high-frequency traders in their sample act rather aggressively, being responsible for more improving limit orders and worsening cancellations than non-high-frequency traders. However,
+14
+
+when considering only strategic runs, we ﬁnd that this aspect of HFT activity generates
+less aggressive order ﬂow, especially for longer runs. While this might indicate a general
+change in the aggressiveness of HFT strategies, it primarily supports the presented descriptive statistics indicating that HFT strategies leading to strategic runs are less aggressive
+than other trading strategies employed by high-frequency traders.
+2.4. Estimating price impact and contribution to price discovery
+Hasbrouck (1991a) introduced a structural vectorautoregression (SVAR) model to estimate the price impact and the contribution to price discovery of trades. This model is
+extended by Fleming et al. (2018), allowing to estimate the eﬀects of other trading activities such as limit order submissions and cancellations, while controlling for the diﬀerence
+between buy- and sell-sided activities. The extended approach is used by previous studies
+that examine the contribution of market orders, limit orders, and cancellations to price discovery at the high-frequency level (e.g., Brogaard et al., 2019; Chaboud et al., 2021; Brugler
+and Hendershott, 2023). We also follow this approach by estimating a model in the same
+way, but analyzing the diﬀerences between trading activities that are part of a short or long
+strategic run and those that are not. Speciﬁcally, we estimate the following model for each
+stock-day in our sample:
+B0yt = B1yt−1 + B2yt−2 + ... + B5yt−5 + ωt, with
+B0 =
+
+
+1
+−b1
+−b2
+· · ·
+−bm+1
+0
+1
+0
+· · ·
+0
+0
+0
+1
+· · ·
+0
+...
+...
+...
+...
+...
+0
+0
+0
+· · ·
+1
+
+
+(1)
+15
+
+where yt = (rt, Xt) with rt being the log-return of the midpoint in t and Xt being a
+vector of m signed dummies according to our classiﬁcation of limit order book events. This
+classiﬁcation varies throughout the analyses discussed in the result section 3. In the model,
+a dummy variable takes a value of 1 in t if the event increases demand pressure, -1 if the
+event increases supply pressure, or 0 if the event does not occur in t. For instance, a dummy
+associated with the submission of a market or limit order in t takes the value of 1 if it is a
+buy order and -1 if it is a sell order. In contrast to order submissions, cancellations withdraw
+liquidity from the market. Thus, a dummy associated with the cancellation of a limit order
+in t takes the value of -1 if the cancelled order is a buy-order and 1 if it is a sell-order.
+Moreover, in the model, ωt is the structural innovation vector, while matrix B0 represents
+the contemporaneous eﬀects among the variables in the system. We identify the model by
+allowing for contemporaneous aﬀects in the return equation only. This identiﬁcation strategy
+is in line with the mechanisms in a central limit order book. Market orders, limit orders
+improving, or cancellation worsening the midpoint can instantaneously shift it by consuming,
+improving, or deleting the current BBO, respectively. In line with Fleming et al. (2018) and
+Brogaard et al. (2019), we estimate the SVAR in event time, while using ﬁve lags. Finally,
+we exclude all asset-days where at least one dummy variable has less than 10 observations.
+To get insights about how each order book activity impacts the midpoint, we estimate
+impulse response functions (IRFs). The main purpose of IRFs is to describe how the variables
+react over time to a shock in one (or more) variable(s) in the system, making them useful
+for tracing the transmission of shocks up to time horizon t + h. As we are predominantly
+interested how each order book event impacts the midpoint, we calculate IRFs to examine
+the reaction of rt with the impulses being one unit in one dummy per IRF. We set the
+16
+
+time horizon h to 20 order book events after the impulse. This value is derived based on
+graphical analyses of multiple asset-days and is also in line with the value used by Brogaard
+et al. (2019). In the results section, we report the mean of the IRF estimates per asset-day.
+We use standard errors clustered at the asset-day level as introduced by Thompson (2011)
+to determine whether an estimate diﬀers signiﬁcantly from zero or whether two estimates
+signiﬁcantly diﬀer from each other at the 95% and 99% level, respectively.
+In addition to the IRFs, we also calculate the information shares measure proposed by
+Hasbrouck (1991b) that is based on the decomposition of the variance of the eﬃcient price.
+The information shares complement the permanent price impact estimates of the IRFs by
+weighting the price impact with the relative occurrence of the event. The result is an estimate
+in percentage points suggesting how much of the midpoint innovation is explained by the
+corresponding order book event.
+Again, we report the mean of the estimates across all
+asset-days in the results section.
+3. Results
+3.1. Price discovery attributable to (non-)strategic run activity
+In the ﬁrst part of our analysis, we explore whether a limit order book event associated
+with a strategic run signiﬁcantly diﬀers from an event that is not part of a strategic run
+in terms of permanent price impact and its contribution to price discovery. As mentioned
+before, we focus on the diﬀerence between the groups "no SR" and "SR+10" to minimize the
+risk of falsely classiﬁed strategic runs and align with the original deﬁnition of Hasbrouck and
+Saar (2013). Nevertheless, we also report the results for the group of short runs ("SR 3 to
+9") to examine whether the results are consistent. To analyze the diﬀerences, we make use
+17
+
+of our initial classiﬁcation of limit order book events, dividing them into 9 classes according
+to their aggressiveness, while further distinguishing between events that are part of a short,
+long, or no strategic run. This categorization results in 27 diﬀerent event types in total.
+Table 4 reports the results for the permanent price impact estimates according to the IRFs,
+expressed in basis points.
+Table 4: Permanent price impact: no SR, SR 3 to 9, SR 10+
+This table shows the permanent price impact according to the Impulse Response Function. The price impact
+is measured in basis points. For each group, indicated by the single Roman numerals, one star (*) and two
+stars (**) following the coeﬃcient indicate that the coeﬃcient is, on average, signiﬁcantly diﬀerent from zero
+at the 95% and 99% conﬁdence levels, respectively. For diﬀerences, one star (*) and two stars (**) following
+a positive (negative) value indicate that the minuend is signiﬁcantly larger (lower) than the subtrahend at
+the 95% and 99% conﬁdence levels, respectively.
+(I)
+(II)
+(III)
+(I)-(II)
+(I)-(III)
+(II)-(III)
+Type
+no SR
+SR 3 to 9
+SR 10+
+Diﬀ.
+Diﬀ.
+Diﬀ.
+Add market
+0.848**
+0.588**
+0.544**
+0.259**
+0.296**
+0.043**
+Add limit improve
+0.603**
+0.516**
+0.277**
+0.087**
+0.326**
+0.239**
+Cancel limit worsening
+0.550**
+0.458**
+0.255**
+0.092**
+0.295**
+0.203**
+Add limit at BBO
+0.086**
+0.087**
+0.080** −0.001
+0.007**
+0.007**
+Cancel limit at BBO
+0.096**
+0.062**
+0.051**
+0.034**
+0.045**
+0.011**
+Add limit at BBO-1
+0.007**
+−0.001**
+0.007**
+0.008**
+0.000
+−0.008**
+Cancel limit at BBO-1
+0.116**
+0.111**
+0.109**
+0.006**
+0.007**
+0.001
+Add limit at BBO-2+
+0.016**
+−0.016**
+−0.007**
+0.031**
+0.023**
+−0.009**
+Cancel limit at BBO-2+
+0.014**
+0.000
+0.015**
+0.014** −0.001
+−0.015**
+Our results suggest that almost every limit order book event has a signiﬁcant price impact.
+Generally, the more aggressive the event, the stronger the price impact. While market orders
+have the strongest price impact, reaching up to 0.848 bps, midpoint-improving submissions
+and midpoint-worsening cancellations lead to price impacts of up to 0.603 and 0.550 bps,
+respectively. In contrast, activities at the BBO have a price impact of up to 0.096 bps. Limit
+orders two or more ticks away from the BBO have only a marginal price impact in the long
+run with estimates of up to 0.016 bps. These estimates align with previous literature but
+are in the lower bound of estimates (e.g., Brogaard et al., 2019; Kwan et al., 2022). The
+18
+
+relatively low values of our price impact estimates might be attributable to the fact that our
+sample contains substantially more messages per asset-day than the samples used in other
+studies such as Brogaard et al. (2019), potentially reducing the informativeness and, thus,
+the price impact of any single event on average.
+The diﬀerences between non-strategic run activity and strategic run activity are presented
+in the second-to-last column (I-III). The results show that the permanent price impact of
+non-strategic run events is signiﬁcantly larger than the impact of strategic run events for
+almost every event type. While the diﬀerence in terms of price impact is 0.296 bps between
+market orders, it is 0.326 bps for improving limit orders. Order cancellations exhibit similar
+diﬀerences as submissions. A cancellation at the BBO triggered by a strategic run has a
+price impact of 0.051 bps, whereas a cancellation at the BBO not generated by a strategic
+run impacts the price by 0.096 bps.
+Generally, the diﬀerences in price impact between
+non-strategic run and strategic run events are relatively large and economically meaningful,
+especially for aggressive events. For instance, the price impact of an improving limit order is
+more than twice as high if it is not part of a strategic run. Regarding events tackling deeper
+levels of the limit order book, the positive diﬀerences become less signiﬁcant.
+Consistently with those results, we observe a signiﬁcant and positive diﬀerence for almost
+every event type when comparing non-strategic run to short-run activity (I-II). Comparing
+these events, we ﬁnd for all events except for limit order submissions at the BBO that
+short-run activity has less price impact than non-strategic run activity. Overall, our results
+suggest that an order book event with the same level of aggressiveness has less permanent
+price impact when it is part of a strategic run, which indicates that these events possess
+signiﬁcantly lower informational value. This may be because some of the high-frequency
+19
+
+traders’ information and beliefs were already conveyed to the market by preceding orders
+that were part of the run. Generally, the results show that the linkage between multiple
+events signiﬁcantly aﬀects the price impact of individual events.
+Furthermore, for some activities we estimate a negative price impact. However, given
+the signed event dummies, we would expect that each event has a (signiﬁcant) positive price
+impact. For instance, our results suggest that a buy order that is part of a long strategic run
+and has a price limit of two or more ticks worse than the BBO, reduces the midpoint by 0.007
+bps in the long run. While this result seems to be counterintuitive at ﬁrst, because the buy
+order is increasing demand, it aligns with the empirical literature. Brogaard et al. (2019)
+interpret this negative price impact as the capability of high-frequency traders to predict
+the next midpoint move, and act accordingly to gain time priority at the associated price
+levels. For instance, a high-frequency trader predicting an upward move of the midpoint
+may submit a sell order one tick away from the best oﬀer (which has a negative price impact
+in SR 3 to 9) to gain a high time priority at the new best oﬀer after the upward move of the
+midpoint. Supporting this interpretation, we ﬁnd negative price impact prevalent only in
+those events that are triggered by high-frequency traders (i.e., short and long runs). Overall,
+this "counterintuitive price impact" aligns with the ambiguous informational value provided
+by strategic-run generated order ﬂow.
+While the IRF estimates provide information about the permanent price impact of a single event, they do not consider the frequency of an event. Consequently, they do not provide
+information about an event’s overall contribution to price discovery. To analyze the importance of an event for price discovery, we examine the results of the variance decomposition
+according to Hasbrouck (1991b). These results are reported in Table 5.
+20
+
+Table 5: Contribution to price discovery: no SR, SR 3 to 9, SR 10+
+This table shows the contribution to price discovery according to the variance decomposition. The values
+are expressed in percentage points.
+Type
+no SR
+SR 3 to 9
+SR 10+
+Total
+Add market
+7.265
+2.803
+2.785
+12.853
+Add limit improve
+13.744
+8.588
+2.320
+24.652
+Cancel limit worsening
+9.357
+7.554
+2.381
+19.292
+Add limit at BBO
+0.052
+0.043
+0.034
+0.129
+Cancel limit at BBO
+0.064
+0.038
+0.028
+0.130
+Add limit at BBO-1
+0.009
+0.009
+0.039
+0.057
+Cancel limit at BBO-1
+0.073
+0.072
+0.069
+0.214
+Add limit at BBO-2+
+0.002
+0.003
+0.012
+0.017
+Cancel limit at BBO-2+
+0.002
+0.001
+0.005
+0.008
+Total
+30.568
+19.111
+7.673
+57.352
+According to the variance decomposition, and without diﬀerentiating between strategic
+run activity, market orders contribute 12.9% to price discovery, while non-marketable trading
+activity contributes 44.5% to price discovery.
+This suggests that limit orders contribute
+more to price discovery than market orders with submissions and cancellations moving the
+midpoint being the most important events for price discovery. This aligns with the results
+of Brogaard et al. (2019). In total, all events explain 57.3% of the innovation in the eﬃcient
+price. The remainder is attributed to the error term of the midpoint return equation. This
+value is omitted in this table.
+Regarding the subgroups, the ﬁndings indicate that non-strategic run activities contribute
+the most to price discovery accounting for 30.6%, while short runs and long runs contribute
+19.1% and 7.7%, respectively. When normalizing these ﬁgures by the sum of the explained
+variance, we ﬁnd that 53.3% of all price discovery can be attributed to non-strategic run
+events, with short runs and long runs responsible for 33.3% and 13.4% of the variance
+explanation, respectively. As shown previously in Table 3, limit order book activity consists
+of 42.7% non-strategic run events.
+However, 53.3% of price discovery can be attributed
+21
+
+to these events. In contrast, 14.7% (42.6%) of all events are long-run (short-run) events
+which are responsible for 13.4% (33.3%) of the explained variance.
+Overall, the results
+suggest that non-strategic run events make a disproportionately larger contribution to price
+discovery, whereas strategic run events play a comparatively lesser role. However, it is worth
+noting that short runs, in particular, have the lowest ratio of price discovery contribution
+relative to their frequency. Nevertheless, the variance decomposition provides additional
+evidence supporting the signiﬁcantly lower informational value of LOB activity associated
+with strategic runs.
+Previous studies show that the price impact of an order book event depends not only on
+its aggressiveness, but also on other event characteristics, as well as the state of the limit
+order book (Kwan et al., 2022). This raises the concern that the diﬀerences in price impact
+and contribution to price discovery between non-strategic and strategic run events may be
+attributable to other characteristics that systematically diﬀer between these subgroups. For
+instance, orders that are part of a strategic run may be systematically lower in size, and
+thus have lower price impact. To analyze whether the diﬀerences between non-strategic run
+and strategic run activity are not driven by other factors, we repeat the previous analysis,
+but split the classes along other dimensions that are known to aﬀect the price impact of an
+event. Speciﬁcally, Kwan et al. (2022) demonstrate that order size as well as order book
+imbalance are key determinants of the price impact of an event. As a consequence, we use
+these two attributes to split the events into further subclasses.
+In particular, we apply the following approach when estimating each model asset-day
+wise. First, we discretize both attributes making them an additional dimension that we can
+use to further divide the events. Speciﬁcally, we calculate the tertiles across all messages of
+22
+
+the order book imbalance and the order size associated with each message. Afterwards, we
+are able to split the events along four dimensions: aggressiveness, strategic run type, order
+book imbalance, and order size. This leads to 243 potential classes.6 However, in an SVAR,
+the number of coeﬃcients increases exponentially in the number of parameters, making it
+practically non-feasible to estimate an SVAR that makes use of all classes. This limitation
+of the SVAR is also highlighted by Kwan et al. (2022). To circumvent this issue, we proceed
+in an iterative way when estimating our models. Compared to the previous analysis, we now
+split a certain class of aggressiveness by incorporating an additional dimension. For instance,
+we divide the three types of improving limit orders (no SR, SR 3 to 9, SR10+) into three
+further subclasses of order size. We repeat this for each class of aggressiveness, except for
+market orders, because they already have a limited number of observations in the SR 10+
+class. This yields to 75 classes when controlling for order size.7 Finally, we proceed in the
+same way when using the order book imbalance dimension. While this iterative approach is
+computationally expensive, it avoids the over-speciﬁcation of the SVAR, and yields reliable
+and comparable estimators.
+In total, we obtain 150 estimates. Due to the extensive size of the output, the results are
+not presented in tabular form. Generally speaking, the robustness analysis conﬁrms that the
+previous results are not driven by the diﬀerences between non-strategic run and strategicrun events in terms of order size and order book imbalance. Speciﬁcally, we ﬁnd that when
+controlling for order size, 80.0% of all events (20 out of 25) exhibit a signiﬁcantly larger price
+6The dimension aggressiveness consists of 9 classes and the other three dimensions, strategic run type,
+order book imbalance, and order size, consist of 3 classes each. Making use of each dimension leads to
+9 · 33 = 243 classes in total.
+7The former 27 classes are split iteratively using the order size. Since we omit the three market order
+classes this yields (27 −3) · 3 + 3 = 75 diﬀerent classes when controlling for order size.
+23
+
+impact in the non-strategic run class. When controlling for order book imbalance, the results
+are even more robust. In this case, our results show a higher price impact for non-strategic
+runs in 92.0% of all events (23 out of 25) compared to strategic run events. Overall, the
+results of these robustness analyses indicate that order ﬂow triggered by strategic runs has a
+systematically lower price impact than order book activities that are not part of a strategic
+run.
+3.2. Price discovery during a strategic run
+The previous analyses provide evidence that events associated with strategic run activity
+by high-frequency traders have a reduced price impact and contribute less to price discovery
+compared to events not part of strategic runs. This ﬁnding implies that other market participants respond diﬀerently to limit order book events of the same aggressiveness depending
+on whether they are generated by these HFT strategies. Speciﬁcally, we expect that market
+reactions will start to adapt when market participants are able to recognize that order book
+events are generated by strategic runs. As market participants may use the same algorithm
+as applied in this study to detect strategic runs, they may start to presume strategic run
+activity when a cancelled order is resubmitted given the conditions discussed in Section 2.2.
+To test whether market reactions change when strategic run activity becomes traceable,
+we divide all events that are associated with a strategic run (SR10+) into two further subclasses. The ﬁrst class consists of the ﬁrst two events that are part of a strategic run. The
+ﬁrst event can be a limit or market order submission, with the market order only partially
+executed. This event is followed by a cancellation of the (remaining) quantity. A priori, both
+events are not attributable to a strategic run. The second class comprises the subsequent
+24
+
+events of the run. These events involve resubmissions and cancellations in an alternating
+order and may be linked to a strategic run by other market participants using the algorithm
+of Hasbrouck and Saar (2013). All other events occurring in the order book are assigned to
+a third class and are also categorized according to their aggressiveness. In sum, we estimate
+a model comprising limit order book event dummies divided into three classes of strategic
+run groups: the ﬁrst two events of a strategic run, the subsequent events of a strategic run,
+and events not belonging to a run (no SR) or associated with a short run (SR 3 to 9). The
+other dimension is again aggressiveness which comprises 9 classes. Consequently, the SVAR
+we estimate has the same number of parameters as the model presented in Table 4 and 5.8
+We solely focus on the diﬀerence between the non-detectable, i.e., ﬁrst two events (event no.
+1-2), and detectable events, i.e., subsequent events (event no. 3+). The estimates for the
+permanent price impact of this model are presented in Table 6.
+The diﬀerences between non-detectable and detectable run activity are presented in the
+last column (I-II). The results provide evidence that the ﬁrst two events of a strategic run have
+stronger price impact than subsequent events of the same run. A market order experiences
+a 0.056 bps, or 10.4%, increase in price impact if it belongs to the initial events compared
+to subsequent market orders within a strategic run. The submission of an improving limit
+during the ﬁrst two events of a run order increases the price by 0.309 bps, whereas the same
+order shifts the price only by 0.229 bps if the run becomes detectable. We observe the largest
+8It is worth noting that the results of this model may not perfectly match with those of the previous
+model. The small discrepancy arises because we apply the same ﬁltering rule, excluding all asset-days where
+at least one dummy variable has less than 10 observations. As the SR10+ group is divided into additional
+subclasses, this results in a higher number of asset-days being excluded due to insuﬃcient observations.
+However, despite the diﬀerence in ﬁltering, the results of both models remain highly similar, aﬃrming the
+robustness of our ﬁndings.
+25
+
+Table 6: Permanent price impact: First two events vs. subsequent events of SR10+
+This table shows the permanent price impact according to the Impulse Response Function. The price impact
+is measured in basis points. For each group, indicated by the single Roman numerals, one star (*) and two
+stars (**) following the coeﬃcient indicate that the coeﬃcient is, on average, signiﬁcantly diﬀerent from zero
+at the 95% and 99% conﬁdence levels, respectively. For diﬀerences, one star (*) and two stars (**) following
+a positive (negative) value indicate that the minuend is signiﬁcantly larger (lower) than the subtrahend at
+the 95% and 99% conﬁdence levels, respectively.
+(I)
+(II)
+(I)-(II)
+Type
+Event no. 1-2
+Event no. 3+
+Diﬀ.
+Add market
+0.593**
+0.537**
+0.056*
+Add limit improve
+0.309**
+0.223**
+0.087**
+Cancel limit worsening
+0.199**
+0.229**
+−0.030
+Add limit at BBO
+0.143**
+0.072**
+0.071**
+Cancel limit at BBO
+0.084**
+0.053**
+0.031**
+Add limit at BBO-1
+0.075**
+0.002
+0.073**
+Cancel limit at BBO-1
+0.162**
+0.118**
+0.044**
+Add limit at BBO-2+
+0.045**
+−0.004*
+0.049**
+Cancel limit at BBO-2+
+0.067**
+0.019**
+0.048**
+relative diﬀerence between limit orders at the BBO. This event has 0.071 bps, i.e. 98.6%,
+more price impact if it is part of the initial events compared to subsequent orders of the
+same aggressiveness within a strategic run. For most events, this diﬀerence is statistically
+signiﬁcant at the 99% conﬁdence level. An exception arises with cancellations that worsen
+the BBO, where subsequent events demonstrate a larger price impact than the initial events.
+However, this diﬀerence is not statistically signiﬁcant.
+In contrast to the results of the
+model presented in Section 3.1, we ﬁnd that the diﬀerence between both groups is relatively
+larger for less aggressive events.
+Economically interpreted, the permanent price impact
+estimates provide evidence that supports our hypothesis of market participants recognizing
+the strategic run activity and attribute less informational value to the order book event.
+Therefore, this ﬁnding suggests that the linkage between limit order book events aﬀects the
+price impact of individual events as soon as the linkage becomes detectable.
+26
+
+As before, we further assess the importance of the strategic run events for price discovery
+by conducting the variance decomposition. The outcomes are outlined in Table 7.
+Table 7: Contribution to price discovery: First two events vs. subsequent events of SR10+
+This table shows the contribution to price discovery according to the variance decomposition. The values
+are expressed in percentage points.
+Type
+Event no. 1-2
+Event no. 3+
+Total
+Add market
+4.764
+3.073
+7.837
+Add limit improve
+0.996
+1.943
+2.939
+Cancel limit worsening
+0.990
+1.978
+2.968
+Add limit at BBO
+0.168
+0.033
+0.201
+Cancel limit at BBO
+0.139
+0.028
+0.167
+Add limit at BBO-1
+0.275
+0.062
+0.337
+Cancel limit at BBO-1
+0.313
+0.086
+0.399
+Add limit at BBO-2+
+0.281
+0.018
+0.299
+Cancel limit at BBO-2+
+0.261
+0.007
+0.268
+Total
+8.187
+7.228
+15.415
+According to the estimated SVAR, strategic run activity contributes 15.4% to overall
+price discovery. Interestingly, more than half of this discovery is impounded via the ﬁrst
+two events of the strategic run. In particular, these two events contribute 8.2% to price
+discovery, whereas the remainder of the run contributes 7.2%, as shown in the last row of
+Table 7. However, the ﬁrst two initial events account for only 13.4% of all order book events
+triggered by a strategic run. This implies that the signal-to-noise ratio is substantially larger
+in the ﬁrst two events of the run than in the remainder of the strategic run. Consequently,
+the variance decomposition results also highlight the decreasing marginal contribution to
+price discovery of individual order book events triggered by a strategic run.
+As the previous results indicate that the ﬁrst two events of a strategic run have a higher
+signal-to-noise ratio, we further examine whether this also applies to events within the run
+that alter the run’s aggressiveness. As discussed in Section 1, if the resubmitted limit order
+27
+
+does not change in terms of aggressiveness compared to the order canceled shortly before, the
+resubmission is more likely a response of an involved trading algorithm or another attempt
+to trigger reactions from other algorithms, rather than providing new information. However,
+if the resubmitted order changes in aggressiveness, it indicates that one of the involved
+algorithms has revised its beliefs about the asset’s true value (Bhattacharya and Saar, 2021).
+Given that high-frequency traders can predict future midpoint moves by extracting valuable
+information from the historical order ﬂow (Van Kervel and Menkveld, 2019), we hypothesize
+that the direction of the change in the aggressiveness is positively correlated with the future
+midpoint movement. This means that we expect the highest price impact if the aggressiveness
+increases, whereas the price impact should be the lowest when the aggressiveness decreases,
+since high-frequency traders expect a downwards move of the midpoint.
+Therefore, we
+suppose that limit orders adjusting a run’s aggressiveness convey more information than limit
+orders that do not. Consequently, the former should be more relevant for price discovery.
+We examine this hypothesis by dividing the order book events along three dimensions.
+The ﬁrst dimension is again the aggressiveness of the event, divided into 9 classes. The
+second dimension is whether the order book event is associated with a strategic run or
+not. As before, the requirement here is that the strategic run must consists of 10 or more
+events (SR 10+). The last dimension is the change in the aggressiveness of the run. We
+diﬀerentiate between the limit order submissions that are part of a strategic run by using
+dummies to indicate whether the limit order leads to a decrease, an increase, or no change
+in the run’s aggressiveness.
+We determine whether the aggressiveness has increased by
+comparing the distance to the BBO in ticks between the resubmitted order and the previous
+order submission at the time when each entered the order book. As a result, the estimated
+28
+
+SVAR model has 25 parameters, 24 order book event dummies and the midpoint return. In
+this analysis, we focus exclusively on the diﬀerence between the limit order submission within
+a strategic run. The results regarding the permanent price impact are shown in Table 8.
+Table 8: Permanent price impact: change in aggressiveness
+This table shows the permanent price impact according to the Impulse Response Function. The price impact
+is measured in basis points. For each group, indicated by the single Roman numerals, one star (*) and two
+stars (**) following the coeﬃcient indicate that the coeﬃcient is, on average, signiﬁcantly diﬀerent from zero
+at the 95% and 99% conﬁdence levels, respectively. For diﬀerences, one star (*) and two stars (**) following
+a positive (negative) value indicate that the minuend is signiﬁcantly larger (lower) than the subtrahend at
+the 95% and 99% conﬁdence levels, respectively.
+(I)
+(II)
+(III)
+(I)-(II)
+(I)-(III)
+(II)-(III)
+Type
+more
+no
+less
+aggressive
+change
+aggressive
+Diﬀ.
+Diﬀ.
+Diﬀ.
+Add limit improve
+0.286**
+0.104**
+0.182**
+Add limit at BBO
+0.115**
+0.068**
+0.158**
+0.046**
+−0.044**
+−0.090**
+Add limit at BBO-1
+0.025**
+0.010**
+−0.002
+0.016**
+0.027**
+0.011**
+Add limit at BBO-2+
+0.097**
+0.019**
+0.013**
+0.077**
+0.084**
+0.006**
+The column (I - II) shows the diﬀerence between the price impact of limit orders increasing
+the aggressiveness of the run and those that do not aﬀect the run’s aggressiveness. For each
+event type this diﬀerence is positive and statistically signiﬁcant. Speciﬁcally, we ﬁnd that the
+price impact of an improving limit order is 0.182 bps larger if the order is increasing the run’s
+aggressiveness. Relatively speaking, the largest diﬀerence is between limit orders submitted
+two or more ticks worse than the BBO. Here, the diﬀerence is 0.077 bps, making the price
+impact of the order increasing the aggressiveness more than ﬁve times larger than the limit
+order that does not alter the run’s aggressiveness. The positive and substantial diﬀerences
+for all types indicate that high-frequency traders are correctly deriving information from the
+observed order ﬂow, as their increase in aggressiveness of their buy (sell) order is followed by
+a stronger upward (downward) move of the midpoint. This also supports our hypothesis of
+HFT algorithms adjusting their beliefs about the true asset value providing more information
+29
+
+to the market.
+Conversely, when the strategic run decreases its aggressiveness with the
+resubmitted buy (sell) order, we expect that this is followed by a reduced upward (downward)
+move of the midpoint. Comparing a decrease in aggressiveness with a no change, we ﬁnd the
+expected outcome for 2 out of 3 classes. For limit orders one or more ticks away from the
+BBO, we ﬁnd that the price impact is signiﬁcantly lower than for limit orders not changing
+the aggressiveness. In contrast, we ﬁnd the opposite for limit orders at the BBO. However,
+this estimate might be driven by the dominant and not fully impounded eﬀects of the previous
+two events consisting of an improving limit order and a cancellation of that order. If the
+order book has changed between those two events and the cancellation does not lead to an
+instantaneous midpoint change, the long-term impact of the previous improving limit order
+might overlap the eﬀect of the resubmitted order at the BBO. In addition, note that we
+disregard the event of a limit order becoming less aggressive while still improving the BBO.
+While it is technically possible, this event has very few observations across all asset-trading
+days. Overall, the permanent price impact estimates indicate that the informativeness of
+a limit order increases as it updates the market on trader’s beliefs, particularly when the
+run increases in aggressiveness. Moreover, we ﬁnd that the price impact of a limit order
+submission is determined not only by being part of a strategic run but also by the limit
+price of the preceding order within that run. On a more abstract level, this implies that the
+price impact of an individual limit order book event depends not only on its connection to
+previous events but also on the characteristics of these interconnected events.
+Finally, we also compare the contribution to price discovery of the diﬀerent limit order
+resubmissions. The results of the variance decomposition are displayed in Table 9.
+30
+
+Table 9: Contribution to price discovery: change in aggressiveness
+This table shows the contribution to price discovery according to the variance decomposition. The values
+are expressed in percentage points.
+Type
+more aggressive
+no change
+less aggressive
+Total
+Add limit improve
+1.266
+2.555
+3.821
+Add limit at BBO
+0.219
+0.052
+0.576
+0.847
+Add limit at BBO-1
+0.267
+0.162
+0.389
+0.818
+Add limit at BBO-2+
+0.252
+0.081
+0.085
+0.418
+Total
+2.004
+2.850
+1.050
+5.904
+The results suggest that resubmissions that do not alter the aggressiveness contribute
+2.9% to price discovery. In contrast, submissions associated with changes in aggressiveness,
+contribute 2.0% and 1.1%, respectively. In terms of frequency, resubmissions that do not
+alter the aggressiveness are the most common event, representing 60.2% of all resubmissions.
+Meanwhile, resubmissions that increase aggressiveness account for 18.8%, and those that
+decrease aggressiveness account for 21.0%. Therefore, even though updates in aggressiveness
+account for only 39.8% of the limit order submissions during a strategic run, they contribute
+more to price discovery. Comparing the results on an event-by-event basis, we ﬁnd that
+improving limit orders that represent a change in aggressiveness account for 1.266% of price
+discovery, whereas the same event contributes 2.555% if it does not alter run’s aggressiveness.
+Considering limit orders at the BBO, these events contribute 0.576% or 0.219% when they
+alter run’s aggressiveness. This is a substantial diﬀerence compared to orders at the BBO
+that do not alter run’s aggressiveness, which only marginally contribute to price discovery
+(0.052%). Additionally, both classes of deeper orders are more relevant for price discovery
+if they signal a change in run’s aggressiveness. Overall, we ﬁnd that, with the exception of
+improving limit orders, events that change aggressiveness contribute more to price discovery
+than no-change submissions, even though they are less frequent. In summary, these results
+31
+
+suggest that limit order submissions altering the aggressiveness of a strategic run provide
+greater informational value. Therefore, the contribution to price discovery depends not only
+on the submission’s inclusion in a run but also on the limit price of the preceding order.
+Moreover, an increase in aggressiveness is particularly associated with a future midpoint
+move in the same direction as the resubmitted limit order. These ﬁndings indicate that
+high-frequency traders revise their orders in response to observed (informed) order ﬂow,
+making these resubmissions more informative with respect to future midpoint movements.
+4. Conclusion
+The role of HFT and its impact on ﬁnancial markets is likely one of the most debated
+topics among market microstructure researchers over the past decade. One reason for this is
+the variety of HFT activities, each of which can have distinct impacts on market quality, necessitating a nuanced understanding of HFT’s eﬀects on ﬁnancial markets. In this study, we
+contribute to this discussion by examining the permanent price impact and the corresponding contribution to price discovery of limit order book events, such as order submissions and
+cancellations, associated with strategic runs.
+We deﬁne strategic runs, in accordance with Hasbrouck and Saar (2013), as an outcome
+of HFT strategies leading to an alternating cycle of order submissions and cancellations
+within a short time interval.
+Each iteration of submission and cancellation consistently
+targets the same side of the limit order book, uses the same order size, and can be repeated
+more than 100 times. Although the underlying strategies of the involved trading algorithms
+are not observable, market data patterns suggest that they result from multiple algorithms
+attempting to undercut or trigger other algorithms (Hasbrouck and Saar, 2013). Since these
+32
+
+limit order book events frequently repeat the same signal and search for information rather
+than providing new information, we question the informational value of this order ﬂow.
+Using granular data that captures each incremental message sent to the limit order book,
+we estimate SVAR models to evaluate the permanent price impact and the contribution to
+price discovery of speciﬁc limit order book events, distinguishing between those associated
+with strategic runs and those that are not.
+We ﬁnd that order submissions and cancellations submitted to the limit order book as
+part of a strategic run have less price impact and contribute less to price discovery than
+submissions and cancellations of the same aggressiveness that are not associated with a
+strategic run.
+This signiﬁcant diﬀerence between non-strategic and strategic run events
+persists when controlling for order size and imbalance in the limit order book. Furthermore,
+we observe that the contribution to price discovery is signiﬁcantly reduced once other market
+participants can recognize the strategic run.
+Based on these ﬁndings, we conclude that
+limit order book events resulting from high-frequency traders’ strategic runs provide limited
+informational value.
+Additionally, we show that the price impact of a strategic run event depends on whether
+the event leads to a change in the aggressiveness of the run. This suggests that other market
+participants observe high-frequency traders’ runs and interpret changes in run’s aggressiveness as new information. Moreover, this ﬁnding aligns with the theory of Bhattacharya and
+Saar (2021), which posits that the frequent cancellations and resubmissions in today’s limit
+order book markets result from high-frequency traders constantly revising their orders as
+they update their beliefs about the asset value based on the observed (informed) order ﬂow.
+33
+
+We view our contribution as two-fold. First, we contribute to the literature on HFT’s
+impact on market quality by demonstrating the reduced signal-to-noise ratio of strategic run
+events, which account for a substantial fraction of messages in limit order book markets.
+Our study provides further evidence that a nuanced perspective is required when assessing
+the impact of HFT on market quality. Second, we extend the growing literature on limit
+order price discovery. Speciﬁcally, we show that the contribution of a limit order book event
+to price discovery is determined not only by the characteristics of the event (Brogaard et al.,
+2019; Brugler and Hendershott, 2023) and the state of the limit order book (Kwan et al.,
+2022), but also by its relationship to other events and the attributes of these interconnected
+events. In particular, we demonstrate that the price impact of an individual limit order book
+event depends on whether the event is triggered by a strategic run and on whether it alters
+the run’s aggressiveness.
+While our study further disentangles the activities of HFT and their implications for
+market quality, more research examining speciﬁc HFT activities is needed to gain a comprehensive understanding and to account for the rapidly changing market environment. This can
+help regulators to introduce more nuanced regulations with respect to HFT. Furthermore,
+since large fractions of limit order book activity are interconnected, not only via strategic
+runs, future research should aim to understand more deeply how order ﬂow is interconnected
+and how this relates to price discovery and price eﬃciency.
+34
+
+References
+Bhattacharya, A. and Saar, G. (2021). Limit order markets under asymmetric information.
+Available at SSRN 3688473.
+Brogaard, J. and Garriott, C. (2019).
+High-frequency trading competition.
+Journal of
+Financial and Quantitative Analysis, 54(4):1469–1497.
+Brogaard, J., Hendershott, T., and Riordan, R. (2014). High-frequency trading and price
+discovery. The Review of Financial Studies, 27(8):2267–2306.
+Brogaard, J., Hendershott, T., and Riordan, R. (2019). Price discovery without trading:
+Evidence from limit orders. The Journal of Finance, 74(4):1621–1658.
+Brugler, J. and Hendershott, T. (2023). Public and private information in quotes and trades.
+Available at SSRN 4674014.
+Carrion, A. (2013). Very fast money: High-frequency trading on the NASDAQ. Journal of
+Financial Markets, 16(4):680–711.
+Chaboud, A., Hjalmarsson, E., and Zikes, F. (2021). The evolution of price discovery in an
+electronic market. Journal of Banking & Finance, 130:106171.
+Chakrabarty, B., Comerton-Forde, C., and Pascual, R. (2023). Identifying high frequency
+trading activity without proprietary data. Available at SSRN 4551238.
+European Securities and Markets Authority (2021). MiFID II Review Report.
+Fleming, M. J., Mizrach, B., and Nguyen, G. (2018). The microstructure of a US Treasury
+ECN: The BrokerTec platform. Journal of Financial Markets, 40:2–22.
+35
+
+Glosten, L. R. and Milgrom, P. R. (1985). Bid, ask and transaction prices in a specialist
+market with heterogeneously informed traders. Journal of Financial Economics, 14(1):71–
+100.
+Goettler, R. L., Parlour, C. A., and Rajan, U. (2009). Informed traders and limit order
+markets. Journal of Financial Economics, 93(1):67–87.
+Goldstein, M., Kwan, A., and Philip, R. (2023). High-frequency trading strategies. Management Science, 69(8):4413–4434.
+Hasbrouck, J. (1991a). Measuring the information content of stock trades. The Journal of
+Finance, 46(1):179–207.
+Hasbrouck, J. (1991b).
+The summary informativeness of stock trades: An econometric
+analysis. The Review of Financial Studies, 4(3):571–595.
+Hasbrouck, J. and Saar, G. (2013). Low-latency trading. Journal of Financial Markets,
+16(4):646–679.
+Hirschey, N. (2021). Do high-frequency traders anticipate buying and selling pressure? Management Science, 67(6):3321–3345.
+Kwan, A., Philip, R., and Shkilko, A. (2022). The conduits of price discovery: A machine
+learning approach. Working Paper.
+Riccó, R., Rindi, B., and Seppi, D. J. (2020). Information, liquidity, and dynamic limit order
+markets. Working Paper No. 660, IGIER, Università Bocconi.
+36
+
+Roşu, I. (2020). Liquidity and information in limit order markets. Journal of Financial and
+Quantitative Analysis, 55(6):1792–1839.
+Shkilko, A. and Sokolov, K. (2020). Every cloud has a silver lining: Fast trading, microwave
+connectivity, and trading costs. The Journal of Finance, 75(6):2899–2927.
+Thompson, S. B. (2011). Simple formulas for standard errors that cluster by both ﬁrm and
+time. Journal of Financial Economics, 99(1):1–10.
+Van Kervel, V. and Menkveld, A. J. (2019). High-frequency trading around large institutional
+orders. The Journal of Finance, 74(3):1091–1137.
+37
+
+Appendix A.
+Table A.1: Limit order book descriptives
+This table shows descriptives for each of the securities in our sample. The values are the daily averages over
+our sample period from January to March 2023. Trading volume is measured in million e, relative spread
+is measured in basis points, volatility is the standard deviation in basis points of the midpoints sampled
+at a 5-minutes frequency. All values are calculated based on the two continuous trading phases: (1) from
+15 minutes after the opening to 15 minutes before the midday auction, and (2) from 15 minutes after the
+midday to 15 minutes before the closing auction. The four last columns describe the average counts per
+trading day for all messages and diﬀerent message types, respectively.
+Asset
+Trading
+Relative
+Volatility
+No.
+No. market
+No. limit
+No.
+volume
+spread
+messages
+orders
+orders
+cancellations
+Allianz
+110.49
+3.36
+7.25
+260 797
+2608
+130 383
+127 806
+BASF
+77.55
+3.25
+11.55
+448 884
+4188
+224 403
+220 293
+Bayer
+78.99
+3.14
+11.89
+449 526
+4638
+225 204
+219 684
+Deutsche Bank
+68.78
+3.54
+12.96
+504 669
+4047
+251 418
+249 204
+Deutsche Telekom
+62.65
+3.13
+8.45
+356 908
+3045
+178 288
+175 574
+Inﬁneon
+57.55
+3.67
+16.57
+794 702
+5054
+396 881
+392 768
+Mercedes Benz
+74.64
+2.93
+11.44
+585 993
+4739
+293 007
+288 247
+SAP
+97.13
+3.02
+11.35
+553 337
+5213
+274 128
+273 996
+Siemens
+81.62
+2.60
+10.72
+619 600
+4229
+310 241
+305 130
+Volkswagen
+89.29
+3.24
+11.98
+591 258
+4306
+292 529
+294 422
+38
+
+Table A.2: Strategic run example
+This table displays a sequence of limit order book events occurring in the stock of Deutsche Telekom on
+January 02, 2023. The ﬁrst column shows the timestamp with microsecond precision, and the second column
+indicates the strategic run with which each event is associated. If "SR ID" is empty the event is not part of a
+strategic run. While the columns three to six describe the event itself, the last two columns show the best bid
+and ask price in the book. If more than two events occur between the activities associated with the observed
+strategic run, we omit these observations indicated by a row containing three dots in each column. In total,
+this run consists of 26 activities, lasts for 3 minutes and 19 seconds and ends with a ﬁnal cancellation.
+Timestamp
+SR ID
+Message
+Side
+Quantity
+Limit price
+Best bid
+Best ask
+09:50:20.648474
+11 592
+Submission
+Buy
+352
+18.80
+18.80
+18.81
+09:50:20.648509
+Submission
+Buy
+279
+18.80
+18.80
+18.81
+09:50:20.650464
+Cancellation
+Buy
+402
+18.80
+18.80
+18.81
+09:50:20.651173
+11 592
+Cancellation
+Buy
+352
+18.80
+18.80
+18.81
+...
+...
+...
+...
+...
+...
+...
+...
+09:50:20.688787
+11 592
+Submission
+Buy
+352
+18.80
+18.80
+18.81
+...
+...
+...
+...
+...
+...
+...
+...
+09:50:21.471697
+11 592
+Cancellation
+Buy
+352
+18.80
+18.80
+18.80
+09:50:21.471732
+Submission
+Buy
+279
+18.79
+18.80
+18.80
+09:50:21.471763
+11 592
+Submission
+Buy
+352
+18.79
+18.80
+18.80
+...
+...
+...
+...
+...
+...
+...
+...
+09:50:29.569656
+11 592
+Cancellation
+Buy
+352
+18.79
+18.79
+18.80
+...
+...
+...
+...
+...
+...
+...
+...
+09:50:29.569703
+11 592
+Submission
+Buy
+352
+18.79
+18.79
+18.80
+...
+...
+...
+...
+...
+...
+...
+...
+09:50:33.371468
+11 592
+Cancellation
+Buy
+352
+18.79
+18.79
+18.80
+09:50:33.371475
+Cancellation
+Buy
+363
+18.79
+18.79
+18.80
+09:50:33.371505
+11 592
+Submission
+Buy
+352
+18.77
+18.79
+18.80
+...
+...
+...
+...
+...
+...
+...
+...
+09:51:28.125777
+11 592
+Cancellation
+Buy
+352
+18.77
+18.80
+18.81
+09:51:28.127407
+11 592
+Submission
+Buy
+352
+18.80
+18.80
+18.81
+...
+...
+...
+...
+...
+...
+...
+...
+09:51:28.132487
+11 592
+Cancellation
+Buy
+352
+18.80
+18.80
+18.81
+09:51:28.132522
+11 592
+Submission
+Buy
+352
+18.80
+18.80
+18.81
+...
+...
+...
+...
+...
+...
+...
+...
+09:51:29.000925
+11 592
+Cancellation
+Buy
+352
+18.80
+18.80
+18.81
+...
+...
+...
+...
+...
+...
+...
+...
+09:51:29.002453
+11 592
+Submission
+Buy
+352
+18.80
+18.80
+18.81
+09:51:29.002460
+Submission
+Buy
+363
+18.80
+18.80
+18.81
+09:51:29.006895
+11 592
+Cancellation
+Buy
+352
+18.80
+18.80
+18.81
+09:51:29.006929
+11 592
+Submission
+Buy
+352
+18.80
+18.80
+18.81
+...
+...
+...
+...
+...
+...
+...
+...
+09:51:29.081093
+11 592
+Cancellation
+Buy
+352
+18.80
+18.80
+18.81
+09:51:29.081099
+Cancellation
+Buy
+363
+18.80
+18.80
+18.81
+09:51:29.081131
+11 592
+Submission
+Buy
+352
+18.79
+18.80
+18.81
+...
+...
+...
+...
+...
+...
+...
+...
+09:51:31.430172
+11 592
+Cancellation
+Buy
+352
+18.79
+18.80
+18.80
+09:51:31.430208
+11 592
+Submission
+Buy
+352
+18.79
+18.80
+18.80
+...
+...
+...
+...
+...
+...
+...
+...
+09:51:40.075608
+11 592
+Cancellation
+Buy
+352
+18.79
+18.79
+18.80
+...
+...
+...
+...
+...
+...
+...
+...
+09:51:40.075656
+11 592
+Submission
+Buy
+352
+18.79
+18.79
+18.80
+...
+...
+...
+...
+...
+...
+...
+...
+39
+
+Table A.3: Strategic run example with changing quantities
+This table displays a sequence of limit order book events occurring in the stock of Allianz on January 02,
+2023. The ﬁrst column shows the timestamp with microsecond precision, and the second column indicates
+the strategic run with which each event is associated. If "SR ID" is empty the event is not part of a strategic
+run. While the columns three to six describe the event itself, the last two columns show the best bid and
+ask price in the book. If more than two events occur between the activities associated with the observed
+strategic run, we omit these observations indicated by a row containing three dots in each column. In total,
+this run consists of 102 activities and ends with a ﬁnal cancellation as the midpoint moves further away from
+the limit price.
+Timestamp
+SR ID
+Message
+Side
+Quantity
+Limit price
+Best bid
+Best ask
+08:17:31.404774
+3
+Submission
+Sell
+28
+201.30
+201.20
+201.25
+08:17:32.605466
+Submission
+Buy
+53
+201.20
+201.20
+201.25
+08:17:32.605510
+Cancellation
+Sell
+120
+201.30
+201.20
+201.25
+08:17:32.607613
+3
+Cancellation
+Sell
+28
+201.30
+201.20
+201.25
+08:17:32.607670
+3
+Submission
+Sell
+28
+201.30
+201.20
+201.25
+...
+...
+...
+...
+...
+...
+...
+...
+08:17:38.213108
+3
+Cancellation
+Sell
+28
+201.30
+201.20
+201.25
+08:17:38.213161
+3
+Submission
+Sell
+27
+201.30
+201.20
+201.25
+08:17:38.300235
+Submission
+Sell
+23
+201.30
+201.20
+201.25
+08:17:38.393762
+3
+Cancellation
+Sell
+27
+201.30
+201.20
+201.25
+08:17:38.393817
+3
+Submission
+Sell
+28
+201.30
+201.20
+201.25
+...
+...
+...
+...
+...
+...
+...
+...
+08:17:39.119998
+3
+Cancellation
+Sell
+28
+201.30
+201.20
+201.25
+08:17:39.121419
+Cancellation
+Sell
+50
+201.25
+201.20
+201.25
+08:17:39.304463
+3
+Submission
+Sell
+27
+201.30
+201.20
+201.25
+...
+...
+...
+...
+...
+...
+...
+...
+08:17:41.455024
+3
+Cancellation
+Sell
+27
+201.30
+201.20
+201.25
+08:17:41.455039
+Cancellation
+Sell
+62
+201.50
+201.20
+201.25
+08:17:41.455069
+3
+Submission
+Sell
+27
+201.30
+201.20
+201.25
+08:17:41.504703
+3
+Cancellation
+Sell
+27
+201.30
+201.20
+201.25
+08:17:41.504746
+3
+Submission
+Sell
+27
+201.30
+201.20
+201.25
+08:17:42.208075
+Submission
+Buy
+74
+201.20
+201.20
+201.25
+08:17:42.215114
+3
+Cancellation
+Sell
+27
+201.30
+201.20
+201.25
+08:17:42.215162
+3
+Submission
+Sell
+29
+201.30
+201.20
+201.25
+...
+...
+...
+...
+...
+...
+...
+...
+08:17:42.547666
+3
+Cancellation
+Sell
+29
+201.30
+201.20
+201.25
+08:17:42.547710
+3
+Submission
+Sell
+29
+201.30
+201.20
+201.25
+08:17:43.193733
+3
+Cancellation
+Sell
+29
+201.30
+201.20
+201.25
+08:17:43.193787
+3
+Submission
+Sell
+28
+201.30
+201.20
+201.25
+08:17:44.072097
+Cancellation
+Buy
+74
+201.20
+201.20
+201.25
+08:17:44.075768
+Cancellation
+Buy
+50
+201.20
+201.20
+201.25
+08:17:44.084393
+3
+Cancellation
+Sell
+28
+201.30
+201.20
+201.25
+08:17:44.084439
+3
+Submission
+Sell
+29
+201.30
+201.20
+201.25
+...
+...
+...
+...
+...
+...
+...
+...
+08:17:45.130179
+3
+Cancellation
+Sell
+29
+201.30
+201.20
+201.25
+08:17:45.130230
+3
+Submission
+Sell
+29
+201.30
+201.20
+201.25
+...
+...
+...
+...
+...
+...
+...
+...
+08:17:45.304705
+3
+Cancellation
+Sell
+29
+201.30
+201.20
+201.25
+08:17:45.304754
+3
+Submission
+Sell
+27
+201.30
+201.20
+201.25
+08:17:45.746062
+Submission
+Sell
+62
+201.50
+201.20
+201.25
+08:17:46.104713
+3
+Cancellation
+Sell
+27
+201.30
+201.20
+201.25
+08:17:46.104766
+3
+Submission
+Sell
+28
+201.30
+201.20
+201.25
+...
+...
+...
+...
+...
+...
+...
+...
+40

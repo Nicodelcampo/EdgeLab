@@ -1,0 +1,3156 @@
+Tracking noise trading through numbers: Is noise
+trading systematic?
+Yongdong Shi, Haomiao Wang, Bohui Zhang, Hongxian Zhen∗
+Current version: March 2026
+Abstract
+We examine the impact of noise trading on stock market returns by exploiting Chinese numerological superstition, where certain numbers in asset prices are perceived as
+being lucky or unlucky by uninformed traders. The noise trading (NT) measure, measured by the difference between the frequencies of lucky and unlucky numbers in stock
+prices directly captures noise trading activity and negatively predicts China’s stock
+market returns. The results also hold out of sample and are stronger when arbitrage
+costs are high and information availability is low than in other situations. Collectively,
+our findings support the notion that noise trading contributes to systematic mispricing
+in the stock market.
+∗Shi (email: ydshi@263.net) is at the School of FinTech, Research Center of Applied Finance and School
+of Finance, Dongbei University of Finance and Economics. Wang (email: harrywang117@qq.com) is at the
+School of FinTech, Dongbei University of Finance and Economics. Zhang (email: bohuizhang@cuhk.edu.cn)
+is at the School of Management and Economics and Shenzhen Finance Institute, the Chinese University of
+Hong Kong, Shenzhen (CUHK-Shenzhen). Zhen (email: zhx223@163.com) is at the School of Accounting
+and China Internal Control Research Center, Dongbei University of Finance and Economics. We are grateful for the helpful comments from Fuwei Jiang, Fengyu Li, Buhui Qiu, Liyan Yang and Shaojun Zhang.
+Haomiao acknowledges financial support from the National Natural Science Foundation of China (Project
+No. 72403033). Hongxian acknowledges financial support from the National Natural Science Foundation of
+China (Project No. 72172029).
+
+JEL Codes: G12
+Keywords: Noise trading, Numerological superstition, Market return prediction, Systematic mispricing.
+
+Tracking noise trading through numbers: Is noise
+trading systematic?
+Abstract
+We examine the impact of noise trading on stock market returns by exploiting Chinese numerological superstition, where certain numbers in asset prices are perceived as
+being lucky or unlucky by uninformed traders. The noise trading (NT) measure, measured by the difference between the frequencies of lucky and unlucky numbers in stock
+prices directly captures noise trading activity and negatively predicts China’s stock
+market returns. The results also hold out of sample and are stronger when arbitrage
+costs are high and information availability is low than in other situations. Collectively,
+our findings support the notion that noise trading contributes to systematic mispricing
+in the stock market.
+JEL Codes: G12
+Keywords: Noise trading, Numerological superstition, Market return prediction, Systematic mispricing.
+
+1
+Introduction
+Noise traders or uninformed traders are investors who lack access to information and
+trade on noise as if it were genuine information (Black, 1986). A large body of theoretical
+literature has concluded that the consequence of noise trading is pushing asset prices away
+from their fundamental values and creating nonfundamental stock movements or mispricing.1 As summarized by Fisher Black, “Noise causes markets to be somewhat ineﬀicient.”2
+Empirically, this prediction is supported at the stock level by rich evidence showing that
+noise trading can have a significant effect on cross-sectional stock returns.3 However, direct
+evidence of the effect of noise trading on market-wide stock returns or whether it leads to
+systematic mispricing remains unclear.
+This study aims to explore the impact of noise trading on market-wide stock returns,
+given the central role of market return predictability in many fundamental aspects of finance
+(Cochrane, 2008). Although how noise trading affects asset prices is theoretically clear, identifying these effects remains an empirical challenge (Wardlaw, 2020). The primary diﬀiculty
+in this research lies in measuring noise traders and tracking their activity because noise
+traders cannot be directly observed.
+The literature has attempted to use two main approaches to construct measures for
+proxying noise trading.4 One strand of literature focuses on defining specific traders as noise
+traders and relies on their trading as a proxy for noise trading (we refer to this approach
+as the trader-based approach).
+For example, many researchers categorize retail investors
+as noise traders and consider their trading noise trading.5
+Another strand of literature
+1See, e.g., Kyle (1985), Black (1986), De Long et al. (1989), De Long et al. (1990), De Long and Shleifer
+(1991), Shleifer and Summers (1990), Shleifer and Vishny (1997).
+2See Black (1986).
+3For example, Coval and Stafford (2007), Hvidkjaer (2008), Barber, Odean, and Zhu (2008), Barber et al.
+(2009), Lou (2012), Edmans, Goldstein, and Jiang (2012), Han and Kumar (2013), Lou and Wang (2018),
+Aboody et al. (2018), Dessaint et al. (2019), Henderson, Pearson, and Wang (2023).
+4We discuss the two approaches in detail in Section 2.1.
+5See, e.g., Odean (1999), Barber and Odean (2000), Barber and Odean (2008), Barber et al. (2009),
+Stambaugh (2014).
+1
+
+relies on using transaction size to proxy for noise trading (we refer to this approach as
+the volume-based approach), such as small trades (e.g., Han and Kumar, 2013). However,
+without observing investors’ information sets, neither approach performs well in capturing
+noise traders’ activity, which raises concerns about effects attributed to noise trading possibly
+being driven by informed trading.6
+We overcome this diﬀiculty by exploring noise traders’ superstitious behavior to construct
+a novel noise trading measure. The direct observation of investors’ information sets is challenging. However, psychological literature has long recognized that individuals tend to rely
+on superstition as a shield against a lack of information, whereas informed individuals do not
+(Malinowski, 1948; Tsang, 2004; Torgler, 2007). As such, noise trading can be inferred from
+superstitious behavior in the stock market because noise traders—investors who lack access
+to information—tend to rely on superstition to compensate for information disadvantages.7
+Building on this notion, we link noise trading to one of the most prevalent superstitious behaviors in financial research—Chinese numerological superstition, which considers
+the number 8 lucky and the number 4 unlucky.8 We begin with the hypothesis that noise
+traders’ equity orders tend to favor prices containing the lucky number. A vivid example is
+that noise traders may place orders at ¥3.8 instead of ¥3.7. As such, when noise traders
+dominate the market, there is a high occurrence of the lucky number in stock prices (Consistent with this premise, we find that our measure yields quantitatively similar results when
+6For example, numerous studies suggest that retail investors’ trading flows contain valuable information
+(Kaniel et al., 2012; Kaniel, Saar, and Titman, 2008; Barrot, Kaniel, and Sraer, 2016; Kelley and Tetlock,
+2013, 2017; Boehmer et al., 2021). Similarly, it is becoming increasingly diﬀicult for small trades to serve as
+a proxy for noise trading because of the spread of computer algorithms (Boehmer et al., 2021).
+7One potential concern is that our approach may not fully capture instances of rational noise trading. For
+example, an investor might sell stocks to finance a real estate purchase—a decision that appears rational.
+However, we argue that even such ostensibly rational trades can be influenced by superstitious beliefs.
+Specifically, the inherent uncertainty surrounding real estate investments may lead some individuals to rely
+on superstition in their stock selling as a means of compensating for perceived informational disadvantages
+in the real estate market. Nevertheless, we acknowledge that our measure may not comprehensively capture
+the entire spectrum of rational noise trading.
+8Chinese numerological superstition considers the number 8 lucky and the number 4 unlucky due to their
+pronunciations in Chinese, which sound like “prosper” and “death”, respectively.
+2
+
+constructed using limit order (level 2) data. In fact, the price-based noise trading measure
+and the limit order-based measure exhibit a correlation of over 96%.). In contrast, informed
+traders are more likely to initiate or accept equity orders with more unlucky numbers because
+they rely on information rather than on superstition in making their investment decisions.
+Accordingly, our noise trading measure (NT) is constructed as the difference between the
+frequencies of the numbers 8 and 4 in the daily stock prices (daily opening, highest, lowest,
+and closing prices) of all firms listed on China’s stock market.9 A higher NT value indicates
+greater noise trading activity.
+Using the daily stock price data from firms listed on the Shanghai and Shenzhen Stock
+Exchanges, we estimate monthly NT over a 23-year period from 2000 to 2022.10 For the first
+part of our empirical analyses, we provide a battery of validation tests for NT. First, we
+show that NT is positively correlated with retail trader ownership and negatively correlated
+with investor experience, the two important determinants of noise trading (Brunnermeier,
+Sockin, and Xiong, 2022). Second, we use the Wind outage as an exogenous shock to noise
+trading to validate our measure. Wind is the leading financial data provider in China. On
+January 8, 2024, it experienced an unexpected outage that prevented users from retrieving
+data. In the absence of reliable information, trading activities during this period were more
+likely driven by noise. We document a high occurrence of the lucky number in stock prices
+during the Wind outage.
+Third, NT spikes near major events related to noise trading.
+For example, China’s
+national leadership has changed, triggering noise trading due to heightened political uncer9We use daily opening, high, low, and closing prices due to data availability. Ideally, an NT measure
+constructed using high-frequency, tick-level transaction data should outperform our current NT measure
+because high-frequency data contain more signals about noise traders than do low-frequency data.
+To
+address this, we reconstruct the NT measure using 60-minute interval data and limit order (Level 2) data
+and find that our current measure exhibits a correlation with the 60-minute price-based measure and the limit
+order-based measure of over 99% and 96%, respectively. Moreover, our robustness analyses suggest that both
+alternative measures deliver similar predictive ability to our current measure. Despite the potential benefits
+of using tick-level data, we note that the results presented in this paper are robust enough to demonstrate
+that the current NT measure is suﬀicient for capturing market-wide noise trading activity.
+10We use the value-weighted method to construct NT.
+3
+
+tainty (Addoum and Kumar, 2016); increases in the Tobin tax, implemented in response
+to substantial noise trading (Cai et al., 2021); and notable noise trading events, such as
+the speculative bubbles of 2007 and 2015 and the Wuhan lockdown. Fourth, we find that
+changes in NT are positively related to changes in market liquidity, consistent with liquidity
+provision by noise traders (Black, 1986). Finally, Hasbrouck (1988, 1991a,b) suggest that
+one of the distinct features of noise trading is that its related changes should be transient.
+As such, a properly constructed noise trading measure should be associated with stronger
+future price reversals, which we indeed observe.
+For the second part of our empirical analyses, we examine how noise trading affects
+stock market returns. We interpret NT as a contrarian predictor of stock market index
+returns. In the presence of valuation diﬀiculty, a high level of noise trading can lead to
+both overpricing and underpricing (Keynes, 1936).11 However, underpricing is more easily
+eliminated than is overpricing because short-sale constraints hinder arbitrage concerning
+overpricing compared with underpricing. Therefore, we expect high-level noise trading to
+result in market overvaluation and, consequently, the observable price correction to lead to
+lower future stock returns (De Long et al., 1990).
+After regressing future market returns on NT, we confirm a strong and negative relationship between noise trading and future monthly market index returns. A one-standarddeviation increase in NT leads to a lower monthly return of 1.135%. This pattern persists
+over the next twelve months, with a one-standard-deviation increase in NT predicting a
+decrease in annualized returns of 14.63%, indicating that the economic magnitude is substantial. Moreover, we obtain similar results through out-of-sample analysis, firm-level NT
+analysis, and a battery of robustness checks. This evidence supports our notion that noise
+trading causes systematic mispricing in the stock market.
+To further support the noise-trading-induced systematic mispricing explanation, we discuss two mispricing channels through which noise trading can affect stock prices, namely, the
+11Grinblatt and Han (2005) suggest that both buying and selling can induce underpricing and overpricing.
+4
+
+limits-to-arbitrage channel (Shleifer and Vishny, 1997) and the valuation diﬀiculty channel
+(Baker and Wurgler, 2006). If the predictability of NT stems from mispricing, then the
+price impact should prevail when arbitrage costs, such as short-sale constraints, restrict the
+willingness of sophisticated investors to trade against mispricing or when stock valuation is
+more subjective, making prices more vulnerable to noise trading. In other words, during
+these times, compared to other times, noise trading can have a greater influence on stock
+prices.
+To access the limits-to-arbitrage channel, we examine how the predictability of NT varies
+with short-sale constraints. We employ abnormal short interest as an inverse proxy for shortsale constraints, as the relaxation of short-sale constraints leads to more active short selling
+activity, resulting in greater abnormal short interest. We show that NT predicts market
+index returns most weakly when short-sale constraints are less binding, consistent with the
+limits-to-arbitrage channel.
+To explore the valuation diﬀiculty channel, we rely on Google’s withdrawal from China,
+which led to a significant reduction in information transparency (Xu, Xuan, and Zheng, 2021;
+Wang, Yu, and Zhang, 2023). After Google’s withdrawal in March 2010, investors’ ability
+to search for information on the internet was hampered. As such, stock valuation became
+more subjective, and the effect of noise trading on stock prices intensified. We confirm that
+the predictability of NT is particularly strong after Google’s withdrawal, consistent with the
+valuation diﬀiculty channel.
+For the final part of our empirical analyses, we investigate several alternative explanations
+for the predictability of NT to reinforce our findings. First, we find that the predictability
+of NT cannot be explained by a range of commonly used market return predictors that aim
+to capture fundamentals. Second, by utilizing China’s B-share market, which shares the
+same fundamentals as our primary sample but features fewer noise traders,12 we conduct
+12Unlike our primary sample, China’s A-share market, the B-share market is occupied predominantly by
+foreign institutional investors, who are less likely to be noise traders than are other types of investors. While
+5
+
+natural experiments and find that NT loses its predictability in the B-share market. Hence,
+our findings on return predictability are less likely to be driven by factors unrelated to noise
+trading. Third, it is tempting to relate the predictability of NT to investor sentiment (Baker
+and Wurgler, 2006). However, we find that the negative relation between NT and future
+market returns remains significant even after controlling for investor sentiment. Fourth, we
+show that the predictability of NT is not driven by retail investors’ round number heuristic
+(Kuo, Lin, and Zhao, 2015).
+Finally, an alternative explanation is that the presence of lucky (or unlucky) numbers in
+stock prices makes stocks more salient and thus grabs investors’ attention rather than reflecting noise trading activity.13 To alleviate this concern, we construct alternative measures
+of NT on the basis of the last several digits of stock prices (e.g., the last one to three digits).
+These digits are less visible to investors and, therefore, less likely to draw their attention
+than are other digits, yet they still capture noise trading activity. We find that these measures still negatively and significantly predict future stock market index returns. Moreover,
+a pseudo NT measure constructed using stock returns, which cannot capture noise trading
+but is likely to draw attention, cannot predict future stock market index returns.
+The contributions of our paper can be understood as follows. First, our paper contributes
+to the measurement of noise trading by extending previous trader- and volume-based approaches (Coval and Stafford, 2007; Hvidkjaer, 2008; Barber, Odean, and Zhu, 2008; Barber et al., 2009; Lou, 2012; Edmans, Goldstein, and Jiang, 2012; Han and Kumar, 2013;
+Lou and Wang, 2018; Aboody et al., 2018; Dessaint et al., 2019; Henderson, Pearson, and
+Wang, 2023). We introduce a novel methodology based on transaction prices, specifically
+superstition-driven price clustering, to capture the time series variation in market-wide noise
+traders’ activities. We do not claim that this methodology is a universal measure of all forms
+A- and B-share markets cater to different investor clientele, they are exposed to identical fundamental factors
+(Chui, Subrahmanyam, and Titman, 2022).
+13For instance, investors may buy a stock after observing multiple instances of lucky numbers in stock
+prices (Hirshleifer, Jian, and Zhang, 2018).
+6
+
+of noise trading; rather, we present a measure to identify investors’ noise trading that can
+be adapted to other cultural or market contexts, given that superstition exists around the
+world.
+Second, our paper contributes to the growing literature on the effects of noise trading on
+asset prices. Earlier studies focused primarily on analyzing the cross-sectional relationship
+between noise trading and stock returns.14 Our study complements these efforts by exploring
+the straightforward impact of noise trading on market-wide stock returns. More importantly,
+our evidence supports the long-standing theoretical prediction that noise trading contributes
+to systematic mispricing in the stock market.
+Finally, our study contributes to recent literature documenting superstitions in the financial market. He et al. (2020) show that buyers pay more for homes with lucky addresses,
+resulting in a lucky premium. Hirshleifer, Jian, and Zhang (2018) find that Chinese initial
+public offering (IPO) stocks with lucky codes deliver lower future returns due to numerological superstition beliefs than do other Chinese stocks. Bhattacharya et al. (2018) find
+that superstitious investors tend to lose money in their trading. Zhang and Du (2022) find
+that numerological superstition has a profound impact across China’s stock, bond, foreign
+exchange, and commodities markets. Furthermore, Fisman et al. (2023) show that during
+the Chinese “zodiac year”, widely held beliefs in terms of bad luck make individuals less
+likely to make risky decisions. Our study complements these studies by investigating the
+effect of superstitions on aggregate stock market performance.
+The rest of the paper is organized as follows. Section 2 describes how we measure noise
+trading. Section 3 presents how we validate our noise trading measure. Section 4 reports
+our main empirical results. Section 5 provides analyses of alternative explanations. Finally,
+Section 6 concludes the paper.
+14For example, Coval and Stafford (2007), Hvidkjaer (2008), Barber, Odean, and Zhu (2008), Barber et al.
+(2009), Lou (2012), Edmans, Goldstein, and Jiang (2012), Han and Kumar (2013), Lou and Wang (2018),
+Aboody et al. (2018), Dessaint et al. (2019), Henderson, Pearson, and Wang (2023).
+7
+
+2
+Measuring noise trading
+2.1
+Trader- and volume-based approaches
+2.1.1
+Trader-based approach
+The trader-based approach categorizes two main types of investors—retail investors
+and mutual funds—as noise traders.
+Retail investors: Many studies categorize retail investors as noise traders (e.g., Stambaugh, 2014). The idea behind this definition is straightforward—retail investors often lack
+information and exhibit psychological biases. Previous research in the literature broadly
+supports the noise trader hypothesis. These studies link retail investors to noise traders by
+showing that retail investors lose money from their trading due to frequent trading on the
+basis of nonfundamental information (Odean, 1999; Barber and Odean, 2000, 2008; Barber
+et al., 2009). Furthermore, retail investors’ trading contains a common directional component, which can lead to nonfundamental price movements (Kumar and Lee, 2006; Dorn,
+Huberman, and Sengmueller, 2008; Henderson, Pearson, and Wang, 2023) and increase price
+volatility (Foucault, Sraer, and Thesmar, 2011).
+Recent empirical studies seem to challenge the notion that retail investors are noise
+traders by showing that retail investors’ trading flow can correctly predict future firm-level
+price movements (Kaniel, Saar, and Titman, 2008; Barber, Odean, and Zhu, 2008; Kaniel
+et al., 2012; Kelley and Tetlock, 2013; Barrot, Kaniel, and Sraer, 2016; Kelley and Tetlock,
+2017; Boehmer et al., 2021). Their trading can provide liquidity and meet the demands
+of institutional investors who face higher liquidity constraints (Kelley and Tetlock, 2013;
+Barrot, Kaniel, and Sraer, 2016). Additionally, some studies find that retail investors’ trading
+flow contains relevant information about future returns, suggesting that at least some retail
+investors are informed traders (Kaniel, Saar, and Titman, 2008; Kaniel et al., 2012; Boehmer
+et al., 2021).
+8
+
+To reconcile these conflicting findings, more recent studies have analyzed the heterogeneity of retail investors. These studies find that larger retail investors’ trading flow can
+correctly predict future cross-sectional stock returns, whereas the trading flow of smaller
+retail investors tends to be a contrarian predictor of future cross-sectional stock returns
+(Jones et al., 2023). However, the trading flow of neither larger nor smaller retail investors
+can predict stock market returns (Boehmer et al., 2021; Jones et al., 2023). In addition,
+some studies shift interest in understanding the new generation of retail investors who trade
+on Robinhood and find that while Robinhood investors perform well, they engage in more
+attention-induced trading than do other retail investors. (Welch, 2022; Barber et al., 2022).
+Mutual funds: A rapidly expanding stream of literature has attempted to use mutual
+funds as a proxy for noise traders. The economic mechanism is that large retail investor
+outflow from mutual funds can create price pressure on fund managers, which, in turn, forces
+mutual funds to sell their stocks at prices below fundamental values (Coval and Stafford,
+2007; Lou, 2012). Building on this assumption, many studies use mutual fund fire sales
+to capture such flow-induced noise trading and test how noise trading affects corporate
+performance (e.g., Edmans, Goldstein, and Jiang, 2012; Derrien, Kecskés, and Thesmar,
+2013; Phillips and Zhdanov, 2013; Lou and Wang, 2018; Dessaint et al., 2019).
+Clearly, a shortcoming of this method is the challenge of distinguishing noise trading
+from information trading because mutual funds’ buying and selling actions can be driven by
+both information and noise simultaneously. As documented by (Wardlaw, 2020), existing
+fund fire sale flow measures fail to capture noise trading; instead, they may reflect variations
+in fundamentals.
+2.1.2
+Volume-based approach
+Rather than identifying specific traders, the volume-based approach focuses on tracking
+noise trading on the basis of trade size and often uses the terms “noise trader” and “retail
+9
+
+trader” interchangeably. The most common method separates trades by dollar size, identifying orders below a certain cutoff as noise trading. For example, Lee and Radhakrishna
+(2000) adopt a $20,000 cutoff to identify noise (retail) trading. More recent studies construct
+noise trading measures on the basis of small trades and find that noise trading can have a
+significant effect on cross-sectional stock returns (Hvidkjaer, 2008; Han and Kumar, 2013).
+However, with the ever-growing spread of computer algorithms allowing institutional
+orders to be broken into smaller pieces, small trades are becoming increasingly less likely to be
+executed by noise investors (Cready, Kumas, and Subasi, 2014). For example, Boehmer et al.
+(2021) show that the retail orders are slightly larger than are other orders. Li et al. (2023)
+suggest that small retail investors tend to submit small and medium-sized orders, whereas
+large retail investors are more likely to submit medium-sized and large orders. In contrast,
+institutional investors submit a greater proportion of small orders, especially after 2018, as
+algorithmic trading has become prevalent among institutional investors (Li et al., 2023). As
+a result, the traditional association between small trades and noise trading no longer holds,
+which, in turn, has made the volume-based approach less effective at distinguishing whether
+trades reflect noise trading or informed trading.
+In summary, because of the diﬀiculty in directly observing investors’ information sets,
+identifying noise trading remains a significant challenge. Although considerable effort has
+been made to examine noise trading’s impact on cross-sectional stock returns, most studies
+on the outcomes of noise trading are limited to theoretical or experimental research.15 More
+importantly, the role of noise trading in affecting market-wide stock returns remains unclear.
+With a few exceptions, ideal settings that enable researchers to identify noise traders or noise
+trading activity are diﬀicult to find. In the following subsection, we discuss how we overcome
+this challenge by utilizing noise traders’ superstitious beliefs to isolate and measure noise
+trading activity.
+15For example, Arnott et al. (2015) predict that noise trading can create size and value effects. Bloomfield,
+O’hara, and Saar (2009) conduct laboratory experiments to analyze how noise trading affects liquidity.
+10
+
+2.2
+Empirical measure of noise trading
+We begin with the well-documented concept that noise traders, or uninformed traders, are
+investors who, lacking access to information, trade on noise as if it were genuine information
+(Black, 1986).
+Of course, the information sets of investors cannot be directly observed.
+However, much psychological literature suggests that when there is a shortage of information
+or individuals face uncertain environments, they tend to rely on superstition to exert control
+over uncertainty (Malinowski, 1948; Skinner, 1992; Tsang, 2004; Torgler, 2007). For example,
+Malinowski (1948) suggests that deep-sea fishermen participate in superstitious rituals to
+manage the uncertainty of their work because fishing in the open sea is dangerous and
+unpredictable.
+Conversely, fishermen who work in calm and safe waters do not rely on
+superstition. Similarly, Tsang (2004) find that superstition plays a crucial role for Chinese
+businesspeople in mitigating the anxiety stirred up by volatile and unpredictable businesses.
+On the basis of these studies, it is natural to relate noise trading activity to superstitious
+behavior in the stock market. In our paper, we rely on the superstitious behavior of stock
+prices to track noise trading activity.
+More precisely, we exploit Chinese numerological
+superstition, one of the most prevalent superstitious behaviors in financial research (e.g.,
+Hirshleifer, Jian, and Zhang, 2018; Bhattacharya et al., 2018; He et al., 2020; Zhang and
+Du, 2022), and use the frequency of lucky and unlucky numbers in stock prices to infer
+noise trading. One distinct advantage of this form of superstition is that it offers a clear,
+observable pattern in stock prices that can be easily quantified.
+To seek protection from superstition and improve luck, equity orders initiated by noise
+traders are likely to exhibit a preference for lucky numbers. This preference manifests in their
+order placement, particularly in their chosen price points. As a result, at the market level,
+the dominance of noise traders can lead to a disproportionately high-level occurrence of lucky
+numbers in individual stock prices. Conversely, experienced, rational, informed traders who
+rely on information rather than on superstition in their trading decisions are likely to initiate
+11
+
+or accept equity orders with more unlucky numbers. Therefore, the high-level occurrence of
+unlucky numbers in stock prices can be viewed as substantial trading by informed traders.
+In our empirical study, we use the difference between the frequencies of lucky and unlucky numbers in stock prices to mitigate the impact of informed trading on noise trading.16
+According to Chinese numerological superstition, the number 8 is considered lucky because
+its pronunciation is similar to the word for “wealth” or “prosper.” In contrast, the number
+4 is deemed unlucky because its pronunciation resembles the word for “death.”
+Monthly noise trading activity is measured as the difference between the frequencies of
+the numbers 8 and 4 in the daily stock prices of all firms listed on China’s stock market.17
+Specifically, we first compute the occurrence of each digit in each stock’s price in month
+t using the daily stock prices. To comprehensively track noise traders’ activity, we use all
+available types of daily stock prices, namely, the opening price, highest price, lowest price,
+and closing price.
+Ideally, high-frequency intraday transaction prices provide richer signals of trading activity, and a noise trading measure based on high-frequency prices can offer a more precise
+representation of noise trading behavior. However, constructing such a measure is challenging due to the complexities and diﬀiculties involved in handling high-frequency data. In
+contrast, daily prices offer two key advantages—simplicity and reduced computational requirements. More importantly, as shown in the following sections, daily data prove suﬀicient
+for identifying noise trading activity. Nevertheless, we acknowledge that high-frequency data
+may improve the precision of noise trading detection; however, the marginal contribution
+they offer is limited relative to the objectives of this paper.
+16Our robustness analysis shows that the choosing of stock prices or limit order do not change our baseline
+findings.
+17Our main findings remain qualitatively the same when using only the frequencies of the number 8 or the
+number 4 in stock prices to capture noise trading activity.
+12
+
+We then define a stock’s noise trading using the following equation:
+NT p
+i,t = # of Num 8p
+i,t −# of Num 4p
+i,t
+# of total Nump
+i,t
+,
+(1)
+where a stock’s noise trading, NT p
+i,t, represents NT O
+i,t, NT H
+i,t, NT L
+i,t, or NT C
+i,t for stock i in
+month t, estimated using daily opening, highest, lowest, and closing prices, respectively. #
+of Num 8p
+i,t is the number of times that the digit 8 is included in daily prices for stock i in
+month t, # of Num 4p
+i,t is the number of times that the digit 4 is included in daily prices for
+stock i in each month t, and # of total Nump
+i,t is the total number of digits in daily prices
+for stock i in each month t. The market-level individual noise trading (NT p
+t ) measure is
+defined as the market-capitalization-weighted cross-sectional average of stock-specific NT p
+i,t.
+Our monthly noise trading (NT) measure is finally defined as an arithmetic average of
+the four types of NT p
+t. More precisely, NT is defined as follows:
+NT t = NT O
+t + NT H
+t + NT L
+t + NT C
+t
+4
+,
+(2)
+where NT O
+t , NT H
+t , NT L
+t , and NT C
+t are calculated using the opening, highest, lowest, and
+closing daily prices in each month, respectively. Following Baker and Wurgler (2006), we
+standardize each NT p
+t to have a mean of zero and a unit standard deviation. Ideally, NT
+can reduce potential measurement errors in each NT p
+t and capture the level of market-wide
+noise trading activity in each month. To help account for any potential nonsynchronicity
+effects that may cause NT to reflect a leading shift in noise trading activity (Aboody et al.,
+2018), all components of NT are introduced with a one-month lag following the procedures
+of Baker and Wurgler (2006) and Cassella and Gulen (2019). A high NT value indicates a
+high level of noise trading activity in the stock market.
+13
+
+2.3
+Data and sample
+Our sample includes all Chinese A-share stocks listed on the Shanghai Stock Exchange
+and Shenzhen Stock Exchange, spanning from January 2000 to December 2022. We begin
+our sample in January 2000 following Liu, Stambaugh, and Yuan (2019). We construct our
+variables using the daily and monthly stock-level and balance sheet data obtained from the
+China Stock Market & Accounting Research (CSMAR) database. Our market index return
+and risk-free rate data are also obtained from the CSMAR database.
+[Insert Table 1 about here]
+Panel A of Table 1 presents the summary statistics for the key variables used in our
+analysis over the period from January 2000 to December 2022. NT is our key measure of
+interest for noise trading. Summary statistics for other control variables are also reported in
+Panel A. Control variables include the dividend-to-price ratio (DP), dividend yield (DY ),
+earnings-to-price ratio (EP), dividend-to-payout ratio (DE), book-to-market ratio (BM),
+turnover (TO), return volatility (RV OL), economic policy uncertainty (EPU), money supply (MS), and inflation (INFL). For comparison, all variables are also standardized to have
+a mean of zero and a unit standard deviation. For space conservation, detailed descriptions
+of how we constructed the market- and firm-level variables used in this paper are provided
+in Appendix A.
+Panel B of Table 1 presents the correlations between NT and other variables. It appears
+that NT shows a relatively low-level correlation with other variables, indicating that NT
+captures different information than do the variables constructed to capture fundamentals.
+[Insert Figure 1 about here]
+To better understand NT, we plot the evolution of NT during our sample period in
+Figure 1. As shown, NT fluctuates over time and decreases throughout the sample period.
+14
+
+The red dotted linear trend line fitted to the data indicates that the slope of NT is −0.55%,
+thus confirming the downward trend in noise trading activity over time. This decline is
+partially consistent with the well-known hypothesis that noise trading arises from retail
+investors, given the substantial downward trend in the fraction of retail investors in China’s
+stock market. As shown in Figure 1, the fraction of retail investors, represented by the
+green dashed line, also exhibits a downward trend. Furthermore, Figure 1 reveals a clear
+relationship between NT and the fraction of retail investors, validating our claim that NT
+reflects noise trading. We further discuss the details in Section 3.
+[Insert Figure 2 about here]
+We also show the evolution of each NT p over the period from January 2000 to December
+2022 in Figure 2. As shown, all NT p values clearly capture similar fluctuations over time,
+despite being constructed on the basis of different types of stock prices. More importantly, as
+expected, all NT p values are highly correlated with each other, implying that they capture
+a similar pattern of investors’ trading behavior,18 which we suggest denotes noise trading
+activity.
+3
+Validation of NT
+3.1
+Retail investors and investor experience
+Given the diﬀiculty in measuring noise trading, we begin our empirical analysis by validating our noise trading measure using variables that existing studies have shown to be
+associated with noise trading. The literature attributes noise trading to retail investors and
+inexperienced investors (Stambaugh, 2014; Brunnermeier, Sockin, and Xiong, 2022) because
+they often cannot obtain and analyze information. We therefore expect our noise trading
+18Nontabulated results suggest that the median values are relatively close, ranging from −0.196 to −0.145.
+In addition, all individual NT measures are persistent with large first-order autocorrelations.
+15
+
+measure to be positively correlated with retail investor ownership and negatively correlated
+with investor experience.
+We construct market-level retail investor ownership (RIO) as the value-weighted average
+of firm-level retail investor ownership, defined as one minus institutional ownership, following
+Gao, Ren, and Zhang (2020).19 To mitigate reporting-induced seasonality, where full holdings
+are disclosed only semi-annually,20 we smooth RIO using a six-month moving average to filter
+out artificial fluctuations and idiosyncratic noise. To proxy for market experience, we use
+the variable Time, which equals one for the first month of our sample and increases by one
+with each subsequent month. Motivated by Engelberg, McLean, and Pontiff (2020), Time
+captures the cumulative experience (e.g., market knowledge and adaptation) that investors
+gain through their past trading activity over time (Lo, 2004).
+[Insert Table 2 about here]
+We validate our noise trading measure by conducting simple time series regressions of
+NT on RIO and Time with control variables. The results are presented in Panel A of Table
+2. Columns (1) and (2) in Panel A of Table 2 show the results of the regressions of NT on
+RIO with and without control variables. In the univariate regression, NT is significantly
+positively correlated with RIO. After controlling for various market and macroeconomic
+factors in column (2), this result remains significant; a one-standard-deviation increase in
+RIO is associated with a 0.027% increase in NT, suggesting that retail investors are robust
+determinants of NT.
+Columns (3) and (4) reveal a negative time trend in NT, as the
+coeﬀicient on this Time is negative and significant in every specification. This declining
+19Institutional ownership is defined as holdings by mutual funds, insurance companies, Qualified Foreign
+Institutional Investors, commercial banks, and investment banks, following Xu, Xuan, and Zheng (2021).
+We obtain these data from CSMAR.
+20This seasonality arises from the disclosure regulations in China. Listed firms are mandated to disclose
+their full institutional holdings only in semi-annual and annual reports. In contrast, quarterly reports only
+require the disclosure of the top ten largest shareholders.
+16
+
+trend in NT over time indicates that improvements in market experience lead to less noise
+trading.
+3.2
+A quasi-natural experiment: the Wind outage
+We further validate our measure by taking advantage of a quasi-natural experiment.
+Specifically, the quasi-natural experiment exploits the abrupt outage of Wind.
+Wind is
+the leading financial data provider in China and is widely used by institutional investors
+for comprehensive, real-time market data to make trading decisions. On January 8, 2024,
+the platform experienced a significant system failure that prevented users from logging into
+terminals or retrieving data. The outage persisted for over eight hours, spanning the entire
+trading session, before services partially recovered in the evening.
+Intuitively, we expect noise trading activity to increase during the Wind outage, as the
+participation of informed institutional investors is hindered, thereby increasing the relative
+influence of noise traders. To test this hypothesis, we examine the dynamics of NT around
+the event using the following regression specification:
+NT i,d,p = α + β1Windd,p + Controls + αi + αdow + αw + αm + ϵi,d,p,
+(3)
+where i, d, and p indicate firm, date, and 60-minute interval, respectively. NT i,d,p is defined
+as the difference in frequency of digits 8 and 4 in prices in interval p of day d. Windd,p is
+an indicator variable equal to one during the Wind outage on January 8, 2024, and zero
+otherwise.
+∗, ∗∗, and ∗∗∗denote significance at the 10%, 5%, and 1% levels, respectively.
+The sample period is from December 24, 2023 to January 23, 2024 (15 days before and after
+January 8, 2024). The coeﬀicient of interest, β1, captures the difference in NT during the
+Wind outage relative to normal periods. If NT effectively captures noise trading, we expect
+to observe an increase in NT during the outage, corresponding to a positive and significant
+β1. As shown in Panel B of Table 2, we find that β1 is consistently positive and statistically
+17
+
+significant, which supports the validity of NT in capturing noise trading.
+3.3
+Noise trading events
+We next validate our noise trading measure by examining the dynamics of NT around
+major noise trading events. Motivated by Baker, Bloom, and Davis (2016), we focus on
+spikes in NT. Figure 1 clearly displays spikes around some noise trading events in China’s
+stock market.
+The first spike aligns with the Chinese Communist Party’s (CCP’s) 16th
+Party Congress in late 2002, during which Hu Jintao became the leader of China. This
+result is consistent with Addoum and Kumar (2016)’s argument that national leadership
+changes trigger uncertainty about future policy directions, thereby boosting noise trading in
+the stock market. This argument is further supported by a similar spike around the CCP’s
+18th Party Congress in late 2012, when Xi Jinping became the leader of China.
+We also explore the dynamics of NT around adjustments in the Tobin tax, a popular
+policy tool that regulators use to mitigate noise trading in financial markets (Cai et al., 2021).
+Intuitively, an increase in the Tobin tax should discourage noise traders, thereby reducing
+noise trading activity. Consistently, Figure 1 shows a notable spike in NT around May 2007,
+when the Tobin tax was increased by the Chinese government from 0.2% to 0.6%. This
+increase in the Tobin tax is consistent with observations of a substantial increase in noise
+trading during that period, which prompted the Chinese government to triple the Tobin tax
+(Cai et al., 2021). More importantly, the time variation in NT aligns with the modest effect
+of the Tobin tax on mitigating noise trading, as NT experiences a sharp drop following the
+tax increase. Conversely, NT shows a sharp rise following the reduction in the Tobin tax
+from 0.6% to 0.1% in early 2008.
+Additionally, NT surges around the notable speculative bubbles of 2007 and 2015, during
+which stock prices soared before crashing, suggesting heightened noise trading activity. This
+pattern is quite intuitive, as noise trading tends to increase during these speculative bubbles.
+18
+
+Conversely, NT experienced a sharp drop around the Split-Share Structure Reform of 2005,
+which unlocked nontradable shares and led to an improvement in price informativeness and
+a reduction in noise trading (Carpenter, Lu, and Whitelaw, 2021).
+Finally, NT clearly spikes around 2018, when U.S.–China trade tensions began, and again
+during the lockdown of Wuhan in early 2020. Casual observations suggest that China’s stock
+market experienced heightened uncertainty during these periods, fostering an environment
+in which noise trading flourished. Overall, our findings suggest that NT effectively captures
+noise trading events.21
+3.4
+Liquidity provision
+Black (1986) suggests that noise trading can affect liquidity as well as the level of asset
+prices. By trading on signals that are uncorrelated with a firm’s fundamentals, noise traders
+can provide liquidity to the market and thus make financial markets possible. Accordingly,
+an increase in noise trading should be associated with higher liquidity. To validate our noise
+trading measure, we study the relationship between changes in stock market liquidity and
+contemporaneous changes in NT. We compute ∆NTt as the difference between NTt and
+NTt−1 and use the aggregate bid–ask spread to measure liquidity. The aggregate bid–ask
+spread (Spread) is the value-weighted average of firm-level bid–ask spreads; a higher value
+of Spread indicates lower market liquidity. For robustness, we also use the relative quoted
+bid–ask spread (SpreadQ) and the relative effective spread (SpreadE).
+To test our conjecture, we estimate the following time-series regression:
+∆Spreadt = α + β1∆NTt + ϵt,
+(4)
+21Importantly, we do not use information events such as earnings announcements or major macro announcements to validate our noise trading measure. The reason for this is that the disclosure of public
+news can have ambiguous effects on noise trading, potentially either providing information or increasing
+information asymmetry among investors (Kim and Verrecchia, 1994; Bogousslavsky, Fos, and Muravyev,
+2024).
+19
+
+where ∆Spreadt is the change in the bid–ask spread and ∆NTt is the change in our noise
+trading measure. Building on Black (1986), we expect β1 < 0 if NT captures noise trading,
+as prior literature suggests that noise trading is often associated with higher liquidity. Hence,
+if our noise trading measure accurately captures noise trading, ∆NTt should be negatively
+related to ∆Spreadt.
+Table B2 presents the estimation results. We document a negative contemporaneous relation between ∆NTt and ∆Spreadt, consistent with NT capturing variation in noise trading
+that is associated with market liquidity. We acknowledge that the theoretical relationship
+between noise trading and liquidity is multifaceted, as recent literature offers a more nuanced view regarding the impact of noise trading on market quality. For instance, Dalvi
+et al. (2023) note that while noise trading can mitigate adverse selection and thus improve
+liquidity, it can simultaneously exacerbate inventory risk for market makers, leading to wider
+bid-ask spreads and reduced liquidity (Grossman and Miller, 1988). This theoretical ambiguity implies that a definitive, monotonic relationship between noise trading and liquidity
+is not guaranteed. Consistent with this argument, recent empirical studies, such as Peress
+and Schmidt (2020) and Eaton et al. (2022) show that noise trading can either enhance or
+impair market liquidity. Despite this theoretical ambiguity, our finding provides supporting
+evidence for the construct validity of our noise trading measure.
+3.5
+Return reversal
+Finally, motivated by Bogousslavsky, Fos, and Muravyev (2024), we validate our noise
+trading measure by testing how NT affects the short-term return reversal effect.
+Prior
+studies suggest that price movements caused by noise trading tend to be transient, whereas
+those caused by informed trading tend to be permanent (Hasbrouck, 1988, 1991a,b). Hence,
+if our noise trading measure indeed captures noise traders’ trading activity, then we should
+observe a stronger return reversal effect following high-NT months. We test this conjecture
+20
+
+by conducting the following time series regression:
+rt+1 = α + β1NTt × rother
+t
++ β2NTt × rpersistence
+t
++ β3NTt
++ β4rother
+t
++ β5rpersistence
+t
++ Controls + ϵt+1,
+(5)
+where rt+1 is the monthly stock market excess return in month t + 1. The monthly stock
+market excess return is the return on the value-weighted market portfolios in excess of the
+risk-free rate. NTt is our noise trading measure.
+Before continuing, however, there is an important issue worth clarifying. Note that the
+price limit rule imposed by the Chinese government can induce artificial autocorrelation in
+stock returns.22 To address this microstructure issue, we decompose rt into two components
+by regressing rt on rt−1. rpersistence
+t
+is the fitted component, which is related to the artificial
+autocorrelation in stock returns caused by the price limit rule. rother
+t
+is the residual component. We expect a high level of noise trading to lead to a stronger return reversal for rother
+t
+;
+hence, the coeﬀicient of the interaction term NTt × rother
+t
+, β1, is expected to be negative.
+[Insert Table 3 about here]
+Table 3 presents the regression results. Column (1) shows that β1 is significantly negative,
+indicating that NT is associated with a stronger short-term return reversal effect. This effect
+persists and strengthens slightly in columns (2) and (3) when we include the interaction
+between NT and rpersistence
+t
+and the control variables. In addition, β2, which captures the
+interaction between NT and the persistent component of returns, is not significant across
+regressions. This contrast between β1 and β2 supports our hypothesis that NT captures
+primarily temporary price movements rather than persistent return patterns, aligning with
+theoretical predictions regarding the nature of noise trading.
+Taken together, these validation results suggest that NT effectively captures noise trading
+22See, e.g., Chen et al. (2019).
+21
+
+activity, which is consistent with our conjecture.23
+4
+NT and market returns
+4.1
+In-sample analysis
+In the in-sample analysis, we examine the forecast power of NT for stock market index
+returns by estimating the following univariate regression equation:
+rt:t+h = α + βNTt + ϵt:t+h,
+(6)
+where rt:t+h = (rt+1+…+rt+h/h) is the average monthly stock market excess return over
+horizon h. The monthly stock market excess return is the return on the value-weighted
+market portfolios in excess of the risk-free rate, and NTt is the noise trading measure.
+Forecasting horizon h spans from one to twelve months. We hypothesize that high-level noise
+trading activity is associated with market overvaluation, with observable price corrections
+leading to lower future returns. Hence, β, the coeﬀicient of interest in Eq. (6), is expected
+to be negative because it captures the subsequent correction of mispricing.
+[Insert Table 4 about here]
+Table 4 reports the in-sample univariate regression results, tracking the relationship
+between NTt and future stock market returns over different horizons. For all forecasting
+horizons, the coeﬀicients on NTt, denoted as β, are consistently negative and significant,
+indicating a negative relationship between noise trading intensity and future stock market
+returns. Taking a one-month horizon (h = 1) as an example, β is −1.135% (Newey and West
+23In Table B1, we also show that NT has no predictive power for future aggregate earnings or earnings
+surprises, measured by ROA and SUE. These results are consistent with Black (1986), which emphasizes
+that “noise is contrasted with information.”
+22
+
+(1987) t statistic = −2.33), suggesting that a one-standard-deviation increase in NT leads
+to 1.135% decrease in excess market return in the subsequent month.
+Similarly, when extended to longer forecasting horizons, such as the twelve-month horizon, the corresponding annualized excess market return decreases to −14.63% (t statistic =
+−2.85), which suggests that the economic magnitude is substantial. Moreover, the adjusted
+R2 value increases over time, increasing from 1.81% to 17.36%. This pattern is consistent
+with recent studies indicating that noise trading plays an important role in China’s stock
+market (Allen et al., 2024).
+Overall, the results from in-sample regressions show that NT is a strong contrarian predictor of future market returns across different forecasting horizons. Hence, in the following
+analysis, we report only the one-month-ahead results for brevity.
+4.2
+Out-of-sample analysis
+In this subsection, we examine the forecasting power of NT for the stock market index
+returns using an alternative approach—out-of-sample analysis. Specifically, we conduct the
+following regression using a subsample that incorporates the information available up through
+month t:
+rt = α + βNTt−1 + εt,
+(7)
+where rt is the monthly stock market return of month t. NTt−1 is the lagged noise trading
+intensity. On the basis of the regression coeﬀicient from Eq. (7), we estimate the forecast
+value of the monthly stock market return for month t + 1.
+We use the sample period from January 2000 to December 2005 as our first subsample;
+therefore, the assessment of out-of-sample forecasts extends over the period from January
+2006 to December 2022. For robustness, we adopt two methodologies for expanding our
+subsample—the first involves progressively extending it by one month at each iteration (expanding approach), and the second employs a 10-year rolling window (rolling approach)
+23
+
+following Chen, Da, and Huang (2022).24
+Following the literature (see, e.g., Chen, Da, and Huang, 2022; Dong et al., 2022; Jiang
+et al., 2019), we assess the out-of-sample predictive accuracy using the R2
+OS statistic introduced by Campbell and Thompson (2008) and Welch and Goyal (2008) and the mean
+squared forecast error (MSFE)-adjusted statistic introduced by Clark and West (2007). The
+latter metric gauges the proportional reduction in the MSFE for the predictive regression
+forecast compared with the historical average benchmark. The R2
+OS statistic is defined as
+follows:
+R2
+OS = 1 −
+∑T
+τ=t+1(rτ −ˆrτ)2
+∑T
+τ=t+1(rτ −¯rτ)2,
+(8)
+where rτ represents the monthly excess market returns and ˆrτ represents the forecast value
+of the excess market returns from Eq. (7). ¯rτ is the historical average of excess market
+returns up to month τ −1, and T is the number of months over our sample period. R2
+OS falls
+within the range (−∞, 1]. A positive R2
+OS value indicates that the forecast ˆrτ outperforms
+the historical average ¯rτ in terms of the MSFE.
+[Insert Table 5 about here]
+Table 5 presents the out-of-sample test results. Over the one-month horizon, the R2
+OS
+statistic is positively significant at the 5% level (Expanding). Likewise, when a 10-year window rolling approach (rolling) is employed, the R2
+OS is qualitatively similar to its expanding
+approach.
+In summary, the out-of-sample analysis results suggest that NT shows strong out-ofsample forecasting power for future stock market index returns. Thus, our out-of-sample
+analysis results reinforce the in-sample analysis results, confirming the important role of
+noise trading in affecting stock prices.
+24We also assess the robustness of our results by conducting out-of-sample analyses using different rolling
+windows, for example, 4- and 5-year rolling windows.
+24
+
+4.3
+Testing channels
+4.3.1
+Channel 1: Limits-to-arbitrage channel
+We interpret the predictability of NT as stemming from the limits-to-arbitrage channel
+and the valuation diﬀiculty channel. We begin by testing the limits-to-arbitrage channel. The
+behavioral literature posits that limits to arbitrage can amplify the effect of noise trading on
+stock prices (Shleifer and Vishny, 1997), as the willingness of rational arbitrageurs to offset
+the effects of noise trading is lower when arbitrage costs are high. Therefore, we expect the
+impact of NT on stock prices to be stronger when arbitrageurs face high arbitrage costs.
+Leading studies suggest that short-sale constraints are among the most important sources
+of arbitrage costs, as they can impede the correction of mispricing (see, e.g., Jones and
+Lamont, 2002; Lamont and Thaler, 2003; Nagel, 2005; Chu, Hirshleifer, and Ma, 2020).
+China’s stock market has consistently faced tight short-sale constraints. However, in March
+2010, these constraints were partially relaxed through the introduction of a pilot program for
+margin trading and short selling (MTSS) launched by the Chinese government. The MTSS
+program allowed short selling for a specific set of stocks included in a designated list, and the
+scope of this pilot program was gradually expanded over time (Leippold, Wang, and Zhou,
+2022).
+We expect the relaxation of short-sale constraints to weaken the predictability of NT.
+We rely on abnormal short interest (ASI) to proxy for short-sale constraints, as high ASI
+reflects increased short selling activity due to low short-sale constraints.25 ASI is measured
+by the difference between the market-level short interest (SI) in month t and its mean over
+the past three months. Market-level SI is defined as the value-weighted average of firm-level
+SI, which is the ratio of shorted shares to total tradable shares in month t. We compare
+the predictability of NT during high- and low-ASI periods using the following time series
+25We do not employ short interest (SI) because high SI can reflect either high or low short-sale constraints
+(see, e.g., Boehme, Danielsen, and Sorescu, 2006; Bali et al., 2023).
+25
+
+regression:
+rt+1 = α + β1NTt × HighASI
+t
++ β2NTt + β3HighASI
+t
++ Controls + ϵt+1,
+(9)
+where rt+1 is the monthly stock market excess return in month t + 1. NTt is our noise
+trading measure. HighASI
+t
+is a dummy variable that equals one if ASI is above its time
+series median value. The sample period is from June 2010 to December 2022 due to ASI
+data constraints. Controls include various market and economic variables, as detailed in
+Table 3. Our key variable of interest is the coeﬀicient of the interaction term, β1, which is
+expected to be positive because short selling can correct mispricing, thereby weakening the
+impact of NT on stock prices.
+[Insert Table 6 about here]
+The results from Table 6 are consistent with our conjecture. We observe a significant
+positive β1 with t statistics larger than two, both with and without control variables. Specifically, in the full model (column (2)), β1 is 2.724 (t statistic = 2.42), indicating that the
+predictive power of NT is significantly weaker following periods of high-level ASI. This finding suggests that increased arbitrage activity, as proxied by higher short selling, attenuates
+the impact of noise trading on stock prices.26
+Overall, in line with our hypothesis that the predictability of NT reflects mispricing, its
+predictability appears to stem from the high arbitrage costs faced by arbitrageurs.
+26Drawing on the MTSS, we also test how the relaxation of short-sale constraints affects the impact of NT
+on stock prices by conducting the following panel data regression with firm and year-month fixed effects:
+ri,t+1 = α + β1NTt × Shorti,t + β2Shorti,t + Controls + αi + αt + ϵi,t+1,
+(10)
+where ri,t+1 is stock i’s excess return in month t + 1. Shorti,t is a dummy variable that equals one if stock i
+has been allowed to short in month t. Our key variable of interest is the coeﬀicient of the interaction term,
+β1, which is expected to be positive because the allowance of short selling makes it easier for arbitragers to
+correct mispricing, thereby weakening the impact of NT on stock prices. In Table B4, we observe a strongly
+significant positive β1, with a t statistic larger than 9, indicating that the allowance of short selling weakens
+the impact of NT on stock prices.
+26
+
+4.3.2
+Channel 2: Valuation diﬀiculty
+We next relate the predictability of NT to the valuation diﬀiculty channel. Kahneman
+and Tversky (1973) and Kahneman (2003) suggest that there are systematic deviations
+from rationality under uncertainty, which can amplify the impact of investor irrationality in
+uncertain environments. This argument is empirically advanced by Birru and Young (2022),
+who suggest that during times of valuation diﬀiculty, investors are more prone to rely on
+subjective valuations. Consequently, we expect greater valuation diﬀiculty to lead to stronger
+effects of noise trading on stock prices.
+We consider Google’s withdrawal from China as a shock to valuation diﬀiculty. Google’s
+exit from its search business in China in March 2010 resulted in a decreased capacity for
+investors to gather and process information (Xu, Xuan, and Zheng, 2021; Wang, Yu, and
+Zhang, 2023). This unique event provides an opportunity to assess how the reduction in
+the amount of internet searching and the subsequent decrease in the degree of information
+transparency of financial markets affect the predictability of NT. We test the valuation
+diﬀiculty channel by conducting the following time series regression:
+rt+1 = α + β1NTt × Googlet + β2NTt + β3Googlet + Controls + ϵt+1,
+(11)
+where rt+1 is the monthly stock market excess return in month t+1. NTt is our noise trading
+measure. Googlet is a dummy variable that equals one after March 2010. We restrict our
+sample to the period from January 2000 to February 2012, covering two years after Google’s
+withdrawal, as Google’s existence had a more significant short-term effect, compared to longterm effect, on the information environment (Xu, Xuan, and Zheng, 2021). Controls include
+various market and economic variables, as detailed in Table 3.
+[Insert Table 7 about here]
+We present the results in Table 7. In column (1), the coeﬀicient of the interaction term
+27
+
+NTt×Googlet, β1 is negatively significant at the 1% level, suggesting that Google’s exit from
+China exacerbates the effect of NT on stock prices. This result holds when control variables
+are included in column (2), with β1 remaining significantly negative.
+Our analysis relies on the time variation in the changing information environment, which
+overlaps with the time variation in the allowance of short selling. We address this problem
+by examining the cross-sectional differences in information transparency across stocks. We
+test the valuation diﬀiculty hypothesis by conducting the following difference-in-differences
+panel regression with year-month fixed effects:
+ri,t+1 = α + β1NTt × Googlet × Treati + β2Googlet × Treati
++ β3NTt × Treati + β4NTt × Googlet + β5NTt
++ β6Googlet + Controls + αi + ϵi,t+1,
+(12)
+where ri,t+1 is stock i’s excess return in month t + 1. Googlet is a dummy variable that
+equals one after March 2010. Treati is a dummy variable that equals one for treatment firms.
+Motivated by Xu, Xuan, and Zheng (2021), we define treatment firms as those whose stock
+tickers have a higher search volume index than the sample median in February 2010.27 β1, as
+the coeﬀicient of interest, captures the decrease in the amount of available information due
+to Google’s existence and is expected to be negative. Consistent with the time series results
+from Table 7, Table B5 shows that β1 is significantly negative.28 This finding suggests that
+the reduction in information availability significantly amplifies the impact of noise trading
+on stock prices.
+Overall, our time series and cross-sectional evidence collectively support the notion that
+low-level information availability amplifies the impact of noise trading on stock prices, con27The search volume indices from Google are downloaded using web crawler technology. We retain the
+monthly search volume index values for a stock ticker exclusively after its adoption by a listed firm. Search
+volume index data are available at [Google Trends] (http://www.google.com/trends).
+28The results are similar if we define treatment firms as those whose stock tickers have a higher search
+volume index than the sample median in 2009, following Xu, Xuan, and Zheng (2021).
+28
+
+firming the valuation diﬀiculty channel.
+4.4
+Robustness tests
+4.4.1
+Alternative market returns
+In this subsection, we perform battery robustness tests for our main results. We first consider several alternative market index returns. Hirshleifer, Jian, and Zhang (2018) find that
+stocks listed for less than 36 months with lucky listing codes tend to deliver lower returns.
+Such a pattern arises due to the susceptibility of IPO stocks to numerological superstitions
+associated with their listing codes. To rule out the possibility that numerological superstitions in stock listing codes may influence our findings, we exclude stocks listed for less than
+36 months from our main analysis sample. Subsequently, we calculate the return on the
+value-weighted portfolio comprising the remaining stocks as a new measure of market index
+returns. Column (1) of Panel A in Table 8 shows that our results remain largely consistent
+with the main result (column (0) of Table 8).
+[Insert Table 8 about here]
+As previously mentioned, our main analysis uses the value-weighted method to calculate
+market index returns. However, the value-weighted method tends to overweight larger stocks.
+To address this concern, we construct alternative market index returns using the equalweighted method and find that our results hold well (column (2) of Panel A in Table 8).
+Moreover, another potential concern regarding our market index returns adopted in our main
+analysis is the inclusion of the bottom 30% of small stocks, whose prices may be influenced by
+shell-value contamination caused by IPO constraints (see, e.g., Liu, Stambaugh, and Yuan,
+2019). To address this concern, we calculate market index returns based on the largest 70%
+of stocks using the value-weighted method and find that the results are also quantitatively
+similar (column (3) of Panel A in Table 8).
+29
+
+4.4.2
+Alternative measures of NT
+We next construct NT using various alternative methods. First, as shown in Figure 1
+and Table 2, NT displays a slight downward trend, implying a reduction in noise trading
+activity. To remove the downward trend from NT, we follow Rapach, Ringgenberg, and
+Zhou (2016) and Chen, Da, and Huang (2022) by regressing NT on the time index and
+retaining the residual as the detrend NT. The first column of Panel B in Table 8 shows
+that the coeﬀicients of the detrended NT are slightly larger than those in our main results,
+indicating that the detrended NT performs better.
+Second, we employ the equal-weighting method instead of the value-weighting method to
+construct NT. As shown in column (2) of Panel B in Table 8, the equal-weighted construction
+of NT can also negatively predict future market returns across various horizons.
+More
+importantly, the coeﬀicients of NT and R2 exhibit qualitative increases compared with their
+counterparts in the baseline results presented in column (0) in Table 8. This observation
+is consistent with noise-trading-induced mispricing theory, as mispricing is more prevalent
+among small stocks than among large stocks (Baker and Wurgler, 2006). Hence, through
+the equal-weighting method, we assign higher weights to small stocks than does the valueweighting method, enabling the better capturing of noise trading.
+Third, Hirshleifer, Jian, and Zhang (2018) suggests that the numbers 6 and 9 are also
+considered lucky because they sound similar to words with positive meanings, such as “prosper” and “longevity.” We therefore define the numbers 6, 8, and 9 as lucky numbers and
+reconstruct NT using the same methodology as our original NT. Column (3) of Panel B
+in Table 8 shows that the alternative lucky-number-based NT can also negatively predict
+future market returns, although the coeﬀicient is relatively small.
+Fourth, the forecasting power of NT may be influenced by price limit rules imposed by
+the government. Specifically, the price limit rule sets a 10% maximum limit on a normal
+stock’s daily return. For special treatment (ST) stocks, the rule imposes a 5% price limit
+30
+
+on their returns. Intuitively, these strict price limits can influence the frequency of certain
+numbers and thus may affect our results. To evaluate whether the price limit rule affects our
+results, we reduce our sample size by excluding ST stocks, which face severe price limits, and
+use the remaining stocks to construct NT. In column (4) of Panel B in Table 8, we repeat
+our main analysis using the NT constructed excluding ST stocks. The economic magnitudes
+are similar to our main results in column (0) in Table 8.
+Fifth, we assess the robustness of our findings by using 60-minute interval prices instead
+of daily prices to construct NT. The data are obtained from RESSET. As reported in column
+(5) of Panel B in Table 8, the coeﬀicient on NT is negative and significant at the 5% level.
+Finally, we address the concern that transaction prices might differ from the prices intended by noise traders. We reconstruct NT using limit order prices derived from 60-minute
+intraday data.29 As reported in column (6) of Panel B in Table 8, the results remain qualitatively similar.
+4.4.3
+Cross-sectional evidence
+Thus far, our evidence suggests that owing to the presence of valuation diﬀiculty, intensive
+noise trading causes transitory market overvaluation that subsequently reverts, resulting in
+a negative relationship between NT and future market index returns. To reinforce this interpretation, we extend our analysis to the cross-section, examining whether the predictability
+of NT is robust at this level. Specifically, we investigate whether overpriced stocks, which
+typically constitute the short leg of anomalies, are more sensitive to NT than are other
+stocks.
+We consider 10 prominent anomalies identified in prior studies (Gu, Kang, and Xu,
+2018; Liu, Stambaugh, and Yuan, 2019). These include idiosyncratic volatility (IV OL),
+volatility (V OL), the maximum daily return (MAX), the minimum daily return (MIN),
+29RESSET provides the top five bid and ask prices.
+31
+
+the idiosyncratic maximum daily return (IMAX), the idiosyncratic minimum daily return
+(IMIN), the earnings-to-price ratio (EP), the book-to-market-equity ratio (BM), twelvemonth turnover (TO12), and one-month turnover (TO). The detailed list and definitions of
+these anomaly variables are reported in the Appendix A.
+We first form monthly decile portfolios on the basis of these anomaly variables over the
+past month. We then conduct the following time series regression to test how well NT can
+predict anomaly returns:
+ra
+t+1 = αa + βaNTt + ϵa
+t+1,
+(13)
+where ra
+t+1 is the value-weighted excess return for each of the portfolios sorted by anomaly
+variables in month t + 1. NTt is our noise trading measure. Table 9 reports the regression
+coeﬀicients βa.
+Consistent with our time series findings, βa for all decile portfolios are
+significantly negative, especially for short legs. More importantly, βa values for the return
+spread of all 10 anomalies are positive, suggesting that noise trading causes a stronger return
+reversal pattern for the short leg of anomalies than for the long leg.
+[Insert Table 9 about here]
+[Insert Figure 3 about here]
+To ensure the robustness of the abovementioned prediction, we also compare the performance of anomalies during high and low NT periods. Given that a high level of NT
+indicates the relative prevalence of overpricing, we expect anomalies to be stronger when
+NT is high than when it is low. We equally divide our sample into two subperiods depending on whether NT in each month is above or below its median. Figure 3 corroborates our
+findings from Table 9, demonstrating that anomalies become stronger following high-NT
+periods, as evidenced by a monotonically increasing relationship between anomaly variables
+and stock returns.
+In conclusion, our empirical results show that the negative predictability of NT is stronger
+for overpriced stocks than for other stocks, reinforcing our interpretations that NT captures
+32
+
+the activity of noise traders and that this noise trading contributes to systematic mispricing
+in the stock market.
+4.4.4
+Firm-level evidence
+Finally, we examine the relationship between the firm-level noise trading measure and
+the cross-section of stock returns. To the extent that NT negatively predicts stock market
+index returns, it is plausible that firm-level NT may also exhibit similar predictive ability for
+the cross-section of stock returns. We calculate firm-level NT (FNT) as the cross-sectional
+average of NT p
+i from Eq. (1), where NT p
+i represents NT O
+i , NT H
+i , NT L
+i , or NT C
+i
+for stock
+i in month t, estimated using daily opening, high, low, and closing prices, respectively. All
+components are introduced with a one-month lag, consistent with the construction of NT.
+A higher FNT value indicates a greater degree of noise trading for a given stock.
+As discussed earlier, noise trading is associated with systematic mispricing in stock markets.
+Accordingly, the relationship between noise trading and stock returns at both the
+aggregate and firm levels can be interpreted as evidence of such mispricing. We therefore
+posit that the predictability of FNT arises from the commonality of noise trading across
+stocks. Specifically, the systematic component of firm-level NT, driven by market-wide noise
+trading, should exhibit negative predictive power for cross-sectional stock returns, whereas
+the residual component is expected to have negligible forecasting ability.30
+To test this hypothesis, we decompose FNT into systematic and residual components by
+estimating the following regression:
+FNT i,t = α + β1NTt + β2NTt−1 + ϵt,
+(14)
+where FNT i,t is the firm-level noise trading measure for stock i in month t. NTt is our
+30In fact, we find no evidence that FNT can predict cross-sectional stock returns, largely because the
+residual component dominates the measure and obscures the influence of the systematic component.
+33
+
+noise trading measure, and NTt−1 is included to account for nonsynchronous trading, following Dimson (1979). The regression is estimated using a 48-month rolling window, with a
+minimum of 24 observations. FNT S is defined as the fitted or systematic component, and
+FNT R is defined as the residual component, both obtained from the most recent month of
+the regression.
+We first test our hypothesis by conducting Fama-Macbeth (1973) cross-sectional regressions. Following the recommendation of Hou, Xue, and Zhang (2020), we use market capitalization as weights for the regressions. The regression is specified as follows:
+ri,t+1 = α + β1FNT S
+t + β2FNT R
+t + Controls + ϵi,t+1,
+(15)
+where ri,t+1 is stock i’s excess return in month t+1. FNT S
+t is systematic component of FNT.
+FNT R
+t is residual component of FNT. Controls is a vector of firm-level characteristics for
+stock i in month t. We run the model across all stocks for every month and then average the
+coeﬀicients on FNT S
+t over time to calculate the final estimate of β1. The standard deviation
+of the coeﬀicients is adjusted using the Newey–West estimator with twelve lags. Under our
+maintained hypothesis, the coeﬀicient on FNT S, β1, is expected to be negative, whereas the
+coeﬀicient on FNT R, β2, should be close to zero (exhibit little forecasting power).
+[Insert Table 10 about here]
+The results are presented in Table 10. As conjectured, we observe that the coeﬀicients
+on FNT S are consistently negative and statistically significant at the 5% or 1% level across
+all specifications. In contrast, FNT R exhibits no statistically significant association with
+future stock returns.
+For robustness, we supplement the analysis with portfolio sorts evidence. In particular,
+at the beginning of each month, we sort stocks into three groups based on their FNT S or
+FNT R. We partition the stocks based on the top and bottom deciles to form low, medium,
+34
+
+and high portfolios, respectively. The low portfolio corresponds to the bottom decile, the high
+portfolio corresponds to the top decile, and the medium portfolio consists of the remaining
+80% of stocks. Portfolios are rebalanced monthly. We compute excess returns as the valueweighted returns minus the risk-free rate. Panel A of Table B6 shows that excess returns
+decline monotonically from the low to high FNT S portfolios. The average value-weighted
+low-minus-high (L −H) spread is 0.342% per month (t statistic = 2.27). By contrast, the L
+−H spread based on FNT R is statistically insignificant. Panel B reports the L −H alphas
+from the CAPM, CH3, and CH4 factor models (Liu, Stambaugh, and Yuan, 2019),31 which
+confirm the robustness of the results.
+Overall, the combined evidence from both Fama-MacBeth regressions and portfolio sorts
+suggests that the systematic component of firm-level NT provides economically and statistically significant forecasting power for the cross-section of stock returns, consistent with our
+hypothesis.
+5
+Alternative explanations
+5.1
+Fundamentals
+In this section, we investigate a range of alternative explanations for our main findings
+and demonstrate that none of them can account for the predictability of our noise trading
+measure. As an initial check, we examine whether our findings can be explained by commonly
+used market return predictors by conducting bivariate regressions and adding these control
+variables one at a time.
+[Insert Table 11 about here]
+Table 11 presents the in-sample bivariate regression results, comparing the predictability
+31The factor model data are obtained from https://en.mingshiim.com/database.
+35
+
+of NT with that of each control variable. The set of control variables includes the dividendto-price ratio (DP), dividend yield (DY ), the earnings-to-price ratio (EP), the dividendto-payout ratio (DE), the book-to-market ratio (BM), turnover (TO), return volatility
+(RV OL), economic policy uncertainty (EPU), money supply (MS), and inflation (INFL).
+These variables are specifically designed to capture fundamental factors influencing stock
+performance.
+As evident from Table 11, none of the control variables demonstrate significant forecasting
+power for a one-month horizon. The coeﬀicients for the control variables are nonsignificant
+across all specifications, with t statistics ranging from −1.58 to 1.56.
+In contrast, NT
+consistently exhibits a negative and significant relationship with future market returns, even
+after control variables are included. The coeﬀicients for NT range from −0.938 to −1.366,
+with t statistics between −2.00 and −2.66, indicating significance at the 5% and 1% levels,
+respectively .
+These results strongly support the unique predictive ability of our noise trading measure,
+demonstrating that its forecasting power cannot be attributed to or subsumed by these wellestablished predictors of market returns. In untabulated analysis, we also include all control
+variables in the regressions over different forecasting horizons and confirm that our results
+hold well, further reinforcing the robustness of our findings.32
+5.2
+Placebo tests using the B-share market
+Our conjecture is that the negative relationship between NT and future stock market
+index returns reflects the systematic mispricing caused by noise trading. However, since
+noise trading can be endogenous, one may conjecture that there are confounding effects
+32The untabulated results suggest that the predictability of NT is robust when we include retail investor
+activity, proxied by RIO, or existing noise trading measures, such as market-level mutual fund holdings and
+market-level small trades. Market-level small trades are measured as the value-weighted average of firm-level
+small trading, which is defined as the ratio of small buy and sell orders (those less than RMB 50,000) to
+total stock trading volume. The data are obtained from CSMAR.
+36
+
+from other factors that can affect stock returns for reasons unrelated to noise trading. We
+aim to mitigate this concern by exploiting a unique feature of China’s stock market—the
+coexistence of the A- and B-share markets, which share the same fundamentals but feature
+different noise trader compositions. Consequently, their return predictability is driven by
+distinct mechanisms. Specifically, return predictability in the A-share market is more likely
+to arise from noise trading, whereas that in the B-share market is more likely attributable to
+informed trading (see, e.g., Mei, Scheinkman, and Xiong, 2009; Chui, Subrahmanyam, and
+Titman, 2022; Allen et al., 2024).
+Our natural experiments are motivated by Chui, Subrahmanyam, and Titman (2022),
+who find variations in price momentum and short-term return reversal between China’s
+A- and B-share markets. Their work suggests that these patterns are driven primarily by
+distinct investor clienteles, with a greater prevalence of noise traders in the A-share market
+and a lower presence of noise traders in the B-share market. Such patterns exist because
+institutional constraints prevent A-share (B-share) traders from investing in the B-share (Ashare) market. In this sense, the B-share market provides a unique setting to assess how the
+exogenous variation in the prevalence of noise traders affects the predictability of NT.
+We conduct two placebo tests to assess the predictability of NT using the B-share market.
+First, we evaluate whether NT can predict future B-share market returns. For clarity, in this
+subsection, we refer to NT as A-share NT because it measures noise trading activity within
+the A-share market. Given that A-share NT identifies noise trading activity in the A-share
+market and that noise traders from the A-share market are prohibited from investing in
+the B-share market, we postulate that there should be no significant association between Ashare NT and future B-share market returns if our mechanism is responsible for the observed
+findings. However, if the predictability of NT is driven by other factors unrelated to noise
+trading, then A-share NT should also be a significant predictor of B-share market returns.
+To test this hypothesis, we conduct univariate regression to assess the predictability of
+A-share NT on B-share market returns and present the results in the first column of Table 12
+37
+
+(labeled A-share NT). The regression results indicate that A-share NT loses its predictive
+power for B-share market returns.
+[Insert Table 12 about here]
+Second, we conduct another placebo test by constructing a placebo, NT, by replacing the
+A-share sample with the B-share sample and examining its relationship with future B-share
+market index returns. We refer to this placebo NT as B-share NT, as it measures noise
+trading activity within the B-share market. As the predictability of NT originates from
+noise trading, our noise trading measure is expected to have marginal predictability in the
+market with a small fraction of noise traders.33 In other words, there should be a weak or
+even nonsignificant negative relationship between the B-share-constructed NT and future
+B-share market returns.
+We assess the predictability of B-share NT on B-share market returns by replicating our
+main univariate analysis using the B-share market. The results of this analysis are reported
+in the second column of Table 12 (labeled B-share NT). As expected, the coeﬀicient for
+B-share NT is nonsignificant, confirming that NT has no effect on the B-share market.
+Collectively, these findings from the B-share market lend further support to the notion that
+the predictability of NT reflects the systematic mispricing caused by noise trading.
+In
+untabulated results, we also construct a pseudo NT measure based on the frequency of the
+number 7, which is unrelated to superstition. We find that this pseudo NT measure does
+not predict future market returns.
+5.3
+Investor sentiment
+The negative relationship between NT and future market index returns is robust even
+after controlling for the effect of investor sentiment (Baker and Wurgler, 2006). Since NT
+33Notably, because short selling is restricted in the B-share market, eﬀicient arbitrage against mispricing
+is impeded.
+38
+
+is constructed on the basis of the frequency of lucky numbers 8 and 4, and because the
+sentiment associated with the number 8 is positive while that associated with the number 4
+is negative in Chinese culture, it is tempting to interpret NT as a sentiment measure. To
+address this concern, we investigate whether the predictability of NT can be attributed to
+sentiment by comparing the forecasting power of NT for stock market returns against the
+standard investor sentiment measures used in the literature.
+Following Yi and Ning (2009) and Chen et al. (2022), we adopt six popular investor
+sentiment measures in China’s stock market. Specifically, we use the consumer confidence
+index (CCI), the discount rate of closed-end funds (CEFD), the number of IPO stocks
+(IPON), the return on IPO stocks (IPOR), the number of new investors (NIA), and the
+China version sentiment index of Baker and Wurgler (2006) BW, calculated as a composite
+of all five variables plus turnover.34
+All sentiment measures are standardized to have a
+mean of zero and unit standard deviation, thereby allowing their regression coeﬀicients to be
+directly compared. We conduct the same bivariate regression analysis to determine whether
+NT remains significant after sentiment measures are considered.
+[Insert Table 13 about here]
+We present the results in Table 13. Consistent with the results presented in Table 4,
+the coeﬀicients of NT are significantly negative across all specifications. In sharp contrast,
+although most coeﬀicients of the sentiment measures are negative, they are largely nonsignificant, with the exception of IPON. This finding suggests that these sentiment measures
+have limited predictive power for future market returns in China’s stock market. More importantly, the coeﬀicients of NT maintain a magnitude similar to its univariate regression
+results when other sentiment measures are included. This finding indicates that NT is a
+robust contrarian predictor of market index returns and that its predictive power cannot be
+explained by investor sentiment.35
+34We exclude turnover because we already control for it in Table 11.
+35We also find that NT is not significantly related to sentiment measures.
+39
+
+5.4
+The round number effect
+The finding that NT can negatively predicts market index returns may be due to the
+round number effect, which arises from retail investors’ preference for round numbers when
+submitting limit orders. For example, Kuo, Lin, and Zhao (2015) show that retail investors
+with more limit orders submitted at round numbers tend to lose money. In this context, the
+round number heuristic, rather than numerological superstition, could drive the predictive
+power of NT.
+To alleviate this concern, we investigate whether the predictability of NT stems from the
+round number effect by comparing the predictive power of NT against the round number
+ratio (RNR). In particular, we construct RNR in a manner similar to NT, but we calculate
+the frequency of round-number prices rather than the difference between the frequencies of
+lucky and unlucky numbers. That is, the proportion of transaction prices ending in the digit
+0. We then employ the same bivariate regression analysis to compare the predictability of
+NT and RNR.
+The results are presented in Table B8. As an initial check, we test the predictability of
+RNR using a univariate regression of future stock market returns on RNR. We observe a
+negative relationship between RNR and future market returns, confirming the existence of
+a round number effect. However, this relationship becomes statistically insignificant once
+NT is included in the regression. In sharp contrast, NT remains a significant predictor. We
+further investigate the determinants of RNR by decomposing it into two components via
+a regression of RNR on NT. RNRF is the fitted component and RNRR is the residual
+component. We find that the coeﬀicient on RNRF is significant, whereas the coeﬀicient on
+RNRR is insignificant. Overall, these results suggest that the predictive power of NT is
+unlikely to be explained by the round number effect.
+40
+
+5.5
+Investor attention
+One may question our mechanism as follows: Does the presence of lucky (or unlucky)
+numbers in stock prices influence investors’ behavior toward stocks rather than reflecting
+genuine noise trading activity? For instance, Hirshleifer, Jian, and Zhang (2018) suggest
+that investors tend to be attracted to stocks with more lucky numbers in their listing codes
+than to those with fewer lucky numbers. Consequently, one alternative mechanism is that
+the presence of lucky numbers in stock prices makes these stocks more salient to investors;
+thus, NT is a measure of noise traders’ attention rather than of their activity.
+To address this concern, we construct alternative NT measures by focusing on the last
+several digits of stock prices. Specifically, we focus on the last one to three digits. According
+to the psychology literature (see, e.g., Tang, 2020), these digits are less visible to investors
+and are therefore less likely to attract their attention, but they still reflect noise trading
+activity.
+Table B7 presents the results of univariate regressions using these alternative NT measures to predict future stock market returns. Across all specifications, we observe a consistent
+negative relationship between these alternative NT measures and future market returns. The
+coeﬀicient on NT remains significant, ranging from −1.340% (t statistic = −2.43) when the
+last three digits are used to −0.973% (t statistic = −1.73) when only the last digit is used.
+This pattern suggests that while the predictive power is strongest when more digits are incorporated, the effect persists even when the model focuses on the least significant digit of
+stock prices. Hence, these findings reinforce our interpretation of the predictability of NT,
+suggesting that it captures noise trading activity instead of attracting investor attention.
+Finally, to rule out the investor attention explanation, we also construct a pseudo NT
+measure by substituting stock prices with stock returns. This measure is likely to capture
+investor attention but is not necessarily related to noise trading, as investors cannot control
+the numbers in stock returns. As reported in the last column of Table B7, this pseudo NT
+41
+
+measure loses its predictability, thereby ruling out the investor attention explanation.
+6
+Conclusions
+In this study, we explore how noise trading affects market-wide stock returns. Theoretical
+studies in the literature conjecture that noise trading can push asset prices away from their
+fundamental values, thus leading to mispricing; however, most empirical studies are limited
+to the stock level.
+Additionally, identifying such effects remains an empirical challenge
+because of the diﬀiculty inherent in directly observing noise trading.
+Drawing on the observation that individuals lacking information tend to rely on superstition as a shield against a lack of information, we exploit Chinese numerological superstition
+to propose a novel transaction-price-based noise trading (NT) measure, defined as the difference between the frequencies of occurrence of the numbers 8 and 4 in stock prices, which
+are considered lucky and unlucky, respectively, in Chinese culture.
+We validate NT through various tests, demonstrating its effectiveness in capturing noise
+trading activity. We also show that NT is a strong contrarian predictor of China’s stock
+market index returns.
+The predictability of NT persists for at least one year before it
+diminishes and is robust to out-of-sample analysis, firm-level NT analysis, and a battery
+of robustness checks.
+Furthermore, we find that the negative relationship between NT
+and future market index returns is stronger when the market faces high arbitrage costs
+and low-level information availability, which is consistent with the limits-to-arbitrage and
+valuation diﬀiculty channels. In addition, the predictability of NT is unlikely to be driven
+by fundamentals, sentiment, or investor attention to lucky numbers.
+Overall, our findings support the long-standing theoretical prediction that noise trading
+leads to systematic mispricing.
+42
+
+References
+Aboody, D., O. Even-Tov, R. Lehavy, and B. Trueman. 2018. Overnight returns and firmspecific investor sentiment. Journal of Financial and Quantitative Analysis 53:485–505.
+Addoum, J. M., and A. Kumar. 2016. Political sentiment and predictable returns. The
+Review of Financial Studies 29:3471–518.
+Allen, F., J. Qian, C. Shan, and J. L. Zhu. 2024. Dissecting the long-term performance of
+the chinese stock market. The Journal of Finance 79:993–1054.
+Arnott, R. D., J. C. Hsu, J. Liu, and H. Markowitz. 2015. Can noise create the size and
+value effects? Management Science 61:2569–79.
+Baker, M., and J. Wurgler. 2006. Investor sentiment and the cross-section of stock returns.
+The Journal of Finance 61:1645–80.
+Baker, S. R., N. Bloom, and S. J. Davis. 2016. Measuring economic policy uncertainty. The
+Quarterly Journal of Economics 131:1593–636.
+Bali, T. G., N. Cakici, and R. F. Whitelaw. 2011. Maxing out: Stocks as lotteries and the
+cross-section of expected returns. Journal of Financial Economics 99:427–46.
+Bali, T. G., B. T. Kelly, M. Mörke, and J. Rahman. 2023. Machine forecast disagreement .
+Barber, B. M., X. Huang, T. Odean, and C. Schwarz. 2022. Attention-induced trading and
+returns: Evidence from robinhood users. The Journal of Finance 77:3141–90.
+Barber, B. M., Y.-T. Lee, Y.-J. Liu, and T. Odean. 2009. Just how much do individual
+investors lose by trading? The Review of Financial Studies 22:609–32.
+Barber, B. M., and T. Odean. 2000. Trading is hazardous to your wealth: The common
+stock investment performance of individual investors. The Journal of Finance 55:773–806.
+43
+
+———. 2008. All that glitters: The effect of attention and news on the buying behavior of
+individual and institutional investors. The Review of Financial Studies 21:785–818.
+Barber, B. M., T. Odean, and N. Zhu. 2008. Do retail trades move markets? The Review of
+Financial Studies 22:151–86.
+Barrot, J.-N., R. Kaniel, and D. Sraer. 2016. Are retail traders compensated for providing
+liquidity? Journal of Financial Economics 120:146–68.
+Bhattacharya, U., W.-Y. Kuo, T.-C. Lin, and J. Zhao. 2018. Do superstitious traders lose
+money? Management Science 64:3772–91.
+Birru, J., and T. Young. 2022. Sentiment and uncertainty. Journal of Financial Economics
+146:1148–69.
+Black, F. 1986. Noise. The Journal of Finance 41.
+Bloomfield, R., M. O’hara, and G. Saar. 2009.
+How noise trading affects markets: An
+experimental analysis. The Review of Financial Studies 22:2275–302.
+Boehme, R. D., B. R. Danielsen, and S. M. Sorescu. 2006. Short-sale constraints, differences
+of opinion, and overvaluation. Journal of Financial and Quantitative Analysis 41:455–87.
+Boehmer, E., C. M. Jones, X. Zhang, and X. Zhang. 2021. Tracking retail investor activity.
+The Journal of Finance 76:2249–305.
+Bogousslavsky, V., V. Fos, and D. Muravyev. 2024. Informed trading intensity. The Journal
+of Finance 79:903–48.
+Brunnermeier, M. K., M. Sockin, and W. Xiong. 2022.
+China’s model of managing the
+financial system. The Review of Economic Studies 89:3115–53.
+44
+
+Cai, J., J. He, W. Jiang, and W. Xiong. 2021. The whack-a-mole game: Tobin taxes and
+trading frenzy. The Review of Financial Studies 34:5723–55.
+Campbell, J. Y., and S. B. Thompson. 2008. Predicting excess stock returns out of sample:
+Can anything beat the historical average? The Review of Financial Studies 21:1509–31.
+Carpenter, J. N., F. Lu, and R. F. Whitelaw. 2021. The real value of china’s stock market.
+Journal of Financial Economics 139:679–96.
+Cassella, S., and H. Gulen. 2019. Belief-based equity market sentiment. Available at SSRN
+3123083 .
+Chen, T., Z. Gao, J. He, W. Jiang, and W. Xiong. 2019. Daily price limits and destructive
+market behavior. Journal of Econometrics 208:249–64.
+Chen, X., L. An, J. Yu, and Z. Wang. 2022. Attention spillover in asset pricing. Available
+at SSRN 3716918 .
+Chen, Y., Z. Da, and D. Huang. 2022. Short selling eﬀiciency. Journal of Financial Economics
+145:387–408.
+Chu, Y., D. Hirshleifer, and L. Ma. 2020. The causal effect of limits to arbitrage on asset
+pricing anomalies. The Journal of Finance 75:2631–72.
+Chui, A. C., A. Subrahmanyam, and S. Titman. 2022. Momentum, reversals, and investor
+clientele. Review of Finance 26:217–55.
+Clark, T. E., and K. D. West. 2007. Approximately normal tests for equal predictive accuracy
+in nested models. Journal of Econometrics 138:291–311.
+Cochrane, J. H. 2008. The dog that did not bark: A defense of return predictability. The
+Review of Financial Studies 21:1533–75.
+45
+
+Coval, J., and E. Stafford. 2007. Asset fire sales (and purchases) in equity markets. Journal
+of Financial Economics 86:479–512.
+Cready, W., A. Kumas, and M. Subasi. 2014. Are trade size-based inferences about traders
+reliable?
+evidence from institutional earnings-related trading.
+Journal of Accounting
+Research 52:877–909.
+Dalvi, M., P. Deuskar, L. R. Glosten, and R. Jagannathan. 2023. Day traders, noise, and
+cost of immediacy. Working Paper, National Bureau of Economic Research.
+De Long, J., and A. Shleifer. 1991. The survival of noise traders in financial markets. Journal
+of Business 64:1–19.
+De Long, J. B., A. Shleifer, L. H. Summers, and R. J. Waldmann. 1989.
+The size and
+incidence of the losses from noise trading. The Journal of Finance 44:681–96.
+———. 1990. Noise trader risk in financial markets. Journal of Political Economy 98:703–38.
+Derrien, F., A. Kecskés, and D. Thesmar. 2013. Investor horizons and corporate policies.
+Journal of Financial and Quantitative Analysis 48:1755–80.
+Dessaint, O., T. Foucault, L. Frésard, and A. Matray. 2019. Noisy stock prices and corporate
+investment. The Review of Financial Studies 32:2625–72.
+Dimson, E. 1979. Risk measurement when shares are subject to infrequent trading. Journal
+of Financial Economics 7:197–226.
+Dong, X., Y. Li, D. E. Rapach, and G. Zhou. 2022. Anomalies and the expected market
+return. The Journal of Finance 77:639–81.
+Dorn, D., G. Huberman, and P. Sengmueller. 2008. Correlated trading and returns. The
+Journal of Finance 63:885–920.
+46
+
+Eaton, G. W., T. C. Green, B. S. Roseman, and Y. Wu. 2022. Retail trader sophistication and
+stock market quality: Evidence from brokerage outages. Journal of Financial Economics
+146:502–28.
+Edmans, A., I. Goldstein, and W. Jiang. 2012. The real effects of financial markets: The
+impact of prices on takeovers. The Journal of Finance 67:933–71.
+Engelberg, J., R. D. McLean, and J. Pontiff. 2020. Analysts and anomalies. Journal of
+Accounting and Economics 69:101249–.
+Fama, E. F., and K. R. French. 1993. Common risk factors in the returns on stocks and
+bonds. Journal of Financial Economics 33:3–56.
+Fama, E. F., and J. D. MacBeth. 1973. Risk, return, and equilibrium: Empirical tests.
+Journal of Political Economy 81:607–36.
+Fisman, R., W. Huang, B. Ning, Y. Pan, J. Qiu, and Y. Wang. 2023. Superstition and risk
+taking: Evidence from “zodiac year” beliefs in china. Management Science 69:5174–88.
+Foucault, T., D. Sraer, and D. J. Thesmar. 2011. Individual investors and volatility. The
+Journal of Finance 66:1369–406.
+Gao, Z., H. Ren, and B. Zhang. 2020. Googling investor sentiment around the world. Journal
+of Financial and Quantitative Analysis 55:549–80.
+Grinblatt, M., and B. Han. 2005.
+Prospect theory, mental accounting, and momentum.
+Journal of Financial Economics 78:311–39.
+Grossman, S. J., and M. H. Miller. 1988. Liquidity and market structure. the Journal of
+Finance 43:617–33.
+Gu, M., W. Kang, and B. Xu. 2018. Limits of arbitrage and idiosyncratic volatility: Evidence
+from china stock market. Journal of Banking & Finance 86:240–58.
+47
+
+Han, B., and A. Kumar. 2013.
+Speculative retail trading and asset prices.
+Journal of
+Financial and Quantitative Analysis 48:377–404.
+Hasbrouck, J. 1988.
+Trades, quotes, inventories, and information.
+Journal of Financial
+Economics 22:229–52.
+———. 1991a. Measuring the information content of stock trades. The Journal of Finance
+46:179–207.
+———. 1991b. The summary informativeness of stock trades: An econometric analysis. The
+Review of Financial Studies 4:571–95.
+He, J., H. Liu, T. F. Sing, C. Song, and W.-K. Wong. 2020.
+Superstition, conspicuous
+spending, and housing market: Evidence from singapore. Management Science 66:783–
+804.
+Henderson, B. J., N. D. Pearson, and L. Wang. 2023. Retail derivatives and sentiment: A
+sentiment measure constructed from issuances of retail structured equity products. The
+Journal of Finance 78:2365–407.
+Hirshleifer, D., M. Jian, and H. Zhang. 2018. Superstition and financial decision making.
+Management Science 64:235–52.
+Hou, K., C. Xue, and L. Zhang. 2020. Replicating anomalies. Review of Financial Studies
+33.
+Hvidkjaer, S. 2008.
+Small trades and the cross-section of stock returns.
+The Review of
+Financial Studies 21:1123–51.
+Jiang, F., J. Lee, X. Martin, and G. Zhou. 2019. Manager sentiment and stock returns.
+Journal of Financial Economics 132:126–49.
+48
+
+Jones, C. M., and O. A. Lamont. 2002. Short-sale constraints and stock returns. Journal of
+Financial Economics 66:207–39.
+Jones, C. M., D. Shi, X. Zhang, and X. Zhang. 2023. Understanding retail investors: evidence
+from china. Journal of Financial and Quantitative Analysis .
+Kahneman, D. 2003. Maps of bounded rationality: Psychology for behavioral economics.
+American Economic Review 93:1449–75.
+Kahneman, D., and A. Tversky. 1973. On the psychology of prediction. Psychological Review
+80:237–.
+Kaniel, R., S. Liu, G. Saar, and S. Titman. 2012. Individual investor trading and return
+patterns around earnings announcements. The Journal of Finance 67:639–80.
+Kaniel, R., G. Saar, and S. Titman. 2008. Individual investor trading and stock returns.
+The Journal of Finance 63:273–310.
+Kelley, E. K., and P. C. Tetlock. 2013. How wise are crowds? insights from retail orders and
+stock returns. The Journal of Finance 68:1229–65.
+———. 2017. Retail short selling and stock prices. The Review of Financial Studies 30:801–
+34.
+Keynes, J. M. 1936. The general theory of employment terest and money. Macmillan and
+Company.
+Kim, O., and R. E. Verrecchia. 1994. Market liquidity and volume around earnings announcements. Journal of Accounting and Economics 17:41–67.
+Kumar, A., and C. M. Lee. 2006. Retail investor sentiment and return comovements. The
+Journal of Finance 61:2451–86.
+49
+
+Kuo, W.-Y., T.-C. Lin, and J. Zhao. 2015. Cognitive limitation and investment performance:
+Evidence from limit order clustering. The Review of Financial Studies 28:838–75.
+Kyle, A. S. 1985. Continuous auctions and insider trading. Econometrica: Journal of the
+Econometric Society 1315–35.
+Lamont, O. A., and R. H. Thaler. 2003. Can the market add and subtract? mispricing in
+tech stock carve-outs. Journal of Political Economy 111:227–68.
+Lee, C. M., and B. Radhakrishna. 2000. Inferring investor behavior: Evidence from torq
+data. Journal of Financial Markets 3:83–111.
+Leippold, M., Q. Wang, and W. Zhou. 2022. Machine learning in the chinese stock market.
+Journal of Financial Economics 145:64–82.
+Li, S., J. Wu, X. Zhang, and X. Zhang. 2023. Tracking retail and institutional investors
+activity in china. PBCSF-NIFR Research Paper .
+Liu, J., R. F. Stambaugh, and Y. Yuan. 2019. Size and value in china. Journal of Financial
+Economics 134:48–69.
+Lo, A. W. 2004. The adaptive markets hypothesis. The Journal of Portfolio Management
+30:15–29.
+Lou, D. 2012. A flow-based explanation for return predictability. The Review of Financial
+Studies 25:3457–89.
+Lou, X., and A. Y. Wang. 2018. Flow-induced trading pressure and corporate investment.
+Journal of Financial and Quantitative Analysis 53:171–201.
+Malinowski, B. 1948. Magic, science and religion: And other essays, by bronislaw malinowski.
+selected, and with an introduction by robert redfield. Beacon Press.
+50
+
+Mei, J., J. A. Scheinkman, and W. Xiong. 2009.
+Speculative trading and stock prices:
+Evidence from chinese ab share premia. Annals of Economics and Finance 10:225–55.
+Nagel, S. 2005. Short sales, institutional investors and the cross-section of stock returns.
+Journal of Financial Economics 78:277–309.
+Newey, W. K., and K. D. West. 1987. A simple, positive semi-definite, heteroskedasticity
+and autocorrelation consistent covariance matrix. Econometrica 55:703–.
+Odean, T. 1999. Do investors trade too much? American Economic Review 89:1279–98.
+Peress, J., and D. Schmidt. 2020. Glued to the tv: Distracted noise traders and stock market
+liquidity. The Journal of Finance 75:1083–133.
+Phillips, G. M., and A. Zhdanov. 2013. R&d and the incentives from merger and acquisition
+activity. The Review of Financial Studies 26:34–78.
+Rapach, D. E., M. C. Ringgenberg, and G. Zhou. 2016. Short interest and aggregate stock
+returns. Journal of Financial Economics 121:46–65.
+Shleifer, A., and L. H. Summers. 1990. The noise trader approach to finance. Journal of
+Economic Perspectives 4:19–33.
+Shleifer, A., and R. W. Vishny. 1997. The limits of arbitrage. The Journal of Finance
+52:35–55.
+Skinner, B. F. 1992. ” superstition” in the pigeon. Journal of Experimental Psychology:
+General 121:273–.
+Stambaugh, R. F. 2014. Presidential address: Investment noise and trends. The Journal of
+Finance 69:1415–53.
+51
+
+Tang, J. 2020. The left-digit effect in price and date perception. Human Behavior and Brain
+1:64–6.
+Torgler, B. 2007. Determinants of superstition. The Journal of Socio-Economics 36:713–33.
+Tsang, E. W. 2004. Toward a scientific inquiry into superstitious business decision-making.
+Organization Studies 25:923–46.
+Wang, K., X. Yu, and B. Zhang. 2023. Panda games: corporate disclosure in the eclipse of
+search. Management Science 69:3263–84.
+Wardlaw, M. 2020. Measuring mutual fund flow pressure as shock to stock returns. The
+Journal of Finance 75:3221–43.
+Welch, I. 2022. The wisdom of the robinhood crowd. The Journal of Finance 77:1489–527.
+Welch, I., and A. Goyal. 2008. A comprehensive look at the empirical performance of equity
+premium prediction. The Review of Financial Studies 21:1455–508.
+Xu, Y., Y. Xuan, and G. Zheng. 2021. Internet searching and stock price crash risk: Evidence
+from a quasi-natural experiment. Journal of Financial Economics 141:255–75.
+Yi, Z., and M. Ning. 2009.
+Measuring investor sentiment in china’s stock market: The
+construction of cicsi. Journal of Financial Research (in Chinese) 174–84.
+Zhang, J., and H. Du. 2022. Superstition everywhere. Available at SSRN 4051934 .
+52
+
+Figure 1. Noise trading measure
+In this figure, we plot our noise trading measure (NT) over time, represented by the black solid line using
+the scale on the left vertical axis. The red dotted line represents the trend of NT. The green dashed line,
+which uses the scale on the right vertical axis, represents retail investor ownership. The sample period
+spans from January 2000 to December 2022.
+53
+
+2000
+2005
+2010
+2015
+2020
+2
+1
+0
+1
+2
+NT O
+2000
+2005
+2010
+2015
+2020
+2
+1
+0
+1
+2
+NT H
+2000
+2005
+2010
+2015
+2020
+2
+1
+0
+1
+2
+NT L
+2000
+2005
+2010
+2015
+2020
+2
+1
+0
+1
+2
+NT C
+Figure 2. Time series of individual noise trading measures
+In this figure, we plot individual noise trading measures over time. We first define a stock’s noise trading
+(NT p
+i ) as the difference between the frequencies of occurrence of the numbers 8 and 4 in the stock’s
+daily opening, highest, lowest, and closing prices. The market-level individual noise trading measure
+(NT p) is then defined as the value-weighted average of stock-specific NT p
+i . NT O, NT H, NT L, and NT C
+correspond to the daily opening, highest, lowest, and closing prices, respectively. We then standardize
+all NT measures to have a mean of zero and a unit standard deviation. The sample period spans from
+January 2000 to December 2022.
+54
+
+1 2 3 4 5 6 7 8 910
+2
+0
+2
+IVOL
+1 2 3 4 5 6 7 8 910
+2
+0
+2
+VOL
+1 2 3 4 5 6 7 8 910
+0
+2
+MAX
+1 2 3 4 5 6 7 8 910
+0
+2
+MIN
+1 2 3 4 5 6 7 8 910
+2
+0
+2
+IMAX
+1 2 3 4 5 6 7 8 910
+2
+0
+2
+IMIN
+1 2 3 4 5 6 7 8 910
+0
+2
+EP
+1 2 3 4 5 6 7 8 910
+0
+2
+BM
+1 2 3 4 5 6 7 8 910
+0
+2
+TO12
+1 2 3 4 5 6 7 8 910
+2
+0
+2
+TO
+Figure 3. Anomalies during high- and low-NT periods
+In this figure, we plot the returns of decile portfolios sorted by the value of each anomaly variable.
+Detailed descriptions of these anomalies are provided in the Appendix A. Each month, we sort stocks
+by each anomaly variable into decile portfolios and calculate the value-weighted excess return.
+We
+then calculate the time series average returns for each portfolio following high- and low-NT periods,
+respectively. The sample period spans from January 2000 to December 2022.
+55
+
+Table 1. Summary statistics
+This table presents NT and other variables in time series. NT is our noise trading measure. The set of control variables
+includes the dividend-to-price ratio (DP), dividend yield (DY ), earnings-to-price ratio (EP), dividend-to-payout ratio
+(DE), book-to-market ratio (BM), turnover (TO), return volatility (RV OL), economic policy uncertainty (EPU),
+money supply (MS), and inflation (INFL). Detailed definitions and lists of these control variables are reported in
+the Appendix A. All variables are standardized to have a mean of zero and unit standard deviation. Panel A presents
+the summary statistics, and Panel B presents the correlations of all variables. The sample period spans from January
+2000 to December 2022.
+Median
+Min.
+25th
+75th
+Max.
+Skew
+Kurt
+AR1
+Panel A: Summary statistics
+NT
+−0.171
+−2.159
+−0.742
+0.727
+2.326
+0.390
+−0.647
+0.872
+DP
+−0.357
+−1.168
+−0.652
+0.239
+3.650
+1.815
+2.983
+0.983
+DY
+−0.366
+−1.152
+−0.658
+0.234
+3.648
+1.815
+2.969
+0.983
+EP
+−0.317
+−1.086
+−0.637
+0.192
+4.101
+1.983
+4.192
+0.976
+DE
+−0.152
+−2.025
+−0.458
+0.421
+3.279
+0.736
+0.696
+0.980
+BM
+−0.253
+−1.310
+−0.620
+0.161
+3.405
+1.622
+2.194
+0.974
+TO
+−0.215
+−1.388
+−0.729
+0.477
+4.227
+1.434
+3.053
+0.805
+RV OL
+−0.288
+−1.412
+−0.647
+0.353
+3.861
+1.549
+2.204
+0.661
+EPU
+−0.461
+−1.013
+−0.686
+0.271
+2.915
+1.347
+0.650
+0.924
+MS
+−0.271
+−1.141
+−0.921
+0.817
+2.233
+0.584
+−0.944
+0.988
+INFL
+−0.102
+−1.772
+−0.610
+0.444
+2.236
+0.450
+−0.004
+0.927
+Panel B: Correlation matrix
+NT
+DP
+DY
+EP
+DE
+BM
+TO
+RV OL
+EPU
+MS
+INFL
+NT
+1.000
+DP
+−0.192
+1.000
+DY
+−0.197
+0.984
+1.000
+EP
+−0.127
+0.886
+0.861
+1.000
+DE
+−0.011
+0.167
+0.187
+−0.279
+1.000
+BM
+−0.170
+0.969
+0.940
+0.874
+0.132
+1.000
+TO
+−0.255
+−0.347
+−0.294
+−0.366
+0.020
+−0.367
+1.000
+RV OL
+0.068
+0.010
+0.001
+0.113
+−0.232
+0.059
+0.285
+1.000
+EPU
+−0.189
+−0.298
+−0.309
+−0.261
+−0.090
+−0.196
+0.253
+−0.181
+1.000
+MS
+−0.353
+−0.420
+−0.426
+−0.392
+−0.099
+−0.353
+0.457
+−0.236
+0.830
+1.000
+INFL
+−0.206
+−0.102
+−0.125
+−0.056
+−0.222
+0.006
+−0.038
+0.243
+0.023
+0.013
+1.000
+56
+
+Table 2. Validation of NT
+This table presents validation tests of NT.
+Panel A presents time-series regressions of NT on RIO and Time with control variables. NT is our noise
+trading measure. RIO is the six-month moving average of the value-weighted average of firm-level retail
+investor ownership, defined as one minus institutional ownership. Time is the time variable that is equal
+to one for the first month of our sample and increases by one each subsequent month. Control variables
+include the dividend-to-price ratio (DP), dividend yield (DY ), earnings-to-price ratio (EP), dividendto-payout ratio (DE), book-to-market ratio (BM), turnover (TO), return volatility (RV OL), economic
+policy uncertainty (EPU), money supply (MS), and inflation (INFL). All regression coeﬀicients are
+reported in percentages. Newey and West (1987) t-statistics with twelve lags are reported in parentheses.
+The sample period is from January 2000 to December 2022.
+Panel B presents the effect of the Wind outage on NT using the following regression:
+NT i,d,p = α + β1Windd,p + Controls + αi + αdow + αw + αm + ϵi,d,p,
+where i, d, and p indicate firm, date, and 60-minute interval, respectively. NT i,d,p is defined as the
+difference in the frequency of digits 8 and 4 in prices during interval p of day d. Windd,p is an indicator
+variable equal to one during the Wind outage on January 8, 2024, and zero otherwise. Controls include
+the 60-minute interval stock price (Price), the number of shares traded during the 60-minute interval
+(V olume), and the bid-ask spread across all quotes during the 60-minute interval (Spread).
+∗, ∗∗, and
+∗∗∗denote significance at the 10%, 5%, and 1% levels, respectively. The sample period is from December
+24, 2023 to January 23, 2024 (15 days before and after January 8, 2024). The data are obtained from
+the RESSET database.
+Panel A: Relation with retail ownership and investor experience
+(1)
+(2)
+(3)
+(4)
+RIO
+0.031∗∗∗
+0.027∗∗
+(5.31)
+(3.32)
+Time
+−0.006∗∗∗
+−0.017∗∗∗
+(−2.97)
+(−3.10)
+Controls
+No
+Yes
+No
+Yes
+Observations
+276
+276
+276
+276
+R2 (%)
+32.75
+50.05
+19.12
+48.33
+Panel B: Evidence from the Wind outage
+(1)
+(2)
+Wind
+0.004∗∗∗
+0.004∗∗∗
+(2.15)
+(2.15)
+Controls
+No
+Yes
+Firm fixed effects
+Yes
+Yes
+Day of week fixed effect
+Yes
+Yes
+Week fixed effect
+Yes
+Yes
+Month fixed effect
+Yes
+Yes
+Observations
+488,945
+488,945
+R2 (%)
+22.43
+22.43
+57
+
+Table 3.
+Validation of NT: Return reversal
+This table presents the impact of NT on the short-term return reversal effect using the following regressions:
+rt+1 = α + β1NTt × rother
+t
++ β2NTt × rpersistence
+t
++ β3NTt
++ β4rother
+t
++ β5rpersistence
+t
++ Controls + ϵt+1,
+where rt+1 is monthly stock market excess return in month t + 1. The monthly stock market excess
+return is the return on the value-weighted market portfolios in excess of the risk-free rate.
+NT t is
+our noise trading measure. rother
+t
+is the residual component, and rpersistence
+t
+is the fitted component
+from the regression of ri,t on ri,t−1. Controls include the dividend-to-price ratio (DP), dividend yield
+(DY ), earnings-to-price ratio (EP), dividend-to-payout ratio (DE), book-to-market ratio (BM), turnover
+(TO), return volatility (RV OL), economic policy uncertainty (EPU), money supply (MS), and inflation
+(INFL). All regression coeﬀicients are reported in percentages. Newey and West (1987) t-statistics with
+twelve lags are reported in parentheses. ∗, ∗∗, and ∗∗∗denote significance at the 10%, 5%, and 1% levels,
+respectively. The sample period is from January 2000 to December 2022.
+(1)
+(2)
+(3)
+NT × rother
+−0.122∗
+−0.126∗∗
+−0.133∗∗
+(−1.96)
+(−2.11)
+(−2.02)
+NT × rpersistence
+−0.102
+−0.059
+(−0.24)
+(−0.13)
+NT
+−1.230∗∗∗
+−1.162∗∗
+−1.419∗
+(−2.73)
+(−2.33)
+(−1.82)
+rother
+0.132
+0.132∗
+0.166
+(1.61)
+(1.82)
+(1.17)
+rpersistence
+0.774
+0.913∗
+(1.35)
+(1.76)
+Controls
+No
+No
+Yes
+Observations
+274
+274
+274
+R2 (%)
+4.15
+5.02
+5.39
+58
+
+Table 4.
+No predictability of fundamentals: NT and ROA/SUE
+This table presents the results from the following univariate regression at the one-, three-, six- and twelvemonth horizons:
+rt:t+h = α + βNTt + ϵt:t+h,
+where rt:t+h = (rt+1 + + rt+h/h) is the average monthly stock market excess return over horizon h. The
+monthly stock market excess return is the return on the value-weighted market portfolios in excess of the
+risk-free rate. NT t is our noise trading measure. The regression coeﬀicients are reported in percentages.
+Newey and West (1987) t-statistics with twelve lags are reported in parentheses.
+∗, ∗∗, and ∗∗∗denote
+significance at the 10%, 5%, and 1% levels, respectively. The sample period is from January 2000 to
+December 2022.
+h = 1
+h = 3
+h = 6
+h = 12
+β
+−1.135∗∗
+−0.984∗∗
+−1.116∗∗
+−1.315∗∗∗
+(−2.33)
+(−2.22)
+(−2.52)
+(−2.85)
+α
+0.635
+0.603
+0.605
+0.630
+(1.01)
+(0.99)
+(1.05)
+(1.28)
+Observations
+275
+273
+270
+264
+R2 (%)
+1.81
+3.48
+7.38
+17.36
+59
+
+Table 5.
+Out-of-sample test
+This table presents the results of the out-of-sample test in forecasting the one-month horizons monthly
+stock market index returns. R2
+OS is the out-of-sample R2 measuring the reduction in the MSFE for the
+competing predictive regression forecast relative to the historical average benchmark forecast. CW stat
+denotes the Clark and West (2007) statistics. Expanding denotes expanding the subsample by one month
+each time (expanding approach). Rolling denotes a 10-year rolling window (rolling approach). ∗, ∗∗, and
+∗∗∗denote significance at the 10%, 5%, and 1% levels, respectively. The sample period is from January
+2000 to December 2022.
+Expanding
+Rolling
+R2
+OS (%)
+2.106∗∗
+2.129∗∗
+CWstat
+[1.98]
+[1.98]
+60
+
+Table 6.
+Effects of short-sale constraints
+This table presents the effects of short-sale constraints on the predictive power of NT using the following
+regressions:
+rt+1 = α + β1NTt × HighASI
+t
++ β2NTt + β3HighASI
+t
++ Controls + ϵt+1,
+where rt+1 is the stock market excess return in month t + 1. The monthly stock market excess return is
+the return on the value-weighted market portfolios in excess of the risk-free rate. NTt is our noise trading
+measure. HighASI
+t
+is a dummy variable that equals one if abnormal short interest (ASI) is above its time
+series median value. Controls are the control variables used in Table 2. The regression coeﬀicients are
+reported in percentages. Newey and West (1987) t-statistics with twelve lags are reported in parentheses.
+∗, ∗∗, and ∗∗∗denote significance at the 10%, 5%, and 1% levels, respectively. The sample period is from
+June 2010 to December 2022 due to ASI data constraints.
+(1)
+(2)
+NT × HighASI
+3.050∗∗
+2.724∗∗
+(2.25)
+(2.42)
+NT
+−2.971∗∗∗
+−3.145∗∗∗
+(−2.63)
+(−3.65)
+HighASI
+0.304
+−0.515
+(0.35)
+(−0.68)
+Controls
+No
+Yes
+Observations
+150
+150
+R2 (%)
+3.72
+9.19
+61
+
+Table 7.
+Effects of information environments
+This table presents the effects of Google’s exit on the predict power of NT using the following regressions:
+rt+1 = α + β1NTt × Googlet + β2NTt + β3Googlet + Controls + ϵt+1,
+where rt+1 is the stock market excess return in month t + 1. The monthly stock market excess return
+is the return on the value-weighted market portfolios in excess of the risk-free rate. NTt is our noise
+trading measure. Googlet is a dummy variable that equals one after March 2010. Controls are the
+control variables used in Table 2. The regression coeﬀicients are reported in percentages. Newey and
+West (1987) t-statistics with twelve lags are reported in parentheses. ∗, ∗∗, and ∗∗∗denote significance at
+the 10%, 5%, and 1% levels, respectively. The sample period is from January 2000 to February 2012.
+(1)
+(2)
+NT × Google
+−6.407∗∗∗
+−6.924∗∗∗
+(−3.52)
+(−2.63)
+NT
+−1.772∗∗
+0.123
+(−2.15)
+(0.07)
+Google
+−8.433∗∗∗
+−4.952
+(−3.79)
+(−1.25)
+Controls
+No
+Yes
+Observations
+146
+146
+R2 (%)
+5.15
+9.92
+62
+
+Table 8.
+Robustness tests
+This table presents robustness test results from the following univariate regression:
+rk
+t+1 = α + βNT j
+t + ϵt+1,
+where rk
+t+1 is the stock market excess return in month t + 1, with k denoting the different market return
+measures described in Panel A. NT j
+t is our noise trading measure, with j denoting the different measures
+of NT described in Panel B. Panel A reports the regression results using alternative market returns:
+“Exclude IPO” denotes the excess return on the value-weighted portfolio of stocks listed for more than 36
+months, “Equal weight” denotes the excess return on the equal-weighted market portfolios, and “Largest
+70%” denotes the excess return on the value-weighted portfolio of the largest 70% of stocks.
+Panel
+B reports regression results using alternative measures of NT: “Detrended” denotes detrended NT;
+“Equal weight” denotes the equal-weighted construction of NT; “Alternative lucky number” denotes NT
+constructed based on numbers 6, 8, and 9 as lucky numbers; “Exclude ST” denotes NT constructed based
+on the sample excluding ST stocks; “60-minute interval prices” denotes NT constructed using 60-minute
+interval prices; and “limit order prices” denotes NT constructed using limit order prices. The regression
+coeﬀicients are reported in percentages. Newey and West (1987) t-statistics with twelve lags are reported
+in parentheses. ∗, ∗∗, and ∗∗∗denote significance at the 10%, 5%, and 1% levels, respectively. The sample
+period spans from January 2000 to December 2022.
+Panel A: Alternative market returns
+(0)
+(1)
+(2)
+(3)
+Baseline
+Exclude IPO
+Equal weight
+Largest 70%
+β
+−1.135∗∗
+−1.130∗∗
+−1.284∗∗
+−1.130∗∗
+(−2.33)
+(−2.29)
+(−2.39)
+(−2.35)
+α
+0.635
+0.652
+1.243∗
+0.567
+(1.01)
+(1.02)
+(1.75)
+(0.91)
+Observations
+275
+275
+275
+275
+R2 (%)
+1.81
+1.75
+1.57
+1.83
+Panel B: Alternative NT measures
+(1)
+(2)
+(3)
+(4)
+(5)
+(6)
+Detrended
+Equal
+weight
+Alternative
+lucky
+number
+Exclude ST
+60-minute
+interval
+prices
+limit order
+prices
+β
+−1.286∗∗
+−1.276∗∗
+−1.110∗
+−1.268∗∗
+−1.175∗∗
+−1.179∗∗
+(−2.23)
+(−2.08)
+(−1.86)
+(−2.09)
+(−2.30)
+(−2.07)
+α
+0.632
+0.634
+0.633
+0.664
+0.636
+0.635
+(1.02)
+(1.01)
+(1.02)
+(1.05)
+(1.01)
+(1.02)
+Observations
+275
+275
+275
+275
+275
+275
+R2 (%)
+2.44
+2.39
+1.72
+2.44
+1.97
+1.99
+63
+
+Table 9.
+Cross-sectional evidence
+This table presents the regression coeﬀicients β and t-statistic from the following regressions:
+ra
+t+1 = αa + βaNTt + ϵa
+t+1,
+where ra
+t+1 is the value-weighted excess return for each of the portfolios sorted by anomaly variables in
+month t + 1. Detailed descriptions of these anomalies are provided in the Appendix A. NTt is the noise
+trading measure. L −S represents the return spread between the long and short legs of the portfolios.
+The regression coeﬀicients are reported in percentages. Newey and West (1987) t-statistics with twelve
+lags are reported in parentheses.
+∗, ∗∗, and ∗∗∗denote significance at the 10%, 5%, and 1% levels,
+respectively. The sample period spans from January 2000 to December 2022.
+Long
+5
+Short
+L −S
+IV OL
+−0.772∗
+−1.085∗∗
+−1.366∗∗
+0.594∗∗
+(−1.88)
+(−2.06)
+(−2.42)
+(2.01)
+V OL
+−0.758∗
+−1.105∗∗
+−1.514∗∗
+0.755∗∗
+(−1.78)
+(−2.17)
+(−2.46)
+(2.13)
+MAX
+−0.789∗
+−1.220∗∗
+−1.472∗∗
+0.683∗∗
+(−1.89)
+(−2.26)
+(−2.30)
+(2.04)
+MIN
+−0.808∗
+−1.250∗∗∗
+−1.216∗∗
+0.408
+(−1.72)
+(−2.61)
+(−2.35)
+(1.48)
+IMAX
+−0.877∗
+−1.144∗∗
+−1.437∗∗∗
+0.559∗∗
+(−1.94)
+(−2.33)
+(−2.52)
+(2.14)
+IMIN
+−0.687
+−1.115∗∗
+−1.292∗∗
+0.605∗∗
+(−1.61)
+(−2.14)
+(−2.27)
+(2.37)
+EP
+−0.783
+−1.129∗∗
+−1.165∗
+0.382
+(−1.62)
+(−2.26)
+(−1.88)
+(1.14)
+BM
+−0.681
+−1.099∗∗
+−1.469∗∗∗
+0.788∗∗∗
+(−1.40)
+(−2.28)
+(−2.91)
+(2.55)
+TO12
+−0.898∗∗
+−1.140∗∗
+−1.039∗∗
+0.141
+(−1.96)
+(−2.12)
+(−2.22)
+(0.58)
+TO
+−0.939∗∗
+−1.167∗∗
+−1.177∗∗
+0.238
+(−2.06)
+(−2.14)
+(−2.19)
+(0.92)
+64
+
+Table 10.
+Fama-MacBeth analysis
+This table presents the results from Fama-MacBeth regressions of monthly excess returns on lagged
+independent variables. We use market capitalization as weights in the regressions. FNT S and FNT R
+are the fitted and residual components of FNT obtained from a 48-month rolling-window regression
+of FNT on current and lagged values of NT. FNT is the firm-level noise trading measure. Detailed
+descriptions of control variables are provided in the Appendix A. Newey and West (1987) t-statistics with
+twelve lags are reported in parentheses. ∗, ∗∗, and ∗∗∗denote significance at the 10%, 5%, and 1% levels,
+respectively. The sample period from is January 2000 to December 2022.
+(1)
+(2)
+(3)
+(4)
+FNT S
+−0.017**
+−0.018**
+−0.022***
+(−2.56)
+(−2.48)
+(−3.91)
+FNT R
+−0.000
+−0.000
+-0.002
+(−0.06)
+(−0.05)
+(-0.72)
+ME
+−0.003***
+(−3.08)
+EP
+0.178***
+(4.00)
+BM
+−0.025***
+(−3.43)
+TO
+0.077***
+(10.86)
+Observations
+396,829
+396,829
+396,829
+396,829
+R2 (%)
+0.86
+0.53
+1.36
+15.91
+65
+
+Table 11.
+In-sample bivariate regression
+This table presents the regression results of one-month ahead market excess return on NT and other control variables. NT is our noise trading measure. The set of control variables includes the dividend-to-price
+ratio (DP), dividend yield (DY ), earnings-to-price ratio (EP), dividend-to-payout ratio (DE), book-tomarket ratio (BM), turnover (TO), return volatility (RV OL), economic policy uncertainty (EPU),
+money supply (MS), and inflation (INFL).
+The regression coeﬀicients are reported in percentages.
+Newey and West (1987) t-statistics with twelve lags are reported in parentheses.
+∗, ∗∗, and ∗∗∗denote
+significance at the 10%, 5%, and 1% levels, respectively. The sample period is from January 2000 to
+December 2022.
+DP
+DY
+EP
+DE
+BM
+NT
+−0.985∗∗
+−0.938∗∗
+−1.084∗∗
+−1.126∗∗
+−1.043∗∗
+(−2.08)
+(−2.00)
+(−2.24)
+(−2.34)
+(−2.17)
+Control
+0.777
+0.989
+0.394
+1.020
+0.539
+(1.22)
+(1.50)
+(0.81)
+(1.56)
+(0.90)
+α
+0.634
+0.634
+0.635
+0.638
+0.635
+(1.00)
+(1.01)
+(1.00)
+(1.08)
+(1.00)
+Obs
+275
+275
+275
+275
+275
+R2 (%)
+2.44
+3.05
+1.71
+3.22
+1.93
+TO
+RV OL
+EPU
+MS
+INFL
+NT
+−1.069∗∗
+−1.132∗∗
+−1.200∗∗
+−1.360∗∗
+−1.366∗∗∗
+(−2.04)
+(−2.38)
+(−2.32)
+(−2.28)
+(−2.66)
+Control
+0.258
+−0.037
+−0.354
+−0.649
+−1.114
+(0.35)
+(−0.05)
+(−0.71)
+(−1.07)
+(−1.58)
+α
+0.636
+0.636
+0.633
+0.631
+0.637
+(1.03)
+(1.01)
+(1.02)
+(1.02)
+(1.04)
+Observations
+275
+275
+275
+275
+275
+R2 (%)
+1.56
+1.45
+1.66
+2.07
+3.48
+66
+
+Table 12.
+Evidence from the B-share market
+This table presents univariate regression results from the B-share stock market at the one-month horizon.
+A share, NT, denotes forecasting B-share market returns using A-share NT, and B-share NT denotes
+forecasting B-share market returns using B-share NT. The regression coeﬀicients are reported in percentages. Newey and West (1987) t-statistics with twelve lags are reported in parentheses. ∗, ∗∗, and ∗∗∗
+denote significance at the 10%, 5%, and 1% levels, respectively. The sample period spans from January
+2000 to December 2022.
+A share NT
+B share NT
+β
+−0.359
+−1.398
+(−0.51)
+(−1.07)
+α
+1.166
+1.164
+(1.52)
+(1.45)
+Observations
+275
+275
+R2 (%)
+−0.24
+1.54
+67
+
+Table 13.
+In-sample bivariate regression: Effect of sentiment
+This table presents the regression results of one-month market excess return on NT along with investor
+sentiment measures at the one-month horizon. NT is the noise trading measure. The sentiment measures
+include the consumer confidence index (CCI), the discount rate of closed-end fund (CEFD), the number
+of IPO stocks (IPON), the return of IPO stocks (IPOR), the number of new investors (NIA) and
+the China version sentiment index of Baker and Wurgler (2006) (BW). The regression coeﬀicients are
+reported in percentages. Newey and West (1987) t-statistics with twelve lags are reported in parentheses.
+∗, ∗∗, and ∗∗∗denote significance at the 10%, 5%, and 1% levels, respectively. The sample period is from
+February 2003 to December 2022 due to sentiment data constraints.
+DCEF
+IPON
+IPOR
+NIA
+CCI
+BW
+NT
+−1.453∗∗
+−1.638∗∗
+−1.460∗∗
+−1.483∗∗
+−1.482∗∗
+−1.488∗∗
+(−2.15)
+(−2.38)
+(−2.28)
+(−2.26)
+(−2.21)
+(−2.19)
+Sent
+−0.521
+−1.027∗∗
+−0.137
+−0.006
+−0.294
+−0.724
+(−0.69)
+(−2.07)
+(−0.27)
+(−0.01)
+(−0.47)
+(−1.26)
+α
+0.440
+0.389
+0.440
+0.435
+0.437
+0.431
+(0.62)
+(0.56)
+(0.62)
+(0.61)
+(0.61)
+(0.61)
+Observations
+238
+238
+238
+238
+238
+238
+R2 (%)
+2.19
+3.37
+1.78
+1.75
+1.89
+2.60
+68
+
+Appendix A
+Variable definitions
+This table describes the construction of the market- and firm-level variables used in this
+paper.
+Variable
+Description
+Market-level variables
+Dividend-to-price ratio (DP)
+The ratio of a 12-month moving sum of dividend payments
+to total market capitalization
+Dividend yield (DY )
+The ratio of a 12-month moving sum of dividend payments
+to lagged total market capitalization
+Earnings-to-price ratio (EP)
+The ratio of a 12-month moving sum of earnings to total
+market capitalization
+Book-to-market ratio (BM)
+The ratio of book value to total market capitalization.
+Turnover (TO)
+The ratio of the sum of shares traded divided by the sum of
+shares outstanding
+Return volatility (RV OL)
+The standard deviation of daily returns on the valueweighted market return in a month
+Economic policy uncertainty (EPU)
+Acquired from the Economic Policy Uncertainty website
+www.policyuncertainty.com
+Money supply (MS)
+M2, acquired from CSMAR
+Inflation (INFL)
+Inflation, acquired from CSMAR
+CCI
+The consumer confidence index
+CEFD
+The discount rate of closed-end funds
+IPON
+The number of IPO stocks
+IPOR
+The return of IPO stocks
+NIA
+The number of new investors
+69
+
+Variable
+Description
+BW
+The Chinese version of the sentiment index of Baker and
+Wurgler (2006), calculated as a composite of six variables—
+the consumer confidence index (CCI), the discount rate
+of closed-end funds (CEFD), the number of IPO stocks
+(IPON), the return of IPO stocks (IPOR), the number of
+new investors (NIA), and turnover (TURN)
+Retail investor ownership (RIO)
+The six-month moving average of the value-weighted average
+of firm-level retail investor ownership, defined as one minus
+institutional ownership
+Abnormal short interest (ASI)
+The change between the market-level short interest (SI) in
+month t and its mean over the past three months (excluding
+the most recent month), with market-level SI being defined
+as the value-weighted average of firm-level SI and firm-level
+SI being the ratio of shorted shares to shares outstanding
+in a month
+Firm-level variables
+Idiosyncratic return volatility (IV OL)
+The standard deviation of daily idiosyncratic returns from
+Fama and French (1993) three factors in a month
+Total return volatility (V OL)
+The standard deviation of daily returns in a month
+Maximum daily return (MAX)
+A stock’s highest daily return in a month (Bali, Cakici, and
+Whitelaw, 2011)
+Minimum daily return (MIN)
+A stock’s lowest daily return in a month (Bali, Cakici, and
+Whitelaw, 2011)
+Idiosyncratic
+maximum
+daily
+return
+(IMAX)
+The highest daily idiosyncratic return from Fama and
+French (1993) three factors in a month
+Idiosyncratic
+minimum
+daily
+return
+(IMIN)
+The lowest daily idiosyncratic return from Fama and French
+(1993) three factors in a month
+70
+
+Variable
+Description
+Earnings-to-price ratio (EP)
+The ratio of earnings to market capitalization using recent
+net profit (excluding nonrecurrent gains/losses)
+Book-to-market equity ratio (BM)
+The ratio of book equity value to market equity value, with
+the book equity value being the difference between the book
+value of total shareholder equity and the book value of preferred stocks reported in the most recent financial statement
+and the market equity value being the market capitalization
+Twelve-month turnover (TO12)
+The ratio of a 12-month average of shares traded divided by
+a 12-month average of shares outstanding
+One-month turnover (TO)
+The ratio of shares traded divided by shares outstanding in
+a month
+ME
+The logarithm of market capitalization
+71
+
+Appendix B
+Additional Tables and Figures
+Table B1.
+NT and aggregate earnings and earnings surprises
+This table presents the results from the following univariate regression:
+ROA/SUEt+1 = α + βNTt + ϵt+1,
+where ROA/SUEt+1 is aggregate earnings (ROA) or aggregate earnings surprises (SUE) in month t+1,
+computed as value-weighted averages of firm-level ROA and SUE, respectively.
+Firm-level ROA is
+defined as the net profit divided by total assets. Firm-level SUE is defined as the year-over-year change
+in quarterly earnings per share, standardized by the rolling eight-quarter standard deviation of these
+changes to account for firm-specific earnings volatility. NTt is our noise trading measure. Newey and
+West (1987) t-statistics with twelve lags are reported in parentheses. ∗, ∗∗, and ∗∗∗denote significance at
+the 10%, 5%, and 1% levels, respectively. The sample period is from January 2000 to December 2022.
+ROA
+SUE
+β
+−0.068
+−0.0004
+(−1.09)
+(−0.23)
+α
+0.289∗∗∗
+0.030∗∗∗
+(4.50)
+(9.91)
+Observations
+275
+275
+R2 (%)
+2.24
+−0.35
+72
+
+Table B2.
+NT and liquidity
+This table presents the results from the following univariate regression:
+∆Spreadt = α + β1∆NTt + ϵt,
+where ∆Spreadt is the change in bid-ask spread and ∆NTt is the change in our noise trading measure.
+Newey and West (1987) t-statistics with twelve lags are reported in parentheses.
+∗, ∗∗, and ∗∗∗denote
+significance at the 10%, 5%, and 1% levels for one-tailed tests, evaluating whether the coeﬀicient is
+significantly smaller than 0, respectively. The sample period is from February 2003 to December 2022
+due to Spread data constraints.
+SpreadQ
+SpreadE
+β
+−0.003∗∗
+−0.003∗∗
+(−1.67)
+(−1.68)
+α
+−0.0005
+−0.0005
+(−0.60)
+(−0.60)
+Observations
+239
+239
+R2 (%)
+0.40
+−0.41
+73
+
+Table B3.
+Individual noise trading measures
+This table presents the results from the following univariate regression:
+rt+1 = α + βNT p
+t + ϵt+1,
+where rt+1 is the monthly stock market excess return in month t + 1. The monthly stock market excess
+return is the return on the value-weighted market portfolios in excess of the risk-free rate. NT p
+t is one
+of four individual noise trading measures. All NT p
+t values are standardized to have a mean of zero and
+unit standard deviation. The regression coeﬀicients are reported in percentages. Newey and West (1987)
+t-statistics with twelve lags are reported in parentheses.
+∗, ∗∗, and ∗∗∗denote significance at the 10%,
+5%, and 1% levels, respectively. The sample period is from January 2000 to December 2022.
+NT O
+NT H
+NT L
+NT E
+β
+−1.130∗∗
+−1.093∗∗
+−1.011∗∗
+−1.216∗∗
+(−2.34)
+(−2.23)
+(−2.13)
+(−2.39)
+α
+0.636
+0.634
+0.635
+0.635
+(1.01)
+(1.00)
+(1.01)
+(1.02)
+Observations
+275
+275
+275
+275
+R2 (%)
+1.79
+1.66
+1.36
+2.14
+74
+
+Table B4.
+Effects of short-sale constraints: Cross-sectional evidence
+This table presents the effects of short-sale constraints on the predict power of NT using the following
+regressions:
+ri,t+1 = α + β1NTt × Shorti,t + β2Shorti,t + Controls + αi + αt + ϵi,t+1,
+where ri,t+1 is stock i’s excess return in month t + 1. NTt is our noise trading measure. Shorti,t is
+a dummy variable that equals one if stock i has been allowed to short in month t and 0 otherwise.
+Controls are the control variables used in Table 2. We include firm and year-month fixed effects in all
+the regressions and cluster standard errors at the firm level. The regression coeﬀicients are reported in
+percentages. ∗, ∗∗, and ∗∗∗denote significance at the 10%, 5%, and 1% levels, respectively. The sample
+period is from January 2000 to December 2022.
+(1)
+NT × Short
+0.677∗∗∗
+(11.65)
+Short
+−1.043∗∗∗
+(−15.58)
+Fixed effects
+Firm & Year-month
+Controls
+Yes
+Observations
+625,996
+R2 (%)
+27.83
+75
+
+Table B5.
+Effects of information environments: Cross-sectional evidence
+This table presents the effects of Google’s exit on the predict power of NT using the following regressions:
+ri,t+1 = α + β1NTt × Googlet × Treati + β2Googlet × Treati
++ β3NTt × Treati + β4NTt × Googlet + β5NTt
++ β6Googlet + Controls + αi + ϵi,t+1,
+where ri,t+1 is stock i’s excess return in month t+1. NTt is our noise trading measure. Googlet is a
+dummy variable that equals one after March 2010.
+Treati is a dummy variable that equals one for
+treatment firms. Motivated by Xu, Xuan, and Zheng (2021), we define treatment firms as those whose
+stock tickers have a higher search volume index than the sample median in February 2010. Controls are
+the control variables used in Table 2. We include firm-level fixed effects in all the regressions and cluster
+standard errors at the firm level. The regression coeﬀicients are reported in percentages. ∗, ∗∗, and ∗∗∗
+denote significance at the 10%, 5%, and 1% levels, respectively. The sample period is from January 2000
+to February 2012.
+(1)
+(2)
+NT × Google × Treat
+−1.666∗∗∗
+−1.644∗∗∗
+(−5.29)
+(−5.22)
+NT × Google
+−6.446∗∗∗
+−5.509∗∗∗
+(−25.88)
+(−21.64)
+NT × Treat
+−0.037
+−0.054
+(−0.57)
+(−0.89)
+Google × Treat
+−1.725∗∗∗
+−1.910∗∗∗
+(−5.74)
+(−6.24)
+NT
+−1.874∗∗∗
+1.344∗∗∗
+(−37.20)
+(17.94)
+Google
+−8.133∗∗∗
+−7.857∗∗∗
+(−31.28)
+(−23.95)
+Fixed effects
+Firm
+Firm
+Controls
+No
+Yes
+Observations
+149,344
+149,344
+R2 (%)
+1.86
+6.68
+76
+
+Table B6.
+Portfolio analysis
+This table presents the portfolio analysis results.
+Panel A reports value-weighted excess returns for
+portfolios sorted by FNT S and FNT R, respectively. FNT S and FNT R are the fitted and residual
+components of FNT obtained from a rolling-window regression of FNT on current and lagged values of
+NT. FNT is the firm-level noise trading measure. Detailed descriptions of control variables are provided
+in the Appendix A. Portfolios are formed based on the bottom decile, middle 80%, and top decile. Low
+denotes the portfolio with the lowest FNT S or FNT R, high denotes the portfolio with the highest FNT S
+or FNT R, and medium denotes the portfolio with the remaining stocks. L −H represents the return
+spread of low-minus-high portfolios. Panel B presents the results of regressing the monthly excess returns
+of decile portfolios formed by FNT S and FNT R on the factor returns of the CAPM, CH3, and CH4
+factor models (Liu, Stambaugh, and Yuan, 2019). The regression coeﬀicients are reported as percentages.
+Newey and West (1987) t-statistics with twelve lags are reported in parentheses.
+∗, ∗∗, and ∗∗∗denote
+significance at the 10%, 5%, and 1% levels, respectively. The sample period spans from January 2000 to
+December 2022.
+Panel A:
+Value-weighted portfolio returns
+FNT S
+FNT R
+Low
+Medium
+High
+L −H
+Low
+Medium
+High
+L −H
+Raw
+1.130
+0.985
+0.789
+0.342∗∗
+1.033
+0.979
+0.979
+0.055
+(2.27)
+(0.33)
+Panel B:
+Factor model regressions for portfolio return spreads
+FNT S
+FNT R
+α
+0.342∗∗
+0.345∗∗
+0.434∗∗
+0.534∗∗
+0.055
+0.088
+−0.052
+−0.091
+(2.27)
+(2.32)
+(2.54)
+(2.33)
+(0.33)
+(0.52)
+(−0.26)
+(−0.45)
+MKT
+−0.591
+−1.225
+−2.406
+−5.260
+−4.200
+−3.741
+(−0.14)
+(−0.36)
+(−0.82)
+(−1.57)
+(−1.15)
+(−0.94)
+SMB
+−2.833
+−3.703
+4.128
+4.739
+(−0.35)
+(−0.42)
+(0.47)
+(0.51)
+V MG
+−5.669
+−6.994
+9.149
+10.163
+(−0.62)
+(−0.76)
+(0.87)
+(0.92)
+PMO
+−8.895
+3.232
+(−0.86)
+(0.34)
+Observations
+239
+239
+239
+239
+239
+239
+239
+239
+R2 (%)
+0.00
+-0.40
+-0.89
+0.04
+0.00
+1.17
+1.16
+1.00
+77
+
+Table B7.
+Alternative noise trading measures
+This table presents results from the following univariate regression:
+rt+1 = α + βNT k
+t + ϵt+1,
+where rt+1 is the stock market excess return in month t + 1. The monthly stock market excess return
+is the return on the value-weighted market portfolio in excess of the risk-free rate. NT k
+t is one of the
+alternative noise trading measures constructed based on the last one to three digits in stock prices or
+derived from stock returns. The regression coeﬀicients are reported in percentages. Newey and West
+(1987) t-statistics with twelve lags are reported in parentheses. ∗, ∗∗, and ∗∗∗denote significance at the
+10%, 5%, and 1% levels, respectively. The sample period is from January 2000 to December 2022.
+Last three digits
+Last two digits
+Last one digit
+Return
+β
+−1.340∗∗
+−1.151∗∗
+−0.973∗
+−0.427
+(−2.43)
+(−2.32)
+(−1.73)
+(−0.69)
+α
+0.634
+0.631
+0.632
+0.632
+(1.01)
+(0.99)
+(0.97)
+(0.98)
+Observations
+275
+275
+275
+275
+R2 (%)
+2.68
+1.88
+1.24
+−0.06
+78
+
+Table B8.
+The round number effect
+This table presents univariate regression results at the one-month horizon. RNR denotes the proportion
+of transaction prices ending in the digit 0. RNRF and RNRR are the fitted and residual components
+of RNR obtained from the regression of RNR on NT.
+The regression coeﬀicients are reported in
+percentages. Newey and West (1987) t-statistics with twelve lags are reported in parentheses.
+∗, ∗∗,
+and ∗∗∗denote significance at the 10%, 5%, and 1% levels, respectively. The sample period spans from
+January 2000 to December 2022.
+(1)
+(2)
+(3)
+RNR
+−1.058∗∗
+−0.761
+(−2.15)
+(−1.60)
+NT
+−0.875∗∗
+(−2.00)
+RNRF
+−3.335∗∗
+(−2.51)
+RNRR
+−0.761
+(−1.60)
+Observations
+275
+275
+275
+R2 (%)
+1.54
+2.33
+2.33
+79

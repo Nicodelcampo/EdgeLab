@@ -1,0 +1,116 @@
+{
+  "doc_id": 202,
+  "titulo": "LLM-Driven Market Microstructure Representation Learning for Robust High-Frequency Forecasting",
+  "resumen_operativo": "Propone un framework llamado MMRL que convierte dinámicas del libro de órdenes en tokens estructurados procesables por encoders tipo LLM. Extrae un embedding latente de ejecución para predicción multi-horizonte. Demuestra una cota de varianza que garantiza robustez ante ruido adversarial en los tokens de microestructura.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Market Microstructure Representation Learning (MMRL)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Framework que convierte datos crudos de microestructura en una secuencia de tokens vectoriales para alimentar un encoder que extrae representaciones latentes de intención de ejecución, usables en predicción multi-horizonte.",
+      "relaciones": [
+        {"tipo": "COMPUESTO_POR", "objeto": "Microstructure Tokenization"},
+        {"tipo": "COMPUESTO_POR", "objeto": "Latent Execution Embedding"},
+        {"tipo": "COMPUESTO_POR", "objeto": "Cross-Horizon Adaptive Forecasting"}
+      ],
+      "cita_textual": "We propose a framework called Market Microstructure Representation Learning (MMRL), which converts order-book dynamics into a sequence of structured tokens, and extracts a latent execution representation that can be used for multi-horizon prediction."
+    },
+    {
+      "nombre": "Microstructure Tokenization",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Mapeo que convierte el estado del LOB, sus cambios, flujo de órdenes, spread e imbalance en un vector de token de dimensión fija mediante una función de embedding φ.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Market Microstructure Representation Learning"},
+        {"tipo": "USA", "objeto": "Order Book Imbalance"}
+      ],
+      "cita_textual": "The microstructure token at time t is τt := ϕ(xt) ∈ Rdτ, where ϕ : Rdx → Rdτ is an embedding function."
+    },
+    {
+      "nombre": "Latent Execution Embedding",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Vector latente zt extraído por un encoder paramétrico Fθ a partir de la secuencia de tokens de microestructura, interpretado como representación de intención de ejecución y presión de cola.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Market Microstructure Representation Learning"},
+        {"tipo": "REQUIERE", "objeto": "Microstructure Tokenization"}
+      ],
+      "cita_textual": "The idea is that zt encodes execution intent, queue pressure, and other latent aspects that are not directly observable from st alone."
+    },
+    {
+      "nombre": "Cross-Horizon Adaptive Forecasting",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Sistema de predicción multi-horizonte con cabezales por horizonte h que comparten una representación latente común, minimizando una pérdida ponderada sobre todos los horizontes.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Market Microstructure Representation Learning"},
+        {"tipo": "USA", "objeto": "Latent Execution Embedding"}
+      ],
+      "cita_textual": "For each h ∈ H, define a prediction head br(h)t = gψh(ht, zt) ... Stacking all heads gives a vector-valued prediction."
+    },
+    {
+      "nombre": "Order Book Imbalance",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Diferencia normalizada entre el volumen agregado de compra y venta en los mejores niveles del LOB, usada como indicador de presión direccional en microestructura.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "order-flow pressure"}
+      ],
+      "cita_textual": "imbalancet := (V bid_t − V ask_t) / (V bid_t + V ask_t + ε), where ε > 0 avoids division by zero."
+    },
+    {
+      "nombre": "Adversarial Microstructure Noise",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Perturbaciones acotadas εt añadidas a los tokens de microestructura que modelan ruido por retrasos de mensajes, cancelaciones y órdenes ocultas. El encoder debe ser robusto a estas perturbaciones.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "Lipschitz Encoder"}
+      ],
+      "cita_textual": "Microstructure data are noisy due to message delays, cancellations, and hidden orders. We consider adversarial perturbations on the token level."
+    },
+    {
+      "nombre": "Lipschitz Encoder",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Propiedad del encoder que acota la variación de cada coordenada del embedding latente ante perturbaciones del token de entrada, garantizando estabilidad del riesgo empírico.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "Adversarial Microstructure Noise"},
+        {"tipo": "REQUIERE", "objeto": "bounded weights"}
+      ],
+      "cita_textual": "Assumption 1 (Coordinatewise Lipschitz Encoder). For each coordinate k ∈ {1, . . . , dz}, there exists βk ≥ 0 such that ... |Gθ,k(τ1, . . . , τt−1, u) − Gθ,k(τ1, . . . , τt−1, v)| ≤ βk ∥u − v∥2."
+    },
+    {
+      "nombre": "Variance Bound",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Cota que acota la varianza de cada coordenada del embedding latente bajo perturbaciones aleatorias por la varianza del token de entrada, escalada por la constante de Lipschitz β².",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "encoder robustness"},
+        {"tipo": "REQUIERE", "objeto": "Lipschitz Encoder"}
+      ],
+      "cita_textual": "Var(˜zk) ≤ β² Var(˜τ) ... When β < 1 after normalization, latent variance contracts relative to input variance, which can be interpreted as a form of robustness or noise smoothing."
+    },
+    {
+      "nombre": "Mid-Price",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Precio medio entre best bid y best ask en cada instante t, usado como base para definir los targets de predicción (retornos o dirección).",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "prediction target"}
+      ],
+      "cita_textual": "Let pt denote the mid-price at time t. For a forecast horizon h > 0, we consider either a continuous target (e.g., return) or a discrete direction label."
+    },
+    {
+      "nombre": "Limit Order Book State",
+      "tipo": "dato",
+      "definicion_en_contexto": "Vector st que captura los precios y volúmenes de best bid/ask y niveles profundos del LOB en tiempo discreto fino (milisegundos).",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Microstructure Tokenization"}
+      ],
+      "cita_textual": "Let st ∈ Rds denote the LOB state at time t; typical components include best bid/ask prices, corresponding volumes, and possibly a few deeper levels."
+    },
+    {
+      "nombre": "Order Flow",
+      "tipo": "dato",
+      "definicion_en_contexto": "Vector ft que agrega volumen firmado de trades, número de cancelaciones y envíos de órdenes en cada paso temporal.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Microstructure Tokenization"}
+      ],
+      "cita_textual": "Let ft ∈ Rdf denote an order-flow vector at time t, including, for example, signed trade volume, number of cancellations, and order submissions."
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "Diseñado explícitamente para predicción de alta frecuencia con horizontes múltiples sobre datos de LOB en escala de milisegundos."}
+}

@@ -1,0 +1,85 @@
+{
+  "doc_id": 244,
+  "titulo": "Observation Frequency as a Trading-Environment Design Variable in Cointegration-Based Deep Reinforcement Learning for Cryptocurrency Statistical Arbitrage",
+  "resumen_operativo": "Investiga el efecto de la frecuencia de observación (15min, 30min, 1h, 2h, 4h) como variable de diseño en entornos de DRL para arbitraje estadístico con criptomonedas basado en cointegración. Con 360 ejecuciones de experimentos (3 agentes DRL x 4 paneles de activos x 2 espacios de acción x 3 seeds x 5 frecuencias), encuentra que la frecuencia afecta significativamente retorno total (χ²=99.43, p<.001), Sharpe ratio y turnover (χ²=270.88, p<.001). La frecuencia de 15min produce las mayores pérdidas y rotación; ninguna frecuencia genera retornos positivos consistentemente.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Observation Frequency",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Intervalo de muestreo temporal que determina cuántas observaciones, recompensas, oportunidades de ajuste y eventos de rotación recibe el agente DRL. Variable de diseño del entorno, no mero preprocesamiento de datos.",
+      "relaciones": [{"tipo": "CAUSA", "objeto": "Turnover"}, {"tipo": "CAUSA", "objeto": "Sharpe Ratio"}, {"tipo": "PARTE_DE", "objeto": "DRL Trading Environment Design"}],
+      "cita_textual": "observation frequency is not a neutral data-formatting decision; it is part of the DRL trading-environment design"
+    },
+    {
+      "nombre": "Cointegration-Based DRL Statistical Arbitrage",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Marco que combina cointegración (formación de carteras sintéticas de arbitraje) con deep reinforcement learning (decisiones secuenciales de trading), separando ventana de formación (6 días) y de trading (1 día).",
+      "relaciones": [{"tipo": "USA", "objeto": "Deep Reinforcement Learning"}, {"tipo": "USA", "objeto": "Cointegration"}, {"tipo": "APLICA_A", "objeto": "Cryptocurrency"}],
+      "cita_textual": "the formation window is used to estimate the relative-price relationship and construct synthetic arbitrage portfolios, while the trading horizon is used by the agent to make sequential trading decisions"
+    },
+    {
+      "nombre": "Temporal Discretization",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Proceso de convertir la actividad continua del mercado en estados discretos de decisión para el agente DRL, determinando cómo se observan precios, cuándo se revisa la exposición y cómo se acumulan recompensas.",
+      "relaciones": [{"tipo": "EQUIVALE_A", "objeto": "Observation Frequency"}, {"tipo": "PARTE_DE", "objeto": "Trading Environment"}],
+      "cita_textual": "Observation frequency determines how continuous market activity is converted into discrete decision states"
+    },
+    {
+      "nombre": "Friedman Repeated-Measures Test",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Test no paramétrico para comparar múltiples tratamientos en un diseño de medidas repetidas, usado para evaluar si las diferencias de performance entre frecuencias son estadísticamente significativas.",
+      "relaciones": [{"tipo": "MIDE", "objeto": "Frequency Effect Significance"}],
+      "cita_textual": "χ² (4) = 99.43, p < .001"
+    },
+    {
+      "nombre": "Turnover as Transmission Mechanism",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Mecanismo clave que vincula frecuencia de observación con performance: intervalos más cortos generan más oportunidades de revisar exposición, que con costes de transacción pueden acumularse y erosionar retornos netos.",
+      "relaciones": [{"tipo": "CAUSA", "objeto": "Negative Returns"}, {"tipo": "PARTE_DE", "objeto": "Transaction Cost Accumulation"}],
+      "cita_textual": "Shorter observation intervals create more opportunities for the agent to revise exposure. When transaction costs penalize exposure changes, more decision points can translate into higher cost accumulation"
+    },
+    {
+      "nombre": "Formation-Trading Separation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Separación metodológica del proceso de arbitraje estadístico en dos fases: formación (6 días, estimación de relación de cointegración) y trading (1 día, decisiones secuenciales del agente DRL).",
+      "relaciones": [{"tipo": "REQUIERE", "objeto": "Cointegration Estimation"}, {"tipo": "PARTE_DE", "objeto": "Statistical Arbitrage Pipeline"}],
+      "cita_textual": "Each scenario contains a six-day formation window and a one-day trading horizon"
+    },
+    {
+      "nombre": "Information-Noise Trade-Off",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Compromiso fundamental donde frecuencias más altas capturan más información de mercado pero también amplifican ruido de microestructura, fricciones de ejecución y errores de medición.",
+      "relaciones": [{"tipo": "CAUSA", "objeto": "Performance Degradation at High Frequency"}],
+      "cita_textual": "finer sampling may capture more market information, but it may also amplify measurement noise and execution frictions"
+    },
+    {
+      "nombre": "DRL Agent Types (DQN, PPO, A2C)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Tres algoritmos de deep reinforcement learning evaluados en el estudio: Deep Q-Network (DQN), Proximal Policy Optimization (PPO) y Advantage Actor-Critic (A2C), cada uno con dos especificaciones de espacio de acción.",
+      "relaciones": [{"tipo": "PARTE_DE", "objeto": "DRL Experimental Design"}],
+      "cita_textual": "The empirical design evaluates DQN, PPO, and A2C agents across four fixed cryptocurrency asset panels, two action-space specifications, and three random seeds, producing 360 matched DRL runs"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "La frecuencia de observación afecta significativamente el retorno total (Friedman χ²(4)=99.43, p<.001), Sharpe ratio (χ²(4)=77.07, p<.001) y turnover (χ²(4)=270.88, p<.001).",
+      "mercado": "Criptomonedas spot USDT en Binance",
+      "periodo": "Período reciente de criptomonedas (c. 2025-2026)",
+      "magnitud": "χ²(4)=99.43 (retorno), χ²(4)=270.88 (turnover); todas p<.001",
+      "condiciones": "4 paneles de criptoactivos; ventana formación 6 días; horizonte trading 1 día; 360 ejecuciones experimentales",
+      "robustez": "alta",
+      "cita_textual": "Friedman repeated-measures tests indicate significant frequency effects for total return, χ² (4) = 99.43, p < .001, and Sharpe ratio, χ² (4) = 77.07, p < .001. The strongest effect appears in turnover, χ² (4) = 270.88, p < .001"
+    },
+    {
+      "afirmacion": "La frecuencia de 15 minutos produce las mayores pérdidas promedio y la mayor rotación, mientras que 2h y 4h reducen pérdidas e intensidad de trading, aunque ninguna frecuencia genera retornos positivos consistentes.",
+      "mercado": "Criptomonedas spot USDT en Binance",
+      "periodo": "Período reciente de criptomonedas (c. 2025-2026)",
+      "magnitud": "15min: mayores pérdidas y turnover; 2h/4h: menores pérdidas; retornos medios negativos en todas las frecuencias",
+      "condiciones": "OHLCV data; sin depth de order book; costes de transacción modelados",
+      "robustez": "media",
+      "cita_textual": "The 15-minute setting produces the largest average losses and highest turnover, whereas the 2-hour and 4-hour settings reduce losses and trading intensity. However, mean returns remain negative across all five frequencies"
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "El estudio es específicamente sobre frecuencias intradía y diseño de entornos DRL para trading algorítmico; resultados muestran que mayor frecuencia no implica mejor performance."}
+}

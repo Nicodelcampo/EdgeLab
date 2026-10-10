@@ -1,0 +1,2579 @@
+ Electronic copy available at: https://ssrn.com/abstract=2542314 
+A Closed-Form Execution Strategy to Target Volume
+Weighted Average Price$
+Published: SIAM Journal on Financial Mathematics (2016)
+´Alvaro Carteaa, Sebastian Jaimungalb
+aDepartment of Mathematics, University of Oxford, Oxford, UK
+Oxford-Man Institute of Quantitative Finance, Oxford, UK
+bDepartment of Statistical Sciences, University of Toronto, Toronto, Canada
+Abstract
+We provide two explicit closed-form optimal execution strategies to target VWAP. We do
+this under very general assumptions about the stochastic process followed by the volume
+traded in the market, and, unlike earlier studies, we account for permanent price impact
+stemming from order-ﬂow of the agent and all other traders. One of the strategies consists
+of TWAP adjusted upward by a fraction of instantaneous order-ﬂow and adjusted downward
+by the average order-ﬂow that is expected over the remaining life of the strategy. The other
+strategy consists of the Almgren-Chriss execution strategy adjusted by the expected volume
+and net order-ﬂow during the remaining life of the strategy. We calibrate model parameters
+to ﬁve stocks traded in Nasdaq (FARO, SMH, NTAP, ORCL, INTC) and use simulations to
+show that the strategies target VWAP very closely and on average outperform the target by
+between 0.10 and 8 basis points.
+Keywords:
+VWAP; POV; TWAP; Algorithmic Trading; High-Frequency Trading;
+Acquisition; Liquidation.
+$SJ would like to thank NSERC and GRI for partially funding this work. ´AC acknowledges the research
+support of the Oxford-Man Institute for Quantitative Finance and the hospitality of the Finance Group at
+Sa¨ıd Business School. We thank two anonymous referees, Peter Carr, Rene Carmona, Ciamac Moallemi, and
+Mathieu Rosenbaum for comments. We also thank seminar participants at: Informs 2015; FIPS (Rutgers);
+New Directions in Financial Mathematics (IPAM-UCLA); Optimization in Finance and Risk Management
+(Fields Institute); and The 6th Annual High Frequency Finance and Data Analytics (Stevens Institute).
+Email addresses: alvaro.cartea@maths.ox.ac.uk (´Alvaro Cartea),
+sebastian.jaimungal@utoronto.ca (Sebastian Jaimungal)
+Preprint submitted to SIFIN
+November 11, 2016
+Electronic copy available at: https://ssrn.com/abstract=2542314
+
+ Electronic copy available at: https://ssrn.com/abstract=2542314 
+1. Introduction
+How to optimally execute a large order has been, and continues to be, a very active ﬁeld of
+research. Set against the backdrop of electronic markets and the rise of computerized trading,
+algorithmic trading has become an industry where brokerage ﬁrms compete to oﬀer the best
+execution strategies. Typically, algorithms break large orders into smaller child orders and
+these are sequentially executed over a trading window. Everything else equal, the longer the
+trading window, the less market impact will the child orders have, but more uncertain the
+execution prices become, see Almgren and Chriss (2000), Almgren (2003), Cartea et al. (2015)
+and Gu´eant (2016). Choosing the length of the execution window to complete the transaction
+is an important decision, but once the execution program is over, how can the performance
+of these algorithms be measured?
+One of the most widely used benchmarks in algorithmic trading in general, and optimal
+execution in particular, is the volume weighted average price (VWAP) (see Section 3.3.1
+in Lehalle and Laruelle (2013) for other benchmarks). This benchmark is straightforward
+to calculate (ex-post), and is attractive to investors because execution prices close to VWAP
+indicate that they obtained prices similar to what the market bore over the execution window.
+Although this transparency and ease of ex-post computation make it a desirable benchmark
+to target with an execution algorithm, its implementation is challenging because volume of
+trades along the trading horizon is not known in advance.
+Total daily volume is indeed
+random, and although it is well known that the intraday pattern is U-shaped (more activity
+at the start and end of the trading day), there is much variability from one day to the next
+and large ﬂuctuations intraday.
+In this paper we provide execution algorithms designed to target VWAP, which is done
+by continuously tracking and trading a percentage of the volume traded in the market. We
+assume a general stochastic process for volume and provide a closed-form expression for the
+optimal execution strategy. To the best of our knowledge, this is the ﬁrst time in the literature
+that an execution algorithm targeting VWAP is provided under such general assumptions for
+the volume process and, more importantly, the strategy is found in closed-form and the result
+of dynamic optimization. Furthermore, the optimal strategy accounts for the impact that
+the agent’s trading has through both temporary and permanent price impact. When the
+agent trades, she receives worse prices than the midprice (temporary price impact), and the
+midprice is pushed in the direction of her trades (permanent price impact), up if she buys and
+down if she sells. In addition, unlike many earlier works, we treat the order-ﬂow from other
+traders in a similar fashion to the agent’s own trades. More speciﬁcally, we account for the
+permanent impact that other traders have when submitting orders to the market, so that if
+total order-ﬂow (from the agent and other traders) is buy (sell) heavy, then prices are pushed
+upwards (downwards).
+2
+Electronic copy available at: https://ssrn.com/abstract=2542314
+
+The ﬁrst academic paper that derives a static execution strategy to target VWAP is Konishi (2002). This was followed by Bialkowski et al. (2008) where they propose a methodology
+for intraday volume which is then used to target VWAP. Humphery-Jenner (2011) proposes
+a way to incorporate intra-day noise into a VWAP trading rule and later McCulloch and
+Kazakov (2012) formulate a mean-variance optimal VWAP strategy, where it is assumed that
+ﬁnal (total) volume is known ahead of time.
+Another recent strand in the literature uses optimal control techniques to devise trading
+algorithms to target VWAP. Frei and Westray (2015) consider the optimal liquidation of a
+large position where the investor’s trades have temporary market impact. They develop an
+algorithm to minimize the mean and variance of the order slippage with respect to VWAP
+where it is assumed that the total volume (not the trajectory) traded during the execution
+is known in advance. In a similar vein, Gu´eant and Royer (2014) develop an algorithm for
+a broker who guarantees VWAP to an investor and the rate at which shares are executed
+have permanent market impact. The authors use a performance criteria based on exponential
+utility, where the utility of the deviation of the investor’s execution cost and that of a VWAP
+strategy is optimized. Although the authors focus on the case when the volume trajectory is
+deterministic, they provide a brief discussion on how their approach would change if volume
+is assumed stochastic. Finally, Mitchell et al. (2013) obtain a closed-form discrete-time strategy where the investor tracks the market VWAP using market orders. Their model allows
+co-dependence between stock price innovations and volume dynamics and they perform an
+extensive data analysis. However, the investor’s market orders do not impact the midprice
+and the intraday midprice is a martingale conditional on the realized stock volume. In all of
+these prior works, the eﬀect of other agent’s trading on prices are ignored.
+The remainder of the paper is structured as follows. In Section 2 we use Nasdaq data
+to show volume patterns, estimate temporary and permanent impact of trading activity, and
+discuss the link between arrival of trades and VWAP. In Section 3 we present the general
+framework, and solve the control problem explicitly. In Section 4 we use data for ﬁve stocks
+traded in Nasdaq to calibrate a model of volume dynamics and use simulations to show the
+performance of the VWAP strategy. Finally, Section 5 concludes, and we collect proofs in the
+Appendix.
+2. Order-Flow, Price Impact, and Targeting VWAP
+2.1. Empirical facts: order-ﬂow and price impact
+Traded volume generally follows a U-shaped pattern where at the beginning and the end
+of the trading day there is more trading than throughout the rest of the day. However, as
+3
+Electronic copy available at: https://ssrn.com/abstract=2542314
+
+Figure 1 shows, there is a considerable amount of deviations from this pattern.1 The ﬁgure
+uses millisecond-stamped messages from Nasdaq ITCH to show the estimate of the volume
+rate of trading (per 5 minutes) for ORCL for all days of 2013. Here the variable volume
+amalgamates buys and sell orders and we use log(1+volume) because there are intervals with
+no trades. The left panel shows a heat-map of the daily traded volume rates, while the right
+panel shows the raw data (ﬁne dots) together with regressions of a given day onto a Legendre
+polynomial basis up to order 4. The thick blue line on the right panel is the mean of every
+regression curve.2 In both panels we observe the well-known U-shape of trading volume, but
+it is also clear that volume is a volatile quantity which must be modelled as a key ingredient
+of a VWAP algorithm.
+Time
+log(1+volume)
+ 
+ 
+10:00
+12:00
+14:00
+16:00
+6
+8
+10
+12
+14
+0
+0.02
+0.04
+0.06
+0.08
+0.1
+10:00
+12:00
+14:00
+16:00
+6
+8
+10
+12
+14
+Time
+log(1+volume)
+Figure 1: ORCL traded volume for orders sent to NASDAQ in all of 2013 using 5 minute buckets. (left) a
+heat-map of the data and 25%, 50% and 75% quantiles (right) functional data regression (using Legendre
+polynomials) on the daily curves and the estimated mean curve
+Traded volume patterns and the arrival of market orders (MOs) in particular are important
+in the design of algorithms that target volume-based benchmarks. In addition, paramount
+to these algorithms is the inclusion of the eﬀect that trading has on midprices.
+As new
+information arrives in the market this is impounded in the midprice of the assets by traders
+who execute MOs and/or traders who reposition their limit orders (LOs). MOs can have
+a temporary or permanent impact on the midprice. MOs that walk the limit order book
+(LOB) have price impact because they obtain average execution prices worse than the best
+quote and are considered temporary because it is assumed that: the LOB will replenish very
+quickly and, after restocking, there is no eﬀect on the midprice of the asset. On the other
+hand, investors’ market order activity has a permanent eﬀect on midprices because traders’
+1See Lehalle and Laruelle (2013) for volume curves across diﬀerent markets and locations.
+2That is, we use a functional data analysis perspective and view the traded volume each day as being
+drawn from a probability space on the set of functions.
+4
+Electronic copy available at: https://ssrn.com/abstract=2542314
+
+order-ﬂow conveys information that aﬀects the midprice of the asset. In general, when there
+is positive net order-ﬂow (more buy than sell MOs) midprices tend to drift up, and when
+there is negative net order-ﬂow (more sell than buy MOs) the midprice tends to drift down.
+In Table 1 we show parameter estimates for permanent and temporary price impact for
+ﬁve stocks using data from Nasdaq for the year 2013. In the ﬁrst row we show the parameter
+estimate for permanent price impact. We assume a linear relationship between net order-ﬂow
+and changes in the midprice, thus for every trading day we perform the regression
+∆Sn = b µn + εn ,
+(1)
+where ∆Sn = Snτ −S(n−1)τ is the change in the midprice, µn is net order-ﬂow deﬁned as the
+diﬀerence between the volume of buy and sell MOs during the time interval [(n−1)τ, nτ], and
+εn is the error term (assumed normal). In the empirical analysis we choose τ = 5 min.3 The
+table shows the mean and standard deviation of the daily estimate for b by ﬁrst Winsorizing
+the data to exclude the upper and lower 0.5% tails and then carrying out a robust linear
+regression on the model (1). Furthermore, Table 2 shows summary statistics for the statistical
+signiﬁcance of b and R2’s of model (1).
+In the second row of the Table 1 we show the parameter estimate for temporary impact.
+To estimate this parameter, which we denote by k, we assume that temporary price impact
+is linear in the rate of trading so the diﬀerence between the execution price that the investor
+receives and the midprice is k ν, where ν is the speed of trading.
+To do this we take a
+snapshot of the LOB each second, determine the price per share for various volumes (by
+walking through the LOB), compute the diﬀerence between the price per share and the best
+quote at that time, and perform a linear regression. The slope of the linear regression is an
+estimate of the temporary price impact per share at that time. We do this for every second of
+every trading day and in the table we report the mean and standard deviation of these daily
+estimates when we exclude the ﬁrst and last half-hour of the trading day and Winsorize the
+data.
+The table also reports the average daily volume (ADV) of shares for each stock, the average
+midprice, and the volatility of price changes. In addition, we report the average number of
+buy and sell MOs, λ+ and λ−respectively, and the mean volume of MOs, E[η+] and E[η−]
+respectively. For example, in Nasdaq, ORCL receives on an hourly basis 346 market buy
+orders, with an average of 747 shares per order.
+3See Almgren et al. (2005) for a discussion on linear market using proprietary execution data.
+5
+Electronic copy available at: https://ssrn.com/abstract=2542314
+
+Table 1: Permanent and temporary price impact parameters for Nasdaq stocks, average volume of MOs,
+average midprice, σ volatility (hourly) of arithmetic price changes, mean arrival (hourly) of MOs λ±, and
+average volume of MOs E[η±]. Data are from Nasdaq 2013.
+FARO
+SMH
+NTAP
+ORCL
+INTC
+mean
+stdev
+mean
+stdev
+mean
+stdev
+mean
+stdev
+mean
+stdev
+ˆb
+1.41E-04
+9.61E-05
+5.45E-06
+4.20E-06
+5.93E-06
+2.31E-06
+1.82E-06
+7.19E-07
+6.15E-07
+2.16E-07
+ˆk
+1.86E-04
+2.56E-04
+8.49E-07
+8.22E-07
+3.09E-06
+1.75E-06
+8.23E-07
+3.78E-07
+2.50E-07
+1.25E-07
+ADV
+23,914
+14,954
+233,609
+148,580
+1,209,628
+642,376
+3,387,954
+1,889,322
+5,947,502
+2,271,967
+Midprice
+40.55
+6.71
+37.90
+2.44
+38.33
+3.20
+33.67
+1.43
+23.04
+1.34
+σ
+0.151
+0.077
+0.067
+0.039
+0.078
+0.045
+0.054
+0.012
+0.039
+0.010
+λ+
+16.81
+9.45
+47.29
+28.13
+300.52
+144.48
+345.94
+151.10
+333.23
+127.67
+E[η+]
+103.56
+21.16
+377.05
+118.05
+308.45
+53.09
+746.70
+188.31
+1,443.60
+317.15
+λ−
+17.62
+10.69
+46.37
+27.62
+293.83
+136.13
+332.49
+158.57
+322.09
+134.30
+E[η−]
+104.00
+21.79
+381.70
+126.74
+312.81
+49.86
+788.35
+187.78
+1,461.86
+312.63
+Table 2: Linear permanent model ﬁt diagnostics
+FARO
+SMH
+NTAP
+ORCL
+INTC
+median p-value
+4.30 × 10−5
+1.76 × 10−2
+4.75 × 10−7
+2.39 × 10−9
+6.76 × 10−13
+% days p-value < 0.1
+91.6%
+71.7%
+98.8%
+99.2%
+99.6%
+% days p-value < 0.05
+89.6%
+60.6%
+98.0%
+98.4%
+99.6%
+median R2
+0.40
+0.15
+0.45
+0.52
+0.66
+2.2. Targeting VWAP
+It is common for investors to seek average execution prices which are close to what the
+market has borne during the execution horizon. This widely pursued objective is achieved by
+targeting VWAP which, as mentioned above, is very simple to compute ex-post, and has the
+added beneﬁt that it can also be employed by the investor to measure the performance of the
+broker to whom she delegated the execution program. When a broker outperforms VWAP,
+and the order was small enough not to drive VWAP, it can be ascribed to the broker’s ability
+and not to good fortune as a result of favorable trends in prices.
+In addition to targeting VWAP, investors reduce the market impact of their own orders by
+breaking the parent order into smaller child orders which are executed over a trading window.
+These two objectives explain why at the core of any algorithm that targets VWAP is the
+choice of how many shares are executed at each point of the trading horizon. Intuitively,
+if the market trades at a constant volume rate, then smoothing the parent order’s volume
+evenly would result in a constant rate of execution and the average execution price would, in
+the absence of temporary impact, match VWAP. Such a simple strategy would, however, not
+necessarily match the total volume the agent seeks. Further, if volume is stochastic, it seems
+reasonable to spread the volume of the parent order so that the execution rate mimics that of
+the overall market – when the market volume rate is high (low), the algorithm should trade
+more (less) so the volume of the child orders go in tandem with the market. Thus, VWAP
+strategies are deeply connected to simpler algorithmic strategies which are designed to track
+6
+Electronic copy available at: https://ssrn.com/abstract=2542314
+
+a percentage of the volume traded in the market, but diﬀer in that under VWAP the investor
+speciﬁes a number of shares to be executed and also speciﬁes the trading horizon.
+A related problem is addressed by Gu´eant (2014) where he discusses execution and block
+trade with optimal constant rate of participation. Cartea and Jaimungal (2016) study how
+order-ﬂow aﬀects execution strategies. See also Laruelle et al. (2013) who discuss optimal
+trading using stochastic approximation methods, and Cartea et al. (2016) who study optimal
+trading when the agent learns from order-ﬂow and price movements.
+Algorithms that track VWAP and those that target a percentage of the volume traded
+(POV) are closely interlinked because the investor also requires to minimize market impact.
+Reducing price impact forces the algorithm to slice the parent order over a time window and
+doing it in a volume-based fashion will help to target VWAP. Our formulation is to set up a
+performance criteria where the investor seeks to execute a large order over a trading horizon T
+and the speed of trading targets POV or targets a percentage of cumulative volume (POCV).
+Once we derive the optimal speed of trading for these two general cases, we show how these
+strategies include optimal execution strategies that target and achieve VWAP.
+If the investor were tracking precisely the POV, then her average execution price per
+share would equal the volume weighted average price (VWAP). However, if she did track the
+POV, and hence attain VWAP, she would not liquidate all of her shares, or she would have
+liquidated more than her initial amount of shares – unless her initial inventory happens to
+equal a ﬁxed percentage (equal to the POV target) of the total shares traded in the market.
+3. The Model
+3.1. Targeting POV
+In this section we assume that the investor’s execution strategy targets a percentage of the
+speed at which other market participants are trading and focus on the liquidation strategy
+with MOs only. The setup for optimal acquisition is very similar. In the liquidation problem,
+the investor searches for an optimal speed to liquidate N shares over a trading horizon T. To
+achieve this she must choose a liquidation strategy, which is denoted by ν = {νt}0≤t≤T, to
+draw down her controlled inventory Qν = {Qν
+t }0≤t≤T according to
+dQν
+t = −νt dt ,
+Qν
+0 = N .
+(2)
+The probability space and, more speciﬁcally, the ﬁltration on which the strategies ν are
+adapted to, and the set of admissible strategies will be provided below.
+The investor also requires her liquidation strategy to target a fraction ˜ρ ∈[0, 1] of the
+speed at which the overall market is trading, i.e. the investor targets order-ﬂow. Here we
+7
+Electronic copy available at: https://ssrn.com/abstract=2542314
+
+assume that other market participants are also sending buy and sell MOs at overall speeds
+of µ+ = {µ+
+t }0≤t≤T and µ−= {µ−
+t }0≤t≤T, respectively. At each instant in time the investor
+therefore targets a percentage of the total, including her own, trading rate (also referred to
+as total order-ﬂow, or simply order-ﬂow) given by
+χν
+t := ˜ρ ×
+ µ+
+t + µ−
+t + νt
+
+.
+(3)
+We could just as easily target instead the one-sided order-ﬂow, ˜ρ × (µ−+ νt), however, most
+market participants target total order-ﬂow. This target will show up as a penalty term in the
+investor’s performance criteria shown below in (7).
+The investor’s MOs have a temporary impact on the asset’s price because there might not
+be enough liquidity posted at the best quote, hence her orders may walk the LOB, and she
+receives an execution price which is worse than the midprice. Even if she breaks up her trades
+into small buckets that do not take the full liquidity at-the-touch, she will still receive worse
+than the best quoted prices since high-frequency traders will shuﬄe their LOs accordingly.
+To simplify the modeling, we assume that when the investor sells shares these are executed
+at a price ˆSν = { ˆSν
+t }0≤t≤T where
+ˆSν
+t = Sν
+t −k νt ,
+(4)
+k > 0 is the temporary impact parameter, and Sν = {Sν
+t }0≤t≤T is the asset’s midprice.
+In principle non-linear temporary impact functions could be applied (see e.g.
+Alfonsi
+et al. (2010) and Schied (2013)), however, the model then fails to be analytically tractable.
+Moreover, as Frei and Westray (2015) point out, given the extremely low predictive accuracy
+of market impact models (typically < 5% R2), the cost of increased complexity arising from
+moving away from a linear model would outweigh any gains from better describing market
+impact. Although numerical methods can still be applied in the non-linear case, we opt to
+leave it out of the discussion in this article and focus instead on the eﬀect of order-ﬂow and
+how we can target VWAP.
+We also assume that all MOs (including other traders’ and the agent’s) have a permanent
+eﬀect on the midprice: sell MOs induce a downward trend in the midprice, and buy MOs induce an upward trend in the midprice so that the (controlled) midprice satisﬁes the stochastic
+diﬀerential equation (SDE)
+dSν
+t = b
+ µ+
+t −(νt + µ−
+t )
+
+dt + dMt ,
+Sν
+0 = S ,
+(5)
+where b ≥0 is the permanent impact parameter, and M = {Mt}0≤t≤T is a martingale (independent of all other processes4) which captures revisions to the midprice that come from
+4There could in fact be dependence between M and µ±, e.g., increased order-ﬂow could induce increases
+in midprice volatility, however, such dependence structures do not alter the ﬁnal form of the optimal strategy,
+other than the ﬁltration which one must use in computing certain expectations.
+To keep the exposition
+compact, we opt to leave this out of the discussions.
+8
+Electronic copy available at: https://ssrn.com/abstract=2542314
+
+changes in the LOB such as additions and cancellations of LOs. Here the permanent price
+impact is assumed the same across all types of investors, but this is not necessarily always the
+case. For example, if the agent has superior information and other traders are able to detect
+these informed trades, the agent’s trading activity will have a stronger (i.e. larger than b)
+eﬀect on the trend of the asset. In our set-up it is trivial to include a speciﬁc price impact
+parameter for the agent’s trades, but for parsimony we assume the same parameter for all
+market participants.
+We assume that the processes M and µ± are Markov, but not necessarily Markov in M
+and µ± solely – there may be additional processes that one needs to include to make the
+processes Markov (e.g., order-ﬂow may be driven by a number of factors) – we suppress the
+dependence on these additional factors, as they do not play a role in the analysis, other than
+to alter the explicit computation of expectations, such as E[ µ±
+s | Ft ] (which appear in the
+optimal solution), under particular modeling assumptions.
+We work on the completed and ﬁltered probability space (Ω, P, F = {Ft}0≤t≤T) where Ft is
+the natural ﬁltration generated by (M, µ+, µ−) and further assume that µ+ and µ−are cadlag
+with ﬁnite second moment (i.e., that E[(µ±
+s )2|Ft] < +∞for t ≤s ∈[0, T]). For example, they
+could be independent Ornstein-Uhlenbeck processes reverting to zero driven by a Compound
+Poisson process with ﬁnite second moment jump size. In Section 4 we present a version of
+such a model.
+Our model for the midprice captures two stylized facts that we observe in the market.
+First, the drift term b
+ µ+
+t −(νt + µ−
+t )
+
+dt shows that when there is one-sided buying or selling
+pressure, the midprice will trend up or down (see Cartea and Jaimungal (2015), Cartea et al.
+(2014) and Cartea et al. (2015)), and see also the estimation results in Table 1. Second, in
+a balanced market, i.e., when the rate of arrival of buys and sells is the same (including the
+investor’s sell orders), there will be no trend and the midprice innovations come solely from
+the increments of the martingale component.
+Finally, the investor’s cash process Xν = {Xν
+t }0≤t≤T, which represents the proceeds from
+liquidating shares, satisﬁes
+dXν
+t = ˆSν
+t νt dt ,
+Xv
+0 = X0 .
+(6)
+3.2. Performance Criteria
+The investor aims to maximize wealth from selling shares, but penalizes strategies that
+deviate from her target trading rate (in order for her to achieve VWAP). Hence, we set her
+performance criteria to be
+Hν(t, x, S, µ, q) = Et,x,S,µ,q
+
+Xν
+T + Qν
+T (Sν
+T −α Qν
+T) −˜ϕ
+Z T
+t
+(νu −χν
+u)2 du
+
+,
+(7)
+9
+Electronic copy available at: https://ssrn.com/abstract=2542314
+
+where µ = {µ+, µ−}, and Et,x,S,µ,q[ · ] represents expectation conditioned on (with a slight
+abuse of notation) Xt = x, St−= S, µ+
+t−= µ+, µ−
+t−= µ−and Qt = q, and her value function
+H(t, x, S, µ, q) = sup
+ν∈A
+Hν(t, x, S, µ, q) ,
+(8)
+where A is the set of admissible strategies consisting of F-predictable processes such that
+E
+hR T
+0 |νu| du
+i
+< +∞.
+On the right-hand side of the performance criteria (7) are three terms. The ﬁrst is the
+investor’s terminal cash from liquidating the shares throughout the trading horizon. The
+second is the cost incurred by the investor when liquidating any remaining inventory Qν
+T at
+the end of the strategy. The terminal inventory is liquidated at the midprice Sν
+T and the costs
+associated to crossing the spread, liquidity taking fees, and market impact, all of which are
+captured by the liquidation penalty parameter α ≥0. Finally, the third term is the running
+penalty ˜ϕ
+R T
+t (νu −χν
+u)2 du that the investor receives if the strategy deviates from the target
+χν
+t , where ˜ϕ ≥0 is the target penalty parameter. This penalization curbs the liquidation
+strategy – high values of ˜ϕ constrain the strategy to closely track the target χν
+t at every
+instant in time, and low values of ˜ϕ result in liquidation strategies which are more lax about
+tracking the POV target.
+3.3. Solving the Dynamic Programming Equation
+Applying the dynamic programming principle suggests that the value function should
+satisfy the dynamic programming equation (DPE)
+0 =
+ ∂t + LM + Lµ
+H
++ sup
+ν
+n
+(S −k ν) ν ∂xH −ν ∂qH + b ((µ+ −µ−) −ν) ∂SH −ϕ (ν −ρ µ)2o
+,
+(9)
+with terminal condition
+H(T, x, S, µ, q) = x + q (S −α q) ,
+(10)
+where µ = µ+ + µ−, Lµ represents the inﬁnitesimal generator of µ, LM the inﬁnitesimal
+generator of M, and we have introduced the re-scaled parameters
+ϕ = ˜ϕ(1 −˜ρ)2
+and
+ρ = ˜ρ/(1 −˜ρ) .
+Here we see the generators of M and µ separately because we assumed their independence.
+If as commented earlier, we allowed for dependence, e.g., the order-ﬂow aﬀects the volatility
+of the martingale component, then we would simply replace the sum of the generators, by the
+generator of the triplet (M, µ+, µ−), but all else remains the same.
+10
+Electronic copy available at: https://ssrn.com/abstract=2542314
+
+Proposition 1. Solving the DPE for POV. The DPE (9) admits the solution
+H(t, x, S, µ, q) = x + q S + h0(t, µ) + h1(t, µ) q + h2(t) q2 ,
+(11)
+where
+h2(t) = −
+ T −t
+k + ϕ +
+1
+α −1
+2b
+−1
+−1
+2 b ,
+(12a)
+h1(t, µ) =
+2ϕ ρ
+(T −t) + ζ
+Z T
+t
+Et,µ
+
+µ+
+s + µ−
+s
+
+ds
++
+b
+(T −t) + ζ
+Z T
+t
+((T −s) + ζ) Et,µ
+
+µ+
+s −µ−
+s
+
+ds ,
+(12b)
+h0(t, µ) =
+Z T
+t
+Et,µ
+
+1
+4(k + ϕ)
+ h1(t, µs) −2ϕ ρ (µ+
+s + µ−
+s )
+2 −ϕ ρ2 (µ+
+s + µ−
+s )2
+
+ds ,
+(12c)
+and the constant
+ζ = k + ϕ
+α −1
+2 b .
+Proof. See Appendix A.1
+The above proposition provides us with a candidate solution to our original control problem
+(8). Note that it is quadratic in inventory q, but potentially non-linear in the net (µ+ −µ−)
+and total (µ+ + µ−) order-ﬂow of other agents – depending on how one speciﬁes the model.
+Furthermore, the candidate value function splits into two pieces: (i) x + q S which is the cash
+from the sales so far plus the book value (valued at the midprice) of the inventory the agent
+still has remaining; and (ii) h0(t, µ) + h1(t, µ) q + h2(t) q2 , which represents the excess value
+(and cost) of trading optimally from this point onwards and is independent of the midprice.
+Indeed, this additional term can be interpreted as the agent’s marginal reservation price, i.e.,
+the price at which she is willing to sell the outstanding inventory so that her value function
+remains unchanged.
+The following theorem shows that this candidate solution is indeed the one we seek and
+also provides us with the explicit form of the optimal control.
+Theorem 2. Veriﬁcation for POV. The candidate value function provided in Proposition
+1 is indeed the solution to the optimal control problem (8). Moreover, the optimal trading speed
+11
+Electronic copy available at: https://ssrn.com/abstract=2542314
+
+is given by
+ν∗
+t =
+1
+(T −t) + ζ Qν∗
+t
+(13a)
++
+ϕ
+k + ϕ ρ
+
+(µ+
+t + µ−
+t ) −
+1
+(T −t) + ζ
+Z T
+t
+E[
+ µ+
+s + µ−
+s
+
+| Fµ
+t ] ds
+
+(13b)
+−
+b
+k + ϕ
+Z T
+t
+(T −s) + ζ
+(T −t) + ζ E
+  µ+
+s −µ−
+s
+
+| Fµ
+t
+
+ds ,
+(13c)
+where Fµ
+t denotes the natural ﬁltration generated by µ, and is the admissible optimal control
+we seek.
+Proof. Since x + q S + h0(t, µ) + h1(t, µ) q + h2(t) q2 is clearly a classical solution. Standard
+results imply that it suﬃces to check that the feedback control is indeed an admissible strategy.
+To this end, from the feedback form of the optimal control ν in (A.2), and the explicit form
+of h2(t) and h1(t, µ) we ﬁnd the expression above for ν∗. Next, note that since µ± have ﬁnite
+second moment, then (13b) and (13c) clearly have ﬁnite expectation. Then, by explicitly
+integrating dQν∗
+t
+= −ν∗
+t dt (see equation (14) in Remark 1 below), we see that Qν∗
+t
+is at most
+linear in µ±, and hence also has ﬁnite expectation, and decays like (T −t)+ζ as t approaches
+T. Therefore, ν∗is admissible.
+□
+The optimal strategy appearing above is general, we have not speciﬁed a model for orderﬂow, and is fully explicit in terms of simple expectations of the future total and net order-ﬂow.
+To understand the intuition of the strategy (13) we start by pointing out that the investor’s
+performance criteria (7) includes competing objectives. On the one hand the strategy aims at
+liquidating N shares by T, and on the other hand the strategy must track a fraction of other
+market participants’ trading rate. Only when N is exactly equal to the desired fraction ρ of
+the total volume over the execution duration T are these two objectives compatible.
+The ﬁrst component of the strategy (13a) is TWAP-like. We refer to the term
+Qν∗
+t
+(T−t)+ζ as
+a TWAP-like strategy because if ζ = 0 we would obtain the so-called time-weighted-averageprice strategy which consists in liquidating shares by slicing the remaining inventory in equal
+parts over the remaining time to expiry.
+The second component of the strategy (13b) consists of targeting instantaneous total
+order-ﬂow plus a weighted average of future expected total order-ﬂow. Although the POV
+target is ρ µt, the strategy targets a lower amount since
+ϕ ρ
+k+ϕ ≤ρ, where equality is achieved
+if the costs of missing the target are ϕ →∞and k remains ﬁnite, or there is no temporary
+impact k ↓0. Recall that in our notation the investor wishes to target ˜ρ (µt + νt), which is
+equivalent to targeting ρ µt when ρ = ˜ρ/(1 −˜ρ).
+The last component, see (13c), acts to correct her trading based on her expectations of
+the net order-ﬂow from that point in time until the end of the trading horizon. When there
+12
+Electronic copy available at: https://ssrn.com/abstract=2542314
+
+is a current surplus of buy trades she slows down her trading rate to allow the midprice to
+appreciate before liquidating the rest of her order. When there is a current surplus of sell
+orders, she speeds up her trades because the action of other sellers in the market will push
+prices downwards, and therefore degrade her cash proceeds from selling shares if she waits.
+Thus, she attempts to liquidate a larger portion of her inventory now rather than later.
+We point out that we solve the unconstrained problem where the investor may buy back
+some assets prior to the end of the trading horizon. This is optimal because the strategy
+can beneﬁt from directional moves in the midprice which are caused by net order-ﬂow. In
+particular, if net order-ﬂow is positive and large, the strategy anticipates an upward trend in
+the midprice and to proﬁt from this short-term trend it is optimal to purchase shares. Below,
+in Section 4 we show the performance of the strategy and report the percentage of time the
+strategy ends up purchasing rather than selling shares.
+Our results have counterparts in the result of Frei and Westray (2015) where order-ﬂow is
+modeled by a Gamma bridge, however, there are some important diﬀerences. Like Frei and
+Westray (2015), through their Gamma bridge, our optimal rate of trading is perturbed by
+future order-ﬂow, however, unlike their work, weighted future expected net and total orderﬂow are important components in our optimal trading rate. In particular, they do not have a
+component which adjusts net order-ﬂow since they do not account for permanent price impact
+in their approach.
+Remark 1. We can explicitly solve for the optimal inventory to hold using (13) and (A.2)
+to ﬁnd
+Qν∗
+t
+= T −t + ζ
+T + ζ
+N +
+1
+2(k + ϕ)
+Z t
+0
+T −t + ζ
+T −s + ζ
+
+h1(s, µs) −2 ρ ϕ
+ µ+
+s + µ−
+s
+
+ds .
+(14)
+Moreover, while the optimal trading speed in Theorem 2 is Markov in the state variables, in
+particular Qν∗
+t , µ+
+t and µ−
+t , we see from (14) that the optimal inventory at any point in time
+is non-Markovian and depends on the entire history of µ+ and µ−through the integral term.
+We continue our discussion of the optimal strategy by looking at some limiting cases.
+3.4. Targeting VWAP with POV
+To obtain VWAP the liquidation strategy we must, over the trading horizon, i) liquidate
+all shares, and ii) target POV at every instant in time. The ﬁrst requirement is achieved by
+taking an arbitrarily large ﬁnal inventory liquidation penalty α →∞. Although the initial
+role of the terminal penalty parameter α was to account for liquidation costs, the investor can
+also choose this parameter to be large enough so that the strategy ensures full liquidation. In
+13
+Electronic copy available at: https://ssrn.com/abstract=2542314
+
+the value function the interpretation is that this is not a ﬁnancial cost so it does not aﬀect
+the cash process. In this limiting case ζ
+α→∞
+−−−→0, and the optimal liquidation speed simpliﬁes
+to
+lim
+α→∞ν∗
+t
+=
+1
+T −tQν∗
+t
+(15a)
++
+ϕ
+k + ϕ ρ
+
+µt −
+1
+T −t
+Z T
+t
+E[ µ+
+s + µ−
+s | Fµ
+t ] ds
+
+(15b)
+−
+b
+k + ϕ
+Z T
+t
+T −s
+T −t E
+
+µ+
+s −µ−
+s | Fµ
+t
+
+ds ,
+(15c)
+which guarantees that the strategy liquidates all shares by the end of the trading horizon as
+required.
+The second requirement, that the strategy must closely target the appropriate POV χν
+t at
+every instant in time, is attained by taking the limit ϕ →∞, resulting in
+lim
+ϕ→∞lim
+α→∞ν∗
+t =
+1
+T −tQν∗
+t + ρ
+ µ+
+t + µ−
+t
+
+−
+1
+T −t
+Z T
+t
+E
+  µ+
+s + µ−
+s
+  Fµ
+t
+
+ds
+
+.
+(16)
+We observe that only total order-ﬂow shows up in the strategy, while the role of the net
+order-ﬂow disappears in this limit. Moreover, this strategy designed to track VWAP consists
+in executing TWAP plus the POV target which is adjusted downward to take into account
+future trades. More precisely, this adjustment is the average trading rate of other traders
+that is expected over the remaining life of the strategy.
+We note that although strategy (16) remains ﬁnite, and makes ﬁnancial sense, in the
+double limit limϕ→∞limα→∞, the value function explodes (becomes minus inﬁnity) due to the
+penalty term ˜ϕ
+R T
+0 (νt −χν
+t )2. However, a normalized value function H →
+1
+ϕH := ˜H has a
+sensible limit and the optimal strategy remains the same – indeed, we could have deﬁned the
+value function as this normalized version. Let us work out this limit. First we take α →∞
+and obtain
+lim
+α→∞
+˜H(t, x, S, µ, q) = 1
+ϕ (x + q S) + ˜h0(t, µ) + ˜h1(t, µ) q , +˜h2(t) q2
+(17)
+where
+˜h2(t) = −
+1 + k
+ϕ
+T −t −1
+2
+b
+ϕ ,
+(18a)
+˜h1(t, µ) =
+ρ
+T −t
+Z T
+t
+Et,µ
+
+µ+
+s + µ−
+s
+
+ds +
+b
+ϕ
+T −t
+Z T
+t
+(T −s) Et,µ
+  µ+
+s −µ−
+s
+ 
+ds ,
+(18b)
+˜h0(t, µ) = 1
+ϕ
+Z T
+t
+Et,µ
+
+1
+4(k + ϕ)
+ h1(t, µs) −2ϕ ρ (µ+
+s + µ−
+s )
+2 −ϕ ρ2 (µ+
+s + µ−
+s )2
+
+ds . (18c)
+This is followed by ϕ →∞and we obtain the result below.
+14
+Electronic copy available at: https://ssrn.com/abstract=2542314
+
+Proposition 3. Limiting Value Function: Complete Liquidation then Targeting
+POV. We have
+lim
+ϕ→∞lim
+α→∞
+1
+ϕH(t, x, S, µ, q) = q
+
+ρ
+T −t
+Z T
+t
+Et,µ
+  µ+
+s + µ−
+s
+ 
+ds −
+q
+T −t
+
+.
+(19)
+Moreover, when the strategy is approaching expiry, T −t ≪1, the optimal liquidation
+strategy (16) behaves like
+ν∗
+t ∼
+1
+T −tQν∗
+t ,
+which is TWAP. Clearly, if the investor’s strategy aims at full liquidation by the end of the
+trading horizon (as a result of α →∞), her other objective, which is to target a fraction of
+the trading rate, needs to be (optimally) phased out very close to expiry even if the target
+penalty parameter ϕ is arbitrarily large. This outcome, where the terminal penalty becomes
+more important than the target penalty parameter as the strategy approaches the terminal
+date T, results from the order in which the limits where taken, ﬁrst α →∞and then ϕ →∞.
+The order in which we take the limits is important for they do not commute. If, on the
+other hand, the investor wishes to closely target a fraction ρ of the trading (µ+
+t + µ−), then
+she lets ϕ →∞ﬁrst, and noting that ζ
+ϕ→∞
+−−−→∞, we obtain
+ν∗
+t
+ϕ→∞
+−−−→ρ (µ+
+t + µ−) .
+(20)
+This strategy does not depend on α and is independent of the investor’s liquidation target N.
+Proposition 4. Limiting Value Function: Targeting POV. We have
+lim
+ϕ→∞H(t, x, S, µ, q) = x + q S + α q2
+−ρ
+Z T
+t
+Et,µ
+
+h1(t, µs) (µ+
+s + µ−
+s )
+
+ds
++
+Z T
+t
+
+ρ Et,µ
+ µ+
+s + µ−
+s
+
++ b Et,µ
+ µ+
+s −µ−
+s
+	
+ds
+
+q .
+(21)
+3.4.1. Temporary impact from other traders
+Above we assumed that the liquidation price received by the investor is worse than the
+midprice because the investor’s market orders walk the LOB, and assumed that the LOB is
+replenished immediately. In our model we can also include the temporary price impact that
+other traders’ market orders have on the LOB. In this case, the investor’s execution price
+(when liquidating the asset) is
+ˆSν
+t = Sν
+t −k
+ νt + µ−
+t
+
+,
+(22)
+15
+Electronic copy available at: https://ssrn.com/abstract=2542314
+
+rather than (4). In principle, one could make the impact of other traders diﬀerent from the
+trader’s own impact (i.e. choose a diﬀerent temporary impact parameter for other traders’
+market orders). The investor’s optimal liquidation strategy can be obtained analogously to
+the previous section, and results in:
+ν∗
+t =
+1
+(T −t) + ζ Qν∗
+t
+(23a)
++
+ϕ
+k + ϕ ρ
+
+(µ+
+t + µ−
+t ) −
+1
+(T −t) + ζ
+Z T
+t
+E[
+ µ+
+s + µ−
+s
+
+| Fµ
+t ] ds
+
+(23b)
+−
+b
+k + ϕ
+Z T
+t
+(T −s) + ζ
+(T −t) + ζ E
+  µ+
+s −µ−
+s
+
+| Fµ
+t
+
+ds ,
+(23c)
+−
+k
+2(k + ϕ)
+
+µ−
+t −
+1
+(T −t) + ζ
+Z T
+t
+E[ µ−
+s | Fµ
+t ] ds
+
+.
+(23d)
+The liquidation strategy (23) is as the one shown in (13) with the additional terms that
+appear in line (23d). These extra terms show how the strategy changes as a result of market
+orders from other participants that also walk the LOB. For example, if the sign of the quantity
+inside the braces is positive, the investor’s liquidation strategy slows down. It is better to
+liquidate more later to avoid current temporary costs from walking the LOB because µ−
+t is
+too high relative to the expected sell order ﬂow (from other traders) during the remaining life
+of the strategy.
+3.5. Targeting VWAP with POCV
+In this subsection we assume that the investor’s execution strategy targets POCV and the
+liquidation strategy relies on MOs only. Here the accumulated volume V of orders, excluding
+the agent’s own trades, is given by
+Vt =
+Z t
+0
+ µ+
+u + µ−
+u
+
+du .
+The assumptions in the previous section on order-ﬂow, midprice, execution price and admissible strategies remain in force. The investor’s performance criteria is now modiﬁed to
+Hν(t, x, S, µ, V, q) = Et,x,S,µ,V,q
+"
+Xν
+T + Qν
+T (Sν
+T −αQν
+T)
+−˜ϕ
+Z T
+t
+
+(N −Qν
+u) −˜ρ (Vu + (N −Qν
+u))
+2
+du
+#
+.
+(24)
+Observe that (Vu + (N −Qν
+u)) is the total volume traded in the market including the investor’s
+own trades. The investor’s value function is
+H(t, x, S, µ, V, q) = sup
+ν∈A
+Hν(t, x, S, µ, V, q) ,
+(25)
+16
+Electronic copy available at: https://ssrn.com/abstract=2542314
+
+and her controlled inventory Qν, execution price ˆSν, midprice Sν, and cash process Xν satisfy
+the equations in (2), (4), (5), and (6) respectively.
+Applying the dynamic programming
+principle suggests that the value function should satisfy the DPE
+0 =
+ ∂t + LM + Lµ,V 
+H −ϕ
+ (N −q) −ρ V
+2
++ sup
+ν
+
+b ((µ+ −µ−) −ν) ∂SH + (S −k ν) ν ∂xH −ν ∂qH
+	
+, (26)
+subject to the terminal condition H(T, x, S, y, q) = x + q (S −α q) and we have introduced
+the re-scaled parameters
+ϕ = ˜ϕ(1 −˜ρ)2
+and
+ρ = ˜ρ/(1 −˜ρ) .
+Here, Lµ,V denotes the inﬁnitesimal generator of the joint process (µt, Vt)0≤t≤T.
+Proposition 5. Solving the DPE for POCV. The DPE (26) admits the solution
+H(t, x, S, µ, V, q) = x + q S + h0(t, µ, V ) + h1(t, µ, V ) q + h2(t) q2 ,
+(27)
+where
+h2(t) = −
+p
+k ϕ γ eξ (T−t) + e−ξ (T−t)
+γ eξ(T−t) −e−ξ (T−t) −1
+2 b ,
+(28a)
+h1(t, µ, V ) = 2 ϕ
+Z T
+t
+ℓ(u, t) (N −ρ Et,µ,V [Vu]) du
++ b
+Z T
+t
+ℓ(u, t) Et,µ,V
+
+(µ+
+u −µ−
+u )
+
+du ,
+(28b)
+h0(t, µ, V ) =
+Z T
+t
+Et,µ
+h
+1
+4k
+ h1(u, µu, Vu)
+2 −ϕ
+ N −ρ Vu
+2i
+du ,
+(28c)
+the function
+ℓ(u, t) := γ eξ (T−u) −e−ξ (T−u)
+γ eξ (T−t) −e−ξ (T−t) ,
+(28d)
+and the constants
+ξ =
+rϕ
+k ,
+and
+γ = α −1
+2b + √k ϕ
+α −1
+2b −√k ϕ .
+Proof. See Appendix A.2.
+As in the previous subsection, the above proposition provides us with a candidate solution for
+the value function, and the ansatz H = x + q S + h0(t, µ, V ) + h1(t, µ, V ) q + h2(t) q2 carries
+the following interpretations: (i) the ﬁrst two terms represent the book value of the asset
+17
+Electronic copy available at: https://ssrn.com/abstract=2542314
+
+evaluated at the midprice together with the cash from liquidation to this point, and (ii) the
+remaining terms correspond to the value of optimally liquidating the remaining shares. As
+before, the additional terms can be interpreted as the investor’s reservation price for selling
+the outstanding inventory all at once.
+Theorem 6. Veriﬁcation for POCV. The candidate value function provided in Proposition 5 is indeed the solution to the optimal control problem (25). Moreover, the trading speed
+is given by
+ν∗
+t = ξ
+1 + γ
+γ eξ(T−t) −e−ξ (T−t) Qν∗
+t
+(29a)
+−ξ2
+Z T
+t
+ℓ(u, t)
+n N −Qν∗
+t
+
+−ρ E
+h
+Vu
+ Fµ,V
+t
+io
+du
+(29b)
+−b
+2 k
+Z T
+t
+ℓ(u, t) E
+h
+(µ+
+u −µ−
+u )
+ Fµ,V
+t
+i
+du ,
+(29c)
+where Fµ,V
+t
+denotes the natural ﬁltration generated by (µ, V ), and ℓ(u, t) is given by (28d),
+is the admissible optimal control we seek.
+Proof. See Appendix A.3.
+The various terms in the optimal speed to trade in the Theorem above carries some
+natural interpretations. First, (29a) may be interpreted as an Almgren-Chriss like strategy
+which approaches TWAP near maturity. The second term (29b) corrects for the weighted
+average of the diﬀerence between what the investor has liquidated so far
+ N −Qν∗
+t
+
+and her
+future targeted volume ρ E
+h
+Vu
+ Fµ,V
+t
+i
+. This term will be positive most of the time because:
+i) total volume is a submartingale and so E
+h
+Vu
+ Fµ,V
+t
+i
+≥Vt, and ii) since at time t the
+investor targets
+ N −Qν∗
+t
+
+to ρ Vt, it is likely that
+ N −Qν∗
+t
+
+−ρ E
+h
+Vu
+ Fµ,V
+t
+i
+∼ρ Vt −ρ E
+h
+Vu
+ Fµ,V
+t
+i
+≤0 .
+The third term (29c) contributes a weighted average of future net order-ﬂow and accounts for
+the permanent impact which trades have on the midprice. If future net order-ﬂow is expected
+to be buy heavy, then the strategy slows down – since the investor wishes to proﬁt from the
+positive pressure on midprice from this order-ﬂow before selling her assets. If, on the other
+hand, future net order-ﬂow is expected to be sell heavy, then the strategy speeds up – since
+the investor wishes to ensure she gets the better prices that prevail in the market now, as she
+expects midprice to have negative pressure. Finally, as the trading horizon ends, t approaching
+T, the second and third terms become negligible and the investor ignores order-ﬂow entirely
+and instead focuses on completing her trades.
+18
+Electronic copy available at: https://ssrn.com/abstract=2542314
+
+Similarly as in the POV target, here we solve the unconstrained problem where the investor
+may buy back some assets prior to the end of the trading horizon. This is optimal because the
+strategy can beneﬁt from directional moves in the midprice which are caused by net orderﬂow. In particular, if net order-ﬂow is positive and large, the strategy anticipates an upward
+trend in the midprice and to proﬁt from this short-term trend it is optimal to purchase shares.
+Below, in Section 4 we show the performance of the strategy and report the percentage of
+time the strategy ends up purchasing rather than selling shares.
+Remark 2. We can explicitly solve for the optimal inventory to hold using (29) and solving
+dQν∗
+t
+= −ν∗
+t dt, with Qν∗
+0 = 0, to ﬁnd
+Qν∗
+t
+= ℓ(t, 0) N
++
+Z t
+0
+Z T
+u
+ℓ(u, s)
+ ϕ
+k
+ N −ρ E
+
+Vs
+ Fµ,V
+u
+
++
+b
+2kE
+
+(µ+
+s −µ−
+s )
+ Fµ,V
+u
+	
+ds du .
+(30)
+Moreover, while the optimal trading speed in Theorem 6 is Markov in the state variables, in
+particular Qν∗
+t , µ±
+t and Vt, we see from (30) that the optimal inventory at any point in time
+is non-Markovian and depends on the entire history of µ± and V through the integral term.
+Note that in the limit as the terminal penalty becomes arbitrarily large α →∞, so that
+the investor ensures that she completely liquidates her position by the terminal time, γ →1,
+therefore ℓ(u, t) →sinh(ξ (T−u))
+sinh(ξ (T−t)) and so we have
+lim
+α→∞ν∗
+t =
+ξ Qν∗
+t
+sinh (ξ (T −t)) −ξ2
+Z T
+t
+sinh (ξ (T −u))
+sinh (ξ (T −t))
+n N −Qν∗
+t
+
+−ρ E
+h
+Vu
+ Fµ,V
+t
+io
+du
+−b
+2 k
+Z T
+t
+sinh (ξ (T −u))
+sinh (ξ (T −t)) E
+h
+(µ+
+u −µ−
+u )
+ Fµ,V
+t
+i
+du ,
+(31)
+and
+lim
+α→∞Qν∗
+t
+= sinh(ξ (T −t))
+sinh(ξ T)
+N + ξ2
+Z t
+0
+Z T
+u
+sinh(ξ (T −u))
+sinh(ξ (T −s))
+ N −ρ E
+
+Vs
+ Fµ,V
+u
+
+ds du
++ b
+2k
+Z t
+0
+Z T
+u
+sinh(ξ (T −u))
+sinh(ξ (T −s))E
+
+(µ+
+s −µ−
+s )
+ Fµ,V
+u
+
+ds du .
+These expressions show how the strategy is similar to Almgren-Chriss with corrections that
+depend on the expected future order-ﬂow relative to amount already liquidated. In the limit
+ϕ →∞, the strategy is not well deﬁned since we are controlling a rate, while the target is the
+total volume. Hence, if we are not precisely on target, an inﬁnitely large penalty will cause
+the investor to trade inﬁnitely fast to get back on target.
+19
+Electronic copy available at: https://ssrn.com/abstract=2542314
+
+3.5.1. Temporary impact from other traders
+As in subsection 3.4.1 here we assume market orders from the investor and other market
+participants have temporary impact, i.e. walk the LOB. Thus, the investor receives prices as
+in (22) and the investor’s optimal liquidation strategy is:
+ν∗
+t = ξ
+1 + γ
+γ eξ(T−t) −e−ξ (T−t) Qν∗
+t
+(32a)
+−ξ2
+Z T
+t
+ℓ(u, t)
+n N −Qν∗
+t
+
+−ρ E
+h
+Vu | Fµ,V
+t
+io
+du
+(32b)
+−b
+2 k
+Z T
+t
+ℓ(u, t) E
+h
+(µ+
+u −µ−
+u ) | Fµ,V
+t
+i
+du
+(32c)
+−1
+2
+
+µ−
+t −ξ
+Z T
+t
+γ eξ (T−u) + e−ξ (T−u)
+γ eξ (T−t) −e−ξ (T−t) E
+h
+µ−
+u | Fµ,V
+t
+i
+du
+
+.
+(32d)
+The liquidation strategy (32) is as the one shown in (29) with two extra terms that appear
+in line (32d). These two extra terms show how the strategy changes as a result of market orders
+from other participants that also walk the LOB. For example, if the sign of the quantity inside
+the braces is positive, the liquidation strategy slows down because it is better to liquidate
+more later to avoid current temporary costs from walking the LOB.
+4. Targeting VWAP: Performance of POV and POCV strategies
+Above we derived the optimal liquidation speed for an investor who wishes to liquidate N
+shares over a time horizon T and requires her selling proceeds per share to target VWAP. To
+show the performance of the strategy we calibrate the model for volume, midprice, and price
+impact using the parameter estimates presented in Table 1.
+So far we have made general assumptions about the midprice and the volume process,
+but to carry out simulations we must specify a model these two processes. We assume that
+the martingale component in the midprice (5) is Mt = σBt where Bt is a standard Brownian
+motion and σ is as in Table 1.
+Moreover, we motivate a choice of model for the speed at which the overall market is
+trading. Figure 2 uses millisecond-stamped messages from Nasdaq to show the rate of trading
+(per minute) for ORCL on Nov 1, 2013 which is computed by counting the volume traded
+over 5 min and 1 min windows, respectively, and scaling the counts to one minute.
+As the ﬁgure shows, a reasonable ﬁrst order model is that traded volume comes in bursts
+of activity which persists for a while (seconds for instance) and then decays to zero. Thus, for
+an agent whose objective is to target VWAP over a time window [0, T] following the strategy
+20
+Electronic copy available at: https://ssrn.com/abstract=2542314
+
+10:00am
+12:00pm
+2:00pm
+4:00pm
+0
+0.5
+1
+1.5
+2 x 10
+4
+Time
+Trading rate
+ 
+ 
+sell
+buy
+10:00am
+10:30am
+11:00am
+0
+0.5
+1
+1.5
+2 x 10
+4
+Time
+Trading Rate
+ 
+ 
+sell
+buy
+Figure 2: ORCL per minute traded volume rates for MOs sent to Nasdaq on Nov 1, 2013 using (left) 5 minute
+buckets (right) 1 minute buckets.
+(15), we assume that the market participants buy/sell order-ﬂow µ±
+t , excluding the investor’s
+own trades, are mean-reverting processes which satisfy the SDEs
+dµ+
+t = −κ+ µ+
+t dt + η+
+1+N+
+t−dN +
+t ,
+(33a)
+dµ−
+t = −κ−µ−
+t dt + η−
+1+N−
+t−dN −
+t ,
+(33b)
+where κ± ≥0 are the mean-reversion rates, N +
+t
+and N −
+t
+are independent homogeneous
+Poisson processes with intensities λ+ and λ−, respectively, {η±
+1 , η±
+2 , . . . } are non-negative
+i.i.d. random variables with distribution function F, with ﬁnite second moment, independent
+from all processes. In addition, we require κ± > λ± E[η±
+1 ] to ensure that µ± remains ergodic.
+Model (33) allows buy and sell order-ﬂow to have their own idiosyncratic jumps. Naturally,
+we could also include a common jump component to reﬂect times when activity on both sides of
+the market increase, we could also add diﬀusive noise terms to both equations, make intensity
+time dependent (to mimic the U-shaped activity seen across markets) and/or stochastic.
+These generalizations, however, do not add much to our intuition and we opt to exclude
+them.
+The solution to (33), for s > t, is
+µ±
+s = e−κ±(s−t) µ±
+t +
+Z s
+t
+e−κ±(s−u) η±
+1+N±
+u−dN ±
+u ,
+so that
+E[ µ±
+s | Fµ
+t ] = e−κ±(s−t)  µ±
+t −ψ±
++ ψ± ,
+where
+ψ± =
+1
+κ± λ± E[η±] .
+21
+Electronic copy available at: https://ssrn.com/abstract=2542314
+
+The constants ψ± therefore act as the expected long-run activity of buy and sell orders.
+Moreover, we have
+E [Vu | Ft] = Vt +
+Z t
+u
+E
+
+(µ+
+s + µ−
+s ) | Ft
+
+ds
+= Vt +
+Z t
+u
+n
+e−κ+(s−t)(µ+
+t −ψ+) + ψ+
++
+
+e−κ−(s−t)(µ−
+t −ψ−) + ψ−o
+ds
+= Vt +
+ 
+1 −e−κ+(u−t)
+κ+
+(µ+
+t −ψ+) + ψ+(u −t)
+!
++
+ 
+1 −e−κ−(u−t)
+κ−
+(µ−
+t −ψ−) + ψ−(u −t)
+!
+.
+As shown earlier in Figure 1, the arrival of trades follows a U-shape which can be incorporated in (33) by introducing a deterministic component in the drift of the process, but here,
+for simplicity, we assume that the trading rate always mean-reverts to zero (e.g., if trading is
+taken only over a given 1 hour period of the trading day).
+From the above computations, when κ± = κ (so that buy and sell activity have the same
+level of persistence), the limiting strategy for targeting POV (16) becomes
+lim
+ϕ→∞lim
+α→∞ν∗POV
+t
+=
+1
+T −tQν∗
+t + ρ
+
+1 −1 −e−κ(T−t)
+κ(T −t)
+  (µ+
+t + µ−
+t ) −(ψ+ + ψ−)
+
+,
+and for targeting POCV (31) becomes
+lim
+α→∞ν∗POCV
+t
+= ξ
+Qν∗
+t
+sinh (ξ (T −t))
+−ξ2
+(
+  N −Qν∗
+t
+
+−ρ Vt
+
+ℓ0(t)
+−ρ
+ℓ0(t) −ℓ2(t)
+κ
+((µ+
+t + µ−
+t ) −(ψ+ + ψ−)) + (ψ+ + ψ−)ℓ1(t)
+ )
+−b
+2 k
+ ℓ2(t)((µ+
+t −µ−
+t ) −(ψ+ −ψ−)) + (ψ+ −ψ−)ℓ0(t)
+
+,
+where
+ℓ0(t) =1
+ξ
+cosh(ξ(T −t)) −1
+sinh(ξ(T −t))
+,
+(34a)
+ℓ1(t) = 1
+ξ2
+
+1 −
+ξ (T −t)
+sinh(ξ(T −t))
+
+,
+(34b)
+ℓ2(t) =
+ξ
+ξ2 −κ2
+cosh(ξ(T −t)) −e−κ (T−t)
+sinh(ξ(T −t))
+−
+κ
+ξ2 −κ2 .
+(34c)
+22
+Electronic copy available at: https://ssrn.com/abstract=2542314
+
+0
+0.2
+0.4
+0.6
+0.8
+1
+0
+1
+2
+3
+4
+5 x 10
+4
+Time
+ν∗
+0
+0.2
+0.4
+0.6
+0.8
+1
+-3000
+-2000
+-1000
+0
+1000
+2000
+Time
+ν∗
+· −˜ρ(µ−
+· + µ+
+· + ν∗
+· )
+0
+0.2
+0.4
+0.6
+0.8
+1
+0
+500
+1000
+1500
+2000
+Time
+Inventory Qν∗
+0
+0.2
+0.4
+0.6
+0.8
+1
+0
+0.5
+1
+1.5
+2
+2.5 x 10
+4
+Time
+ν∗
+0
+0.2
+0.4
+0.6
+0.8
+1
+-30
+-20
+-10
+0
+10
+Time
+(N −Qν∗
+· ) −˜ρ((N −Qν∗
+· ) + V·)
+0
+0.2
+0.4
+0.6
+0.8
+1
+0
+500
+1000
+1500
+2000
+Time
+Inventory Qν∗
+Figure 3: SMH: Sample path of the investor’s optimal trading rate, the diﬀerence between it and its target,
+and the resulting inventory path. The dashed lines in the left and right panels are the trajectory for a TWAP
+strategy.
+As expected, when t ↗T, ℓ0, ℓ1 and ℓ2 all approach 0 and both strategies becomes TWAP:
+lim
+ϕ→∞lim
+α→∞ν∗POV ∼Qν∗
+t
+T −t,
+lim
+α→∞ν∗POCV ∼Qν∗
+t
+T −t .
+4.1. Targeting VWAP: Numerical Experiments
+For the numerical experiments we use the estimated model parameters in Table 1 and
+choose ϕ = 105 ×k for the POCV strategy. We assume trading occurs over 1 hour. Over that
+one hour, the investor must liquidate an amount of shares equal to 5% of the total expected
+traded volume, including her own. She is also targeting a trading rate of ˜ρ = 5%. Finally,
+we assume that when the investor has liquidated the target amount, she stops trading – this
+could happen before the terminal date of the trading horizon T. This is an ad-hoc assumption
+because the control problem solved by the investor allows share repurchases throughout the
+life of the strategy and trades up until the terminal date T.
+We perform 10, 000 simulations of the order-ﬂow, optimal speed to trade, and midprice.
+Along each midprice path we compute the VWAP (resulting from all traders order-ﬂow) using
+the parameter estimates for FARO, SMH, NTAP, ORCL, INTC. To illustrate diﬀerent aspects
+of the strategies we ﬁrst discuss the results for SMH and then present a table for all assets.
+Figure 3 illustrates one realization of the strategy for SMH where we show: (i) market
+trading rate, (ii) optimal trading speed, (iii) deviations from target (rate for POV and cumu23
+Electronic copy available at: https://ssrn.com/abstract=2542314
+
+lative volume for POCV), and (iv) the resulting inventory path. The dashed line in the ﬁrst
+picture of each row represents the constant speed of liquidation of a TWAP strategy, and in
+the third picture the dashed line shows the investor’s TWAP inventory. In the ﬁgure the top
+row is the POV strategy and the bottom row is the POCV strategy.
+We see that the diﬀerence between the optimal liquidation speed and target rate for POV,
+second picture in ﬁrst row of Figure 3, ﬂuctuates near zero for a large portion of the path, but
+towards the end of the trading horizon, the optimal strategy ignores the target and instead
+focuses on liquidating the remaining shares – recall that close to expiry the strategy becomes
+TWAP and recall also that for POV we are using the limiting strategy where the investor
+penalizes any remaining inventory α →∞.
+Moreover, the second picture in the second row shows the POCV deviation from the target.
+The large downward spikes result from the market trading rate spiking upward, but without
+the strategy fully tracking the increase in the volume traded. This is optimal because the
+liquidation strategy also takes into account the permanent impact that the market’s increase
+in trading rate has on the midprice. In these cases there is a trade-oﬀbetween missing the
+target and taking advantage of the permanent eﬀect on the midprice. Finally, from the same
+picture we see that for this particular path, the POCV strategy ﬁnished liquidation early.
+Figure 4 shows the heat-map of the inventory, together with the 5% and 95% percentiles,
+and the histogram of the diﬀerence between execution price/share and VWAP relative to
+VWAP for POV and POCV for asset SMH. The computed VWAP does not account for
+temporary price impact.
+It does, however, account for the total traded volume and the
+investor’s permanent price impact on the midprice. That is, we compute VWAP as
+VWAP =
+R T
+0 Sν
+u (µ+
+u + µ−
+u + νu) du
+R T
+0 (µ+
+u + µ−
+u + νu) du
+,
+(35a)
+while the execution price is computed as
+Exec. Price = Xν
+T
+N =
+R T
+0 ˆSν
+u νu du
+N
+.
+(35b)
+Table 3 shows summary statistics of the revenue from liquidating the shares when the
+investor follows POV and POCV to target VWAP. The ﬁrst panel of the table shows the
+results for POV and the second panel the results for POCV. We see that the strategy targets
+VWAP very closely but on average it outperforms the target. For example, if the investor
+follows a POV strategy in SMH, the strategy outperforms VWAP by 2.98 basis points, or if
+the investor employs POCV then it outperforms VWAP 2.75 basis points. From the results we
+observe that in all cases the two algorithms not only outperform VWAP by an economically
+signiﬁcant amount – brokerage fees for targeting are in the region of 10 to 20 basis points (see
+Mitchell et al. (2013)) – but the distribution of the relative error is skewed to the right.
+24
+Electronic copy available at: https://ssrn.com/abstract=2542314
+
+Time
+Inventory
+ 
+ 
+0.2
+0.4
+0.6
+0.8
+1
+0
+500
+1000
+1500
+0
+0.05
+0.1
+0.15
+0.2
+-20
+-10
+0
+10
+20
+0
+1000
+2000
+3000
+4000
+(Exec. Price - VWAP)/VWAP
+Frequency
+Time
+Inventory
+ 
+ 
+0.2
+0.4
+0.6
+0.8
+1
+0
+500
+1000
+1500
+0
+0.02
+0.04
+0.06
+0.08
+0.1
+-20
+-10
+0
+10
+20
+0
+200
+400
+600
+800
+1000
+1200
+(Exec. Price - VWAP)/VWAP
+Frequency
+Figure 4: SMH: Heat-map of the inventory, ﬁrst and third pictures for POV and POCV respectively. Histograms of the diﬀerence between execution price/share and VWAP relative to VWAP, second and fourth
+pictures are POV and POCV (in basis points) respectively.
+The table also shows the percentage of time that the strategy is buying, rather than selling,
+shares. In general, for these stocks, strategies that target VWAP employing POV spend a
+percentage of time between 0.5% and 27.3% buying back shares. On the other hand, VWAP
+strategies based on POCV very seldom purchase shares during the trading horizon.
+25
+Electronic copy available at: https://ssrn.com/abstract=2542314
+
+POV
+FARO
+SMH
+NTAP
+ORCL
+INTC
+VWAP
+Rel.Error
+VWAP
+Rel.Error
+VWAP
+Rel.Error
+VWAP
+Rel.Error
+VWAP
+Rel.Error
+mean
+$ 40.54
+8.9
+$ 37.90
+2.98
+$ 38.30
+0.19
+$ 33.64
+0.13
+$ 23.03
+0.16
+stdev
+$ 0.11
+16.9
+$ 0.04
+6.10
+$ 0.06
+0.87
+$ 0.04
+0.74
+$ 0.03
+0.77
+quantile
+5%
+$ 40.35
+-4.2
+$ 37.83
+-1.03
+$ 38.20
+-0.78
+$ 33.57
+-0.69
+$ 22.99
+-0.65
+25%
+$ 40.46
+-0.4
+$ 37.87
+-0.16
+$ 38.26
+-0.20
+$ 33.62
+-0.18
+$ 23.02
+-0.17
+50%
+$ 40.54
+2.5
+$ 37.90
+0.53
+$ 38.30
+0.03
+$ 33.65
+0.02
+$ 23.04
+0.03
+75%
+$ 40.61
+12.0
+$ 37.92
+3.60
+$ 38.34
+0.36
+$ 33.67
+0.28
+$ 23.05
+0.29
+95%
+$ 40.72
+42.6
+$ 37.96
+15.29
+$ 38.40
+1.66
+$ 33.71
+1.35
+$ 23.08
+1.42
+%t : ν∗
+t < 0
+27.3%
+18.4%
+0.6%
+0.4%
+0.5%
+POCV
+FARO
+SMH
+NTAP
+ORCL
+INTC
+VWAP
+Rel.Error
+VWAP
+Rel.Error
+VWAP
+Rel.Error
+VWAP
+Rel.Error
+VWAP
+Rel.Error
+mean
+$ 40.54
+5.0
+$ 37.89
+2.75
+$ 38.30
+1.88
+$ 33.64
+1.81
+$ 23.03
+1.81
+stdev
+$ 0.11
+14.2
+$ 0.04
+6.02
+$ 0.06
+2.35
+$ 0.04
+2.16
+$ 0.03
+2.18
+quantile
+5%
+$ 40.35
+-13.6
+$ 37.83
+-5.43
+$ 38.20
+-1.65
+$ 33.57
+-1.43
+$ 22.99
+-1.45
+25%
+$ 40.46
+-3.0
+$ 37.87
+-0.78
+$ 38.26
+0.28
+$ 33.61
+0.37
+$ 23.01
+0.36
+50%
+$ 40.54
+1.9
+$ 37.89
+1.79
+$ 38.30
+1.72
+$ 33.64
+1.68
+$ 23.03
+1.66
+75%
+$ 40.61
+11.0
+$ 37.92
+5.51
+$ 38.34
+3.27
+$ 33.67
+3.06
+$ 23.05
+3.08
+95%
+$ 40.73
+31.9
+$ 37.96
+13.76
+$ 38.40
+6.00
+$ 33.72
+5.62
+$ 23.08
+5.64
+%t : ν∗
+t < 0
+0.83%
+0.01%
+0.55%
+0%
+0%
+Table 3: Statistics of the execution price, VWAP, and relative error (computed as (Exec.Price −V WAP)/V WAP for each simulation) and reported in
+basis points (i.e., ×104). For POCV we set ϕ = 105 × k.
+26
+Electronic copy available at: https://ssrn.com/abstract=2542314
+
+5. Conclusions
+We provide a closed-form execution strategy for an investor who wishes to liquidate a large
+position over a trading horizon, her trades have both permanent and temporary impact, and
+the strategy must track VWAP. The strategy is based on tracking the rate of trading of the
+market or on tracking the cumulative traded volume in the market. In both cases the strategy
+is derived assuming a general stochastic process for the market’s volume. The strategy based
+on tracking the market’s trading rate consists of TWAP adjusted upward by a fraction of
+instantaneous order-ﬂow and adjusted downward by the average order-ﬂow that is expected
+over the remaining life of the strategy. The strategy based on cumulative volume consists of
+Almgren-Chriss adjusted by expected future volume and a weighted average of expected net
+order-ﬂow to account for the permanent impact which trades have on the midprice.
+We calibrate model parameters to ﬁve stocks traded in Nasdaq (FARO, SMH, NTAP,
+ORCL, INTC) and use simulations to show the performance of the strategies. We show that
+the strategies target VWAP very closely and on average they outperform the target. For
+example, if the investor follows a POV strategy in SMH, the strategy outperforms VWAP by
+2.98 basis points, or if the investor employs POCV then it outperforms VWAP by 2.75 basis
+points. The two strategies not only outperform VWAP by economically signiﬁcant amount –
+brokerage fees for targeting are in the region of 10 to 20 basis points – but the distribution
+of the relative error is skewed to the right.
+Appendix A. Proofs
+Appendix A.1. Proof of Proposition 1
+To solve the DPE (9), ﬁrst we seek a solution of the form
+H(t, x, S, µ, q) = x + q S + h(t, µ, q) .
+Inserting the ansatz into (9), we ﬁnd that h must satisfy
+0 = (∂t + Lµ) h + b (µ+ −µ−) q + sup
+ν
+n
+−k ν2 −(∂qh + b q) ν −ϕ (ν −ρ (µ+ + µ−))2o
+(A.1)
+with terminal condition h(T, µ, q) = −α q2. The ﬁrst order condition provides the optimal
+speed of trading in feedback form as
+ν∗= −(∂qh + b q) + 2 ϕ ρ (µ+ + µ−)
+2(k + ϕ)
+,
+(A.2)
+27
+Electronic copy available at: https://ssrn.com/abstract=2542314
+
+and upon inserting into the DPE we ﬁnd the non-linear equation which h should satisfy:
+0 = (∂t + Lµ) h + b (µ+ −µ−) q
++
+1
+4(k + ϕ)
+ ∂qh + b q −2 ϕ ρ (µ+ + µ−)
+2 −ϕ ρ2 (µ+ + µ−)2 .
+(A.3)
+Next, to solve (A.3) we observe that the PDE and its terminal conditions are at most
+quadratic in q which suggest the further ansatz
+h(t, µ, q) = h0(t, µ) + h1(t, µ) q + h2(t, µ) q2 ,
+subject to the terminal conditions h0(T, µ) = h1(T, µ) = 0 and h2(T, µ) = −α. On inserting
+this ansatz, expanding the expression and collecting terms with like powers in q, setting each
+power of q to zero separately since it must hold every q, we ﬁnd that hi satisfy the following
+coupled equations
+0 = (∂t + Lµ) h2 +
+ h2 + 1
+2b
+2
+k + ϕ
+,
+(A.4a)
+0 = (∂t + Lµ) h1 + h1 −2 ϕ ρ (µ+ + µ−)
+k + ϕ
+ h2 + 1
+2 b
+
++ b (µ+ −µ−) ,
+(A.4b)
+0 = (∂t + Lµ) h0 +
+1
+4(k + ϕ)
+ h1 −2ϕ ρ (µ+ + µ−)
+2 −ϕ ρ2 (µ+ + µ−)2 .
+(A.4c)
+Now observe that equation (A.4a) for h2 contains no source terms dependent on µ and its
+terminal condition is independent of µ, hence the solution must also be independent from µ,
+and straight forward computations show that it is given by
+h2(t) = −
+
+T−t
+k+ϕ +
+1
+α−1
+2 b
+−1
+−1
+2 b .
+Next, we observe that (A.4b) is a linear PDE for h1 with non-linear source terms. The
+general solution of such an equation can be represented using the Feynman-Kac theorem as
+follows
+h1(t, µ) = Et,µ
+Z T
+t
+e
+R s
+t ˜h2(u,µu) du n
+−2 ϕ ρ ˜h2(s, µs) (µ+
+s + µ−
+s ) + b
+ µ+
+s −µ−
+s
+o
+ds
+
+,
+where Et,µ[ · ] represents expectation conditional on µ±
+t = µ± and
+˜h2(t, µt) :=
+1
+k+ϕ
+ h2(t, µt) + 1
+2b
+
+.
+The above expectation can be simpliﬁed by explicitly computing
+e
+R s
+t ˜h2(u,µu) du = exp
+
+−
+1
+k+ϕ
+Z s
+t
+
+T−s
+k+ϕ +
+1
+α−1
+2 b
+−1
+ds
+
+= (T −s) + ζ
+(T −t) + ζ ,
+28
+Electronic copy available at: https://ssrn.com/abstract=2542314
+
+and recall that ζ =
+k+ϕ
+α−1
+2 b.
+Inserting this integral into the expression for h1 above, and
+interchanging the expectation and outer integral, we arrive at (12b).
+Finally, we can solve for h0(t, µ) by again noticing it is a linear PDE with non-linear source
+term and a straight forward application of Feynman-Kac, and interchanging integration and
+expectation, we obtain (12c).
+□
+Appendix A.2. Proof of Proposition 5
+To solve the DPE (26), we seek a solution of the form
+H(t, x, S, µ, V, q) = x + q S + h(t, µ, V, q) .
+Inserting this ansatz into (26), we ﬁnd that h must satisfy
+0 =
+ ∂t + Lµ,V 
+h −ϕ
+ (N −q) −ρ V
+2 + b (µ+ −µ−) q
++ sup
+ν
+
+−k ν2 −(∂qh + b q) ν
+	
+,
+(A.5)
+subject to the terminal condition h(T, µ, V, q) = −α q2. The ﬁrst order condition provides us
+with the optimal trading rate in feedback form as
+ν∗= −1
+2k (∂qh + b q) ,
+and upon inserting this result into (A.5) we ﬁnd that h satisﬁes the non-linear PDE
+0 =
+ ∂t + Lµ,V 
+h −ϕ
+ (N −q) −ρ V
+2 + b (µ+ −µ−) q + 1
+4k (∂qh + b q)2 .
+(A.6)
+Next, since the terminal conditions and PDE are at most quadratic in q, we use the further
+ansatz
+h(t, µ, V, q) = h0(t, µ, V ) + q h1(t, µ, V, q) + q2 h2(t, µ, V, q) ,
+with the terminal conditions h0(T, µ, V ) = h1(T, µ, V ) = 0 and h2(T, µ, V ) = −α. Inserting
+this ansatz into (A.6), expanding and collecting powers of q, setting each power of q to zero
+(since the equation must hold for all q), we ﬁnd that hi satisfy the following coupled system
+of PDEs:
+0 =
+ ∂t + Lµ,V 
+h2 + 1
+k
+ h2 + 1
+2b
+2 −ϕ ,
+(A.7a)
+0 =
+ ∂t + Lµ,V 
+h1 + 1
+k
+ h2 + 1
+2b
+
+h1 + 2 ϕ (N −ρ V ) + b (µ+ −µ−) ,
+(A.7b)
+0 =
+ ∂t + Lµ,V 
+h0 + 1
+4k (h1)2 −ϕ (N −ρ V )2 .
+(A.7c)
+Now observe that (A.7a) for h2 contains no source terms dependent on V or µ and its
+terminal condition is also independent of V and µ, hence the solution must also be independent
+29
+Electronic copy available at: https://ssrn.com/abstract=2542314
+
+of V and µ and we write h2(t) to show this independence. Moreover, h2 satisﬁes the Riccati
+equation
+0 = ∂th2 + 1
+k
+ h2 + 1
+2b
+2 −ϕ ,
+which can be solved explicitly to ﬁnd (28a). Next, we observe that (A.4b) is a linear PDE for
+h1 with non-linear source terms. The general solution of such an equation can be represented
+using the Feynman-Kac theorem as follows
+h1(t, µ, V ) = Et,µ,V
+Z T
+t
+e
+1
+k
+R s
+t (h2(u)+ 1
+2 b) du 
+2ϕ(N −ρ Vs) + b (µ+
+s −µ−
+s )
+	
+ds
+
+.
+By explicitly computing the integral in the expectation we arrive at (28b). Similarly, we can
+solve for h0 using Feynman-Kac since it is a linear PDE with non-linear source terms to arrive
+at (28c).
+□
+Appendix A.3. Proof of Theorem 6
+Since x + q S + h0(t, µ, V ) + h1(t, µ, V ) q + h2(t) q2 is clearly a classical solution, standard
+results imply that it suﬃces to check that the feedback control is indeed an admissible strategy.
+To this end, from the feedback form of the optimal control ν in (Appendix A.2), and the
+explicit form of h2(t) and h1(t, µ) we ﬁnd that
+ν∗
+t = ξ γ eξ (T−t) + eξ (T−t)
+γ eξ(T−t) −e−ξ (T−t) Qν∗
+t
+(A.8a)
+−ξ2
+Z T
+t
+γ eξ (T−u) −e−ξ (T−u)
+γ eξ (T−t) −e−ξ (T−t)
+
+N −ρ E
+h
+Vu
+ Fµ,V
+t
+i
+du
+(A.8b)
+−b
+2 k
+Z T
+t
+γ eξ (T−u) −e−ξ (T−u)
+γ eξ (T−t) −e−ξ (T−t) E
+h
+(µ+
+u −µ−
+u )
+ Fµ,V
+t
+i
+du .
+(A.8c)
+Next, using the equality
+ξ
+
+γ eξ (T−t) + eξ (T−t)	
+= ξ(γ + 1) + ξ2
+Z T
+t
+ γ eξ (T−u) −e−ξ (T−u)
+du ,
+the ﬁrst and second lines above can be re-written as in (29). Finally, note that since µ± are
+assumed to have ﬁnite second moment, clearly (A.8b) and (A.8c) have ﬁnite expectation, and
+by explicitly solving dQν∗
+t
+= −ν∗
+t dt (see Remark 2 and explicitly (30)) so does (A.8a). Hence,
+ν∗is admissible.
+□
+References
+Alfonsi, A., A. Fruth, and A. Schied (2010). Optimal execution strategies in limit order books
+with general shape functions. Quantitative Finance 10(2), 143–157.
+30
+Electronic copy available at: https://ssrn.com/abstract=2542314
+
+Almgren, R. (2003). Optimal execution with nonlinear impact functions and trading-enhanced
+risk. Applied Mathematical Finance 10(1), 1–18.
+Almgren, R. and N. Chriss (2000). Optimal execution of portfolio transactions. Journal of
+Risk 3.
+Almgren, R., C. Thum, E. Hauptmann, and H. Li (2005). Direct estimation of equity market
+impact. Risk 18, 5752.
+Bialkowski, J., S. Darolles, and G. L. Fol (2008). Improving VWAP strategies: A dynamic
+volume approach. Journal of Banking & Finance 32(9), 1709 – 1722.
+Cartea, ´A., R. Donnelly, and S. Jaimungal (2015). Enhancing trading strategies with order
+book signals. Working Paper.
+Cartea, ´A. and S. Jaimungal (2015). Risk metrics and ﬁne tuning of high-frequency trading
+strategies. Mathematical Finance 25(3), 576–611.
+Cartea, ´A. and S. Jaimungal (2016).
+Incorporating order-ﬂow into optimal execution.
+Mathematics and Financial Economics 10(3), 339–364.
+Cartea, ´A., S. Jaimungal, and D. Kinzebulatov (2016). Algorithmic trading with learning.
+International Journal of Theoretical and Applied Finance 19(04), 1650028.
+Cartea, ´A., S. Jaimungal, and J. Penalva (2015). Algorithmic and High-Frequency Trading.
+Cambridge University Press.
+Cartea, ´A., S. Jaimungal, and J. Ricci (2014). Buy low, sell high: A high frequency trading
+perspective. SIAM Journal on Financial Mathematics 5(1), 415–444.
+Frei, C. and N. Westray (2015). Optimal execution of a VWAP order: a stochastic control
+approach. Mathematical Finance 25(3), 612–639.
+Gu´eant, O. (2014). Execution and block trade pricing with optimal constant rate of participation. Journal of Mathematical Finance 4, 255–264.
+Gu´eant, O. (2016). The Financial Mathematics of Market Liquidity: From Optimal Execution
+to Market Making, Volume 33. CRC Press.
+Gu´eant, O. and G. Royer (2014). VWAP execution and guaranteed VWAP. SIAM Journal
+on Financial Mathematics 5(1), 445 – 471.
+Humphery-Jenner, M. L. (2011). Optimal VWAP trading under noisy conditions. Journal of
+Banking & Finance 35(9), 2319 – 2329.
+Konishi, H. (2002). Optimal slice of a VWAP trade. Journal of Financial Markets 5(2), 197
+– 221.
+31
+Electronic copy available at: https://ssrn.com/abstract=2542314
+
+Laruelle, S., C.-A. Lehalle, and G. Pag´es (2013).
+Optimal posting price of limit orders:
+learning by trading. Mathematics and Financial Economics 7(3), 359–403.
+Lehalle, C.-A. and S. Laruelle (2013). Market Microstructure in Practice. World Scientiﬁc.
+McCulloch, J. and V. Kazakov (2012).
+Mean variance optimal VWAP trading.
+SSRN
+eLibtrary, http://ssrn.com/abstract=1803858.
+Mitchell, D., J. P. Bialkowski, and S. Tompaidis (2013). Optimal VWAP tracking. SSRN
+eLibtrary, http://ssrn.com/abstract=2333916.
+Schied, A. (2013). Robust strategies for optimal order execution in the Almgren-Chriss framework. Applied Mathematical Finance 20(3), 264–286.
+32
+Electronic copy available at: https://ssrn.com/abstract=2542314

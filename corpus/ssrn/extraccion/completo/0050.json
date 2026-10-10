@@ -1,0 +1,145 @@
+{
+  "doc_id": 50,
+  "titulo": "An Open Book: Level 4 Order Book Data from the Hyperliquid Exchange",
+  "resumen_operativo": "Presenta un dataset público de datos 'Level 4' del exchange descentralizado Hyperliquid, obtenido operando un nodo no validador de blockchain, que captura no solo el libro de órdenes completo sino también órdenes rechazadas, intentos de cancelación fallidos, identidad pseudónima de wallets y posiciones de inventario pre-trade de ambas contrapartes. Es un paper de descripción de datos (sin backtests propios), pero relevante para quien quiera investigar microestructura, impacto de precio de órdenes rechazadas o carreras de latencia con granularidad inédita respecto a fuentes convencionales como LOBSTER.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "Level 4 order book data",
+      "tipo": "dato",
+      "definicion_en_contexto": "Extensión de los datos Level 3 convencionales que agrega identificadores pseudónimos de traders, intentos de órdenes rechazadas y de cancelación fallidos, e información de contraparte para cada trade, con timestamps de precisión nanosegundo.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "limit order book"},
+        {"tipo": "MEJORA_A", "objeto": "Level 3 order book data"},
+        {"tipo": "REQUIERE", "objeto": "non-validating blockchain node"}
+      ],
+      "cita_textual": "The resulting dataset provides what Hyperliquid terms \"Level 4\" data—extending the conventional Level 3 granularity with pseudonymous trader identifiers, rejected order/cancellation attempts, and counterparty information for every trade."
+    },
+    {
+      "nombre": "rejected order",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Intento de orden que es rechazado por el motor de matching (por ejemplo por cruzar el spread siendo post-only) y que en fuentes de datos convencionales no queda registrado, pero en este dataset sí se captura.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Level 4 order book data"},
+        {"tipo": "PREDICE", "objeto": "future returns"}
+      ],
+      "cita_textual": "the approximately 89% that are rejected by the matching engine"
+    },
+    {
+      "nombre": "non-validating blockchain node",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Nodo que sincroniza con la red blockchain y mantiene una copia local completa de cada transacción sin participar del consenso, usado por los autores para capturar la historia completa de actividad del mercado de Hyperliquid.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Level 4 order book data"}
+      ],
+      "cita_textual": "a non-validating node synchronises with the network and maintains a complete local copy of every transaction without participating in consensus"
+    },
+    {
+      "nombre": "price-time priority",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Regla estándar de matching de órdenes usada por el libro de órdenes de Hyperliquid, análoga a la de exchanges centralizados.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "limit order book"}
+      ],
+      "cita_textual": "Order matching follows standard price-time priority."
+    },
+    {
+      "nombre": "intra-block action ordering",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Dentro de cada bloque de la blockchain de Hyperliquid, las órdenes pasivas se procesan primero, luego las cancelaciones, y por último las órdenes agresivas (taker); esta jerarquía busca proteger a los market makers permitiéndoles cancelar cotizaciones obsoletas antes de ser adversamente seleccionados.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "adverse selection"},
+        {"tipo": "PARTE_DE", "objeto": "Level 4 order book data"}
+      ],
+      "cita_textual": "passive orders are processed first, cancellations second, and taker orders last; within each tier, arrival-time priority applies"
+    },
+    {
+      "nombre": "message routing randomness",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "En Hyperliquid la ordenación entre bloques no está definida de forma única porque distintos validadores pueden secuenciar los mismos mensajes pendientes de manera diferente, lo que limita cuánto puede explotarse la jerarquía intra-bloque.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "intra-block action ordering"}
+      ],
+      "cita_textual": "different validators may sequence the same pending messages differently, the within-block ordering reflects the proposer's local view rather than a globally consistent ordering"
+    },
+    {
+      "nombre": "maker-taker fee schedule",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Estructura de comisiones de Hyperliquid en la que los makers pagan menos que los takers, con un sistema de niveles VIP que reduce las tarifas según volumen operado por wallet, pudiendo llegar a rebates para makers muy activos.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "market making"}
+      ],
+      "cita_textual": "a baseline of 1.5 basis points (bp) for makers and 4.5 bp for takers"
+    },
+    {
+      "nombre": "gasless order submission",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Característica de Hyperliquid por la cual el envío y cancelación de órdenes no incurre en comisión de red (gas), a diferencia de la mayoría de transacciones blockchain, lo que hace viable estructuralmente el trading de alta frecuencia con altas ratios cancelación/trade.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "high-frequency trading"}
+      ],
+      "cita_textual": "the absence of this cost on Hyperliquid ensures that high-frequency trading remains structurally viable"
+    },
+    {
+      "nombre": "TWAP order",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Orden algorítmica que divide un trade grande en sub-órdenes más pequeñas ejecutadas a intervalos regulares; en el dataset, las ejecuciones hijas de un TWAP quedan vinculadas mediante un twap_id compartido a su meta-orden padre.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "TWAP"}
+      ],
+      "cita_textual": "TWAP (Time-Weighted Average Price) Order: An algorithmic order that slices a large trade into smaller sub-orders executed at regular intervals."
+    },
+    {
+      "nombre": "binary encoding compression",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Conversión de los registros de order status desde JSON (300-450 bytes por registro) a una codificación binaria compacta de 54 bytes por registro mediante tablas de lookup y punto fijo, logrando reducción sustancial de tamaño de archivo.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Level 4 order book data"}
+      ],
+      "cita_textual": "we therefore convert the raw order status logs into a compact binary encoding of 54 bytes per record, achieving an 85–88% reduction in file size while preserving all analytically relevant fields"
+    },
+    {
+      "nombre": "latency race",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Situación en la que múltiples participantes compiten por actuar sobre la misma oportunidad de trading; los datos convencionales solo registran al ganador, mientras que este dataset también registra a los perdedores en forma de órdenes IOC rechazadas y cancelaciones fallidas.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Level 4 order book data"},
+        {"tipo": "PARTE_DE", "objeto": "market microstructure"}
+      ],
+      "cita_textual": "In a latency race, multiple participants compete to act on the same trading opportunity—for instance, several takers racing to hit a mispriced quote, or a market maker racing to cancel before being adversely selected."
+    },
+    {
+      "nombre": "trader ecology classification",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Uso de los identificadores pseudónimos de wallet para clasificar a toda la población de traders en arquetipos conductuales (market makers, especuladores direccionales, arbitrajistas, ejecutores TWAP, etc.) y estudiar su interacción y evolución.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Level 4 order book data"}
+      ],
+      "cita_textual": "the dataset supports classification of the entire trader population into behavioural archetypes—market makers, directional speculators, arbitrageurs, TWAP executors, and others"
+    },
+    {
+      "nombre": "price impact of rejected orders",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Fenómeno documentado en estudios complementarios de los mismos autores según el cual órdenes que nunca entran al libro (rechazadas) están significativamente correlacionadas con retornos futuros, desafiando nociones convencionales de impacto de precio basadas solo en órdenes ejecutadas.",
+      "relaciones": [
+        {"tipo": "CONTRADICE_A", "objeto": "market impact"},
+        {"tipo": "USA", "objeto": "rejected order"}
+      ],
+      "cita_textual": "orders which never enter the book are nonetheless significantly correlated with future returns, challenging conventional notions of price impact"
+    },
+    {
+      "nombre": "LOBSTER dataset",
+      "tipo": "dato",
+      "definicion_en_contexto": "Base de datos convencional de reconstrucción de libro de órdenes de nivel 3, usada como punto de comparación; carece de identificadores de trader y no captura órdenes rechazadas ni intentos de cancelación fallidos.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "Level 4 order book data"}
+      ],
+      "cita_textual": "existing research utilises databases such as LOBSTER, which, although valuable, offer an incomplete record of market activity and lack trader identifiers"
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "El dataset es de un exchange cripto descentralizado (Hyperliquid) sin backtests propios en el paper; no es directamente aplicable al ES, pero la idea metodológica de usar órdenes rechazadas/canceladas como señal de impacto de precio podría inspirar features de order flow si se dispusiera de datos L3 análogos en futuros."
+  }
+}

@@ -1,0 +1,169 @@
+{
+  "titulo": "Quantum-Inspired Optimization for Enhanced Cross-Sectional Dispersion Strategies",
+  "resumen_operativo": "Utiliza simulated annealing (quantum-inspired) para optimizar seleccion de baskets de pares de trading basados en z-scores de dispersion cross-sectional. Con datos del S&P 500 (2011-2024, semanal), demuestra que baskets mas grandes reducen ruido idiosincratico y aceleran la reversion a la media. Cardinalidad k=5 supera consistentemente a k=3 en profitability. Contrastes jerarquicos mas profundos A-vs-B producen reversion de pares mas rapida. La estrategia con k=5 y z-score probabilistico genera P&L acumulado de 92.9k bps en 24 meses (2022-2024).",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Basket z-Scores",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Indicadores de dispersion cross-sectional construidos como spread normalizado entre dos baskets A y B definidos por features categoricos (sector, industria, ratios financieros).",
+      "relaciones": [
+        {
+          "tipo": "USA",
+          "objeto": "Pairs Trading Enhancement"
+        },
+        {
+          "tipo": "MEJORA_A",
+          "objeto": "Pair-Level z-Scores"
+        }
+      ],
+      "cita_textual": "Basket spreads are not traded; their z-scores act as filters/weights for tradable signals"
+    },
+    {
+      "nombre": "Simulated Annealing (SA) Optimization",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Algoritmo de optimizacion combinatoria con cooling schedule que converge a maximos globales; acepta peores soluciones con probabilidad exp(Delta/T).",
+      "relaciones": [
+        {
+          "tipo": "USA",
+          "objeto": "Basket Pair Selection"
+        },
+        {
+          "tipo": "MEJORA_A",
+          "objeto": "Mixed Integer Programming"
+        }
+      ],
+      "cita_textual": "SA targets pi_T proportional to exp(f/T). Under slow cooling, convergence to global maximizers holds"
+    },
+    {
+      "nombre": "Hierarchical Contrast Depth",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Profundidad de contraste entre baskets A y B basada en numero de tags jerarquicos compartidos; mayor profundidad produce reversion mas rapida y confiable.",
+      "relaciones": [
+        {
+          "tipo": "CAUSA",
+          "objeto": "Faster Pair Reversion"
+        }
+      ],
+      "cita_textual": "More hierarchical contrast leads to larger absolute beta difference and smaller sigma_xi, resulting in faster pair mean reversion"
+    },
+    {
+      "nombre": "Probabilistic Basket Indicator",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Indicador Sprob normalizado por sector con tanh para estabilizar ranking cross-sectorial: Sprob_ij = sgn(Sdet_ij)*tanh(|Sdet_ij|/tau_ij).",
+      "relaciones": [
+        {
+          "tipo": "MEJORA_A",
+          "objeto": "Deterministic Basket Indicator"
+        }
+      ],
+      "cita_textual": "Sprob normalizes sector heterogeneity, improving cross-sector comparability in tails"
+    },
+    {
+      "nombre": "Deterministic Basket Indicator",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Indicador Sdet_ij = suma_b(m_ij(b) * z_b) donde m_ij(b) captura alineacion del par con el contraste tematico A-vs-B.",
+      "relaciones": [
+        {
+          "tipo": "PARTE_DE",
+          "objeto": "Basket z-Scores"
+        }
+      ],
+      "cita_textual": "Sdet captures thematic A vs. B tilt implying directional pressure for convergence"
+    },
+    {
+      "nombre": "Cardinality Effect (k)",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "k=2 revierte mas rapido pero menos rentable; k=5 supera consistentemente a k=3 en profitability de pairs trading.",
+      "relaciones": [
+        {
+          "tipo": "CAUSA",
+          "objeto": "Pairs Trading Profitability"
+        }
+      ],
+      "cita_textual": "in pair-trades, cardinality and hierarchy matter more than the number of assets"
+    },
+    {
+      "nombre": "SNR Decomposition (Basket vs Pair)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Signal-to-noise ratio: SNR_basket = kappa*|S_t|*Delta/sqrt(sigma_F^2*Delta + 2*sigma_eps^2*(1/nA+1/nB)); baskets grandes reducen ruido.",
+      "relaciones": [
+        {
+          "tipo": "MIDE",
+          "objeto": "Mean Reversion Quality"
+        }
+      ],
+      "cita_textual": "Larger baskets imply lower idiosyncratic variance providing cleaner/faster standardized reversion of the indicator"
+    },
+    {
+      "nombre": "Vol-Scaled Exits",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Salidas con Take-Profit/Stop-Loss escaladas por volatilidad (1.5sigma, 1.0sigma) o (2.0sigma, 1.0sigma); superiores a salidas fijas +/-2%.",
+      "relaciones": [
+        {
+          "tipo": "MEJORA_A",
+          "objeto": "Fixed Percentage Exits"
+        }
+      ],
+      "cita_textual": "Hard +/-2% TP clips runners causing losers dominate; vol-scaled exits work better"
+    },
+    {
+      "nombre": "Metropolis Acceptance",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Criterio de aceptacion del SA: alpha(x->x') = min{1, exp(Delta/T)}; mejoras aceptadas siempre, deterioros con probabilidad exp(Delta/T).",
+      "relaciones": [
+        {
+          "tipo": "PARTE_DE",
+          "objeto": "Simulated Annealing (SA) Optimization"
+        }
+      ],
+      "cita_textual": "Improvements are accepted; deteriorations are accepted with probability exp(Delta/T)"
+    },
+    {
+      "nombre": "I-Watch Dispersion Indicator",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Indicador de dispersion de mercado basado en basket z-scores con 8 features cualitativos y cuantitativos del S&P 500.",
+      "relaciones": [
+        {
+          "tipo": "USA",
+          "objeto": "Basket z-Scores"
+        }
+      ],
+      "cita_textual": "Market dispersion can be measured through basket z-scores indicators (i-Watch)"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Configuracion card5+topZ+Z120+z2+prob: P&L acumulado 92.9k bps, MDD -79.5k bps, Sharpe 0.61 en 24 meses (2022-2024).",
+      "mercado": "S&P 500 stocks",
+      "periodo": "Feb 2022 - Feb 2024 (24 meses)",
+      "magnitud": "Cum P&L 92.9k bps, Sharpe 0.61; Calmar ratios 0.9-1.2",
+      "condiciones": "k=5, |z|>=2, top weeks selection, 120-day lookback, probabilistic indicator, ~20bps/RT costs",
+      "robustez": "media",
+      "cita_textual": "card5+topZ+Z120+z2 prob: Cum P&L 92.9k, Sharpe 0.61"
+    },
+    {
+      "afirmacion": "Cardinalidad k=3 genera perdidas en todas las configuraciones; k=5 consistentemente produce retornos positivos con Sprob en colas 5-10% y Sdet en 15%.",
+      "mercado": "S&P 500",
+      "periodo": "2022-2024",
+      "magnitud": "k=5: mean +108 bps/tr (5%+vol(2,1)+prob); k=3: -118 bps/tr (mejor caso)",
+      "condiciones": "Comparacion directa de configuraciones identicas con diferente cardinalidad",
+      "robustez": "alta",
+      "cita_textual": "Card=5 consistently produces positive averages. Sprob works best in narrow tails (5-10%), while Sdet wins at broader sets (15%)"
+    },
+    {
+      "afirmacion": "Enhanced Index Tracking con quantum-inspired SA: tracking error <2% con 60 activos, reb balanceo trimestral, 60% menores costos de trading.",
+      "mercado": "S&P 500",
+      "periodo": "2008-2022",
+      "magnitud": "TE <= 2% con 60 activos; excess return promedio positivo (1.4-2.2% anual)",
+      "condiciones": "Simulated annealing vs Gurobi MIP (10s vs 1 ano de computo)",
+      "robustez": "alta",
+      "cita_textual": "Tracking error < 2% with 60 assets, quarterly rebalance"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "Usa datos semanales; los conceptos de basket z-scores y SA optimization son aplicables a intradia con datos de mayor frecuencia."
+  },
+  "doc_id": 286
+}

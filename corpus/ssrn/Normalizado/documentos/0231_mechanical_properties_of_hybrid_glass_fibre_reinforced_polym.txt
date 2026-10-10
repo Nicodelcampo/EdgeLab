@@ -1,0 +1,1402 @@
+1
+Mechanical properties of hybrid glass fibre-reinforced polymer and timber 
+(HFT) laminates and a new failure theory
+Chuang Miaoa, Dilum Fernandob, *, Darshana Rathnayaka Mudiyanselageb, Shishun Zhangc, 
+Marcelo Diasb, Michael Heitzmanna
+aSchool of Civil Engineering, The University of Queensland, St Lucia, QLD 4072, Australia
+bSchool of Engineering, University of Edinburgh, EH9 3FG, UK
+cSchool of Civil and Hydraulic Engineering, Huazhong University of Science and Technology, 
+Wuhan 430074 China
+ABSTRACT
+Hybrid glass fibre reinforced polymer (GFRP)-timber (HFT) laminated thin-walled structural 
+members are a new low carbon composite technology which has shown great potential to be used in 
+load bearing structural members. Existing studies have shown that HFT laminates exhibit complex 
+behaviour under different loading, and existing numerical modelling approaches using well-known 
+failure theories to model the behaviour of laminae (or laminate) cannot capture the true behaviour of 
+HFT laminates. While micro or meso scale approaches may provide a pathway to capturing the 
+complex behaviour of HFT laminates, such modelling approaches become computationally 
+demanding when modelling large scale structures. This paper presents an experimental investigation 
+on the behaviour of HFT laminates under different loading conditions and a new failure theory to 
+accurately capture the constitutive behaviour of the HFT laminates. Data generated through 
+experimental investigations as well as through a numerical approach were compared with most 
+commonly used existing failure theories demonstrating the shortcomings of them to capture the 
+behaviour of HFT laminates. Based on the generated data, a new failure theory consisting of a new 
+failure initiation criterion and a fracture energy based failure evolution law is proposed. The new 
+failure theory was implemented in finite element (FE) software ABAQUS using a vectorized user 
+material subroutine (VUMAT). FE results agreed well with the experimental results. 
+Keywords: HFT laminates; Mechanical properties; Finite element modelling; Failure theory
+1. Introduction 
+As a result of the climate emergency, construction engineers are constantly faced with the challenge 
+to find low carbon technologies for replacing existing high carbon technologies. Hybrid glass fibrereinforced polymer (GFRP) and timber (HFT) laminated thin-walled structures (Fig. 1) is a novel 
+technology recently developed as a sustainable alternative to thin-walled steel and aluminium 
+structures [1,2]. 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244199
+Preprint not peer reviewed
+
+2
+Figure 1. HFT laminated thin-walled structures concept (arrow heads indicate the FRP fibre and the timber 
+grain directions): (a) Hat section; (b) C-section; (c) Rectangular hollow section; and (d) Circular hollow 
+section; (e) Sheathed FRP-timber wall panels; (f) Finished sheathed FRP-timber wall panels.
+The HFT laminate consists of timber veneers and GFRP laminae, where grains in timber layers are 
+kept parallel to member axis and fibres of the GFRP layers are kept predominantly perpendicular to 
+timber grain direction (Fig. 1) [1]. Most of the HFT laminates use very low amount of GFRP (<12% 
+by volume), and manufacturing of HFT laminates structures is low energy intensive. Therefore, HFT 
+laminated structures are expected to results in minimal CO2 emissions, especially compared to 
+metallic alternatives [1]. Several studies have been conducted on demonstrating the potential of thinwalled structural members made of HFT laminates as a sustainable alternative to thin-walled steel 
+and aluminium structures [1–6]. These studies have clearly demonstrated the excellent performance 
+of HFT structures as load carrying elements, and their higher weight specific load capacity than thinwalled steel structures [1,5,6]. However, research on HFT structures is still at an early stage and much 
+more efforts are required to better understand the behaviour of HFT structural members under 
+different loading and boundary conditions. 
+While experimental methods are essential in investigating the behaviour of HFT structural members 
+and developing and validating the design theories, they are expensive and time consuming thus cannot 
+be used as the sole method in investigating the behaviour of HFT structural members. Development 
+of a suitable numerical modelling approach to capture the behaviour of HFT laminates and HFT 
+structural members is necessary to enable the use of HFT structural members. Existing studies have 
+shown that behaviour of HFT laminates under different loading conditions is complex [7, 8]. 
+Membrane elastic modulus of HFT laminates was found to be different to flexural elastic modulus, 
+which indicates transverse shear deformations between lamella during bending [7]. When subjected 
+to shear, behaviour of the laminate was found to be affected significantly by the fibre rotations [8]. 
+Such behaviours have made numerical modelling of the HFT structures difficult. 
+Few efforts have been made on numerical modelling of HFT structures under different loading 
+conditions [8, 9]. Ability of the existing numerical modelling approaches to capture the initial 
+stiffness of the HFT structures was found to be dependent on the manufacturing pressure [7]. When 
+sufficient pressure was applied during the manufacturing process, it was found that difference 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244199
+Preprint not peer reviewed
+
+3
+between flexural and membrane elastic modulus values reduced thus numerical modelling approaches 
+both when laminate was modelled as a single layer, or a composite layup manage to accurately capture 
+the initial stiffness [7]. However, existing failure theories at laminate level was not able to capture 
+the behaviour of HFT laminates beyond initial elastic region due to complex behaviours of HFT 
+laminates such as fibre rotations, progressive failure of lamella, and bonded interface failures [8].  
+Existing approaches where fibres and matrix are modelled as a single homogenized medium does not 
+account for mechanisms such as fibre rotations. While modelling fibres and matrix as separate 
+elements, theoretically has the ability to consider fibre rotation effects, such detailed modelling 
+requires significant computational efforts and not suitable for modelling the behaviour of structural 
+scale elements. Therefore, a suitable constitutive model capable of capturing the behaviour of HFT 
+laminates is necessary to enable accurate FE modelling of the HFT structural members. 
+Against this background, this paper presents a study aimed at developing a constitutive model for 
+HFT laminates considering the whole laminate as a single layer. As modelling individual layers and 
+complex mechanisms governing the interaction between different lamella becomes too 
+computationally demanding for modelling large scale HFT structures, this study attempts to capture 
+the behaviour of the HFT laminates as a single layer, by smearing all the behaviours occurring within 
+the laminate in to a single laminate behaviour. Failure theory in this model was developed using data 
+created through both experimental and numerical approaches. This failure theory was then 
+implemented using a vectorised user material subroutine (VUMAT) in FE software 
+ABAQUS\Explicit [10], and the model was applied in the numerical modelling of HFT laminates 
+under tension-tension biaxial loading.  
+2. Material coupon tests
+To determine the mechanical properties in the principal material directions, material coupon tests 
+were carried out, including tensile, compressive and shear tests. Coupon tests were carried out on 
+timber laminates, GFRP laminates, and HFT laminates. Coupons in both timber grain direction and 
+perpendicular to grain direction were prepared and tested for timber and HFT coupons, while coupons 
+in fibre direction and perpendicular to fibre direction were prepared and tested for GFRP specimens. 
+Additionally, off-axis HFT coupons with fibres at 20o, 40o and 70o to the longitudinal axis were also 
+prepared and tested under tension to investigate the behaviour of HFT laminates under biaxial stress 
+states.
+2.1 Materials
+Hoop pine (Araucaria cunninghamii) veneer sheets with planar dimensions of 1200mm × 2400mm 
+and 1.5mm thickness were used to prepare the timber and HFT specimens in this study. Unidirectional 
+E-glass fibre (GF) woven fabric with 1025 grams per square meter (gsm) density was used for GFRP 
+and HFT specimens. Based on the recommendation of Ref. [11], one-component polyurethane 
+(Loctite Purbond HB S109) adhesive was used in the fabrication of all laminated specimens.  
+2.2 Specimen dimensions and test setup
+GFRP specimens for tension test were prepared following the ASTM D3039 [12]. The same specimen 
+dimensions were trialled for timber specimens, but the failure was always found to occur close to the 
+gripping regions. Therefore, a dog-bone shape similar to the shapes given in ASTM D3500 [13] was 
+adopted for timber tensile specimens, with the specimen length reduced from 406 mm to 250 mm due 
+to size limitation of the press machine used to manufacture the GFRP, timber and HFT laminates. 
+Specimen width was also reduced proportionally, while keeping the shape of the specimens as per 
+ASTM D3500 [13]. The specimen dimensions of timber tensile specimens were also adopted for HFT 
+tensile specimens with longitudinal fibres. However, for most of the trial specimens of HFT tensile 
+specimens with transverse fibres failure occurred outside the middle gauge section. Therefore, ASTM 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244199
+Preprint not peer reviewed
+
+4
+D3039 [12] was followed for preparing HFT tensile specimens with transverse fibres. A length-towidth ratio (L/w) of 24 was adopted for the off-axis tensile coupons to minimise the shear coupling 
+effect induced by the clamping constraints at specimen ends [14]. The details of GFRP, timber and 
+HFT tensile specimens are given in Fig. 2.
+Figure 2. Details of the tensile test coupons: (a). GFRP tensile specimen with longitudinal fibres; 
+(b). GFRP tensile specimen with transverse fibres; (c). Timber tensile specimen with longitudinal 
+timber grains, timber tensile specimen with transverse timber grains and HFT tensile specimen with 
+longitudinal fibres; (d). HFT tensile specimen with transverse fibres; (e) Off-axis HFT specimens 
+with fibres at 20o, 40o and 70o to the longitudinal axis. For (a), (b), (d), and (e) rectangular shape 
+coupons with dimensions as per ASTM Standard D3039 [12] were used while for (c) a modified 
+dog bone shape coupon as per ASTM Standard D3500 [13] was used to ensure failure occurring 
+out-side of the end regions. Tabs are used in the end regions (where the specimens are gripped by 
+the testing machine grips) to avoid failures in the end regions. 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244199
+Preprint not peer reviewed
+
+5
+Compressive test for GFRP, timber, and HFT specimens were carried out according to ASTM D6641 
+[14]. Dimensions of the compressive test specimens are given in Fig. 3. A Wyoming compressive test 
+fixture was used to carry out the tests. 
+Figure 3. Details of the compressive test coupons. Rectangular shape coupons as per ASTM D6641 
+[14] were used. Strain gauges were attached at the mid length of the coupon on both faces to 
+measure strains during loading. 
+V-notched rail shear test method as per ASTM D7078 [15] was adopted for the shear tests of timber, 
+GFRP, and HFT laminates. Dimensions of the shear test specimens are given in Fig. 4. 
+Figure 4. Details of the shear test coupons prepared for V-notched rail shear test as per ASTM 
+D7078 [15].
+2.2 Specimen preparation
+As timber properties could vary from one veneer sheet to another, efforts were made to ensure the 
+timber veneers are distributed approximately evenly amongst the sample sets of different test 
+specimen types. In total four 1.2 m × 2.4 m timber veneer sheets were used in specimen 
+manufacturing. Each timber veneer sheet was cut into 320 mm × 320 mm squares, from which both 
+pure timber and HFT plates (also in the size of 320 mm × 320 mm) were fabricated. Each timber 
+plate and HFT plate consist of two layers of timber veneers, with grains of both veneers kept in the 
+same direction. For HFT specimens, GF fabric layer of 320 mm × 320 mm squares were added to 
+either side of the timber plate. Efforts were made to ensure adhesive is equally spread in bonding 
+timber veneers together, while equal spreading as well as proper wetting of GFs were ensured in the 
+fabrication of HFT specimens. Fibres of the GFRP layers were kept perpendicular to the timber grain 
+direction. Layer configuration of HFT plates is shown in Fig. 5. Once all the layers were assembled, 
+plates (both HFT and timber) were placed in a press machine under 1 MPa at room temperature for 4 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244199
+Preprint not peer reviewed
+
+6
+hours. While initial pressure was set to 1MPa, pressure was found to have reduced to 0.8MPa over 
+the 4 hour curing period. 
+Figure 5. Layer configuration of HFT laminates. Two timber veneers are sandwiched between GF 
+layers. Grain direction of both timber veneers are kept perpendicular to the fibre direction of the GF 
+layers. 
+Once the plates were cured, equal number of tensile, compressive, and shear specimens were cut from 
+each plate using a CNC router in both parallel and perpendicular to grain directions. This ensured 
+approximately equal distribution of timber veneer amongst specimens of different types of tests. 
+For GFRP specimens, tensile specimens consist of only one layer of GFRP, while two layers of GFRP 
+were used for compressive and shear specimens to reduce the specimen slenderness effects. GF fabric 
+was cut into 320 mm × 320 mm squares and adhesive was applied. For fabricating shear and 
+compressive coupons, two layers were assembled together. Plates were then pressed at 1 MPa 
+pressure for 4 hours at room temperature (pressure gradually reduced to 0.8 MPa over 4 hours). Once 
+plates were fully cured, tensile, compression and shear coupons were cut from respective plates using 
+a CNC router. For off-axis HFT tension tests, 2 specimens each were prepared with fibres at of 20o, 
+40o and 70o with the longitudinal axis and all the specimens were cut from HFT plates made from the 
+first timber veneer sheet. Details of the specimens of each test group, including the number of 
+specimens and average measured thickness are given in Table 1. Number of specimens given in Table 
+1 are the final number of test specimens used in this study, which corresponds to number for 
+specimens with desired failure mode away from the gripping areas. 
+Table 1. Details of the specimens used in the experiments
+Laminate 
+type
+Test
+Number 
+of GFRP 
+layers
+Number 
+of timber 
+layers
+Number 
+of 
+samples
+Average 
+thickness, 
+mm (COV %)
+Tension-Parallel to fibres
+1
+N/A
+5
+0.88 (5.9)
+Tension-perpendicular to fibres
+1
+N/A
+5
+0.95 (2.9)
+Compression-parallel to fibres
+2
+N/A
+5
+1.45 (4.0)
+Compression-perpendicular to fibres
+2
+N/A
+6
+1.39 (2.5)
+Shear-parallel to fibres
+2
+N/A
+5
+1.44 (1.6)
+GFRP
+Shear-perpendicular to fibres
+2
+N/A
+5
+1.47 (1.3)
+Tension-parallel to grains
+N/A
+2
+28
+3.03 (1.4)
+Tension-perpendicular to grains
+N/A
+2
+24
+3.03 (1.0)
+Timber
+Compression-parallel to grains
+N/A
+2
+24
+3.03 (1.2)
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244199
+Preprint not peer reviewed
+
+7
+Compression-perpendicular to grains
+N/A
+2
+16
+3.03 (1.4)
+Shear-parallel to grains
+N/A
+2
+21
+3.03 (1.3)
+Shear-perpendicular to grains
+N/A
+2
+21
+3.03 (1.1)
+Tension-parallel to grains
+2
+2
+29
+4.52 (0.8)
+Tension-perpendicular to grains
+2
+2
+37
+4.50 (1.1)
+Compression-parallel to grains
+2
+2
+18
+4.48 (1.4)
+Compression-perpendicular to grains
+2
+2
+20
+4.51 (1.3)
+Shear-parallel to grains
+2
+2
+20
+4.48 (1.1)
+HFT
+Shear-perpendicular to grains
+2
+2
+21
+4.44 (1.6)
+20o off-axis specimens 
+2
+2
+2
+4.51
+40o off-axis specimens 
+2
+2
+2
+4.52
+70o off-axis specimens 
+2
+2
+2
+4.49
+2.3 Test setup and instrumentation
+All the tests were carried out using a servo controlled 250 kN capacity, Instron testing machine. For 
+tensile tests of GFRP specimens and HFT specimens with transverse fibres, 1 mm thick aluminium 
+tabs were attached to the ends of the specimens, and the specimens were gripped to the jaws of the 
+Instron testing machine (Fig. 6a). For compressive tests, specimens were first placed in the Wyoming 
+compressive test fixture [14] and then the fixture was placed between the top and bottom loading 
+plates of the Instron machine (Fig. 6b). For shear tests, specimen was first placed in the Wyoming Vnotched rail shear test fixture [15], and the two halves of the test fixture were connected directly to 
+the Instron loading machine (Fig. 5c). For all the tensile tests, a loading rate of 2 mm/min was used, 
+for compressive tests a loading rate of 1.3 mm/min was used, and for shear tests a loading rate of 0.6 
+mm/min was used. Strains of timber and HFT tensile test specimens were measured using a digital 
+image correlation (DIC) system. DIC system malfunctioned during GFRP tensile coupon tests, thus 
+strain gauges were used to measure the strains of GFRP tensile test specimens. For compressive 
+coupons, the use of DIC system was not possible due to the limited space available in the test fixture, 
+and strain gauges were attached to either side of the specimen. DIC system was used for measuring 
+strains in the gauge section between the tips of the two notches for shear specimens. Instrumented 
+test specimens for tensile, compressive and shear tests are shown in Fig. 6. 
+Tension test setup
+HFT tension test coupon with transverse 
+fibres
+(a) 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244199
+Preprint not peer reviewed
+
+8
+Compression test setup
+HFT compression test coupon with 
+transverse fibres
+(b) 
+Shear test setup
+HFT shear test coupon with transverse 
+fibres
+(c) 
+Figure 6. Different test setups and examples coupons. (a) The test setup used for tensile tests and 
+typical coupons with aluminium end tabs. A speckle pattern was used on the face of the specimen to 
+capture the strains using DIC system. (b) The setup used for compressive tests. Specimens were 
+placed in a Wyoming test fixture for compression [14], and placed in the testing machine. A typical 
+compressive coupon is also shown. Instead of DIC system, strain gauges are used due to lack of 
+visibility of the specimen through the compressive test fixture. (c) A shear test specimen placed in 
+Wyoming V-notch rail shear test fixture [15] and placed in the testing machine. A typical test 
+specimen is also shown, with a speckle pattern applied on the face of the specimen to measure 
+strains. 
+2.4 Test results 
+Stress-strain curves of the GFRP tensile coupons are shown in Fig. 7a for loading parallel to fibres 
+and in Fig. 7b for loading perpendicularly to fibres. In parallel to fibre direction, stress-strain 
+behaviour was initially linear and tends to become nonlinear close to the ultimate load (Fig. 7a). 
+However, in perpendicular to fibre direction, stress-strain behaviour was nonlinear from the 
+beginning (Fig. 7b). Average ultimate tensile strength parallel to fibre was 391 MPa, with a COV of 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244199
+Preprint not peer reviewed
+
+9
+4.4%, and average ultimate tensile strength perpendicular to fibre was 52.7 MPa with a COV of 17% 
+(Table 2). 
+(a)
+(b)
+Figure 7. Experimental tensile stress-strain curves of GFRP. (a) The experimental curves of 
+different specimens loaded parallel to fibres; (b) The experimental curves of different specimens 
+loaded perpendicular to fibre. 
+(a)
+(b)
+Figure 8. Experimental compressive stress-strain curves of GFRP. (a) The experimental curves of 
+different specimens loaded parallel to fibres; (b) The experimental curves of different specimens 
+loaded perpendicular to fibres. 
+Stress-strain curves of the GFRP compressive coupons are shown in Fig. 8. Stress-strain behaviour 
+in compression was nonlinear from the beginning in both parallel and perpendicular to fibre directions. 
+The ultimate compressive strength in parallel to fibre direction was 84.9 MPa with a COV of 21.1% 
+and ultimate compressive strength perpendicular to fibre was 16 MPa with a COV of 11.2% (Table 
+2). During the compressive testing, buckling of the specimens close to the ultimate load was observed 
+for specimens loaded perpendicularly to fibres. Therefore, the ultimate strength in compression may 
+not reflect the material compressive strength in perpendicular to fibre direction. 
+Table 2. Coupon test results of the GFRP, Timber, and HFT with fibres parallel and perpendicular to 
+axis specimens
+Laminate 
+type
+Test
+Elastic modulus, 
+MPa (COV%)
+Strength, MPa 
+(COV%)
+GFRP
+Tensile-Parallel to fibres
+27964 (6.2)
+391 (4.4)
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244199
+Preprint not peer reviewed
+
+10
+Tensile-perpendicular to fibres
+3270 (12.0)
+52.7 (17.0)
+Compressive-parallel to fibres
+21620 (25.9)
+84.9 (21.1)
+Compressive-perpendicular to fibres
+3913 (11.6)
+16.0 (11.2)
+Shear-parallel to fibres
+461 (18.1)
+11.3 (3.7)
+Shear-perpendicular to fibres
+375 (14.5)
+12.2 (10.8)
+Tensile-parallel to grains
+15422 (10.7)
+152 (9.2)
+Tensile-perpendicular to grains
+523 (13.3)
+3.55 (15.5)
+Compressive-parallel to grains
+15650 (8.9)
+61.2 (8.2)
+Compressive-perpendicular to grains
+1079 (7.6)
+11.1 (13.5)
+Shear-parallel to grains
+885 (11.4)
+6.71 (13.2)
+Timber
+Shear-perpendicular to grains
+979 (9.9)
+15.5 (8.3)
+Tensile-parallel to grains
+11421 (8.9)
+91.2 (11.2)
+Tensile-perpendicular to grains
+11193 (10.4)
+197 (11.4)
+Compressive-parallel to grains
+12092 (13.6)
+42.1 (5.9)
+Compressive-perpendicular to grains
+8287 (23.0) 
+41.3 (14.9)
+Shear-parallel to grains
+606 (8.4)
+11.2 (10.9)
+HFT
+Shear-perpendicular to grains
+627 (7.7)
+12.5 (7.2)
+When subjected to shear loading, stress-strain behaviour of GFRP coupons were found to be 
+significantly nonlinear (Fig. 9). Significant fibre rotation along the notched cross section was 
+observed during the testing. Average ultimate shear strength parallel to fibre was 11.3 MPa, with a 
+COV of 3.7%, and average ultimate shear strength perpendicular to fibre was 12.2 MPa with a COV 
+of 10.8% (Table 2).
+(a)
+(b)
+Figure 9. Experimental shear stress-strain curves of GFRP. (a) The experimental curves of different 
+specimens loaded parallel to fibres; (b) The experimental curves of different specimens loaded 
+perpendicular to fibres.  
+Timber specimens loaded in tension parallel to grain showed linear elastic behaviour until ultimate 
+load, and a sudden drop in load results soon after the ultimate load was reached (Fig. 10a). Some 
+nonlinearity was seen in stress-strain behaviour of timber when loaded perpendicularly to grain 
+direction, and a sudden drop in load was seen soon after the ultimate load was reached (Fig. 10b). 
+Average ultimate tensile strength parallel to grain was 152 MPa, with a COV of 9.2%, and average 
+ultimate tensile strength perpendicular to grain was 3.55 MPa with a COV of 15.5% (Table 2).
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244199
+Preprint not peer reviewed
+
+11
+(a)
+(b)
+Figure 10. Experimental tensile stress-strain curves of timber. (a) The experimental curves of 
+different specimens loaded parallel to grain; (b) The experimental curves of different specimens 
+loaded perpendicular to grain. 
+When loaded in compression, timber specimens showed some nonlinearity in the stress-strain curves 
+(Fig. 11). Similar to GFRP coupons, buckling was observed closer to the ultimate load for specimens 
+loaded in perpendicular to the grain’s direction. Average ultimate compressive strength parallel to 
+grain was 61.2 MPa, with a COV of 8.2%, and average ultimate compressive strength perpendicular 
+to grain was 11.1 MPa with a COV of 13.5% (Table 2).
+(a)
+(b)
+Figure 11. Experimental compressive stress-strain curves of timber. (a) The experimental curves of 
+different specimens loaded in parallel to the grains direction; (b) The experimental curves of 
+different specimens loaded in perpendicular to the grains direction. 
+When loaded in shear parallel to grains, timber specimens showed almost linear stress-strain 
+behaviour until ultimate load is reached followed by a sudden drop in load (Fig. 12a). This was 
+different to the behaviour of GFRP specimens in shear, which shows significant nonlinearity in stressstrain behaviour (Fig. 9). When loaded in shear perpendicular to grain of the timber specimens, 
+nonlinearity in stress-strain behaviour was observed with a clear gradual descending branch of the 
+stress-strain curve after the ultimate load was reached (Fig. 12b). Average ultimate shear strength 
+parallel to grain was 6.71 MPa, with a COV of 13.2%, and average ultimate shear strength 
+perpendicular to grain was 15.5 MPa with a COV of 8.3% (Table 2).
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244199
+Preprint not peer reviewed
+
+12
+(a)
+(b)
+Figure 12. Experimental shear stress-strain curves of timber. (a) The experimental curves of 
+different specimens loaded parallel to grains; (b) The experimental curves of different specimens 
+loaded perpendicular to grains. 
+All the HFT specimens loaded in tension showed approximately linear stress-strain behaviour until 
+ultimate load and resulted in sudden drop of load soon after the ultimate load was reached (Fig. 13). 
+Average ultimate tensile strength parallel to grain was 91.2 MPa, with a COV of 11.2%, and average 
+ultimate tensile strength perpendicular to grain was 197 MPa with a COV of 11.4% (Table 2).
+(a)
+(b)
+Figure 13. Experimental tensile stress-strain curves of HFT. (a) The experimental curves of 
+different specimens loaded parallel to timber grains; (b) The experimental curves of different 
+specimens loaded perpendicular to timber grains. 
+Unlike GFRP and timber specimens under compression, HFT specimens did not fail in buckling and 
+showed crushing of the cross section. Most of the specimens loaded parallel to timber grains showed 
+linear stress-strain behaviour at the beginning, but became nonlinear closer to the ultimate strength 
+(Fig. 14a). Most of the specimens loaded perpendicular to timber grains exhibited nonlinear stressstrain behaviour from the beginning (Fig. 14b). Average ultimate compressive strength parallel to 
+grain was 42.1 MPa, with a COV of 5.9%, while average ultimate compressive strength perpendicular 
+to grain was 41.3 MPa with a COV of 14.9% (Table 2).
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244199
+Preprint not peer reviewed
+
+13
+(a)
+(b)
+Figure 14. Experimental compressive stress-strain curves of HFT. (a) The experimental curves of 
+different specimens loaded parallel to timber grains; (b) The experimental curves of different 
+specimens loaded perpendicular to timber grains. 
+When loaded in shear, HFT specimens showed nonlinear stress-strain behaviour with all the 
+specimens showing long plateau in stress-strain curves (Fig. 15). In specimens loaded parallel to grain, 
+a clear drop in load resulted soon after the first peak in load was reached (Fig. 15a), but load started 
+to increase afterwards and, in some cases, even reaching a load higher than the first peak load. 
+Significant rotation in fibre was observed during the testing. Average ultimate shear strength parallel 
+to grain was 11.2 MPa, with a COV of 10.9%, while average ultimate shear strength perpendicular to 
+grain was 12.5 MPa with a COV of 7.2% (Table 2).
+(a) Parallel to grain
+(b) Perpendicular to grain
+Figure 15. Experimental shear stress-strain curves of HFT. (a) The experimental curves of different 
+specimens loaded parallel to timber grains; (b) The experimental curves of different specimens 
+loaded perpendicular to timber grains. 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244199
+Preprint not peer reviewed
+
+14
+Figure 16. Load-displacement curves of off-axis HFT tensile specimens.
+Load-displacement curves of the HFT tensile specimens with off-axis fibres are given in Fig. 16. 
+Since loading direction is not aligning with any of the principal directions, results are presented in 
+terms of the load-displacement curves instead of stress-strain curves. Two HFT specimens with fibres 
+at 20o angle resulted in 1.35 kN and 1.26 kN ultimate loads. Two HFT specimens with 40o fibres 
+resulted in 0.85 kN and 0.9 kN ultimate loads, while ultimate load of the two specimens with 70o 
+fibres were 1.44 kN and 1.31 kN. Specimens with 20o and 40o fibres showed good load retention after 
+the ultimate load is reached before final failure. However, specimens with 70o fibres showed a sharp 
+load drop soon after the ultimate load is reached. 
+2.5 Discussion on experimental results
+Comparing the tensile test results of the timber, GFRP, and HFT coupons it can be observed that: (a) 
+Tensile elastic modulus of HFT lies between the tensile elastic modulus and timber elastic modulus 
+(in their respective directions within HFT). Similar could be said for tensile strength. Similar 
+observations could be made for compressive and shear test results. Addition of GFRP improved the 
+properties of timber in transverse direction, while addition of timber improved the properties of GFRP 
+in transverse direction. Unlike pure timber and pure GFRP coupons, HFT specimens showed similar 
+stiffness in two principal directions. 
+During the testing, none of the HFT specimens showed delamination of the GFRP layer from the 
+timber layer, which indicates that it is reasonable to assume all laminae of the HFT specimens remain 
+fully bonded until the complete failure. Considering delamination did not occur, strength of HFT at 
+the first laminae failure was calculated (assuming strain continuity) to be: tensile strength parallel to 
+grain 112 MPa; tensile strength perpendicular to grain 66 MPa; compressive strength parallel to grain 
+46 MPa; compressive strength perpendicular to grain 31 MPa; shear strength parallel to grain 5.4 
+MPa; and shear strength perpendicular to grain 13 MPa. For tensile and compressive strengths, 
+calculated values over predicted the strength in parallel to grain direction but underestimated the 
+values in perpendicular to grain direction. Shear strength parallel to grain was under predicted by the 
+calculations, while shear strength perpendicular to grain was reasonably well predicted. Overall, 
+except for shear strength perpendicular to grain, all other strength values were incorrectly predicted 
+by the calculations based on strain continuity until first ply failure. 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244199
+Preprint not peer reviewed
+
+15
+HFT specimens under shear loading showed somewhat different behaviour to pure GFRP and timber 
+specimens under shear loading. GFRP specimens showed significant nonlinear behaviour when 
+loaded in shear (Fig. 9). Pure timber specimens when loaded in shear parallel to grains, did not show 
+much nonlinearity in stress-strain curves (Fig. 12a), while when loaded in shear perpendicular to 
+grains showed a descending branch in stress-strain curves after the maximum load is reached (Fig. 
+12b). For HFT specimens, when loaded in shear, stress-strain curves were found to be nonlinear with 
+a load plateau (Fig. 15). During the experiments of GFRP and HFT shear coupons, significant fibre 
+rotations could be observed. Recent study by Miao et al. [8] showed that the nonlinear behaviour of 
+the GFRP specimens and HFT specimens are significantly impacted by the fibre rotation effects and 
+progressive failure. It was also shown that accurate modelling of the behaviour of HFT specimens 
+under shear loading require modelling of the fibre rotation. 
+HFT specimens with off-axis fibres showed significant nonlinearity in load-displacement curves. 
+Specimens with 20o, and 40o fibres showed load plateau but specimen with 70o fibres showed 
+different behaviour with a sudden load drop as the ultimate load is reached. As off-axis fibre 
+specimens are subjected to bi-axial loading with respect to the principal directions, in plane shear 
+loading can be expected. Therefore, at certain fibre angles, shear dominant failures could be expected. 
+However, from the experimental results alone, it is difficult to determine the exact failure process of 
+the off-axis fibre specimens. 
+3. Numerical modelling of HFT laminates under biaxial loading
+Several specimen shapes have been used in existing studies to investigate the behaviour of composite 
+laminates under biaxial loading [16–18]. One key difficulty reported in many of those studies is the 
+high number of samples failing in pre-dominantly uniaxially loaded regions. Some of those specimen 
+shapes were trialled in the current study to determine the behaviour of HFT laminates under bi-axial 
+loading. However, failure of all the specimens occurred either within the gripping region or in the 
+regions with predominantly uniaxial loading. Therefore, after many failed attempts, experimental 
+approach to investigate the behaviour of HFT laminates under bi-axial loading was ruled out. Instead, 
+numerical modelling was used to determine the failure initiation of HFT laminates under bi-axial 
+loading. While existing studies have shown that numerical modelling of HFT sections using layered 
+approaches cannot capture the full range behaviour of the HFT sections, behaviour until failure in 
+first ply was reasonably well captured [9]. Therefore, numerical modelling approach was deemed 
+satisfactory to study the failure initiation of the HFT laminates. This section presents the details of 
+the numerical modelling approach, verification of the numerical model against uni-axial data, and 
+numerical results under bi-axial loading with the aim of capturing the failure initiation of the HFT 
+laminates. 
+3.1 Numerical modelling approach
+HFT laminates were modelled using composite layup approach available in commercially available 
+FE modelling software ABAQUS [10]. Thickness of timber was taken as 3 mm, based on the 
+measured values of HFT laminates, and the nominal thickness of each GFRP layer was considered as 
+0.75 mm. Reduced integration shell elements S4R were used to model the HFT laminates. 
+Both GFRP and timber were considered as orthotropic materials. Under both tension and compression, 
+the uniaxial behaviour in each principal material direction was assumed to be characterized by a bilinear (i.e. a linear ascending branch and a linear descending branch) traction-separation law. The 
+gradient of the ascending branch of the traction-separation curve was taken as the respective elastic 
+modulus, and the gradient of the descending branch of the curve was determined based on the fracture 
+energy in each principal material direction based on material coupon tests. The critical fracture energy 
+values used in the models are [8]: (1) For GFRP- parallel to fibre in tension=50 N/mm,  perpendicular 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244199
+Preprint not peer reviewed
+
+16
+to fibre in tension=2 N/mm, parallel to fibre in compression=2 N/mm, perpendicular to fibre in 
+compression=2 N/mm; and (2) For timber- parallel to grain in tension=2 N/mm, perpendicular to 
+grain in tension=8 N/mm, parallel to grain in compression=1N/mm, perpendicular to grain in 
+compression=1 N/mm.
+The well-known Hashin failure theory available in ABAQUS [10] was used to model the failure of 
+each lamina in HFT laminates. The Hashin failure theory [19] was successfully used previously to 
+model the behaviour of HFT laminates under shear loading by Miao et al. [8], thus was adopted in 
+this study. The Hashin failure theory used in this study is briefly presented below.
+Four different failures were considered for the failure initiation: (1) tension in the 1-direction (which 
+was taken as perpendicular to grain for timber and parallel to fibres for GFRP), (2) compression in 
+the 1-direction, (3) tension in the 2-direction (which was taken as parallel to grain for timber and 
+perpendicular to fibres for GFRP), and (4) compression in the 2-direction. The initiation criteria have 
+the following forms [19]:
+Tension in the 1-direction (𝜎11 ≥0):
+𝐹𝑓𝑡= (
+𝜎11
+𝑋𝑇)
+2 + 𝛼(
+𝜎12
+𝑆𝐿)
+2 = 1 
+                         (1)
+Compression in the 1-direction (𝜎11 < 0):
+𝐹𝑓𝑐= (
+𝜎11
+𝑋𝐶)
+2 = 1 
+                         (2)
+Tension in the 2-direction (𝜎22 ≥0):
+𝐹𝑝𝑡= (
+𝜎22
+𝑌𝑇)
+2 + (
+𝜎12
+𝑆𝐿)
+2 = 1 
+                         (3)
+Compression in the 2-direction (𝜎22 < 0):
+𝐹𝑝𝑐= (
+𝜎22
+2𝑆𝑇)
+2 +[(
+𝑌𝐶
+2𝑆𝑇)
+2
+― 1]
+𝜎22
+𝑌𝐶+ (
+𝜎12
+𝑆𝐿)
+2 = 1 
+                         (4)
+In the above equations 𝜎𝑖𝑗 is the effective stress tensor, 𝑋𝑇 and 𝑋𝐶 are the tensile and compressive 
+strengths in the 1-direction respectively, 𝑌𝑇 and 𝑌𝐶 are the tensile and compressive strengths in the 2direction respectively, 𝑆𝐿 and 𝑆𝑇 are the shear strengths in 2-1 and 1-2 directions respectively, and 𝛼 
+is an empirical constant to account for shear effects (set to 0 in this study). 
+Once the failure is initiated, the effective stress 𝜎 was defined as:
+𝜎= 𝑀𝜎 
+                                     (5)
+where 𝑀 is the damage operator and 𝜎 is the nominal stress. The damage operator 𝑀 is given by:
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244199
+Preprint not peer reviewed
+
+17
+𝑀=[
+1
+1 ― 𝑑1
+0
+0
+0
+1
+1 ― 𝑑2
+0
+0
+0
+1
+1 ― 𝑑𝑠]
+ 
+                                     (6)
+where 𝑑1, 𝑑2, and 𝑑𝑠 represents the damage variables for failure modes in the 1-direction, 2-direction, 
+and shear failure modes respectively. The corresponding stiffness matrix 𝐶 can be obtained as:
+𝐶=
+1
+𝐷[
+(1 ― 𝑑1)𝐸1
+(1 ― 𝑑1)(1 ― 𝑑2)𝑣21𝐸1
+0
+(1 ― 𝑑1)(1 ― 𝑑2)𝑣12𝐸2
+(1 ― 𝑑2)𝐸2
+0
+0
+0
+𝐷(1 ― 𝑑𝑠)𝐺12]                                             (7)
+where 𝐷= 1 ― (1 ― 𝑑1)(1 ― 𝑑2)𝑣12𝑣21 is a combined damage variable, 𝐸1, 𝐸2, and 𝐺12 are the 
+undamaged material elastic moduli, and 𝑣12, 𝑣21 are the undamaged material Poisson’s ratios. Under 
+the 1-direction and 2-direction failure modes, the material is either in tension or compression. 
+Therefore, subscripts t and c are added to expand the damage variables 𝑑1 and 𝑑2 to acknowledge 
+these distinctions. The damage variable of shear failure 𝑑𝑠 is assumed to depend on the other damage 
+variables as:
+𝑑𝑠= 1 ― (1 ― 𝑑1𝑡)(1 ― 𝑑1𝑐)(1 ― 𝑑2𝑡)(1 ― 𝑑2𝑐) 
+                                     (8)
+The evolution of the damage variable was defined using the energy dissipated during the damage 
+process Gc, based on a generalization of the approach proposed in Ref. [20]. Following damage 
+initiation, the damage variables monotonically increase from zero (undamaged) to one (fully 
+damaged).
+Considering the bi-linear traction separation behaviour in each principal material direction, the value 
+of each damage variable can be computed using the equivalent displacement. The damage variable 
+for each failure mode 𝐼, i.e. tension failure in the 1-direction (𝐼= 1𝑡), compression failure in the 1direction (𝐼= 1𝑐), tension failure in the 2-direction (𝐼= 2𝑡) and compression failure in the 2-direction 
+(𝐼= 2𝑐), can be calculated from:
+𝑑𝐼=
+𝛿𝑓𝐼,𝑒𝑞(𝛿𝐼,𝑒𝑞― 𝛿0𝐼,𝑒𝑞)
+𝛿𝐼,𝑒𝑞(𝛿𝑓𝐼,𝑒𝑞― 𝛿0𝐼,𝑒𝑞); 𝛿0𝐼,𝑒𝑞≤𝛿𝐼,𝑒𝑞≤𝛿𝑓𝐼,𝑒𝑞; 𝐼∈{1𝑡,1𝑐,2𝑡,2𝑐} 
+                                                 (9)
+where 𝛿0𝐼,𝑒𝑞 is the equivalent displacement at failure initiation, and 𝛿𝑓𝐼,𝑒𝑞 is the equivalent displacement 
+when the material is fully damaged (𝑑𝐼= 1). 
+The equivalent displacement 𝛿𝐼,𝑒𝑞 is given by [21]:
+Tension in the 1-direction (𝜎11 ≥0):
+𝛿𝐼,𝑒𝑞= 𝐿𝑐〈𝜀11〉2 + 𝛼𝜀212
+                     (10)
+Compression in the 1-direction (𝜎11 < 0):
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244199
+Preprint not peer reviewed
+
+18
+𝛿𝐼,𝑒𝑞= 𝐿𝑐〈― 𝜀11〉
+                     (11)
+Tension in the 2-direction (𝜎22 ≥0):
+𝛿𝐼,𝑒𝑞= 𝐿𝑐〈𝜀22〉2 + 𝜀212
+                     (12)
+Compression in the 2-direction (𝜎22 < 0):
+𝛿𝐼,𝑒𝑞= 𝐿𝑐〈―𝜀22〉2 + 𝜀212
+                     (13)
+where 𝐿𝑐 is the element characteristic length.
+3.2 Comparison of the numerical predictions with uniaxial and shear test data
+The above-described numerical modelling approach was used first to model the behaviour of uniaxial 
+HFT test coupons and HFT shear test coupons. The exact geometry as in tensile and compressive 
+coupons were used. For shear coupons, fibre rotation effects were also considered and the numerical 
+model is described in detail in Miao et al. [8].
+To minimize the effect of variations of timber properties among different veneer sheets, experimental 
+results of HFT specimens manufactured from the first timber veneer sheet were compared with FE 
+results. Mechanical properties obtained from material coupon tests of timber specimens manufactured 
+from the same timber veneer sheet were used as the input parameters for timber layer in the FE models. 
+Average mechanical properties obtained from GFRP material coupon tests were used as the input 
+parameters for GFRP layer in the FE models. The mechanical properties of timber and GFRP in the 
+FE simulations of HFT specimens under uni-axial and shear loading are given in Table 3. 
+It should be noted that the nominal thickness of GFRP layer in the FE models is 0.75 mm, is slightly 
+smaller than the average thickness of the GFRP coupons for tensile test in fibre direction (0.88 mm). 
+However, GF volume in the GFRP coupons of the tests and the HFT laminates in the FE models were 
+the same. In GFRP laminates, load is predominantly carried by the GFs. For the GFRP layer in the 
+FE models, with the decrease of thickness, the volume fraction of fibres increases, which results in a 
+higher strength. Therefore, adjustment was made to the tensile strength of GFRP layer in fibre 
+direction with a new value of 460 MPa in the FE models to account for the difference in GF volume 
+fraction.
+Table 3. Mechanical properties of timber and GFRP used in FE models
+𝐸1
+(MPa)
+𝐸2
+(MPa)
+𝜐12
+𝐺12
+(MPa)
+𝑋𝑇
+(MPa)
+𝑋𝐶
+(MPa)
+𝑌𝑇
+(MPa)
+𝑌𝐶
+(MPa)
+𝑆𝐿
+(MPa)
+𝑆𝑇
+(MPa)
+Timber 
+veneer
+16393
+547
+0.524
+375
+163
+64
+4.2
+10.6
+15.1
+15.1
+GFRP 
+lamina
+27964
+3270
+0.452
+415
+460
+85
+53
+16
+11
+12
+Comparison of the tensile and compressive test results with the FE predictions are shown in Figs. 17 
+and 18 respectively.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244199
+Preprint not peer reviewed
+
+19
+(a)
+(b)
+Figure 17. Comparison of the uniaxial tensile experimental load-displacement curves of HFT 
+coupons with FE results. (a) shows the results of the specimens loaded parallel to timber grains, 
+while (b) shows results of the specimens loaded perpendicular to timber grains. FE models used the 
+average timber and GFRP properties of the selected experimental specimens. 
+(a)
+(b)
+Figure 18. Comparison of uniaxial compressive experimental load-displacement curves of HFT 
+coupons with FE results. (a) Shows the results of the specimens loaded parallel to timber grains, 
+while (b) shows results of the specimens loaded perpendicular to timber grains. FE models used the 
+average timber and GFRP properties of the selected experimental specimens.
+Comparison of selected shear test results are compared with the FE results in Fig. 19, and full set of 
+the comparisons can be found in Ref. [8]. A good agreement was found between the experimental 
+and FE results, with predictions showing an excellent agreement with the experimental results at the 
+initial stages, indicating the ability of the proposed FE modelling approach to capture the HFT 
+behaviour until failure initiation. For uniaxial tests, predictions start to deviate from the experimental 
+curves once the curve becomes nonlinear. This is expected for complex progressive failures which is 
+not well captured through the layer wise numerical modelling approach [9]. Results from shear 
+coupons showed that fibre rotation had a significant effect on post-ultimate behaviour of the HFT 
+coupons under shear loading [8]. However, fibre rotation was found to have minimal effects until the 
+failure initiation [8]. Overall, the modelling approach was found to be reasonable in terms of 
+determining stresses at the failure initiation. 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244199
+Preprint not peer reviewed
+
+20
+(a) 
+(b) 
+Figure 19. Comparison of experimental shear load-displacement curves with FE results (also given 
+in Ref. [8]). (a) Results of the specimens loaded parallel to timber grains, while (b) Results of the 
+specimens loaded perpendicular to timber grains. FE models used the average timber and GFRP 
+properties of the selected experimental specimens.
+3.3 Numerical results of biaxial loading
+With FE modelling approach showing good results when compared with uni-axial and shear 
+experimental results of HFT coupons, the same FE modelling approach as described previously was 
+used to simulate the behaviour of HFT laminates under bi-axial loading. The goal of this simulation 
+was to understand the interaction between different stress components on failure initiation. Average 
+mechanical properties obtained from GFRP and timber (as given in Table 3) material coupon tests 
+were used to define the mechanical properties of respective layers in the HFT laminate.
+Figure 20. Details of the bi-axial specimen modelled in FE. Shape consists of an HFT plate 
+sandwiched between two 1mm thick aluminium plates. Each aluminium plate consists of a 160 mm 
+diameter circular cut-out at the centre. Timber grains in HFT laminate are parallel to 1-axis, while 
+GFs are parallel to 2-axis. 
+Bi-axial test coupon shape as shown in Fig. 20, commonly used to study the behaviour of composite 
+laminates under biaxial loading [17,18,22] was selected for the FE modelling in this study. The shape 
+consists of an HFT plate sandwiched between two 1 mm thick aluminium plates. A 160 mm diameter 
+circular hole was cut on each aluminium plate, thus creating a circular region at the centre of the HFT 
+1 mm thick 
+aluminium plates
+HFT plate visible through the 160 
+mm diameter circular cut-out 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244199
+Preprint not peer reviewed
+
+21
+plate without any aluminium plate (Fig. 20). As the specimen design intends to ensure the failure 
+occurs within the middle circular region of the HFT plate, aluminium plates were modelled as an 
+isotropic linear elastic material in the FE models.  Previously described modelling approach was used 
+for modelling the HFT laminate. Modelling was done with different load ratios between the 1direction and 2-direction, and the stress components of the elements at failure initiation was recorded. 
+Over 450 data sets were created to investigate the effect of different stress components on failure 
+initiation. For each data set, stress was taken as the average stress of the HFT laminate (i.e. cumulative 
+force of the lamella divided by the total area of the lamella). Once stress data were extracted, all the 
+stresses were normalized with respect to the corresponding strength values of the HFT laminate. In 
+many cases, several models yield the same stress values at failure initiation, where only one data set 
+was considered. Finally, 190 different data points were obtained from the 450 data sets generated 
+from the FE analysis. 
+Normalized stress values (normalized with respect to strength values of the HFT laminate) in the 1direction and 2-direction at failure initiation are plotted in Fig. 21. Except for when both stress 
+components in the principal material directions are compressive, in all other cases a strong interaction 
+between the stress components in the principal material directions could be observed. Hashin failure 
+initiation envelope (from Eqns. 1-4) and quadratic stress failure initiation envelope ((
+𝜎11
+𝑋)
+2 + (
+𝜎22
+𝑌)
+2
+= 1) are plotted on the 1-2 plane in Fig. 21. It is clear that Hashin failure theory was not able to 
+capture the failure initiation in the tension-tension and tension-compression stress quadrants, while 
+failure initiation in the compression-compression stress quadrant was reasonably well captured. On 
+the other hand, quadratic stress criterion captured the failure initiation well in the tension-tension and 
+tension-compression stress quadrants, but was not able to capture the failure initiation well in the 
+compression-compression stress quadrant. 
+Figure 21. Normalized 1-direction stress vs normalized 2-direction stress at failure initiation of 
+HFT laminates (X is the compression or tensile strength of HFT laminate in 1-direction, Y is the 
+compression or tension strength of HFT laminate in the 2-direction).  Hashin criterion curve was 
+obtained from Eqns. (1)-(4), while quadratic criterion curve was obtained from the equation: (
+𝜎11
+𝑋)
+2
++ (
+𝜎22
+𝑌)
+2 = 1. 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244199
+Preprint not peer reviewed
+
+22
+In 1-axis compression, 2-axis tension stress quadrant (3rd quadrant), 2 data points showed very 
+different behaviours to the others. For these two points, tensile loads are applied parallel to GF 
+direction, while compressive loads are applied parallel to timber grains direction. When Hashin 
+failure theory was used to model compression in 2-direction of a lamella (i.e. perpendicular to grain 
+or fibre direction), interaction between compressive normal stresses and shear stresses are considered 
+(Eqn. 4).  These two data points corresponds to two cases where, failure was in fact governed by shear 
+stresses within the GFRP lamella. For those two data points, it was found that stresses perpendicular 
+to GFs are compressive, thus Eqn. (4) is active in determining the failure within GFRP lamella. As 
+compressive strength in 2-direction (i.e. Yc) and shear strength of the GFRP lamella are quite similar 
+(Table 3), effects of the compressive stresses in Eqn. (4) becomes negligible and failure initiation was 
+found to be driven by high shear stresses. Therefore, these two data points were excluded from further 
+analysis. 
+For the rest of the data, the normalized shear stresses at failure initiation are plotted against the 
+normalized stress data in the 1-direction in Fig. 22a, while against the normalized stress data in the 
+2-direction is given in Fig. 22b.
+(a)
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244199
+Preprint not peer reviewed
+
+23
+(a)
+Figure 22. Variation of normalized shear stress with normalized 1-direction (in (a)) and 2-direction 
+(in (b)) stresses at failure initiation (X is the compression or tensile strength of HFT laminate in the 
+1-direction, Y is the compression or tension strength of HFT laminate in the 2-direction, and S is 
+the shear strength of the HFT laminate)
+Data plotted in Figs. 22(a) and (b) showed no clear interaction between shear and normal stresses at 
+failure initiation. This also means that any of the failure theories which consider interaction between 
+shear and normal stress components on failure initiation is not applicable for HFT laminates. 
+In studying the behaviour of the HFT laminate under bi-axial loading conditions, Hashin failure 
+theory was used to model failure initiation. It is clear from Eqs. (1)-(4) that for each constituent (i.e. 
+GFRP and timber) of the HFT laminate, interaction between normal stresses in the two principal 
+material directions are not considered in the failure initiation. However, when all the lamellae are 
+considered as a single unit, failure initiation was found to show strong interactions between the 
+normal stresses in the two principal material directions, except for when both stress components are 
+compressive. While Eqs. (3)-(4) consider shear-normal stress interactions of each layer, final results 
+showed negligible interaction of shear and normal stresses in the failure initiation of the HFT laminate. 
+It is clear from the results of this investigation that even though Hashin failure theory is used to model 
+the failure of each constituent lamina, it cannot be directly adopted to model the failure of the HFT 
+laminate.  
+4. Failure theory for HFT laminates
+4.1 Failure initiation
+The data presented in the previous section clearly showed that neither Hashin nor quadratic stress 
+criterion can predict the failure initiation accurately under bi-axial loading in all four stress quadrants. 
+In addition, it was also shown that there is no normal and shear stress interaction on failure initiation 
+of the HFT laminates. Based on the observations made from the bi-axial data on failure initiation, it 
+was found that quadratic stress criterion captured the failure initiation well in the tension-tension and 
+tension-compression stress quadrants. It was also observed that failure initiation in the compressioncompression stress quadrant was dependent on the strength value of the 1-direction or the 2-direction, 
+and there was no interaction between normal stresses of the 1-direction and the 2-direction. Based on 
+the above observations, a new failure initiation criterion is proposed for modelling the failure 
+initiation of the HFT laminate:
+When both normal stresses are compressive, damage initiation is given by:
+𝑚𝑎𝑥(|
+𝜎𝑖𝑖
+𝐹𝑖|, |
+𝜎12
+𝑆|) = 1;𝑖= 1, 2
+                                               (14)
+while in all other cases damage initiation is given by: 
+𝑚𝑎𝑥{[(
+𝜎11
+𝐹1)
+2 + (
+𝜎22
+𝐹2)
+2], |
+𝜎12
+𝑆|} = 1
+                                   (15)
+Where, 𝐹𝑖 is the strength of the HFT laminate in ith direction (i.e. 1st (𝐹1) or 2nd (𝐹2) direction), and S 
+is the shear strength of the HFT laminate. The damage variable was defined through the reduction of 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244199
+Preprint not peer reviewed
+
+24
+stiffness in the material constitutive model similar to that presented in Eq. (7). Values of damage 
+variables begin with zero (undamaged) and monotonically increase to one (fully damaged) as damage 
+evolves. Calculation of the damage parameter is given by Eq. (9). 
+With the newly proposed failure initiation criterion, the equivalent displacement when 𝜎11 > 0,𝜎22
+> 0; 𝜎11 × 𝜎22 < 0 is given by:
+𝛿𝑒𝑞,𝑖= 𝐿𝐶|𝜀𝑖𝑖|  𝑖= 1, 2
+           (16)
+𝛿𝑒𝑞,𝑚= 𝐿𝐶𝜀211 + 𝜀222 
+     
+                       (17)
+where 𝛿𝑒𝑞,𝑖 is the equivalent displacement in the i-direction (𝑖= 1, 2), 𝛿𝑒𝑞,𝑚 is the equivalent 
+displacement under mixed-mode, and  𝐿𝐶 is the characteristic length of the element. For 𝜎11 < 0,𝜎22
+< 0 equivalent displacement is given by Eq. (16). 
+4.2 Damage evolution
+Based on the failure initiation criterion proposed for different stress states in the above section, two 
+different damage evolution laws are employed for the corresponding failure criterion. 
+4.2.1 Damage evolution for 𝜎11 > 0, 𝜎22 > 0; 𝜎11 × 𝜎22 < 0
+Under tension-tension and tension-compression stress states, evolution of the damage is defined using 
+a fracture energy-based criterion, where the complete damage is assumed to occur when:
+𝐺1
+𝐺1𝐶+
+𝐺2
+𝐺2𝐶= 1 
+                                   (18)
+where 𝐺1 and 𝐺2 are the dissipated energies during the damage process in the 1-direction and the 2direction respectively, 𝐺1𝐶 and 𝐺2𝐶 are the critical fracture energies in the 1-direction and the 2direction under uniaxial loading respectively.
+The dissipated energies in the i-direction 𝐺𝑖 can be computed from the relation:
+𝐺𝑖=
+1
+2𝜎0𝑒𝑞,𝑖𝛿𝑓𝑒𝑞,𝑖  𝑖= 1, 2     
+                                   (19)
+where 𝜎0𝑒𝑞,𝑖 is the stress at damage initiation in the i-direction; 𝛿𝑓𝑒𝑞,𝑖 is the equivalent displacement at 
+full damage in the i-direction.
+Dissipated energies at damage initiation in the i-direction 𝐺𝑖,0 can be obtained from the equivalent 
+stress at damage initiation 𝜎0𝑒𝑞,𝑖, and equivalent displacement at damage initiation 𝛿0𝑒𝑞,𝑖 as:
+𝐺𝑖,0 =
+1
+2𝜎0𝑒𝑞,𝑖𝛿0𝑒𝑞,𝑖 
+                                   (20)
+Dissipated energies at damage initiation in the i-direction 𝐺𝑖,0 can also be computed using the stresses 
+𝜎0𝑖𝑖 and strains 𝜀0𝑖𝑖 at damage initiation, and characteristic element length 𝐿𝐶 as: 
+𝐺𝑖,0 =
+1
+2𝜎0𝑖𝑖𝐿𝐶𝜀0𝑖𝑖 
+                       (21)
+where 𝜀011 = (
+𝜎011
+𝐸1 ― 𝜈21𝜎022
+𝐸2 ) and 𝜀022 = (
+𝜎022
+𝐸2 ― 𝜈12𝜎011
+𝐸1 ).
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244199
+Preprint not peer reviewed
+
+25
+Using the Eqs. (20) and (21), values of equivalent stress at damage initiation 𝜎0𝑒𝑞, 𝑖 can be obtained. 
+Failure initiates when Eq. (15) is met, and the equivalent displacement in the i-direction can be 
+obtained from Eq. (16). The ratio between the equivalent displacements at damage initiation 𝛿0𝑒𝑞,1 and 
+𝛿0𝑒𝑞,2 is defined by 𝛾, and the same ratio was assumed for the equivalent displacements at full damage 
+in the 1-direction 𝛿𝑓𝑒𝑞,1 and in the 2-direction 𝛿𝑓𝑒𝑞,2, i.e.:
+𝛾=
+𝛿0𝑒𝑞,1
+𝛿0𝑒𝑞,2 =
+𝛿𝑓𝑒𝑞,1
+𝛿𝑓𝑒𝑞,2 
+           (22) 
+Using the ratio 𝛾 and equivalent stresses at damage initiation 𝜎0𝑒𝑞, 𝑖, equivalent displacement at full 
+damage in the 1-direction and the 2-direction 𝛿𝑓𝑒𝑞,𝑖 (𝑖= 1, 2) can be determined from Eqs. (18) and 
+(19). With the current equivalent displacement obtained from Eq. (17) and the ratio 𝛾, the damage 
+variable can be determined from Eq. (9).
+4.2.2 Damage evolution for 𝜎11 < 0,𝜎22 < 0
+Under compression-compression stress state, damage evolution follows the independent evolution 
+law in the 1-direction and the 2-direction. Full damage is reached when the dissipated energy 𝐺𝑖 is 
+equal to the fracture energy in that direction 𝐺𝑖𝐶, which is given by the following relation
+𝐺𝑖
+𝐺𝑖𝐶= 1  𝑖= 1, 2
+                                   (23)
+Accordingly, based on the bi-linear traction-separation law and the failure initiation criterion in Eq. 
+(14), the equivalent displacement at full damage 𝛿𝑓𝑒𝑞,𝑖 in the i-direction can be computed as follows
+𝛿𝑓𝑒𝑞,𝑖=
+2𝐺𝑖𝐶
+𝐹𝑖𝐶   𝑖= 1,2
+         
+                                               (24)
+where 𝐹𝑖𝐶 is the compressive strength in the 1-direction or the 2-direction.
+From Eq. (16), equivalent displacement at damage initiation 𝛿0𝑒𝑞,𝑖 and the current equivalent 
+displacement 𝛿𝑒𝑞,𝑖 can be calculated. Then, the value of damage variable 𝑑𝑖 can be obtained from Eq. 
+(9).
+4.2.3 Damage evolution when failure initiates due to shear
+The damage parameter for shear used in Eq. (8) is related to the damage parameters in 1- and 2- 
+directions. In the model presented in section 3.1, since shear and normal stress coupling is considered 
+in failure initiation, even if failure initiation occurs due to shear alone, damage parameters in 1- and 
+2- directions can still capture the damage due to shear stresses. However, in the proposed model in 
+section 4, as no coupling between shear and normal stresses are considered, modification to the 
+damage parameters is necessary to account for damage due to shear. Study by Miao et al. [12] showed 
+that when subjected to shear loading, rotation in fibres results in tensile stresses in fibres. Therefore, 
+final failure occurs when the fibres fail. Rotation of the fibres also means, while tensile stresses in 
+fibre direction increases, fibre direction will not be parallel to specified 1- or 2- directions. During 
+the increase in deformations, shear stress was found to remain a constant [8]. That means, the increase 
+in tensile stresses in fibre direction will result in such a manner that force vector parallel to shear 
+direction will remain a constant. An exact consideration of the fibre rotation effects can only be done 
+through modelling of the fibre rotation as in Miao et al. [8]. However, such modelling is complex, 
+thus does not comply with the objective of simplified modelling of the HFT laminates. Therefore, the 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244199
+Preprint not peer reviewed
+
+26
+following failure theory is adopted to capture the effects of fibre rotations on shear damage in a 
+relatively simple manner:
+The envelope normal stress-displacement behaviour under linear damage evolution is shown in Fig. 
+23.
+Figure 23. Normal stress-displacement relationship in i-direction. 𝐹𝑖 is the strength in i-direction, 
+𝜎0𝑖𝑖 is the stress at damage initiation, 𝛿0𝑖𝑖 is the displacement at damage initiation, 𝛿1𝑖𝑖  is the 
+displacement at strength, 𝛿2𝑖𝑖 is the displacement at 𝜎0𝑖𝑖 along the descending branch of the envelope 
+curve, and 𝛿𝑓𝑖𝑖 is the displacement at full damage. 
+While the displacements are less than the minimum of 𝛿211𝑎𝑛𝑑 𝛿222:
+𝑑𝑠= 1 ―
+𝑆
+𝐺12𝜀12      𝑓𝑜𝑟  𝛿𝑖𝑖< min [𝛿211, 𝛿222]                                                                                          (25)   
+𝑑1 = 𝑑2 = 1 ―
+(1 ― 𝑑𝑠)     𝑓𝑜𝑟   𝛿𝑖𝑖< min [𝛿211, 𝛿222]                                                                                 (26)
+where 𝑑1 and 𝑑2 are the damage parameters in 1- and 2- directions either in tension or compression, 
+and 𝑆 is the shear strength. Once the minimum of 𝛿211𝑎𝑛𝑑 𝛿222, (taken to be denoted by 𝛿2𝑖𝑖 , while the 
+maximum value between  𝛿211𝑎𝑛𝑑 𝛿222 is taken as 𝛿2𝑗𝑗) is reached, strength will reduce below 𝜎0𝑖𝑖 , thus 
+shear stress will also start to reduce. Damage during this stage until 𝛿𝑗𝑗= 𝛿2
+𝑗𝑗 is given by the damage 
+in i-direction as:
+𝑑𝑖= 𝑑𝑗=
+𝛿𝑓𝑖𝑖(𝛿𝑖𝑖― 𝛿0𝑖𝑖,)
+𝛿𝑖𝑖(𝛿𝑓𝑖𝑖― 𝛿0𝑖𝑖);  𝑓𝑜𝑟   𝛿𝑖𝑖≥𝛿2
+𝑖𝑖 𝑎𝑛𝑑 𝛿𝑗𝑗≤𝛿2𝑗𝑗 
+           (27)
+𝑑𝑠= 1 ― (1 ― 𝑑𝑖)(1 ― 𝑑𝑗)
+           (28)
+Once 𝛿11 > 𝛿2
+11 𝑎𝑛𝑑 𝛿22 > 𝛿2
+22, damage parameters in each direction are calculated using:
+𝑑1 =
+𝛿𝑓11(𝛿11 ― 𝛿011,)
+𝛿11(𝛿𝑓11 ― 𝛿011);  𝑓𝑜𝑟   𝛿11 > 𝛿2
+11 𝑎𝑛𝑑 𝛿22 > 𝛿222
+           (29)
+𝑑2 =
+𝛿𝑓22(𝛿22 ― 𝛿022,)
+𝛿22(𝛿𝑓22 ― 𝛿022);  𝑓𝑜𝑟   𝛿11 > 𝛿2
+11 𝑎𝑛𝑑 𝛿22 > 𝛿222
+           (30)
+The shear damage parameter, 𝑑𝑠, is calculated using Eq. (28).
+5. Application of the failure theory for HFT laminates under uni-axial and bi-axial loading
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244199
+Preprint not peer reviewed
+
+27
+The failure theory developed in section 4 was applied in the numerical modelling of HFT coupons 
+with grains parallel or transverse to coupon axis as well as HFT coupons with off-axis fibres. FE 
+models of HFT coupons for tensile and compressive tests described in section 2 were modelled and 
+FE results were compared with the experimental results. The HFT laminate in the FE simulations was 
+modelled as a single layer. 
+The FE models were built in commercially available finite element software ABAQUS\Explicit [10]. 
+Thickness of the HFT was taken as 4.5 mm. HFT laminates were modelled using S4R shell elements. 
+A mesh convergence study which covered mesh sizes from 1.5 mm × 1.5 mm to 0.75 mm × 0.75 mm 
+was carried out for selecting the most appropriate mesh size. With change in the ultimate load less 
+than 0.5%, a mesh size of 1 mm × 1 mm was selected for the models. The failure theory presented in 
+section 4 was implemented via a vectorized user material subroutine (VUMAT). Average mechanical 
+properties of the HFT specimens manufactured from the first timber veneer sheet were used as the 
+required parameters for HFT laminate in the FE models, as given in Table 4. It should be noted that 
+different values were used for tensile modulus and compressive modulus in the 1-direction, because 
+there is a significant difference between the test results of tensile and compressive moduli of HFT 
+laminates along the perpendicular-to-timber direction as shown in Table 2. 
+Table 4. Parameters for mechanical properties of HFT laminate
+𝐸1
+(tensile/compressive) 
+(MPa) 
+𝐸2
+(tensile/compressive) 
+(MPa)
+𝜐12
+𝐺12
+(MPa)
+𝑋𝑇
+(MPa)
+𝑋𝐶
+(MPa)
+𝑌𝑇
+(MPa)
+𝑌𝐶
+(MPa)
+𝑆𝐿
+(MPa)
+𝑆𝑇
+(MPa)
+12013/6467
+11928/8287
+0.161
+600
+210
+34.7
+97
+42.1
+12.9
+10.9
+The fracture energy per unit area values of HFT laminate (determined based on the GFRP, timber and 
+HFT coupon test results) used in the models are: 
+(a) parallel to the 1-direction in tension=17.3 N/mm, 
+(b) perpendicular to 1-direction in tension=1.3 N/mm,
+(c) parallel to the 2-direction in compression=2 N/mm,
+(d) perpendicular to the 2-direction in compression=6 N/mm.
+Experimental results and FE results of HFT coupons with fibre oriented parallel or perpendicular to 
+coupon axis, tested in tensile and compressive loads are compared in Figs. 24 and 25. For all the 
+specimens, a good agreement was achieved. For the specimens under tensile load, the loaddisplacement behaviour of the FE models agreed well with that of the test results, especially in the 
+initial part. The compressive load-displacement behaviour of HFT specimens loaded parallel to 
+timber grain was also well predicted by the FE model. However, initial stiffness of the compression 
+HFT specimens with timber grains parallel to specimen axis predicted by FE was found to be lower 
+than the experimental results (Fig. 25b). Careful investigation of the calculated compressive elastic 
+modulus of HFT from the GFRP and timber elastic modulus was found to be higher than the 
+experimentally obtained HFT compression elastic modulus. This lower elastic modulus used in FE 
+modelling of HFT is believed to be the reason for lower initial stiffness in FE predictions in Fig. 25b.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244199
+Preprint not peer reviewed
+
+28
+(a). HFT tensile specimens loaded parallelly to 
+timber grain
+(b). HFT tensile specimens loaded 
+perpendicularly to timber grain
+Figure 24. Comparison of uniaxial tension load-displacement curves between HFT coupons and FE 
+simulation with the proposed failure theory
+(a). HFT compressive specimens loaded parallel 
+to timber grain
+(b). HFT compressive specimens loaded 
+perpendicular to timber grain
+Figure 25. Comparison of uniaxial compression load-displacement curves between HFT coupons 
+and FE simulation with proposed failure theory
+Experimental data from the off-axis HFT tensile tests were used to verify the proposed failure theory 
+under bi-axial stress states. A comparison of the load-displacement curves from experiments and FE 
+models are shown in Fig. 26. For all the off-axis HFT tensile specimens failure initiation was driven 
+by shear. For the specimens with fibres at 20o, the FE prediction agreed well with the experimental 
+curves. For specimens with fibres at 40o and 70o, initial stiffness of the FE model was lower than the 
+experimental values. Experimental shear modulus values of parallel to gran was found to be lower 
+than that of perpendicular to gran (Table 2). In the FE models, lower value of the shear modulus was 
+selected. Increase in fibre angle results in higher influence from the shear in perpendicular to fibre, 
+which is expected to lead to lower initial stiffness than what’s observed experimentally. Ultimate load 
+predictions from the FE models closely matched with the experimental results for all specimens. 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244199
+Preprint not peer reviewed
+
+29
+(a). Off-axis HFT specimen with fibre at 
+20o with longitudinal axis
+ (b). Off-axis HFT specimen with fibre at 
+40o with longitudinal axis
+(c). Off-axis HFT specimen with fibre at 70o with longitudinal axis
+Figure 26. Comparison of load-displacement curves from off-axis HFT tensile specimens and FE 
+models with the proposed failure theory
+Conclusions
+This paper presents an investigation into understanding the behaviour of HFT laminates and a new 
+failure theory to model the constitutive behaviour of HFT laminates. Experimental studies were 
+carried out to determine the behaviour under uniaxial tensile, compressive and shear loading with 
+respect to both principal material directions of HFT laminates. As behaviour of HFT laminates under 
+bi-axial load was not possible to capture through experiments, a numerical approach based on 
+previous research of HFT laminates was adopted to determine the different stress components at 
+failure initiation of HFT laminates. Based on the obtained experimental and numerical data, a new 
+failure theory was proposed. This failure theory was then implemented in FE software ABAQUS 
+using a vectorized user material subroutine (VUMAT). Results were then compared with 
+experimental results of HFT coupons. From the experimental and theoretical investigations presented 
+in this paper, following conclusions can be achieved:
+
+Uniaxial tests showed that HFT specimens showed approximately linear behaviour until 
+ultimate load. When loaded in tension, specimens failed suddenly once ultimate load is 
+reached. When loaded in compression, some specimens showed gradual reduction of load 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244199
+Preprint not peer reviewed
+
+30
+once ultimate load is reached. Elastic properties under normal stresses were found to be more 
+balanced between the two principal material directions than in pure GFRP and timber.
+
+When loaded in shear, HFT specimens showed significant nonlinear behaviour with a load 
+plateau after the ultimate load is reached. A parallel study by the authors’ research group [8] 
+showed through numerical modelling and experimental observations that fibre rotation of 
+glass fibre is the key reason for such nonlinear behaviour under shear loading. 
+
+Simple calculation of the failure initiation load based on strain continuity was not able to 
+capture the failure loads of HFT laminates.
+
+Numerical modelling based on layer wise modelling approach was used to generate data for 
+failure initiation of HFT laminates under bi-axial loading. These data showed that both Hashin 
+failure criteria and Quadratic stress criteria cannot capture the failure initiation accurately in 
+all the stress quadrants of the normal stress diagram.  
+
+A new failure theory was proposed based on the data generated using experimental and 
+numerical approaches. Failure theory was implemented in FE software ABAQUS using a 
+VUMAT. FE predictions using the new model provided excellent agreements with the test 
+results of HFT laminates. Proposed failure theory can be used to model the behaviour of HFT 
+structures, where full laminate can be modelled as a single layer, thus significantly reduce the 
+computational cost. 
+Acknowledgements
+Authors would like to acknowledge the assistance by the staff of the Queensland Department of 
+Agriculture and Fisheries Salisbury Research Facility in manufacturing the test specimens. The 
+authors are also grateful for the financial support received from the Australian Research Council 
+under the Discovery Early Career Researcher funding scheme to the second author (DE150101512).
+References:
+[1]
+Fernando D, Teng JG, Gattas J, Heitzmann M. Hybrid fibre-reinforced polymer–timber thinwalled 
+structural 
+members. 
+Adv 
+Struct 
+Eng 
+2017;21:1409–17. 
+https://doi.org/10.1177/1369433217739709.
+[2]
+Gattas JM, O’Dwyer ML, Heitzmann MT, Fernando D, Teng JG. Folded hybrid FRP-timber 
+sections: concept, geometric design and experimental behaviour. Thin-Walled Struct 
+2018;122:182–92. https://doi.org/https://doi.org/10.1016/j.tws.2017.10.007.
+[3]
+Gilbert BP, Underhill ID, Fernando D, Bailleres H. Structural solutions to produce long timber 
+Veneer Based Composite hollow sections. Constr Build Mater 2017;139:81–92. 
+https://doi.org/http://dx.doi.org/10.1016/j.conbuildmat.2017.02.046.
+[4]
+Alqaryouti Y, Fernando D, Gattas J. Structural Behavior of Digitally Fabricated Thin-Walled 
+Timber Columns. Int J Struct Stab Dyn 2019;19:1950126.
+[5]
+Min L, Fernando D, Gilbert BP. Experimental study on the behaviour of hybrid fibre 
+reinforced polymer-timber thin-walled cee section columns. Thin-Walled Struct 2021; 163: 
+107723. 
+[6]     Wen Y, Fernando D, Gilbert BP, Bailleres H, Hu R, Bisby L, Roy D. An investigation into the 
+buckling behaviour of hybrid fibre reinforced polymer (FRP)- timber (HFT) thin-walled Csection columns. Adv Struct Eng 2024;  doi:10.1177/13694332241269249
+[7]
+Min L, Fernando D, Heitzmann M. Mechanical properties of hybrid fibre reinforced polymertimber veneer laminates. Constr Build Mater 2020; 301:124316. 
+[8]
+Miao C, Fernando D, Wilson P, Heitzmann M. Behaviour of hybrid glass fibre-reinforced 
+polymer and timber composite laminates under shear loading: importance of fibre rotation. 
+Compos Struct 2021; 287:115304.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244199
+Preprint not peer reviewed
+
+31
+[9]     Min L, Fernando D, Gilbert BP, You Z. Hybrid FRP-timber thin-walled Cee section columns 
+under axial compression: Numerical modelling. Thin-Walled Struct 2020;157:107029.
+[10]
+SIMULIA. Abaqus User’s Manual, version 6.13 edn, Dassault Systems, Providence, RI 2013. 
+[11]
+Miao C, Fernando D, Heitzmann MT, Bailleres H. GFRP-to-timber bonded joints: Adhesive 
+selection. Int J Adhes Adhes 2019;94:29–39. https://doi.org/10.1016/j.ijadhadh.2019.05.007.
+[12]
+ASTM International. D3039/D3039M-17 Standard Test Method for Tensile Properties of 
+Polymer Matrix Composite Materials, West Conshohocken, PA: ASTM International; 2017. 
+https://doi.org/https://doi.org/10.1520/D3039_D3039M-17.
+[13]
+ASTM International. D3500 − 14 Standard Test Methods for Structural Panels in Tension, 
+West Conshohocken, PA: 2014.
+[14]
+ASTM International. D6641/D6641M-16e1 Standard Test Method for Compressive 
+Properties of Polymer Matrix Composite Materials Using a Combined Loading Compression 
+(CLC) 
+Test 
+Fixture, 
+West 
+Conshohocken, 
+PA: 
+ASTM 
+International; 
+2016. 
+https://doi.org/https://doi.org/10.1520/D6641_D6641M-16E01.
+[15]
+ASTM International. D7078/D7078M-20 Standard Test Method for Shear Properties of 
+Composite Materials by V-Notched Rail Shear Method, West Conshohocken, PA: 2020. 
+https://doi.org/https://doi.org/10.1520/D7078_D7078M-20.
+[16]
+Olsson R. A survey of test methods for multiaxial and out-of-plane strength of composite 
+laminates. 
+Compos 
+Sci 
+Technol 
+2011;71:773–83. 
+https://doi.org/10.1016/J.COMPSCITECH.2011.01.022.
+[17]
+Daniel IM. Behavior of graphite/epoxy plates with holes under biaxial loading. Exp Mech 
+1980;20:1–8.
+[18]
+Mackenzie-Helnwein P, Eberhardsteiner J, Mang HA. Rate-independent mechanical behavior 
+of biaxially stressed wood: Experimental observations and constitutive modeling as an 
+orthotropic 
+two-surface 
+elasto-plastic 
+material 
+2005;59:311–21. 
+https://doi.org/doi:10.1515/HF.2005.052.
+[19]    Hashin Z. Failure criteria for unidirectional fiber composites. J App Mech, 1980; 47: 329-334.
+[20]
+Camanho PP, Dávila CG. Mixed-mode decohesion finite elements for the simulation of 
+delamination in composite materials. NASA/TM- 2002–211737, 2002, p. 1–37.
+[21]
+Lapczyk I, Hurtado JA. Progressive damage modeling in fiber-reinforced materials. Compos 
+Part 
+A 
+Appl 
+Sci 
+Manuf 
+2007;38:2333–41. 
+https://doi.org/10.1016/J.COMPOSITESA.2007.01.017.
+[22]
+IM  Daniel. Biaxial Testing of Graphite/Epoxy Laminates with Cracks. West Conshohocken, 
+PA: ASTM International; n.d. https://doi.org/978-0-8031-4800-0.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244199
+Preprint not peer reviewed

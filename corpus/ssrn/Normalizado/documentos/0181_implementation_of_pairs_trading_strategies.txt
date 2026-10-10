@@ -1,0 +1,574 @@
+Şahin Telli  
+Nanjing University of Aeronautics and Astronautics  
+Jiangjun Road, No:29  
+Nanjing, Jiangsu, China 211106  
+sahintelli@yahoo.com  
+ 
+Editor-in-Chief 
+Finance Research Letters 
+March 03, 2023  
+ 
+Dear Editor  
+ 
+I am pleased to submit an original research article entitled, “Zero-fee Trading and Price Clustering in 
+Cryptocurrency Pairs” by Şahin Telli and Xufeng Zhao for consideration for publication in Finance 
+Research Letters.  
+ 
+We believe that this manuscript is appropriate for publication by Finance Research Letters. Our research 
+paper focuses on whether clustering exists in Bitcoin markets and the impact of the implementation of 
+zero-fee trading on clustering. Our manuscript uncovers intriguing facts about the behavior of traders in 
+Bitcoin markets.  
+ 
+This manuscript has not been published and is not under consideration for publication elsewhere. We 
+have no conflicts of interest to disclose.  
+ 
+Thank you for your consideration!  
+ 
+Sincerely,  
+ 
+Şahin Telli, Ph.D. 
+Department of Management Science and Engineering, College of Economics and Management, Nanjing 
+University of Aeronautics and Astronautics 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4384957
+Preprint not peer reviewed
+
+Highlights
+Zero-Fee Trading and Price Clustering in Cryptocurrency Pairs
+Author 1, Author 2
+• There is clustering in prices, especially at 00 followed by 99.
+• Implementation of zero-fee trading decreased price clustering.
+• If price increases, the probability of particular numbers occurring increases.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4384957
+Preprint not peer reviewed
+
+Zero-Fee Trading and Price Clustering in Cryptocurrency Pairs
+Author 1a,∗, Author 2a,∗
+aDepartment and Organization, City, Country
+Abstract
+This study analyzes the impact of zero-fee trading on price clustering in BTCBUSD and BTCUSDT cryptocurrency pairs using
+one year of data. The study conﬁrms that observed frequency distributions deviate from a uniform distribution and that zero-fee
+trading has a signiﬁcant eﬀect on the distribution of observed frequencies. The study also ﬁnds that price level and trading volume
+positively correlate with clustering probability, while volatility has a negative correlation. These ﬁndings have implications for
+market participants and policymakers and emphasizes the signiﬁcance of taking into account market conditions and transaction fees
+while examining the clustering of prices in ﬁnancial markets.
+Keywords: Price clustering, Zero-fee trading, Bitcoin, Cryptocurrency, Market micro-structure
+1. Introduction
+Price clustering is commonly associated with the price resolution [1] and negotiation hypotheses [2], as traders tend to
+use price grids to reduce negotiation costs. Limited recall [3]
+and the attraction hypothesis [4], have also been identiﬁed as
+contributors to clustering. The presence of strategic trading [5]
+also plays a role in the occurrence of price clustering. Studies
+have found similar price clustering patterns in Bitcoin markets
+[6–11], with prices clustering most at 00, followed by 99, 01, or
+50. The distribution of numbers does not follow a uniform distribution, with certain numbers occurring more frequently than
+expected.
+This study explores the inﬂuence of zero-fee trading on price
+clustering, providing new knowledge about the role of transaction fees in shaping market behavior. Results suggest that zerofee trading has a signiﬁcant impact on price clustering, highlighting the need to consider this factor in analyzing market dynamics. The research contributes to the current understanding
+of cryptocurrency markets by investigating the eﬀects of zerofee trading on price clustering.
+2. Data and Methodology
+Binance had announced its zero-fee trading policy for speciﬁc trading pairs, which was set to commence on July 8th,
+2022, at 14:00 (UTC) [12]. The trading pairs that have been
+selected for this study are BTCBUSD and BTUSDT, both of
+which exhibit high trading volumes and are traded against stablecoins, rather than ﬁat currencies. The dataset used in this
+study comprises minute-by-minute trading data over a total of
+one year, covering six months prior to and following the introduction of zero-fee trading (from January 9th, 2022, to January
+∗Corresponding author
+4th, 2023). Figure 1 displays price, volume, and volatility, calculated as the diﬀerence between High and Low, over a oneyear period.
+The uniformity of the distribution of digits is evaluated using
+the chi-square test.
+χ2 =
+n
+X
+i=1
+(Oi −Ei)2
+Ei
+where Oi corresponds to the observed frequency, and Ei is expected frequency under a uniform distribution. Following the
+evidence of the violation of uniform distribution indicated by
+the chi-square test, probit regression analyses are conducted to
+elucidate the anomalous clustering in speciﬁc digits. To investigate the potential diﬀerences before and after the commencement of zero-fee trading and any immediate eﬀects, the distribution of digits is analyzed over a twelve-month period encompassing six months before and six months after the introduction
+of zero-fee trading. In addition, one-month periods before and
+after the start of zero-fee trading (from June 8th, 2022, to August 7th, 2022) are examined to detect any sudden changes that
+may have occurred.
+Probit(Y2R) = Xβ + ϵ
+Probit(Y2L) = Xβ + ϵ, where
+x1i = Constant
+x2i = ln(PriceClose)
+x3i = ln(Volume)
+x4i = ln(PriceHigh-PriceLow)
+x5i = DummyZf
+The probit regression models employed the natural logarithm
+of three variables: the closing price, the volume of the base
+asset (BTC), and the diﬀerence between the highest and lowest prices, which respectively represent the price level, volume,
+Preprint submitted to Finance Research Letters
+March 3, 2023
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4384957
+Preprint not peer reviewed
+
+Figure 1: Price, volume and volatility.
+Figure 2: Occurrences for 6 months, expected frequency marked by red line.
+and volatility variables. In addition, a binary variable is employed to diﬀerentiate the time period of zero-fee trading from
+the period preceding it, where the variable is assigned a value
+of 1 for the former and 0 for the latter. Furthermore, a binary
+variable is introduced as the dependent variable, where it took
+the value of 1 if the closing price matched certain conditions
+deﬁned in three diﬀerent scenarios, and 0 otherwise. The ﬁrst
+scenario, named Scenario 1, aimed to identify the inclination
+towards strategic trading and took the value of 1 if the closing
+price ended with 99, 00, or 01, and 0 otherwise. The second
+scenario, named Scenario 2, is focused solely on round numbers, and took the value of 1 if the closing price is in the form
+of 00, 10, or multiples of 10, and 0 otherwise. Finally, Scenario
+3 is a combination of the ﬁrst two scenarios, where the dependent variable took the value of 1 if the closing price is in the
+form of 99, 00, 01, or multiples of 10, and 0 otherwise.
+3. Results
+Figures 2 and 3 present the observed frequencies of digits
+sorted in descending order for 6-month and 1-month periods,
+respectively. Notably, the values during the zero-fee trading
+period appear to be closer to the expected value under a uniform distribution assumption than that of the pre-zero-fee trading period. Tables 1 and 2 display the frequencies of digits for
+Figure 3: Occurrences for 1 month, expected frequency marked by red line.
+BTCBUSD and BTCUSDT trading pairs over 6-month and 1month periods before and during zero-fee trading, respectively.
+The most prevalent occurrence in all circumstances is 00, in
+line with [6–11], and its frequency decreased during zero-fee
+trading. Additionally, 99 and 01 are most observed digits following 00, in line with [8–11], and their observed frequencies
+also decreased during zero-fee trading. Assuming a uniform
+distribution, each decimal from 00 to 99 should occur 1% of
+the time. However, Chi-squared tests show that the observed
+frequencies do not conform to a uniform distribution.
+The factors aﬀecting price clustering are analyzed by using
+probit models with various variables, including the natural logarithm of closing price, trading volume, and price spread within
+1-minute intervals, with the addition of a binary variable to signify zero-fee trading periods. The analysis was conducted under three diﬀerent scenarios, focusing on strategic trading activity, round numbers, and a combination of the two. Table 3
+indicates that higher price levels are positively associated with
+increased probability of clustering, supporting the negotiation
+hypothesis and previous studies on traditional ﬁnancial markets
+[2, 13, 14]. Our results are also consistent with ﬁndings by
+Urquhart (2017)[6], and with Baig et al. (2019) [8] when examining clustering for strategic trading. Baig et al. (2019) also
+found that the model for clustering at round numbers had a negative sign. Ma (2022) [11] reported signiﬁcant but varying signs
+2
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4384957
+Preprint not peer reviewed
+
+Table 1: Observed digits and their frequencies (%) in 6-month periods.
+BTCBUSD
+BTCUSDT
+pre-Zf
+Zf
+pre-Zf
+Zf
+Rank
+d
+fi
+d
+fi
+d
+fi
+d
+fi
+1
+00
+4.57
+00
+3.47
+00
+4.93
+00
+1.63
+2
+01
+2.49
+99
+1.31
+99
+3.22
+99
+1.17
+3
+99
+2.39
+01
+1.31
+01
+3.07
+01
+1.09
+4
+98
+1.23
+50
+1.15
+98
+1.29
+98
+1.06
+5
+02
+1.22
+98
+1.07
+02
+1.28
+02
+1.06
+6
+97
+1.05
+02
+1.06
+50
+1.15
+97
+1.05
+Least frequently observed digits
+96
+57
+0.89
+37
+0.93
+26
+0.86
+13
+0.95
+97
+45
+0.89
+86
+0.92
+42
+0.85
+54
+0.95
+98
+58
+0.88
+81
+0.92
+64
+0.85
+89
+0.94
+99
+46
+0.88
+62
+0.92
+35
+0.85
+05
+0.93
+100
+74
+0.88
+89
+0.91
+78
+0.85
+63
+0.93
+χ2
+6m
+45600.3
+16924.75
+66972.96
+1312.76
+Table 2: Observed digits and their frequencies (%) in 1-month periods.
+BTCBUSD
+BTCUSDT
+pre-Zf
+Zf
+pre-Zf
+Zf
+Rank
+d
+fi
+d
+fi
+d
+fi
+d
+fi
+1
+00
+4.36
+00
+3.46
+00
+2.62
+00
+1.81
+2
+01
+2.52
+01
+1.41
+99
+2.02
+99
+1.19
+3
+99
+2.37
+99
+1.40
+01
+1.99
+84
+1.12
+4
+98
+1.16
+50
+1.18
+02
+1.15
+02
+1.12
+5
+50
+1.14
+84
+1.06
+98
+1.13
+52
+1.11
+6
+02
+1.13
+97
+1.05
+95
+1.09
+01
+1.10
+Least frequently observed digits
+96
+93
+0.84
+91
+0.87
+32
+0.88
+89
+0.90
+97
+13
+0.84
+24
+0.87
+60
+0.88
+39
+0.89
+98
+46
+0.83
+77
+0.87
+35
+0.86
+61
+0.86
+99
+23
+0.83
+89
+0.86
+47
+0.84
+17
+0.86
+100
+37
+0.83
+72
+0.86
+26
+0.80
+07
+0.85
+χ2
+1m
+7058.93
+2918.26
+2201.18
+427.27
+for the variable across diﬀerent markets.
+Table 3 shows a positive relationship between trading volume
+and price clustering, contrary to the expected negative association according to the negotiation hypothesis. Higher liquidity
+is generally expected to lead to a more eﬃcient market with a
+ﬁner price grid and reduced price clustering [4]. One potential explanation is that larger trades may be executed at prices
+that are more clustered [14]. However, our results are consistent with previous research on Bitcoin markets [6, 8], the price
+variable was found to be positively related to clustering, while
+diﬀering from the negotiation hypothesis and some prior studies. The study conducted by Ma (2022) [11] reported diﬀering
+signs for the variable in various markets.
+The study ﬁnds a signiﬁcant negative association between
+volatility and price clustering in all models, contrary to what
+is commonly observed in traditional ﬁnancial markets [2, 14].
+The negative sign implies higher volatility leads to a lower
+probability of observing price clustering. In Urquhart’s (2017)
+study [6], volatility was insigniﬁcant, while Baig et al.’s (2019)
+[8] found a positive relationship. Ma (2022) [11] showed varying eﬀects in diﬀerent markets, with diﬀerent directions.
+Table 3: Determinants of price clustering.
+Models
+Price
+Volume
+Volatility
+DummyZf
+Scenario 1
+BTCBUSD1m
+-0.0698
+0.0129
+-0.0862
+-0.2109
+BTCBUSD6m
+0.1673
+0.0058
+-0.0395
+-0.1707
+BTCUSDT1m
+-0.1327
+0.0073
+-0.0299
+-0.2354
+BTCUSDT6m
+0.5806
+-0.001
+-0.0251
+-0.2137
+Scenario 2
+BTCBUSD1m
+-0.0136
+0.006
+-0.0375
+-0.0372
+BTCBUSD6m
+0.0518
+0.0072
+-0.0192
+-0.0125
+BTCUSDT1m
+0.1559
+0.0257
+-0.0317
+-0.0502
+BTCUSDT6m
+0.2293
+0.0104
+-0.0174
+-0.0313
+Scenario 3
+BTCBUSD1m
+-0.0526
+0.0054
+-0.0533
+-0.1138
+BTCBUSD6m
+0.0769
+0.0045
+-0.0272
+-0.0856
+BTCUSDT1m
+0.0594
+0.0131
+-0.0283
+-0.1109
+BTCUSDT6m
+0.3642
+0.0082
+-0.0227
+-0.0909
+* Signiﬁcant at α = 0.05.
+Table 3 shows that the dummy variable for zero-fee trading periods is signiﬁcant in all models, except for the 6-month
+model for round BTCBUSD prices. One could assume that
+zero-fee trading periods would lead to an increase in strategic trading activity and therefore enhance clustering at speciﬁc
+numbers. However, the variable has a negative eﬀect on the
+predicted probability of clustering, which suggests that traders
+use a ﬁner price grid and may have employed diﬀerent tactics
+during zero-fee trading periods. This may have arisen from that
+our selected dummy variable may be capturing the eﬀects of increased volume and decreased volatility in the zero-fee period.
+However, the coeﬃcient is signiﬁcant and has a strong eﬀect
+on the 1-month models as well, indicating an immediate impact on negotiations and price clustering. Baig et al. (2019) [8]
+found a negative correlation between daily average transaction
+fee and clustering, which supports our ﬁndings. This indicates
+that transaction fees can signiﬁcantly impact trading behavior
+and price clustering in ﬁnancial markets.
+The current study has signiﬁcant implications for policymakers and market participants. Traders must take into consideration the impact of zero-fee trading on price clustering when
+making trading decisions. Policymakers should also be mindful
+of the potential impact of zero-fee trading on market eﬃciency
+and integrity, as the study reveals that zero-fee trading can affect the frequency distribution of digits, thereby aﬀecting the
+overall eﬀectiveness of the market. These ﬁndings indicate the
+necessity for further research on the eﬀects of zero-fee trading
+on market eﬃciency and integrity.
+The study has a few limitations that future research should
+address. Firstly, the analysis is based on a single cryptocurrency exchange, and it is uncertain whether the ﬁndings can be
+generalized to other markets. Secondly, our study solely concentrated on investigating the inﬂuence of zero-fee trading on
+3
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4384957
+Preprint not peer reviewed
+
+price clustering, but we did not explore the underlying reasons
+for this impact, including whether it is due to the change in
+market volatility and liquidity. Third, we did not investigate
+other factors that may contribute to price clustering, such as
+trading frequency and trade size. Future research could investigate these issues in more detail. Finally, the study is limited
+to a relatively short timeframe, and it is unknown whether the
+results are reliable over longer periods.
+4. Conclusion
+This study investigates how the price clustering in cryptocurrency trading pairs BTCBUSD and BTCUSDT is aﬀected
+by the implementation of zero-fee trading, using a one-year
+dataset. Results revealed that certain price levels, such as 00,
+99, and 01, are observed more frequently than others, especially
+before the implementation of zero-fee trading.
+Chi-squared
+tests conﬁrm that the observed frequency of the numbers is not
+due to chance. Probit model estimations are then utilized, including variables such as the natural logarithm of the closing
+price, trading volume, and the diﬀerence between the highest and lowest prices within 1-minute intervals, along with a
+dummy variable to represent zero-fee trading periods. The ﬁndings suggest that price level and trading volume have a positive correlation with predicted probability of price clustering,
+while volatility has a negative correlation. Furthermore, predicted probability of price clustering is found to be reduced signiﬁcantly due to the implementation of zero-fee trading. The
+study highlights the importance of considering transaction fees
+and other market conditions when analyzing price clustering in
+ﬁnancial markets.
+References
+[1] C. A. Ball, W. N. Torous, A. E. Tschoegl, The degree of price resolution:
+The case of the gold market, Journal of Futures Markets 5 (1) (1985) 29–
+43. doi:10.1002/fut.3990050105.
+[2] L. Harris, Stock price clustering and discreteness, The Review of Financial Studies 4 (3) (1991) 389–415. doi:10.1093/rfs/4.3.389.
+[3] C. Kahn, G. Pennacchi, B. Sopranzetti, Bank deposit rate clustering: Theory and empirical evidence, The Journal of Finance 54 (6) (1999) 2185–
+2214. doi:10.1111/0022-1082.00185.
+[4] P. Brown, A. Chua, J. Mitchell, The inﬂuence of cultural factors on price
+clustering: Evidence from asia–paciﬁc stock markets, Paciﬁc-Basin Finance Journal 10 (3) (2002) 307–332. doi:10.1016/S0927-538X(02)
+00049-5.
+[5] J. Sonnemans, Price clustering and natural resistance points in the dutch
+stock market: A natural experiment, European Economic Review 50 (8)
+(2006) 1937–1950. doi:10.1016/j.euroecorev.2005.09.001.
+[6] A. Urquhart, Price clustering in bitcoin, Economics letters 159 (2017)
+145–148. doi:10.1016/j.econlet.2017.07.035.
+[7] C. L. Mbanga, The day-of-the-week pattern of price clustering in bitcoin,
+Applied Economics Letters 26 (10) (2019) 807–811.
+doi:10.1080/
+13504851.2018.1497844.
+[8] A. Baig, B. M. Blau, N. Sabah, Price clustering and sentiment in bitcoin,
+Finance Research Letters 29 (2019) 111–116. doi:10.1016/j.frl.
+2019.03.013.
+[9] B. Hu, T. McInish, J. Miller, L. Zeng, Intraday price behavior of cryptocurrencies, Finance Research Letters 28 (2019) 337–342.
+doi:10.
+1016/j.frl.2018.06.002.
+[10] X. Li, S. Li, C. Xu, Price clustering in bitcoin market—an extension, Finance Research Letters 32 (2020) 101072. doi:10.1016/j.frl.2018.
+12.020.
+[11] D. Ma, H. Tanizaki, Intraday patterns of price clustering in bitcoin, Financial Innovation 8 (4) (2022) 1–25. doi:10.1186/s40854-021-003074.
+[12] Binance,
+Binance
+launches
+zero-fee
+bitcoin
+trading,
+https://www.binance.com/en/support/announcement/
+binance-launches-zero-fee-bitcoin-trading10435147c55d4a40b64fcbf43cb46329, accessed:
+Feb 26, 2023
+(2022).
+[13] D. L. Ikenberry, J. P. Weston, Clustering in us stock prices after decimalisation, European Financial Management 14 (1) (2008) 30–54. doi:
+10.1111/j.1468-036X.2007.00410.x.
+[14] M. Aitken, P. Brown, C. Buckland, H. Izan, T. Walter, Price clustering
+on the australian stock exchange, Paciﬁc-Basin Finance Journal 4 (2-3)
+(1996) 297–314. doi:10.1016/0927-538X(96)00016-9.
+4
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4384957
+Preprint not peer reviewed

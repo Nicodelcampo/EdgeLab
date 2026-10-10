@@ -1,0 +1,1304 @@
+Statistical Arbitrage:
+Medium Frequency Portfolio Trading
+Igor Skachkov ∗
+July 9, 2013
+Contents
+1
+Signal Generation
+3
+1.1
+Regression on Indices and Largest Principal Components
+. . . . . . . . . . . . . . . .
+3
+1.2
+”Noise” Strategies
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+5
+1.3
+Fractional Integration
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+6
+2
+Execution
+14
+2.1
+Market impact models . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+14
+2.2
+Multi-periods portfolio trading
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+17
+2.3
+Inventory Management . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+18
+3
+Results and discussion
+20
+A Appendix
+24
+A.1 Multidimensional optimization
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+24
+A.1.1
+Boundary conditions . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+25
+A.1.2
+Terminal constraints . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+26
+A.2 Multi-period liquidation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+27
+∗iskachkov@yahoo.com
+1
+Electronic copy available at: https://ssrn.com/abstract=2284577
+
+Abstract
+Medium frequency trading strategies include all trading activities, that do not require market
+microstructure analysis on one side and signiﬁcantly depend on market impact on the other side.
+The most important diﬀerence from high frequency trading is the ability to analyze big amount
+of data using complex algorithms. Portfolio management in this case is the dynamic process,
+combination of signal (alpha) discovery and optimal execution on the level of trading scheduling.
+We used close price and trading volume time series for the list of S&P 500 companies that exist in
+an index since the beginning of 2008 at least. In this paper we present signal generation approaches
+as well as optimization of portfolio transactions. Formally the performances of medium frequency
+statistical arbitrage strategies are much better than the performance of their benchmarks, but
+they are very sensitive to the quality of trading engine and optimization software.
+In this minor revision we added the results of out-of-sample tests and explanations of terms
+and methodology.
+2
+Electronic copy available at: https://ssrn.com/abstract=2284577
+
+1
+Signal Generation
+We consider N time-series of logarithmic prices St = (St1, St2, . . . , StN) of the length T and corresponding log-returns R
+Rtn = Stn −St−1 n,
+n = 1, 2, . . . N,
+t = 1, 2, . . . T,
+R0n = 0
+We assume a linear regression model
+y = Xβ + ε,
+(1)
+where y can be price or return time-series, c is a constant vector, β is a k×1 vector of coeﬃcients,ε
+are orthogonal to factors X residuals.
+1.1
+Regression on Indices and Largest Principal Components
+The very ﬁrst idea that can be exploited is the comparison of individual stocks and index time-series.
+We have a single not trivial factor.
+The regression equations for return and price series are
+R = [1 Rind]β + ε
+S = [1 t Sind]β + ε,
+(2)
+t = [1, 2, . . . t]′, is the vector of constant trend and 1 = [1, 1, . . . 1]′ is the constant vector of the
+same length.
+The residuals of regression equations (2) are our ﬁrst candidates for trading strategy signals α:
+α = −ε, ε = My = (I −Hat)y,
+(3)
+where Hat and M are symmetric, idempotent matrices.
+Hat = X(X′X)−1X′
+(4)
+The proﬁt and loss (PnL) data for optimized portfolios presented on ﬁgure (1) and ﬁgure (2).
+The Sharpe ratios (SR) for return and price series based strategies are close, but the return with the
+second approach is much higher plus the ﬁrst strategy has a turnover (the ratio of average absolute
+value of trading order to the sum of absolute values of portfolio positions) that is greater then 100%.
+Firstly, it means that the daily frequency is too low: we still hold the position when the sign of the
+signal is opposite. Secondly, such a high turnover leads to high transaction cost. We will analyze
+that subject in details in next section. In the meantime we just remind that with 100% turnover and
+transaction cost of 2 basis points (bps) the annualized return would be reduced by 5%.
+The next step is to use some speciﬁc benchmarks. We can use ETFs or make more quantitative
+choice - as a regressor we take the eigenvector that corresponds to the largest eigenvalue or the most
+3
+Electronic copy available at: https://ssrn.com/abstract=2284577
+
+Figure 1: Regression of return time-series on SPY.
+Annual return equals to 3.65 %, Sharpe ratio - 1.97,
+turnover - 159%, max drawdown - 1.31%
+Figure 2:
+Regression of price time-series on SPY.
+Annual return equals to 5.55 %, Sharpe ratio - 2.16,
+turnover - 33%, max drawdown - 2.49%
+principal component. S&P500 index we split to 10 Global Industry Classiﬁcation Standard (GICS)
+sectors. The regression equation for principal components can be simpliﬁed: each time-series can be
+presented as a combination of principal components
+y = Xβ,
+(5)
+X is a T × N matrix of components and β is a N × 1 vector of coeﬃcients. The residual of regression
+to the set of principal components is also a regression - to complementary set of orthogonal vectors
+y = X1β1 + X2β2,
+(6)
+X1 and X2 are T × k and T × (N −k) matrices. In matrix form
+Y = X1B1 + X2B2,
+(7)
+where Y is a portfolio of N stock time-series, matrices B1 and B2 consists of k and N −k vectors of
+coeﬃcients. Let us denote matrix of eigenvectors as V and diagonal matrix of eigenvalues as Λ. Also
+let the ﬁrst term in eq.(7) be the main part and the second term - the residual of regression. Then
+ε = X2B2 = X2(X′
+2X2)−1X′
+2XV ′ = X2Λ−1
+2 [Λ20]V ′ = X2[E20]V ′ = Y V2V ′
+2
+(8)
+where E2 is a k × k identity matrix, 0 is k × (N −k) zero matrix. Figure 3 and ﬁgure 4 show
+the PnL of the strategies on assumption that ”fair price” of the stock follows the move of the largest
+principal component of the sector. The diﬀerence between correlation and covariance matrices based
+calculations are not signiﬁcant: variance/covariance coeﬃcients are comparatively uniform inside the
+sectors of large cap stocks.
+4
+Electronic copy available at: https://ssrn.com/abstract=2284577
+
+Figure 3:
+Regression of price time-series on the
+largest principal component. Covariance matrix. Annual return - 6.25 %, Sharpe ratio - 2.0, turnover -
+34%, max drawdown - 2.3%
+Figure 4:
+Regression of price time-series on the
+largest principal component. Correlation matrix. Annual return - 6.13 %, Sharpe ratio - 1.89, turnover -
+33%, max drawdown - 2.7%
+Besides correlation and covariance matrices it is possible to consider more general matrix
+C = diag(σ)γ ·Cov· diag(σ)γ
+(9)
+or
+Ci,j = (σiσj)γ+1ρi,j
+(10)
+where Cov is a covariance matrix.
+σ is a vector of standard deviations, ρi,j is a correlation
+coeﬃcient between stocks i and j. With γ = 0, −1 matrix C becomes covariance and correlation, but
+those numbers are not sacred. For example the infra-correlation γ < −1 (ﬁgure 5) and ultra-covariance
+γ > 0 (ﬁgure 6) matrices generate strong signals.
+We can add the next largest principal component or combine two previous cases. Two components
+give the similar result, and eigenvector combination with index or three largest principal components
+make PnL lower.
+Figures 7 - 11 show the output of the strategy with regression on 2 principal
+components.
+1.2
+”Noise” Strategies
+Bouchaud and Potters [8] showed that the density of the eigenvalues of empirical S&P500 stocks daily
+returns correlation matrix could be perfectly ﬁt by theoretical curve for purely random time-series
+correlation matrix except for the very few highest eigenvalues. They concluded that a large part of
+the empirical matrices must be considered as noise. We try to use this noise for the next step in our
+strategy building, considering the regression on few smallest principal components as a signal. Instead
+of ﬁxing the number of eigenvalues we ﬁx the percentage of variance they cover. We sort eigenvalues
+5
+Electronic copy available at: https://ssrn.com/abstract=2284577
+
+Figure 5: Regression of prices on the largest principal component.
+Infra-correlation matrix (γ = −2).
+Annual return - to 6.27 %, Sharpe ratio - 1.80,
+turnover - 33%, max drawdown - 3.43%
+Figure 6: Regression of prices on the largest principal component. Ultra-covariance matrix (γ = 2). Annual return - to 7.37 %, Sharpe ratio - 2.15, turnover
+- 36%, max drawdown - 2.06%
+Figure 7: (γ = −3).
+Sharpe ratio - 1.95.
+Figure 8: (γ = −1).
+Sharpe ratio - 2.01.
+Figure 9:
+(γ = 0).
+Sharpe ratio - 2.04.
+Figure 10: (γ = 1).
+Sharpe ratio - 2.01.
+Figure 11: (γ = 3).
+Sharpe ratio - 2.19.
+and then draw the line between ”fair” price and residual when the sum of small eigenvalues exceed the
+given fraction of the total sum. Figures 12 - 13 show how 1% of variance works as a signal. Tables
+1 - 2 give more detailed information for the results of modelling with diﬀerent residual variances
+RV . Other parameters: PnL stands for proﬁt and loss, TO ia a turnover and DD is a maximum
+drawdown. On all PnL plots maximum drawdowns indicated by red color. We used diﬀerent values of
+additional parameters, such as aggressiveness of mean-variance optimization coeﬃcient λ and exposure
+to variance γ to illustrate sensitivity to them. Analysis of volatility of output parameters in tables is
+the best way to estimate strategies more conservatively, avoiding overﬁtting.
+1.3
+Fractional Integration
+Fractional Brownian motion (fBm) and Fractional Gaussian noise (fGm)
+Before we worked
+only with conventional price and return time-series. Now we consider the cases between, i.e. consider fraction-integrated time-series. Fractional integration is based on Couchy formula for repeated
+6
+Electronic copy available at: https://ssrn.com/abstract=2284577
+
+Figure 12: Regression of price time-series on the 1%
+of smallest principal components. Covariance matrix
+Figure 13: Regression of price time-series on the 1%
+of smallest principal components. Correlation matrix
+RV %
+0.1
+0.2
+0.3
+0.4
+0.5
+0.6
+0.7
+0.8
+0.9
+1.0
+PnL%
+5.19
+6.79
+7.42
+7.10
+7.78
+7.47
+7.41
+7.06
+7.69
+6.75
+SR
+3.0
+3.26
+3.28
+2.85
+2.98
+2.77
+2.66
+2.52
+2.65
+2.23
+TO
+1.15
+1.12
+1.08
+1.04
+1.02
+0.99
+0.96
+0.94
+0.91
+0.89
+DD%
+1.53
+1.10
+1.26
+1.46
+1.24
+1.44
+1.69
+2.23
+1.73
+2.1
+Table 1: Regression on smallest principal components γ = −1; λ = 0.5·10−4, RV is a residual variance,
+PnL stands for proﬁt and loss, TO ia a turnover and DD is a maximum drawdown
+integration
+Inf(x) =
+1
+(n −1)!
+x
+Z
+0
+(x −t)n−1f(t)dt
+(11)
+Its generalization for real n is straightforward
+Iνf(x) =
+1
+Γ(ν)
+x
+Z
+0
+(x −t)ν−1f(t)dt
+(12)
+The corresponding Holmgren - Riemann - Liouville fractional integral [9] deﬁnes the stochastic process
+XH(t) =
+1
+Γ(H + 1/2)
+t
+Z
+0
+(t −s)H−1/2dBs,
+(13)
+dBt is a white noise, H is a Hurst exponent. Equation (13) is diﬀerent from the stochastic integral
+representation of fractional Brownian motion (fBm) in classic Mandelbrot and Van Ness paper [9],
+but they are equivalent for our purposes.
+7
+Electronic copy available at: https://ssrn.com/abstract=2284577
+
+RV %
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+PnL%
+5.18
+4.43
+5.24
+5.31
+5.79
+6.29
+5.90
+5.75
+5.79
+5.85
+SR
+2.99
+2.17
+2.32
+2.13
+2.23
+2.26
+1.98
+1.88
+1.84
+1.83
+TO
+0.77
+0.67
+0.61
+0.56
+0.53
+0.51
+0.49
+0.47
+0.45
+0.44
+DD%
+1.34
+1.64
+1.83
+3.23
+2.35
+3.15
+3.27
+2.86
+2.54
+2.57
+Table 2: Regression on smallest principal components γ = −0.6; λ = 2·10−4, RV is a residual variance,
+PnL stands for proﬁt and loss, TO is a turnover and DD is a maximum drawdown
+XH(t) =
+1
+Γ(H + 1/2)
+(
+0
+Z
+−∞
+h
+(t −s)H−1/2 −(−s)H−1/2i
+dBs +
+t
+Z
+0
+(t −s)H−1/2dBs
+)
+,
+(14)
+Another way to get fractionally integrated time-series is to apply a recursive algorithm for fractional
+diﬀerencing to integrated I1 series.
+(1 −D)ν(I1X) = I1−νX
+(15)
+(1 −D)νxt = (1 + ν
+1!(−1)1D1 + ν(ν −1)
+2!
+(−1)2D2 + . . .)xt =
+∞
+X
+i=0
+Cixt−i,
+(16)
+where D is a shift operator: Dxn = xn−1 and coeﬃcients Ci have obvious recursive rule:
+C0 = 1; Ci = Ci−1
+i −ν −1
+i
+(17)
+A normalized fractional Brownian motion is uniquely characterized by the following properties:
+• XH(t) has stationary increments;
+• XH(0) = 0 and E(XH(t)) = 0 for t ≥0;
+• EX2
+H(t) = t2H for t ≥0;
+• XH(t) has a Gaussian distribution for t > 0.
+From the ﬁrst three properties it follows that the covariance function is given by
+ρ(s, t) = EXH(s)XH(t) = 1
+2
+n
+t2H + s2H −(t −s)2Ho
+(18)
+for 0 < s ≤t. For Gaussian processes, the mean and covariance structure determine the ﬁnitedimensional distributions uniquely.Therefore, from homogeneity of Equation (18)we conclude that
+fractional Brownian motion with Hurst parameter H is self-similar with Hurst parameter H.
+8
+Electronic copy available at: https://ssrn.com/abstract=2284577
+
+Figure 14: Fractional Gaussian noise and Fractional Brownian motion
+The incremental process RH = XH(k + 1) −XH(k + 1), k = 0, 1 . . . of fractional Brownian motion,
+which is called fractional Gaussian noise has a standard normal distribution for every k, but there is
+no independence. The corresponding autocovariance function
+ρR(k) = 1
+2
+n
+|k −1|2H −2|k|2H + |k + 1|2Ho
+(19)
+is equal to zero only for H = 1/2. The fBms corresponding to 0 < H < 1/2, 1/2 < H < 1, and
+H = 1/2, diﬀer in many signiﬁcant ways. If 1/2 < H < 1, then the covariance is positive and series
+diverges
+ρR(k) > 0; k̸ = 0
+∞
+X
+k=0
+ρR(k) = ∞
+On the other hand, if 0 < H < 1/2, the covariances are negative and the sum of their absolute values
+converges. We illustrate this behavior on ﬁgures
+(14). A positive covariance (bottom row) means
+that positive (negative) returns are followed by returns of the same size more frequently, and we can
+expect cluster phenomena. A negative covariance (top row) leads to strong intermittency or,in other
+words, to mean-reversion pace. A case H = 1/2 (middle row)is special: this is a classic Gaussian
+sequence of independent identically distributed variables or white noise.
+Spectral Analysis
+For stationary stochastic processes, the spectral density is computed as
+follows [10], [11],[12]:
+f(λ) = 2 sin(πH)Γ(2H + 1)(1 −cos λ)
+h
+λ−2H−1 +
+X n
+(2π + λ)−2H−1 + (2π −λ)−2H−1oi
+(20)
+In the article [12] the approximation for the sum S(λ, H) at the right side of (20) was suggested
+S(λ, H) = (1.0002 −0.000134λ)
+n
+S3(λ, H) −2−7.65H−7.4o
+S3(λ, H) = Σ3
+j=1
+n
+(a+
+j )−2H−1 + (a−
+j )−2H−1o
++ (a+
+3 )−2H + (a−
+3 )−2H + (a+
+4 )−2H + (a−
+4 )−2H
+8Hπ
+(21)
+9
+Electronic copy available at: https://ssrn.com/abstract=2284577
+
+Figure 15: S&P500 Hurst parameters. The mean and the mean ± 2 ∗std lines
+where a±
+j = 2πj ± λ
+Figure 15 shows the estimation of Hurst parameters for the S&P500 stocks for the last 5 years. The
+mean is equal to 0.47 and standard deviation is equal to 0.036. Figure 16 illustrates in log-log scale
+diﬀerent colored Gaussian noises. The color was calculated as the weighted by average amplitude of
+the third part of spectrum RGB mixture. Higher amplitude for higher frequency (”blue noise”) means
+negative covariance,strong intermittency or fast up and down alternation. This is a characteristic f
+hydrodynamic turbulence. At the right upper corner you can see a typical spectrum of stock return
+series with the Hurst parameter H = 0.45.
+With H = 0.5 we would have perfectly white noise.
+On the other side of whiteness we can see the ”pink noise” that getting more and more ”pure red”
+with the H −→1. It is featured by a ”strong aftereﬀect”, ”persistence” and ”long memory”. The
+parameter H between 0.5 and 1 is what H. Hurst himself observed in the ﬂuctuations of yearly runoﬀs of Nile and some other rivers. Long memory was discovered in characteristics of high frequency
+10
+Electronic copy available at: https://ssrn.com/abstract=2284577
+
+Figure 16: Fractional Gaussian noises spectrum: blue H=0.01, almost white (H=0.45), pink(0.80) and Brownian
+trading, particularly in a series of signs of trades. The ”Brownian noise” is the spectrum of Gaussian
+Brownian motion (a cumulative sum of ”white noise”) and a mixture of mostly red and ”black noise”
+(zero frequency). It is diﬀerent from other cases because it is not a stationary process that should
+have 0 < H < 1.
+Fractional Brownian motion trading strategies
+Figures 17 and 18 show Hurst parameters
+for principal components sorted by eigenvalues. At left side of the ﬁgures the axis X (logarithmic) is the
+cumulative relative variance in percents that cover principal components from the least volatile to the
+current one. In sample, with 1202 time points and 466 series we see that the least volatile principal
+components are stationary.
+If we could ﬁnd stationary out of sample price time-series, we would
+have a perfect trading strategy. The lower row of ﬁgures 17 and 18 prove the complete dissipation
+of that property on the next one year interval.
+Fractional diﬀerentiation doesn’t give any visible
+11
+Electronic copy available at: https://ssrn.com/abstract=2284577
+
+Figure 17: Hurst parameters for prices. Upper row
+- in sample, lower row - out of sample
+Figure 18: Hurst parameters for fraction - integrated
+return.
+Upper row - in sample, lower row - out of
+sample.
+improvements. However, the positive ”pre-tax” proﬁt of our strategies conﬁrms that the cointegrated
+systems do not disappear instantly. Figures 19 - 22 show the dynamics of trading portfolio with the
+Sharpe Ratio up to 4.10.
+Figure 19: Regression of fractionally integrated return on the 4% of smallest principal components. Covariance matrix. H = 1/3
+Figure 20: Regression of fractionally integrated return on the 4% of smallest principal components.
+γ = −2/3, H = 1/3
+We added ﬁgures 23 - 24 to show results of out-of-sample tests for the same set of parameters as
+at 2 previous plots.
+12
+Electronic copy available at: https://ssrn.com/abstract=2284577
+
+Figure 21: Regression of fractionally integrated return on the 4% of smallest principal components.
+γ = −0.7, H = 0.3
+Figure 22: Regression of fractionally integrated return on the 0.3% of smallest principal components.
+γ = −0.6, H = 0.3
+Figure 23: Regression of fractionally integrated return on the 4% of smallest principal components.
+γ = −0.7, H = 0.3. Out-of-sample test.
+Figure 24: Regression of fractionally integrated return on the 0.3% of smallest principal components.
+γ = −0.6, H = 0.3. Out-of-sample test.
+13
+Electronic copy available at: https://ssrn.com/abstract=2284577
+
+2
+Execution
+R. Grinold and R. Kahn [4] and R.Almgren and N.Chriss [1, 3] independently pioneered application
+of calculus of variation to the problem of portfolio liquidation. In the meantime most modern trading
+engines use some modiﬁcations of that approach. They found the maximum of mean-variance utility
+function Mean-variance utility is given by
+Φ =
+Z t
+0
+(E(R) −λV ar(R))dt =
+Z T
+0
+(αx + h[x] ˙x −λ(Sxσ)2)dt
+(22)
+where S is a stock price
+R is an absolute asset price return in $
+V ar is a variance of that return
+x(t) is a current position in stock
+h[x] is a market impact functional
+T is a time horizon
+λ is a risk-averse parameter.
+α(t) is a signal or expected return (drift) α = E(R)
+Traditionally impact is divided by two parts: permanent and temporary. Permanent impact is a
+linear function of the amount traded only, because otherwise we could move the value of particular asset
+cyclically buying and selling the same number of shares but with diﬀerent speed. We don’t include
+this permanent impact in our analysis for two reasons: ﬁrst - doesn’t depend on trading trajectories
+and second - typically the sizes of proprietary traders transactions don’t exceed few percent of average
+daily volume (ADV ) and correspondingly are negligible fractions of capitalization.
+2.1
+Market impact models
+Execution price is path-dependent in general through the aﬀect by previous trading history. The
+diﬀerence between arrival price and execution price a.k.a implementation shortfall is supposed to be
+of opposite sign to direction of trade: we pay more to increase our position and get less to unwind it.
+h[x] = −
+Z t
+0
+f( ˙x(τ))K(t, τ)dt
+(23)
+Market impact kernel K(τ, t) is assumed homogenous in volume time K(τ, t) = K(t −τ). Initial
+time is set to 0. Market impact is assumed to be linear functional of trading rate
+h(t, ˙x) = −
+Z t
+0
+(˜ηK(t −τ) ˙x(τ))dτ
+˜η = η
+σ
+ADV S0
+(24)
+14
+Electronic copy available at: https://ssrn.com/abstract=2284577
+
+G.K.A.C. model
+The simplest form of the convolution integral kernel was proposed by Grinold
+and Kahn [4] and analyzed in details by Almgren and Chriss [1, 2] (G.K.A.C.)
+K(t −τ) = δ(0),
+Dirac′s delta function
+Utility function (22) is given by
+Φ[x] = −
+Z T
+0
+Ψ(x, ˙x, t) dt →max
+Ψ(x, ˙x, t) = −αx + η ˙x2 + λ(xSσ)2
+(25)
+Subject to initial and terminal conditions:
+x(0) = X0, x(T) = XT
+(26)
+Maximization of (25) is a standard calculus of variation problem. Applying The Euler equation
+∂Ψ
+dx −d
+dt
+∂Ψ
+∂˙x = 0
+(27)
+we obtain
+¨x −k2x = −˜α
+(28)
+Our solution is a simple generalization of Almgren & Chriss [2] to the drift with exponential decay
+x (t) = (X0 + a(0)) sinh (k(T −t))
+sinh (kT)
++ (XT + a(T)) sinh (kt)
+sinh (kT) −a(t)
+˙x (t) = dx
+dt = −(X0 + a(0)) k cosh (k(T −t)
+sinh (kT)
++ (XT + a(T)) k cosh (kt)
+sinh (kT) −˙a(t)
+(29)
+where
+α(t) = α0 exp(−γt)
+k2 = λ/˜η
+˜α = α/(2˜η)
+a(t) is a particular solution of equation (28)
+a(t) = −˜α(t))/γ2 −k2)
+Exponential kernel
+The solution (29) is a decent approximation for optimal trajectories on practice, but it cannot describe the market impact of a single discrete trade (it is a delta-function). The
+instantaneous recovery assumption is unrealistic and inconsistent with calibration procedures. To resolve those problems we have to replace delta function with some smooth kernel. The function under
+integral in (25) is given by:
+Ψ(x, ˙x, t) = −αx + η
+Z t
+0
+˙x(τ)K(t −τ)dτ + λ(xSσ)2
+(30)
+15
+Electronic copy available at: https://ssrn.com/abstract=2284577
+
+Calculating variations 1 we obtain the following equation
+2˜λx = ˙F = d
+dt
+Z T
+0
+˙x(τ)K(|t −τ|)dτ
+(31)
+Assuming that the kernel is twice diﬀerentiable gives
+2˜λ¨x = d
+dt(
+Z T
+0
+˙x(τ) ¨K(|t −τ|)dτ + 2 ˙x ˙K0(0))
+Now we plug the exponential kernel
+K(t −τ) = β · exp(−β(t −τ))
+into generic equations and get the system:
+¨x −
+λβ2
+λ + β2 x = β2α + ¨α
+2(λ + β2)
+¨F −β2F = −2β2 ˙x
+(32)
+We presented a solution of the system in simple and familiar form [6]:
+x (t) = (X0 + a) B sinh ((k(T −t) + A)
+sinh (kT + 2A)
++ (XT + a) B
+sinh (kt)
+sinh (kT + 2A) −a
+where
+A = ln
+s
+β + k
+β −k ,
+B =
+k
+√
+λ
+(33)
+For risk-neutral traders (λ →0) and α = 0 the optimal schedule under exponential impact relaxation
+is a combination of two jumps and straight line between them.
+lim
+λ→0 x = (X0 −∆X0)T −t
+T
++ (XT + ∆XT ) t
+T
+∆X0 = ∆XT = X0 −XT
+βT + 2
+(34)
+Optimal trading strategy with the exponential kernel was the subject of A.Obizhaeva and J.Wang,
+[7]. They probably were the ﬁrst who pointed out to discontinuity of optimal paths at the ends of
+time interval and derived equation (34) for risk-neutral traders. Both discrete and continuous regimes
+of trading were considered using dynamic-programming approach. They also obtained a solution in
+quadratures for more general case, but it is much more complex then our analytical formula.
+1
+δ ˙xΨ =
+Z T
+0
+[δ( ˙x(t))
+Z t
+0
+˙x(τ)K(t −τ)dτ + ˙x(t)
+Z t
+0
+δ( ˙x(τ))K(t −τ)dτ]dt
+We change the order of integration for the second integral and get
+δ ˙xΨ =
+Z T
+0
+Z t
+0
+˙x(τ)K(|t −τ|)dτδ( ˙x(t))dt
+16
+Electronic copy available at: https://ssrn.com/abstract=2284577
+
+2.2
+Multi-periods portfolio trading
+We assume that the asset can be traded for unknown number of periods with the breaks between them.
+During the breaks the trading rate is zero. The length of overnight (lunch) breaks ∆t is calculated
+as the ratio of close-to-open (lunch) variance to day (half day) variance. Inside each active trading
+interval we have Almgren & Chriss trajectory:
+x (t) = (Xn−1 + α∗) sinh (k(T −t))
+sinh (kT)
++ (Xn + α∗) sinh (kt)
+sinh (kT) −α∗
+˙x (t) = dx
+dt = −(Xn−1 + α∗) k cosh (k(T −t)
+sinh (kT)
++ (Xn + α∗) k cosh (kt)
+sinh (kT)
+(35)
+We assume that the sign of position is held inside time intervals. We consider the simple case
+when the α is constant and exists only for the ﬁrst active trading period.
+To deﬁne N + 1 of unknown initial and terminal values of our position Xn we have two boundary
+equations at the very beginning and the very end
+x (0) = X0
+x (T) = 0
+(36)
+and N −1 transversality conditions
+∂Ψ
+∂˙x
+
+tn+0
+tn−0
++ ∂Ψ
+∂˙x
+
+tn+∆t+0
+tn+∆t−0
++ dG
+dxn
+= 0
+(37)
+where G(xn, tn) =
+R tn+∆t
+tn
+Ψ(x, q, t) dt
+
+
+
+
+
+
+
+
+b
+c
+a
+b
+c
+a
+b
+c
+...
+...
+...
+...
+a
+b
+
+
+
+
+
+
+
+
+·
+
+
+
+
+
+
+
+
+x1
+x2
+x3
+...
+xN−1
+
+
+
+
+
+
+
+
+=
+
+
+
+
+
+
+
+
+r1
+r2
+r3
+...
+rN−1
+
+
+
+
+
+
+
+
+(38)
+Assuming equal time intervals tn = t1 we get:
+a = c = 1
+b = −2(∆t · k · sinh(kt1) + cosh(kt1))
+rn = −α · (2 · (1 −cosh(kt1)) −∆t · sinh(kt1)/k)
+r1 = r1 −x0
+(39)
+We presented the fast and simple method of solution in appendix (A.2). We extend the execution
+time iteratively until the position or direction of trade change their signs. In both cases it means that
+17
+Electronic copy available at: https://ssrn.com/abstract=2284577
+
+the initial position was liquidated on the last time interval. The optimal time of execution t∗can be
+found applying additional boundary condition for the rate of trade.
+x (t∗) = 0
+˙x (t∗) = 0
+(40)
+Substituting solution 35 for the last interval into (40) we get
+t∗= 1
+kacosh((xn−1 + α)/α)
+2.3
+Inventory Management
+For portfolio trading the approach will be same, but instead of one equation we will have a system of
+ODEs (A.1), that after the orthogonalization gives for each eigenvector the solution of the form (29).
+z (t) = Zn−1
+sinh (k(T −t))
+sinh (kT)
++ Zn
+sinh (kt)
+sinh (kT)
+(41)
+For simpliﬁcation we dropped the price drift term.
+Constraints
+Soft constraints (additional quadratic terms to objective functions) is a ﬂexible tool
+to modify the optimal trajectory without changing complexity of the problem.
+We consider cash
+and market neutrality constraints on portfolio level and a combination of cash neutrality and relative
+variance on sector level.
+Cij = Cij + λcash + λmarket · βiβj
+(42)
+Usually it is not a good idea to apply hard equality constraints to the asset positions as functions
+of time. Those constraints would require immediate move regardless of cost of trade. At the same
+time the goals like to have cash, market or even sector neutral portfolio at the end of the day are not
+hard to achieve.
+Na¨ıve and not so na¨ıve strategies
+It is always a temptation to apply well known from adjacent
+areas results to a new problem. In our case the source of solutions is obvious - the Portfolio Management. However this natural approach has limitations. The classic mean-variance investment portfolio
+optimization is similar but not identical to the dynamic problem of trading portfolio management.
+Φ(x) = xtCx →min
+(43)
+Solving the system above we are looking for the cash-neutral minimal variance portfolio given the
+maximum market participation rate. This strategy is naive or shortsighted because we don’t consider
+18
+Electronic copy available at: https://ssrn.com/abstract=2284577
+
+neither diﬀerent transaction cost to obtain this intermediate portfolio nor the risk and market impact
+during following liquidation. We can improve that approach making strong but reasonable assumptions
+about unwinding/hedging trajectories. The optimal time of execution is inﬁnite and a trajectory for
+a single stock or independent part of portfolio (eigenvector) is an exponential decay.
+Φ(x) = (X −x)tη(X −x) + λ(xtCx + zt e2k
+k2 z) →min
+(44)
+19
+Electronic copy available at: https://ssrn.com/abstract=2284577
+
+3
+Results and discussion
+Wide universe.
+In this section we present more up-to-date, more realistic and on wider universe
+results. The methodology we used is similar to the best approaches in Section 1, but the parameter
+values and other details of trading strategies are intentionally hidden.
+Figure 25: Regression of price time-series. Uniform
+capital allocation
+Figure 26: Regression of fractionally integrated return time-series. Uniform capital allocation
+Figure 27: Regression of price time-series. Optimal
+solution
+Figure 28: Regression of fractionally integrated return time-series. Optimal solution
+The strategies shown on Figures 19,20,21,22 look attractive, but we showed the results in a perfect
+world without friction, i.e. market impact, fees and other chargers. We simulated perfect world (blue
+lines) and adjusted to fees and market impact (green lines) returns on Figures
+25,26,27,28
+The
+results at lower level (Figures 27,28 ) are better then at upper one (Figures 25,26). The results at
+upper level were obtained by allocation of 1% of notional capital (in our simulation - $10 million)
+20
+Electronic copy available at: https://ssrn.com/abstract=2284577
+
+into stocks with 50 highest positive and 50 highest negative signals. Lower level charts proves that
+the portfolio optimization is a powerful method to increase return and reduce risk. Optimization
+looks as an unconditionally better choice in strategies implementation, but it is not. The special
+ﬁnancial optimization software can be eﬃcient and comparatively friendly for traders but they are
+very expensive, e.g. Axioma Portfolio Optimizer. It Is easy to ﬁnd free or almost free general
+optimization packages, but the development and maintenance of trading engines with them requires
+more advanced and professional people.
+From left (Figures
+25, 27) to right (Figures 26, 28
+)
+the theoretical values of Sharpe ratio grow but adjusted ones slightly drop. The reason is in much
+higher turnover for fractional integrated time-series. Actually turnover greater then 100% means that
+the portfolio rebalancing was overdue: signals have shorter life then intervals between trades. It is an
+indication that the more frequent data is required for analysis and, correspondingly, intraday portfolio
+rebalancing should be considered.
+Out of the box.
+In the section 1.2 I used the unconventional names ”ultra-covariance” matrix
+and ”infra-correlation” matrix. Rather than to coin new terms and ”to multiplied entities beyond
+necessity” my intention was to to point out that something useful can exist out of the box - even if we
+never saw or heard it. Covariance matrix is the natural measure for the relations between time-series
+of similar stocks like the stocks of the same sector of S&P500 index. Largest principal component (the
+component with the highest variance) is a good indicator of the sector behavior and can be chosen
+as a next generation ETF. Note, that the volatilities of S&P500 stocks are not very diﬀerent inside
+their sectors. For wider universe using covariance matrix for PCA means giving more weights to
+most volatile small cap stocks. Correlation (normalized covariance) matrix eliminates that premium.
+To give the premium to most solid and ”ﬂat” stocks we need to multiply correlation coeﬃcients by
+standard deviations in negative power. The step in opposite direction also can be explained (good
+theoretician should be able to explain everything!): more volatile stocks are more sensitive to trends
+and therefore serve as better indicators of future returns.
+There are many other combinations of time-series and methods of their processing and ﬁltering.
+The most obvious one is a combination with the trading volume. Using changes in market value
+(returns times volume traded) sequences seems pretty logical. But the opposite operation - calculating
+volume time returns, i.e. dividing returns by trading volume looks logical as well and very popular.
+Volume traded is better measure of events happened than calendar time. Actually both ideas are
+far from perfect as is, because of very high volatility of daily volumes. Short time (including daily
+and weekly) volume time-series would completely overshadow the most important price moves. Some
+smoothing or diﬀerent out-of-the-box tricks required to incorporate that additional information.
+In-sample or out-of-sample?
+All time-series combinations and especially data mining such as
+smoothing and ﬁltering are signiﬁcantly nonlinear procedures, all of them make the models less transparent and therefore make proper formal statistic tests hard to design and even harder to believe.
+21
+Electronic copy available at: https://ssrn.com/abstract=2284577
+
+Pure out-of-sample tests are easy to run for high frequency strategies and almost mentally impossible
+for daily trading strategies. Ideally the researcher should tune all parameters in sample leaving at
+least a hundred points ( ∼5 months ) intact. After single out-of-sample run any further changes in
+working version should be postponed for the next 5 months. The possibility to use more sophisticated constructions that could provide some warranty against overﬁtting, for example, bootstrapping
+is very limited because of subtle nature of portfolio level signal generation. A.Inoue and L.Kilian [14]
+questioned and ”overturned the conventional wisdom that out-of-sample test results are more reliable
+than in-sample test results”. Long time horizon and smooth and wide maximums of PnL functions
+(see Table 1 and Table 2) of the most sensitive parameters are more important than unveriﬁed virginity of relatively small samples. Anyway, the electronic form of this publication allow me to respond
+promptly to the questions about in-sample - out-of-sample tests and add updated results - see Figures
+23 and 24. The results presented are not ”the best” - I didn’t try to maximize the PnL for all static
+parameters in in-sample tests or make them dynamic (changing day by day during simulation). Also
+I didn’t treat sectors separatively.
+Even the most primitive of statistical arbitrage trading strategies, as we saw, can give us formally
+the performance that is much better than the historical performance of indices. And this free lunch
+is paid by other expenses: investments in smart trading engines and dynamic liquidity adjusted
+optimization software.
+I don’t discuss Execution section here. There are many fundamental and practical problems in
+market impact and optimal execution theories that are not covered in literature. I am going to address
+some of them in near future.
+22
+Electronic copy available at: https://ssrn.com/abstract=2284577
+
+References
+[1] Almgren R. and N. Chriss (2001) Optimal Execution of Portfolio Transactions, Journal of Risk,
+3(2), 5–40.
+[2] Almgren, Robert, 2003, Optimal execution with nonlinear impact functions and trading enhanced
+risk, Applied Mathematical Finance 10, 118.
+[3] Almgren, Robert, and Neil Chriss, 1999, Value under liquidation, Risk, 12 (12).
+[4] Grinold Richard, and Kahn Ronald, 1999, Active Portfolio Management, McGraw-Hill, New
+York.
+[5] BARRA, Market impact model handbook (Berkeley, California, Barra, 1997).
+[6] Skachkov Igor, 2010 Optimal Execution:
+Linear Market Impact with Exponential Decay.
+http://ssrn.com/abstract=2283027
+[7] Obizhaeva, Anna and Wang, Jiang , 2005 Optimal trading strategy and supply/demand dynamics.
+MIT working paper
+[8] Bouchaud, Jean-Philippe and Potters, Marc, 2000, Theory of Financial Risks, Cambridge U.
+Press, Cambridge, UKAC1999
+[9] Mandelbrot, B.B. and Van Ness J.W. Fractional Brownian Motion, fractional Noises and Applications. SIAM Review, 10:422-437, 1968
+[10] Shiryaev, A.. 1999, Essential of stochastic ﬁnance:
+Facts, Models, Theory, World Scientiﬁc,Singapore
+[11] Dieker,Ton. 2004, Simulation of fractional Brownian motion, Master Thesis, Amsterdam
+[12] Paxson, V. Fast, approximate synthesis of fractional Gaussian noise for generating self-similar
+network traﬃc, Computer Communication Review, 27 (1997), pp. 5-18.
+[13] Gatheral J., Schied A. (2013) Dynamical models of market impact and algorithms for order
+execution. Preprint. URL: http://ssrn.com/abstract=2034178
+[14] Inoue, Atsushi and Kilian, Lutz, In-Sample or Out-of-Sample Tests of Predictability: Which
+One Should We Use?
+(November 2002). ECB Working Paper No. 195. Available at SSRN:
+http://ssrn.com/abstract=358500
+23
+Electronic copy available at: https://ssrn.com/abstract=2284577
+
+A
+Appendix
+A.1
+Multidimensional optimization
+Unconstrained N-dimensional optimization could be divided to N one-dimensional problems AC
+(2000). We rewrite equations (25) in matrix form
+Φ[x] = −
+Z T
+0
+Ψ(x, ˙x, t) dt →max
+Ψ(x, ˙x, t) = −αtx + ˙xtη ˙x + λ · xtΩx
+(45)
+where
+α is a vector of expected returns
+η is diagonal matrix of market impact coeﬃcients.
+Ωis a covariance matrix
+The chain of linear transformations
+˙xtη ˙x = ˙xtη1/2η1/2 ˙x = (η1/2 ˙x)t · (η1/2 ˙x)
+λ · xtΩx = (η1/2x)t(λη−1/2Ωη−1/2)(η1/2x) =
+(η1/2x)tV tUV (η1/2x) = (V η1/2x)tU(V η1/2x) = ztUz
+(η1/2 ˙x)t · (η1/2 ˙x) = (η1/2 ˙x)tV −1V (η1/2 ˙x) = (η1/2 ˙x)tV tV (η1/2 ˙x) = ˙zt ˙z
+αtx = αt(η−1/2V t)(V η1/2x) = ((T −1)tα)t(T x) = αt
+zz
+where
+V is a matrix of eigenvectors
+U is a diagonal matrix of eigenvalues{k2
+1, k2
+2, . . . , k2
+N}
+T is the transformation matrix: z = T x
+makes the problem split.
+Φ[z] = −
+Z T
+0
+Ψ(z, ˙z, t) dt →max
+Ψ(z, ˙z, t) = −αt
+zz + ˙zt ˙z + ztUz
+(46)
+Applying Euler equation to (46) we get the system of N independent diﬀerential equations:
+¨zi −k2
+i z = −αzi
+i = 1, 2, . . . , N
+(47)
+24
+Electronic copy available at: https://ssrn.com/abstract=2284577
+
+A.1.1
+Boundary conditions
+For the ﬁrst boundary problem:
+x(0) = X0,
+x(T) = XT
+(48)
+we present the solution of (47) in the form:
+z(t) = S1(t)C1 + S2(t)C2
+where
+S1(t) and S2(t)are two sets of independent solutions of homogeneous Euler equations
+or explicitly
+
+
+
+
+
+
+z1
+z2
+...
+zN
+
+
+
+
+
+
+=
+
+
+
+
+
+
+sinh(k1(T −t))
+0
+. . .
+0
+0
+sinh(k2(T −t))
+. . .
+0
+...
+...
+...
+...
+0
+0
+. . .
+sinh(kN(T −t))
+
+
+
+
+
+
+
+
+
+
+
+
+C11
+C12
+...
+C1N
+
+
+
+
+
+
++
+
+
+
+
+
+
+sinh(k1t)
+0
+. . .
+0
+0
+sinh(k2t)
+. . .
+0
+...
+...
+...
+...
+0
+0
+. . .
+sinh(kNt)
+
+
+
+
+
+
+
+
+
+
+
+
+C21
+C22
+...
+C2N
+
+
+
+
+
+
+Multiplying boundary conditions (48) by transformation matrix we get
+ 
+S10
+S20
+S1T
+S2T
+! 
+C1
+C2
+!
+=
+ 
+Z0
+ZT
+!
+where
+S0 = S(0)
+ST = S(T)
+With our choice for functional form of solution equations to deﬁne C1 and C2 would be divided
+C1 = S−1
+10 Z0
+C2 = S−1
+2T ZT
+If all left or all right (or both) conditions are deﬁned for trading rates instead of initial positions the
+procedure is very similar. We just need to replace sinh(.) by cosh(.) in corresponding set of solutions.
+Those homogeneous conditions are typical on practice, but if we have to calculate marginal cost of
+particular position we should consider more special case:
+(x1, x2, . . . , ˙xk, . . . , xN)t|t=0 = (X1, X2, . . . , Qk, . . . , XN)t
+25
+Electronic copy available at: https://ssrn.com/abstract=2284577
+
+We denote a vector on the right side as ˜X. The matrix equation for arbitrary constants C1 is
+(DkT −1S1)|t=0C1 = ˜X
+(49)
+where operator
+Dk =
+
+
+
+E ...
+0
+...
+d
+dt ...
+0 ...
+E
+
+
+
+diﬀerentiate the k −th row of the matrix at right and leave other elements intact.
+A.1.2
+Terminal constraints
+Usually it is required that at the end of the day portfolio will satisfy to the set of hard constraints,
+e.g. cash and β neutrality (total or sector wise), budget constraint and possible ﬁxed exposure to to
+some particular stocks or groups of stocks.The problem is described by lagrangian:
+Φ[x] = −
+Z T
+0
+Ψ(x, ˙x, t) dt + G(T, X) →max
+G(T, X) = λt(BtX −c) =
+M
+X
+i=1
+λi(βt
+iX −ci)
+(50)
+where λ = (λ1, λ2, . . . , λM) is a vector of Lagrange coeﬃcients, B is a (N × M) matrix. For example
+if the only constraint is cash neutrality then
+B = (1, . . . , 1)t is a N-dimensional unity vector
+As before we change the variable to make liquidity adjusted covariance matrix orthogonal. Additional
+term in target function doesn’t depend on internal points and therefore doesn’t change the Euler
+equations. What it does change is boundary condition at the right end of time interval. It gives rise
+to the transversality condition with terminal value:
+Ψ ˙z|t=T + GZ = 0
+Ψ ˙z = dΨ
+d ˙z
+GZ = dG
+dZ
+G(T, Z) = λt(BtT −1Z −c) = λt( ˜BtZ −c)
+(51)
+z(0) = Z0
+˙z(T) + ˜Bλ = 0
+(52)
+We present the solution in the form that satisﬁes initial condition:
+26
+Electronic copy available at: https://ssrn.com/abstract=2284577
+
+z(t) = cosh(k(T −t))
+cosh(kT)
+Z0 +
+sinh(kt)
+k cosh(kT)C
+(53)
+For the constants C we have the system of N + M equations:
+C + ˜Bλ = 0
+˜Bt(Z0 + S2T C) −c = 0
+S2T = 1
+k tanh(kT)
+(54)
+It follows that
+λ =
+˜BtZ0 −c
+˜BtS2T ˜B
+C = −˜Bλ
+(55)
+A.2
+Multi-period liquidation
+The standard approach to solve the tridiagonal system of linear equations is progonka a.k.a Thompson’s algorithm. This algorithm perfectly ﬁts our goal to ﬁnd the optimal strategy with unknown
+terminal time. At ﬁrst stage of progonka called decomposition and forward substitution we sequentially obtain the values of variables xk under implicit assumption that the next term xk +1 is equal to
+zero. Because the risks factors always work in direction of decreasing the absolute value of a position
+- the interval where the trajectory cross the line x = 0 would be the last. The algorithm is presented
+by the following pseudo-code:
+γ1 = b, β = b, n = 1, xn = r1/β,
+˙x = −1
+while( ˙x < 0 & xn > 0) {
+n = n + 1 Decomposition and forvard substitution
+γn = 1/β
+β = b −γn
+xn = (r −xn)/β
+˙x =
+k
+sinh(kt1)((α + xn) · cosh(kt1) −(xn−1 + α))
+}
+xn = 0;
+for (j = 2) to (n −1)
+Backsubstitution
+xn−j = xn−j −γn−j+1 · xn−j+1
+(56)
+27
+Electronic copy available at: https://ssrn.com/abstract=2284577

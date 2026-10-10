@@ -1,0 +1,289 @@
+{
+  "doc_id": 8,
+  "titulo": "In Search of Pairs using Firm Fundamentals: Is Pairs Trading Profitable?",
+  "resumen_operativo": "El paper propone filtrar pares candidatos (identificados por SSD y cointegración) usando una medida de similitud de fundamentals de la firma (FCS, vía elastic net sobre 81 características contables/mercado) para reducir el riesgo de no-convergencia causado por el problema de tests de hipótesis múltiples. Muestra que, aunque la rentabilidad bruta del pairs trading en acciones de EE.UU. se desvaneció desde 2003, el costo de operar pares espurios sigue siendo significativo en los 2010s, y que variables contables (no de mercado) son las que más aportan a identificar pares confiables, especialmente en crisis.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "pairs trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia de arbitraje estadístico que explota la desviación temporal de precio entre dos acciones con relación de largo plazo, tomando posiciones largas y cortas.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "cointegration"},
+        {"tipo": "USA", "objeto": "minimum distance method"},
+        {"tipo": "APLICA_A", "objeto": "statistical arbitrage"}
+      ],
+      "cita_textual": "Pairs trading, a type of statistical arbitrage strategy, is designed to exploit temporal price deviation between two stocks that have a long-term relationship in their prices."
+    },
+    {
+      "nombre": "multiple hypothesis testing",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Problema por el cual el número de pares incorrectamente identificados como cointegrados crece exponencialmente con el número de acciones testeadas, aun cuando ninguna tenga relación real.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "non-convergence risk"},
+        {"tipo": "MITIGA", "objeto": "firm characteristics similarity"}
+      ],
+      "cita_textual": "the number of wrongly identified pairs exponentially increases with the number of stocks, even though none of them have any long-term relationship"
+    },
+    {
+      "nombre": "non-convergence risk",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Riesgo de que la divergencia de precios de un par identificado no converja, generando pérdidas; se origina en pares espurios identificados por el problema de tests múltiples.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "loss"},
+        {"tipo": "MITIGA", "objeto": "firm characteristics similarity"}
+      ],
+      "cita_textual": "incorrectly identifying pairs can increase non-convergence risk"
+    },
+    {
+      "nombre": "firm characteristics similarity",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Medida (FCS) construida a partir de 81 características de la firma que cuantifica la cercanía fundamental entre dos acciones de un par, ponderando cada característica por su importancia (coeficiente elastic net) en explicar los retornos de pairs trading.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "elastic net regression"},
+        {"tipo": "MITIGA", "objeto": "non-convergence risk"},
+        {"tipo": "MEJORA_A", "objeto": "pairs trading"}
+      ],
+      "cita_textual": "we propose a measure called ‘firm characteristics similarity’ (FCS) using a large number of firm-level characteristics"
+    },
+    {
+      "nombre": "elastic net regression",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica de regresión regularizada usada para estimar qué características de la firma importan en el desempeño del pairs trading, minimizando overfitting y multicolinealidad entre las 81 variables independientes correlacionadas.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "overfitting"},
+        {"tipo": "USA", "objeto": "firm characteristics similarity"},
+        {"tipo": "MEJORA_A", "objeto": "ordinary least squares"}
+      ],
+      "cita_textual": "we adapt the elastic net regression because it can minimize overfitting and multicollinearity problems and also allows us to evaluate which firm characteristics matter in pairs trading"
+    },
+    {
+      "nombre": "cointegration",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Test (Engle-Granger) usado junto con la suma de diferencias al cuadrado (SSD) para identificar pares candidatos, regresando el log-precio de una acción sobre el otro y testeando estacionariedad de los residuos con ADF.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "pairs trading"},
+        {"tipo": "USA", "objeto": "augmented Dickey-Fuller test"}
+      ],
+      "cita_textual": "We then test if these pairs are co-integrated using the procedure proposed by Engle and Granger (1987)"
+    },
+    {
+      "nombre": "minimum distance method",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Método de identificación de pares mediante la suma de diferencias al cuadrado (SSD) entre precios normalizados, usado como filtro previo a cointegración.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "pairs trading"},
+        {"tipo": "USA", "objeto": "cointegration"}
+      ],
+      "cita_textual": "we first calculate the distance between all possible combinations of two stocks within industry, as in Gatev et al. (2006), and select pairs with smaller sums of squared differences (SSD)"
+    },
+    {
+      "nombre": "cost of spurious pairs",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Diferencia de desempeño entre la cartera de pares fundamentalmente similares (P1) y la de pares fundamentalmente disímiles (P5); interpretada como el costo que soportan los arbitrajistas por operar pares espurios sin considerar fundamentals.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "non-convergence risk"},
+        {"tipo": "USA", "objeto": "firm characteristics similarity"}
+      ],
+      "cita_textual": "the performance difference between these two portfolios can be interpreted as the cost that arbitrageurs bear in trading spurious pairs if they do not consider fundamentals"
+    },
+    {
+      "nombre": "transaction costs",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Costos de trading incorporados en el cálculo del retorno de pairs trading, aplicados como 10 puntos básicos por lado de cada operación.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "pairs trading"}
+      ],
+      "cita_textual": "Note that 10 bps is taken for transaction costs on each side of trading."
+    },
+    {
+      "nombre": "Sharpe ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Usado para comparar el desempeño ajustado por riesgo entre carteras de pares de alta y baja FCS; la cartera de alta FCS muestra Sharpe superior.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "pairs trading"}
+      ],
+      "cita_textual": "the Sharpe ratios of portfolios with higher FCSs are greater than those with lower FCSs"
+    },
+    {
+      "nombre": "industry classification",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Primer filtro de formación de pares: se agrupan acciones en 11 grupos por código SIC de 2 dígitos y se seleccionan 6 sectores, para asegurar exposición a factores de riesgo comunes antes de aplicar SSD y cointegración.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "pairs trading"}
+      ],
+      "cita_textual": "We assign stocks to 11 industry groups using the first two digits of the SIC code"
+    },
+    {
+      "nombre": "accounting information",
+      "tipo": "dato",
+      "definicion_en_contexto": "Conjunto de variables contables (capex, inventario, current ratio, leverage, concentración de ventas de la industria, entre otras) que resultan ser las de mayor importancia relativa para determinar la cercanía fundamental (FCS), por encima de datos de mercado.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "trade volume"},
+        {"tipo": "USA", "objeto": "firm characteristics similarity"}
+      ],
+      "cita_textual": "Accounting information plays a crucial role in identifying pairs rather than market trading data"
+    },
+    {
+      "nombre": "look-ahead bias",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Sesgo evitado usando únicamente los 5 años previos de datos para estimar el modelo de importancia de características en cada ventana móvil mensual.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "look-ahead bias"}
+      ],
+      "cita_textual": "To avoid look-ahead bias, we use the past 5 years data to estimate the model in (4)."
+    },
+    {
+      "nombre": "walk-forward validation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "El modelo de importancia de características se reestima cada mes con ventanas móviles (rolling windows) de 5 años, y la identificación de pares se repite mensualmente con formación sobre 12 meses previos y trading a 6 meses.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "look-ahead bias"},
+        {"tipo": "PARTE_DE", "objeto": "pairs trading"}
+      ],
+      "cita_textual": "equation (4) is estimated every month by rolling windows"
+    },
+    {
+      "nombre": "market crisis regime dependence",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Regularidad empírica por la cual la importancia de la similitud fundamental (FCS) para explicar el desempeño de pairs trading aumenta durante períodos de crisis financiera (crisis financiera global, burbuja dot-com, crisis asiática).",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "firm characteristics similarity"}
+      ],
+      "cita_textual": "the importance of fundamental closeness increases during crises, i.e., the global financial crisis, the dot-com bubble, and the Asian financial crisis"
+    },
+    {
+      "nombre": "pairs trading profitability decline",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Fenómeno documentado de caída sostenida en la rentabilidad del pairs trading en acciones de EE.UU. desde 2003, atribuido al aumento de trading de arbitraje y a cambios en el entorno de mercado e información.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "market efficiency"}
+      ],
+      "cita_textual": "the profitability of pairs trading has continued to decline since 2003 and is not significant any more"
+    },
+    {
+      "nombre": "reversal effect",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "El coeficiente negativo del factor momentum en la regresión de retornos de las carteras FCS indica que parte de la rentabilidad de pairs trading proviene de un efecto de reversión de corto plazo.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "momentum"}
+      ],
+      "cita_textual": "our results confirm that momentum has a negative effect on all quintile portfolios... This indicates that some part of the profitability of pairs trading is derived from the reversal effect."
+    },
+    {
+      "nombre": "spread standard deviation trigger",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Regla de trading que abre posiciones cuando el spread del par excede dos desviaciones estándar históricas (calculadas en el período de formación) y las cierra cuando el spread vuelve a la media.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "pairs trading"}
+      ],
+      "cita_textual": "Positions are opened when the absolute value of the spread at time t (ϵt) exceeds two standard deviations (σS) and are closed when the spread reaches the mean (zero)."
+    },
+    {
+      "nombre": "liquidity filter",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Restricción de universo de trading que excluye acciones con volumen en el 20% inferior de los últimos 3 meses, precio menor a 1 dólar, o tamaño menor al 20% del NYSE, para eliminar acciones ilíquidas y no shorteables.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "illiquidity"},
+        {"tipo": "PARTE_DE", "objeto": "pairs trading"}
+      ],
+      "cita_textual": "Stocks with a trading volume less than the bottom 20% over the past 3 months, stocks with a price less than $1, and stocks whose size is less than 20% of the NYSE are excluded from trading"
+    },
+    {
+      "nombre": "overlapping portfolio construction",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica de construcción de retornos mensuales combinando seis carteras superpuestas (una por cada mes de un período de trading de 6 meses) siguiendo a Jegadeesh y Titman (2001), para aumentar el poder estadístico de los tests.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "pairs trading"}
+      ],
+      "cita_textual": "we construct an overlapping portfolio using six portfolios in order to increase the power of our tests as in Jegadeesh and Titman (2001)"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Las carteras de pares con mayor similitud fundamental (FCS alta, P1) superan a las de menor similitud (P5) en todos los seis sectores analizados, evidenciando que la cercanía fundamental reduce el riesgo de no-convergencia.",
+      "mercado": "US equities (NYSE, AMEX, Nasdaq)",
+      "periodo": "1980-2018",
+      "magnitud": "diferencia de retorno P1-P5 entre 0.18% mensual (transporte) y 0.64% mensual (finanzas); Sharpe ratio anual de 1.24 en el sector financiero, significativo al 5%",
+      "condiciones": "incluye costos de transacción de 10bps por lado; formación con SSD+cointegración al 5%; trading a 6 meses; significativo al 1% en la mayoría de sectores",
+      "robustez": "media",
+      "cita_textual": "the returns difference between P1 and P5 in the finance sector is 0.64% per month and its annual Sharpe ratio is 1.24, which is statistically significant at the 5% level"
+    },
+    {
+      "afirmacion": "La rentabilidad general del pairs trading en EE.UU. cayó fuertemente desde 2003, la mayor parte de las ganancias ocurrieron en los 1980s y 1990s.",
+      "mercado": "US equities",
+      "periodo": "1980-2018 (comparación pre/post 2003)",
+      "magnitud": "P1 (fundamentalmente similar) pasa de 1.30% mensual en el sector minero pre-2003 a -0.17% mensual post-2003",
+      "condiciones": "consistente con Gatev et al. (2006) y Rad et al. (2016); incluye costos de transacción",
+      "robustez": "media",
+      "cita_textual": "the profitability of pairs trading has declined sharply since 2003"
+    },
+    {
+      "afirmacion": "El costo de operar pares espurios (COSP, diferencia P1-P5) sigue siendo significativo en la década de 2010, a pesar de que la rentabilidad general del pairs trading desapareció.",
+      "mercado": "US equities",
+      "periodo": "pre-2003 (hasta dic-2002) vs post-2003 (desde ene-2004)",
+      "magnitud": "COSP en el sector minero aumenta de 0.31% a 1.02% mensual entre pre- y post-2003",
+      "condiciones": "significativo en la mayoría de sectores en ambos subperíodos; incluye costos de transacción",
+      "robustez": "media",
+      "cita_textual": "the COSP in Mining sector has increased slightly from 0.31% to 1.02% during the pre- and post-2003 periods, respectively"
+    },
+    {
+      "afirmacion": "La diferencia de desempeño entre pares fundamentalmente similares y disímiles se explica por menores pérdidas en los pares que no convergen, no por diferencias en tasa de convergencia u otras variables.",
+      "mercado": "US equities",
+      "periodo": "no especificado (muestra completa 1980-2018)",
+      "magnitud": "retorno promedio de pares no convergentes: P1 (Close) = -3.56% vs P5 (Remote) = -6.52% en transporte y servicios públicos; convergentes: P1 = 6.72% vs P5 = 8.08%",
+      "condiciones": "sin diferencias significativas entre P1 y P5 en tasa de convergencia, número de trades, número de pares operados o duración de trading",
+      "robustez": "media",
+      "cita_textual": "the average return of non-converged pairs of P1 (Close) in the transportation and public utilities sector is only −3.56%, while that of converged pairs is 6.72%"
+    },
+    {
+      "afirmacion": "Las variables contables (capex, inventario, current ratio, financial statement score, leverage, concentración de ventas de industria) son más importantes que las variables de mercado (iliquidez, momentum, tamaño) para determinar la similitud fundamental de un par.",
+      "mercado": "US equities",
+      "periodo": "no especificado",
+      "magnitud": "ranking de importancia relativa de 81 características vía coeficientes de elastic net (Figura 4); sin valor numérico único reportado en el texto",
+      "condiciones": "estimado con elastic net regression sobre datos de 60 meses x 100 pares por ventana",
+      "robustez": "media",
+      "cita_textual": "Firm characteristics such as capital expenditures and inventory (Chen and Zhang, 2010), current ratio (Ou and Penman,1989), financial statement score (Mohanram, 2005), leverage (Bhandari, 1988), and industry sales concentration (Hou and Robinson, 2006) are more important for determining fundamental similarity"
+    },
+    {
+      "afirmacion": "La importancia de la similitud fundamental (FCS) para explicar la rentabilidad de pairs trading aumenta durante períodos de crisis financiera.",
+      "mercado": "US equities",
+      "periodo": "incluye crisis asiática, burbuja dot-com y crisis financiera global",
+      "magnitud": "aumento visual en índice de importancia FCS agregado (ecuación 7, Figura 5); sin cifra puntual reportada en el texto",
+      "condiciones": "medido con coeficientes negativos promedio del elastic net por mes",
+      "robustez": "media",
+      "cita_textual": "Figure 5 shows that FCS becomes more important when uncertainty increases, such as the global financial crisis, the dot-com bubble, and the Asian financial crisis"
+    },
+    {
+      "afirmacion": "Incluso controlando por los factores de Fama-French de 5 factores más momentum y liquidez, la cartera de pares con alta similitud fundamental (P1) mantiene un alfa significativo.",
+      "mercado": "US equities",
+      "periodo": "no especificado (100 pares seleccionados sin distinción de sector)",
+      "magnitud": "alfa de P1 = 0.48% mensual, significativo",
+      "condiciones": "regresión de 7 factores (Fama-French 5 + momentum + liquidez); incluye costos de transacción",
+      "robustez": "media",
+      "cita_textual": "the alpha of P1 is 0.48% per month and is significant"
+    },
+    {
+      "afirmacion": "Los pares identificados con elastic net regression superan en desempeño a los identificados con regresión OLS estándar en todas las industrias analizadas.",
+      "mercado": "US equities",
+      "periodo": "no especificado",
+      "magnitud": "superioridad consistente en las seis industrias (Tabla 6); sin cifra puntual reportada en el texto",
+      "condiciones": "misma metodología de formación de pares salvo el método de estimación de importancia de características",
+      "robustez": "baja",
+      "cita_textual": "Table 6 demonstrates that pairs trading calculated with the elastic net regression outperform those determined by OLS in all industries"
+    },
+    {
+      "afirmacion": "Al incluir acciones pequeñas e ilíquidas (micro stocks) en la muestra, el desempeño del pairs trading mejora y se vuelve rentable incluso en los 2010s, pero esta ganancia no es realmente explotable por costos e iliquidez.",
+      "mercado": "US equities (incluyendo micro-caps)",
+      "periodo": "incluye década de 2010",
+      "magnitud": "mejora de desempeño en todos los sectores (Tabla 5, Figura 1); sin cifra puntual dada",
+      "condiciones": "los autores advierten explícitamente que esta anomalía no es fácilmente explotable en la práctica por iliquidez y costos de trading",
+      "robustez": "baja",
+      "cita_textual": "in reality, price anomaly in small and illiquid stocks are not easily exploitable due to their illiquidity and trading costs"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "El paper trabaja con datos mensuales/diarios de acciones y variables contables de balance, un marco no directamente trasladable al intradía de futuros ES; lo único transferible es el principio metodológico de filtrar señales estadísticas espurias con información exógena adicional para reducir riesgo de no-convergencia."
+  }
+}

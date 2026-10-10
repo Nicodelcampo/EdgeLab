@@ -1,0 +1,147 @@
+{
+  "doc_id": 294,
+  "titulo": "Pairs Trading via Unsupervised Learning",
+  "resumen_operativo": "Desarrolla una estrategia de pairs trading usando clustering no supervisado (k-means, DBSCAN y aglomerativo) sobre acciones del mercado estadounidense entre enero 1980 y diciembre 2020. Incorpora características fundamentales de empresas además de momentum de precios, a diferencia del enfoque tradicional basado solo en cointegración. El portafolio long-short construido con clustering aglomerativo obtiene un retorno anualizado del 24.8% y Sharpe ratio de 2.69, con máximo drawdown del 12.3%. Las características empresariales mejoran significativamente el rendimiento respecto a usar solo precios.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Unsupervised Learning for Pairs Trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia que agrupa acciones mediante clustering no supervisado usando características fundamentales y momentum de precios, identificando pares cuyos precios divergen transitoriamente. Se toma posición long en infravaloradas y short en sobrevaloradas dentro del mismo cluster.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "Distance-Based Pairs Trading"},
+        {"tipo": "USA", "objeto": "k-Means Clustering"}
+      ],
+      "cita_textual": "We identify pairs by incorporating firm characteristics as well as price information. Firm characteristics are revealed to provide important information for pair identification and significantly improve the performance of the pairs trading strategy."
+    },
+    {
+      "nombre": "Agglomerative Clustering",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Método de clustering jerárquico bottom-up donde cada acción comienza como cluster individual y se van fusionando según distancia de linkage (average linkage). Usa el percentil α de distancias entre pares más cercanos como umbral de fusión.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "DBSCAN"},
+        {"tipo": "APLICA_A", "objeto": "High-Dimensional Financial Data"}
+      ],
+      "cita_textual": "Agglomerative clustering tends to form many small clusters (average 188), which comprises an average of 769 (24.6%) stocks."
+    },
+    {
+      "nombre": "PCA for Feature Selection",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Análisis de componentes principales aplicado a 48 factores de momentum y 78 características empresariales antes del clustering. Retiene componentes que explican al menos 99% de la variación total (promedio 86 PCs de 126 features). Reduce dimensionalidad y enfatiza features importantes.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "Feature Normalization"},
+        {"tipo": "MITIGA", "objeto": "Curse of Dimensionality"}
+      ],
+      "cita_textual": "The principal components entered into clustering are determined so that the principal components explain at least 99% of the total variation. On average, 86 principal components out of 126 are selected as input."
+    },
+    {
+      "nombre": "k-Means Clustering",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Método de clustering particional que asigna datos a K clusters minimizando la suma de cuadrados intra-cluster. Requiere eliminación post-hoc de outliers mediante filtro de distancia al centroide versus distancia al vecino más cercano (percentil α=0.5).",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Within-Cluster Sum of Squares"},
+        {"tipo": "SE_OPONE_A", "objeto": "DBSCAN"}
+      ],
+      "cita_textual": "K-means clustering assigns all data points into the specified number of clusters, it does not have the capability to identify outliers. Hence, we adopt and modify the method used by Hautamaki et al. (2005) to identify these stocks and remove them from the asset pool."
+    },
+    {
+      "nombre": "DBSCAN",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Clustering basado en densidad que identifica regiones de alta densidad separadas por baja densidad. Tiende a formar un cluster gigante con la mayoría de stocks y tratar el resto como outliers. Parametrizado con l1 norm y MinPts = ln(N).",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "k-Means Clustering"},
+        {"tipo": "USA", "objeto": "Density Reachable"}
+      ],
+      "cita_textual": "DBSCAN tends to form one giant cluster and several small clusters, with an average of only two clusters every month. DBSCAN clusters only 376 (12.1%) stocks on average, and 88.0% of the stocks are deemed as outliers."
+    },
+    {
+      "nombre": "Contrarian Strategy within Clusters",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Dentro de cada cluster se ordenan stocks por retorno del mes anterior (mom1). Se forman pares emparejando el de mayor retorno con el de menor. Se abre long-short si la diferencia de retornos supera una desviación estándar cross-sectional de todas las diferencias.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Short-Term Reversal"},
+        {"tipo": "APLICA_A", "objeto": "Mean Reversion"}
+      ],
+      "cita_textual": "Low (high) return stocks within the same cluster are deemed undervalued (overvalued), and a contrarian strategy is adopted by going long on the undervalued stocks and short on the overvalued stocks."
+    },
+    {
+      "nombre": "Firm Characteristics as Forward-Looking Features",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Las características empresariales (78 variables de Green et al., 2017) son prospectivas y reducen la probabilidad de identificar pares espuriamente correlacionados. Su inclusión reduce significativamente la volatilidad y el drawdown de la estrategia.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "Pairs Trading Performance"},
+        {"tipo": "REQUIERE", "objeto": "Momentum Features"}
+      ],
+      "cita_textual": "We consider firm characteristics to be more forward-looking. This motivates us to use both momentum features and firm characteristics for clustering."
+    },
+    {
+      "nombre": "Short-Term Reversal Factor",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Factor de reversión a corto plazo: acciones con bajo retorno en el mes anterior (mom1) tienden a rebotar, y acciones con alto retorno tienden a revertir. Es la base del momento contrarian dentro de clusters.",
+      "relaciones": [
+        {"tipo": "PREDICE", "objeto": "Future Returns"},
+        {"tipo": "USA", "objeto": "Contrarian Strategy within Clusters"}
+      ],
+      "cita_textual": "Our strategy is essentially a short-term reversal strategy with a carefully selected trading asset pool."
+    },
+    {
+      "nombre": "Factor Regression Alpha Analysis",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Regresión de retornos del portafolio long-short contra FF3, FF3+momentum+reversal, FF5 y q5 factors para verificar que el alpha no es explicado por factores de riesgo sistemáticos. El alpha mensual de 1.9% es estadísticamente significativo en todas las especificaciones.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Fama-French Factors"},
+        {"tipo": "MIDE", "objeto": "Risk-Adjusted Performance"}
+      ],
+      "cita_textual": "The long-short portfolio constructed from agglomerative clustering yields an economically and statistically significant monthly alpha of 1.9% (t = 14.16) when regressed against FF3."
+    },
+    {
+      "nombre": "Outlier Removal in Clustering",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Procedimiento para k-means: se mide distancia al centroide y distancia al vecino más cercano. Se usa la distancia al vecino en el percentil α=0.5 como umbral; cualquier stock con distancia al centroide mayor que ese umbral es outlier.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "k-Means Clustering"},
+        {"tipo": "MITIGA", "objeto": "Cluster Contamination"}
+      ],
+      "cita_textual": "Any stock whose distance to its centroid is greater than ϵ is regarded as an outlier and removed. We set α = 0.5."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "El portafolio long-short con clustering aglomerativo obtiene retorno anualizado del 24.8%, Sharpe ratio de 2.69 y máximo drawdown del 12.3% durante 41 años out-of-sample (1980-2020), sin un solo año no rentable.",
+      "mercado": "US Stock Market (NYSE, AMEX, Nasdaq)",
+      "periodo": "Enero 1980 - Diciembre 2020",
+      "magnitud": "24.8% retorno anual, Sharpe 2.69, drawdown 12.3%",
+      "condiciones": "Stocks con share code 10/11, exclusión de stocks bajo percentil 20 de NYSE por tamaño; 48 momentos de precio + 78 características empresariales; PCA con 99% varianza explicada; α=0.3 para aglomerativo",
+      "robustez": "alta",
+      "cita_textual": "The long-short portfolio constructed via the agglomerative clustering earns a statistically significant annualized mean return of 24.8% and a Sharpe ratio of 2.69."
+    },
+    {
+      "afirmacion": "Excluir características empresariales reduce el Sharpe ratio de 2.69 a 1.44 para clustering aglomerativo, de 2.34 a 1.76 para k-means, y de 2.04 a 1.57 para DBSCAN, con diferencias estadísticamente significativas (t > 3 excepto DBSCAN t=2.88).",
+      "mercado": "US Stock Market",
+      "periodo": "Enero 1980 - Diciembre 2020",
+      "magnitud": "Reducción de Sharpe: aglomerativo -1.25, k-means -0.58, DBSCAN -0.47",
+      "condiciones": "Misma muestra, usando solo 48 momentum features sin características empresariales",
+      "robustez": "alta",
+      "cita_textual": "The Sharpe ratios are reduced from 2.34 to 1.76 (k-means), 2.04 to 1.57 (DBSCAN), and 2.69 to 1.44 (agglomerative), and the differences are statistically significant with the t-statistic greater than 3 except for DBSCAN."
+    },
+    {
+      "afirmacion": "Tras costos de transacción de 20 puntos básicos, la estrategia aglomerativa mantiene Sharpe ratio anualizado de 1.73 y retorno medio del 15.9%, con turnover aproximado del 180%.",
+      "mercado": "US Stock Market",
+      "periodo": "Enero 1980 - Diciembre 2020",
+      "magnitud": "Sharpe 1.73 post-costos, retorno 15.9%, turnover ~180%",
+      "condiciones": "20 bps transaction costs",
+      "robustez": "media",
+      "cita_textual": "The agglomerative strategy attains an annualised Sharpe ratio of 1.73 and a mean return of 15.9% after subtracting 20 basis point transaction costs."
+    },
+    {
+      "afirmacion": "El alpha mensual del portafolio aglomerativo es de 1.9% (t=14.16) contra FF3, 2.0% (t=15.01) contra FF3+momentum+reversal, y permanece económicamente significativo contra FF5 y q5.",
+      "mercado": "US Stock Market",
+      "periodo": "Enero 1980 - Diciembre 2020",
+      "magnitud": "Alpha mensual 1.9%-2.0%, t-stats 14-15",
+      "condiciones": "Equally-weighted long-short portfolio; FF3, FF3+2, FF5, q5 factor models",
+      "robustez": "alta",
+      "cita_textual": "The long-short portfolio constructed from agglomerative clustering yields an economically and statistically significant monthly alpha of 1.9% (t = 14.16) when regressed against FF3."
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "baja", "nota": "Estrategia mensual con rebalanceo a fin de mes; no usa datos intradiarios. Podría adaptarse acortando el horizonte de clustering y trading."}
+}

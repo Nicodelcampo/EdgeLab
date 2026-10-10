@@ -1,0 +1,308 @@
+{
+  "doc_id": 40,
+  "titulo": "Algorithmic Trading and Information Dynamics Around Unscheduled Corporate Events",
+  "resumen_operativo": "El paper muestra que el trading algorítmico (AT) anormal (desviado de su propia línea base) se asocia con brechas informativas más amplias antes de anuncios corporativos no programados (dividendos especiales), y que la actividad de AT cae bruscamente y se mantiene deprimida ~20 días de trading tras el anuncio, sugiriendo que el AT lucra de la asimetría informativa y se retira cuando ésta se resuelve. Introduce además una métrica de price jump estandarizada que preserva más del 50% de observaciones descartadas por la métrica original de Weller (2018). Útil para un quant que quiera modelar retiros de liquidez algorítmica alrededor de eventos corporativos sorpresivos y para diseñar medidas robustas de incorporación de información pre/post anuncio.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "algorithmic trading deters information acquisition",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "El AT detecta el order flow informado, opera en la misma dirección (back-running) y erosiona las rentas económicas extraíbles por traders informados, desincentivando la adquisición de información privada.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "informational gap"},
+        {"tipo": "USA", "objeto": "back-running"},
+        {"tipo": "MITIGA", "objeto": "informed trading"}
+      ],
+      "cita_textual": "AT increases the incorporation of readily available information into prices, which discourages participants from acquiring private information"
+    },
+    {
+      "nombre": "back-running",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Proceso de operar en la misma dirección que un trade institucional (informado) inferido, mecanismo por el cual el AT erosiona las ganancias de traders informados.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "algorithmic trading deters information acquisition"},
+        {"tipo": "APLICA_A", "objeto": "informed trading"}
+      ],
+      "cita_textual": "The process of trading in the same direction as an inferred institutional (informed) trade is known as back-running."
+    },
+    {
+      "nombre": "standardized price jump",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida generalizada del price jump que cuantifica la proporción de información revelada en el anuncio respecto de la información total acumulable, definida para todo patrón de retornos (incluye reversiones), acotada inferiormente en cero y sin necesidad de truncar la muestra.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "Weller's price jump"},
+        {"tipo": "MIDE", "objeto": "informational gap"},
+        {"tipo": "USA", "objeto": "cumulative abnormal return"}
+      ],
+      "cita_textual": "the standardized price jump allows us to retain 50% of observations that would be cut if we were to employ the regular price jump instead"
+    },
+    {
+      "nombre": "Weller's price jump",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Ratio de CAR del anuncio respecto de la CAR total (pre+post) propuesto por Weller (2018) para medir incorporación de información antes de un evento; acotado entre 0 y 1, pero produce valores no informativos ante reversiones y requiere truncar la muestra.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "informational gap"},
+        {"tipo": "SE_OPONE_A", "objeto": "standardized price jump"}
+      ],
+      "cita_textual": "This metric is subject to limitations pertaining to CARs in the pre- and post-announcement windows being similar in magnitude but opposite in sign (reversals)."
+    },
+    {
+      "nombre": "abnormal algorithmic trading",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Diferencia entre el nivel de un proxy de AT en la ventana de evento (pre o post anuncio) y su nivel en una ventana de línea base específica de la firma, análoga a la construcción de retornos anormales en estudios de eventos; aísla la variación específica del evento respecto de características estructurales persistentes de la firma.",
+      "relaciones": [
+        {"tipo": "PREDICE", "objeto": "informational gap"},
+        {"tipo": "MEJORA_A", "objeto": "raw algorithmic trading level"},
+        {"tipo": "MITIGA", "objeto": "backtest overfitting"}
+      ],
+      "cita_textual": "AbnormalATj,i = AT [T-21, T-1] j,i −AT [T-61, T-22] j,i"
+    },
+    {
+      "nombre": "raw algorithmic trading level",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Nivel bruto (no diferenciado) de un proxy de AT, que refleja mayormente características estructurales persistentes de la firma (liquidez, propiedad institucional, membresía de índice) más que dinámicas específicas del evento, por lo que carece de poder explicativo sobre el price jump.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "abnormal algorithmic trading"}
+      ],
+      "cita_textual": "raw AT levels largely reflect persistent structural characteristics – liquidity, institutional ownership, index membership – rather than event-specific dynamics"
+    },
+    {
+      "nombre": "trade-to-order ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Proxy de AT construido como volumen total de trades dividido volumen de órdenes; una razón más baja indica mayor actividad de AT.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "algorithmic trading"},
+        {"tipo": "PARTE_DE", "objeto": "abnormal algorithmic trading"}
+      ],
+      "cita_textual": "Trade-to-order ratio (TTO): Total trade volume divided by order volume."
+    },
+    {
+      "nombre": "cancel-to-trade ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Proxy de AT construido como número de cancelaciones dividido número de trades; una razón más alta indica mayor actividad de AT.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "algorithmic trading"},
+        {"tipo": "PARTE_DE", "objeto": "abnormal algorithmic trading"}
+      ],
+      "cita_textual": "Cancel-to-trade ratio (CTT): Number of cancellations divided by the number of trades."
+    },
+    {
+      "nombre": "odd-lot ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Proxy de AT: volumen de trades en lotes impares (menores al tamaño de round-lot, típicamente 100 acciones) dividido volumen de round-lot; mayor razón indica mayor AT.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "algorithmic trading"},
+        {"tipo": "PARTE_DE", "objeto": "abnormal algorithmic trading"}
+      ],
+      "cita_textual": "Odd-lot ratio (OLR): Odd-lot (trades which execute in a quantity less than the round-lot size, which is typically 100 shares) volume divided by round-lot volume."
+    },
+    {
+      "nombre": "trade size",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Proxy de AT: volumen total de trades dividido número de trades; menor tamaño de trade indica mayor actividad de AT.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "algorithmic trading"},
+        {"tipo": "PARTE_DE", "objeto": "abnormal algorithmic trading"}
+      ],
+      "cita_textual": "Trade Size (TS): Total trade volume divided by number of trades."
+    },
+    {
+      "nombre": "algorithmic trading withdrawal",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Retirada sostenida de la actividad de AT tras un anuncio corporativo no programado que resuelve una asimetría de información, persistiendo aproximadamente 20 días de trading; contradice la visión del AT como tecnología pura de procesamiento de información que se activaría más ante nueva información.",
+      "relaciones": [
+        {"tipo": "CONTRADICE_A", "objeto": "algorithmic trading deters information acquisition"},
+        {"tipo": "SE_OPONE_A", "objeto": "information incorporation"}
+      ],
+      "cita_textual": "aggregate AT activity declines following special dividend announcements and remains depressed for approximately 20 trading days"
+    },
+    {
+      "nombre": "special dividend",
+      "tipo": "dato",
+      "definicion_en_contexto": "Pago único no programado a accionistas, considerado una señal corporativa genuinamente inesperada (a diferencia de dividendos regulares o earnings), típicamente 5-20 veces mayor que el dividendo regular y asociado a retornos anormales positivos.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "cumulative abnormal return"},
+        {"tipo": "PREDICE", "objeto": "informational gap"}
+      ],
+      "cita_textual": "Special dividends are consistently 5 to 20 times larger than their regular counterparts"
+    },
+    {
+      "nombre": "informational gap",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Asimetría de información entre la firma y el mercado que existe antes de un anuncio corporativo no programado y que es resuelta (parcial o totalmente) por la señal del evento.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "standardized price jump"},
+        {"tipo": "CAUSA", "objeto": "algorithmic trading withdrawal"}
+      ],
+      "cita_textual": "Abnormal algorithmic trading activity is associated with wider informational gaps before special dividend announcements"
+    },
+    {
+      "nombre": "hidden volume ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Ratio logarítmico del volumen de órdenes ocultas respecto del volumen total para trades elegibles a ocultamiento; se usa como evidencia indirecta de trading informado que precede al anuncio.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "informed trading"},
+        {"tipo": "PREDICE", "objeto": "informational gap"}
+      ],
+      "cita_textual": "HVR is the log ratio of hidden order volume to total volume for hidden-eligible trades."
+    },
+    {
+      "nombre": "hidden trade ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Ratio logarítmico de trades ocultos respecto del total de trades elegibles a ocultamiento; elevado en el período pre-evento, sugiriendo actividad de trading informado antes del anuncio.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "informed trading"},
+        {"tipo": "PREDICE", "objeto": "informational gap"}
+      ],
+      "cita_textual": "Hidden trading activity is elevated in the pre-event period as opposed to the post-event period."
+    },
+    {
+      "nombre": "informed trading",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Actividad de traders sofisticados que poseen información privada sobre la firma antes de que sea públicamente revelada por una señal corporativa como el dividendo especial.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "informational gap"},
+        {"tipo": "SE_OPONE_A", "objeto": "algorithmic trading deters information acquisition"}
+      ],
+      "cita_textual": "Fuller (2003) finds that informed traders possess private information about the firm before it is publicly conveyed through the signal."
+    },
+    {
+      "nombre": "information incorporation",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Velocidad e integridad con que el mercado incorpora en precios la señal proveniente de un anuncio corporativo, medida vía ratio de incorporación, price jump post-anuncio y probabilidad de reversión de retorno.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "standardized price jump"},
+        {"tipo": "USA", "objeto": "abnormal algorithmic trading"}
+      ],
+      "cita_textual": "Algorithmic trading accelerates the speed at which the market interprets and incorporates the signal from a special dividend announcement."
+    },
+    {
+      "nombre": "return reversal indicator",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Variable indicadora igual a uno si el signo del CAR[0,+2] difiere del signo del CAR[0,+5], usada como proxy de que la interpretación inicial del mercado fue posteriormente revisada.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "information incorporation"},
+        {"tipo": "PREDICE", "objeto": "reversal probability"}
+      ],
+      "cita_textual": "a return reversal indicator, equal to one if the sign of CAR[0,+2] differs from the sign of CAR[0,+5], and zero otherwise"
+    },
+    {
+      "nombre": "placebo test",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica de validación que asigna fechas de pseudo-anuncio aleatorias fuera de la ventana de evento y recalcula el AT anormal con la misma metodología, para confirmar que la relación hallada es específica al evento y no un artefacto de características persistentes de la firma.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "backtest overfitting"},
+        {"tipo": "APLICA_A", "objeto": "abnormal algorithmic trading"}
+      ],
+      "cita_textual": "All placebo coefficients are statistically insignificant (Table 7, Panel A), confirming that our measure captures event-specific dynamics rather than persistent firm characteristics."
+    },
+    {
+      "nombre": "cumulative abnormal return",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Retorno anormal acumulado estimado mediante el modelo de cinco factores de Fama-French (2015) más momentum, usado para cuantificar la reacción del mercado a un anuncio de dividendo especial.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "special dividend"},
+        {"tipo": "USA", "objeto": "standardized price jump"}
+      ],
+      "cita_textual": "CARs reach 3.67% over the 11-day window [−5, +5], significant at the 1% level"
+    },
+    {
+      "nombre": "multiple testing correction",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Corrección de Benjamini-Hochberg aplicada a los p-valores de los cuatro proxies de AT anormal para controlar el false discovery rate, tras la cual tres de cuatro proxies siguen siendo significativos.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "data snooping"},
+        {"tipo": "APLICA_A", "objeto": "abnormal algorithmic trading"}
+      ],
+      "cita_textual": "After Benjamini-Hochberg correction at 5%, three of four proxies (Abnormal TS, OLR, TTO) remain significant (Table IA7)."
+    },
+    {
+      "nombre": "event study",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Marco empírico centrado en la fecha de declaración del dividendo especial, usado para computar retornos anormales, price jumps y AT anormal en ventanas pre y post evento.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "cumulative abnormal return"},
+        {"tipo": "USA", "objeto": "abnormal algorithmic trading"}
+      ],
+      "cita_textual": "In Table 4 we compute abnormal returns and cumulative abnormal returns centered on the special dividend declaration date."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "El AT anormal (desviaciones de la línea base propia de la firma) en la ventana pre-anuncio se asocia positivamente con el price jump estandarizado, indicando una brecha informativa más amplia antes del anuncio de dividendos especiales.",
+      "mercado": "US equities (acciones comunes CRSP)",
+      "periodo": "2012-2024",
+      "magnitud": "Abnormal TS coef=-3.32 (p<0.05); Abnormal OLR coef=2.90 (p<0.01); Abnormal TTO coef=-1.35 (p<0.05); Abnormal CTT coef=1.11 (p<0.10); N=865",
+      "condiciones": "Regresión cross-sectional con controles de firma (precio, volumen, market cap, volatilidad, spread) y efectos fijos de año e industria Fama-French 12; robusto a placebo tests, bootstrap, permutación y ventanas alternativas de línea base",
+      "robustez": "media",
+      "cita_textual": "Abnormal TS a coefficient of −3.32 (p < 0.05), Abnormal OLR a coefficient of 2.90 (p < 0.01), Abnormal TTO a coefficient of −1.35 (p < 0.05), and Abnormal CTT a coefficient of 1.11 (p < 0.10)"
+    },
+    {
+      "afirmacion": "Una suba de un desvío estándar en Abnormal OLR se asocia con un aumento de 0.60 unidades en el price jump estandarizado, equivalente al 44% de la mediana del price jump; el efecto entre los cuatro proxies va de 25% a 44% de la mediana.",
+      "mercado": "US equities",
+      "periodo": "2012-2024",
+      "magnitud": "0.60 unidades (0.11σ) = 44% de la mediana del price jump; rango 25%-44% entre proxies",
+      "condiciones": "Basado en coeficientes de la regresión de Panel B, Tabla 6, con controles y efectos fijos",
+      "robustez": "media",
+      "cita_textual": "a one-standard-deviation increase in Abnormal OLR is associated with a 0.60-unit increase in the standardized price jump (0.11σ), equivalent to 44% of the median price jump"
+    },
+    {
+      "afirmacion": "La actividad agregada de AT cae de forma abrupta al momento del anuncio de un dividendo especial y permanece deprimida durante aproximadamente 20 días de trading, con caída más fuerte que la observada alrededor de aumentos de dividendos regulares en las mismas firmas.",
+      "mercado": "US equities",
+      "periodo": "2012-2024",
+      "magnitud": "Persistencia ~20 días de trading; declive estadísticamente significativo en día de anuncio y hasta día 20 para la mayoría de proxies (Table IA8)",
+      "condiciones": "Comparación diff-in-diff contra dividendos regulares por las mismas firmas (Table IA4); todos los 4 proxies de AT muestran dirección consistente de menor AT",
+      "robustez": "media",
+      "cita_textual": "aggregate AT activity declines for approximately 20 trading days following special dividend announcements, persisting longer than that observed around regular dividend benchmarks"
+    },
+    {
+      "afirmacion": "La medida de price jump estandarizada retiene el 50% de las observaciones que se descartarían con el método de truncamiento de Weller (2018), y las observaciones descartadas por Weller difieren estadísticamente de las retenidas (mayor volatilidad, volumen, spreads más ajustados y mayores retornos de anuncio).",
+      "mercado": "US equities",
+      "periodo": "2012-2024",
+      "magnitud": "N=865 con medida estandarizada vs. N=433 (pérdida de 49.9% de la muestra) con Weller PJ restringido a [0,1]",
+      "condiciones": "Muestra de 865 dividendos especiales no esperados; Weller PJ media=-0.302, sd=17.031 sin restringir; medida estandarizada winsorizada al 1%/99%, media=3.743, sd=5.556",
+      "robustez": "media",
+      "cita_textual": "the standardized price jump allows us to retain 50% of observations that would be cut if we were to employ the regular price jump instead"
+    },
+    {
+      "afirmacion": "En el nivel bruto (no anormal) de AT, los proxies carecen en gran medida de poder explicativo sobre el price jump pre-anuncio; solo TTO es marginalmente significativo con Weller PJ.",
+      "mercado": "US equities",
+      "periodo": "2012-2024",
+      "magnitud": "Con Weller PJ (N=433) solo TTO p<0.10; con standardized PJ (N=865) los cuatro proxies son estadísticamente insignificantes",
+      "condiciones": "Regresión con niveles brutos de AT, controles y efectos fijos año/industria",
+      "robustez": "media",
+      "cita_textual": "Using the standardized price jump, the coefficients are larger in magnitude but remain statistically insignificant across all four proxies."
+    },
+    {
+      "afirmacion": "El AT anormal post-anuncio se asocia con una mayor concentración de la respuesta de precio total de 5 días en la ventana inicial de 2 días, medido con el price jump estandarizado post-anuncio, pero no con el ratio de incorporación bruto.",
+      "mercado": "US equities",
+      "periodo": "2012-2024",
+      "magnitud": "Abnormal TS coef=-1.71 (p<0.05); Abnormal TTO coef=-0.62 (p<0.05); Abnormal CTT coef=0.55 (p<0.05)",
+      "condiciones": "Regresión con AT anormal medido en ventana [T,T+2] vs. baseline [T-61,T-22], controles y efectos fijos año/industria",
+      "robustez": "media",
+      "cita_textual": "Abnormal TS a coefficient of −1.71 (p < 0.05), Abnormal TTO a coefficient of −0.62 (p < 0.05), and Abnormal CTT a coefficient of 0.55 (p < 0.05)"
+    },
+    {
+      "afirmacion": "Los anuncios de dividendos especiales no esperados generan una reacción de mercado positiva y significativa, mayor para firmas que no pagan dividendos regulares (más opacas) que para pagadoras regulares.",
+      "mercado": "US equities",
+      "periodo": "2012-2024",
+      "magnitud": "Retorno anormal día 0 = 0.64% (toda la muestra); CAR 11 días [-5,+5] = 3.67% (p<0.01); firmas no pagadoras de dividendo regular: retorno día 0 = 1.28% vs. 0.42% en pagadoras regulares",
+      "condiciones": "Retornos anormales estimados con modelo de 5 factores Fama-French (2015) más momentum; muestra de 865 eventos",
+      "robustez": "media",
+      "cita_textual": "Non-dividend-paying firms exhibit substantially larger announcement returns: a day 0 abnormal return of 1.28% compared to 0.42% for dividend payers."
+    },
+    {
+      "afirmacion": "El AT anormal post-anuncio incrementa la probabilidad de reversión del retorno inicial (TTO y CTT significativos), sugiriendo que el AT acelera la respuesta de precio inicial pero no necesariamente mejora su precisión; aproximadamente 15% de los eventos muestran reversión.",
+      "mercado": "US equities",
+      "periodo": "2012-2024",
+      "magnitud": "TTO ratio coef=-0.083 (p<0.01); CTT ratio coef=0.090 (p<0.01); ~15% de eventos con reversión",
+      "condiciones": "Modelo de probabilidad lineal; posible causalidad inversa dado que ventanas de AT anormal y reversión son contemporáneas",
+      "robustez": "baja",
+      "cita_textual": "approximately 15% of events in our sample exhibit such reversals"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "El paper opera a frecuencia diaria sobre eventos corporativos idiosincráticos (dividendos especiales) de acciones individuales, sin relación directa con futuros ES intradía; el concepto transferible es la idea de retiro de liquidez algorítmica alrededor de resolución de asimetrías de información, aplicable conceptualmente a comportamiento de order flow HFT en ES tras eventos macro sorpresivos, pero no operacionalizable directamente con este dataset o metodología."
+  }
+}

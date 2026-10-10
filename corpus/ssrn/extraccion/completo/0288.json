@@ -1,0 +1,117 @@
+{
+  "titulo": "Execution of Pairs Trading Strategy: Some Propositions",
+  "resumen_operativo": "Propone un framework de pairs trading integrando analisis tecnico (Momentum, Bollinger Bands, MACD) para identificar oportunidades de arbitraje de corto plazo en acciones indias del mismo sector. Formula 6 proposiciones de ejecucion basadas en la interaccion entre la direccion del ratio de precios y el momentum relativo de cada accion. Usa pares como Cipla/DRL, PNB/BOB, Hero/Bajaj, Infosys/TCS para ilustrar la metodologia. Trabajo conceptual sin backtesting cuantitativo riguroso.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "Technical Pairs Trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Integracion de indicadores tecnicos (Momentum, Bollinger Bands, MACD) con pairs trading para senales de entrada/salida de corto plazo.",
+      "relaciones": [
+        {
+          "tipo": "MEJORA_A",
+          "objeto": "Pairs Trading"
+        },
+        {
+          "tipo": "USA",
+          "objeto": "Technical Analysis"
+        }
+      ],
+      "cita_textual": "it provides a framework for a trader to profit in the short run by using technical analysis"
+    },
+    {
+      "nombre": "Momentum Indicator for Pairs",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Mide la tasa de cambio de cada accion del par; la diferencia de momentum determina cual accion lidera y la direccion del trade.",
+      "relaciones": [
+        {
+          "tipo": "PARTE_DE",
+          "objeto": "Technical Pairs Trading"
+        }
+      ],
+      "cita_textual": "the success of the strategy lies in tracking the momentum"
+    },
+    {
+      "nombre": "Bollinger Bands on Pair Ratio",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Bandas de Bollinger aplicadas al ratio de precios del par; tocar banda superior/inferior indica reversion inminente del ratio.",
+      "relaciones": [
+        {
+          "tipo": "PARTE_DE",
+          "objeto": "Technical Pairs Trading"
+        }
+      ],
+      "cita_textual": "When the pair touches the upper (lower) band of the Bollinger Band, the pair value falls (rises)"
+    },
+    {
+      "nombre": "MACD on Pair Ratio",
+      "tipo": "metodo",
+      "definicion_en_contexto": "MACD aplicado al ratio del par: senal de venta si MACD cruza trigger line desde arriba; zona de sobrecompra/sobreventa segun posicion respecto a cero.",
+      "relaciones": [
+        {
+          "tipo": "PARTE_DE",
+          "objeto": "Technical Pairs Trading"
+        }
+      ],
+      "cita_textual": "If the MACD line intersects the trigger line from above then it is a sell signal"
+    },
+    {
+      "nombre": "Momentum Reversal Signal",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Cuando el numerador sube mas rapido que el denominador y su momentum esta cayendo (NF DR), hay beneficio inmediato por reversion de momentum.",
+      "relaciones": [
+        {
+          "tipo": "PARTE_DE",
+          "objeto": "Momentum Indicator for Pairs"
+        }
+      ],
+      "cita_textual": "NF DR - profit as momentum reversal has taken place - profit booking immediate"
+    },
+    {
+      "nombre": "Sector-Constrained Pair Selection",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Seleccion de pares del mismo sector (bancos, farmaceuticas, automotrices, IT) para controlar riesgo sistematico comun.",
+      "relaciones": [
+        {
+          "tipo": "MITIGA",
+          "objeto": "Systematic Risk"
+        },
+        {
+          "tipo": "PARTE_DE",
+          "objeto": "Pairs Trading"
+        }
+      ],
+      "cita_textual": "the shares chosen are of companies from the same sector"
+    },
+    {
+      "nombre": "Pair Ratio Mean Reversion",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "El ratio de precios de dos acciones del mismo sector tiende a revertir a su media tras desviaciones.",
+      "relaciones": [
+        {
+          "tipo": "REQUIERE",
+          "objeto": "Pairs Trading"
+        }
+      ],
+      "cita_textual": "the fundamental basis of Pair Trading is that... this ratio would be mean reverting"
+    },
+    {
+      "nombre": "Bombay Stock Exchange (BSE)",
+      "tipo": "dato",
+      "definicion_en_contexto": "Bolsa de valores india donde cotizan los pares analizados; datos diarios de precios usados para el analisis tecnico.",
+      "relaciones": [
+        {
+          "tipo": "APLICA_A",
+          "objeto": "Indian Equity Pairs"
+        }
+      ],
+      "cita_textual": "companies listed in both the Bombay Stock Exchange and the National Stock Exchange"
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "El marco de analisis tecnico es conceptualmente aplicable a intradia; requeriria backtesting cuantitativo riguroso para validacion."
+  },
+  "doc_id": 288
+}
