@@ -13,7 +13,8 @@
       "objective": "Exact historical input lineage and explicit pairs, weights, reuse, overlap, tie-preserving bins and support diagnostics. Preserve original evidence.",
       "status": "RAW_STRUCTURAL_QA_COMPLETE_METHOD_AND_SOURCE_QUALITY_OPEN",
       "market_execution_done": false,
-      "new_inference_done": false
+      "new_inference_done": false,
+      "zone_causal_review_ref": "config/research/avzvol_zone_causal_review_v1.json"
     },
     {
       "id": "P2",
@@ -26,7 +27,8 @@
       "market_execution_done": false,
       "new_inference_done": false,
       "descriptive_diagnostics_ref": "docs/research/AVZVOL_CONTROL_CENSUS_DIAGNOSTICS_20261010.md",
-      "own_census_outcome_benchmark_implemented": false
+      "own_census_outcome_benchmark_implemented": false,
+      "causal_census_contract_ref": "docs/research/AVZVOL_ZONE_CAUSAL_REVIEW_20261010.md"
     },
     {
       "id": "P3",
@@ -64,5 +66,19 @@
   "user_instruction_no_economic_outcomes": true,
   "economic_scope_requires_new_explicit_user_authorization": true,
   "raw_quality_evidence_ref": "config/research/avzvol_mnq_raw_quality_review_20261010.json",
-  "selection_readiness_evidence_ref": "config/research/avzvol_selection_readiness_review_v1.json"
+  "selection_readiness_evidence_ref": "config/research/avzvol_selection_readiness_review_v1.json",
+  "conditional_non_economic_execution_request": {
+    "requested": true,
+    "scope": "non_economic_zone_incremental_and_control_own_census_effects_only",
+    "timing": "only_after_data_census_and_method_readiness",
+    "requires": [
+      "independently_reviewed_source_quality_and_pins",
+      "reviewed_causal_candidate_census",
+      "frozen_matching_support_balance_endpoints_censoring_family_and_budget",
+      "campaign_permissions_and_exposure_review"
+    ],
+    "clears_runtime_gates": false,
+    "authorizes_holdout_access": false,
+    "authorizes_economic_outcomes": false
+  }
 }

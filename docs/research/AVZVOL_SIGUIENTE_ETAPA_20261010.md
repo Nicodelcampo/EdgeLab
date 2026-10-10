@@ -88,8 +88,9 @@ provenir del detector causal revisado, no del resultado futuro.
 - IDs por par ligados al digest de política y de las declaraciones de ambos censos
   (hash autoconsistente, no prueba de verdad/calidad upstream). No duplicar controles dentro del set.
 - Diagnosticar soporte por estrato, distribuciones/balance y sensibilidad de
-  población, antes de calcular contraste. El helper sólo devuelve gap medio en
-  unidades de escala; NO calcula SMD, no examina colas y no acepta balance.
+  población, antes de calcular contraste. El matching devuelve gap medio; el
+  diagnóstico descriptivo agrega gaps absolutos y ECDF ponderadas. NO calcula
+  SMD, inferencia de outcomes ni aceptación de balance.
 - Medir controles contra su propio censo para detectar sesgo de selección.
   Ese segundo contraste todavía NO está implementado; exige endpoints/budget.
 
@@ -200,3 +201,11 @@ soporte por estrato, reutilización/pesos, diferencias absolutas y ECDF ponderad
 sobre covariables pre-anchor. Sólo fixtures sintéticos; no SMD/test/ESS, aceptación
 ni benchmark de outcomes. P2 sigue bloqueada por censo real, política y protocolo;
 P4 sigue prohibida. No se ejecutaron nuevos trials ni se ingresó evidencia al ledger.
+
+## Causalidad de zonas y del censo
+
+[Revisión de fuente y ejemplos sintéticos](AVZVOL_ZONE_CAUSAL_REVIEW_20261010.md):
+pseudo histórico no exige ausencia de racimo/igual sesión; reconocimiento del
+racimo y pertenencia final no son el nacimiento de su primera zona. El censo
+nuevo requiere clasificación as-of, snapshot y política entre sesiones aprobados.
+Sin medición de contaminación real ni nuevo contraste; P1/P2 siguen abiertos.
