@@ -1,9 +1,9 @@
 name: CPU base and installed wheel (no research)
 on:
   push:
-    paths: ['specs/kaggle/**', 'specs/research/avzvol_incremental_design_v1.json', 'config/research/avzvol_*.json', 'tools/avzvol_design_smoke.py', 'tools/review_avzvol_exposed_o5.py', 'edgelab/**', 'validation/**', 'tests/**', 'pyproject.toml', 'requirements/cpu-dev-py312.lock', 'requirements/core-py312.lock', 'tools/check_installed_runtime.py', 'tools/check_installed_core.py', 'tools/kaggle_spec_v2.py', 'tools/kaggle_hippocampus_ingest.py', 'tools/audit_kaggle_aggregates.py', 'tools/audit_avzvol_outputs.py', 'tools/audit_avzvol_mnq_metadata.py', 'tools/check_research_data_gate.py', 'tools/run_funnel_arrays.py', 'tools/verify_funnel_cpu_gpu.py', 'config/component_registry.json', 'docs/COMPONENTS.md', '.github/workflows/cpu-runtime.yml']
+    paths: ['specs/kaggle/**', 'specs/research/avzvol_incremental_design_v1.json', 'config/research/avzvol_*.json', 'tools/avzvol_design_smoke.py', 'tools/avzvol_detector_tape_smoke.py', 'tools/audit_avzvol_o5_boundary_exports.py', 'tools/review_avzvol_exposed_o5.py', 'edgelab/**', 'validation/**', 'tests/**', 'pyproject.toml', 'requirements/cpu-dev-py312.lock', 'requirements/core-py312.lock', 'tools/check_installed_runtime.py', 'tools/check_installed_core.py', 'tools/kaggle_spec_v2.py', 'tools/kaggle_hippocampus_ingest.py', 'tools/audit_kaggle_aggregates.py', 'tools/audit_avzvol_outputs.py', 'tools/audit_avzvol_mnq_metadata.py', 'tools/check_research_data_gate.py', 'tools/run_funnel_arrays.py', 'tools/verify_funnel_cpu_gpu.py', 'config/component_registry.json', 'docs/COMPONENTS.md', '.github/workflows/cpu-runtime.yml']
   pull_request:
-    paths: ['specs/kaggle/**', 'specs/research/avzvol_incremental_design_v1.json', 'config/research/avzvol_*.json', 'tools/avzvol_design_smoke.py', 'tools/review_avzvol_exposed_o5.py', 'edgelab/**', 'validation/**', 'tests/**', 'pyproject.toml', 'requirements/cpu-dev-py312.lock', 'requirements/core-py312.lock', 'tools/check_installed_runtime.py', 'tools/check_installed_core.py', 'tools/kaggle_spec_v2.py', 'tools/kaggle_hippocampus_ingest.py', 'tools/audit_kaggle_aggregates.py', 'tools/audit_avzvol_outputs.py', 'tools/audit_avzvol_mnq_metadata.py', 'tools/check_research_data_gate.py', 'tools/run_funnel_arrays.py', 'tools/verify_funnel_cpu_gpu.py', 'config/component_registry.json', 'docs/COMPONENTS.md', '.github/workflows/cpu-runtime.yml']
+    paths: ['specs/kaggle/**', 'specs/research/avzvol_incremental_design_v1.json', 'config/research/avzvol_*.json', 'tools/avzvol_design_smoke.py', 'tools/avzvol_detector_tape_smoke.py', 'tools/audit_avzvol_o5_boundary_exports.py', 'tools/review_avzvol_exposed_o5.py', 'edgelab/**', 'validation/**', 'tests/**', 'pyproject.toml', 'requirements/cpu-dev-py312.lock', 'requirements/core-py312.lock', 'tools/check_installed_runtime.py', 'tools/check_installed_core.py', 'tools/kaggle_spec_v2.py', 'tools/kaggle_hippocampus_ingest.py', 'tools/audit_kaggle_aggregates.py', 'tools/audit_avzvol_outputs.py', 'tools/audit_avzvol_mnq_metadata.py', 'tools/check_research_data_gate.py', 'tools/run_funnel_arrays.py', 'tools/verify_funnel_cpu_gpu.py', 'config/component_registry.json', 'docs/COMPONENTS.md', '.github/workflows/cpu-runtime.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -39,11 +39,12 @@ jobs:
           "$RUNNER_TEMP/wheel-env/bin/python" -m pip install --require-hashes -r requirements/cpu-dev-py312.lock
           "$RUNNER_TEMP/wheel-env/bin/python" -m pip install --no-deps dist/*.whl
           mkdir -p "$RUNNER_TEMP/installed-smoke"
-          cp tools/check_installed_runtime.py tools/check_installed_kaggle_quality.py "$RUNNER_TEMP/installed-smoke/"
+          cp tools/check_installed_runtime.py tools/check_installed_kaggle_quality.py tools/avzvol_detector_tape_smoke.py "$RUNNER_TEMP/installed-smoke/"
           cd "$RUNNER_TEMP/installed-smoke"
           unset PYTHONPATH
           "$RUNNER_TEMP/wheel-env/bin/python" check_installed_runtime.py
           "$RUNNER_TEMP/wheel-env/bin/python" check_installed_kaggle_quality.py
+          "$RUNNER_TEMP/wheel-env/bin/python" avzvol_detector_tape_smoke.py
       - name: Verify core API without optional dependencies
         shell: bash
         run: |
