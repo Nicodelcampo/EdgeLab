@@ -10,6 +10,8 @@ from edgelab.kaggle.raw_tick_audit import audit_canonical_tick_file
 
 def main():
     p=argparse.ArgumentParser(description=__doc__)
+    p.add_argument('--include-clock-diagnostics',action='store_true',
+        help='Count 16:00-17:00 Chicago observations; NOT a reviewed maintenance calendar')
     for name in ('path','expected-sha256','instrument','contract','out-dir'):
         p.add_argument('--'+name,required=True)
     for name in ('expected-bytes','expected-rows'):

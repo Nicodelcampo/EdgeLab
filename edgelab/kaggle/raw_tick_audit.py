@@ -11,7 +11,7 @@ from edgelab.kaggle.aggregate_audit import AggregateAuditError, digest
 
 
 def audit_canonical_tick_file(*, path, expected_sha256, expected_bytes, expected_rows,
-                              instrument, contract, batch_size=65536):
+                              instrument, contract, batch_size=65536, include_clock_diagnostics=False):
     import numpy as np
     import pandas as pd
     import pyarrow as pa
@@ -32,7 +32,7 @@ def audit_canonical_tick_file(*, path, expected_sha256, expected_bytes, expected
     if pf.metadata.num_rows != expected_rows: raise AggregateAuditError('raw footer row count mismatch')
     cutoff = pd.Timestamp('2026-09-30 17:00',tz='America/Chicago').tz_convert('UTC').value
     # Full footer preflight before any payload. Contract names are source literals.
-    row_limit = 50_000_000; source_max = 0
+    source_max = 0
     for j in range(pf.num_row_groups):
         rg=pf.metadata.row_group(j);cols={rg.column(k).path_in_schema:rg.column(k) for k in range(rg.num_columns)}
         for n in required:
@@ -45,11 +45,13 @@ def audit_canonical_tick_file(*, path, expected_sha256, expected_bytes, expected
                for n,wanted in [('instrument',instrument),('contract',contract),('tick_type','trade')]):
             raise AggregateAuditError('mixed/unapproved raw identity or tick type')
         st=cols['source_row'].statistics
-        if st.min < 0 or st.max > row_limit:
+        if st.min < 0:
             raise AggregateAuditError('source identity outside bounded audit capacity')
         source_max=max(source_max,st.max)
     errors=Counter();warnings=Counter();seen={};last_ts=None;last_seq=None;rows=0
-    trade_dates=set();aggressors=Counter();offsets=Counter();totals={}
+    trade_dates=set();aggressors=Counter();offsets=Counter();totals={};clock_minutes={}
+    if type(include_clock_diagnostics) is not bool:
+        raise AggregateAuditError("invalid clock diagnostic flag")
     # Bitmaps: exact source_file+source_row duplicate detection, including nonadjacent.
     # Bound total bitmap allocation; fail rather than approximate uniqueness.
     max_bitmap_bytes=128*1024*1024
@@ -72,7 +74,8 @@ def audit_canonical_tick_file(*, path, expected_sha256, expected_bytes, expected
         errors['wrong_identity']+=int(((t.instrument!=instrument)|(t.contract!=contract)|(t.tick_type!='trade')).sum())
         errors['invalid_aggressor']+=int((~t.aggressor.isin(['buy','sell','unclassified','unknown'])).sum())
         warnings['unclassified_or_unknown_aggressor']+=int(t.aggressor.isin(['unclassified','unknown']).sum())
-        aggressors.update(t.aggressor);offsets.update((t.ts_utc_ns-t.ts_local_ns).tolist())
+        aggressors.update(t.aggressor.value_counts().to_dict())
+        offsets.update((t.ts_utc_ns-t.ts_local_ns).value_counts().to_dict())
         for source,g in t.groupby('source_file',sort=False):
             ids=g.source_row.to_numpy()
             if not isinstance(source,str) or not source.strip() or (ids<0).any() or (ids>source_max).any():
@@ -92,13 +95,28 @@ def audit_canonical_tick_file(*, path, expected_sha256, expected_bytes, expected
                 errors['duplicate_source_identity']+=int(((bitmap[byte_ids] >> bit_ids) & 1).sum())
                 np.bitwise_or.at(bitmap,byte_ids,(1 << bit_ids).astype(np.uint8))
         ct=pd.to_datetime(t.ts_utc_ns,unit='ns',utc=True).dt.tz_convert('America/Chicago')
-        dates=(ct.dt.normalize().dt.tz_localize(None)+pd.to_timedelta((ct.dt.hour>=17).astype(int),unit='D')).dt.strftime('%Y-%m-%d')
-        if (dates>='2026-10-01').any():raise AggregateAuditError('reserved raw payload date')
-        trade_dates.update(dates)
-        # PRIVATE source totals only, for later catalog/aggregate reconciliation.
-        for d,g in t.assign(trade_date=dates).groupby('trade_date',sort=False):
-            acc=totals.setdefault(d,{'trades':0,'volume':0})
-            acc['trades']+=len(g);acc['volume']+=int(g.volume.astype('int64').sum())
+        # Vector calendar LABEL conversion. No per-row formatted date strings or
+        # floating-point volume sums. Labels are not reviewed exchange calendars.
+        hours=ct.dt.hour.to_numpy()
+        local_days=ct.dt.tz_localize(None).to_numpy(dtype='datetime64[D]').astype(np.int64)
+        day_ids=local_days+(hours>=17).astype(np.int64)
+        unique,inverse=np.unique(day_ids,return_inverse=True)
+        quantities=np.zeros(len(unique),dtype=np.int64)
+        counts=np.bincount(inverse,minlength=len(unique))
+        np.add.at(quantities,inverse,t.volume.to_numpy(dtype=np.int64))
+        clock=(hours==16)
+        for i,day_id in enumerate(unique):
+            day=str(np.datetime64(int(day_id),'D'))
+            if day>='2026-10-01':raise AggregateAuditError('reserved raw payload date')
+            trade_dates.add(day);acc=totals.setdefault(day,{'trades':0,'volume':0})
+            acc['trades']+=int(counts[i]);acc['volume']+=int(quantities[i])
+            if include_clock_diagnostics:
+                picked=(inverse==i)&clock
+                acc['clock_band_16_to_17_CT_trade_rows']=acc.get('clock_band_16_to_17_CT_trade_rows',0)+int(picked.sum())
+                clock_minutes.setdefault(day,set()).update((ns[picked]//(60*10**9)).tolist())
+    if include_clock_diagnostics:
+        for day,acc in totals.items():
+            acc['clock_band_16_to_17_CT_observed_minutes']=len(clock_minutes[day])
     report={'schema':'edgelab_canonical_tick_structural_audit_v1','file':path.name,
         'sha256':expected_sha256,'bytes':expected_bytes,'rows':rows,'instrument':instrument,'contract':contract,
         'status':'FAIL_RAW_STRUCTURE' if any(errors.values()) else 'PASS_RAW_STRUCTURE_ONLY',
@@ -109,5 +127,8 @@ def audit_canonical_tick_file(*, path, expected_sha256, expected_bytes, expected
         'timezone_independently_verified':False,'quote_aggressor_provenance_verified':False,
         'exchange_continuity_verified':False,'calendar_completeness_verified':False,
         'liquidity_certified':False,'research_allowed':False,'promotion_allowed':False,
-        'price_outcomes_computed':False,'deduplicated_or_rewritten':False}
+        'price_outcomes_computed':False,'deduplicated_or_rewritten':False,
+        'clock_diagnostics_enabled':include_clock_diagnostics,
+        'clock_band_16_to_17_CT_trade_rows':sum(v.get('clock_band_16_to_17_CT_trade_rows',0) for v in totals.values()) if include_clock_diagnostics else None,
+        'clock_band_16_to_17_CT_observed_minutes':sum(len(v) for v in clock_minutes.values()) if include_clock_diagnostics else None}
     return report,totals

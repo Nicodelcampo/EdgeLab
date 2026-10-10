@@ -97,3 +97,11 @@ El detalle diario, identidades y totales de la QA cruda quedan privados.
 Ambos CLIs preservan outputs anteriores y no reescriben ni interpolan fuentes.
 
 [Auditoría de cobertura y lote crudo](infra/KAGGLE_COVERAGE_RAW_20261010.md).
+
+## QA cruda completa y cuarentena de fuente
+
+[Auditoría de los 18 primarios](infra/KAGGLE_FULL_RAW_AUDIT_20261010.md): estructura
+PASS no habilita research. NQ preholdout v6 / NQ_09-26_ticks.parquet sigue con
+horario/contenido discrepante; `KNOWN_UNRESOLVED_SOURCES` lo bloquea aun frente
+a un certificado PASS. No se cambia la fuente ni se recorta la hora automáticamente.
+`--include-clock-diagnostics` habilita conteos de reloj, no un calendario certificado.

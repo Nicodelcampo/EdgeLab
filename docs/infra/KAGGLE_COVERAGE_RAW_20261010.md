@@ -84,3 +84,10 @@ No se implementó ccbus ni el agente autónomo; loaders legacy siguen opt-in/no 
 
 [Evidencia estructurada](KAGGLE_COVERAGE_RAW_20261010.json) ·
 [QA previa de barras](KAGGLE_DATA_QUALITY_20261010.md).
+
+## Continuación posterior: primarios completos
+
+El [lote completo](KAGGLE_FULL_RAW_AUDIT_20261010.md) termina la QA estructural
+de los 18 archivos (546.709.478 filas), conserva este reporte parcial como historia
+y detalla una discrepancia NQ en cuarentena. Completar archivos no cierra
+calendario, fuentes ni liquidez causal.
