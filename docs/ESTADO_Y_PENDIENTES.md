@@ -25,6 +25,14 @@ reconcilia 261 sesiones candidatas, pero muestra warmup fuera de la máscara apr
 y reglas de elegibilidad sin as-of acreditado. El checker JSON conserva STOP científico;
 no escanea raw ni certifica continuidad/reloj/liquidez. R7/K8 permanecen abiertos.
 
+La [QA física MNQ](infra/AVZVOL_MNQ_RAW_QUALITY_20261010.md) verificó seis pins y
+485.596.960 filas, con cero errores estructurales. No certifica continuidad,
+calendario, reloj, liquidez ni consumo histórico. Las diferencias de gaps se
+reconcilian bajo el filtro de pausa candidato; no son automáticamente huecos.
+[Cuatro propuestas](../config/research/avzvol_followup_proposals_v1.json) conservadas;
+**no buscar outcomes económicos: P4 bloqueada hasta nueva autorización explícita**.
+R7/K8 siguen abiertos; ningún snapshot previo se reescribe.
+
 ## 1. Respuesta operativa
 
 - **Ya integrado:** los lotes #69–#78 enumerados abajo. No queda pendiente pushear

@@ -1,0 +1,866 @@
+{
+  "schema": "edgelab_avzvol_mnq_raw_quality_review_v1",
+  "status": "PASS_RAW_STRUCTURE_ONLY_SOURCE_QUALITY_REVIEW_OPEN",
+  "code_base_commit": "6c73f7e9802343389ea51183f1e59309955f64c3",
+  "scope": "six pinned MNQ candidate source files only; whole-file structural QA and timestamp-only coverage diagnostic, not historical economic or scientific validation",
+  "research_authorized": false,
+  "promotion_allowed": false,
+  "economic_outcomes_computed": false,
+  "new_market_trials": 0,
+  "original_bytes_or_outputs_modified": false,
+  "historical_runtime_consumption_verified": false,
+  "calendar_certified": false,
+  "clock_independently_certified": false,
+  "continuity_certified": false,
+  "liquidity_certified": false,
+  "quote_aggressor_provenance_verified": false,
+  "price_quote_payload_read_for_structural_qa": true,
+  "price_outcomes_computed": false,
+  "global_preflight_before_any_payload": true,
+  "holdout_first_trade_date": "2026-10-01",
+  "strict_preholdout_utc_cutoff": "2026-09-30T22:00:00Z",
+  "all_files_strictly_preholdout": true,
+  "files": [
+    {
+      "candidate_contract": "MNQ_03-26",
+      "physical_bytes_sha256_verified_now": true,
+      "producer_pins_match": true,
+      "footer_preflight": {
+        "contract": "MNQ_03-26",
+        "row_groups": 208,
+        "rows": 103921542,
+        "all_required_footer_statistics_nonnull": true,
+        "all_groups_strictly_preholdout": true,
+        "identity_homogeneous": true
+      },
+      "structural_audit": {
+        "schema": "edgelab_canonical_tick_structural_audit_v1",
+        "file": "MNQ_03-26_ticks_ext.parquet",
+        "sha256": "1b3f6f17fbc1c189d627292bf8b1922ce58b7097a42ab498b546d36ad3b37afa",
+        "bytes": 910224741,
+        "rows": 103921542,
+        "instrument": "MNQ",
+        "contract": "MNQ 03-26",
+        "status": "PASS_RAW_STRUCTURE_ONLY",
+        "errors": {
+          "null_required_rows": 0,
+          "backward_timestamps": 0,
+          "nonincreasing_local_sequence": 0,
+          "invalid_timestamp_precision": 0,
+          "nonpositive_price_or_quote": 0,
+          "crossed_book": 0,
+          "nonpositive_trade_volume": 0,
+          "wrong_identity": 0,
+          "invalid_aggressor": 0,
+          "duplicate_source_identity": 0
+        },
+        "warnings": {
+          "repeated_timestamps_legitimate": 63577060,
+          "local_sequence_discontinuities_not_upstream_proof": 0,
+          "locked_book": 154,
+          "unclassified_or_unknown_aggressor": 136
+        },
+        "aggressor_counts": {
+          "sell": 52072800,
+          "buy": 51848606,
+          "unclassified": 136
+        },
+        "source_identity_files": 117,
+        "identity_bitmap_bytes": 13467648,
+        "first_trade_date": "2025-10-03",
+        "last_trade_date": "2026-03-20",
+        "observed_trade_dates": 118,
+        "footer_preflight_passed": true,
+        "utc_minus_local_ns_counts": {
+          "0": 103921542
+        },
+        "timezone_independently_verified": false,
+        "quote_aggressor_provenance_verified": false,
+        "exchange_continuity_verified": false,
+        "calendar_completeness_verified": false,
+        "liquidity_certified": false,
+        "research_allowed": false,
+        "promotion_allowed": false,
+        "price_outcomes_computed": false,
+        "deduplicated_or_rewritten": false,
+        "clock_diagnostics_enabled": true,
+        "clock_band_16_to_17_CT_trade_rows": 8,
+        "clock_band_16_to_17_CT_observed_minutes": 4,
+        "dataset_ref": "nicolasbuttaro/edgelab-ticks-nt8-canonical",
+        "dataset_version": 1,
+        "dataset_file": "MNQ/MNQ_03-26_ticks_ext.parquet",
+        "historical_runtime_consumption_verified": false,
+        "auditor_code_sha256": "28abd2266459befe70320f35ab84c385d38d4205a0b77ffb365a645229fca61a"
+      },
+      "timestamp_coverage_audit": {
+        "contract": "MNQ_03-26",
+        "rows_timestamp_scanned": 103921542,
+        "sha256_reverified": true,
+        "timestamps_only_payload": true,
+        "source_summary_discrepancy_count": 3,
+        "source_summary_discrepancies": [
+          {
+            "date": "2025-12-25",
+            "fields": [
+              "max_gap_s"
+            ]
+          },
+          {
+            "date": "2026-02-01",
+            "fields": [
+              "max_gap_s"
+            ]
+          },
+          {
+            "date": "2026-02-05",
+            "fields": [
+              "max_gap_s"
+            ]
+          }
+        ],
+        "approved_resolver_trade_count_discrepancies": [],
+        "weekly_regular_closed_reference_rows": 15,
+        "approved_weekly_regular_closed_reference_rows": 0,
+        "weekly_reference_is_NOT_reviewed_historical_calendar": true,
+        "intraday_gap_classification": "UNKNOWN_WITHOUT_REVIEWED_CALENDAR_AND_UPSTREAM_REFERENCE",
+        "continuity_certified": false,
+        "clock_independently_certified": false,
+        "liquidity_certified": false,
+        "economic_outcomes_computed": false,
+        "price_outcomes_computed": false,
+        "research_authorized": false
+      }
+    },
+    {
+      "candidate_contract": "MNQ_06-26",
+      "physical_bytes_sha256_verified_now": true,
+      "producer_pins_match": true,
+      "footer_preflight": {
+        "contract": "MNQ_06-26",
+        "row_groups": 312,
+        "rows": 116002246,
+        "all_required_footer_statistics_nonnull": true,
+        "all_groups_strictly_preholdout": true,
+        "identity_homogeneous": true
+      },
+      "structural_audit": {
+        "schema": "edgelab_canonical_tick_structural_audit_v1",
+        "file": "MNQ_06-26_ticks_ext.parquet",
+        "sha256": "968210ac96d0357d0983bb30f9cef6042e9d25b510880160508c64fb9a381fbc",
+        "bytes": 1316253277,
+        "rows": 116002246,
+        "instrument": "MNQ",
+        "contract": "MNQ 06-26",
+        "status": "PASS_RAW_STRUCTURE_ONLY",
+        "errors": {
+          "null_required_rows": 0,
+          "backward_timestamps": 0,
+          "nonincreasing_local_sequence": 0,
+          "invalid_timestamp_precision": 0,
+          "nonpositive_price_or_quote": 0,
+          "crossed_book": 0,
+          "nonpositive_trade_volume": 0,
+          "wrong_identity": 0,
+          "invalid_aggressor": 0,
+          "duplicate_source_identity": 0
+        },
+        "warnings": {
+          "repeated_timestamps_legitimate": 71545101,
+          "local_sequence_discontinuities_not_upstream_proof": 0,
+          "locked_book": 145,
+          "unclassified_or_unknown_aggressor": 187
+        },
+        "aggressor_counts": {
+          "buy": 58000954,
+          "sell": 58001105,
+          "unknown": 187
+        },
+        "source_identity_files": 83,
+        "identity_bitmap_bytes": 14839808,
+        "first_trade_date": "2025-12-14",
+        "last_trade_date": "2026-06-18",
+        "observed_trade_dates": 123,
+        "footer_preflight_passed": true,
+        "utc_minus_local_ns_counts": {
+          "0": 116002246
+        },
+        "timezone_independently_verified": false,
+        "quote_aggressor_provenance_verified": false,
+        "exchange_continuity_verified": false,
+        "calendar_completeness_verified": false,
+        "liquidity_certified": false,
+        "research_allowed": false,
+        "promotion_allowed": false,
+        "price_outcomes_computed": false,
+        "deduplicated_or_rewritten": false,
+        "clock_diagnostics_enabled": true,
+        "clock_band_16_to_17_CT_trade_rows": 2,
+        "clock_band_16_to_17_CT_observed_minutes": 2,
+        "dataset_ref": "nicolasbuttaro/edgelab-ticks-nt8-reexport-20261005",
+        "dataset_version": 2,
+        "dataset_file": "MNQ/MNQ_06-26_ticks_ext.parquet",
+        "historical_runtime_consumption_verified": false,
+        "auditor_code_sha256": "28abd2266459befe70320f35ab84c385d38d4205a0b77ffb365a645229fca61a"
+      },
+      "timestamp_coverage_audit": {
+        "contract": "MNQ_06-26",
+        "rows_timestamp_scanned": 116002246,
+        "sha256_reverified": true,
+        "timestamps_only_payload": true,
+        "source_summary_discrepancy_count": 1,
+        "source_summary_discrepancies": [
+          {
+            "date": "2026-01-02",
+            "fields": [
+              "max_gap_s"
+            ]
+          }
+        ],
+        "approved_resolver_trade_count_discrepancies": [],
+        "weekly_regular_closed_reference_rows": 3,
+        "approved_weekly_regular_closed_reference_rows": 1,
+        "weekly_reference_is_NOT_reviewed_historical_calendar": true,
+        "intraday_gap_classification": "UNKNOWN_WITHOUT_REVIEWED_CALENDAR_AND_UPSTREAM_REFERENCE",
+        "continuity_certified": false,
+        "clock_independently_certified": false,
+        "liquidity_certified": false,
+        "economic_outcomes_computed": false,
+        "price_outcomes_computed": false,
+        "research_authorized": false
+      }
+    },
+    {
+      "candidate_contract": "MNQ_09-25",
+      "physical_bytes_sha256_verified_now": true,
+      "producer_pins_match": true,
+      "footer_preflight": {
+        "contract": "MNQ_09-25",
+        "row_groups": 70,
+        "rows": 34508845,
+        "all_required_footer_statistics_nonnull": true,
+        "all_groups_strictly_preholdout": true,
+        "identity_homogeneous": true
+      },
+      "structural_audit": {
+        "schema": "edgelab_canonical_tick_structural_audit_v1",
+        "file": "MNQ_09-25_ticks_ext.parquet",
+        "sha256": "c78ff5cebeca2130876409b27e00dbb9cab8c0007ab451e4ddb4319088a2be85",
+        "bytes": 296821013,
+        "rows": 34508845,
+        "instrument": "MNQ",
+        "contract": "MNQ 09-25",
+        "status": "PASS_RAW_STRUCTURE_ONLY",
+        "errors": {
+          "null_required_rows": 0,
+          "backward_timestamps": 0,
+          "nonincreasing_local_sequence": 0,
+          "invalid_timestamp_precision": 0,
+          "nonpositive_price_or_quote": 0,
+          "crossed_book": 0,
+          "nonpositive_trade_volume": 0,
+          "wrong_identity": 0,
+          "invalid_aggressor": 0,
+          "duplicate_source_identity": 0
+        },
+        "warnings": {
+          "repeated_timestamps_legitimate": 20822012,
+          "local_sequence_discontinuities_not_upstream_proof": 0,
+          "locked_book": 42,
+          "unclassified_or_unknown_aggressor": 113
+        },
+        "aggressor_counts": {
+          "buy": 17217029,
+          "sell": 17291703,
+          "unclassified": 113
+        },
+        "source_identity_files": 44,
+        "identity_bitmap_bytes": 4493312,
+        "first_trade_date": "2025-08-01",
+        "last_trade_date": "2025-09-21",
+        "observed_trade_dates": 43,
+        "footer_preflight_passed": true,
+        "utc_minus_local_ns_counts": {
+          "0": 34508845
+        },
+        "timezone_independently_verified": false,
+        "quote_aggressor_provenance_verified": false,
+        "exchange_continuity_verified": false,
+        "calendar_completeness_verified": false,
+        "liquidity_certified": false,
+        "research_allowed": false,
+        "promotion_allowed": false,
+        "price_outcomes_computed": false,
+        "deduplicated_or_rewritten": false,
+        "clock_diagnostics_enabled": true,
+        "clock_band_16_to_17_CT_trade_rows": 22,
+        "clock_band_16_to_17_CT_observed_minutes": 8,
+        "dataset_ref": "nicolasbuttaro/edgelab-ticks-nt8-canonical",
+        "dataset_version": 1,
+        "dataset_file": "MNQ/MNQ_09-25_ticks_ext.parquet",
+        "historical_runtime_consumption_verified": false,
+        "auditor_code_sha256": "28abd2266459befe70320f35ab84c385d38d4205a0b77ffb365a645229fca61a"
+      },
+      "timestamp_coverage_audit": {
+        "contract": "MNQ_09-25",
+        "rows_timestamp_scanned": 34508845,
+        "sha256_reverified": true,
+        "timestamps_only_payload": true,
+        "source_summary_discrepancy_count": 3,
+        "source_summary_discrepancies": [
+          {
+            "date": "2025-08-12",
+            "fields": [
+              "max_gap_s"
+            ]
+          },
+          {
+            "date": "2025-09-08",
+            "fields": [
+              "max_gap_s"
+            ]
+          },
+          {
+            "date": "2025-09-12",
+            "fields": [
+              "max_gap_s"
+            ]
+          }
+        ],
+        "approved_resolver_trade_count_discrepancies": [],
+        "weekly_regular_closed_reference_rows": 26,
+        "approved_weekly_regular_closed_reference_rows": 3,
+        "weekly_reference_is_NOT_reviewed_historical_calendar": true,
+        "intraday_gap_classification": "UNKNOWN_WITHOUT_REVIEWED_CALENDAR_AND_UPSTREAM_REFERENCE",
+        "continuity_certified": false,
+        "clock_independently_certified": false,
+        "liquidity_certified": false,
+        "economic_outcomes_computed": false,
+        "price_outcomes_computed": false,
+        "research_authorized": false
+      }
+    },
+    {
+      "candidate_contract": "MNQ_09-26",
+      "physical_bytes_sha256_verified_now": true,
+      "producer_pins_match": true,
+      "footer_preflight": {
+        "contract": "MNQ_09-26",
+        "row_groups": 295,
+        "rows": 110632331,
+        "all_required_footer_statistics_nonnull": true,
+        "all_groups_strictly_preholdout": true,
+        "identity_homogeneous": true
+      },
+      "structural_audit": {
+        "schema": "edgelab_canonical_tick_structural_audit_v1",
+        "file": "MNQ_09-26_ticks_ext.parquet",
+        "sha256": "5b234b0f94888c44ba5e68fb0aaf2b52138c70d9485daa2875fa028f8ab24b77",
+        "bytes": 1251646827,
+        "rows": 110632331,
+        "instrument": "MNQ",
+        "contract": "MNQ 09-26",
+        "status": "PASS_RAW_STRUCTURE_ONLY",
+        "errors": {
+          "null_required_rows": 0,
+          "backward_timestamps": 0,
+          "nonincreasing_local_sequence": 0,
+          "invalid_timestamp_precision": 0,
+          "nonpositive_price_or_quote": 0,
+          "crossed_book": 0,
+          "nonpositive_trade_volume": 0,
+          "wrong_identity": 0,
+          "invalid_aggressor": 0,
+          "duplicate_source_identity": 0
+        },
+        "warnings": {
+          "repeated_timestamps_legitimate": 68353784,
+          "local_sequence_discontinuities_not_upstream_proof": 0,
+          "locked_book": 91,
+          "unclassified_or_unknown_aggressor": 21
+        },
+        "aggressor_counts": {
+          "sell": 55372845,
+          "buy": 55259465,
+          "unknown": 21
+        },
+        "source_identity_files": 63,
+        "identity_bitmap_bytes": 14086144,
+        "first_trade_date": "2026-03-13",
+        "last_trade_date": "2026-09-18",
+        "observed_trade_dates": 117,
+        "footer_preflight_passed": true,
+        "utc_minus_local_ns_counts": {
+          "0": 110632331
+        },
+        "timezone_independently_verified": false,
+        "quote_aggressor_provenance_verified": false,
+        "exchange_continuity_verified": false,
+        "calendar_completeness_verified": false,
+        "liquidity_certified": false,
+        "research_allowed": false,
+        "promotion_allowed": false,
+        "price_outcomes_computed": false,
+        "deduplicated_or_rewritten": false,
+        "clock_diagnostics_enabled": true,
+        "clock_band_16_to_17_CT_trade_rows": 0,
+        "clock_band_16_to_17_CT_observed_minutes": 0,
+        "dataset_ref": "nicolasbuttaro/edgelab-ticks-nt8-reexport-20261005",
+        "dataset_version": 2,
+        "dataset_file": "MNQ/MNQ_09-26_ticks_ext.parquet",
+        "historical_runtime_consumption_verified": false,
+        "auditor_code_sha256": "28abd2266459befe70320f35ab84c385d38d4205a0b77ffb365a645229fca61a"
+      },
+      "timestamp_coverage_audit": {
+        "contract": "MNQ_09-26",
+        "rows_timestamp_scanned": 110632331,
+        "sha256_reverified": true,
+        "timestamps_only_payload": true,
+        "source_summary_discrepancy_count": 0,
+        "source_summary_discrepancies": [],
+        "approved_resolver_trade_count_discrepancies": [],
+        "weekly_regular_closed_reference_rows": 0,
+        "approved_weekly_regular_closed_reference_rows": 0,
+        "weekly_reference_is_NOT_reviewed_historical_calendar": true,
+        "intraday_gap_classification": "UNKNOWN_WITHOUT_REVIEWED_CALENDAR_AND_UPSTREAM_REFERENCE",
+        "continuity_certified": false,
+        "clock_independently_certified": false,
+        "liquidity_certified": false,
+        "economic_outcomes_computed": false,
+        "price_outcomes_computed": false,
+        "research_authorized": false
+      }
+    },
+    {
+      "candidate_contract": "MNQ_12-25",
+      "physical_bytes_sha256_verified_now": true,
+      "producer_pins_match": true,
+      "footer_preflight": {
+        "contract": "MNQ_12-25",
+        "row_groups": 199,
+        "rows": 99091418,
+        "all_required_footer_statistics_nonnull": true,
+        "all_groups_strictly_preholdout": true,
+        "identity_homogeneous": true
+      },
+      "structural_audit": {
+        "schema": "edgelab_canonical_tick_structural_audit_v1",
+        "file": "MNQ_12-25_ticks_ext.parquet",
+        "sha256": "832533e504b7ae2c33a5575366974bc0d639ba8c65ebc406105939a70f63397f",
+        "bytes": 860641906,
+        "rows": 99091418,
+        "instrument": "MNQ",
+        "contract": "MNQ 12-25",
+        "status": "PASS_RAW_STRUCTURE_ONLY",
+        "errors": {
+          "null_required_rows": 0,
+          "backward_timestamps": 0,
+          "nonincreasing_local_sequence": 0,
+          "invalid_timestamp_precision": 0,
+          "nonpositive_price_or_quote": 0,
+          "crossed_book": 0,
+          "nonpositive_trade_volume": 0,
+          "wrong_identity": 0,
+          "invalid_aggressor": 0,
+          "duplicate_source_identity": 0
+        },
+        "warnings": {
+          "repeated_timestamps_legitimate": 61118815,
+          "local_sequence_discontinuities_not_upstream_proof": 0,
+          "locked_book": 88,
+          "unclassified_or_unknown_aggressor": 199
+        },
+        "aggressor_counts": {
+          "buy": 49396705,
+          "sell": 49694514,
+          "unclassified": 199
+        },
+        "source_identity_files": 87,
+        "identity_bitmap_bytes": 12742656,
+        "first_trade_date": "2025-09-11",
+        "last_trade_date": "2025-12-21",
+        "observed_trade_dates": 82,
+        "footer_preflight_passed": true,
+        "utc_minus_local_ns_counts": {
+          "0": 99091418
+        },
+        "timezone_independently_verified": false,
+        "quote_aggressor_provenance_verified": false,
+        "exchange_continuity_verified": false,
+        "calendar_completeness_verified": false,
+        "liquidity_certified": false,
+        "research_allowed": false,
+        "promotion_allowed": false,
+        "price_outcomes_computed": false,
+        "deduplicated_or_rewritten": false,
+        "clock_diagnostics_enabled": true,
+        "clock_band_16_to_17_CT_trade_rows": 14,
+        "clock_band_16_to_17_CT_observed_minutes": 6,
+        "dataset_ref": "nicolasbuttaro/edgelab-ticks-nt8-canonical",
+        "dataset_version": 1,
+        "dataset_file": "MNQ/MNQ_12-25_ticks_ext.parquet",
+        "historical_runtime_consumption_verified": false,
+        "auditor_code_sha256": "28abd2266459befe70320f35ab84c385d38d4205a0b77ffb365a645229fca61a"
+      },
+      "timestamp_coverage_audit": {
+        "contract": "MNQ_12-25",
+        "rows_timestamp_scanned": 99091418,
+        "sha256_reverified": true,
+        "timestamps_only_payload": true,
+        "source_summary_discrepancy_count": 5,
+        "source_summary_discrepancies": [
+          {
+            "date": "2025-09-12",
+            "fields": [
+              "max_gap_s"
+            ]
+          },
+          {
+            "date": "2025-09-28",
+            "fields": [
+              "max_gap_s"
+            ]
+          },
+          {
+            "date": "2025-10-30",
+            "fields": [
+              "max_gap_s"
+            ]
+          },
+          {
+            "date": "2025-11-19",
+            "fields": [
+              "max_gap_s"
+            ]
+          },
+          {
+            "date": "2025-11-24",
+            "fields": [
+              "max_gap_s"
+            ]
+          }
+        ],
+        "approved_resolver_trade_count_discrepancies": [],
+        "weekly_regular_closed_reference_rows": 25,
+        "approved_weekly_regular_closed_reference_rows": 0,
+        "weekly_reference_is_NOT_reviewed_historical_calendar": true,
+        "intraday_gap_classification": "UNKNOWN_WITHOUT_REVIEWED_CALENDAR_AND_UPSTREAM_REFERENCE",
+        "continuity_certified": false,
+        "clock_independently_certified": false,
+        "liquidity_certified": false,
+        "economic_outcomes_computed": false,
+        "price_outcomes_computed": false,
+        "research_authorized": false
+      }
+    },
+    {
+      "candidate_contract": "MNQ_12-26",
+      "physical_bytes_sha256_verified_now": true,
+      "producer_pins_match": true,
+      "footer_preflight": {
+        "contract": "MNQ_12-26",
+        "row_groups": 112,
+        "rows": 21440578,
+        "all_required_footer_statistics_nonnull": true,
+        "all_groups_strictly_preholdout": true,
+        "identity_homogeneous": true
+      },
+      "structural_audit": {
+        "schema": "edgelab_canonical_tick_structural_audit_v1",
+        "file": "MNQ_12-26_ticks_ext.parquet",
+        "sha256": "7c0dfd811dcb059faf57926be08203031e9fff6bac1e8e234c7f158f6308f93e",
+        "bytes": 244126468,
+        "rows": 21440578,
+        "instrument": "MNQ",
+        "contract": "MNQ 12-26",
+        "status": "PASS_RAW_STRUCTURE_ONLY",
+        "errors": {
+          "null_required_rows": 0,
+          "backward_timestamps": 0,
+          "nonincreasing_local_sequence": 0,
+          "invalid_timestamp_precision": 0,
+          "nonpositive_price_or_quote": 0,
+          "crossed_book": 0,
+          "nonpositive_trade_volume": 0,
+          "wrong_identity": 0,
+          "invalid_aggressor": 0,
+          "duplicate_source_identity": 0
+        },
+        "warnings": {
+          "repeated_timestamps_legitimate": 12826771,
+          "local_sequence_discontinuities_not_upstream_proof": 0,
+          "locked_book": 42,
+          "unclassified_or_unknown_aggressor": 3
+        },
+        "aggressor_counts": {
+          "sell": 10720318,
+          "buy": 10720257,
+          "unknown": 3
+        },
+        "source_identity_files": 71,
+        "identity_bitmap_bytes": 2969600,
+        "first_trade_date": "2026-06-12",
+        "last_trade_date": "2026-09-30",
+        "observed_trade_dates": 77,
+        "footer_preflight_passed": true,
+        "utc_minus_local_ns_counts": {
+          "0": 21440578
+        },
+        "timezone_independently_verified": false,
+        "quote_aggressor_provenance_verified": false,
+        "exchange_continuity_verified": false,
+        "calendar_completeness_verified": false,
+        "liquidity_certified": false,
+        "research_allowed": false,
+        "promotion_allowed": false,
+        "price_outcomes_computed": false,
+        "deduplicated_or_rewritten": false,
+        "clock_diagnostics_enabled": true,
+        "clock_band_16_to_17_CT_trade_rows": 1,
+        "clock_band_16_to_17_CT_observed_minutes": 1,
+        "dataset_ref": "nicolasbuttaro/edgelab-ticks-nt8-reexport-20261005",
+        "dataset_version": 2,
+        "dataset_file": "MNQ/MNQ_12-26_ticks_ext.parquet",
+        "historical_runtime_consumption_verified": false,
+        "auditor_code_sha256": "28abd2266459befe70320f35ab84c385d38d4205a0b77ffb365a645229fca61a"
+      },
+      "timestamp_coverage_audit": {
+        "contract": "MNQ_12-26",
+        "rows_timestamp_scanned": 21440578,
+        "sha256_reverified": true,
+        "timestamps_only_payload": true,
+        "source_summary_discrepancy_count": 0,
+        "source_summary_discrepancies": [],
+        "approved_resolver_trade_count_discrepancies": [],
+        "weekly_regular_closed_reference_rows": 0,
+        "approved_weekly_regular_closed_reference_rows": 0,
+        "weekly_reference_is_NOT_reviewed_historical_calendar": true,
+        "intraday_gap_classification": "UNKNOWN_WITHOUT_REVIEWED_CALENDAR_AND_UPSTREAM_REFERENCE",
+        "continuity_certified": false,
+        "clock_independently_certified": false,
+        "liquidity_certified": false,
+        "economic_outcomes_computed": false,
+        "price_outcomes_computed": false,
+        "research_authorized": false
+      }
+    }
+  ],
+  "totals": {
+    "files": 6,
+    "rows": 485596960,
+    "structural_error_count": 0,
+    "warnings": {
+      "repeated_timestamps_legitimate": 298243543,
+      "local_sequence_discontinuities_not_upstream_proof": 0,
+      "locked_book": 562,
+      "unclassified_or_unknown_aggressor": 659
+    },
+    "clock_band_16_to_17_CT_trade_rows": 47,
+    "clock_band_contract_minutes": 21,
+    "approved_resolver_trade_count_discrepancies": 0,
+    "weekly_regular_closed_reference_rows": 69,
+    "approved_weekly_regular_closed_reference_rows": 4
+  },
+  "gap_definition_review": {
+    "schema": "edgelab_gap_definition_diagnostic_v1",
+    "right_endpoint_predicate": "Chicago hour != 16; applied to original adjacent differences, NOT gap after removing rows",
+    "candidate_builder_ref": "f397a318be8b0acf68789070fe8064d83e172f7d:tools/build_es_ext_2026q3.py",
+    "candidate_builder_sha256": "18e950d6c73b48eb27d8ab85a5338e74eaccf92131c105fe99e61c6f373256ed",
+    "candidate_helper_sha256": "2d209b4e96422bc57f7c72cc29d4625f6647dadea60e8dbecd620c793ca05910",
+    "cases_checked": 16,
+    "cases_not_matching_declared_under_candidate_definition": 0,
+    "unfiltered_summary_differences_before_definition_review": 12,
+    "calendar_or_clock_certified": false,
+    "economic_outcomes_computed": false,
+    "price_payload_read": false,
+    "original_bytes_changed": false,
+    "research_allowed": false,
+    "candidate_builder_is_proven_historical_producer": false,
+    "comparison_tolerance_seconds": 1e-06,
+    "tolerance_is_quality_acceptance_threshold": false,
+    "cases": [
+      {
+        "contract": "MNQ_03-26",
+        "date": "2025-12-25",
+        "rows": 4,
+        "unfiltered_max_gap_ns": 32546300,
+        "right_endpoint_outside_16_to_17_CT_max_gap_ns": 0,
+        "declared_max_gap_s": 0.0,
+        "matches_declared_under_candidate_builder_definition": true,
+        "diagnostic_only_not_calendar_or_data_approval": true
+      },
+      {
+        "contract": "MNQ_03-26",
+        "date": "2026-01-12",
+        "rows": 1187063,
+        "unfiltered_max_gap_ns": 13828000000,
+        "right_endpoint_outside_16_to_17_CT_max_gap_ns": 13828000000,
+        "declared_max_gap_s": 13.828,
+        "matches_declared_under_candidate_builder_definition": true,
+        "diagnostic_only_not_calendar_or_data_approval": true
+      },
+      {
+        "contract": "MNQ_03-26",
+        "date": "2026-02-01",
+        "rows": 3,
+        "unfiltered_max_gap_ns": 12830516390200,
+        "right_endpoint_outside_16_to_17_CT_max_gap_ns": 6374350147500,
+        "declared_max_gap_s": 6374.3501475,
+        "matches_declared_under_candidate_builder_definition": true,
+        "diagnostic_only_not_calendar_or_data_approval": true
+      },
+      {
+        "contract": "MNQ_03-26",
+        "date": "2026-02-05",
+        "rows": 2418847,
+        "unfiltered_max_gap_ns": 597226397200,
+        "right_endpoint_outside_16_to_17_CT_max_gap_ns": 8236000000,
+        "declared_max_gap_s": 8.236,
+        "matches_declared_under_candidate_builder_definition": true,
+        "diagnostic_only_not_calendar_or_data_approval": true
+      },
+      {
+        "contract": "MNQ_06-26",
+        "date": "2026-01-02",
+        "rows": 1630,
+        "unfiltered_max_gap_ns": 3830071646300,
+        "right_endpoint_outside_16_to_17_CT_max_gap_ns": 1715252000000,
+        "declared_max_gap_s": 1715.252,
+        "matches_declared_under_candidate_builder_definition": true,
+        "diagnostic_only_not_calendar_or_data_approval": true
+      },
+      {
+        "contract": "MNQ_06-26",
+        "date": "2026-05-01",
+        "rows": 1484517,
+        "unfiltered_max_gap_ns": 22668000000,
+        "right_endpoint_outside_16_to_17_CT_max_gap_ns": 22668000000,
+        "declared_max_gap_s": 22.668,
+        "matches_declared_under_candidate_builder_definition": true,
+        "diagnostic_only_not_calendar_or_data_approval": true
+      },
+      {
+        "contract": "MNQ_09-25",
+        "date": "2025-08-12",
+        "rows": 1053920,
+        "unfiltered_max_gap_ns": 258646372300,
+        "right_endpoint_outside_16_to_17_CT_max_gap_ns": 40616000000,
+        "declared_max_gap_s": 40.616,
+        "matches_declared_under_candidate_builder_definition": true,
+        "diagnostic_only_not_calendar_or_data_approval": true
+      },
+      {
+        "contract": "MNQ_09-25",
+        "date": "2025-09-08",
+        "rows": 1066352,
+        "unfiltered_max_gap_ns": 1209424677600,
+        "right_endpoint_outside_16_to_17_CT_max_gap_ns": 24888000000,
+        "declared_max_gap_s": 24.888,
+        "matches_declared_under_candidate_builder_definition": true,
+        "diagnostic_only_not_calendar_or_data_approval": true
+      },
+      {
+        "contract": "MNQ_09-25",
+        "date": "2025-09-12",
+        "rows": 837475,
+        "unfiltered_max_gap_ns": 1671969123400,
+        "right_endpoint_outside_16_to_17_CT_max_gap_ns": 24048000000,
+        "declared_max_gap_s": 24.048,
+        "matches_declared_under_candidate_builder_definition": true,
+        "diagnostic_only_not_calendar_or_data_approval": true
+      },
+      {
+        "contract": "MNQ_09-25",
+        "date": "2025-09-21",
+        "rows": 1,
+        "unfiltered_max_gap_ns": 0,
+        "right_endpoint_outside_16_to_17_CT_max_gap_ns": 0,
+        "declared_max_gap_s": 0.0,
+        "matches_declared_under_candidate_builder_definition": true,
+        "diagnostic_only_not_calendar_or_data_approval": true
+      },
+      {
+        "contract": "MNQ_12-25",
+        "date": "2025-09-12",
+        "rows": 30979,
+        "unfiltered_max_gap_ns": 3139948766400,
+        "right_endpoint_outside_16_to_17_CT_max_gap_ns": 205456000000,
+        "declared_max_gap_s": 205.456,
+        "matches_declared_under_candidate_builder_definition": true,
+        "diagnostic_only_not_calendar_or_data_approval": true
+      },
+      {
+        "contract": "MNQ_12-25",
+        "date": "2025-09-28",
+        "rows": 3,
+        "unfiltered_max_gap_ns": 12306625918600,
+        "right_endpoint_outside_16_to_17_CT_max_gap_ns": 0,
+        "declared_max_gap_s": 0.0,
+        "matches_declared_under_candidate_builder_definition": true,
+        "diagnostic_only_not_calendar_or_data_approval": true
+      },
+      {
+        "contract": "MNQ_12-25",
+        "date": "2025-10-30",
+        "rows": 1864980,
+        "unfiltered_max_gap_ns": 186584815300,
+        "right_endpoint_outside_16_to_17_CT_max_gap_ns": 9012000000,
+        "declared_max_gap_s": 9.012,
+        "matches_declared_under_candidate_builder_definition": true,
+        "diagnostic_only_not_calendar_or_data_approval": true
+      },
+      {
+        "contract": "MNQ_12-25",
+        "date": "2025-11-19",
+        "rows": 2555247,
+        "unfiltered_max_gap_ns": 273710372400,
+        "right_endpoint_outside_16_to_17_CT_max_gap_ns": 14364000000,
+        "declared_max_gap_s": 14.364,
+        "matches_declared_under_candidate_builder_definition": true,
+        "diagnostic_only_not_calendar_or_data_approval": true
+      },
+      {
+        "contract": "MNQ_12-25",
+        "date": "2025-11-24",
+        "rows": 1729926,
+        "unfiltered_max_gap_ns": 802910266600,
+        "right_endpoint_outside_16_to_17_CT_max_gap_ns": 20240600100,
+        "declared_max_gap_s": 20.2406001,
+        "matches_declared_under_candidate_builder_definition": true,
+        "diagnostic_only_not_calendar_or_data_approval": true
+      },
+      {
+        "contract": "MNQ_12-26",
+        "date": "2026-09-23",
+        "rows": 1771429,
+        "unfiltered_max_gap_ns": 14440000000,
+        "right_endpoint_outside_16_to_17_CT_max_gap_ns": 14440000000,
+        "declared_max_gap_s": 14.44,
+        "matches_declared_under_candidate_builder_definition": true,
+        "diagnostic_only_not_calendar_or_data_approval": true
+      }
+    ]
+  },
+  "reproduction": {
+    "structural_entrypoint": "tools/audit_kaggle_raw_ticks.py",
+    "api": "edgelab.kaggle.raw_tick_audit.audit_canonical_tick_file",
+    "python": "3.12.15",
+    "pyarrow": "26.0.0",
+    "pandas": "3.0.6",
+    "batch_rows": 65536,
+    "parallel_files": 2,
+    "timestamp_coverage_method": "Read ts_utc_ns only in source order, assign Chicago trade date at 17:00. Reconcile date label set, tick count, first and last against pinned producer JSON, and approved resolver tick counts. Report unfiltered adjacent maximum gap separately from candidate producer right-endpoint pause filter. No independently reviewed historical calendar.",
+    "diagnostic_script_sha256": {
+      "time_coverage_qa.py": "3755082cac7df4009de987121b12ba1297066350105551ba69386a5b1e7cbae9",
+      "check_source_gap_definition.py": "40b7c27f04858a66e7d0ba45073b894ee47923af421a52d616cd25c76ff84c92"
+    },
+    "scripts_hashes_are_not_historical_attestation": true
+  },
+  "remaining_blockers": [
+    "historical mounted raw versions and imported code not physically attested",
+    "clock/calendar/exchange continuity and quote/aggressor upstream provenance unverified",
+    "liquid contract selection, challenger comparison and as-of rules unverified, including 45-day warmup",
+    "gaps cannot distinguish missing data from closed exchange or inactive contract without independent references",
+    "pair identities/weights/reuse/overlap/tie-preserving bins and matching/control census remain unresolved",
+    "P4 forbidden until new explicit user authorization; technical QA never authorizes outcomes"
+  ]
+}
