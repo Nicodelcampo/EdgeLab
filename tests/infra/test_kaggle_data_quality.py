@@ -193,3 +193,30 @@ def test_new_technical_results_explicitly_refuse_certification(store):
     result=json.loads((store[0]/'results.json').read_text())
     assert result['research_allowed'] is False and result['raw_sanitation_certified'] is False
     assert result['causal_liquidity_certified'] is False
+
+
+def test_known_unresolved_frozen_source_cannot_be_relabelled_by_certificate(store,monkeypatch):
+    args=research_args(store);future_fixture(store,args)
+    # Synthetic fixture borrows only the blocked immutable source identifiers.
+    p=args['store']/'plan.json';plan=json.loads(p.read_text());row=plan['shards'][0]['sessions'][0]
+    row.update(dataset='edgelab-ticks-nq-preholdout',file='NQ_09-26_ticks.parquet')
+    plan['spec']['dataset_versions'][row['dataset']]='nicolasbuttaro/edgelab-ticks-nq-preholdout/6'
+    p.write_text(json.dumps(plan));repin(args['store'],'plan.json');args['expected_manifest_sha256']=digest(args['store']/'manifest.json')
+    args['certificate']['aggregate_store_manifest_sha256']=args['expected_manifest_sha256'];args['expected_certificate_sha256']=seal(args['certificate'])
+    monkeypatch.setattr(pd,'read_parquet',lambda *a,**k:pytest.fail('quarantined source opened'))
+    with pytest.raises(DataEligibilityError,match='KNOWN_UNRESOLVED_SOURCE_TIME_DISCREPANCY'):
+        load_research_bars(start='2026-01-05',end='2026-01-05',seconds=1,**args)
+
+
+@pytest.mark.parametrize('version,file,blocked',[
+    ('nicolasbuttaro/edgelab-ticks-nq-preholdout/6','NQ_09-26_ticks.parquet',True),
+    ('nicolasbuttaro/edgelab-ticks-nq-preholdout/7','NQ_09-26_ticks.parquet',False),
+    ('nicolasbuttaro/edgelab-ticks-nq-preholdout/6','NQ_06-26_ticks.parquet',False)])
+def test_quarantine_is_version_file_specific_not_general_permission(version,file,blocked):
+    from edgelab.kaggle.research_access import _reject_known_unresolved_sources
+    plan={'spec':{'dataset_versions':{'fixture':version}}};rows=[{'dataset':'fixture','file':file}]
+    if blocked:
+        with pytest.raises(DataEligibilityError):_reject_known_unresolved_sources(plan,rows)
+    else:
+        # No quarantine hit is NOT research approval; all other gates still apply.
+        assert _reject_known_unresolved_sources(plan,rows) is None

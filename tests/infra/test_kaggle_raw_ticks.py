@@ -74,3 +74,41 @@ def test_identity_bitmap_handles_nonadjacent_collision(raw):
 def test_timestamp_backward_not_sorted_away(raw):
     t=pd.read_parquet(raw);t.loc[4,'ts_utc_ns']=t.loc[0,'ts_utc_ns']-100;t.to_parquet(raw,index=False,row_group_size=2)
     r,_=audit_canonical_tick_file(**args(raw));assert r['errors']['backward_timestamps']==1
+
+
+def test_vector_labels_dst_and_integer_volume_match_independent_reduction(raw):
+    # Raw input deliberately spans Chicago DST and the 17:00 label boundary.
+    t=pd.read_parquet(raw).iloc[:4].copy()
+    stamps=['2026-03-06T22:59:00Z','2026-03-06T23:00:00Z','2026-03-09T21:59:00Z','2026-03-09T22:00:00Z']
+    t['ts_utc_ns']=[pd.Timestamp(s).value for s in stamps];t['ts_local_ns']=t.ts_utc_ns
+    t['volume']=2_000_000_000;t['sequence']=[0,1,2,3];t['source_file']='one';t['source_row']=[0,1,2,3]
+    t.to_parquet(raw,index=False,row_group_size=2);a=args(raw);a.update(expected_rows=4,include_clock_diagnostics=True)
+    report,totals=audit_canonical_tick_file(**a)
+    assert report['status']=='PASS_RAW_STRUCTURE_ONLY'
+    # Independent Python timezone/date arithmetic, not vector label code.
+    from datetime import timedelta
+    from zoneinfo import ZoneInfo
+    expected={}
+    for row in t.itertuples():
+        local=pd.Timestamp(row.ts_utc_ns,unit='ns',tz='UTC').to_pydatetime().astimezone(ZoneInfo('America/Chicago'))
+        day=(local.date()+timedelta(days=int(local.hour>=17))).isoformat()
+        expected.setdefault(day,{'trades':0,'volume':0})
+        expected[day]['trades']+=1;expected[day]['volume']+=int(row.volume)
+    assert {d:{k:v[k] for k in ('trades','volume')} for d,v in totals.items()}==expected
+    assert sum(v['volume'] for v in totals.values())==8_000_000_000
+    assert report['clock_band_16_to_17_CT_trade_rows']==2
+    assert report['clock_band_16_to_17_CT_observed_minutes']==2
+
+
+def test_sparse_large_source_row_uses_bounded_exact_pages(raw):
+    t=pd.read_parquet(raw);t['source_file']='same';t['source_row']=[0,1,60_000_000,1_000_000_000_000,60_000_000]
+    t.to_parquet(raw,index=False,row_group_size=2)
+    r,_=audit_canonical_tick_file(**args(raw))
+    assert r['errors']['duplicate_source_identity']==1
+    assert r['identity_bitmap_bytes']==4096*3
+
+
+def test_volume_sum_does_not_use_float_or_int32_accumulator(raw):
+    t=pd.read_parquet(raw);t['volume']=2_000_000_000;t.to_parquet(raw,index=False,row_group_size=2)
+    r,v=audit_canonical_tick_file(**args(raw));assert r['status']=='PASS_RAW_STRUCTURE_ONLY'
+    assert v['2026-06-01']['volume']==10_000_000_000

@@ -15,6 +15,23 @@ from edgelab.kaggle.aggregate_audit import digest
 
 CAUSAL_SELECTION_POLICY = 'previous_complete_session_causal_eligibility_v1'
 
+# Frozen version/file quarantine from independent raw QA. PASS declarations in
+# a caller certificate cannot erase a known unresolved source discrepancy.
+# Changing this list requires explicit review/evidence, never an auto-relabel.
+KNOWN_UNRESOLVED_SOURCES = {
+    ('nicolasbuttaro/edgelab-ticks-nq-preholdout/6', 'NQ_09-26_ticks.parquet'):
+        'KNOWN_UNRESOLVED_SOURCE_TIME_DISCREPANCY',
+}
+
+
+def _reject_known_unresolved_sources(plan, rows):
+    versions = plan.get('spec', {}).get('dataset_versions', {})
+    for row in rows:
+        key = (versions.get(row.get('dataset')), row.get('file'))
+        if key in KNOWN_UNRESOLVED_SOURCES:
+            raise DataEligibilityError(KNOWN_UNRESOLVED_SOURCES[key])
+
+
 
 def require_research_store(*, store, resolver, instrument, expected_manifest_sha256,
         expected_resolver_sha256, certificate, regime_manifest, liquidity_limits,
@@ -32,6 +49,8 @@ def require_research_store(*, store, resolver, instrument, expected_manifest_sha
     if 'plan.json' not in listed or digest(root/'plan.json')!=listed['plan.json']:
         raise DataEligibilityError('aggregate plan mismatch')
     plan=json.loads((root/'plan.json').read_text());catalog=json.loads(Path(resolver).read_text())
+    _reject_known_unresolved_sources(plan,
+        [r for sh in plan['shards'] for r in sh['sessions'] if r['instrument']==instrument])
     if catalog.get('selection_policy_id')!=CAUSAL_SELECTION_POLICY:
         raise DataEligibilityError('RETROSPECTIVE_OR_UNVERIFIED_SELECTION_MASK: catalog approval is not causal research eligibility')
     if not isinstance(certificate,dict) or certificate.get('aggregate_store_manifest_sha256')!=expected_manifest_sha256:

@@ -20,8 +20,9 @@ def main():
             'instrument':['ES','ES'],'contract':['ES 03-26','ES 03-26'],
             'source_file':['invented','invented'],'source_row':[0,1]}).to_parquet(raw,index=False)
         report,_=audit_canonical_tick_file(path=raw,expected_sha256=digest(raw),
-            expected_bytes=raw.stat().st_size,expected_rows=2,instrument='ES',contract='ES 03-26')
+            expected_bytes=raw.stat().st_size,expected_rows=2,instrument='ES',contract='ES 03-26',include_clock_diagnostics=True)
         assert report['status']=='PASS_RAW_STRUCTURE_ONLY' and report['research_allowed'] is False
+        assert report['clock_band_16_to_17_CT_trade_rows']==0
         assert report['errors']['duplicate_source_identity']==0 and report['warnings']['repeated_timestamps_legitimate']==1
         row={'instrument':'ES','date':'2026-01-05','contract':'ES_03-26','dataset':'SYNTHETIC','file':'raw.parquet','approved':True}
         plan={'spec':{'holdout_first_trade_date':'2026-10-01','requests':[{'instrument':'ES','start':'2026-01-04','end':'2026-01-05'}]},'shards':[{'sessions':[row]}]}
