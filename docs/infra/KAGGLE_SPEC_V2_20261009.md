@@ -90,14 +90,14 @@ No hay pruebas suficientes para atribuir el fallo de adjuntos por MCP a permisos
 
 1. **Smoke ES/NQ y workaround de mounts: cerrados.** Resolver todavía los adjuntos directamente por MCP o CLI oficial para no depender del navegador en cada kernel.
 2. Ampliar la paridad contra el loader, medir tiempo/memoria y cobertura sobre datos reales; conservación por sesión y consumidor ya pasaron, todavía no hay medición de aceleración.
-3. Materializar la cobertura completa y publicar un **dataset privado de agregados**. No se publicó ninguno en esta tanda; el MCP expuesto no tiene creación/versionado integral de datasets.
+3. **Cobertura aprobada y dataset privado: cerrados.** Se materializaron las 521 sesiones del plan y se publicó `nicolasbuttaro/edgelab-es-nq-aggregates-20261009/1`. Creación desde outputs en la interfaz; verificación y descarga por custom MCP.
 4. Añadir adaptadores de hipótesis/métricas/reglas económicas, con aprobación humana y autorización independiente de outcomes.
-5. **Adaptador durable cerrado y smoke ingerido:** `tools/kaggle_hippocampus_ingest.py` valida el almacén inmutable antes de escribir, usa el mismo lock del store de producción, conserva la cadena previa y evita duplicados. El smoke creó cinco registros verificados; la corrida histórica aún está en curso.
+5. **Adaptador durable cerrado y smoke ingerido:** `tools/kaggle_hippocampus_ingest.py` valida el almacén inmutable antes de escribir, usa el mismo lock del store de producción, conserva la cadena previa y evita duplicados. El smoke creó cinco registros verificados; la corrida histórica completa fue verificada e ingerida (10 registros en total).
 6. Añadir lanzamiento/polling/descarga de k kernels; hoy se generan kernels y se unen sus outputs, no se ofrece un scheduler completo.
 
 ## Aporte al referente
 
-Reduce duplicación de infraestructura y hace verificables inputs/sesiones, agregados y evidencia sin convertir un PASS técnico en un edge ni gastar holdout. El mount real y el smoke de una sesión ES/NQ quedaron verificados sin internet; los adjuntos vía MCP y la materialización histórica completa siguen pendientes.
+Reduce duplicación de infraestructura y hace verificables inputs/sesiones, agregados y evidencia sin convertir un PASS técnico en un edge ni gastar holdout. El mount real y el smoke de una sesión ES/NQ quedaron verificados sin internet; los adjuntos vía MCP siguen sin cierre fiable, pero la materialización histórica completa, publicación privada y registro durable ya se verificaron.
 
 ## Corrida histórica y continuidad durable
 
@@ -107,4 +107,17 @@ El consumidor de evidencia verifica manifest, attestation y cobertura antes de a
 
 ### Formato de agresor reexportado
 
-La primera tanda histórica v2: k01 PASS; k02/k03/k04 ABSTAIN por etiqueta no contemplada. Diagnóstico privado `edgelab-aggressor-diagnostic-20261010` v2 leyó sólo agresor de row groups con timestamps demostrablemente anteriores al holdout; confirmó `unknown` (6 filas en el primer row group de NQ_09-25). `unknown` se conserva como unknown_volume y aporta cero al volumen firmado, igual que neutral/unclassified. Otras etiquetas no previstas siguen fallando con el listado explícito. Una nueva prueba confirma trades/volumen y signo; los cuatro shards se regeneraron con el mismo hash de runner. No se mezcla el k01 viejo con la nueva tanda.
+La primera tanda histórica v2 (historial de fallos, ya corregido): k01 PASS; k02/k03/k04 ABSTAIN por etiqueta no contemplada. Diagnóstico privado `edgelab-aggressor-diagnostic-20261010` v2 leyó sólo agresor de row groups con timestamps demostrablemente anteriores al holdout; confirmó `unknown` (6 filas en el primer row group de NQ_09-25). `unknown` se conserva como unknown_volume y aporta cero al volumen firmado, igual que neutral/unclassified. Otras etiquetas no previstas siguen fallando con el listado explícito. Una nueva prueba confirma trades/volumen y signo; los cuatro shards se regeneraron con el mismo hash de runner. No se mezcla el k01 viejo con la nueva tanda.
+
+## Cierre de la materialización histórica
+
+- Cuatro shards **v4 COMPLETE / PASS_INTEGRITY_NOT_EDGE**, 521 sesiones: ES 243 y NQ 278. Hash común de runner `e1e1221315e0bd7c05905ab08b69cfff8da38f4d3d9edce03ef74dabc5428b38`.
+- Merge v3, ejecución 356910171: verificó los cuatro zips contra hashes esperados obtenidos externamente vía MCP, manifests, identidad de runner, plan y cobertura; seis lecturas con `load_bars` PASS.
+- Dataset **privado, v1 Ready**: https://www.kaggle.com/datasets/nicolasbuttaro/edgelab-es-nq-aggregates-20261009 . Licencia Other (specified in description); no permiso de redistribución de derivados CME. GET anónimo al dataset API devolvió 403; `get_dataset_info` autenticado confirmó is_private=true.
+- Comprobación independiente montando el dataset publicado: `edgelab-aggregates-published-check-20261010` v2, ejecución 356912231, COMPLETE. Hashes de los seis archivos primarios, manifest, código consumidor, ledger y cobertura exacta coinciden con la salida original.
+- Ingestión automática en el reducer mediante el adaptador existente: cinco registros nuevos añadidos a los cinco del smoke, tip `4c2cc7ff6b9968312aecf2d9e3e4d9ff8b641c303274e0c181ecadacbb4b6684`. Se verificó que el ledger comienza con los bytes históricos anteriores; ANCHORS conserva el ancla a 5 registros y añade la de 10, sin modificar otras anclas. No trials ni outcomes.
+- Kaggle **expandió automáticamente output.zip** al crear el dataset: aparecen copias bajo `store/output/`. El consumidor usa sólo archivos primarios bajo `store/`. El zip inmutable original permanece en los outputs del notebook merge v3, SHA256 `1f532ca9b63be1a2524a917bbd516298542f568c2d3f0c44ffc896bd7e2d9819`; NO es el hash del zip de descarga que Kaggle crea para un dataset. No se alteró ni reempaquetó el almacén luego de la ingestión.
+
+La creación, ejecución, polling y URLs de descarga se operaron principalmente vía custom MCP. Los mounts y la creación del dataset se cerraron en la interfaz autenticada: el MCP no demuestra adjuntos por guardar una versión. La escritura de licencia por MCP falló su validación y se completó en la interfaz; la lectura posterior MCP confirmó licencia, privacidad y disponibilidad.
+
+Rama de trabajo y PR #68 permanecen aislados, en borrador y **sin fusionar**. La evidencia detallada y referencias a ejecuciones están en `KAGGLE_SPEC_V2_FULL_EVIDENCE_20261009.json`. No se afirmó un benchmark de aceleración ni se implementaron adaptadores de hipótesis económicas.
