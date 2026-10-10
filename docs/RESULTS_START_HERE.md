@@ -27,6 +27,13 @@ No es una auditoría de todos los kernels ni vincula ese source con cada
 artefacto histórico. Las fechas de ejecución de listados y metadata no bastan
 para esa vinculación; hace falta versión/run/output exactos.
 
+También se revisaron los tres `procedencia.json` de AVZVOL k1/k2/k3 ya
+guardados: declaran MNQ, `spec=25`, contratos, commit/tree y hora de inicio.
+El snapshot conserva sus SHA. **No contienen versiones de datasets ni hashes
+de los archivos raw consumidos**. Esa omisión impide certificar la lineage
+completa con esos archivos solos; no demuestra que sus resultados sean falsos.
+No se cargaron outcomes económicos para esta revisión.
+
 - Los tres sources declaran **MNQ**. No atribuirles el problema de roll de ES
   o la cuarentena de un archivo NQ por el nombre del indicador o los datasets
   que tengan adjuntos.
