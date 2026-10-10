@@ -20,6 +20,11 @@ resolver/loader v15, declaraciones SHA de seis raw y comparación estática del 
 Coherencia con logs y Git no acredita consumo físico histórico ni calidad. R7/K8
 no se cierran; no hubo nuevas ejecuciones de mercado.
 
+La [revisión de metadatos MNQ](infra/AVZVOL_MNQ_METADATA_QUALITY_20261010.md)
+reconcilia 261 sesiones candidatas, pero muestra warmup fuera de la máscara aprobada
+y reglas de elegibilidad sin as-of acreditado. El checker JSON conserva STOP científico;
+no escanea raw ni certifica continuidad/reloj/liquidez. R7/K8 permanecen abiertos.
+
 ## 1. Respuesta operativa
 
 - **Ya integrado:** los lotes #69–#78 enumerados abajo. No queda pendiente pushear

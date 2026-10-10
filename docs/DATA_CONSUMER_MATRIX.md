@@ -22,6 +22,7 @@ Esta matriz describe wiring de código, no certificación de datos ni permisos d
 |---|---|
 | `edgelab.kaggle.discovery` / `tools/kaggle_data_entrypoint.py` | Plan/pins sin datos por defecto; research STOP. Mount QA hashea bytes, no certifica calidad |
 | `python -m edgelab.edge_brain.result_lineage` | Envelope de metadatos; no autentica aprobación ni demuestra ausencia de sesgo |
+| `tools/audit_avzvol_mnq_metadata.py` | Sólo JSON con pins de documentos; concuerda resúmenes y resolver candidato, incluye warmup. No raw, calendario/liq aprobados ni attestation histórica; exit 0 != permiso de research |
 | `tools/audit_avzvol_outputs.py` | Seis exports fijados; todos los footers preholdout antes de covariables; no outcomes nuevos; requiere revisión |
 | `avzvol_audit.require_baseline_reproduction` / `assign_frozen_bins` | Controles opt-in; no cambian ni protegen automáticamente el runner histórico |
 

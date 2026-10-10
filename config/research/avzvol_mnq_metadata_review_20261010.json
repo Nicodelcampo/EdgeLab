@@ -1,0 +1,301 @@
+{
+  "schema": "edgelab_avzvol_mnq_metadata_review_v1",
+  "status": "REQUIRES_SOURCE_QUALITY_REVIEW",
+  "research_authorized": false,
+  "raw_quality_certified": false,
+  "historical_bias_adjudicated": false,
+  "calendar_certified": false,
+  "clock_certified": false,
+  "liquidity_certified": false,
+  "new_market_trials": 0,
+  "price_payload_read": false,
+  "method": "Source-declared session summaries vs candidate resolver; legacy absolute warmup boundaries; no raw scan or historical mount proof. Label != reviewed exchange session; extra labels are NOT a measured number of detector-contaminating sessions.",
+  "metadata_grain": "one producer-declared source date label per contract, not independent trades or certified exchange sessions",
+  "selection_rules_declared_by_resolver": "Selección de datos APROBADOS para análisis: aplica reglas fijas, por sesión, al catálogo y escribe docs/data_catalog/{curated.json,CURATED.md,REEXPORT.md}.\nReglas (iguales para todos los instrumentos; se cambian solo en este archivo y se documentan):\n  1. Serie líder y elegibilidad del catálogo (mayor volumen de la sesión anterior; volumen >= 50 % de la mediana del contrato).\n  2. Excluida si el volumen es < 25 % de la mediana de volumen del líder de TODO el instrumento (liquidez baja respecto del instrumento).\n  3. Excluida si tiene menos de la mitad de los minutos típicos (sesión truncada o cierre temprano).\n  4. Con salvedad (no excluida) si el contrato tiene fuentes en conflicto material (> 1 % de diferencia de trades en más del 10 % de los días comunes).\n  5. Excluida toda sesión desde 2026-10-01 (holdout formal).\nVeredicto por instrumento: APROBADO (>= 85 % de las sesiones elegibles aprobadas y sin salvedades), CON_SALVEDADES (>= 60 %), NO_RECOMENDADO (< 60 %).",
+  "selection_rule_asof_review_required": true,
+  "detector_before_approved_mask_source_review": "v1 source calls zp2_run before appr = isin; existing code inspected, impact NOT quantified",
+  "contracts": [
+    {
+      "contract": "MNQ_03-26",
+      "candidate_dataset_ref": "nicolasbuttaro/edgelab-ticks-nt8-canonical",
+      "candidate_version": 1,
+      "approved_session_count": 57,
+      "missing_approved_summary_dates": [],
+      "approved_trade_count_mismatch_dates": [],
+      "source_summary_tick_total": 103921542,
+      "legacy_read_window_start_utc_ns": 1762063200000000000,
+      "first_approved_midnight_utc_ns": 1765951200000000000,
+      "legacy_read_window_end_utc_ns_exclusive": 1773694800000000000,
+      "warmup_intersecting_summary_count": 29,
+      "leading_no_declared_observation_ns": 162001172000000,
+      "declared_gap_review_required": true,
+      "complete_session_certified": false,
+      "warmup_liquidity_certified": false,
+      "historical_consumption_verified": false,
+      "source_summary_total_matches_producer_manifest_rows": true,
+      "unapproved_or_warmup_summary_label_count_in_read_window": 39,
+      "boundary_straddling_summary_count": 0
+    },
+    {
+      "contract": "MNQ_06-26",
+      "candidate_dataset_ref": "nicolasbuttaro/edgelab-ticks-nt8-reexport-20261005",
+      "candidate_version": 2,
+      "approved_session_count": 57,
+      "missing_approved_summary_dates": [],
+      "approved_trade_count_mismatch_dates": [],
+      "source_summary_tick_total": 116002246,
+      "legacy_read_window_start_utc_ns": 1770008400000000000,
+      "first_approved_midnight_utc_ns": 1773896400000000000,
+      "legacy_read_window_end_utc_ns_exclusive": 1781298000000000000,
+      "warmup_intersecting_summary_count": 29,
+      "leading_no_declared_observation_ns": 0,
+      "declared_gap_review_required": true,
+      "complete_session_certified": false,
+      "warmup_liquidity_certified": false,
+      "historical_consumption_verified": false,
+      "source_summary_total_matches_producer_manifest_rows": true,
+      "unapproved_or_warmup_summary_label_count_in_read_window": 33,
+      "boundary_straddling_summary_count": 1
+    },
+    {
+      "contract": "MNQ_09-25",
+      "candidate_dataset_ref": "nicolasbuttaro/edgelab-ticks-nt8-canonical",
+      "candidate_version": 1,
+      "approved_session_count": 29,
+      "missing_approved_summary_dates": [],
+      "approved_trade_count_mismatch_dates": [],
+      "source_summary_tick_total": 34508845,
+      "legacy_read_window_start_utc_ns": 1750395600000000000,
+      "first_approved_midnight_utc_ns": 1754283600000000000,
+      "legacy_read_window_end_utc_ns_exclusive": 1757710800000000000,
+      "warmup_intersecting_summary_count": 3,
+      "leading_no_declared_observation_ns": 3682800008000000,
+      "declared_gap_review_required": true,
+      "complete_session_certified": false,
+      "warmup_liquidity_certified": false,
+      "historical_consumption_verified": false,
+      "source_summary_total_matches_producer_manifest_rows": true,
+      "unapproved_or_warmup_summary_label_count_in_read_window": 8,
+      "boundary_straddling_summary_count": 1
+    },
+    {
+      "contract": "MNQ_09-26",
+      "candidate_dataset_ref": "nicolasbuttaro/edgelab-ticks-nt8-reexport-20261005",
+      "candidate_version": 2,
+      "approved_session_count": 46,
+      "missing_approved_summary_dates": [],
+      "approved_trade_count_mismatch_dates": [],
+      "source_summary_tick_total": 110632331,
+      "legacy_read_window_start_utc_ns": 1777698000000000000,
+      "first_approved_midnight_utc_ns": 1781586000000000000,
+      "legacy_read_window_end_utc_ns_exclusive": 1789419600000000000,
+      "warmup_intersecting_summary_count": 26,
+      "leading_no_declared_observation_ns": 166057528000000,
+      "declared_gap_review_required": true,
+      "complete_session_certified": false,
+      "warmup_liquidity_certified": false,
+      "historical_consumption_verified": false,
+      "source_summary_total_matches_producer_manifest_rows": true,
+      "unapproved_or_warmup_summary_label_count_in_read_window": 38,
+      "boundary_straddling_summary_count": 0
+    },
+    {
+      "contract": "MNQ_12-25",
+      "candidate_dataset_ref": "nicolasbuttaro/edgelab-ticks-nt8-canonical",
+      "candidate_version": 1,
+      "approved_session_count": 62,
+      "missing_approved_summary_dates": [],
+      "approved_trade_count_mismatch_dates": [],
+      "source_summary_tick_total": 99091418,
+      "legacy_read_window_start_utc_ns": 1754197200000000000,
+      "first_approved_midnight_utc_ns": 1758085200000000000,
+      "legacy_read_window_end_utc_ns_exclusive": 1765836000000000000,
+      "warmup_intersecting_summary_count": 6,
+      "leading_no_declared_observation_ns": 3362434052000000,
+      "declared_gap_review_required": true,
+      "complete_session_certified": false,
+      "warmup_liquidity_certified": false,
+      "historical_consumption_verified": false,
+      "source_summary_total_matches_producer_manifest_rows": true,
+      "unapproved_or_warmup_summary_label_count_in_read_window": 15,
+      "boundary_straddling_summary_count": 0
+    },
+    {
+      "contract": "MNQ_12-26",
+      "candidate_dataset_ref": "nicolasbuttaro/edgelab-ticks-nt8-reexport-20261005",
+      "candidate_version": 2,
+      "approved_session_count": 10,
+      "missing_approved_summary_dates": [],
+      "approved_trade_count_mismatch_dates": [],
+      "source_summary_tick_total": 21440578,
+      "legacy_read_window_start_utc_ns": 1785733200000000000,
+      "first_approved_midnight_utc_ns": 1789621200000000000,
+      "legacy_read_window_end_utc_ns_exclusive": 1790802000000000000,
+      "warmup_intersecting_summary_count": 34,
+      "leading_no_declared_observation_ns": 0,
+      "declared_gap_review_required": true,
+      "complete_session_certified": false,
+      "warmup_liquidity_certified": false,
+      "historical_consumption_verified": false,
+      "source_summary_total_matches_producer_manifest_rows": true,
+      "unapproved_or_warmup_summary_label_count_in_read_window": 33,
+      "boundary_straddling_summary_count": 1
+    }
+  ],
+  "rolls": [
+    {
+      "from": "MNQ_09-25",
+      "to": "MNQ_12-25",
+      "previous_session": "2025-09-16",
+      "previous_label_weekday": 1,
+      "declared_previous_volumes_positive": true,
+      "complete_previous_session_verified": false,
+      "all_challenger_sources_verified": false,
+      "liquid_roll_certified": false
+    },
+    {
+      "from": "MNQ_12-25",
+      "to": "MNQ_03-26",
+      "previous_session": "2025-12-16",
+      "previous_label_weekday": 1,
+      "declared_previous_volumes_positive": true,
+      "complete_previous_session_verified": false,
+      "all_challenger_sources_verified": false,
+      "liquid_roll_certified": false
+    },
+    {
+      "from": "MNQ_03-26",
+      "to": "MNQ_06-26",
+      "previous_session": "2026-03-17",
+      "previous_label_weekday": 1,
+      "declared_previous_volumes_positive": true,
+      "complete_previous_session_verified": false,
+      "all_challenger_sources_verified": false,
+      "liquid_roll_certified": false
+    },
+    {
+      "from": "MNQ_06-26",
+      "to": "MNQ_09-26",
+      "previous_session": "2026-06-15",
+      "previous_label_weekday": 0,
+      "declared_previous_volumes_positive": true,
+      "complete_previous_session_verified": false,
+      "all_challenger_sources_verified": false,
+      "liquid_roll_certified": false
+    },
+    {
+      "from": "MNQ_09-26",
+      "to": "MNQ_12-26",
+      "previous_session": "2026-09-15",
+      "previous_label_weekday": 1,
+      "declared_previous_volumes_positive": true,
+      "complete_previous_session_verified": false,
+      "all_challenger_sources_verified": false,
+      "liquid_roll_certified": false
+    }
+  ],
+  "required_reviews": [
+    "physical raw-byte pin and structure",
+    "historical calendar and source UTC conversion",
+    "all read dates including warmup/rejected dates and intraday gaps",
+    "full prior-session challenger census and complete-session evidence",
+    "ex-ante eligibility thresholds rather than full-sample masks",
+    "historical consumption and exposure, distinct from fresh data approval"
+  ],
+  "source_summary_metadata_pins": [
+    {
+      "contract": "MNQ_03-26",
+      "artifact": "canonical.v1.MNQ_03-26_sessions_ext.json",
+      "measured_sha256": "656dd8a2ba419e6d954b253aeb398d91e87646f9582c90c90e739f76e07bac31",
+      "downloaded_bytes": 13032,
+      "historic_mount_verified": false
+    },
+    {
+      "contract": "MNQ_06-26",
+      "artifact": "reexport.v2.MNQ_06-26_sessions_ext.json",
+      "measured_sha256": "4a8cf9721289995b785ef18c3dbb8b4a2a95e73f24a0cea43664112c5d49bdf0",
+      "downloaded_bytes": 15828,
+      "historic_mount_verified": false
+    },
+    {
+      "contract": "MNQ_09-25",
+      "artifact": "canonical.v1.MNQ_09-25_sessions_ext.json",
+      "measured_sha256": "4e87009819a75074998692a540880d8b505e485b8ce1d44bef7c32bdd914d0a3",
+      "downloaded_bytes": 4779,
+      "historic_mount_verified": false
+    },
+    {
+      "contract": "MNQ_09-26",
+      "artifact": "reexport.v2.MNQ_09-26_sessions_ext.json",
+      "measured_sha256": "051ecdae5e3825c34ba01222a72130262f604196f98980e5a7a3c4a7d30a2153",
+      "downloaded_bytes": 15047,
+      "historic_mount_verified": false
+    },
+    {
+      "contract": "MNQ_12-25",
+      "artifact": "canonical.v1.MNQ_12-25_sessions_ext.json",
+      "measured_sha256": "970006afa60e4a39a41b84762a1d774529992588fde54f7dfbba1f1f1af30b43",
+      "downloaded_bytes": 9129,
+      "historic_mount_verified": false
+    },
+    {
+      "contract": "MNQ_12-26",
+      "artifact": "reexport.v2.MNQ_12-26_sessions_ext.json",
+      "measured_sha256": "6ca7fe8c5c0d6bac9fb0529d79cb8d8943fcc775aafe62b48fe5e2257a60237e",
+      "downloaded_bytes": 9855,
+      "historic_mount_verified": false
+    }
+  ],
+  "document_input_pins": [
+    {
+      "role": "resolver",
+      "measured_sha256": "9b21eeff751d4397465fcc6831ea615b7dd401a5605a5997f52c8bfd9248117c"
+    },
+    {
+      "role": "catalog",
+      "measured_sha256": "dc00e09b440e58d5e8be0918bd3b9de6fdb3da8a748df03f106234d218559efd"
+    },
+    {
+      "role": "lineage",
+      "measured_sha256": "dc930e64e3767a6dd8da304f66ac4af44fd117410df18b93d02df781d3397555"
+    }
+  ],
+  "base_commit": "e1c8cb13ff2b31d2fece93b1c16bec76dfb9452b",
+  "audit_date_utc": "2026-10-10",
+  "approved_session_count": 261,
+  "missing_approved_summaries": 0,
+  "approved_trade_count_mismatches": 0,
+  "candidate_source_totals_reconcile": true,
+  "canonical_manifest_hash_identity_notes": [
+    {
+      "contract": "MNQ_03-26",
+      "manifest_precompression_declared_sha256": "9a0225520591dd599857d3bcfad3ab8e0af30e053a9fb53f67e66131fe90c71c",
+      "published_zstd_declared_sha256": "1b3f6f17fbc1c189d627292bf8b1922ce58b7097a42ab498b546d36ad3b37afa",
+      "hashes_differ": true,
+      "rows_declared_equal": true,
+      "recompression_declared_by_audit_manifest": true,
+      "raw_byte_or_semantic_equivalence_independently_verified": false
+    },
+    {
+      "contract": "MNQ_09-25",
+      "manifest_precompression_declared_sha256": "fdd2c14e331f2cdb71234eda2f3c6e294976d9d5e3f10abea8f0571af87410bd",
+      "published_zstd_declared_sha256": "c78ff5cebeca2130876409b27e00dbb9cab8c0007ab451e4ddb4319088a2be85",
+      "hashes_differ": true,
+      "rows_declared_equal": true,
+      "recompression_declared_by_audit_manifest": true,
+      "raw_byte_or_semantic_equivalence_independently_verified": false
+    },
+    {
+      "contract": "MNQ_12-25",
+      "manifest_precompression_declared_sha256": "bae949b294fbc67b258964b9f874a8b23b197b92fe0603e21021ba623254e649",
+      "published_zstd_declared_sha256": "832533e504b7ae2c33a5575366974bc0d639ba8c65ebc406105939a70f63397f",
+      "hashes_differ": true,
+      "rows_declared_equal": true,
+      "recompression_declared_by_audit_manifest": true,
+      "raw_byte_or_semantic_equivalence_independently_verified": false
+    }
+  ],
+  "historical_outputs_rewritten": false,
+  "signed_urls_or_raw_calendar_published": false,
+  "interpretation": "Summary concordance only. Sparse/unreviewed warmup and full-sample eligibility rules require review; no economic bias size measured. Historic mounts not verified."
+}
