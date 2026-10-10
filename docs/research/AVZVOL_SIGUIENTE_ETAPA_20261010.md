@@ -33,6 +33,9 @@ No inferir consumo desde attachments ni aplicar automáticamente fallos de ES/NQ
 Avance documental: [recuperación de candidatos de procedencia](../infra/AVZVOL_LINEAGE_RECOVERY_20261010.md).
 Los artefactos recuperados son coherentes, pero no prueban el montaje histórico.
 `reviewed_input_pins` permanece vacío y la revisión incluye los 45 días de warmup.
+La [revisión documental de calidad MNQ](../infra/AVZVOL_MNQ_METADATA_QUALITY_20261010.md)
+no cierra calidad: detector previo a la máscara y reglas de selección sin as-of
+acreditado requieren revisión antes de contraste. Ningún parámetro se eligió por outcomes.
 
 Conservar el original. La revisión tiene identidad de método nueva y debe explicar
 cada diferencia: bins por cutpoints externos congelados (`assign_frozen_bins`),

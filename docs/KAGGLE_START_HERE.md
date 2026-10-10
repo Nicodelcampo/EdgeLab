@@ -69,3 +69,11 @@ no cambiando un booleano del inventario. Su consumidor es
 `research_access.load_research_bars`, con gate previo, cobertura diaria revisada,
 regímenes y límites de liquidez. [API y límites](COMPONENT_KAGGLE.md) ·
 [Matriz de lectores](DATA_CONSUMER_MATRIX.md).
+
+## MNQ / AVZVOL: revisión acotada
+
+[Procedencia candidata](infra/AVZVOL_LINEAGE_RECOVERY_20261010.md) y
+[calidad declarada/warmup/liquidez](infra/AVZVOL_MNQ_METADATA_QUALITY_20261010.md).
+`tools/audit_avzvol_mnq_metadata.py` revisa JSON fijados, no raw ni outcomes.
+Exit 0 no aprueba datos; devuelve `REQUIRES_SOURCE_QUALITY_REVIEW`.
+No sustituye `discovery.json` por estos candidatos ni certifica mounts históricos.
