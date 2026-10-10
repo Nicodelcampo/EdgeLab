@@ -87,3 +87,10 @@ La [revisión causal de selección AVZVOL](infra/AVZVOL_CAUSAL_SELECTION_REVIEW_
 refuerza el gate de metadatos: no basta el volumen del elegido; se requieren
 competidores D-1 completos y conocidos al cutoff. Es evidencia externa pendiente,
 no un certificado emitido por el token, catálogo o tests. No se modificó catalog v15.
+
+## AVZVOL: diagnóstico sintético de controles
+
+[Guía y API descriptivos](research/AVZVOL_CONTROL_CENSUS_DIAGNOSTICS_20261010.md):
+`python tools/avzvol_design_smoke.py --report control-census`. Sólo covariables
+inventadas; no autorización, certificación, inferencia ni benchmark de outcomes.
+P2 requiere censo/política/protocolo revisados; P4 permanece prohibida.

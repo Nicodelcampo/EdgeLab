@@ -62,3 +62,10 @@ outcomes económicos. Mantener discovery y candidatos AVZVOL separados.
 competidores D-1; lo heredan read_research_session y research_access. Rechaza antes
 de fuentes, pero NO protege lectores legacy ni autentica revisión externa.
 [Contrato reforzado](infra/AVZVOL_CAUSAL_SELECTION_REVIEW_20261010.md).
+
+## AVZVOL: diagnóstico sintético de controles
+
+[Guía y API descriptivos](research/AVZVOL_CONTROL_CENSUS_DIAGNOSTICS_20261010.md):
+`python tools/avzvol_design_smoke.py --report control-census`. Sólo covariables
+inventadas; no autorización, certificación, inferencia ni benchmark de outcomes.
+P2 requiere censo/política/protocolo revisados; P4 permanece prohibida.

@@ -228,3 +228,10 @@ histórico. Ante contradicción: STOP y autoridad de campaña, no mayoría de do
 **Fuera de alcance:** planeación de autonomía/ccbus no pusheada, servidor y ciclos
 recursivos. Su ubicación futura debe consumir estos contratos; no se inventa ni
 se implementa ahora. Tampoco se lanzan hipótesis, P&L, promociones ni outcomes nuevos.
+
+## AVZVOL: diagnóstico sintético de controles
+
+[Guía y API descriptivos](research/AVZVOL_CONTROL_CENSUS_DIAGNOSTICS_20261010.md):
+`python tools/avzvol_design_smoke.py --report control-census`. Sólo covariables
+inventadas; no autorización, certificación, inferencia ni benchmark de outcomes.
+P2 requiere censo/política/protocolo revisados; P4 permanece prohibida.

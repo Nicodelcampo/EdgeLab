@@ -3,6 +3,7 @@
 import argparse
 import json
 from edgelab.kaggle.avzvol_design import FEATURES, plan_covariate_matches
+from edgelab.kaggle.avzvol_diagnostics import describe_control_census
 
 
 def synthetic_fixture():
@@ -22,13 +23,15 @@ def synthetic_fixture():
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--purpose', choices=('synthetic', 'research'), default='synthetic')
+    parser.add_argument('--report', choices=('match', 'control-census'), default='match')
     args = parser.parse_args(argv)
     if args.purpose == 'research':
         print(json.dumps({'status': 'STOP_AVZVOL_RESEARCH_NOT_IMPLEMENTED',
                           'research_authorized': False, 'inputs_opened': False}))
         return 2
     reals, controls, policy = synthetic_fixture()
-    result = plan_covariate_matches(reals, controls, policy=policy, holdout_start='2026-10-01')
+    report = describe_control_census if args.report == 'control-census' else plan_covariate_matches
+    result = report(reals, controls, policy=policy, holdout_start='2026-10-01')
     result['fixture'] = 'SYNTHETIC_ONLY_NOT_MARKET_THRESHOLDS'
     print(json.dumps(result, allow_nan=False, sort_keys=True))
     return 0
