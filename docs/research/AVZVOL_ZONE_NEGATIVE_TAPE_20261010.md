@@ -103,3 +103,10 @@ sin holdout y sin reescribir resultados originales. El censo real sigue pendient
 Guards de fecha reservada y cinta ausente verificados también con Python `-O`.
 [Registro de alcance](../../config/research/avzvol_zone_negative_development_v1.json).
 Esto acredita pruebas del software, no calidad de fuente ni resultados de mercado.
+
+## Productor de cinta y riesgo de ventana O5
+
+[API, reproducción y auditoría](AVZVOL_DETECTOR_TAPE_AND_O5_BOUNDARY_20261010.md): productor del detector histórico
+instrumentado, sin loaders ni estados finales. Censo real pendiente. Desfase
+de una barra en el guard O5 documentado; QA acotada de etiquetas existentes no
+lo descarta. No outcomes nuevos ni certificación; P4 sigue prohibida.

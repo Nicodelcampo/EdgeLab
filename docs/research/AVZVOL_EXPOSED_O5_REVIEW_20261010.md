@@ -167,3 +167,11 @@ sólo exports inventados: faltantes, pesos, permiso explícito, hash/holdout,
 protección incluso con Python -O y no sobrescritura. No prueban verdad del raw.
 La figura canónica generada con preflight está conservada en
 `avzvol_exposed_o5_review_20261010/avzvol_o5_notion_agent_chart.html`.
+
+## Advertencia posterior: límite de sesión O5
+
+[Auditoría del guard y de etiquetas existentes](AVZVOL_DETECTOR_TAPE_AND_O5_BOUNDARY_20261010.md):
+la comprobación histórica alcanza `te+199`, pero el rango incluye `te+200`.
+Hay un caso sintético que cruza sesión y pasa el guard. La comprobación exacta
+de etiquetas disponibles tiene cobertura limitada y no descarta el riesgo.
+Estos resultados y faltantes no se recalcularon ni se certificaron.

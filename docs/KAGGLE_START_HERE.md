@@ -112,3 +112,10 @@ alteran los gates/pins pendientes de P1–P3; P4 permanece prohibida.
 UNKNOWN por bloques/calibración/as-of faltantes. Sin zona en una ventana no
 acredita ausencia de racimo ni consolidación. Sólo fixtures inventados; el censo
 real, protocolo y calidad siguen pendientes. No libera gates ni P4.
+
+## Productor de cinta y riesgo de ventana O5
+
+[API, reproducción y auditoría](research/AVZVOL_DETECTOR_TAPE_AND_O5_BOUNDARY_20261010.md): productor del detector histórico
+instrumentado, sin loaders ni estados finales. Censo real pendiente. Desfase
+de una barra en el guard O5 documentado; QA acotada de etiquetas existentes no
+lo descarta. No outcomes nuevos ni certificación; P4 sigue prohibida.
