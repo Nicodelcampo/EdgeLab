@@ -47,8 +47,10 @@ No se cargaron outcomes económicos para esta revisión.
 - El cierre calculado por días hábiles no sustituye un calendario histórico
   revisado con feriados y cierres anticipados.
 - AVZVOL/AVZGRID usan `SPEC=25` en el builder, aunque conservan `TICKS_BAR=50`
-  y una descripción de 50t. Reconciliar el manifiesto original antes de
-  reutilizar resultados. Un comentario no gobierna el parámetro ejecutado.
+  y una descripción de 50t. Para **AVZVOL** se recuperó el manifiesto original:
+  **25t es correcto**, no un cambio de configuración. Su [auditoría específica](infra/AVZVOL_AUDIT_20261010.md)
+  reproduce el baseline publicado. AVZGRID no se volvió a auditar en esa revisión.
+  Un comentario no gobierna el parámetro ejecutado.
 - HFTRET usa `hash(c)` como semilla. Sin congelación verificable de
   `PYTHONHASHSEED`, esa semilla puede cambiar entre procesos. Es un riesgo de
   reproducibilidad; **no prueba por sí solo sesgo económico**. No retocar sus

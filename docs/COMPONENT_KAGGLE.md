@@ -112,3 +112,11 @@ PASS no habilita research. NQ preholdout v6 / NQ_09-26_ticks.parquet sigue con
 horario/contenido discrepante; `KNOWN_UNRESOLVED_SOURCES` lo bloquea aun frente
 a un certificado PASS. No se cambia la fuente ni se recorta la hora automáticamente.
 `--include-clock-diagnostics` habilita conteos de reloj, no un calendario certificado.
+
+## Auditoría específica de AVZVOL
+
+[AVZVOL: evidencia, reproducción del baseline y pendientes](infra/AVZVOL_AUDIT_20261010.md).
+`tools/audit_avzvol_outputs.py` revisa covariables preholdout con pins, sin ticks,
+retornos o control O5 nuevo. `edgelab.kaggle.avzvol_audit` aporta comparación
+estricta del baseline y bins futuros invariantes a empates/orden.
+Son controles opt-in, no certificación ni protección automática del runner legacy.
