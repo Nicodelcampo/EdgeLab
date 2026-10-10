@@ -94,3 +94,7 @@ no un certificado emitido por el token, catálogo o tests. No se modificó catal
 `python tools/avzvol_design_smoke.py --report control-census`. Sólo covariables
 inventadas; no autorización, certificación, inferencia ni benchmark de outcomes.
 P2 requiere censo/política/protocolo revisados; P4 permanece prohibida.
+
+[AVZVOL: causalidad de zonas y controles](research/AVZVOL_ZONE_CAUSAL_REVIEW_20261010.md):
+revisión de fuente fijada y ejemplos inventados. Pseudo no acredita control sin
+racimo; censo as-of y política de sesiones siguen pendientes, sin outcomes nuevos.
