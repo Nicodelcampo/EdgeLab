@@ -22,6 +22,11 @@ python tools/edgelab_catalog.py check --json
 
 Estos comandos usan sólo el registro y rutas del repo. No importan el motor, leen ticks, ejecutan campañas ni conectan servicios. `check` valida **el mapa**, no certifica EdgeLab ni habilita research.
 
+### Datos Kaggle
+
+[Entrada única y versiones fijadas para agentes](docs/KAGGLE_START_HERE.md).
+El inventario distingue QA de research; el release actual NO está listo para research.
+
 ## Estado de integración
 
 La base de organización/núcleo ya se integró mediante [PR 69](https://github.com/Nicodelcampo/EdgeLab/pull/69). Para screening, consultar el [contrato CPU del funnel](docs/COMPONENT_FUNNEL.md); no tratarlo como una plataforma confirmatoria completa.

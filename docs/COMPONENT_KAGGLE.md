@@ -17,6 +17,13 @@ El componente está local; el estado del dataset publicado sigue **BLOCKED para 
 | `research_access.load_research_bars` | Consumidor opt-in de research: aprobar TODAS las sesiones del archivo antes de precios, no sólo ventana; funciona desde wheel |
 | `tools/kaggle_hippocampus_ingest.py` | Anexar evidencia técnica al store durable existente bajo lock; sin trials/promoción; escribir requiere autorización separada |
 
+## Entrada de datasets para agentes
+
+[Empezar aquí](KAGGLE_START_HERE.md): `python -m edgelab.kaggle.discovery`,
+snapshot portable de seis datasets/31 archivos con versiones y hashes, sin secretos.
+La verificación de bytes no certifica research. [Anomalía de roll ES](infra/KAGGLE_ROLL_SELECTION_20261010.md)
+es un bloqueo adicional del catálogo v15 y sus agregados.
+
 ## Acceso mínimo
 
 ```bash
