@@ -23,7 +23,10 @@ El primero devuelve el plan JSON. El segundo termina con STOP y exit 2 antes de
 abrir mounts. `tools/kaggle_data_entrypoint.py` es la entrada equivalente del repo.
 El inventario se distribuye **en el repo/wheel**: no afirmar que es un archivo de
 catalog v15 en Kaggle; una nueva versión de archivos no ha sido publicada.
-La descripción del dataset debe enlazar el commit inmutable de este contrato.
+La descripción del dataset ya enlaza el commit inmutable publicado por #75
+(`18924be6d84303f08075825c72ba6691850ca529`). Esa publicación fue de metadata:
+no creó archivos nuevos en catalog v15 ni aprobó research.
+[Pendientes concretos de Kaggle y repo](ESTADO_Y_PENDIENTES.md#6-kaggle-qué-hay-y-qué-falta-exactamente).
 
 ## Descargar y adjuntar sin ambigüedad
 
