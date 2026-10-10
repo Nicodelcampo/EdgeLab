@@ -15,6 +15,11 @@ IDs/pares/pesos, soporte declarado y match determinista sobre covariables. No mo
 el snapshot de ramas ni los resultados originales. No hay nuevos outcomes, inferencia
 ni release aprobado; R7/K8 siguen abiertos y faltan pins/calipers/censo/censura/presupuesto.
 
+Se recuperaron [candidatos de procedencia MNQ](infra/AVZVOL_LINEAGE_RECOVERY_20261010.md):
+resolver/loader v15, declaraciones SHA de seis raw y comparación estática del bundle v2.
+Coherencia con logs y Git no acredita consumo físico histórico ni calidad. R7/K8
+no se cierran; no hubo nuevas ejecuciones de mercado.
+
 ## 1. Respuesta operativa
 
 - **Ya integrado:** los lotes #69–#78 enumerados abajo. No queda pendiente pushear
