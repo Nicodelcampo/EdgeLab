@@ -54,8 +54,18 @@ def build_continuous_series(
     contract_source_paths: Mapping[str, Path | str],
     output_parquet_path: Path | str | None = None,
     strict_eligibility: bool = True,
+    acknowledge_unaudited_legacy: bool = False,
 ) -> pa.Table:
-    """Build a continuous causal tick series for an asset root from certified regime intervals."""
+    """Build a continuous causal tick series for an asset root from certified regime intervals.
+
+    Legacy path: reads whole contracts before filtering and has no research gate. Callers
+    must pass ``acknowledge_unaudited_legacy=True``; research inputs go through
+    ``edgelab.data.research_window.read_research_window`` instead.
+    """
+    if acknowledge_unaudited_legacy is not True:
+        raise ContinuousContractError(
+            "legacy whole-contract reader has no research gate; pass acknowledge_unaudited_legacy=True "
+            "for technical use or use edgelab.data.research_window.read_research_window")
     validate_contract_regime(regime_manifest)
     clean_root = str(root).strip().upper()
 
