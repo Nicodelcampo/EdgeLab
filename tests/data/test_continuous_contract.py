@@ -100,7 +100,7 @@ class ContinuousContractTests(unittest.TestCase):
         self.temp_dir.cleanup()
 
     def test_continuous_series_preserves_actual_prices(self) -> None:
-        table = build_continuous_series(
+        table = build_continuous_series(acknowledge_unaudited_legacy=True,
             root="NQ",
             regime_manifest=self.manifest,
             contract_source_paths=self.source_paths,
@@ -110,7 +110,7 @@ class ContinuousContractTests(unittest.TestCase):
         self.assertEqual(prices, [18000, 18001, 18100, 18150])
 
     def test_causal_contract_selection(self) -> None:
-        table = build_continuous_series(
+        table = build_continuous_series(acknowledge_unaudited_legacy=True,
             root="NQ",
             regime_manifest=self.manifest,
             contract_source_paths=self.source_paths,
@@ -123,7 +123,7 @@ class ContinuousContractTests(unittest.TestCase):
         self.assertEqual(trade_dates[2:], [20260311, 20260312])
 
     def test_state_reset_flag_at_rolls_post_sort(self) -> None:
-        table = build_continuous_series(
+        table = build_continuous_series(acknowledge_unaudited_legacy=True,
             root="NQ",
             regime_manifest=self.manifest,
             contract_source_paths=self.source_paths,
@@ -157,7 +157,7 @@ class ContinuousContractTests(unittest.TestCase):
         paths = dict(self.source_paths)
         paths["NQ_03-26"] = p_disordered
 
-        table = build_continuous_series(
+        table = build_continuous_series(acknowledge_unaudited_legacy=True,
             root="NQ",
             regime_manifest=self.manifest,
             contract_source_paths=paths,
@@ -172,7 +172,7 @@ class ContinuousContractTests(unittest.TestCase):
         self.assertFalse(flags[1])
 
     def test_lineage_columns_presence_and_validity(self) -> None:
-        table = build_continuous_series(
+        table = build_continuous_series(acknowledge_unaudited_legacy=True,
             root="NQ",
             regime_manifest=self.manifest,
             contract_source_paths=self.source_paths,
@@ -206,7 +206,7 @@ class ContinuousContractTests(unittest.TestCase):
         paths["NQ_03-26"] = p_dup
 
         with self.assertRaisesRegex(ContinuousContractError, "Duplicate .* detected"):
-            build_continuous_series(
+            build_continuous_series(acknowledge_unaudited_legacy=True,
                 root="NQ",
                 regime_manifest=self.manifest,
                 contract_source_paths=paths,
@@ -233,7 +233,7 @@ class ContinuousContractTests(unittest.TestCase):
         paths["NQ_03-26"] = p_mnq_disguised
 
         with self.assertRaisesRegex(ContinuousContractError, "Content mismatch.*MNQ"):
-            build_continuous_series(
+            build_continuous_series(acknowledge_unaudited_legacy=True,
                 root="NQ",
                 regime_manifest=self.manifest,
                 contract_source_paths=paths,
@@ -273,7 +273,7 @@ class ContinuousContractTests(unittest.TestCase):
             source_identity={"mock": True},
         )
         with self.assertRaises(ContinuousContractError):
-            build_continuous_series(
+            build_continuous_series(acknowledge_unaudited_legacy=True,
                 root="NQ",
                 regime_manifest=mixed_manifest,
                 contract_source_paths=self.source_paths,
@@ -304,7 +304,7 @@ class ContinuousContractTests(unittest.TestCase):
         paths["NQ_03-26"] = p_deep
 
         with self.assertRaisesRegex(ContinuousContractError, "Content mismatch.*MNQ"):
-            build_continuous_series(
+            build_continuous_series(acknowledge_unaudited_legacy=True,
                 root="NQ",
                 regime_manifest=self.manifest,
                 contract_source_paths=paths,
@@ -331,7 +331,7 @@ class ContinuousContractTests(unittest.TestCase):
         paths = dict(self.source_paths)
         paths["NQ_03-26"] = p_flagged
 
-        table = build_continuous_series(
+        table = build_continuous_series(acknowledge_unaudited_legacy=True,
             root="NQ",
             regime_manifest=self.manifest,
             contract_source_paths=paths,
@@ -345,7 +345,7 @@ class ContinuousContractTests(unittest.TestCase):
 
     def test_writes_to_disk_with_exact_output_name(self) -> None:
         out_file = self.tmp_path / "NQ_CONT_CAUSAL_D1.parquet"
-        build_continuous_series(
+        build_continuous_series(acknowledge_unaudited_legacy=True,
             root="NQ",
             regime_manifest=self.manifest,
             contract_source_paths=self.source_paths,

@@ -7,7 +7,8 @@ Esta matriz describe wiring de código, no certificación de datos ni permisos d
 | `tools/check_research_data_gate.py` | Sí; ninguna fuente de mercado se abre | CLI de metadatos, PASS_METADATA_ONLY; no adjudica permisos |
 | `research_session.read_research_session` | Sí | Nueva ruta opt-in: shard homogéneo, D-1/liquidez/pins, footer y hash antes de payload |
 | `nt8_reader.audit` | No | Parser de iterable; el caller controla fuente, fechas y permisos |
-| `continuous_contract.build_continuous_series` | No | Ruta legacy: lee contratos enteros antes del filtro; NO usar como firewall de reservas |
+| `research_window.read_research_window` | Sí, toda la ventana antes de abrir | Opt-in: cada sesión del calendario leída por el lector de sesión o declarada como exclusión con motivo; sin omisiones implícitas |
+| `continuous_contract.build_continuous_series` | No; exige `acknowledge_unaudited_legacy=True` | Ruta legacy: lee contratos enteros antes del filtro; sin el reconocimiento falla antes de leer. NO usar como firewall de reservas |
 | `tools/run_funnel_arrays.py` | No | Split validado antes de precios, sólo kernels CPU D0/D1 aislados; no gate de custodia/liquidez upstream |
 | `databuild` / scripts MGC | No | Builders históricos; no aprobar por presencia o por tests del lector nuevo |
 | `tools/kaggle_spec_v2.py` | No gate de research | Infra técnica local; agregados/conservación no certifican calidad ni liquidez |

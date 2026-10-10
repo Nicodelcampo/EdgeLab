@@ -13,7 +13,8 @@
 | `event_identity.EventIdentityV2` / `audit_capture` | eventos tipados → IDs/reporte | Identidad/secuencias locales; no acredita continuidad upstream sin contrato de feed |
 | `research_data_gate.require_research_eligibility` | evidencia + tres hashes externos → decisión técnica | Sólo metadatos; NO autentica aprobación ni adjudica saneamiento |
 | `research_session.read_research_session` | shard de sesión + evidencia fijada → tabla + reporte | Gate antes de abrir fuente; stats homogéneas y SHA antes de deserializar; opt-in |
-| `contract_regime` / `continuous_contract` | sesiones/contratos → régimen/derivado | Exige revisión de fuente y wiring; no interpretar tests sintéticos como dataset saneado |
+| `research_window.read_research_window` | shards por sesión + ventana + exclusiones declaradas → tabla + reporte | Gate de toda la ventana antes de abrir un archivo; cobertura exacta o exclusión con motivo; opt-in |
+| `contract_regime` / `continuous_contract` | sesiones/contratos → régimen/derivado | `build_continuous_series` exige `acknowledge_unaudited_legacy=True`; no interpretar tests sintéticos como dataset saneado |
 
 ## Ejemplo mínimo, sólo fixture inventado
 
