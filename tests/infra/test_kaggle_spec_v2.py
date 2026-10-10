@@ -247,3 +247,14 @@ def test_hippocampus_existing_ledger_preserved(fixture,tmp_path):
     assert ledger.read_bytes().startswith(original)
     assert receipt['records']==6
     assert sm.DurableHippocampus(ledger).verify()==receipt['tip']
+
+
+def test_explicit_unknown_aggressor_conserved_unsigned():
+    ticks=pd.DataFrame(dict(ts_utc_ns=[1,2,3],price_ticks=[100,101,102],volume=[2,3,7],
+                           aggressor=['buy','sell','unknown'],contract=['ES_03-26']*3,session_date=['2026-01-05']*3))
+    bars=f.aggregate_frame(ticks,1)
+    assert bars.volume.iloc[0]==12 and bars.trades.iloc[0]==3
+    assert bars.buy_volume.iloc[0]==2 and bars.sell_volume.iloc[0]==3
+    assert bars.unknown_volume.iloc[0]==7 and bars.signed_volume.iloc[0]==-1
+    ticks.loc[2,'aggressor']='unexpected_vendor_label'
+    with pytest.raises(ValueError,match='unsupported aggressor labels'):f.aggregate_frame(ticks,1)

@@ -4,7 +4,7 @@
 
 Rama aislada: `infra/kaggle-spec-framework-v2-20261009`. Base de integración leída: `foundation/f0b-compatibility-probe@617064e0b86fd2490f2834b5da731cd26aaa23ea`.
 
-Esto implementa un primer camino común para **preflight y materialización de agregados**, no un motor universal de contraste de papers. No modifica specs históricos, el runner v1, datos publicados, costos, hipótesis económicas ni autorizaciones. No abre resultados futuros/P&L y no ingiere resultados automáticamente en el Brain.
+Esto implementa un primer camino común para **preflight y materialización de agregados**, no un motor universal de contraste de papers. No modifica specs históricos, el runner v1, datos publicados, costos, hipótesis económicas ni autorizaciones. No abre resultados futuros/P&L. El adaptador verificado registra únicamente evidencia técnica en el Hipocampo durable existente: episodios no adjudicados y outcomes=False, nunca trials ni aprobaciones.
 
 ## Hecho
 
@@ -69,7 +69,7 @@ Para sólo comprobar inputs, cambiar `mode` a `preflight` antes de generar el pl
 
 ## Pruebas y evidencia
 
-Suite sintética: `tests/infra/test_kaggle_spec_v2.py`, **25 pruebas locales PASS**. Incluye división de una barra entre row groups, última cotización nula, conservación, hash incorrecto, fuente truncada, holdout mixto, ausencia de estadísticas, mounts faltantes, plan adulterado, reparto por contrato, cobertura del consumidor y unión incompleta/duplicada/adulterada. La prueba de holdout usa timestamps fabricados, no datos de mercado sellados.
+Suite sintética: `tests/infra/test_kaggle_spec_v2.py`, **29 pruebas locales PASS** (26 del armazón + 3 del adaptador durable). Incluye división de una barra entre row groups, última cotización nula, conservación, hash incorrecto, fuente truncada, holdout mixto, ausencia de estadísticas, mounts faltantes, plan adulterado, reparto por contrato, cobertura del consumidor y unión incompleta/duplicada/adulterada. La prueba de holdout usa timestamps fabricados, no datos de mercado sellados.
 
 Kernel de prueba privada, offline, exclusivamente sintética:
 `https://www.kaggle.com/code/nicolasbuttaro/edgelab-framework-v2-synthetic-20261009`.
@@ -92,9 +92,19 @@ No hay pruebas suficientes para atribuir el fallo de adjuntos por MCP a permisos
 2. Ampliar la paridad contra el loader, medir tiempo/memoria y cobertura sobre datos reales; conservación por sesión y consumidor ya pasaron, todavía no hay medición de aceleración.
 3. Materializar la cobertura completa y publicar un **dataset privado de agregados**. No se publicó ninguno en esta tanda; el MCP expuesto no tiene creación/versionado integral de datasets.
 4. Añadir adaptadores de hipótesis/métricas/reglas económicas, con aprobación humana y autorización independiente de outcomes.
-5. Integrar el formato de evidencia con el contrato vigente del Hipocampo/Brain; no escribir asientos automáticos antes de cerrar dicho contrato.
+5. **Adaptador durable cerrado y smoke ingerido:** `tools/kaggle_hippocampus_ingest.py` valida el almacén inmutable antes de escribir, usa el mismo lock del store de producción, conserva la cadena previa y evita duplicados. El smoke creó cinco registros verificados; la corrida histórica aún está en curso.
 6. Añadir lanzamiento/polling/descarga de k kernels; hoy se generan kernels y se unen sus outputs, no se ofrece un scheduler completo.
 
 ## Aporte al referente
 
 Reduce duplicación de infraestructura y hace verificables inputs/sesiones, agregados y evidencia sin convertir un PASS técnico en un edge ni gastar holdout. El mount real y el smoke de una sesión ES/NQ quedaron verificados sin internet; los adjuntos vía MCP y la materialización histórica completa siguen pendientes.
+
+## Corrida histórica y continuidad durable
+
+Spec `aggregates_es_nq_full_v2_20261009.json`: 521 sesiones aprobadas (ES 243, NQ 278), cuatro shards por contrato. Las fechas solicitadas 2025-07-01..2026-09-30 no implican continuidad de mercado: el resolver selecciona ES 2025-07-18..2026-09-25 y NQ 2025-08-04..2026-09-25. Las sesiones ausentes no se inventan.
+
+El consumidor de evidencia verifica manifest, attestation y cobertura antes de anexar cinco registros (episode, expectation, step, success, lesson) al Hipocampo. Éxito técnico permanece UNADJUDICATED; lesson PROPOSED/LOW, outcomes=False. El recibo queda fuera del almacén inmutable. Se conserva cada ancla anterior en ANCHORS.json y se agrega una nueva, sin cambiar hashes históricos.
+
+### Formato de agresor reexportado
+
+La primera tanda histórica v2: k01 PASS; k02/k03/k04 ABSTAIN por etiqueta no contemplada. Diagnóstico privado `edgelab-aggressor-diagnostic-20261010` v2 leyó sólo agresor de row groups con timestamps demostrablemente anteriores al holdout; confirmó `unknown` (6 filas en el primer row group de NQ_09-25). `unknown` se conserva como unknown_volume y aporta cero al volumen firmado, igual que neutral/unclassified. Otras etiquetas no previstas siguen fallando con el listado explícito. Una nueva prueba confirma trades/volumen y signo; los cuatro shards se regeneraron con el mismo hash de runner. No se mezcla el k01 viejo con la nueva tanda.

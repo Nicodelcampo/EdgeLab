@@ -131,8 +131,10 @@ def aggregate_frame(t, seconds):
     required = ['ts_utc_ns', 'price_ticks', 'volume', 'aggressor', 'contract', 'session_date']
     if any(c not in t for c in required) or t[required].isna().any().any():
         raise ValueError('missing/null tick fields')
-    if not set(t.aggressor).issubset({'buy', 'sell', 'unclassified', 'neutral'}):
-        raise ValueError('unknown aggressor label')
+    # canonical_tick_v1 re-export uses explicit 'unknown': unclassified, never signed.
+    labels = set(t.aggressor)
+    if not labels.issubset({'buy', 'sell', 'unclassified', 'neutral', 'unknown'}):
+        raise ValueError('unsupported aggressor labels: ' + repr(sorted(labels)))
     if (t.volume < 0).any() or (t.ts_utc_ns.diff().dropna() < 0).any():
         raise ValueError('negative volume or unsorted ticks')
     t = t.copy()
