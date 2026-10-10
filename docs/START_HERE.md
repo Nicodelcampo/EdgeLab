@@ -23,7 +23,7 @@ No instalar dependencias ni ejecutar todos los scripts para «ver si funciona».
 | Papers SSRN | `bibliography`; PR 67 fuera de esta base |
 | Ejecutar en Kaggle/agregados | `kaggle-execution`; [contrato local](COMPONENT_KAGGLE.md), QA y guard; dataset actual bloqueado para research causal |
 | Ver indicadores | `bridge` + `viewer`; paridad específica y bundle aprobado |
-| Ordenar investigación histórica | `campaigns` + `history`; conservar negativos |
+| Ordenar investigación histórica | `campaigns` + `history`; [resultados y revisión de lineage](RESULTS_START_HERE.md); conservar negativos |
 
 `entrypoint` del registro es una referencia de uso, **no** una instrucción para autoejecutar. Las ayudas de herramientas de research pueden necesitar dependencias; no las importa el catálogo.
 
