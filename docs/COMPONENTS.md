@@ -10,7 +10,7 @@ Fuente de esta tabla: [registro JSON](../config/component_registry.json). Para c
 | `data` | Definir contratos, régimen y procedencia de datos antes de consumirlos. | core | local | [edgelab/data](../edgelab/data), [edgelab/bridge/session_preflight.py](../edgelab/bridge/session_preflight.py), [nt8_reader](../edgelab/data/nt8_reader.py), [nt8_timezone](../edgelab/data/nt8_timezone.py), [event_identity](../edgelab/data/event_identity.py), [config](../edgelab/config.py) · [PR 65](https://github.com/Nicodelcampo/EdgeLab/pull/65) |
 | `bridge` | Producir barras/indicadores y verificar paridad contra oráculos. | core | local | [edgelab/bridge](../edgelab/bridge) · [PR 17](https://github.com/Nicodelcampo/EdgeLab/pull/17), [PR 22](https://github.com/Nicodelcampo/EdgeLab/pull/22), [PR 34](https://github.com/Nicodelcampo/EdgeLab/pull/34) |
 | `validation` | Auditar causalidad, simetría, ejecución y contrastes registrados. | core | local | [validation/harness.py](../validation/harness.py), [validation/verify.py](../validation/verify.py), [validation/mcpt.py](../validation/mcpt.py), [validation/pbo.py](../validation/pbo.py), [validation/spa.py](../validation/spa.py) |
-| `funnel` | Realizar screening por lotes y registrar selección de candidatos. | experimental | local | [edgelab/funnel](../edgelab/funnel), [tools/run_funnel_arrays.py](../tools/run_funnel_arrays.py), [requirements-funnel.txt](../requirements-funnel.txt), [requirements-funnel-gpu.txt](../requirements-funnel-gpu.txt) · [PR 63](https://github.com/Nicodelcampo/EdgeLab/pull/63), [PR 64](https://github.com/Nicodelcampo/EdgeLab/pull/64) |
+| `funnel` | Screening CPU exploratorio con kernels de outcomes separados por D0/D1. | experimental | local | [edgelab/funnel](../edgelab/funnel), [contrato](COMPONENT_FUNNEL.md), [tools/run_funnel_arrays.py](../tools/run_funnel_arrays.py), [requirements-funnel.txt](../requirements-funnel.txt), [requirements-funnel-gpu.txt](../requirements-funnel-gpu.txt) · [PR 63](https://github.com/Nicodelcampo/EdgeLab/pull/63), [PR 64](https://github.com/Nicodelcampo/EdgeLab/pull/64) |
 | `memory` | Persistir episodios, evidencia, lecciones e invalidaciones. | core | local | [edgelab/edge_brain/hippocampus.py](../edgelab/edge_brain/hippocampus.py), [edgelab/edge_brain/hippocampus_store.py](../edgelab/edge_brain/hippocampus_store.py), [retrieval](../edgelab/edge_brain/retrieval.py) · [PR 56](https://github.com/Nicodelcampo/EdgeLab/pull/56), [PR 58](https://github.com/Nicodelcampo/EdgeLab/pull/58) |
 | `brain-controls` | Aplicar elegibilidad, políticas y trazabilidad a episodios. | experimental | local | [edgelab/edge_brain](../edgelab/edge_brain), [typed registry](../edgelab/edge_brain/typed_registry.py), [schemas](../edgelab/edge_brain/schemas) · [PR 43](https://github.com/Nicodelcampo/EdgeLab/pull/43), [PR 46](https://github.com/Nicodelcampo/EdgeLab/pull/46), [PR 58](https://github.com/Nicodelcampo/EdgeLab/pull/58) |
 | `campaigns` | Conservar hipótesis, preregistros, negativos y artefactos por familia. | campaign | local | [docs/research](../docs/research), [strategies](../strategies), [edgelab/research](../edgelab/research) |
@@ -28,6 +28,8 @@ Fuente de esta tabla: [registro JSON](../config/component_registry.json). Para c
 
 - [Datos: contrato, parser e identidad](COMPONENT_DATA.md).
 - [Memoria: persistencia, consulta y controles](COMPONENT_MEMORY.md).
+
+- [Funnel: aislamiento CPU, split y autoridad](COMPONENT_FUNNEL.md).
 
 ## Fronteras que no deben mezclarse
 
