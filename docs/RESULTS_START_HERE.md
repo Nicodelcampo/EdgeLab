@@ -130,6 +130,12 @@ certifica que las declaraciones sean ciertas ni que cubran todo el universo.
 La cuarentena conocida se aplica al par exacto versión/archivo consumido;
 una declaración PASS no la borra y MNQ no se convierte en NQ.
 
+## AVZVOL: próxima etapa preparada
+
+[Protocolo incremental y controles sintéticos](research/AVZVOL_SIGUIENTE_ETAPA_20261010.md).
+Planificador de covariables opt-in, sin loader/outcomes/inferencia ni autorización.
+Los umbrales del smoke son inventados; la spec de mercado sigue bloqueada.
+
 ## Pendientes y orden de trabajo
 
 1. Obtener provenance/output-version de cada corrida histórica; adjuntos y

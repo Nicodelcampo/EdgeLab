@@ -332,7 +332,11 @@
         "edgelab/kaggle/raw_tick_audit.py",
         "edgelab/kaggle/avzvol_audit.py",
         "tools/audit_avzvol_outputs.py",
-        "docs/infra/AVZVOL_AUDIT_20261010.md"
+        "docs/infra/AVZVOL_AUDIT_20261010.md",
+        "edgelab/kaggle/avzvol_design.py",
+        "tools/avzvol_design_smoke.py",
+        "specs/research/avzvol_incremental_design_v1.json",
+        "docs/research/AVZVOL_SIGUIENTE_ETAPA_20261010.md"
       ],
       "inputs": [
         "spec y catálogo fijados",
@@ -343,7 +347,8 @@
         "reporte QA sin valores de precio",
         "evidencia técnica durable no adjudicada; no certificados/trials",
         "inventario diario privado completo y ausencias intrasesión UNKNOWN, no cero",
-        "QA cruda estructural sin certificación de continuidad upstream"
+        "QA cruda estructural sin certificación de continuidad upstream",
+        "diseño sintético de pares/pesos y soporte declarado; sin inferencia ni permiso de mercado"
       ],
       "dependencies": [
         "entorno CPU con PyArrow/Pandas",
@@ -357,7 +362,8 @@
         "Research guard opt-in exige pins/revisión/límites externos y autoridad sobre todas las sesiones del archivo, incluyendo restricciones D2.",
         "Cobertura diaria solicitada requiere revisión externa de calendario e intervalos antes de leer precios por el consumidor protegido.",
         "QA estructural completada para 18 primarios; NQ preholdout v6/NQ_09-26_ticks.parquet en cuarentena por discrepancia temporal/contenido.",
-        "AVZVOL: baseline discovery reproducido desde exports; pares, bins y calidad/lineage upstream requieren revisión. Guards/bins nuevos opt-in, no retrofit automático de legacy."
+        "AVZVOL: baseline discovery reproducido desde exports; pares, bins y calidad/lineage upstream requieren revisión. Guards/bins nuevos opt-in, no retrofit automático de legacy.",
+        "AVZVOL incremental: sólo covariables declaradas y smoke sintético. Sin loader, census benchmark, inferencia, autoridad ni política de calipers aprobada."
       ],
       "entrypoint": "python tools/audit_kaggle_aggregates.py --help",
       "related_prs": [

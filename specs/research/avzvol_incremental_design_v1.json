@@ -1,0 +1,110 @@
+{
+  "schema": "edgelab_avzvol_incremental_design_v1",
+  "study_id": "AVZVOL-INCREMENTAL-1",
+  "status": "BLOCKED_FOR_MARKET_EXECUTION",
+  "authorized_scope": "protocol_code_and_synthetic_tests_only",
+  "research_authorized": false,
+  "promotion_allowed": false,
+  "pnl_allowed": false,
+  "historical_evidence_rewritten": false,
+  "hypothesis": "Racimos contain incremental information about later compression beyond comparable zone-free consolidation geometry and pre-anchor activity.",
+  "primary_endpoint": {
+    "name": "historical_O5",
+    "definition": "log(range of 200 bars after first close outside frozen band / range of 200 bars before the first zone of the racimo (NOT before t0))",
+    "bar_spec": "25 ticks (trade-count bars, NOT constant traded volume or wall time)",
+    "conditional_population": "events with valid observed exit and complete outcome horizon in same session; selection/censoring needs explicit accounting",
+    "historical_cells": "all 23 previously evaluable cells retained as development/review, not independent replications"
+  },
+  "phases": [
+    {
+      "id": "A",
+      "purpose": "source lineage + deterministic methodological correction",
+      "market_execution": "STOP until reviewed lineage, permissions and exposure registry",
+      "interpretation": "revision of exposed development evidence, never fresh confirmation"
+    },
+    {
+      "id": "B",
+      "purpose": "incremental contrast against activity/geometrically matched zone-free census",
+      "market_execution": "STOP until frozen covariate policy, population/support rules and inference budget approved"
+    },
+    {
+      "id": "C",
+      "purpose": "clock-time response and tail/censoring diagnostics",
+      "market_execution": "STOP until exact endpoints/horizons, correction and power declared"
+    },
+    {
+      "id": "D",
+      "purpose": "new certified data replication",
+      "market_execution": "STOP until independent exposure assessment and campaign-specific approval",
+      "interpretation": "NQ/MNQ share underlying; NQ is not independent market confirmation"
+    },
+    {
+      "id": "E",
+      "purpose": "one existing frozen strategy with vs without context, net of costs",
+      "market_execution": "NOT IMPLEMENTED; separate economic approval after A-D",
+      "interpretation": "compression alone is neither direction nor profit nor lower tail risk"
+    }
+  ],
+  "required_match_features": [
+    "occ",
+    "amp",
+    "trend_magnitude",
+    "momentum",
+    "vol_occ",
+    "vol_100",
+    "dur_occ",
+    "dur_100"
+  ],
+  "exact_match_strata": [
+    "contract",
+    "session",
+    "cell",
+    "clock_bucket",
+    "trend_sign"
+  ],
+  "match_policy": null,
+  "support_acceptance_threshold": null,
+  "balance_acceptance_thresholds": null,
+  "minimum_material_effect": null,
+  "clock_horizons_seconds": null,
+  "tail_endpoints": null,
+  "formal_family_and_budget": null,
+  "reviewed_input_pins": null,
+  "approved_windows_and_holdout": null,
+  "source_quality_review_refs": null,
+  "control_census_selection_rule": null,
+  "censoring_and_session_boundary_policy": null,
+  "inference": {
+    "method": "paired per-real contrast; session dependence and control reuse respected",
+    "implementation": "NOT IMPLEMENTED",
+    "family_correction": "must be frozen jointly, not per selected winning cell",
+    "effective_independent_sample": "sessions, not event-cell rows; precise design required"
+  },
+  "blockers": [
+    "raw_dataset_versions_file_hashes_resolver_and_code_bundle_not_certified",
+    "MNQ_clock_calendar_continuity_quotes_and_liquidity_not_certified",
+    "historical_bins_ties_and_pair_weights_require_new_method_identity",
+    "candidate_census_and_own_census_benchmark_not_implemented",
+    "matching_calipers_scales_support_and_balance_rules_not_frozen",
+    "clock_endpoints_censoring_power_family_and_budget_not_frozen",
+    "fresh_exposure_and_campaign_authority_required"
+  ],
+  "source_documents": [
+    {
+      "path": "docs/research/AVZP2_RACIMO_GRILLA_VOL_RESULTADOS_20261009.md",
+      "commit": "f397a318be8b0acf68789070fe8064d83e172f7d",
+      "role": "published_control_result_not_independently_reaudited"
+    },
+    {
+      "path": "docs/infra/AVZVOL_AUDIT_20261010.md",
+      "commit": "2aa8034d7d6bf507a9336ab96f70d473675eafa9",
+      "role": "technical_baseline_and_covariate_audit"
+    }
+  ],
+  "technical_entrypoints": [
+    "edgelab.kaggle.avzvol_design.plan_covariate_matches",
+    "tools/avzvol_design_smoke.py"
+  ],
+  "technical_status": "COVARIATE_DESIGN_ONLY_NO_LOADER_NO_INFERENCE",
+  "synthetic_thresholds_are_market_parameters": false
+}

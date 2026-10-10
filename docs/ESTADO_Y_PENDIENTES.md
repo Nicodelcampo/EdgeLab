@@ -8,6 +8,13 @@ semántica completa de cada rama. El trabajo no pusheado de la PC no es visible.
 [Snapshot legible por agentes](../config/repository_inventory_20261010.json).
 Los conteos son congelados: el PR de este cierre es adicional y no los modifica.
 
+## Avance posterior al corte: AVZVOL incremental
+
+Se preparó [protocolo y controles sintéticos](research/AVZVOL_SIGUIENTE_ETAPA_20261010.md):
+IDs/pares/pesos, soporte declarado y match determinista sobre covariables. No modifica
+el snapshot de ramas ni los resultados originales. No hay nuevos outcomes, inferencia
+ni release aprobado; R7/K8 siguen abiertos y faltan pins/calipers/censo/censura/presupuesto.
+
 ## 1. Respuesta operativa
 
 - **Ya integrado:** los lotes #69–#78 enumerados abajo. No queda pendiente pushear
