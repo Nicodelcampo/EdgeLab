@@ -10,6 +10,8 @@ El componente está local; el estado del dataset publicado sigue **BLOCKED para 
 |---|---|
 | `tools/kaggle_spec_v2.py` | Generar/ejecutar preflight y agregados target-free, shards por contrato, manifest/attestation/zip, unión fija y consumidor técnico |
 | `tools/audit_kaggle_aggregates.py` | QA estructural por batches con manifest/resolver fijados externamente; no emite certificado |
+| `tools/audit_kaggle_coverage.py` / `coverage_inventory.audit_coverage` | Inventario de todas las fechas solicitadas + intervalos sin observación; summary separado de detalle privado; NO calendario ni actividad cero |
+| `tools/audit_kaggle_raw_ticks.py` / `raw_tick_audit.audit_canonical_tick_file` | QA canonical_tick_v1 por batches; timestamp, cotizaciones, volumen e identidad exacta; no sanea ni certifica continuidad upstream |
 | `aggregate_audit.audit_aggregate_store` | Retorna reporte sin precios + totales privados para reconciliación; no reescribe fuente |
 | `research_access.require_research_store` | Gate metadata-only; política causal, evidencia y límites externos obligatorios; v15 NO pasa |
 | `research_access.load_research_bars` | Consumidor opt-in de research: aprobar TODAS las sesiones del archivo antes de precios, no sólo ventana; funciona desde wheel |
@@ -21,6 +23,8 @@ El componente está local; el estado del dataset publicado sigue **BLOCKED para 
 python tools/edgelab_catalog.py show kaggle-execution
 python tools/kaggle_spec_v2.py --help
 python tools/audit_kaggle_aggregates.py --help
+python tools/audit_kaggle_coverage.py --help
+python tools/audit_kaggle_raw_ticks.py --help
 ```
 
 QA real necesita `--store`, `--resolver`, los dos `--expected-*-sha256` del manifiesto
@@ -60,3 +64,36 @@ sello de julio NO se portan ni se mezclan con esta autoridad.
   whole-file de particiones no autorizadas.
 
 [Historia PR 68](infra/KAGGLE_SPEC_V2_20261009.md) · [Mapa](COMPONENTS.md) · [Plan](INTEGRATION_PLAN.md).
+
+## Cobertura diaria obligatoria del consumidor protegido
+
+Además de los checks por sesión, `load_research_bars` exige `coverage_review`
+dentro del certificado ya fijado externamente. Su esquema es
+`edgelab_reviewed_daily_coverage_v1`, con `calendar_sha256`,
+`interval_evidence_sha256` y lista `dates`. Cada fecha de la ventana solicitada,
+incluidos fines de semana/feriados, debe tener `instrument`, `date`,
+`evidence_sha256` y estado revisado:
+
+- `VERIFIED_OPEN_COMPLETE`: sesión materializada, `interval_review: "PASS"`,
+  `unresolved_intervals: 0` entero. La revisión externa debe resolver las ausencias
+  como cierre programado/actividad cero demostrada o defecto reparado con nueva
+  evidencia; no basta que haya una barra en ese minuto.
+- `VERIFIED_SCHEDULED_CLOSED`: cierre sustentado en calendario revisado, sin
+  sesión materializada que lo contradiga.
+
+Ausencia, descarte por liquidez, UNKNOWN o contradicción bloquean **antes de hash o
+lectura de precios**. La ventana no se acorta silenciosamente. Para trabajar una
+subventana legítima se declara expresamente y se obtiene autorización específica,
+no se transforma un hueco en cero ni se borra su existencia del inventario.
+Los SHA referenciados son declaraciones de la revisión externa, NO firmas ni
+verificación automática del calendario. Esta API no autentica al aprobador.
+
+El diagnóstico `edgelab_coverage_diagnostic_v1` NO es el certificado anterior.
+Los bins 17:00→17:00 Chicago sólo representan la convención de trade-date:
+incluyen posibles mantenimiento/feriados; jamás son minutos esperados de trading.
+`UNOBSERVED_ACTIVITY_UNKNOWN` no demuestra pérdida de ticks. La banda horaria
+16:00→17:00 CT es un diagnóstico de reloj, NO una clasificación de cierre.
+El detalle diario, identidades y totales de la QA cruda quedan privados.
+Ambos CLIs preservan outputs anteriores y no reescriben ni interpolan fuentes.
+
+[Auditoría de cobertura y lote crudo](infra/KAGGLE_COVERAGE_RAW_20261010.md).

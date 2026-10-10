@@ -71,3 +71,9 @@ certificados, umbrales arbitrarios, aprobaciones, trials o registros nuevos de �
    los agregados v1 ni reescribir sus manifests/ledgers históricos.
 
 [Evidencia técnica](KAGGLE_DATA_QUALITY_20261010.json) · [Contrato del componente](../COMPONENT_KAGGLE.md).
+
+## Continuación: cobertura y QA parcial cruda
+
+La auditoría posterior declara toda la ventana solicitada y comprueba dos de los
+18 archivos primarios. No sustituye esta evidencia histórica ni certifica el resto.
+Ver [cobertura y lote crudo](KAGGLE_COVERAGE_RAW_20261010.md).

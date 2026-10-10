@@ -321,7 +321,11 @@
         "tools/kaggle_hippocampus_ingest.py",
         "edgelab/kaggle/aggregate_audit.py",
         "edgelab/kaggle/research_access.py",
-        "docs/COMPONENT_KAGGLE.md"
+        "docs/COMPONENT_KAGGLE.md",
+        "tools/audit_kaggle_coverage.py",
+        "tools/audit_kaggle_raw_ticks.py",
+        "edgelab/kaggle/coverage_inventory.py",
+        "edgelab/kaggle/raw_tick_audit.py"
       ],
       "inputs": [
         "spec y catálogo fijados",
@@ -330,7 +334,9 @@
       "outputs": [
         "resultados técnicos, attestation/manifest/zip+SHA",
         "reporte QA sin valores de precio",
-        "evidencia técnica durable no adjudicada; no certificados/trials"
+        "evidencia técnica durable no adjudicada; no certificados/trials",
+        "inventario diario privado completo y ausencias intrasesión UNKNOWN, no cero",
+        "QA cruda estructural sin certificación de continuidad upstream"
       ],
       "dependencies": [
         "entorno CPU con PyArrow/Pandas",
@@ -341,7 +347,8 @@
         "Infra v2 técnica local; dataset v15/v1 NO certificado para research causal.",
         "Catálogo con máscara retrospectiva y conflictos de fuentes; PASS de barras no certifica ticks.",
         "Attach MCP fiable/scheduler remoto no implementados; generación no prueba mounts.",
-        "Research guard opt-in exige pins/revisión/límites externos y autoridad sobre todas las sesiones del archivo, incluyendo restricciones D2."
+        "Research guard opt-in exige pins/revisión/límites externos y autoridad sobre todas las sesiones del archivo, incluyendo restricciones D2.",
+        "Cobertura diaria solicitada requiere revisión externa de calendario e intervalos antes de leer precios por el consumidor protegido."
       ],
       "entrypoint": "python tools/audit_kaggle_aggregates.py --help",
       "related_prs": [
