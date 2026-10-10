@@ -48,23 +48,31 @@
         "edgelab/data/nt8_reader.py",
         "edgelab/data/nt8_timezone.py",
         "edgelab/data/event_identity.py",
-        "edgelab/config.py"
+        "edgelab/config.py",
+        "edgelab/data/research_data_gate.py",
+        "edgelab/data/research_session.py",
+        "tools/check_research_data_gate.py",
+        "docs/DATA_CONSUMER_MATRIX.md"
       ],
       "inputs": [
         "datos versionados",
         "aprobación de sesiones y campaña"
       ],
       "outputs": [
-        "contratos y preflight"
+        "contratos y preflight",
+        "decisión de elegibilidad metadata-only",
+        "tabla de un shard de sesión y evidencia de lectura opt-in"
       ],
       "dependencies": [
         "fuentes privadas cuando corresponda"
       ],
       "limitations": [
-        "Presencia no acredita completitud/liquidez. Gate 65 aún necesita wiring.",
-        "Parser e identidad portados con fixtures sintéticos; no certifican dataset real, liderazgo o continuidad upstream."
+        "Gate/lector opt-in integrado; rutas legacy, builders, arrays y Kaggle NO quedan rewired. Ver matriz de consumidores.",
+        "Parser e identidad portados con fixtures sintéticos; no certifican dataset real, liderazgo o continuidad upstream.",
+        "Hashes y SANITIZED_VERIFIED son declaraciones externas: no autentican autoridad/revisión.",
+        "D2/features upstream y adversarial/concurrent file mutation no están protegidos por este lector."
       ],
-      "entrypoint": null,
+      "entrypoint": "python tools/check_research_data_gate.py --help",
       "related_prs": [
         65
       ],

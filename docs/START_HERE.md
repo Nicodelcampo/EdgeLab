@@ -17,7 +17,7 @@ No instalar dependencias ni ejecutar todos los scripts para «ver si funciona».
 |---|---|
 | Entender lo que existe | `list`, después `show <id>`; [mapa](COMPONENTS.md) |
 | Proponer una estrategia | `engine` y `validation`; [contrato](../CONTRATO_LLM.md) |
-| Revisar datos o builders | `data` y `builders`; autorización/custodia antes de leer |
+| Revisar datos o builders | `data` y `builders`; [matriz de lectores](DATA_CONSUMER_MATRIX.md), gate y autorización antes de leer |
 | Screening CPU/GPU | `funnel`; [contrato CPU](COMPONENT_FUNNEL.md), split original y aprobación; GPU end-to-end bloqueado |
 | Consultar/persistir evidencia | `memory`; especificar ledger, anchors y permiso |
 | Papers SSRN | `bibliography`; PR 67 fuera de esta base |

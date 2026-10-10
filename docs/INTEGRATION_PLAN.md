@@ -29,6 +29,15 @@ La [matriz de comparación](../config/module_reconciliation_20261009.json) descr
 
 ## Fase 3 — Datos y ejecución
 
+### Avance gate y lector de sesión (2026-10-10)
+
+Port selectivo de PR 65: gate de metadatos reforzado, hashes de límites fijados,
+validación causal integrada y lector opt-in de shard homogéneo con footer/hash antes
+del payload. Régimen rechaza volumen no finito y excluye selección de volumen cero.
+La matriz de lectores declara las rutas todavía NO protegidas. Sin datos de mercado
+ni certificados emitidos. El dictamen histórico NOT_CERTIFIED se conserva; PR 65 no
+está resuelto por completo y no se cambia por una declaración global de saneamiento.
+
 ### Avance CPU aislado (2026-10-10)
 
 Se integra el alcance acotado del aislamiento de PR 63: recortes por D0/D1, horizonte completo, presupuesto float64 y oráculo sintético. Se fortalece el batching público, split congelado en CLI, compatibilidad inverse/reverse y preservación de outputs. La route del runner queda CPU-only; upstream/features, data gate 65 y paridad GPU end-to-end siguen pendientes. No se mergea 64 ni se cierran 63/64 como totalmente resueltos.

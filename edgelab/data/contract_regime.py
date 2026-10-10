@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 from collections import defaultdict
 from collections.abc import Iterable, Mapping, Sequence
 from typing import Any
@@ -100,8 +101,13 @@ def _normalize_volumes(
         key = (root, contract, trade_date)
         if key in out:
             raise ContractRegimeError(f"duplicate daily volume row: {key}")
-        volume = float(raw["volume"])
-        if volume < 0 or volume != volume:
+        if isinstance(raw["volume"], bool):
+            raise ContractRegimeError(f"boolean volume for {key}")
+        try:
+            volume = float(raw["volume"])
+        except (TypeError, ValueError, OverflowError) as exc:
+            raise ContractRegimeError(f"invalid volume for {key}") from exc
+        if not math.isfinite(volume) or volume < 0:
             raise ContractRegimeError(f"invalid volume for {key}: {volume}")
         complete = raw["complete_session"]
         if not isinstance(complete, bool):
@@ -267,6 +273,15 @@ def build_contract_regime(
                 c["contract"]: volumes[(root, c["contract"], signal_date)]["volume"]
                 for c in covered
             }
+            if max(observed.values()) == 0:
+                root_daily.append({"root": root, "trade_date": trade_date,
+                    "signal_trade_date": signal_date, "active_contract": current,
+                    "eligible": False, "decision": "NO_POSITIVE_SELECTED_VOLUME",
+                    "leader_contract": None, "current_volume": 0.0,
+                    "leader_volume": 0.0, "leader_over_current": None})
+                diagnostics.append({"root": root, "trade_date": trade_date,
+                    "signal_trade_date": signal_date, "code": "NO_POSITIVE_SELECTED_VOLUME"})
+                continue
             if current is None:
                 lead = _leader(covered, observed, None)
                 current = lead
@@ -317,8 +332,8 @@ def build_contract_regime(
                     "trade_date": trade_date,
                     "signal_trade_date": signal_date,
                     "active_contract": current,
-                    "eligible": True,
-                    "decision": decision,
+                    "eligible": observed[current] > 0,
+                    "decision": decision if observed[current] > 0 else "NO_POSITIVE_SELECTED_VOLUME",
                     "leader_contract": lead,
                     "current_volume": current_volume,
                     "leader_volume": leader_volume,
