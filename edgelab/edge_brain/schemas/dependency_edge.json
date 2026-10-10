@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://edgelab.local/schemas/edge_brain/dependency_edge.json",
+  "title": "EdgeLab Dependency Edge",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["edge_id", "source_id", "target_id", "relation", "source_record_id", "status"],
+  "properties": {
+    "edge_id": {"type": "string", "pattern": "^EDGE-[A-Za-z0-9._:-]+$"},
+    "source_id": {"type": "string", "minLength": 1},
+    "target_id": {"type": "string", "minLength": 1},
+    "relation": {"enum": ["DEPENDS_ON", "MEASURED_BY", "IMPLEMENTED_BY", "TESTED_BY", "SUPPORTED_BY", "CONTRADICTED_BY", "REPLICATED_BY", "INVALIDATED_BY", "SUPERSEDES"]},
+    "source_record_id": {"type": "string", "minLength": 1},
+    "status": {"enum": ["PROPOSED", "VERIFIED", "REJECTED", "SUPERSEDED"]}
+  }
+}

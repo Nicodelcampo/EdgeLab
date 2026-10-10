@@ -1,0 +1,525 @@
+{
+  "schema_version": 1,
+  "snapshot_date": "2026-10-09",
+  "base_commit": "ab9a0540c43ad7f68a015a9f22892633a555cd6d",
+  "scope": "Mapa de navegación, NO certificado operativo ni autorización para research.",
+  "locations": {
+    "local": "Presente en la base revisada; puede requerir dependencias/datos/autorización.",
+    "other_branch": "Fuera de esta base; ver referencias y PR antes de usar.",
+    "not_pushed": "Trabajo local informado por el usuario; no disponible ni auditado."
+  },
+  "modules": [
+    {
+      "id": "engine",
+      "name": "Motor de ejecución",
+      "purpose": "Simular fills, costos y salidas en una implementación compartida.",
+      "category": "core",
+      "location": "local",
+      "paths": [
+        "edgelab/engine.py",
+        "CONTRATO_LLM.md"
+      ],
+      "inputs": [
+        "ticks y señales causales",
+        "spec de ejecución aprobada"
+      ],
+      "outputs": [
+        "trades y P&L bajo el contrato"
+      ],
+      "dependencies": [
+        "entorno numérico compatible"
+      ],
+      "limitations": [
+        "No reimplementar P&L en estrategias; ampliar el motor con tests cuando falte capacidad."
+      ],
+      "entrypoint": null,
+      "related_prs": [],
+      "certification": "Consultar evidencia específica; presencia de código no acredita certificación del módulo."
+    },
+    {
+      "id": "data",
+      "name": "Datos y custodia",
+      "purpose": "Definir contratos, régimen y procedencia de datos antes de consumirlos.",
+      "category": "core",
+      "location": "local",
+      "paths": [
+        "edgelab/data",
+        "edgelab/bridge/session_preflight.py",
+        "edgelab/data/nt8_reader.py",
+        "edgelab/data/nt8_timezone.py",
+        "edgelab/data/event_identity.py",
+        "edgelab/config.py"
+      ],
+      "inputs": [
+        "datos versionados",
+        "aprobación de sesiones y campaña"
+      ],
+      "outputs": [
+        "contratos y preflight"
+      ],
+      "dependencies": [
+        "fuentes privadas cuando corresponda"
+      ],
+      "limitations": [
+        "Presencia no acredita completitud/liquidez. Gate 65 aún necesita wiring.",
+        "Parser e identidad portados con fixtures sintéticos; no certifican dataset real, liderazgo o continuidad upstream."
+      ],
+      "entrypoint": null,
+      "related_prs": [
+        65
+      ],
+      "certification": "Consultar evidencia específica; presencia de código no acredita certificación del módulo."
+    },
+    {
+      "id": "bridge",
+      "name": "Bridge NT8 e indicadores",
+      "purpose": "Producir barras/indicadores y verificar paridad contra oráculos.",
+      "category": "core",
+      "location": "local",
+      "paths": [
+        "edgelab/bridge"
+      ],
+      "inputs": [
+        "ticks/barras",
+        "oráculo y perfiles por instrumento"
+      ],
+      "outputs": [
+        "indicadores y evidencia de paridad"
+      ],
+      "dependencies": [
+        "entorno bridge",
+        "oráculos cuando corresponda"
+      ],
+      "limitations": [
+        "Paridad es específica por activo, versión y campos; no se transporta por nombre."
+      ],
+      "entrypoint": null,
+      "related_prs": [
+        17,
+        22,
+        34
+      ],
+      "certification": "Consultar evidencia específica; presencia de código no acredita certificación del módulo."
+    },
+    {
+      "id": "validation",
+      "name": "Validación estadística y técnica",
+      "purpose": "Auditar causalidad, simetría, ejecución y contrastes registrados.",
+      "category": "core",
+      "location": "local",
+      "paths": [
+        "validation/harness.py",
+        "validation/verify.py",
+        "validation/mcpt.py",
+        "validation/pbo.py",
+        "validation/spa.py"
+      ],
+      "inputs": [
+        "señales",
+        "datos autorizados",
+        "preregistro"
+      ],
+      "outputs": [
+        "preflight y diagnósticos/veredictos de alcance definido"
+      ],
+      "dependencies": [
+        "motor",
+        "entorno de validación"
+      ],
+      "limitations": [
+        "No interpretar corridas rechazadas; sobrevivir una tanda no confirma un edge."
+      ],
+      "entrypoint": null,
+      "related_prs": [],
+      "certification": "Consultar evidencia específica; presencia de código no acredita certificación del módulo."
+    },
+    {
+      "id": "funnel",
+      "name": "Embudo CPU/GPU",
+      "purpose": "Realizar screening por lotes y registrar selección de candidatos.",
+      "category": "experimental",
+      "location": "local",
+      "paths": [
+        "edgelab/funnel",
+        "tools/run_funnel_arrays.py",
+        "requirements-funnel.txt",
+        "requirements-funnel-gpu.txt"
+      ],
+      "inputs": [
+        "arrays",
+        "registro de candidatos",
+        "split y política de campaña"
+      ],
+      "outputs": [
+        "survivors",
+        "summary",
+        "ledger"
+      ],
+      "dependencies": [
+        "NumPy/Numba",
+        "CuPy/CUDA para GPU"
+      ],
+      "limitations": [
+        "Fixes de aislamiento y presupuesto pendientes en 63/64; no asumir que el README anterior prueba ausencia de lectura D2."
+      ],
+      "entrypoint": "python tools/run_funnel_arrays.py --help",
+      "related_prs": [
+        63,
+        64
+      ],
+      "certification": "Consultar evidencia específica; presencia de código no acredita certificación del módulo."
+    },
+    {
+      "id": "memory",
+      "name": "Hipocampo operativo",
+      "purpose": "Persistir episodios, evidencia, lecciones e invalidaciones.",
+      "category": "core",
+      "location": "local",
+      "paths": [
+        "edgelab/edge_brain/hippocampus.py",
+        "edgelab/edge_brain/hippocampus_store.py",
+        "edgelab/edge_brain/retrieval.py"
+      ],
+      "inputs": [
+        "episodios y evidencia validada",
+        "anchors y autorizaciones"
+      ],
+      "outputs": [
+        "ledger encadenado y replay",
+        "consulta léxica determinista del ledger verificado"
+      ],
+      "dependencies": [
+        "esquemas/contratos de memoria"
+      ],
+      "limitations": [
+        "Persistencia no certifica hipótesis. Reconciliar PR 56 con código ya presente antes de otro port."
+      ],
+      "entrypoint": null,
+      "related_prs": [
+        56,
+        58
+      ],
+      "certification": "Consultar evidencia específica; presencia de código no acredita certificación del módulo."
+    },
+    {
+      "id": "brain-controls",
+      "name": "Controles del Brain",
+      "purpose": "Aplicar elegibilidad, políticas y trazabilidad a episodios.",
+      "category": "experimental",
+      "location": "local",
+      "paths": [
+        "edgelab/edge_brain",
+        "edgelab/edge_brain/typed_registry.py",
+        "edgelab/edge_brain/schema_validator.py",
+        "edgelab/edge_brain/schemas"
+      ],
+      "inputs": [
+        "propuestas",
+        "evidencia",
+        "permisos"
+      ],
+      "outputs": [
+        "decisiones y episodios"
+      ],
+      "dependencies": [
+        "data",
+        "memory"
+      ],
+      "limitations": [
+        "No equivale a orquestación autónoma completa; reconstrucción y governor tienen linajes adicionales.",
+        "Esquemas empaquetados son contratos, no implementación del atlas o corpus bibliográfico."
+      ],
+      "entrypoint": null,
+      "related_prs": [
+        43,
+        46,
+        58
+      ],
+      "certification": "Consultar evidencia específica; presencia de código no acredita certificación del módulo."
+    },
+    {
+      "id": "campaigns",
+      "name": "Campañas de investigación",
+      "purpose": "Conservar hipótesis, preregistros, negativos y artefactos por familia.",
+      "category": "campaign",
+      "location": "local",
+      "paths": [
+        "docs/research",
+        "strategies",
+        "edgelab/research"
+      ],
+      "inputs": [
+        "manifiesto aprobado",
+        "datos permitidos",
+        "presupuesto de trials"
+      ],
+      "outputs": [
+        "artefactos y actas con alcance"
+      ],
+      "dependencies": [
+        "engine",
+        "validation",
+        "data"
+      ],
+      "limitations": [
+        "No ejecutar scripts por estar en el repo; no retunear negativos ni convertir resultados históricos en certificación actual."
+      ],
+      "entrypoint": null,
+      "related_prs": [],
+      "certification": "Consultar evidencia específica; presencia de código no acredita certificación del módulo."
+    },
+    {
+      "id": "builders",
+      "name": "Builders de datos",
+      "purpose": "Construir productos de datos con trazabilidad contractual.",
+      "category": "experimental",
+      "location": "local",
+      "paths": [
+        "databuild"
+      ],
+      "inputs": [
+        "fuentes y contratos aprobados"
+      ],
+      "outputs": [
+        "productos derivados y manifiestos"
+      ],
+      "dependencies": [
+        "data",
+        "entorno específico del builder"
+      ],
+      "limitations": [
+        "Rutas legacy y sanitización tienen deuda en 65/issue 38; no lanzar antes de verificar lectura y causalidad."
+      ],
+      "entrypoint": null,
+      "related_prs": [
+        65
+      ],
+      "certification": "Consultar evidencia específica; presencia de código no acredita certificación del módulo."
+    },
+    {
+      "id": "kaggle-execution",
+      "name": "Ejecución Kaggle y agregados",
+      "purpose": "Resolver spec, datasets y shards por contrato; verificar evidencia.",
+      "category": "integration_pending",
+      "location": "other_branch",
+      "paths": [
+        "edgelab/kaggle"
+      ],
+      "inputs": [
+        "spec y catálogo fijados",
+        "datasets aprobados"
+      ],
+      "outputs": [
+        "agregados 1s/30s/60s",
+        "manifest",
+        "attestation",
+        "zip y hashes"
+      ],
+      "dependencies": [
+        "Kaggle privado",
+        "catálogo versionado"
+      ],
+      "limitations": [
+        "La infraestructura está en PR 68, no integrada en esta base; adaptadores económicos/scheduler universal no se declaran terminados."
+      ],
+      "entrypoint": null,
+      "related_prs": [
+        68,
+        24
+      ],
+      "certification": "Consultar evidencia específica; presencia de código no acredita certificación del módulo."
+    },
+    {
+      "id": "bibliography",
+      "name": "Biblioteca SSRN",
+      "purpose": "Buscar papers y claims bibliográficos con custodia.",
+      "category": "integration_pending",
+      "location": "other_branch",
+      "paths": [
+        "corpus/ssrn",
+        "tools/ssrn_brain_cli.py",
+        "tools/ssrn_corpus_bootstrap.py"
+      ],
+      "inputs": [
+        "corpus versionado",
+        "consulta"
+      ],
+      "outputs": [
+        "papers, claims y manifests"
+      ],
+      "dependencies": [
+        "bootstrap y entorno de PR 67"
+      ],
+      "limitations": [
+        "Claims bibliográficos no son evidencia de edge propio; deuda de ledger/metadatos visible. PR 67 reemplaza 52 según su descripción."
+      ],
+      "entrypoint": null,
+      "related_prs": [
+        67,
+        52
+      ],
+      "certification": "Consultar evidencia específica; presencia de código no acredita certificación del módulo."
+    },
+    {
+      "id": "factory",
+      "name": "Factory de hipótesis",
+      "purpose": "Separar generación de candidatos de evaluación y adjudicación.",
+      "category": "experimental",
+      "location": "other_branch",
+      "paths": [
+        "edgelab/edge_factory"
+      ],
+      "inputs": [
+        "bibliografía/contextos",
+        "restricciones y presupuesto"
+      ],
+      "outputs": [
+        "hipótesis estructuradas"
+      ],
+      "dependencies": [
+        "brain-controls",
+        "validation"
+      ],
+      "limitations": [
+        "Responsabilidades de Factory/Brain/Governor requieren reconciliación; no hay pipeline autónomo certificado."
+      ],
+      "entrypoint": null,
+      "related_prs": [
+        43,
+        46,
+        54,
+        58
+      ],
+      "certification": "Consultar evidencia específica; presencia de código no acredita certificación del módulo."
+    },
+    {
+      "id": "viewer",
+      "name": "Visor canónico",
+      "purpose": "Mostrar bundles y evidencia sin ocultar estado exploratorio.",
+      "category": "integration_pending",
+      "location": "other_branch",
+      "paths": [
+        "viewer/nt8_bridge/index.html"
+      ],
+      "inputs": [
+        "bundle versionado y aprobado"
+      ],
+      "outputs": [
+        "visualización"
+      ],
+      "dependencies": [
+        "bridge",
+        "navegador"
+      ],
+      "limitations": [
+        "No es autoridad estadística; no transportar paridad NQ a otros activos por renombrar etiquetas."
+      ],
+      "entrypoint": null,
+      "related_prs": [
+        48,
+        41
+      ],
+      "certification": "Consultar evidencia específica; presencia de código no acredita certificación del módulo."
+    },
+    {
+      "id": "propfirm",
+      "name": "Reglas y EV de prop firms",
+      "purpose": "Modelar condiciones de evaluación y EV del participante.",
+      "category": "experimental",
+      "location": "other_branch",
+      "paths": [
+        "edgelab/propfirm"
+      ],
+      "inputs": [
+        "reglas verificadas",
+        "modelo de riesgo y ventaja"
+      ],
+      "outputs": [
+        "reportes y simulaciones"
+      ],
+      "dependencies": [
+        "reglas versionadas"
+      ],
+      "limitations": [
+        "Separado de detección de edge y de operación real."
+      ],
+      "entrypoint": null,
+      "related_prs": [
+        48
+      ],
+      "certification": "Consultar evidencia específica; presencia de código no acredita certificación del módulo."
+    },
+    {
+      "id": "context",
+      "name": "Contextos, GEX y regímenes",
+      "purpose": "Representar información contextual y propuestas de regímenes.",
+      "category": "experimental",
+      "location": "other_branch",
+      "paths": [
+        "edgelab/context",
+        "edgelab/gex",
+        "edgelab/regimes"
+      ],
+      "inputs": [
+        "fuentes/contextos con disponibilidad causal"
+      ],
+      "outputs": [
+        "features y clasificaciones"
+      ],
+      "dependencies": [
+        "data",
+        "contratos por módulo"
+      ],
+      "limitations": [
+        "No agrupar como capacidad operativa sin documentar cada consumidor y validación."
+      ],
+      "entrypoint": null,
+      "related_prs": [],
+      "certification": "Consultar evidencia específica; presencia de código no acredita certificación del módulo."
+    },
+    {
+      "id": "history",
+      "name": "Histórico y cuarentenas",
+      "purpose": "Preservar procedencia y versiones retiradas sin activarlas.",
+      "category": "historical",
+      "location": "other_branch",
+      "paths": [
+        "archive"
+      ],
+      "inputs": [
+        "artefactos existentes"
+      ],
+      "outputs": [
+        "evidencia consultable"
+      ],
+      "dependencies": [],
+      "limitations": [
+        "No mergear ni borrar backup/preserve o auditorías congeladas como limpieza automática."
+      ],
+      "entrypoint": null,
+      "related_prs": [],
+      "certification": "Consultar evidencia específica; presencia de código no acredita certificación del módulo."
+    },
+    {
+      "id": "agent-coordination",
+      "name": "Consumidores agentes y ccbus",
+      "purpose": "Reservar el límite de integración para agentes interactivos y futuros procesos autónomos.",
+      "category": "planned",
+      "location": "not_pushed",
+      "paths": [],
+      "inputs": [
+        "contratos públicos de EdgeLab"
+      ],
+      "outputs": [
+        "tareas y referencias a evidencia"
+      ],
+      "dependencies": [],
+      "limitations": [
+        "El usuario informó trabajo local no pusheado. No implementado ni auditado aquí; no construir otro bus ni servidor en esta fase."
+      ],
+      "entrypoint": null,
+      "related_prs": [],
+      "certification": "Consultar evidencia específica; presencia de código no acredita certificación del módulo."
+    }
+  ]
+}

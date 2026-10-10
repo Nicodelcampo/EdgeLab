@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://edgelab.local/schemas/edge_brain/hypothesis_proposal.json",
+  "title": "EdgeLab Hypothesis Proposal",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "proposal_id",
+    "title",
+    "proposed_by",
+    "model_identifier",
+    "is_llm_generated",
+    "proposal_content",
+    "status",
+    "created_at_utc"
+  ],
+  "properties": {
+    "proposal_id": {
+      "type": "string",
+      "pattern": "^PROP-[A-Za-z0-9._:-]+$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "proposed_by": {
+      "type": "string",
+      "minLength": 1
+    },
+    "model_identifier": {
+      "type": "string",
+      "minLength": 1
+    },
+    "is_llm_generated": {
+      "type": "boolean"
+    },
+    "proposal_content": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "enum": [
+        "PROPOSED",
+        "ACCEPTED_FOR_TESTING",
+        "REJECTED"
+      ]
+    },
+    "created_at_utc": {
+      "type": "string"
+    }
+  }
+}

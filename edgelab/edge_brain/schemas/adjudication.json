@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://edgelab.local/schemas/edge_brain/adjudication.json",
+  "title": "EdgeLab Adjudication",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "adjudication_id",
+    "claim_or_experiment_id",
+    "reviewer_id",
+    "reviewer_is_independent",
+    "verdict",
+    "rationale",
+    "adjudicated_at_utc"
+  ],
+  "properties": {
+    "adjudication_id": {
+      "type": "string",
+      "pattern": "^ADJ-[A-Za-z0-9._:-]+$"
+    },
+    "claim_or_experiment_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "reviewer_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "reviewer_is_independent": {
+      "const": true
+    },
+    "verdict": {
+      "enum": [
+        "APPROVED",
+        "REJECTED",
+        "REQUIRES_REAUDIT",
+        "INCONCLUSIVE"
+      ]
+    },
+    "rationale": {
+      "type": "string",
+      "minLength": 1
+    },
+    "adjudicated_at_utc": {
+      "type": "string"
+    }
+  }
+}
