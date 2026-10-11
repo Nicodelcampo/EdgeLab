@@ -258,3 +258,7 @@ no son features as-of. No quitar celdas/contratos por signo ni barrer ganadores.
 ## Comparabilidad de controles, sin outcomes
 
 [Auditoría de covariables](AVZVOL_CONTROLES_COMPARABILIDAD_20261011.md): soporte exacto para81,1514% de filas reales y41,7939% pseudo;412 pseudo también anclas reales en misma celda. Residual SMD de log volumen100 +0,1203 en panel30celdas. No certifica negativos/censo/as-of, no explica por sí solo el efecto ni habilita nuevos outcomes. Prioridad P1/P2; no calipers guiados por efecto, P4/holdout prohibidos.
+
+## Evidencia para hipótesis de entradas, no backtest
+
+[Retest y lógica de investigación](AVZVOL_LOGICAS_DE_ENTRADA_20261011.md): anclas inicialmente dentro de banda, retest98,6008% real vs98,9030% pseudo; rebote geométrico resuelto49,0022% vs49,6734%. Retest solo no distingue; estudiar confirmación observable de rechazo/aceptación y reentrada como rival. Tres hipótesis propuestas, no reglas rentables ni permiso P4; controles/censo/as-of pendientes.

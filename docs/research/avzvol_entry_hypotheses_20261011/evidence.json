@@ -1,0 +1,4902 @@
+{
+  "schema": "edgelab_exposed_entry_hypothesis_triage_v1",
+  "plan": {
+    "scope": "EXPOSED_RETEST_AND_ENTRY_HYPOTHESIS_TRIAGE_NOT_BACKTEST",
+    "columns_read": [
+      "contract",
+      "cell",
+      "kind",
+      "session",
+      "clock",
+      "t0",
+      "te",
+      "dir",
+      "o2",
+      "o3a",
+      "o3b",
+      "trend",
+      "pos",
+      "mom100_h"
+    ],
+    "blind_or_preregistered": false,
+    "cell_universe": [
+      "4_250_20",
+      "4_250_30",
+      "4_250_45",
+      "4_500_20",
+      "4_500_30",
+      "4_500_45",
+      "4_1000_20",
+      "4_1000_30",
+      "4_1000_45",
+      "5_250_20",
+      "5_250_30",
+      "5_250_45",
+      "5_500_20",
+      "5_500_30",
+      "5_500_45",
+      "5_1000_20",
+      "5_1000_30",
+      "5_1000_45",
+      "6_250_20",
+      "6_250_30",
+      "6_250_45",
+      "6_500_20",
+      "6_500_30",
+      "6_500_45",
+      "6_1000_20",
+      "6_1000_30",
+      "6_1000_45",
+      "8_250_20",
+      "8_250_30",
+      "8_250_45",
+      "8_500_20",
+      "8_500_30",
+      "8_500_45",
+      "8_1000_20",
+      "8_1000_30",
+      "8_1000_45"
+    ],
+    "retest": "O3a 0/1 given observed exit; window-limited absence not permanent absence; original same-session maximum2000 bars",
+    "bounce": "O3b 0/1 given retest; one height from exit edge in exit direction versus opposite direction, starting AFTER retest bar, original maximum2000 bars; -2 both barriers same later bar and -1 unresolved are retained",
+    "entry_compatible_subset": "pos=0 at original anchor, reported separately without replacing full legacy population",
+    "exit_known_cut": "At the hypothetical confirmed-exit decision ONLY, compare observed exit direction with signs of PRIOR500-bar trend and PRIOR100-bar momentum: both aligned, both opposed, mixed, or any zero. All categories retained. dir is unavailable at original anchor; no momentum threshold or optimized lookback",
+    "context": "exact contract/session/cell/clock/trend overlap, changing support; equal supported strata per session; not causal matching",
+    "weights": "same reviewed direction tool; equal supported sessions, common cells and six contracts; duplicates preserved, all36cells retained",
+    "bounds": "within exact groups supporting known bounce contrast, all retests with ambiguous/unresolved outcomes; adversarial binary resolution bounds, NOT confidence intervals or fills",
+    "timing": "exported te minus t0 descriptive 25-trade bar counts; median by contract/kind for inside-band anchors with observed exit; no wall-clock conversion or retest timestamp available",
+    "no_raw_price_outcomes": true,
+    "no_economic_outcomes": true,
+    "no_holdout": true,
+    "no_entry_or_exit_fills": true,
+    "no_parameter_optimization": true
+  },
+  "all_six_pins_and_footers_before_payload": true,
+  "source_export_reference_sha256": "1611277b3dc6f6393e0c6f280201359f488b8352e80a23bf9c77149e8152192e",
+  "source_stage_sha256": "889d9b23cf2428167c93e18bfc45436b9efb48f67dd44d5a43c00654aa5c365c",
+  "reviewed_aggregation_helper_sha256": "fbcde4e4f933c5b9c0553bb829d75c4c52a18dfdd3142b0900ff1d41171a28d0",
+  "profile": [
+    {
+      "contract": "MNQ_09-25",
+      "rows": 56638,
+      "nulls": 0,
+      "duplicate_full_export_columns_retained": 40
+    },
+    {
+      "contract": "MNQ_12-25",
+      "rows": 107098,
+      "nulls": 0,
+      "duplicate_full_export_columns_retained": 30
+    },
+    {
+      "contract": "MNQ_03-26",
+      "rows": 94166,
+      "nulls": 0,
+      "duplicate_full_export_columns_retained": 16
+    },
+    {
+      "contract": "MNQ_06-26",
+      "rows": 103585,
+      "nulls": 0,
+      "duplicate_full_export_columns_retained": 17
+    },
+    {
+      "contract": "MNQ_09-26",
+      "rows": 148429,
+      "nulls": 0,
+      "duplicate_full_export_columns_retained": 28
+    },
+    {
+      "contract": "MNQ_12-26",
+      "rows": 34615,
+      "nulls": 0,
+      "duplicate_full_export_columns_retained": 39
+    }
+  ],
+  "rows": 544531,
+  "accounting": [
+    {
+      "scope": "all_legacy_anchors",
+      "contract": "MNQ_09-25",
+      "kind": "real",
+      "rows": 9816,
+      "no_exit": 23,
+      "observed_exit": 9793,
+      "observed_retest": 9670,
+      "no_observed_retest_within_window": 123,
+      "bounce_first": 4856,
+      "opposite_excursion_first": 4724,
+      "same_bar_both": 0,
+      "unresolved_after_retest": 90
+    },
+    {
+      "scope": "all_legacy_anchors",
+      "contract": "MNQ_09-25",
+      "kind": "pseudo",
+      "rows": 46822,
+      "no_exit": 78,
+      "observed_exit": 46744,
+      "observed_retest": 46121,
+      "no_observed_retest_within_window": 623,
+      "bounce_first": 22856,
+      "opposite_excursion_first": 22927,
+      "same_bar_both": 0,
+      "unresolved_after_retest": 338
+    },
+    {
+      "scope": "all_legacy_anchors",
+      "contract": "MNQ_12-25",
+      "kind": "real",
+      "rows": 19143,
+      "no_exit": 16,
+      "observed_exit": 19127,
+      "observed_retest": 18836,
+      "no_observed_retest_within_window": 291,
+      "bounce_first": 9172,
+      "opposite_excursion_first": 9546,
+      "same_bar_both": 0,
+      "unresolved_after_retest": 118
+    },
+    {
+      "scope": "all_legacy_anchors",
+      "contract": "MNQ_12-25",
+      "kind": "pseudo",
+      "rows": 87955,
+      "no_exit": 39,
+      "observed_exit": 87916,
+      "observed_retest": 86585,
+      "no_observed_retest_within_window": 1331,
+      "bounce_first": 42954,
+      "opposite_excursion_first": 43306,
+      "same_bar_both": 2,
+      "unresolved_after_retest": 323
+    },
+    {
+      "scope": "all_legacy_anchors",
+      "contract": "MNQ_03-26",
+      "kind": "real",
+      "rows": 17039,
+      "no_exit": 8,
+      "observed_exit": 17031,
+      "observed_retest": 16776,
+      "no_observed_retest_within_window": 255,
+      "bounce_first": 8118,
+      "opposite_excursion_first": 8553,
+      "same_bar_both": 0,
+      "unresolved_after_retest": 105
+    },
+    {
+      "scope": "all_legacy_anchors",
+      "contract": "MNQ_03-26",
+      "kind": "pseudo",
+      "rows": 77127,
+      "no_exit": 38,
+      "observed_exit": 77089,
+      "observed_retest": 75895,
+      "no_observed_retest_within_window": 1194,
+      "bounce_first": 37731,
+      "opposite_excursion_first": 37870,
+      "same_bar_both": 2,
+      "unresolved_after_retest": 292
+    },
+    {
+      "scope": "all_legacy_anchors",
+      "contract": "MNQ_06-26",
+      "kind": "real",
+      "rows": 18524,
+      "no_exit": 13,
+      "observed_exit": 18511,
+      "observed_retest": 18237,
+      "no_observed_retest_within_window": 274,
+      "bounce_first": 9050,
+      "opposite_excursion_first": 9128,
+      "same_bar_both": 0,
+      "unresolved_after_retest": 59
+    },
+    {
+      "scope": "all_legacy_anchors",
+      "contract": "MNQ_06-26",
+      "kind": "pseudo",
+      "rows": 85061,
+      "no_exit": 19,
+      "observed_exit": 85042,
+      "observed_retest": 83567,
+      "no_observed_retest_within_window": 1475,
+      "bounce_first": 42190,
+      "opposite_excursion_first": 41204,
+      "same_bar_both": 3,
+      "unresolved_after_retest": 170
+    },
+    {
+      "scope": "all_legacy_anchors",
+      "contract": "MNQ_09-26",
+      "kind": "real",
+      "rows": 26139,
+      "no_exit": 25,
+      "observed_exit": 26114,
+      "observed_retest": 25781,
+      "no_observed_retest_within_window": 333,
+      "bounce_first": 12683,
+      "opposite_excursion_first": 13046,
+      "same_bar_both": 0,
+      "unresolved_after_retest": 52
+    },
+    {
+      "scope": "all_legacy_anchors",
+      "contract": "MNQ_09-26",
+      "kind": "pseudo",
+      "rows": 122290,
+      "no_exit": 24,
+      "observed_exit": 122266,
+      "observed_retest": 120349,
+      "no_observed_retest_within_window": 1917,
+      "bounce_first": 58751,
+      "opposite_excursion_first": 61372,
+      "same_bar_both": 4,
+      "unresolved_after_retest": 222
+    },
+    {
+      "scope": "all_legacy_anchors",
+      "contract": "MNQ_12-26",
+      "kind": "real",
+      "rows": 6094,
+      "no_exit": 0,
+      "observed_exit": 6094,
+      "observed_retest": 5967,
+      "no_observed_retest_within_window": 127,
+      "bounce_first": 2917,
+      "opposite_excursion_first": 3025,
+      "same_bar_both": 0,
+      "unresolved_after_retest": 25
+    },
+    {
+      "scope": "all_legacy_anchors",
+      "contract": "MNQ_12-26",
+      "kind": "pseudo",
+      "rows": 28521,
+      "no_exit": 4,
+      "observed_exit": 28517,
+      "observed_retest": 28091,
+      "no_observed_retest_within_window": 426,
+      "bounce_first": 14210,
+      "opposite_excursion_first": 13844,
+      "same_bar_both": 0,
+      "unresolved_after_retest": 37
+    },
+    {
+      "scope": "inside_band_anchors",
+      "contract": "MNQ_09-25",
+      "kind": "real",
+      "rows": 7705,
+      "no_exit": 23,
+      "observed_exit": 7682,
+      "observed_retest": 7586,
+      "no_observed_retest_within_window": 96,
+      "bounce_first": 3824,
+      "opposite_excursion_first": 3691,
+      "same_bar_both": 0,
+      "unresolved_after_retest": 71
+    },
+    {
+      "scope": "inside_band_anchors",
+      "contract": "MNQ_09-25",
+      "kind": "pseudo",
+      "rows": 36817,
+      "no_exit": 73,
+      "observed_exit": 36744,
+      "observed_retest": 36379,
+      "no_observed_retest_within_window": 365,
+      "bounce_first": 18015,
+      "opposite_excursion_first": 18107,
+      "same_bar_both": 0,
+      "unresolved_after_retest": 257
+    },
+    {
+      "scope": "inside_band_anchors",
+      "contract": "MNQ_12-25",
+      "kind": "real",
+      "rows": 14815,
+      "no_exit": 16,
+      "observed_exit": 14799,
+      "observed_retest": 14623,
+      "no_observed_retest_within_window": 176,
+      "bounce_first": 7172,
+      "opposite_excursion_first": 7387,
+      "same_bar_both": 0,
+      "unresolved_after_retest": 64
+    },
+    {
+      "scope": "inside_band_anchors",
+      "contract": "MNQ_12-25",
+      "kind": "pseudo",
+      "rows": 68228,
+      "no_exit": 37,
+      "observed_exit": 68191,
+      "observed_retest": 67405,
+      "no_observed_retest_within_window": 786,
+      "bounce_first": 33467,
+      "opposite_excursion_first": 33729,
+      "same_bar_both": 2,
+      "unresolved_after_retest": 207
+    },
+    {
+      "scope": "inside_band_anchors",
+      "contract": "MNQ_03-26",
+      "kind": "real",
+      "rows": 13206,
+      "no_exit": 8,
+      "observed_exit": 13198,
+      "observed_retest": 13027,
+      "no_observed_retest_within_window": 171,
+      "bounce_first": 6333,
+      "opposite_excursion_first": 6606,
+      "same_bar_both": 0,
+      "unresolved_after_retest": 88
+    },
+    {
+      "scope": "inside_band_anchors",
+      "contract": "MNQ_03-26",
+      "kind": "pseudo",
+      "rows": 59759,
+      "no_exit": 36,
+      "observed_exit": 59723,
+      "observed_retest": 58987,
+      "no_observed_retest_within_window": 736,
+      "bounce_first": 29330,
+      "opposite_excursion_first": 29400,
+      "same_bar_both": 1,
+      "unresolved_after_retest": 256
+    },
+    {
+      "scope": "inside_band_anchors",
+      "contract": "MNQ_06-26",
+      "kind": "real",
+      "rows": 14446,
+      "no_exit": 9,
+      "observed_exit": 14437,
+      "observed_retest": 14251,
+      "no_observed_retest_within_window": 186,
+      "bounce_first": 7110,
+      "opposite_excursion_first": 7089,
+      "same_bar_both": 0,
+      "unresolved_after_retest": 52
+    },
+    {
+      "scope": "inside_band_anchors",
+      "contract": "MNQ_06-26",
+      "kind": "pseudo",
+      "rows": 66281,
+      "no_exit": 19,
+      "observed_exit": 66262,
+      "observed_retest": 65395,
+      "no_observed_retest_within_window": 867,
+      "bounce_first": 32987,
+      "opposite_excursion_first": 32256,
+      "same_bar_both": 2,
+      "unresolved_after_retest": 150
+    },
+    {
+      "scope": "inside_band_anchors",
+      "contract": "MNQ_09-26",
+      "kind": "real",
+      "rows": 20022,
+      "no_exit": 25,
+      "observed_exit": 19997,
+      "observed_retest": 19786,
+      "no_observed_retest_within_window": 211,
+      "bounce_first": 9898,
+      "opposite_excursion_first": 9847,
+      "same_bar_both": 0,
+      "unresolved_after_retest": 41
+    },
+    {
+      "scope": "inside_band_anchors",
+      "contract": "MNQ_09-26",
+      "kind": "pseudo",
+      "rows": 93845,
+      "no_exit": 23,
+      "observed_exit": 93822,
+      "observed_retest": 92712,
+      "no_observed_retest_within_window": 1110,
+      "bounce_first": 45234,
+      "opposite_excursion_first": 47300,
+      "same_bar_both": 3,
+      "unresolved_after_retest": 175
+    },
+    {
+      "scope": "inside_band_anchors",
+      "contract": "MNQ_12-26",
+      "kind": "real",
+      "rows": 4517,
+      "no_exit": 0,
+      "observed_exit": 4517,
+      "observed_retest": 4436,
+      "no_observed_retest_within_window": 81,
+      "bounce_first": 2163,
+      "opposite_excursion_first": 2248,
+      "same_bar_both": 0,
+      "unresolved_after_retest": 25
+    },
+    {
+      "scope": "inside_band_anchors",
+      "contract": "MNQ_12-26",
+      "kind": "pseudo",
+      "rows": 21065,
+      "no_exit": 4,
+      "observed_exit": 21061,
+      "observed_retest": 20845,
+      "no_observed_retest_within_window": 216,
+      "bounce_first": 10481,
+      "opposite_excursion_first": 10332,
+      "same_bar_both": 0,
+      "unresolved_after_retest": 32
+    }
+  ],
+  "scopes": {
+    "all_legacy_anchors": {
+      "retest_given_exit": {
+        "headline": {
+          "real_rate_percent": 98.49161984157969,
+          "pseudo_rate_percent": 98.34748308992795,
+          "gap_pp": 0.14413675165174897,
+          "common_cells": 31,
+          "supported_session_cell_groups": 6079,
+          "independent_max_error": 0.0
+        },
+        "contracts": [
+          {
+            "contract": "MNQ_09-25",
+            "real_rate_percent": 98.94802164147359,
+            "pseudo_rate_percent": 98.7432403995122,
+            "gap_pp": 0.20478124196138428
+          },
+          {
+            "contract": "MNQ_12-25",
+            "real_rate_percent": 98.1916521777734,
+            "pseudo_rate_percent": 97.61546138326632,
+            "gap_pp": 0.5761907945070731
+          },
+          {
+            "contract": "MNQ_03-26",
+            "real_rate_percent": 98.41514446104071,
+            "pseudo_rate_percent": 98.47516323900615,
+            "gap_pp": -0.060018777965442235
+          },
+          {
+            "contract": "MNQ_06-26",
+            "real_rate_percent": 98.03034650073218,
+            "pseudo_rate_percent": 98.26049785453284,
+            "gap_pp": -0.23015135380065674
+          },
+          {
+            "contract": "MNQ_09-26",
+            "real_rate_percent": 99.08373500671485,
+            "pseudo_rate_percent": 98.33914644580587,
+            "gap_pp": 0.7445885609089811
+          },
+          {
+            "contract": "MNQ_12-26",
+            "real_rate_percent": 98.28081926174347,
+            "pseudo_rate_percent": 98.65138921744432,
+            "gap_pp": -0.3705699557008457
+          }
+        ],
+        "cells": [
+          {
+            "cell": "4_250_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.36193075644079753
+          },
+          {
+            "cell": "4_250_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.30296601872688356
+          },
+          {
+            "cell": "4_250_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.05925064959603283
+          },
+          {
+            "cell": "4_500_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.38570076919574975
+          },
+          {
+            "cell": "4_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.3473222427987172
+          },
+          {
+            "cell": "4_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.018699654116113403
+          },
+          {
+            "cell": "4_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.35030124691773473
+          },
+          {
+            "cell": "4_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.12872645757692713
+          },
+          {
+            "cell": "4_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.06397250381261953
+          },
+          {
+            "cell": "5_250_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.1427852541982979
+          },
+          {
+            "cell": "5_250_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.3443194550594789
+          },
+          {
+            "cell": "5_250_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.22499391919822667
+          },
+          {
+            "cell": "5_500_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.9397447502436151
+          },
+          {
+            "cell": "5_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.02152563373125175
+          },
+          {
+            "cell": "5_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.37250731688827726
+          },
+          {
+            "cell": "5_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.30157483816112984
+          },
+          {
+            "cell": "5_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.10507795132409795
+          },
+          {
+            "cell": "5_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.05409168575498635
+          },
+          {
+            "cell": "6_250_20",
+            "contracts_supported": 5,
+            "common_six_contracts": false,
+            "gap_pp": -2.2222222222222223
+          },
+          {
+            "cell": "6_250_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.16664469789469838
+          },
+          {
+            "cell": "6_250_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -2.449205115871783
+          },
+          {
+            "cell": "6_500_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -2.268114582356068
+          },
+          {
+            "cell": "6_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.6487291568282793
+          },
+          {
+            "cell": "6_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.6940924968794114
+          },
+          {
+            "cell": "6_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.37119237943024175
+          },
+          {
+            "cell": "6_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.08628968796859231
+          },
+          {
+            "cell": "6_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.03654268059711926
+          },
+          {
+            "cell": "8_250_20",
+            "contracts_supported": 0,
+            "common_six_contracts": false,
+            "gap_pp": null
+          },
+          {
+            "cell": "8_250_30",
+            "contracts_supported": 1,
+            "common_six_contracts": false,
+            "gap_pp": 0.0
+          },
+          {
+            "cell": "8_250_45",
+            "contracts_supported": 5,
+            "common_six_contracts": false,
+            "gap_pp": 3.3333333333333335
+          },
+          {
+            "cell": "8_500_20",
+            "contracts_supported": 2,
+            "common_six_contracts": false,
+            "gap_pp": 0.0
+          },
+          {
+            "cell": "8_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.6666666666666667
+          },
+          {
+            "cell": "8_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.9043259447105598
+          },
+          {
+            "cell": "8_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 8.015873015873016
+          },
+          {
+            "cell": "8_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.8659415287977643
+          },
+          {
+            "cell": "8_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.5376644543807061
+          }
+        ]
+      },
+      "bounce_given_resolved_retest": {
+        "headline": {
+          "real_rate_percent": 49.16992820461599,
+          "pseudo_rate_percent": 49.20120828672463,
+          "gap_pp": -0.03128008210863557,
+          "common_cells": 31,
+          "supported_session_cell_groups": 6055,
+          "independent_max_error": 0.0
+        },
+        "contracts": [
+          {
+            "contract": "MNQ_09-25",
+            "real_rate_percent": 51.620000338827,
+            "pseudo_rate_percent": 49.57612210405056,
+            "gap_pp": 2.0438782347764284
+          },
+          {
+            "contract": "MNQ_12-25",
+            "real_rate_percent": 49.775224989864135,
+            "pseudo_rate_percent": 48.41676116226263,
+            "gap_pp": 1.358463827601498
+          },
+          {
+            "contract": "MNQ_03-26",
+            "real_rate_percent": 48.888128856997014,
+            "pseudo_rate_percent": 48.211087159010674,
+            "gap_pp": 0.6770416979863425
+          },
+          {
+            "contract": "MNQ_06-26",
+            "real_rate_percent": 47.57394878394704,
+            "pseudo_rate_percent": 49.11616924409037,
+            "gap_pp": -1.5422204601433307
+          },
+          {
+            "contract": "MNQ_09-26",
+            "real_rate_percent": 50.04981342242102,
+            "pseudo_rate_percent": 49.3309110759686,
+            "gap_pp": 0.7189023464524211
+          },
+          {
+            "contract": "MNQ_12-26",
+            "real_rate_percent": 47.11245283563977,
+            "pseudo_rate_percent": 50.556198974964936,
+            "gap_pp": -3.4437461393251727
+          }
+        ],
+        "cells": [
+          {
+            "cell": "4_250_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.00510955603704932
+          },
+          {
+            "cell": "4_250_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.7328553770317014
+          },
+          {
+            "cell": "4_250_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.3676482433756154
+          },
+          {
+            "cell": "4_500_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.7902407160543288
+          },
+          {
+            "cell": "4_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.2656264572621208
+          },
+          {
+            "cell": "4_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.0514177761744758
+          },
+          {
+            "cell": "4_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.6176280523770832
+          },
+          {
+            "cell": "4_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.3774966509503903
+          },
+          {
+            "cell": "4_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.23576261691485578
+          },
+          {
+            "cell": "5_250_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -3.587692524289531
+          },
+          {
+            "cell": "5_250_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.8726731270357528
+          },
+          {
+            "cell": "5_250_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 1.6934795871551525
+          },
+          {
+            "cell": "5_500_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 2.494825980055787
+          },
+          {
+            "cell": "5_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.6580021753634904
+          },
+          {
+            "cell": "5_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.582938182176776
+          },
+          {
+            "cell": "5_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.531124967466351
+          },
+          {
+            "cell": "5_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -2.617533523460882
+          },
+          {
+            "cell": "5_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.9557389423088609
+          },
+          {
+            "cell": "6_250_20",
+            "contracts_supported": 5,
+            "common_six_contracts": false,
+            "gap_pp": 3.8888888888888884
+          },
+          {
+            "cell": "6_250_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 1.1648328523328526
+          },
+          {
+            "cell": "6_250_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -4.5871680844701554
+          },
+          {
+            "cell": "6_500_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 5.646235912780031
+          },
+          {
+            "cell": "6_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -7.0035419066329565
+          },
+          {
+            "cell": "6_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.9307344323275765
+          },
+          {
+            "cell": "6_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.6372699992409059
+          },
+          {
+            "cell": "6_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 1.2825541613594384
+          },
+          {
+            "cell": "6_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.3756462679351469
+          },
+          {
+            "cell": "8_250_20",
+            "contracts_supported": 0,
+            "common_six_contracts": false,
+            "gap_pp": null
+          },
+          {
+            "cell": "8_250_30",
+            "contracts_supported": 1,
+            "common_six_contracts": false,
+            "gap_pp": 0.0
+          },
+          {
+            "cell": "8_250_45",
+            "contracts_supported": 5,
+            "common_six_contracts": false,
+            "gap_pp": -32.55555555555556
+          },
+          {
+            "cell": "8_500_20",
+            "contracts_supported": 2,
+            "common_six_contracts": false,
+            "gap_pp": -23.333333333333332
+          },
+          {
+            "cell": "8_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 14.211640211640212
+          },
+          {
+            "cell": "8_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -5.2672197225764466
+          },
+          {
+            "cell": "8_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 8.251772382207164
+          },
+          {
+            "cell": "8_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -5.152916790670933
+          },
+          {
+            "cell": "8_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 2.65582431722029
+          }
+        ]
+      },
+      "bounce_context_exact_strata": {
+        "headline": {
+          "real_rate_percent": 48.63876497702941,
+          "pseudo_rate_percent": 50.5250670786335,
+          "gap_pp": -1.8863021016040926,
+          "common_cells": 29,
+          "supported_session_cell_groups": 5094,
+          "independent_max_error": 2.220446049250313e-16
+        },
+        "contracts": [
+          {
+            "contract": "MNQ_09-25",
+            "real_rate_percent": 51.45114871893273,
+            "pseudo_rate_percent": 49.694111424204586,
+            "gap_pp": 1.757037294728139
+          },
+          {
+            "contract": "MNQ_12-25",
+            "real_rate_percent": 47.088475995763105,
+            "pseudo_rate_percent": 51.05078649132936,
+            "gap_pp": -3.9623104955662583
+          },
+          {
+            "contract": "MNQ_03-26",
+            "real_rate_percent": 47.02179498566917,
+            "pseudo_rate_percent": 50.3079658848465,
+            "gap_pp": -3.2861708991773417
+          },
+          {
+            "contract": "MNQ_06-26",
+            "real_rate_percent": 48.4939615674585,
+            "pseudo_rate_percent": 51.115500711824716,
+            "gap_pp": -2.6215391443662126
+          },
+          {
+            "contract": "MNQ_09-26",
+            "real_rate_percent": 49.226697246830206,
+            "pseudo_rate_percent": 49.39525489370629,
+            "gap_pp": -0.16855764687608663
+          },
+          {
+            "contract": "MNQ_12-26",
+            "real_rate_percent": 48.55051134752274,
+            "pseudo_rate_percent": 51.58678306588954,
+            "gap_pp": -3.036271718366794
+          }
+        ],
+        "cells": [
+          {
+            "cell": "4_250_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 3.0560320342473335
+          },
+          {
+            "cell": "4_250_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -6.13061498890525
+          },
+          {
+            "cell": "4_250_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -2.512762866666318
+          },
+          {
+            "cell": "4_500_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.20248607834653778
+          },
+          {
+            "cell": "4_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -2.8144075386588323
+          },
+          {
+            "cell": "4_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -4.314034282321776
+          },
+          {
+            "cell": "4_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.3888011358056995
+          },
+          {
+            "cell": "4_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.660577963416042
+          },
+          {
+            "cell": "4_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.851607229608523
+          },
+          {
+            "cell": "5_250_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -12.47150997150997
+          },
+          {
+            "cell": "5_250_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -5.565542685060229
+          },
+          {
+            "cell": "5_250_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -3.0399533950296114
+          },
+          {
+            "cell": "5_500_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 7.584336483103246
+          },
+          {
+            "cell": "5_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.28675089762218753
+          },
+          {
+            "cell": "5_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.025789040359635203
+          },
+          {
+            "cell": "5_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -2.1203042264235488
+          },
+          {
+            "cell": "5_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.746836219365075
+          },
+          {
+            "cell": "5_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.9752439129296113
+          },
+          {
+            "cell": "6_250_20",
+            "contracts_supported": 3,
+            "common_six_contracts": false,
+            "gap_pp": -16.666666666666664
+          },
+          {
+            "cell": "6_250_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.13888888888888898
+          },
+          {
+            "cell": "6_250_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -14.309585090835089
+          },
+          {
+            "cell": "6_500_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.8873456790123455
+          },
+          {
+            "cell": "6_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -10.018305382888716
+          },
+          {
+            "cell": "6_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.299778486175094
+          },
+          {
+            "cell": "6_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 6.868795779431745
+          },
+          {
+            "cell": "6_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.0421358257862013
+          },
+          {
+            "cell": "6_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.7079277807790735
+          },
+          {
+            "cell": "8_250_20",
+            "contracts_supported": 0,
+            "common_six_contracts": false,
+            "gap_pp": null
+          },
+          {
+            "cell": "8_250_30",
+            "contracts_supported": 1,
+            "common_six_contracts": false,
+            "gap_pp": 0.0
+          },
+          {
+            "cell": "8_250_45",
+            "contracts_supported": 3,
+            "common_six_contracts": false,
+            "gap_pp": -8.333333333333332
+          },
+          {
+            "cell": "8_500_20",
+            "contracts_supported": 2,
+            "common_six_contracts": false,
+            "gap_pp": 4.1666666666666625
+          },
+          {
+            "cell": "8_500_30",
+            "contracts_supported": 5,
+            "common_six_contracts": false,
+            "gap_pp": -28.055555555555557
+          },
+          {
+            "cell": "8_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -6.537037037037035
+          },
+          {
+            "cell": "8_1000_20",
+            "contracts_supported": 5,
+            "common_six_contracts": false,
+            "gap_pp": 16.523809523809526
+          },
+          {
+            "cell": "8_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.4049307174307175
+          },
+          {
+            "cell": "8_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 4.835851566423656
+          }
+        ]
+      },
+      "bounce_same_context_overlap_unstratified": {
+        "headline": {
+          "real_rate_percent": 48.78183094627469,
+          "pseudo_rate_percent": 50.162654337219045,
+          "gap_pp": -1.3808233909443592,
+          "common_cells": 29,
+          "supported_session_cell_groups": 5094,
+          "independent_max_error": 0.0
+        },
+        "contracts": [
+          {
+            "contract": "MNQ_09-25",
+            "real_rate_percent": 51.65040685241442,
+            "pseudo_rate_percent": 48.98465477148286,
+            "gap_pp": 2.66575208093156
+          },
+          {
+            "contract": "MNQ_12-25",
+            "real_rate_percent": 47.492137729628524,
+            "pseudo_rate_percent": 50.894098841527445,
+            "gap_pp": -3.401961111898919
+          },
+          {
+            "contract": "MNQ_03-26",
+            "real_rate_percent": 47.068428648317415,
+            "pseudo_rate_percent": 49.96847462344057,
+            "gap_pp": -2.9000459751231555
+          },
+          {
+            "contract": "MNQ_06-26",
+            "real_rate_percent": 48.58304663113292,
+            "pseudo_rate_percent": 50.603946083251515,
+            "gap_pp": -2.020899452118599
+          },
+          {
+            "contract": "MNQ_09-26",
+            "real_rate_percent": 49.142904554820866,
+            "pseudo_rate_percent": 49.44872625847282,
+            "gap_pp": -0.30582170365195355
+          },
+          {
+            "contract": "MNQ_12-26",
+            "real_rate_percent": 48.75406126133398,
+            "pseudo_rate_percent": 51.07602544513906,
+            "gap_pp": -2.321964183805088
+          }
+        ],
+        "cells": [
+          {
+            "cell": "4_250_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 3.915337398823083
+          },
+          {
+            "cell": "4_250_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -4.41721664619602
+          },
+          {
+            "cell": "4_250_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.2238169155811636
+          },
+          {
+            "cell": "4_500_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.5050726194687608
+          },
+          {
+            "cell": "4_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.795264613889936
+          },
+          {
+            "cell": "4_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -2.2529213216866393
+          },
+          {
+            "cell": "4_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.1334529548703238
+          },
+          {
+            "cell": "4_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.1533282251464705
+          },
+          {
+            "cell": "4_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.46090153482596047
+          },
+          {
+            "cell": "5_250_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -11.187084520417852
+          },
+          {
+            "cell": "5_250_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -6.730825239504928
+          },
+          {
+            "cell": "5_250_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.880116452252079
+          },
+          {
+            "cell": "5_500_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 6.846611641870264
+          },
+          {
+            "cell": "5_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.6000528267584486
+          },
+          {
+            "cell": "5_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 1.2583027332934558
+          },
+          {
+            "cell": "5_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.4401855953745696
+          },
+          {
+            "cell": "5_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.0705542945293243
+          },
+          {
+            "cell": "5_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.7495683330766039
+          },
+          {
+            "cell": "6_250_20",
+            "contracts_supported": 3,
+            "common_six_contracts": false,
+            "gap_pp": -16.666666666666664
+          },
+          {
+            "cell": "6_250_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.2962962962962967
+          },
+          {
+            "cell": "6_250_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -13.832758676508675
+          },
+          {
+            "cell": "6_500_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.824854158187491
+          },
+          {
+            "cell": "6_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -9.757482098675156
+          },
+          {
+            "cell": "6_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.4775059861735211
+          },
+          {
+            "cell": "6_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 6.73116778144721
+          },
+          {
+            "cell": "6_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.3771693222609688
+          },
+          {
+            "cell": "6_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.5003153903495096
+          },
+          {
+            "cell": "8_250_20",
+            "contracts_supported": 0,
+            "common_six_contracts": false,
+            "gap_pp": null
+          },
+          {
+            "cell": "8_250_30",
+            "contracts_supported": 1,
+            "common_six_contracts": false,
+            "gap_pp": 0.0
+          },
+          {
+            "cell": "8_250_45",
+            "contracts_supported": 3,
+            "common_six_contracts": false,
+            "gap_pp": -8.333333333333332
+          },
+          {
+            "cell": "8_500_20",
+            "contracts_supported": 2,
+            "common_six_contracts": false,
+            "gap_pp": 4.1666666666666625
+          },
+          {
+            "cell": "8_500_30",
+            "contracts_supported": 5,
+            "common_six_contracts": false,
+            "gap_pp": -29.28571428571429
+          },
+          {
+            "cell": "8_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -4.314814814814815
+          },
+          {
+            "cell": "8_1000_20",
+            "contracts_supported": 5,
+            "common_six_contracts": false,
+            "gap_pp": 17.0
+          },
+          {
+            "cell": "8_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.8804390054390049
+          },
+          {
+            "cell": "8_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 4.662022207868151
+          }
+        ]
+      },
+      "bounce_unresolved_adversarial_bounds": {
+        "lower_gap_pp": -0.7191707404415671,
+        "upper_gap_pp": 0.3965461065159389,
+        "population": "all retests in exactly known-bounce supported groups; unresolved and same-bar double hits adversarial; not CI"
+      }
+    },
+    "inside_band_anchors": {
+      "retest_given_exit": {
+        "headline": {
+          "real_rate_percent": 98.6008364596222,
+          "pseudo_rate_percent": 98.90304121830422,
+          "gap_pp": -0.30220475868202995,
+          "common_cells": 31,
+          "supported_session_cell_groups": 5835,
+          "independent_max_error": 0.0
+        },
+        "contracts": [
+          {
+            "contract": "MNQ_09-25",
+            "real_rate_percent": 98.97044440294225,
+            "pseudo_rate_percent": 99.0297359008908,
+            "gap_pp": -0.059291497948553
+          },
+          {
+            "contract": "MNQ_12-25",
+            "real_rate_percent": 99.15597606195958,
+            "pseudo_rate_percent": 99.06668794705591,
+            "gap_pp": 0.0892881149036623
+          },
+          {
+            "contract": "MNQ_03-26",
+            "real_rate_percent": 98.46681886518456,
+            "pseudo_rate_percent": 99.0387828024443,
+            "gap_pp": -0.5719639372597398
+          },
+          {
+            "contract": "MNQ_06-26",
+            "real_rate_percent": 97.90516425002822,
+            "pseudo_rate_percent": 98.47882665959516,
+            "gap_pp": -0.5736624095669232
+          },
+          {
+            "contract": "MNQ_09-26",
+            "real_rate_percent": 99.05344393461078,
+            "pseudo_rate_percent": 98.74481986770326,
+            "gap_pp": 0.30862406690752014
+          },
+          {
+            "contract": "MNQ_12-26",
+            "real_rate_percent": 98.05317124300782,
+            "pseudo_rate_percent": 99.05939413213598,
+            "gap_pp": -1.006222889128146
+          }
+        ],
+        "cells": [
+          {
+            "cell": "4_250_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.27547590964613644
+          },
+          {
+            "cell": "4_250_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.2692391639128442
+          },
+          {
+            "cell": "4_250_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.2810449341202017
+          },
+          {
+            "cell": "4_500_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.35011333330638317
+          },
+          {
+            "cell": "4_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.008210210717008448
+          },
+          {
+            "cell": "4_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.23434160895258407
+          },
+          {
+            "cell": "4_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.0019353601301096194
+          },
+          {
+            "cell": "4_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.4468383831468183
+          },
+          {
+            "cell": "4_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.18435121243788843
+          },
+          {
+            "cell": "5_250_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.4833488951136007
+          },
+          {
+            "cell": "5_250_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.28638734522844034
+          },
+          {
+            "cell": "5_250_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.017041144912472807
+          },
+          {
+            "cell": "5_500_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -2.6187501834053553
+          },
+          {
+            "cell": "5_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.05381880336185969
+          },
+          {
+            "cell": "5_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.23252028918168693
+          },
+          {
+            "cell": "5_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.31442812073673077
+          },
+          {
+            "cell": "5_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.28384857462670965
+          },
+          {
+            "cell": "5_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.18976664901548201
+          },
+          {
+            "cell": "6_250_20",
+            "contracts_supported": 5,
+            "common_six_contracts": false,
+            "gap_pp": -5.0
+          },
+          {
+            "cell": "6_250_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 1.0333994708994707
+          },
+          {
+            "cell": "6_250_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -3.476388748637735
+          },
+          {
+            "cell": "6_500_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -2.131519274376417
+          },
+          {
+            "cell": "6_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.46943225675478567
+          },
+          {
+            "cell": "6_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.6442787080897842
+          },
+          {
+            "cell": "6_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.12026759086060156
+          },
+          {
+            "cell": "6_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.09270069818376943
+          },
+          {
+            "cell": "6_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.08518730127416324
+          },
+          {
+            "cell": "8_250_20",
+            "contracts_supported": 0,
+            "common_six_contracts": false,
+            "gap_pp": null
+          },
+          {
+            "cell": "8_250_30",
+            "contracts_supported": 1,
+            "common_six_contracts": false,
+            "gap_pp": 0.0
+          },
+          {
+            "cell": "8_250_45",
+            "contracts_supported": 4,
+            "common_six_contracts": false,
+            "gap_pp": 4.166666666666666
+          },
+          {
+            "cell": "8_500_20",
+            "contracts_supported": 2,
+            "common_six_contracts": false,
+            "gap_pp": 0.0
+          },
+          {
+            "cell": "8_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.6666666666666667
+          },
+          {
+            "cell": "8_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 1.6830004234895537
+          },
+          {
+            "cell": "8_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.7936507936507938
+          },
+          {
+            "cell": "8_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.5791410263783453
+          },
+          {
+            "cell": "8_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.3579270237831507
+          }
+        ]
+      },
+      "bounce_given_resolved_retest": {
+        "headline": {
+          "real_rate_percent": 49.00219120146017,
+          "pseudo_rate_percent": 49.67343794479214,
+          "gap_pp": -0.6712467433319741,
+          "common_cells": 31,
+          "supported_session_cell_groups": 5815,
+          "independent_max_error": 0.0
+        },
+        "contracts": [
+          {
+            "contract": "MNQ_09-25",
+            "real_rate_percent": 52.30148684554569,
+            "pseudo_rate_percent": 50.56614257267522,
+            "gap_pp": 1.7353442728704558
+          },
+          {
+            "contract": "MNQ_12-25",
+            "real_rate_percent": 50.21712255802881,
+            "pseudo_rate_percent": 49.707608519061665,
+            "gap_pp": 0.5095140389671576
+          },
+          {
+            "contract": "MNQ_03-26",
+            "real_rate_percent": 45.72814925901528,
+            "pseudo_rate_percent": 48.20234858724109,
+            "gap_pp": -2.47419932822581
+          },
+          {
+            "contract": "MNQ_06-26",
+            "real_rate_percent": 49.09190104992599,
+            "pseudo_rate_percent": 49.24501797400817,
+            "gap_pp": -0.15311692408217845
+          },
+          {
+            "contract": "MNQ_09-26",
+            "real_rate_percent": 49.7942936235984,
+            "pseudo_rate_percent": 49.40126515341628,
+            "gap_pp": 0.39302847018211334
+          },
+          {
+            "contract": "MNQ_12-26",
+            "real_rate_percent": 46.88019387264685,
+            "pseudo_rate_percent": 50.918244862350434,
+            "gap_pp": -4.038050989703582
+          }
+        ],
+        "cells": [
+          {
+            "cell": "4_250_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.4047559139189705
+          },
+          {
+            "cell": "4_250_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -2.459984276544737
+          },
+          {
+            "cell": "4_250_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.6446908956796675
+          },
+          {
+            "cell": "4_500_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.13762598318914354
+          },
+          {
+            "cell": "4_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.5555658809127012
+          },
+          {
+            "cell": "4_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.5357429472985258
+          },
+          {
+            "cell": "4_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.9160775541365496
+          },
+          {
+            "cell": "4_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.500371623448143
+          },
+          {
+            "cell": "4_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.03977498557661003
+          },
+          {
+            "cell": "5_250_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -2.8372451042706652
+          },
+          {
+            "cell": "5_250_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -2.568212270686885
+          },
+          {
+            "cell": "5_250_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.8377475005279555
+          },
+          {
+            "cell": "5_500_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 4.405128735131956
+          },
+          {
+            "cell": "5_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.08159748036875612
+          },
+          {
+            "cell": "5_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.7797312895652255
+          },
+          {
+            "cell": "5_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 1.008925782261511
+          },
+          {
+            "cell": "5_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.309866692977938
+          },
+          {
+            "cell": "5_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.592592292982461
+          },
+          {
+            "cell": "6_250_20",
+            "contracts_supported": 5,
+            "common_six_contracts": false,
+            "gap_pp": -1.1102230246251565e-15
+          },
+          {
+            "cell": "6_250_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -3.5757375340708673
+          },
+          {
+            "cell": "6_250_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.21523536775116342
+          },
+          {
+            "cell": "6_500_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 3.2079725829725834
+          },
+          {
+            "cell": "6_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -7.485420254557969
+          },
+          {
+            "cell": "6_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 3.156985009879824
+          },
+          {
+            "cell": "6_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.7794793098080317
+          },
+          {
+            "cell": "6_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.5359150599051544
+          },
+          {
+            "cell": "6_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.5013210333732085
+          },
+          {
+            "cell": "8_250_20",
+            "contracts_supported": 0,
+            "common_six_contracts": false,
+            "gap_pp": null
+          },
+          {
+            "cell": "8_250_30",
+            "contracts_supported": 1,
+            "common_six_contracts": false,
+            "gap_pp": 0.0
+          },
+          {
+            "cell": "8_250_45",
+            "contracts_supported": 4,
+            "common_six_contracts": false,
+            "gap_pp": -43.75
+          },
+          {
+            "cell": "8_500_20",
+            "contracts_supported": 2,
+            "common_six_contracts": false,
+            "gap_pp": -19.166666666666664
+          },
+          {
+            "cell": "8_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 2.5540123456790123
+          },
+          {
+            "cell": "8_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -8.959712077375121
+          },
+          {
+            "cell": "8_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 5.408850408850408
+          },
+          {
+            "cell": "8_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -6.177248451358245
+          },
+          {
+            "cell": "8_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 1.7899927430030746
+          }
+        ]
+      },
+      "bounce_context_exact_strata": {
+        "headline": {
+          "real_rate_percent": 48.4606116141282,
+          "pseudo_rate_percent": 49.6001131637758,
+          "gap_pp": -1.1395015496475989,
+          "common_cells": 28,
+          "supported_session_cell_groups": 4776,
+          "independent_max_error": 2.220446049250313e-16
+        },
+        "contracts": [
+          {
+            "contract": "MNQ_09-25",
+            "real_rate_percent": 53.549610229214665,
+            "pseudo_rate_percent": 49.47195117597602,
+            "gap_pp": 4.077659053238645
+          },
+          {
+            "contract": "MNQ_12-25",
+            "real_rate_percent": 48.50270405755233,
+            "pseudo_rate_percent": 48.56350848519736,
+            "gap_pp": -0.0608044276450284
+          },
+          {
+            "contract": "MNQ_03-26",
+            "real_rate_percent": 46.57386954234753,
+            "pseudo_rate_percent": 50.380441671577415,
+            "gap_pp": -3.806572129229883
+          },
+          {
+            "contract": "MNQ_06-26",
+            "real_rate_percent": 46.14187307147296,
+            "pseudo_rate_percent": 50.04796116568821,
+            "gap_pp": -3.906088094215243
+          },
+          {
+            "contract": "MNQ_09-26",
+            "real_rate_percent": 50.334654338255135,
+            "pseudo_rate_percent": 51.34982751049995,
+            "gap_pp": -1.0151731722448054
+          },
+          {
+            "contract": "MNQ_12-26",
+            "real_rate_percent": 45.660958445926575,
+            "pseudo_rate_percent": 47.78698897371586,
+            "gap_pp": -2.1260305277892777
+          }
+        ],
+        "cells": [
+          {
+            "cell": "4_250_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 6.464585667560343
+          },
+          {
+            "cell": "4_250_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -5.890274135305326
+          },
+          {
+            "cell": "4_250_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -2.2797516839693914
+          },
+          {
+            "cell": "4_500_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.7883938849032655
+          },
+          {
+            "cell": "4_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.7673289088274076
+          },
+          {
+            "cell": "4_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -2.6359277664326353
+          },
+          {
+            "cell": "4_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.9638929282329379
+          },
+          {
+            "cell": "4_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.9915811672755985
+          },
+          {
+            "cell": "4_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.8535857010099113
+          },
+          {
+            "cell": "5_250_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -9.722222222222221
+          },
+          {
+            "cell": "5_250_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.11556730306730321
+          },
+          {
+            "cell": "5_250_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.8344746480279325
+          },
+          {
+            "cell": "5_500_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 6.7898569684283965
+          },
+          {
+            "cell": "5_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 1.1650905057585015
+          },
+          {
+            "cell": "5_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 1.5715764900099234
+          },
+          {
+            "cell": "5_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -3.982053546727333
+          },
+          {
+            "cell": "5_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.9262040417951546
+          },
+          {
+            "cell": "5_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.2555276609555486
+          },
+          {
+            "cell": "6_250_20",
+            "contracts_supported": 3,
+            "common_six_contracts": false,
+            "gap_pp": -33.33333333333333
+          },
+          {
+            "cell": "6_250_30",
+            "contracts_supported": 5,
+            "common_six_contracts": false,
+            "gap_pp": -0.9999999999999993
+          },
+          {
+            "cell": "6_250_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -7.814030105696773
+          },
+          {
+            "cell": "6_500_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -2.893518518518519
+          },
+          {
+            "cell": "6_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -10.122887557864267
+          },
+          {
+            "cell": "6_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.7961826458512067
+          },
+          {
+            "cell": "6_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 4.361853038936371
+          },
+          {
+            "cell": "6_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.5909971454084235
+          },
+          {
+            "cell": "6_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 1.5347641927712832
+          },
+          {
+            "cell": "8_250_20",
+            "contracts_supported": 0,
+            "common_six_contracts": false,
+            "gap_pp": null
+          },
+          {
+            "cell": "8_250_30",
+            "contracts_supported": 1,
+            "common_six_contracts": false,
+            "gap_pp": 0.0
+          },
+          {
+            "cell": "8_250_45",
+            "contracts_supported": 2,
+            "common_six_contracts": false,
+            "gap_pp": -25.0
+          },
+          {
+            "cell": "8_500_20",
+            "contracts_supported": 2,
+            "common_six_contracts": false,
+            "gap_pp": 4.1666666666666625
+          },
+          {
+            "cell": "8_500_30",
+            "contracts_supported": 4,
+            "common_six_contracts": false,
+            "gap_pp": 6.597222222222224
+          },
+          {
+            "cell": "8_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -3.8227716727716734
+          },
+          {
+            "cell": "8_1000_20",
+            "contracts_supported": 5,
+            "common_six_contracts": false,
+            "gap_pp": 19.28571428571429
+          },
+          {
+            "cell": "8_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 1.6162830225330234
+          },
+          {
+            "cell": "8_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 4.044754677029809
+          }
+        ]
+      },
+      "bounce_same_context_overlap_unstratified": {
+        "headline": {
+          "real_rate_percent": 48.50901354404024,
+          "pseudo_rate_percent": 49.33329113590844,
+          "gap_pp": -0.8242775918682019,
+          "common_cells": 28,
+          "supported_session_cell_groups": 4776,
+          "independent_max_error": 0.0
+        },
+        "contracts": [
+          {
+            "contract": "MNQ_09-25",
+            "real_rate_percent": 53.48170806424385,
+            "pseudo_rate_percent": 48.71487056966959,
+            "gap_pp": 4.766837494574257
+          },
+          {
+            "contract": "MNQ_12-25",
+            "real_rate_percent": 48.5956909589347,
+            "pseudo_rate_percent": 48.245225806383495,
+            "gap_pp": 0.3504651525512103
+          },
+          {
+            "contract": "MNQ_03-26",
+            "real_rate_percent": 46.445410712650684,
+            "pseudo_rate_percent": 50.16279959508635,
+            "gap_pp": -3.717388882435672
+          },
+          {
+            "contract": "MNQ_06-26",
+            "real_rate_percent": 45.971281294294464,
+            "pseudo_rate_percent": 49.9037931222594,
+            "gap_pp": -3.9325118279649423
+          },
+          {
+            "contract": "MNQ_09-26",
+            "real_rate_percent": 50.159904633549665,
+            "pseudo_rate_percent": 51.126710808019205,
+            "gap_pp": -0.9668061744695354
+          },
+          {
+            "contract": "MNQ_12-26",
+            "real_rate_percent": 46.40008560056809,
+            "pseudo_rate_percent": 47.846346914032615,
+            "gap_pp": -1.4462613134645292
+          }
+        ],
+        "cells": [
+          {
+            "cell": "4_250_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 6.818221829063713
+          },
+          {
+            "cell": "4_250_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -5.767847184161055
+          },
+          {
+            "cell": "4_250_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -2.029725099328026
+          },
+          {
+            "cell": "4_500_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.6611127955838583
+          },
+          {
+            "cell": "4_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.627948029973168
+          },
+          {
+            "cell": "4_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.5391440893127595
+          },
+          {
+            "cell": "4_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.1550873983293284
+          },
+          {
+            "cell": "4_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.8267951256947925
+          },
+          {
+            "cell": "4_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.5717729888779196
+          },
+          {
+            "cell": "5_250_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -8.878968253968251
+          },
+          {
+            "cell": "5_250_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.2358887805316383
+          },
+          {
+            "cell": "5_250_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.14516689526381896
+          },
+          {
+            "cell": "5_500_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 5.201371720311116
+          },
+          {
+            "cell": "5_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.5464303871841597
+          },
+          {
+            "cell": "5_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 1.3547346285386543
+          },
+          {
+            "cell": "5_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -2.6645482117138424
+          },
+          {
+            "cell": "5_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.7946331573798858
+          },
+          {
+            "cell": "5_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.18062306447996226
+          },
+          {
+            "cell": "6_250_20",
+            "contracts_supported": 3,
+            "common_six_contracts": false,
+            "gap_pp": -33.33333333333333
+          },
+          {
+            "cell": "6_250_30",
+            "contracts_supported": 5,
+            "common_six_contracts": false,
+            "gap_pp": -0.4444444444444436
+          },
+          {
+            "cell": "6_250_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -7.52955377955378
+          },
+          {
+            "cell": "6_500_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -2.083333333333333
+          },
+          {
+            "cell": "6_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -8.778653914523481
+          },
+          {
+            "cell": "6_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 1.7500503370212226
+          },
+          {
+            "cell": "6_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 4.416083016777462
+          },
+          {
+            "cell": "6_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.8513430988263406
+          },
+          {
+            "cell": "6_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 1.8379973104347036
+          },
+          {
+            "cell": "8_250_20",
+            "contracts_supported": 0,
+            "common_six_contracts": false,
+            "gap_pp": null
+          },
+          {
+            "cell": "8_250_30",
+            "contracts_supported": 1,
+            "common_six_contracts": false,
+            "gap_pp": 0.0
+          },
+          {
+            "cell": "8_250_45",
+            "contracts_supported": 2,
+            "common_six_contracts": false,
+            "gap_pp": -25.0
+          },
+          {
+            "cell": "8_500_20",
+            "contracts_supported": 2,
+            "common_six_contracts": false,
+            "gap_pp": 4.1666666666666625
+          },
+          {
+            "cell": "8_500_30",
+            "contracts_supported": 4,
+            "common_six_contracts": false,
+            "gap_pp": 6.448412698412698
+          },
+          {
+            "cell": "8_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -2.560846560846562
+          },
+          {
+            "cell": "8_1000_20",
+            "contracts_supported": 5,
+            "common_six_contracts": false,
+            "gap_pp": 20.333333333333332
+          },
+          {
+            "cell": "8_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.11120052786719459
+          },
+          {
+            "cell": "8_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 3.8596534527400292
+          }
+        ]
+      },
+      "bounce_unresolved_adversarial_bounds": {
+        "lower_gap_pp": -1.2231080391137648,
+        "upper_gap_pp": -0.2420303284738809,
+        "population": "all retests in exactly known-bounce supported groups; unresolved and same-bar double hits adversarial; not CI"
+      }
+    }
+  },
+  "inside_band_exit_contexts": [
+    {
+      "category": "BOTH_ALIGNED",
+      "real_rows": 28200,
+      "pseudo_rows": 108148,
+      "continuation": {
+        "headline": {
+          "real_rate_percent": 13.11905438531774,
+          "pseudo_rate_percent": 15.3685210849725,
+          "gap_pp": -2.24946669965476,
+          "common_cells": 30,
+          "supported_session_cell_groups": 4552,
+          "independent_max_error": 0.0
+        },
+        "contracts": [
+          {
+            "contract": "MNQ_09-25",
+            "real_rate_percent": 8.505084933205765,
+            "pseudo_rate_percent": 10.263486274575513,
+            "gap_pp": -1.7584013413697475
+          },
+          {
+            "contract": "MNQ_12-25",
+            "real_rate_percent": 11.702285773875856,
+            "pseudo_rate_percent": 16.541166209338314,
+            "gap_pp": -4.838880435462462
+          },
+          {
+            "contract": "MNQ_03-26",
+            "real_rate_percent": 11.058548331062129,
+            "pseudo_rate_percent": 13.701789584466537,
+            "gap_pp": -2.643241253404407
+          },
+          {
+            "contract": "MNQ_06-26",
+            "real_rate_percent": 14.513332553564377,
+            "pseudo_rate_percent": 16.4013745167805,
+            "gap_pp": -1.8880419632161232
+          },
+          {
+            "contract": "MNQ_09-26",
+            "real_rate_percent": 18.23176186320324,
+            "pseudo_rate_percent": 18.80879612292878,
+            "gap_pp": -0.5770342597255421
+          },
+          {
+            "contract": "MNQ_12-26",
+            "real_rate_percent": 14.703312856995076,
+            "pseudo_rate_percent": 16.494513801745356,
+            "gap_pp": -1.7912009447502777
+          }
+        ],
+        "cells": [
+          {
+            "cell": "4_250_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.5348275673905925
+          },
+          {
+            "cell": "4_250_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 1.2570241677879523
+          },
+          {
+            "cell": "4_250_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.1280451247544667
+          },
+          {
+            "cell": "4_500_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -3.515662356079992
+          },
+          {
+            "cell": "4_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.9710724235226986
+          },
+          {
+            "cell": "4_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.0255453423178256
+          },
+          {
+            "cell": "4_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -3.9206781448922117
+          },
+          {
+            "cell": "4_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.6366219856591371
+          },
+          {
+            "cell": "4_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.40953405087402794
+          },
+          {
+            "cell": "5_250_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -3.2407407407407405
+          },
+          {
+            "cell": "5_250_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.2137678219549566
+          },
+          {
+            "cell": "5_250_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.4476818881189709
+          },
+          {
+            "cell": "5_500_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 2.17167428124278
+          },
+          {
+            "cell": "5_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -3.2567985755532805
+          },
+          {
+            "cell": "5_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -2.171852377748802
+          },
+          {
+            "cell": "5_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -5.029595859217872
+          },
+          {
+            "cell": "5_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 1.831056017706113
+          },
+          {
+            "cell": "5_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.37258254251209405
+          },
+          {
+            "cell": "6_250_20",
+            "contracts_supported": 2,
+            "common_six_contracts": false,
+            "gap_pp": 50.0
+          },
+          {
+            "cell": "6_250_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 7.638888888888889
+          },
+          {
+            "cell": "6_250_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -2.608418367346939
+          },
+          {
+            "cell": "6_500_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -2.083333333333333
+          },
+          {
+            "cell": "6_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -7.661541005291005
+          },
+          {
+            "cell": "6_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -4.069439248399077
+          },
+          {
+            "cell": "6_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.2537520350020348
+          },
+          {
+            "cell": "6_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.4381248104021955
+          },
+          {
+            "cell": "6_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.08736850968430002
+          },
+          {
+            "cell": "8_250_20",
+            "contracts_supported": 0,
+            "common_six_contracts": false,
+            "gap_pp": null
+          },
+          {
+            "cell": "8_250_30",
+            "contracts_supported": 0,
+            "common_six_contracts": false,
+            "gap_pp": null
+          },
+          {
+            "cell": "8_250_45",
+            "contracts_supported": 1,
+            "common_six_contracts": false,
+            "gap_pp": 0.0
+          },
+          {
+            "cell": "8_500_20",
+            "contracts_supported": 1,
+            "common_six_contracts": false,
+            "gap_pp": 0.0
+          },
+          {
+            "cell": "8_500_30",
+            "contracts_supported": 4,
+            "common_six_contracts": false,
+            "gap_pp": 31.25
+          },
+          {
+            "cell": "8_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -4.35759537733222
+          },
+          {
+            "cell": "8_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -25.27777777777778
+          },
+          {
+            "cell": "8_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -3.24853552532124
+          },
+          {
+            "cell": "8_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.5964885734093424
+          }
+        ]
+      },
+      "resolved_bounce": {
+        "headline": {
+          "real_rate_percent": 47.74515414581952,
+          "pseudo_rate_percent": 49.32148280482797,
+          "gap_pp": -1.5763286590084509,
+          "common_cells": 30,
+          "supported_session_cell_groups": 4533,
+          "independent_max_error": 0.0
+        },
+        "contracts": [
+          {
+            "contract": "MNQ_09-25",
+            "real_rate_percent": 48.96337251826635,
+            "pseudo_rate_percent": 47.92091772495367,
+            "gap_pp": 1.0424547933126787
+          },
+          {
+            "contract": "MNQ_12-25",
+            "real_rate_percent": 49.08460966370623,
+            "pseudo_rate_percent": 47.91137099586252,
+            "gap_pp": 1.1732386678437128
+          },
+          {
+            "contract": "MNQ_03-26",
+            "real_rate_percent": 46.812294846812826,
+            "pseudo_rate_percent": 49.30747155316818,
+            "gap_pp": -2.495176706355347
+          },
+          {
+            "contract": "MNQ_06-26",
+            "real_rate_percent": 48.42087218205785,
+            "pseudo_rate_percent": 52.680404128306336,
+            "gap_pp": -4.25953194624848
+          },
+          {
+            "contract": "MNQ_09-26",
+            "real_rate_percent": 47.992599899320574,
+            "pseudo_rate_percent": 46.048865676929395,
+            "gap_pp": 1.9437342223911729
+          },
+          {
+            "contract": "MNQ_12-26",
+            "real_rate_percent": 45.19717576475329,
+            "pseudo_rate_percent": 52.05986674974773,
+            "gap_pp": -6.862690984994443
+          }
+        ],
+        "cells": [
+          {
+            "cell": "4_250_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 1.4369034370201503
+          },
+          {
+            "cell": "4_250_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -3.558902374107933
+          },
+          {
+            "cell": "4_250_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.37487731999140667
+          },
+          {
+            "cell": "4_500_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -2.8973266859384146
+          },
+          {
+            "cell": "4_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.35962224975383084
+          },
+          {
+            "cell": "4_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 1.0147590876176447
+          },
+          {
+            "cell": "4_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -5.126882928329929
+          },
+          {
+            "cell": "4_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.838275857528803
+          },
+          {
+            "cell": "4_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 1.0379918220835347
+          },
+          {
+            "cell": "5_250_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -33.888888888888886
+          },
+          {
+            "cell": "5_250_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 1.7275201650201657
+          },
+          {
+            "cell": "5_250_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.006948692032820494
+          },
+          {
+            "cell": "5_500_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -3.2794792944270483
+          },
+          {
+            "cell": "5_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -4.274370693000988
+          },
+          {
+            "cell": "5_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.31968644159035253
+          },
+          {
+            "cell": "5_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -4.063426637258922
+          },
+          {
+            "cell": "5_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.01722008255690896
+          },
+          {
+            "cell": "5_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 1.860536089096269
+          },
+          {
+            "cell": "6_250_20",
+            "contracts_supported": 1,
+            "common_six_contracts": false,
+            "gap_pp": -50.0
+          },
+          {
+            "cell": "6_250_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 14.166666666666666
+          },
+          {
+            "cell": "6_250_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 5.472222222222223
+          },
+          {
+            "cell": "6_500_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 4.166666666666666
+          },
+          {
+            "cell": "6_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -2.365027151211361
+          },
+          {
+            "cell": "6_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 2.311833977227681
+          },
+          {
+            "cell": "6_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -3.881448412698412
+          },
+          {
+            "cell": "6_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 1.710603906909489
+          },
+          {
+            "cell": "6_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.9177255649377358
+          },
+          {
+            "cell": "8_250_20",
+            "contracts_supported": 0,
+            "common_six_contracts": false,
+            "gap_pp": null
+          },
+          {
+            "cell": "8_250_30",
+            "contracts_supported": 0,
+            "common_six_contracts": false,
+            "gap_pp": null
+          },
+          {
+            "cell": "8_250_45",
+            "contracts_supported": 1,
+            "common_six_contracts": false,
+            "gap_pp": 0.0
+          },
+          {
+            "cell": "8_500_20",
+            "contracts_supported": 1,
+            "common_six_contracts": false,
+            "gap_pp": 0.0
+          },
+          {
+            "cell": "8_500_30",
+            "contracts_supported": 4,
+            "common_six_contracts": false,
+            "gap_pp": 4.791666666666668
+          },
+          {
+            "cell": "8_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -10.79156223893066
+          },
+          {
+            "cell": "8_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -5.833333333333335
+          },
+          {
+            "cell": "8_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.7811318972033257
+          },
+          {
+            "cell": "8_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -2.5632502196096025
+          }
+        ]
+      }
+    },
+    {
+      "category": "BOTH_OPPOSED",
+      "real_rows": 13805,
+      "pseudo_rows": 71054,
+      "continuation": {
+        "headline": {
+          "real_rate_percent": 15.632329521687495,
+          "pseudo_rate_percent": 16.707292365283347,
+          "gap_pp": -1.0749628435958523,
+          "common_cells": 27,
+          "supported_session_cell_groups": 3872,
+          "independent_max_error": 0.0
+        },
+        "contracts": [
+          {
+            "contract": "MNQ_09-25",
+            "real_rate_percent": 13.964081061069859,
+            "pseudo_rate_percent": 15.917504679369138,
+            "gap_pp": -1.953423618299283
+          },
+          {
+            "contract": "MNQ_12-25",
+            "real_rate_percent": 16.238636480061697,
+            "pseudo_rate_percent": 14.577946163300414,
+            "gap_pp": 1.6606903167612839
+          },
+          {
+            "contract": "MNQ_03-26",
+            "real_rate_percent": 13.529833268037239,
+            "pseudo_rate_percent": 15.533589426941946,
+            "gap_pp": -2.0037561589047086
+          },
+          {
+            "contract": "MNQ_06-26",
+            "real_rate_percent": 19.465199125509635,
+            "pseudo_rate_percent": 19.914589844448496,
+            "gap_pp": -0.44939071893886046
+          },
+          {
+            "contract": "MNQ_09-26",
+            "real_rate_percent": 16.800777315301673,
+            "pseudo_rate_percent": 19.012534785896126,
+            "gap_pp": -2.2117574705944514
+          },
+          {
+            "contract": "MNQ_12-26",
+            "real_rate_percent": 13.795449880144869,
+            "pseudo_rate_percent": 15.287589291743961,
+            "gap_pp": -1.4921394115990936
+          }
+        ],
+        "cells": [
+          {
+            "cell": "4_250_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -8.047782721393833
+          },
+          {
+            "cell": "4_250_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.1799995408566217
+          },
+          {
+            "cell": "4_250_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.973113795233258
+          },
+          {
+            "cell": "4_500_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -4.083426866586141
+          },
+          {
+            "cell": "4_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -2.703693885494848
+          },
+          {
+            "cell": "4_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.18454276890291377
+          },
+          {
+            "cell": "4_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.6671351414210116
+          },
+          {
+            "cell": "4_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.044666117819013
+          },
+          {
+            "cell": "4_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.970939032517168
+          },
+          {
+            "cell": "5_250_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -3.6111111111111116
+          },
+          {
+            "cell": "5_250_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 2.257716049382716
+          },
+          {
+            "cell": "5_250_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.0293993530153779
+          },
+          {
+            "cell": "5_500_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 4.699695366362033
+          },
+          {
+            "cell": "5_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 2.83539224701666
+          },
+          {
+            "cell": "5_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -2.2979263216376475
+          },
+          {
+            "cell": "5_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 4.258479102270442
+          },
+          {
+            "cell": "5_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -4.078109128749612
+          },
+          {
+            "cell": "5_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -2.0122791344418993
+          },
+          {
+            "cell": "6_250_20",
+            "contracts_supported": 0,
+            "common_six_contracts": false,
+            "gap_pp": null
+          },
+          {
+            "cell": "6_250_30",
+            "contracts_supported": 5,
+            "common_six_contracts": false,
+            "gap_pp": -30.0
+          },
+          {
+            "cell": "6_250_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -11.517857142857142
+          },
+          {
+            "cell": "6_500_20",
+            "contracts_supported": 4,
+            "common_six_contracts": false,
+            "gap_pp": -20.3125
+          },
+          {
+            "cell": "6_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 6.042574437182281
+          },
+          {
+            "cell": "6_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 3.441436294000397
+          },
+          {
+            "cell": "6_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -6.344951344951346
+          },
+          {
+            "cell": "6_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 4.204760001481814
+          },
+          {
+            "cell": "6_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.015627703084321872
+          },
+          {
+            "cell": "8_250_20",
+            "contracts_supported": 0,
+            "common_six_contracts": false,
+            "gap_pp": null
+          },
+          {
+            "cell": "8_250_30",
+            "contracts_supported": 0,
+            "common_six_contracts": false,
+            "gap_pp": null
+          },
+          {
+            "cell": "8_250_45",
+            "contracts_supported": 0,
+            "common_six_contracts": false,
+            "gap_pp": null
+          },
+          {
+            "cell": "8_500_20",
+            "contracts_supported": 1,
+            "common_six_contracts": false,
+            "gap_pp": 0.0
+          },
+          {
+            "cell": "8_500_30",
+            "contracts_supported": 4,
+            "common_six_contracts": false,
+            "gap_pp": 0.0
+          },
+          {
+            "cell": "8_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 2.7777777777777777
+          },
+          {
+            "cell": "8_1000_20",
+            "contracts_supported": 4,
+            "common_six_contracts": false,
+            "gap_pp": -41.666666666666664
+          },
+          {
+            "cell": "8_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -7.9872134038800695
+          },
+          {
+            "cell": "8_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.1923944825832697
+          }
+        ]
+      },
+      "resolved_bounce": {
+        "headline": {
+          "real_rate_percent": 50.045051541517886,
+          "pseudo_rate_percent": 51.995257587536315,
+          "gap_pp": -1.9502060460184332,
+          "common_cells": 27,
+          "supported_session_cell_groups": 3843,
+          "independent_max_error": 0.0
+        },
+        "contracts": [
+          {
+            "contract": "MNQ_09-25",
+            "real_rate_percent": 52.13720839712903,
+            "pseudo_rate_percent": 51.436695502783266,
+            "gap_pp": 0.7005128943457575
+          },
+          {
+            "contract": "MNQ_12-25",
+            "real_rate_percent": 48.284756172883995,
+            "pseudo_rate_percent": 56.02150153297131,
+            "gap_pp": -7.736745360087317
+          },
+          {
+            "contract": "MNQ_03-26",
+            "real_rate_percent": 47.35087015522062,
+            "pseudo_rate_percent": 51.67699066412248,
+            "gap_pp": -4.326120508901851
+          },
+          {
+            "contract": "MNQ_06-26",
+            "real_rate_percent": 51.97999357129333,
+            "pseudo_rate_percent": 48.0645042497957,
+            "gap_pp": 3.915489321497635
+          },
+          {
+            "contract": "MNQ_09-26",
+            "real_rate_percent": 49.327507184719835,
+            "pseudo_rate_percent": 52.24178624754088,
+            "gap_pp": -2.9142790628210435
+          },
+          {
+            "contract": "MNQ_12-26",
+            "real_rate_percent": 51.18997376786049,
+            "pseudo_rate_percent": 52.53006732800426,
+            "gap_pp": -1.3400935601437802
+          }
+        ],
+        "cells": [
+          {
+            "cell": "4_250_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -2.36049315910427
+          },
+          {
+            "cell": "4_250_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 1.9978795381211025
+          },
+          {
+            "cell": "4_250_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -3.0522605604464865
+          },
+          {
+            "cell": "4_500_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 1.4940395287304054
+          },
+          {
+            "cell": "4_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.5710705681730105
+          },
+          {
+            "cell": "4_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 2.711569841604319
+          },
+          {
+            "cell": "4_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 3.592183869891854
+          },
+          {
+            "cell": "4_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -3.3859838032406393
+          },
+          {
+            "cell": "4_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.497549003271662
+          },
+          {
+            "cell": "5_250_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -20.555555555555557
+          },
+          {
+            "cell": "5_250_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -5.396376000542666
+          },
+          {
+            "cell": "5_250_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 1.6034988673726047
+          },
+          {
+            "cell": "5_500_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 7.13035113035113
+          },
+          {
+            "cell": "5_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 1.8590318848868723
+          },
+          {
+            "cell": "5_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 1.2779372591277587
+          },
+          {
+            "cell": "5_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 3.777366857957245
+          },
+          {
+            "cell": "5_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -2.564794911566054
+          },
+          {
+            "cell": "5_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.8908265357001088
+          },
+          {
+            "cell": "6_250_20",
+            "contracts_supported": 0,
+            "common_six_contracts": false,
+            "gap_pp": null
+          },
+          {
+            "cell": "6_250_30",
+            "contracts_supported": 5,
+            "common_six_contracts": false,
+            "gap_pp": 6.666666666666665
+          },
+          {
+            "cell": "6_250_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -3.551587301587301
+          },
+          {
+            "cell": "6_500_20",
+            "contracts_supported": 4,
+            "common_six_contracts": false,
+            "gap_pp": -13.541666666666666
+          },
+          {
+            "cell": "6_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -18.990883390393197
+          },
+          {
+            "cell": "6_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.04149616922456874
+          },
+          {
+            "cell": "6_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -3.0521561771561774
+          },
+          {
+            "cell": "6_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 4.637454848196904
+          },
+          {
+            "cell": "6_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -2.320757028890776
+          },
+          {
+            "cell": "8_250_20",
+            "contracts_supported": 0,
+            "common_six_contracts": false,
+            "gap_pp": null
+          },
+          {
+            "cell": "8_250_30",
+            "contracts_supported": 0,
+            "common_six_contracts": false,
+            "gap_pp": null
+          },
+          {
+            "cell": "8_250_45",
+            "contracts_supported": 0,
+            "common_six_contracts": false,
+            "gap_pp": null
+          },
+          {
+            "cell": "8_500_20",
+            "contracts_supported": 1,
+            "common_six_contracts": false,
+            "gap_pp": 50.0
+          },
+          {
+            "cell": "8_500_30",
+            "contracts_supported": 4,
+            "common_six_contracts": false,
+            "gap_pp": 33.333333333333336
+          },
+          {
+            "cell": "8_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -20.87037037037037
+          },
+          {
+            "cell": "8_1000_20",
+            "contracts_supported": 4,
+            "common_six_contracts": false,
+            "gap_pp": -8.333333333333332
+          },
+          {
+            "cell": "8_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 2.3522927689594364
+          },
+          {
+            "cell": "8_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 2.1483454876761523
+          }
+        ]
+      }
+    },
+    {
+      "category": "MIXED",
+      "real_rows": 31088,
+      "pseudo_rows": 159175,
+      "continuation": {
+        "headline": {
+          "real_rate_percent": 17.22818709137489,
+          "pseudo_rate_percent": 16.01753714237325,
+          "gap_pp": 1.210649949001637,
+          "common_cells": 30,
+          "supported_session_cell_groups": 4951,
+          "independent_max_error": 0.0
+        },
+        "contracts": [
+          {
+            "contract": "MNQ_09-25",
+            "real_rate_percent": 13.324691947869386,
+            "pseudo_rate_percent": 13.940670377204656,
+            "gap_pp": -0.6159784293352721
+          },
+          {
+            "contract": "MNQ_12-25",
+            "real_rate_percent": 12.847963797016899,
+            "pseudo_rate_percent": 13.631994053491084,
+            "gap_pp": -0.7840302564741864
+          },
+          {
+            "contract": "MNQ_03-26",
+            "real_rate_percent": 19.77021475601611,
+            "pseudo_rate_percent": 16.434966195555084,
+            "gap_pp": 3.335248560461031
+          },
+          {
+            "contract": "MNQ_06-26",
+            "real_rate_percent": 19.90987970256023,
+            "pseudo_rate_percent": 19.29180948150725,
+            "gap_pp": 0.61807022105298
+          },
+          {
+            "contract": "MNQ_09-26",
+            "real_rate_percent": 20.333671614219412,
+            "pseudo_rate_percent": 17.472028520298917,
+            "gap_pp": 2.8616430939204944
+          },
+          {
+            "contract": "MNQ_12-26",
+            "real_rate_percent": 17.18270073056728,
+            "pseudo_rate_percent": 15.333754226182503,
+            "gap_pp": 1.8489465043847748
+          }
+        ],
+        "cells": [
+          {
+            "cell": "4_250_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 1.110658759935735
+          },
+          {
+            "cell": "4_250_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -2.002708335806032
+          },
+          {
+            "cell": "4_250_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.3564752134766043
+          },
+          {
+            "cell": "4_500_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.3529429141744256
+          },
+          {
+            "cell": "4_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.9428229675040203
+          },
+          {
+            "cell": "4_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 1.0447209283761227
+          },
+          {
+            "cell": "4_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.17187803755193828
+          },
+          {
+            "cell": "4_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.9302195071436118
+          },
+          {
+            "cell": "4_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.6938288459322417
+          },
+          {
+            "cell": "5_250_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 13.412698412698413
+          },
+          {
+            "cell": "5_250_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 4.976299702920768
+          },
+          {
+            "cell": "5_250_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.5387494933729478
+          },
+          {
+            "cell": "5_500_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 4.634222535372469
+          },
+          {
+            "cell": "5_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 1.6653458219399306
+          },
+          {
+            "cell": "5_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.027623005882525014
+          },
+          {
+            "cell": "5_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.0688399852171377
+          },
+          {
+            "cell": "5_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.7162989050292272
+          },
+          {
+            "cell": "5_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.21774277805350406
+          },
+          {
+            "cell": "6_250_20",
+            "contracts_supported": 2,
+            "common_six_contracts": false,
+            "gap_pp": -50.0
+          },
+          {
+            "cell": "6_250_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 2.09104938271605
+          },
+          {
+            "cell": "6_250_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 8.103809533455255
+          },
+          {
+            "cell": "6_500_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 16.790674603174605
+          },
+          {
+            "cell": "6_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -8.094872974285945
+          },
+          {
+            "cell": "6_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 4.2107234913453295
+          },
+          {
+            "cell": "6_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 4.320226477235114
+          },
+          {
+            "cell": "6_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.38084889150684315
+          },
+          {
+            "cell": "6_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.1251073868702956
+          },
+          {
+            "cell": "8_250_20",
+            "contracts_supported": 0,
+            "common_six_contracts": false,
+            "gap_pp": null
+          },
+          {
+            "cell": "8_250_30",
+            "contracts_supported": 1,
+            "common_six_contracts": false,
+            "gap_pp": 0.0
+          },
+          {
+            "cell": "8_250_45",
+            "contracts_supported": 2,
+            "common_six_contracts": false,
+            "gap_pp": 0.0
+          },
+          {
+            "cell": "8_500_20",
+            "contracts_supported": 1,
+            "common_six_contracts": false,
+            "gap_pp": 0.0
+          },
+          {
+            "cell": "8_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -4.166666666666666
+          },
+          {
+            "cell": "8_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.7742504409171072
+          },
+          {
+            "cell": "8_1000_20",
+            "contracts_supported": 4,
+            "common_six_contracts": false,
+            "gap_pp": -3.106060606060606
+          },
+          {
+            "cell": "8_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -5.318979301122159
+          },
+          {
+            "cell": "8_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.7987763588889368
+          }
+        ]
+      },
+      "resolved_bounce": {
+        "headline": {
+          "real_rate_percent": 48.96324775325368,
+          "pseudo_rate_percent": 50.179990635547874,
+          "gap_pp": -1.2167428822941935,
+          "common_cells": 30,
+          "supported_session_cell_groups": 4921,
+          "independent_max_error": 0.0
+        },
+        "contracts": [
+          {
+            "contract": "MNQ_09-25",
+            "real_rate_percent": 50.19805015164815,
+            "pseudo_rate_percent": 51.76326628512198,
+            "gap_pp": -1.565216133473834
+          },
+          {
+            "contract": "MNQ_12-25",
+            "real_rate_percent": 46.671542536183445,
+            "pseudo_rate_percent": 50.89548190218276,
+            "gap_pp": -4.223939365999308
+          },
+          {
+            "contract": "MNQ_03-26",
+            "real_rate_percent": 46.06323687186589,
+            "pseudo_rate_percent": 46.44322195457384,
+            "gap_pp": -0.37998508270795717
+          },
+          {
+            "contract": "MNQ_06-26",
+            "real_rate_percent": 53.379813256636425,
+            "pseudo_rate_percent": 51.8387865369182,
+            "gap_pp": 1.5410267197182157
+          },
+          {
+            "contract": "MNQ_09-26",
+            "real_rate_percent": 51.64807310258852,
+            "pseudo_rate_percent": 49.301263172623045,
+            "gap_pp": 2.346809929965477
+          },
+          {
+            "contract": "MNQ_12-26",
+            "real_rate_percent": 45.81877060059965,
+            "pseudo_rate_percent": 50.8379239618674,
+            "gap_pp": -5.0191533612677555
+          }
+        ],
+        "cells": [
+          {
+            "cell": "4_250_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 1.6242630314289803
+          },
+          {
+            "cell": "4_250_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -2.679003368449902
+          },
+          {
+            "cell": "4_250_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.9370519525032923
+          },
+          {
+            "cell": "4_500_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.522539819133975
+          },
+          {
+            "cell": "4_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.33367264705111227
+          },
+          {
+            "cell": "4_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -2.097913735830737
+          },
+          {
+            "cell": "4_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.6937911581092756
+          },
+          {
+            "cell": "4_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.08295989888903449
+          },
+          {
+            "cell": "4_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.39289905274019
+          },
+          {
+            "cell": "5_250_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 3.402777777777778
+          },
+          {
+            "cell": "5_250_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -7.512397974963567
+          },
+          {
+            "cell": "5_250_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.399140953128003
+          },
+          {
+            "cell": "5_500_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 9.722334944578668
+          },
+          {
+            "cell": "5_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.4221974381324255
+          },
+          {
+            "cell": "5_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.005448469433743966
+          },
+          {
+            "cell": "5_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 2.322536563968137
+          },
+          {
+            "cell": "5_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.2988723355248484
+          },
+          {
+            "cell": "5_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.7736420497119816
+          },
+          {
+            "cell": "6_250_20",
+            "contracts_supported": 2,
+            "common_six_contracts": false,
+            "gap_pp": 0.0
+          },
+          {
+            "cell": "6_250_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -25.454144620811288
+          },
+          {
+            "cell": "6_250_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.8997898516615088
+          },
+          {
+            "cell": "6_500_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 11.855709876543209
+          },
+          {
+            "cell": "6_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -8.060141259032886
+          },
+          {
+            "cell": "6_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 3.756395278951908
+          },
+          {
+            "cell": "6_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.02417300393782666
+          },
+          {
+            "cell": "6_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -2.0770257270330426
+          },
+          {
+            "cell": "6_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.2341423094178494
+          },
+          {
+            "cell": "8_250_20",
+            "contracts_supported": 0,
+            "common_six_contracts": false,
+            "gap_pp": null
+          },
+          {
+            "cell": "8_250_30",
+            "contracts_supported": 1,
+            "common_six_contracts": false,
+            "gap_pp": 0.0
+          },
+          {
+            "cell": "8_250_45",
+            "contracts_supported": 2,
+            "common_six_contracts": false,
+            "gap_pp": -50.0
+          },
+          {
+            "cell": "8_500_20",
+            "contracts_supported": 1,
+            "common_six_contracts": false,
+            "gap_pp": 0.0
+          },
+          {
+            "cell": "8_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -12.5
+          },
+          {
+            "cell": "8_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 6.271164021164023
+          },
+          {
+            "cell": "8_1000_20",
+            "contracts_supported": 4,
+            "common_six_contracts": false,
+            "gap_pp": 4.46969696969697
+          },
+          {
+            "cell": "8_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -3.7207214082214084
+          },
+          {
+            "cell": "8_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -2.493629778813044
+          }
+        ]
+      }
+    },
+    {
+      "category": "NEUTRAL_OR_ZERO",
+      "real_rows": 1537,
+      "pseudo_rows": 7426,
+      "continuation": {
+        "headline": {
+          "real_rate_percent": 15.470017820869941,
+          "pseudo_rate_percent": 13.618837586048626,
+          "gap_pp": 1.851180234821317,
+          "common_cells": 11,
+          "supported_session_cell_groups": 896,
+          "independent_max_error": 0.0
+        },
+        "contracts": [
+          {
+            "contract": "MNQ_09-25",
+            "real_rate_percent": 18.41488477852114,
+            "pseudo_rate_percent": 11.022289999562727,
+            "gap_pp": 7.392594778958415
+          },
+          {
+            "contract": "MNQ_12-25",
+            "real_rate_percent": 9.569180487242688,
+            "pseudo_rate_percent": 12.068291335635832,
+            "gap_pp": -2.4991108483931446
+          },
+          {
+            "contract": "MNQ_03-26",
+            "real_rate_percent": 19.464149066421797,
+            "pseudo_rate_percent": 10.42621015348288,
+            "gap_pp": 9.037938912938912
+          },
+          {
+            "contract": "MNQ_06-26",
+            "real_rate_percent": 9.276092967822636,
+            "pseudo_rate_percent": 15.940921160427694,
+            "gap_pp": -6.664828192605056
+          },
+          {
+            "contract": "MNQ_09-26",
+            "real_rate_percent": 21.79565532506709,
+            "pseudo_rate_percent": 19.54968516155491,
+            "gap_pp": 2.245970163512181
+          },
+          {
+            "contract": "MNQ_12-26",
+            "real_rate_percent": 14.300144300144298,
+            "pseudo_rate_percent": 12.705627705627705,
+            "gap_pp": 1.5945165945165947
+          }
+        ],
+        "cells": [
+          {
+            "cell": "4_250_20",
+            "contracts_supported": 4,
+            "common_six_contracts": false,
+            "gap_pp": 0.0
+          },
+          {
+            "cell": "4_250_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.9259259259259258
+          },
+          {
+            "cell": "4_250_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 1.1863425925925932
+          },
+          {
+            "cell": "4_500_20",
+            "contracts_supported": 4,
+            "common_six_contracts": false,
+            "gap_pp": 33.63095238095239
+          },
+          {
+            "cell": "4_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -7.788800705467372
+          },
+          {
+            "cell": "4_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -1.0562690396023728
+          },
+          {
+            "cell": "4_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 1.1671199171199176
+          },
+          {
+            "cell": "4_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -0.7422432442012639
+          },
+          {
+            "cell": "4_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.463767816292447
+          },
+          {
+            "cell": "5_250_20",
+            "contracts_supported": 1,
+            "common_six_contracts": false,
+            "gap_pp": 100.0
+          },
+          {
+            "cell": "5_250_30",
+            "contracts_supported": 3,
+            "common_six_contracts": false,
+            "gap_pp": 16.666666666666664
+          },
+          {
+            "cell": "5_250_45",
+            "contracts_supported": 5,
+            "common_six_contracts": false,
+            "gap_pp": 28.333333333333332
+          },
+          {
+            "cell": "5_500_20",
+            "contracts_supported": 3,
+            "common_six_contracts": false,
+            "gap_pp": -33.33333333333333
+          },
+          {
+            "cell": "5_500_30",
+            "contracts_supported": 5,
+            "common_six_contracts": false,
+            "gap_pp": -0.9523809523809523
+          },
+          {
+            "cell": "5_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 6.361712361712361
+          },
+          {
+            "cell": "5_1000_20",
+            "contracts_supported": 5,
+            "common_six_contracts": false,
+            "gap_pp": -1.9444444444444442
+          },
+          {
+            "cell": "5_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 8.18549642079054
+          },
+          {
+            "cell": "5_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 4.245131284837167
+          },
+          {
+            "cell": "6_250_20",
+            "contracts_supported": 0,
+            "common_six_contracts": false,
+            "gap_pp": null
+          },
+          {
+            "cell": "6_250_30",
+            "contracts_supported": 0,
+            "common_six_contracts": false,
+            "gap_pp": null
+          },
+          {
+            "cell": "6_250_45",
+            "contracts_supported": 1,
+            "common_six_contracts": false,
+            "gap_pp": 0.0
+          },
+          {
+            "cell": "6_500_20",
+            "contracts_supported": 1,
+            "common_six_contracts": false,
+            "gap_pp": 100.0
+          },
+          {
+            "cell": "6_500_30",
+            "contracts_supported": 1,
+            "common_six_contracts": false,
+            "gap_pp": 0.0
+          },
+          {
+            "cell": "6_500_45",
+            "contracts_supported": 5,
+            "common_six_contracts": false,
+            "gap_pp": -2.0
+          },
+          {
+            "cell": "6_1000_20",
+            "contracts_supported": 4,
+            "common_six_contracts": false,
+            "gap_pp": 37.5
+          },
+          {
+            "cell": "6_1000_30",
+            "contracts_supported": 5,
+            "common_six_contracts": false,
+            "gap_pp": 12.46031746031746
+          },
+          {
+            "cell": "6_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 7.4147992530345475
+          },
+          {
+            "cell": "8_250_20",
+            "contracts_supported": 0,
+            "common_six_contracts": false,
+            "gap_pp": null
+          },
+          {
+            "cell": "8_250_30",
+            "contracts_supported": 0,
+            "common_six_contracts": false,
+            "gap_pp": null
+          },
+          {
+            "cell": "8_250_45",
+            "contracts_supported": 0,
+            "common_six_contracts": false,
+            "gap_pp": null
+          },
+          {
+            "cell": "8_500_20",
+            "contracts_supported": 0,
+            "common_six_contracts": false,
+            "gap_pp": null
+          },
+          {
+            "cell": "8_500_30",
+            "contracts_supported": 0,
+            "common_six_contracts": false,
+            "gap_pp": null
+          },
+          {
+            "cell": "8_500_45",
+            "contracts_supported": 1,
+            "common_six_contracts": false,
+            "gap_pp": 0.0
+          },
+          {
+            "cell": "8_1000_20",
+            "contracts_supported": 0,
+            "common_six_contracts": false,
+            "gap_pp": null
+          },
+          {
+            "cell": "8_1000_30",
+            "contracts_supported": 5,
+            "common_six_contracts": false,
+            "gap_pp": 20.0
+          },
+          {
+            "cell": "8_1000_45",
+            "contracts_supported": 4,
+            "common_six_contracts": false,
+            "gap_pp": -32.8125
+          }
+        ]
+      },
+      "resolved_bounce": {
+        "headline": {
+          "real_rate_percent": 46.56752969341995,
+          "pseudo_rate_percent": 50.83350789317339,
+          "gap_pp": -4.265978199753445,
+          "common_cells": 11,
+          "supported_session_cell_groups": 855,
+          "independent_max_error": 0.0
+        },
+        "contracts": [
+          {
+            "contract": "MNQ_09-25",
+            "real_rate_percent": 57.40860990860991,
+            "pseudo_rate_percent": 50.900432900432904,
+            "gap_pp": 6.508177008177009
+          },
+          {
+            "contract": "MNQ_12-25",
+            "real_rate_percent": 43.9043173732169,
+            "pseudo_rate_percent": 53.888467902821965,
+            "gap_pp": -9.984150529605076
+          },
+          {
+            "contract": "MNQ_03-26",
+            "real_rate_percent": 42.12756624688442,
+            "pseudo_rate_percent": 49.847963014406865,
+            "gap_pp": -7.720396767522436
+          },
+          {
+            "contract": "MNQ_06-26",
+            "real_rate_percent": 54.209634126757955,
+            "pseudo_rate_percent": 53.880666279367574,
+            "gap_pp": 0.3289678473903735
+          },
+          {
+            "contract": "MNQ_09-26",
+            "real_rate_percent": 54.03679653679654,
+            "pseudo_rate_percent": 48.514090855084646,
+            "gap_pp": 5.522705681711893
+          },
+          {
+            "contract": "MNQ_12-26",
+            "real_rate_percent": 27.71825396825397,
+            "pseudo_rate_percent": 47.9694264069264,
+            "gap_pp": -20.251172438672437
+          }
+        ],
+        "cells": [
+          {
+            "cell": "4_250_20",
+            "contracts_supported": 4,
+            "common_six_contracts": false,
+            "gap_pp": -22.916666666666664
+          },
+          {
+            "cell": "4_250_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -19.951499118165785
+          },
+          {
+            "cell": "4_250_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 12.928240740740742
+          },
+          {
+            "cell": "4_500_20",
+            "contracts_supported": 4,
+            "common_six_contracts": false,
+            "gap_pp": 24.72222222222222
+          },
+          {
+            "cell": "4_500_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -5.962241462241461
+          },
+          {
+            "cell": "4_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 12.598439754689755
+          },
+          {
+            "cell": "4_1000_20",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -25.869107744107744
+          },
+          {
+            "cell": "4_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -9.732919877352648
+          },
+          {
+            "cell": "4_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 0.5740221452967754
+          },
+          {
+            "cell": "5_250_20",
+            "contracts_supported": 1,
+            "common_six_contracts": false,
+            "gap_pp": 0.0
+          },
+          {
+            "cell": "5_250_30",
+            "contracts_supported": 3,
+            "common_six_contracts": false,
+            "gap_pp": 33.33333333333333
+          },
+          {
+            "cell": "5_250_45",
+            "contracts_supported": 5,
+            "common_six_contracts": false,
+            "gap_pp": 3.3333333333333335
+          },
+          {
+            "cell": "5_500_20",
+            "contracts_supported": 1,
+            "common_six_contracts": false,
+            "gap_pp": -12.5
+          },
+          {
+            "cell": "5_500_30",
+            "contracts_supported": 5,
+            "common_six_contracts": false,
+            "gap_pp": 1.1111111111111105
+          },
+          {
+            "cell": "5_500_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 9.309964726631394
+          },
+          {
+            "cell": "5_1000_20",
+            "contracts_supported": 5,
+            "common_six_contracts": false,
+            "gap_pp": 15.0
+          },
+          {
+            "cell": "5_1000_30",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -10.19345238095238
+          },
+          {
+            "cell": "5_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": 3.5784808488612847
+          },
+          {
+            "cell": "6_250_20",
+            "contracts_supported": 0,
+            "common_six_contracts": false,
+            "gap_pp": null
+          },
+          {
+            "cell": "6_250_30",
+            "contracts_supported": 0,
+            "common_six_contracts": false,
+            "gap_pp": null
+          },
+          {
+            "cell": "6_250_45",
+            "contracts_supported": 1,
+            "common_six_contracts": false,
+            "gap_pp": -16.666666666666664
+          },
+          {
+            "cell": "6_500_20",
+            "contracts_supported": 1,
+            "common_six_contracts": false,
+            "gap_pp": -100.0
+          },
+          {
+            "cell": "6_500_30",
+            "contracts_supported": 1,
+            "common_six_contracts": false,
+            "gap_pp": -75.0
+          },
+          {
+            "cell": "6_500_45",
+            "contracts_supported": 5,
+            "common_six_contracts": false,
+            "gap_pp": -24.666666666666668
+          },
+          {
+            "cell": "6_1000_20",
+            "contracts_supported": 4,
+            "common_six_contracts": false,
+            "gap_pp": 37.5
+          },
+          {
+            "cell": "6_1000_30",
+            "contracts_supported": 5,
+            "common_six_contracts": false,
+            "gap_pp": -12.063492063492061
+          },
+          {
+            "cell": "6_1000_45",
+            "contracts_supported": 6,
+            "common_six_contracts": true,
+            "gap_pp": -14.205687830687829
+          },
+          {
+            "cell": "8_250_20",
+            "contracts_supported": 0,
+            "common_six_contracts": false,
+            "gap_pp": null
+          },
+          {
+            "cell": "8_250_30",
+            "contracts_supported": 0,
+            "common_six_contracts": false,
+            "gap_pp": null
+          },
+          {
+            "cell": "8_250_45",
+            "contracts_supported": 0,
+            "common_six_contracts": false,
+            "gap_pp": null
+          },
+          {
+            "cell": "8_500_20",
+            "contracts_supported": 0,
+            "common_six_contracts": false,
+            "gap_pp": null
+          },
+          {
+            "cell": "8_500_30",
+            "contracts_supported": 0,
+            "common_six_contracts": false,
+            "gap_pp": null
+          },
+          {
+            "cell": "8_500_45",
+            "contracts_supported": 1,
+            "common_six_contracts": false,
+            "gap_pp": 0.0
+          },
+          {
+            "cell": "8_1000_20",
+            "contracts_supported": 0,
+            "common_six_contracts": false,
+            "gap_pp": null
+          },
+          {
+            "cell": "8_1000_30",
+            "contracts_supported": 5,
+            "common_six_contracts": false,
+            "gap_pp": 0.0
+          },
+          {
+            "cell": "8_1000_45",
+            "contracts_supported": 4,
+            "common_six_contracts": false,
+            "gap_pp": -32.14285714285714
+          }
+        ]
+      }
+    }
+  ],
+  "inside_band_exit_delay_bar_counts": [
+    {
+      "contract": "MNQ_09-25",
+      "kind": "real",
+      "observed_exit_rows": 7682,
+      "median_exit_delay_25_trade_bars": 9.0,
+      "q90_exit_delay_25_trade_bars": 49.0
+    },
+    {
+      "contract": "MNQ_09-25",
+      "kind": "pseudo",
+      "observed_exit_rows": 36744,
+      "median_exit_delay_25_trade_bars": 9.0,
+      "q90_exit_delay_25_trade_bars": 47.0
+    },
+    {
+      "contract": "MNQ_12-25",
+      "kind": "real",
+      "observed_exit_rows": 14799,
+      "median_exit_delay_25_trade_bars": 10.0,
+      "q90_exit_delay_25_trade_bars": 47.0
+    },
+    {
+      "contract": "MNQ_12-25",
+      "kind": "pseudo",
+      "observed_exit_rows": 68191,
+      "median_exit_delay_25_trade_bars": 8.0,
+      "q90_exit_delay_25_trade_bars": 40.0
+    },
+    {
+      "contract": "MNQ_03-26",
+      "kind": "real",
+      "observed_exit_rows": 13198,
+      "median_exit_delay_25_trade_bars": 8.0,
+      "q90_exit_delay_25_trade_bars": 41.0
+    },
+    {
+      "contract": "MNQ_03-26",
+      "kind": "pseudo",
+      "observed_exit_rows": 59723,
+      "median_exit_delay_25_trade_bars": 7.0,
+      "q90_exit_delay_25_trade_bars": 37.0
+    },
+    {
+      "contract": "MNQ_06-26",
+      "kind": "real",
+      "observed_exit_rows": 14437,
+      "median_exit_delay_25_trade_bars": 8.0,
+      "q90_exit_delay_25_trade_bars": 37.0
+    },
+    {
+      "contract": "MNQ_06-26",
+      "kind": "pseudo",
+      "observed_exit_rows": 66262,
+      "median_exit_delay_25_trade_bars": 7.0,
+      "q90_exit_delay_25_trade_bars": 34.0
+    },
+    {
+      "contract": "MNQ_09-26",
+      "kind": "real",
+      "observed_exit_rows": 19997,
+      "median_exit_delay_25_trade_bars": 8.0,
+      "q90_exit_delay_25_trade_bars": 39.0
+    },
+    {
+      "contract": "MNQ_09-26",
+      "kind": "pseudo",
+      "observed_exit_rows": 93822,
+      "median_exit_delay_25_trade_bars": 7.0,
+      "q90_exit_delay_25_trade_bars": 35.0
+    },
+    {
+      "contract": "MNQ_12-26",
+      "kind": "real",
+      "observed_exit_rows": 4517,
+      "median_exit_delay_25_trade_bars": 9.0,
+      "q90_exit_delay_25_trade_bars": 48.0
+    },
+    {
+      "contract": "MNQ_12-26",
+      "kind": "pseudo",
+      "observed_exit_rows": 21061,
+      "median_exit_delay_25_trade_bars": 8.0,
+      "q90_exit_delay_25_trade_bars": 39.0
+    }
+  ],
+  "independent_numeric_checks_completed": true,
+  "comparison_plan": [
+    {
+      "grain": "six contracts retest/bounce",
+      "population": "declared legacy or inside-band supported groups; each endpoint has own conditional denominator",
+      "unit": "percent/percentage points",
+      "disposition": "chart",
+      "reason": "separate retest frequency from conditional post-retest barriers; upload capability currently unavailable"
+    },
+    {
+      "grain": "four exit-known sign categories",
+      "population": "inside-band anchors with observed exit",
+      "unit": "rates and support",
+      "disposition": "table",
+      "reason": "retain all declared categories; never label strongest context a discovered entry rule"
+    },
+    {
+      "grain": "retest same-bar both/unresolved",
+      "population": "all observed retests",
+      "unit": "row count",
+      "disposition": "prose",
+      "reason": "prevents treating geometry as an executable win probability"
+    },
+    {
+      "grain": "exit delay",
+      "population": "inside-band anchors with observed exit",
+      "unit": "25-trade bars",
+      "disposition": "table",
+      "reason": "not wall time or retest entry latency"
+    }
+  ],
+  "raw_price_payload_read": false,
+  "new_market_price_outcomes_computed": false,
+  "economic_outcomes_computed": false,
+  "holdout_payload_read": false,
+  "entries_backtested": false,
+  "fills_or_costs_simulated": false,
+  "causal_zone_effect_validated": false,
+  "controls_zone_free_certified": false,
+  "formal_inference_executed": false,
+  "entry_rule_promoted": false,
+  "research_release_authorized": false,
+  "historical_outputs_modified": false,
+  "public_literature_sources": [
+    {
+      "url": "https://www.newyorkfed.org/research/epr/00v06n2/0007osle.html",
+      "title": "Support for Resistance: Technical Analysis and Intraday Exchange Rates",
+      "authors": "Carol Osler",
+      "market": "foreign exchange support/resistance from six firms",
+      "used_claim": "Intraday trend interruptions vary by exchange rate and firm; not validation of AVZVOL/MNQ"
+    },
+    {
+      "url": "https://www.newyorkfed.org/research/staff_reports/sr125.html",
+      "title": "Currency Orders and Exchange-Rate Dynamics: Explaining the Success of Technical Analysis",
+      "authors": "Carol Osler",
+      "market": "stop-loss/take-profit orders at a large FX dealing bank",
+      "used_claim": "Different order clustering can explain reversal at levels and momentum after crossing; not measured order mechanism of our executed-volume zones"
+    },
+    {
+      "url": "https://arxiv.org/abs/1011.6402",
+      "title": "The Price Impact of Order Book Events",
+      "authors": "Rama Cont, Arseniy Kukanov, Sasha Stoikov",
+      "market": "NYSE TAQ, 50 US stocks",
+      "used_claim": "Short-interval price changes linked to best bid/ask order-flow imbalance and depth; not equivalent to total traded volume, quote prices alone or our footprint"
+    }
+  ],
+  "review_recipe_sha256": "e22bd24fa38746d4af4c9f2d1e53555dc2d26912f68ad2a5c35d53ab4b686c72"
+}
