@@ -175,3 +175,11 @@ la comprobación histórica alcanza `te+199`, pero el rango incluye `te+200`.
 Hay un caso sintético que cruza sesión y pasa el guard. La comprobación exacta
 de etiquetas disponibles tiene cobertura limitada y no descarta el riesgo.
 Estos resultados y faltantes no se recalcularon ni se certificaron.
+
+
+## Revisión posterior de robustez
+
+[Eliminaciones y extremos anotados](AVZVOL_O5_ROBUSTNESS_20261010.md): conserva
+las cifras originales; agrega sensibilidad por contrato/fecha y una restricción
+exploratoria con pérdida de soporte y reversión por celda. No efecto corregido
+ni certificación de sesgo, causalidad o fuente.

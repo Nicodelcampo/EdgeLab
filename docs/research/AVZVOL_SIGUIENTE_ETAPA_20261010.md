@@ -230,3 +230,11 @@ real, protocolo y calidad siguen pendientes. No libera gates ni P4.
 instrumentado, sin loaders ni estados finales. Censo real pendiente. Desfase
 de una barra en el guard O5 documentado; QA acotada de etiquetas existentes no
 lo descarta. No outcomes nuevos ni certificación; P4 sigue prohibida.
+
+
+## Robustez descriptiva posterior
+
+[Corrida sobre O5 existente](AVZVOL_O5_ROBUSTNESS_20261010.md): no depende del signo
+de un solo contrato/fecha, pero la selección por extremos anotados tiene cobertura
+3,61%, pierde nueve celdas y exhibe una reversión. Es revisión expuesta; no cumple
+P2/P3 ni libera P1/P4. Próximos pasos por propuesta y Kaggle en el informe.

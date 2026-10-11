@@ -119,3 +119,11 @@ real, protocolo y calidad siguen pendientes. No libera gates ni P4.
 instrumentado, sin loaders ni estados finales. Censo real pendiente. Desfase
 de una barra en el guard O5 documentado; QA acotada de etiquetas existentes no
 lo descarta. No outcomes nuevos ni certificación; P4 sigue prohibida.
+
+
+## Revisión O5 expuesta: no promoción del catálogo
+
+[Robustez y sensibilidad con faltantes](research/AVZVOL_O5_ROBUSTNESS_20261010.md):
+resultados descriptivos sobre seis exports fijados. No nuevos datos/kernel,
+no certificación, no holdout ni economía. El filtro de extremo seleccionado no
+recupera el panel completo ni acredita continuidad/reloj; no convertirlo en release.
