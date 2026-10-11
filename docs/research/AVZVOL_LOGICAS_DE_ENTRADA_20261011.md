@@ -123,3 +123,7 @@ Los códigos ambiguos y no resueltos no se convierten a fracasos ni éxitos. Bou
 [Plan](avzvol_entry_hypotheses_20261011/analysis-plan.json), [evidencia completa con fuentes](avzvol_entry_hypotheses_20261011/evidence.json), [todas las celdas](avzvol_entry_hypotheses_20261011/all_cells.csv), [receta](../../tools/review_avzvol_entry_hypotheses.py). CLI: inventario de seis exports, fuente histórica fijada, `--out-dir` nuevo, `--allow-exposed-entry-hypothesis-review`. Agregación revisada/importada del helper descriptivo, no del runner histórico. SHA de helper/receta en evidencia; seis pins y fuente histórica antes de payload. Medias, conteos, bounds y cuantiles contrastados independientemente.
 
 [Dirección y continuación](AVZVOL_DIRECCION_Y_CONTINUACION_20261011.md), [comparabilidad sin outcomes](AVZVOL_CONTROLES_COMPARABILIDAD_20261011.md), [mapa candidato](AVZVOL_MAPA_Y_DECISION_20261011.md). No calidad certificada, matching causal, inferencia formal, nuevos outcomes desde precios ni económicos. Publicación añade referencias externas y hash de receta sin cambiar resultados privados originales. La carga de gráficos al chat sigue fallando sin archivo válido; tablas y CSV conservan la lectura, sin URI inventada.
+
+## Seguimiento de captura
+
+[Auditoría de observabilidad y contrato de captura propuesto](AVZVOL_CONFIRMACION_OBSERVABILIDAD_20261011.md): revisión sólo de schemas/footers; no añade outcomes ni aprueba parámetros H1/H2/H3.

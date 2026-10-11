@@ -1,0 +1,117 @@
+{
+  "schema": "edgelab_avzvol_interaction_capture_requirements_v1",
+  "status": "PROPOSED_CAPTURE_REQUIREMENTS_NOT_APPROVED_RESEARCH_PROTOCOL",
+  "purpose": "Separate band location, observed interaction, and a later decision snapshot without inventing outcomes or treating a touch as rejection.",
+  "hypotheses_ref": "config/research/avzvol_entry_hypotheses_v1.json",
+  "records": [
+    {
+      "type": "band_snapshot",
+      "fields": [
+        "candidate_id",
+        "band_snapshot_id",
+        "band_known_utc_ns",
+        "band_known_sequence",
+        "L",
+        "H",
+        "source_sha256",
+        "detector_method_id"
+      ],
+      "invariant": "snapshot exists before any interaction using it; preserve creation and every update, never substitute final racimo membership"
+    },
+    {
+      "type": "completed_bar",
+      "fields": [
+        "bar_id",
+        "bar_end_utc_ns",
+        "bar_available_utc_ns",
+        "bar_end_sequence",
+        "session",
+        "open_ticks",
+        "high_ticks",
+        "low_ticks",
+        "close_ticks",
+        "bar_source_sha256"
+      ],
+      "invariant": "bar is complete and available at decision, prices share documented tick units; equal UTC requires source order or UNKNOWN"
+    },
+    {
+      "type": "interaction_observation",
+      "fields": [
+        "candidate_id",
+        "band_snapshot_id",
+        "observation_bar_id",
+        "observation_available_utc_ns",
+        "observed_state",
+        "state_reason",
+        "history_complete",
+        "session_policy_id"
+      ],
+      "invariant": "store touch, outside close, inside close and UNKNOWN separately; absence of observation is not a negative; do not name these states successful or failed trades"
+    },
+    {
+      "type": "decision_snapshot",
+      "fields": [
+        "decision_id",
+        "candidate_id",
+        "band_snapshot_id",
+        "decision_bar_id",
+        "decision_available_utc_ns",
+        "hypothesis_id",
+        "trigger_policy_id",
+        "context_snapshot_id",
+        "source_exposure_id"
+      ],
+      "invariant": "H2 requires recorded retest and an observable confirmation under a separately frozen policy; H3 requires observed reentry; H1 requires known completed outside close. No state outcome may define its own candidate"
+    },
+    {
+      "type": "context_snapshot",
+      "fields": [
+        "context_snapshot_id",
+        "context_available_utc_ns",
+        "feature_window_first_bar",
+        "feature_window_last_bar",
+        "trend",
+        "momentum",
+        "activity",
+        "duration",
+        "context_method_id"
+      ],
+      "invariant": "context is computed as-of the NEW decision, not relabelled anchor covariates; missing windows/cross-session policy stay explicit"
+    },
+    {
+      "type": "control_snapshot",
+      "fields": [
+        "control_candidate_id",
+        "own_census_id",
+        "negative_classification_asof_id",
+        "control_decision_id",
+        "control_band_snapshot_id",
+        "control_context_snapshot_id"
+      ],
+      "invariant": "control has its own candidate census, geometry and state tape; a legacy pseudo or absence of detected zones is not a certified zone-free control"
+    }
+  ],
+  "unapproved_scientific_policy": {
+    "touch_definition": null,
+    "rejection_definition": null,
+    "acceptance_definition": null,
+    "reentry_definition": null,
+    "same_bar_sequence_policy": null,
+    "cross_session_policy": null,
+    "buffer_ticks": null,
+    "confirmation_closes": null,
+    "maximum_wait_seconds": null,
+    "clock_response_horizons": null,
+    "matching_policy": null,
+    "censoring_policy": null,
+    "inference_family_and_budget": null
+  },
+  "technical_capture_is_source_certification": false,
+  "technical_capture_is_authorization": false,
+  "market_replay_implemented": false,
+  "entry_fill_or_stop_target_model": null,
+  "new_market_outcomes_authorized": false,
+  "holdout_access_authorized": false,
+  "economic_execution_authorized": false,
+  "entry_rule_promoted": false
+}
