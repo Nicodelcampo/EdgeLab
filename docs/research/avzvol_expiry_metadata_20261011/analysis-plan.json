@@ -1,0 +1,11 @@
+{
+  "scope": "PINNED_SESSION_SUMMARY_METADATA_VS_CURRENT_OFFICIAL_CME_EXPIRY_REFERENCE_ONLY",
+  "population": "all dates in exact six previously pinned MNQ producer summaries, plus existing approved resolver session declarations",
+  "payload_allowed": "metadata summaries: date label, declared tick count, first/last UTC; no raw ticks, trade prices, event outcome exports or holdout prices",
+  "predeclared_checks": ["date labels strictly later than official U.S. quarterly expiry date", "all flagged counts retained and reconciled", "whether flagged date labels are approved resolver selections", "timestamps converted independently to America/Chicago for context, not timezone certification", "generic third-Friday date vs official exceptions", "compare declared rolls to customary CME roll dates without requiring equality"],
+  "limitations": ["same-day termination time is not assessed", "first/last summary endpoints do not locate every trade or prove intraday order", "calendar trade label is a producer declaration not verified exchange identity", "current CME page is not historical available-at evidence", "date conflict cannot identify late reporting, corrections, mislabelling or exporter artefacts", "no threshold or exclusion chosen from outcomes"],
+  "no_price_outcomes": true,
+  "no_economic_outcomes": true,
+  "no_source_certification": true,
+  "comparison_plan": [{"grain":"flagged source date records and roll declarations","disposition":"table","reason":"categorical identity/date QA, not an effect estimate or time-series chart"}]
+}

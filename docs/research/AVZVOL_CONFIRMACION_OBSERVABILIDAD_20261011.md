@@ -58,3 +58,7 @@ No corresponde seguir probando filtros sobre los mismos resultados hasta consegu
 [Plan](avzvol_trigger_observability_20261011/analysis-plan.json), [evidencia por archivo y schema](avzvol_trigger_observability_20261011/evidence.json). El inventario privado contiene sólo rutas a los exports ya fijados; no se publica ni se incluyen enlaces firmados. Reproducción: `python tools/audit_avzvol_trigger_observability.py --inventory <inventario-local> --out-dir <directorio-nuevo> --allow-exposed-footer-audit`.
 
 [Semántica de retest e hipótesis H1/H2/H3](AVZVOL_LOGICAS_DE_ENTRADA_20261011.md), [control comparability](AVZVOL_CONTROLES_COMPARABILIDAD_20261011.md), [gates científicos](../../specs/research/avzvol_incremental_design_v1.json). Se preservan resultados y evidencia históricos; esta revisión no añade efectos calculados ni significancia.
+
+## Seguimiento de fuente
+
+[Revisión parcial externa de vencimientos](AVZVOL_VENCIMIENTOS_Y_FUENTE_20261011.md): conflictos de fecha y excepción oficial preservados; no certificado ni nuevos outcomes.
