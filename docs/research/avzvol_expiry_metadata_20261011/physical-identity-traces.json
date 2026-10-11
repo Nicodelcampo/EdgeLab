@@ -1,0 +1,121 @@
+{
+  "schema": "edgelab_avzvol_postexpiry_identity_trace_v1",
+  "status": "PHYSICAL_IDENTITY_WITNESSES_FOUND_UPSTREAM_CAUSE_UNKNOWN",
+  "plan": {
+    "scope": "BOUNDED_SOURCE_IDENTITY_QA_NOT_RESEARCH_REPLAY",
+    "columns_read": [
+      "ts_utc_ns",
+      "sequence",
+      "tick_type",
+      "instrument",
+      "contract",
+      "source_file",
+      "source_row"
+    ],
+    "all_two_pins_and_all_footer_partitions_checked_before_payload": true,
+    "query": "reported UTC interpreted in Chicago civil dates strictly after official expiry date; source clock not certified",
+    "row_group_pruning": "only groups with timestamp maximum at or after first following Chicago midnight",
+    "prices_volume_quotes_aggressor_outcomes_prohibited": true,
+    "original_nt8_text_or_capture_log_verified": false
+  },
+  "source_pins": [
+    {
+      "contract": "MNQ_09-25",
+      "file": "MNQ_09-25_ticks_ext.parquet",
+      "sha256": "c78ff5cebeca2130876409b27e00dbb9cab8c0007ab451e4ddb4319088a2be85",
+      "bytes": 296821013,
+      "rows": 34508845
+    },
+    {
+      "contract": "MNQ_12-25",
+      "file": "MNQ_12-25_ticks_ext.parquet",
+      "sha256": "832533e504b7ae2c33a5575366974bc0d639ba8c65ebc406105939a70f63397f",
+      "bytes": 860641906,
+      "rows": 99091418
+    }
+  ],
+  "expiry_evidence_sha256": "b2b7e59a0c4b6976d3bc73fa73ebc6f98f0851a21a09ba167ce410aa8cfcfacb",
+  "recipe_sha256": "56fbef35e52f0fafa4f65ecc91aceb064c44dc0aa3125090188f99643a663942",
+  "physical_postexpiry_rows": 3,
+  "identity_witnesses": [
+    {
+      "ts_utc_ns": 1758489344084163900,
+      "sequence": 34508844,
+      "tick_type": "trade",
+      "instrument": "MNQ",
+      "contract": "MNQ 09-25",
+      "source_row": 34508844,
+      "candidate_contract": "MNQ_09-25",
+      "row_group_index": 69,
+      "reported_ct": "2025-09-21T16:15:44.084163900-0500",
+      "source_file_basename": "20250921.Last.utc.txt",
+      "source_file_path_sha256": "9112923598e9ca80eb610ff29b3a3ebc70d60bdbf1456d0bda9bfb7b8f916eb6",
+      "upstream_cause": "UNKNOWN",
+      "source_row_is_original_text_line_verified": false
+    },
+    {
+      "ts_utc_ns": 1766341549884521900,
+      "sequence": 99091416,
+      "tick_type": "trade",
+      "instrument": "MNQ",
+      "contract": "MNQ 12-25",
+      "source_row": 99091416,
+      "candidate_contract": "MNQ_12-25",
+      "row_group_index": 198,
+      "reported_ct": "2025-12-21T12:25:49.884521900-0600",
+      "source_file_basename": "20251221.Last.utc.txt",
+      "source_file_path_sha256": "e498ebf1959fdac8a7a7c53ee2672197c6967f2947443cac1303084a9d36398b",
+      "upstream_cause": "UNKNOWN",
+      "source_row_is_original_text_line_verified": false
+    },
+    {
+      "ts_utc_ns": 1766353956822849100,
+      "sequence": 99091417,
+      "tick_type": "trade",
+      "instrument": "MNQ",
+      "contract": "MNQ 12-25",
+      "source_row": 99091417,
+      "candidate_contract": "MNQ_12-25",
+      "row_group_index": 198,
+      "reported_ct": "2025-12-21T15:52:36.822849100-0600",
+      "source_file_basename": "20251221.Last.utc.txt",
+      "source_file_path_sha256": "e498ebf1959fdac8a7a7c53ee2672197c6967f2947443cac1303084a9d36398b",
+      "upstream_cause": "UNKNOWN",
+      "source_row_is_original_text_line_verified": false
+    }
+  ],
+  "scan_accounting": [
+    {
+      "contract": "MNQ_09-25",
+      "row_groups_read": [
+        69
+      ],
+      "rows_decoded_in_identity_columns_only": 8845,
+      "cutoff_utc_ns": 1758344400000000000
+    },
+    {
+      "contract": "MNQ_12-25",
+      "row_groups_read": [
+        198
+      ],
+      "rows_decoded_in_identity_columns_only": 91418,
+      "cutoff_utc_ns": 1766210400000000000
+    }
+  ],
+  "independent_filter_checks_completed": true,
+  "physical_count_matches_summary": true,
+  "physical_date_and_endpoints_match_summary": true,
+  "source_identity_payload_read": true,
+  "raw_price_payload_read": false,
+  "volume_payload_read": false,
+  "outcome_exports_read": false,
+  "new_market_outcomes_computed": false,
+  "economic_outcomes_computed": false,
+  "holdout_payload_read": false,
+  "source_clock_certified": false,
+  "source_quality_certified": false,
+  "upstream_nt8_text_or_log_verified": false,
+  "research_release_authorized": false,
+  "source_rows_excluded": false,
+  "historical_outputs_modified": false
+}

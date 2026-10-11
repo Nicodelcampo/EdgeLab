@@ -2,7 +2,7 @@
 
 ## Resultado concreto
 
-Se recuperaron **los mismos seis resúmenes de sesiones previamente fijados**, sin sustituir versiones, y se contrastaron sus fechas con la tabla oficial de vencimientos de índices estadounidenses de CME. Los hashes y tamaños coinciden con los pins anteriores: 560 registros contrato-fecha y 485.596.960 ticks **declarados por los resúmenes**, conciliados por contrato con el QA físico anterior. No se vuelven a leer ticks/precios ni outcomes.
+Se recuperaron **los mismos seis resúmenes de sesiones previamente fijados**, sin sustituir versiones, y se contrastaron sus fechas con la tabla oficial de vencimientos de índices estadounidenses de CME. Los hashes y tamaños coinciden con los pins anteriores: 560 registros contrato-fecha y 485.596.960 ticks **declarados por los resúmenes**, conciliados por contrato con el QA físico anterior. En esta primera etapa no se releen ticks/precios ni outcomes; la sección 4 añade trazabilidad física restringida a siete columnas de identidad, sin precios.
 
 **Hay 3 ticks declarados en 2 registros cuya fecha es posterior al vencimiento de su contrato. Ninguno de esos registros está seleccionado en el resolver fijado.** Son conflictos de identidad/fecha que necesitan trazabilidad upstream, no un nuevo resultado de entradas ni prueba de fabricación de datos. Su causa sigue UNKNOWN; no se excluyen ni reparan datos.
 
@@ -46,6 +46,24 @@ CME indica que los participantes pueden rolear cuando elijan y describe una fech
 
 **Las dos últimas columnas describen el conjunto aprobado del resolver**, no el momento efectivo de la decisión de roll ni una prueba de que los días intermedios estuvieran cerrados. No completar automáticamente esos huecos ni llamar tardío al selector sólo por compararlo con customary. El QA previo declara referencias de volumen D-1, pero sigue faltando matriz completa e independiente de challengers, disponibilidad antes de decisión, completitud y política as-of.
 
+## 4. Seguimiento físico: los tres registros sí están en los Parquet fijados
+
+Se recuperaron **dos fuentes canonical v1**, verificando hashes/tamaños originales y todos sus footers antes de abrir columnas. Se leyeron únicamente `ts_utc_ns`, `sequence`, `tick_type`, `instrument`, `contract`, `source_file`, `source_row` en los row groups que podían contener fechas posteriores al vencimiento. No se decodificaron precio, bid/ask, volumen, agresor ni outcomes.
+
+**Los tres registros existen físicamente**, no sólo en el resumen JSON. Conteos, fechas y endpoints coinciden exactamente con los dos resúmenes. Todos llevan `tick_type=trade` y el contrato declarado; eso tampoco verifica que sean ejecuciones originales del exchange.
+
+| Contrato | Fuente declarada, basename | `source_row` declarado | `sequence` declarado | Timestamp reportado CT |
+|---|---|---:|---:|---|
+| MNQ_09-25 | `20250921.Last.utc.txt` | 34508844 | 34508844 | 2025-09-21T16:15:44.084163900-0500 |
+| MNQ_12-25 | `20251221.Last.utc.txt` | 99091416 | 99091416 | 2025-12-21T12:25:49.884521900-0600 |
+| MNQ_12-25 | `20251221.Last.utc.txt` | 99091417 | 99091417 | 2025-12-21T15:52:36.822849100-0600 |
+
+**`source_row` coincide aquí con `sequence`, en el final del archivo agregado. No está verificado como número de línea del texto original.** Por tanto, los números sirven para localizar los registros del Parquet, no para pedir la línea 34 millones del pequeño archivo `.utc.txt`. Los paths privados no se publican: basename exacto más hash del path completo en evidencia.
+
+La tarea upstream ya es concreta: obtener estos dos textos `.Last.utc.txt`, sus originales NT8, el convertidor NT8→UTC y logs/mapeo de identidad; comprobar si el registro fue emitido tardíamente, corregido o etiquetado/exportado de forma incorrecta. No se cargaron esos textos/logs ni se escogió una causa. Se conserva UNKNOWN y no se borra ninguna fila.
+
+[Plan acotado](avzvol_expiry_metadata_20261011/physical-trace-plan.json), [testigos físicos y pins](avzvol_expiry_metadata_20261011/physical-identity-traces.json), [receta de identidad](../../tools/trace_avzvol_postexpiry_identities.py). Consulta por fecha civil CT inferida desde el UTC reportado; el reloj upstream sigue sin certificar. La lectura queda explícita, no se presenta toda la revisión como metadata-only después de esta etapa.
+
 ## Implicación para reconstruir retest/confirmación
 
 - El contraste externo agrega una revisión real de fuente: fechas de vencimiento y conflictos señalados, con originales preservados.
@@ -55,7 +73,7 @@ CME indica que los participantes pueden rolear cuando elijan y describe una fech
 
 ## Alcance y pendientes conservados
 
-Revisión **parcial** de referencia externa y metadata; no calendario completo de exchange, upstream clock, secuencia/quotes/agresor, continuidad ni liquidez. Se intentó obtener el horario histórico detallado: la página general entrega mezcla de productos/fechas y la ficha dinámica MNQ no expuso los horarios ni siquiera con carga ampliada. **No se sustituyó con horario de BrokerTec, clearing o una ficha antigua de NQ.** No se resolvieron por esa vía las 47 filas antiguas de 16–17 CT ni las 69 referencias semanales cerradas.
+Revisión **parcial** de referencia externa, metadata e identidades físicas acotadas; no calendario completo de exchange, upstream clock, secuencia/quotes/agresor, continuidad ni liquidez. Se intentó obtener el horario histórico detallado: la página general entrega mezcla de productos/fechas y la ficha dinámica MNQ no expuso los horarios ni siquiera con carga ampliada. **No se sustituyó con horario de BrokerTec, clearing o una ficha antigua de NQ.** No se resolvieron por esa vía las 47 filas antiguas de 16–17 CT ni las 69 referencias semanales cerradas.
 
 El profiler genérico interpreta este JSON como fechas-columnas con valores heterogéneos; sus medias entre ticks/UTC/gaps carecen de significado. Se usó validación nativa: objeto por fecha, ticks enteros positivos, first≤last, particiones anteriores al holdout, hashes/tamaños y conteos independientes. No imputación, deduplicación ni exclusión.
 
