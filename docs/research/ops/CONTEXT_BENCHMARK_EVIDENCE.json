@@ -1,0 +1,125 @@
+{
+  "active_runner_changed": false,
+  "campaign_speedup_established": false,
+  "limitations": [
+    "shared CPU with active MNQ",
+    "small fixed synthetic workloads, not representative measured signal distribution",
+    "cache can slow unique keys; not integrated with whole engine",
+    "no source or selection certification produced"
+  ],
+  "market_data_read": false,
+  "numpy": "2.3.5",
+  "pandas": "3.0.6",
+  "python": "3.13.14",
+  "status": "PASS_SYNTHETIC_PRODUCTION_EXPRESSION_PARITY",
+  "synthetic_fixture": true,
+  "workloads": [
+    {
+      "calls": 8192,
+      "exact_parity": true,
+      "independent_check": true,
+      "input_sha256": "3548726c4fd7fcadfc72f3a40b13bc1479a6b1b5661bcf054bb82b66caaee88d",
+      "median_ms": {
+        "baseline": 130.4326240001501,
+        "memo": 14.172494999911578
+      },
+      "memo_stats": {
+        "capacity_per_cache": 8192,
+        "hour_entries": 512,
+        "hour_hits": 7680,
+        "hour_misses": 512,
+        "range_entries": 512,
+        "range_hits": 7680,
+        "range_misses": 512
+      },
+      "order": [
+        [
+          "baseline",
+          "memo"
+        ],
+        [
+          "memo",
+          "baseline"
+        ],
+        [
+          "baseline",
+          "memo"
+        ]
+      ],
+      "output_sha256": "89c906b3afd7acfec1ef769a04c3ddac6522123b59fc90f89f038f2bc50aa6e9",
+      "timing_seconds": {
+        "baseline": [
+          0.1304326240001501,
+          0.1349439010000424,
+          0.12977753899986055
+        ],
+        "memo": [
+          0.014172494999911578,
+          0.01384585400001015,
+          0.01806827800010069
+        ]
+      },
+      "unique_keys": 512,
+      "workload": "repeated"
+    },
+    {
+      "calls": 8192,
+      "exact_parity": true,
+      "independent_check": true,
+      "input_sha256": "6feb0e978818ec86419bdcf4492496e572f70b28156726d2e90e73fbdf1d3aaa",
+      "median_ms": {
+        "baseline": 134.9686670000665,
+        "memo": 149.81897000006938
+      },
+      "memo_stats": {
+        "capacity_per_cache": 8192,
+        "hour_entries": 8192,
+        "hour_hits": 0,
+        "hour_misses": 8192,
+        "range_entries": 8192,
+        "range_hits": 0,
+        "range_misses": 8192
+      },
+      "order": [
+        [
+          "baseline",
+          "memo"
+        ],
+        [
+          "memo",
+          "baseline"
+        ],
+        [
+          "baseline",
+          "memo"
+        ]
+      ],
+      "output_sha256": "54478e8a19e1406162cdd2bbadafdbf509ca331b4e34d163567676b3d8e5eb52",
+      "timing_seconds": {
+        "baseline": [
+          0.13329786600024818,
+          0.1349686670000665,
+          0.13551618099972984
+        ],
+        "memo": [
+          0.15083823700024368,
+          0.14981897000006938,
+          0.14573726300022827
+        ]
+      },
+      "unique_keys": 8192,
+      "workload": "unique"
+    }
+  ],
+  "comparison_plan": [
+    {
+      "grain": "one fixed synthetic workload",
+      "population": "8192 context queries per run, three repeats, fresh caches",
+      "unit": "milliseconds",
+      "finding": "Memo is faster with repeated keys but slower with unique keys",
+      "derivation": "median of recorded elapsed seconds *1000; same inputs and exact output parity",
+      "disposition": "chart",
+      "reason": "preserve the reversal; no overall campaign speedup inferred"
+    }
+  ]
+}

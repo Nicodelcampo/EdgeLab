@@ -66,3 +66,7 @@ El comando`observe PATH_TO_CAMPAIGN_STATUS_JSON`lee un snapshot; no detiene, rel
 ## Segundo hito: integración read-only y paridad sintética
 
 Se agregó un puente metadata-only al gate canónico y un candidato acotado de rango previo por sesión. No habilita ejecutor de mercado ni importa la autorización exploratoria como certificación. Alcance, límites y pruebas: [Integración y paridad](INTEGRATION_PREFLIGHT_AND_PARITY.md). Evidencia de este hito: `PHASE2_TEST_EVIDENCE.json`; la evidencia original se conserva sin reemplazar.
+
+## Tercer hito: presupuesto por unidades y rendimiento
+
+Se agregaron inventario sellado de18familias, evaluación conservadora de admisión (sin lanzamiento), memo causal acotado y microbenchmark de las expresiones existentes con inputs sintéticos. Se conserva el ejecutor exclusivamente sintético. Detalle: [Rendimiento y unidades](PERFORMANCE_AND_FROZEN_WORK_UNITS.md). La medición demuestra tanto beneficio con hits como penalización sin repetición; no demuestra aceleración de la campaña completa.
