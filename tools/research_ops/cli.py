@@ -1,0 +1,47 @@
+"""CLI: explicit synthetic proposals, finite daemon, read-only observation."""
+import argparse,json,time
+from pathlib import Path
+from .store import Store,Policy,Plan
+from .worker import run_one,SCRIPT_SHA256
+from .observer import observe
+from .design import Draft,audit_draft
+
+def main(argv=None):
+    p=argparse.ArgumentParser(description=__doc__)
+    p.add_argument('--state',type=Path,default=Path('artifacts/research_ops/queue.sqlite'))
+    s=p.add_subparsers(dest='command',required=True)
+    a=s.add_parser('init');a.add_argument('--attempts',type=int,default=3);a.add_argument('--seconds',type=int,default=30)
+    a=s.add_parser('submit-synthetic');a.add_argument('job_id');a.add_argument('--hypothesis',default='operational synthetic selfcheck');a.add_argument('--timeout',type=int,default=5)
+    a=s.add_parser('verify');a.add_argument('--expected-tip')
+    s.add_parser('run-one')
+    a=s.add_parser('quarantine');a.add_argument('job_id')
+    a=s.add_parser('audit-draft');a.add_argument('proposal',type=Path)
+    a=s.add_parser('observe');a.add_argument('campaign_state',type=Path)
+    a=s.add_parser('daemon');a.add_argument('--cycles',type=int,default=1);a.add_argument('--interval',type=float,default=5);a.add_argument('--expected-tip',required=True)
+    args=p.parse_args(argv)
+    if args.command=='audit-draft':
+        if args.proposal.is_symlink() or args.proposal.stat().st_size>65536:raise ValueError('bounded regular proposal required')
+        with args.proposal.open('rb') as f:raw=f.read(65537)
+        if len(raw)>65536:raise ValueError('proposal grew beyond limit')
+        result=audit_draft(Draft(**json.loads(raw)))
+    elif args.command=='observe': result=observe(args.campaign_state)
+    else:
+        store=Store(args.state)
+        if args.command=='init':store.initialize(Policy(args.attempts,args.seconds));result=store.verify()
+        elif args.command=='submit-synthetic':store.submit(Plan(args.job_id,args.hypothesis,SCRIPT_SHA256,args.timeout));result=store.verify()
+        elif args.command=='verify':result=store.verify(args.expected_tip)
+        elif args.command=='quarantine':store.finish(args.job_id,'INTERRUPTED');result=store.verify()
+        elif args.command=='run-one':result=run_one(store)
+        else:
+            if not 1<=args.cycles<=100 or not 0<=args.interval<=300:raise ValueError('finite daemon bounds required')
+            store.verify(args.expected_tip)
+            result=[]
+            for cycle in range(args.cycles):
+                receipt=run_one(store)
+                result.append({'cycle':cycle,'receipt':receipt,'queue':store.verify()})
+                if receipt is None or receipt['status']!='SUCCEEDED_TECHNICAL':break
+                if cycle+1<args.cycles:time.sleep(args.interval)
+    print(json.dumps(result,sort_keys=True,allow_nan=False))
+    return 0
+
+if __name__=='__main__':raise SystemExit(main())

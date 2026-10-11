@@ -1,0 +1,27 @@
+name: Research Ops synthetic prototype
+on:
+  pull_request:
+    paths:
+      - 'tools/research_ops/**'
+      - 'tests/research_ops/**'
+      - 'config/component_registry.json'
+      - 'docs/research/ops/**'
+      - '.github/workflows/research-ops.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  synthetic:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.12', '3.13']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Synthetic queue, guards, receipts and draft tests only
+        run: python -m unittest discover -s tests/research_ops -v
+      - name: Navigation only, not research certification
+        run: python tools/edgelab_catalog.py check --json
