@@ -142,3 +142,7 @@ faltantes raw; no liberar el gate ni convertir el filtro de extremo en release v
 ## Dirección y continuación ya expuestas
 
 [Revisión descriptiva](research/AVZVOL_DIRECCION_Y_CONTINUACION_20261011.md): O2 real−pseudo -0,3630 pp; acuerdo tendencia previa–salida +2,4804 pp, con excepción MNQ_06-26. Diagnóstico de soporte horario/tendencia: poblaciones cambian y el signo de O2 puede cambiar por composición. No señal de zona validada, comparación causal, resultados económicos ni nuevo acceso a mercado/holdout.
+
+## Comparabilidad de controles, sin outcomes
+
+[Auditoría de covariables](research/AVZVOL_CONTROLES_COMPARABILIDAD_20261011.md): soporte exacto para81,1514% de filas reales y41,7939% pseudo;412 pseudo también anclas reales en misma celda. Residual SMD de log volumen100 +0,1203 en panel30celdas. No certifica negativos/censo/as-of, no explica por sí solo el efecto ni habilita nuevos outcomes. Prioridad P1/P2; no calipers guiados por efecto, P4/holdout prohibidos.
