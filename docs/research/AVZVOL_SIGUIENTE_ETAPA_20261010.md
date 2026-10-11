@@ -250,3 +250,7 @@ no son features as-of. No quitar celdas/contratos por signo ni barrer ganadores.
 ## Mapa candidato completo y prioridad de continuidad
 
 [Resultado y decisión](AVZVOL_MAPA_Y_DECISION_20261011.md): 27 cruces candidatos entre 539.759 O5 finitos; excluirlos cambia -6,4807893% a -6,4803799%, sin pérdida de grupos soportados ni cambios de signo por celda. El defecto puntual no explica materialmente el patrón bajo esta reconstrucción. Prioridad: procedencia/preventana y censo as-of con controles comparables; no filtros guiados por efecto. No certificación de fuentes, causalidad, nuevos outcomes de precios, económicos ni holdout.
+
+## Dirección y continuación ya expuestas
+
+[Revisión descriptiva](AVZVOL_DIRECCION_Y_CONTINUACION_20261011.md): O2 real−pseudo -0,3630 pp; acuerdo tendencia previa–salida +2,4804 pp, con excepción MNQ_06-26. Diagnóstico de soporte horario/tendencia: poblaciones cambian y el signo de O2 puede cambiar por composición. No señal de zona validada, comparación causal, resultados económicos ni nuevo acceso a mercado/holdout.
