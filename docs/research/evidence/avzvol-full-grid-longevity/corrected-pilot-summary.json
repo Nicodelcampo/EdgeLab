@@ -1,0 +1,392 @@
+{
+  "status": "PASS_CORRECTED_PILOT_INTERPRETATION",
+  "contract": "MNQ_12-26",
+  "observed_sessions": 10,
+  "full_grid_cells": 1935360,
+  "support_tiers": {
+    "300+_resolved": 36328,
+    "100-299_resolved": 84430,
+    "30-99_resolved": 133299,
+    "1-29_resolved": 522853,
+    "signals_none_resolved": 53016,
+    "no_signal": 1105434
+  },
+  "cells_100plus_resolved": 120758,
+  "cells_100plus_percent": 6.239562665343915,
+  "cells_below30_including_no_signal": 1681303,
+  "cells_below30_percent": 86.87288153108466,
+  "primary_counts_independent": [
+    {
+      "age": 2000,
+      "target": 97,
+      "opposite": 80,
+      "resolved": 177,
+      "signals": 179,
+      "active_dates": 10,
+      "prior_5plus_resolved": 170
+    },
+    {
+      "age": 3000,
+      "target": 83,
+      "opposite": 56,
+      "resolved": 139,
+      "signals": 142,
+      "active_dates": 10,
+      "prior_5plus_resolved": 137
+    }
+  ],
+  "matched": [
+    {
+      "contract": "MNQ_12-26",
+      "landmark": 2000,
+      "endpoint": 0,
+      "common_strata": 52,
+      "matched_weight": 80.0,
+      "real_resolved_before": 177,
+      "control_resolved_before": 195,
+      "real_minus_control_points": 15.211309523809524,
+      "paired_day_lower": -1.1503750815394687,
+      "paired_day_upper": 26.914682539682538,
+      "not_randomized": true
+    },
+    {
+      "contract": "MNQ_12-26",
+      "landmark": 2000,
+      "endpoint": 1,
+      "common_strata": 52,
+      "matched_weight": 71.0,
+      "real_resolved_before": 177,
+      "control_resolved_before": 193,
+      "real_minus_control_points": 1.9248826291079824,
+      "paired_day_lower": -12.5,
+      "paired_day_upper": 14.004329004329009,
+      "not_randomized": true
+    },
+    {
+      "contract": "MNQ_12-26",
+      "landmark": 2000,
+      "endpoint": 2,
+      "common_strata": 54,
+      "matched_weight": 77.0,
+      "real_resolved_before": 175,
+      "control_resolved_before": 192,
+      "real_minus_control_points": 2.297464440321584,
+      "paired_day_lower": -17.16970899470899,
+      "paired_day_upper": 15.743135808540274,
+      "not_randomized": true
+    },
+    {
+      "contract": "MNQ_12-26",
+      "landmark": 3000,
+      "endpoint": 0,
+      "common_strata": 49,
+      "matched_weight": 65.0,
+      "real_resolved_before": 139,
+      "control_resolved_before": 157,
+      "real_minus_control_points": 8.999999999999996,
+      "paired_day_lower": -2.883811858076568,
+      "paired_day_upper": 21.333582089552237,
+      "not_randomized": true
+    },
+    {
+      "contract": "MNQ_12-26",
+      "landmark": 3000,
+      "endpoint": 1,
+      "common_strata": 44,
+      "matched_weight": 59.0,
+      "real_resolved_before": 137,
+      "control_resolved_before": 157,
+      "real_minus_control_points": 3.3615819209039612,
+      "paired_day_lower": -10.94309947299077,
+      "paired_day_upper": 15.66681286549708,
+      "not_randomized": true
+    },
+    {
+      "contract": "MNQ_12-26",
+      "landmark": 3000,
+      "endpoint": 2,
+      "common_strata": 47,
+      "matched_weight": 63.0,
+      "real_resolved_before": 135,
+      "control_resolved_before": 157,
+      "real_minus_control_points": -0.2910052910052807,
+      "paired_day_lower": -11.950302370585375,
+      "paired_day_upper": 10.075757575757576,
+      "not_randomized": true
+    }
+  ],
+  "model": {
+    "status": "INCREMENTAL_DIAGNOSTIC_NOT_VIRGIN_HOLDOUT",
+    "contract": "MNQ_12-26",
+    "training_dates": [
+      "2026-09-17",
+      "2026-09-18",
+      "2026-09-21",
+      "2026-09-22",
+      "2026-09-23",
+      "2026-09-24"
+    ],
+    "test_dates": [
+      "2026-09-25",
+      "2026-09-28",
+      "2026-09-29",
+      "2026-09-30"
+    ],
+    "training_signals": 187,
+    "test_signals": 100,
+    "fixed_ridge_lambda": 10,
+    "hyperparameter_tuning": false,
+    "source_certified": false,
+    "pnl_computed": false,
+    "multiplicity_corrected": false,
+    "context_only": {
+      "test_brier": 0.25931046130955643,
+      "test_log_loss": 0.7136077169765852,
+      "test_signals": 100,
+      "training_signals": 187
+    },
+    "plus_revisits_volume_speed_flow": {
+      "test_brier": 0.2644191850605237,
+      "test_log_loss": 0.72740829378377,
+      "test_signals": 100,
+      "training_signals": 187
+    },
+    "extended_minus_baseline_brier": 0.00510872375096729,
+    "test_session_bootstrap95": [
+      -0.004157889751311402,
+      0.017392374207476254
+    ],
+    "interpretation": "negative Brier gap is better prediction in this diagnostic, not causal interest, certified edge, costs or virgin validation",
+    "coefficients": {
+      "context_only": {
+        "feature_names": [
+          "intercept",
+          "log_age",
+          "log_remaining",
+          "log_span",
+          "hour_sin",
+          "hour_cos"
+        ],
+        "coefficients": [
+          0.3840639312700703,
+          0.0729905731011629,
+          -0.13202283413822158,
+          -0.0034448904761615064,
+          -0.14780559571371693,
+          -0.1344155958533517
+        ],
+        "training_only_imputation_and_scaling": true
+      },
+      "plus_revisits_volume_speed_flow": {
+        "feature_names": [
+          "intercept",
+          "log_age",
+          "log_remaining",
+          "log_span",
+          "hour_sin",
+          "hour_cos",
+          "log_visits",
+          "volume_inside_fraction",
+          "speed_ratio",
+          "return_imbalance_proxy_toward",
+          "proxy_coverage",
+          "return_efficiency",
+          "log_recency",
+          "speed_ratio_missing"
+        ],
+        "coefficients": [
+          0.38734424999684514,
+          0.0713546408092567,
+          -0.1305012948021104,
+          0.006072865712073132,
+          -0.19590399441706405,
+          -0.147207231039116,
+          -0.05772028908374465,
+          -0.041067484399211394,
+          0.006452769153889347,
+          -0.20228168645825634,
+          0.0,
+          0.02007564140294499,
+          0.01852164765813289,
+          -0.040647275329296684
+        ],
+        "training_only_imputation_and_scaling": true
+      }
+    }
+  },
+  "frequency": [
+    {
+      "percentile": 80.0,
+      "window_bars": 5,
+      "configurations": 96,
+      "configurations_with_births": 95,
+      "median_births": 5160.0,
+      "median_max_resolved": 734.5,
+      "configurations_with_any_rule_100_resolved": 79
+    },
+    {
+      "percentile": 80.0,
+      "window_bars": 10,
+      "configurations": 96,
+      "configurations_with_births": 86,
+      "median_births": 860.5,
+      "median_max_resolved": 117.0,
+      "configurations_with_any_rule_100_resolved": 50
+    },
+    {
+      "percentile": 80.0,
+      "window_bars": 20,
+      "configurations": 96,
+      "configurations_with_births": 68,
+      "median_births": 32.5,
+      "median_max_resolved": 5.0,
+      "configurations_with_any_rule_100_resolved": 19
+    },
+    {
+      "percentile": 80.0,
+      "window_bars": 40,
+      "configurations": 96,
+      "configurations_with_births": 46,
+      "median_births": 0.0,
+      "median_max_resolved": 0.0,
+      "configurations_with_any_rule_100_resolved": 0
+    },
+    {
+      "percentile": 90.0,
+      "window_bars": 5,
+      "configurations": 96,
+      "configurations_with_births": 92,
+      "median_births": 1249.5,
+      "median_max_resolved": 200.5,
+      "configurations_with_any_rule_100_resolved": 57
+    },
+    {
+      "percentile": 90.0,
+      "window_bars": 10,
+      "configurations": 96,
+      "configurations_with_births": 78,
+      "median_births": 115.0,
+      "median_max_resolved": 15.0,
+      "configurations_with_any_rule_100_resolved": 20
+    },
+    {
+      "percentile": 90.0,
+      "window_bars": 20,
+      "configurations": 96,
+      "configurations_with_births": 58,
+      "median_births": 2.0,
+      "median_max_resolved": 0.0,
+      "configurations_with_any_rule_100_resolved": 1
+    },
+    {
+      "percentile": 90.0,
+      "window_bars": 40,
+      "configurations": 96,
+      "configurations_with_births": 29,
+      "median_births": 0.0,
+      "median_max_resolved": 0.0,
+      "configurations_with_any_rule_100_resolved": 0
+    },
+    {
+      "percentile": 95.0,
+      "window_bars": 5,
+      "configurations": 96,
+      "configurations_with_births": 80,
+      "median_births": 212.5,
+      "median_max_resolved": 36.5,
+      "configurations_with_any_rule_100_resolved": 31
+    },
+    {
+      "percentile": 95.0,
+      "window_bars": 10,
+      "configurations": 96,
+      "configurations_with_births": 70,
+      "median_births": 20.0,
+      "median_max_resolved": 3.0,
+      "configurations_with_any_rule_100_resolved": 4
+    },
+    {
+      "percentile": 95.0,
+      "window_bars": 20,
+      "configurations": 96,
+      "configurations_with_births": 38,
+      "median_births": 0.0,
+      "median_max_resolved": 0.0,
+      "configurations_with_any_rule_100_resolved": 0
+    },
+    {
+      "percentile": 95.0,
+      "window_bars": 40,
+      "configurations": 96,
+      "configurations_with_births": 20,
+      "median_births": 0.0,
+      "median_max_resolved": 0.0,
+      "configurations_with_any_rule_100_resolved": 0
+    },
+    {
+      "percentile": 97.5,
+      "window_bars": 5,
+      "configurations": 96,
+      "configurations_with_births": 71,
+      "median_births": 36.5,
+      "median_max_resolved": 6.0,
+      "configurations_with_any_rule_100_resolved": 6
+    },
+    {
+      "percentile": 97.5,
+      "window_bars": 10,
+      "configurations": 96,
+      "configurations_with_births": 60,
+      "median_births": 5.0,
+      "median_max_resolved": 1.0,
+      "configurations_with_any_rule_100_resolved": 0
+    },
+    {
+      "percentile": 97.5,
+      "window_bars": 20,
+      "configurations": 96,
+      "configurations_with_births": 29,
+      "median_births": 0.0,
+      "median_max_resolved": 0.0,
+      "configurations_with_any_rule_100_resolved": 0
+    },
+    {
+      "percentile": 97.5,
+      "window_bars": 40,
+      "configurations": 96,
+      "configurations_with_births": 8,
+      "median_births": 0.0,
+      "median_max_resolved": 0.0,
+      "configurations_with_any_rule_100_resolved": 0
+    }
+  ],
+  "primary_interpretation": "touch has positive point estimates, but every matched real-control interval includes zero; center/cross gains are smaller or absent; no familywise inference or replicated longevity edge",
+  "model_interpretation": "extended features worsen point Brier and log loss in four previously inspected test sessions; uncertainty crosses zero; no incremental improvement established",
+  "revisit_identifiability": "old cohorts are predominantly 5+ revisit cases; 0 and1 have no resolved cases and2-4 have7and2; cannot estimate monotonic visit effect",
+  "comparison_plan": [
+    {
+      "grain": "percentile \u00d7 window",
+      "population": "96 detector configurations per combination, 10 selected pilot sessions",
+      "unit": "detector count with any of1260rules having100 resolved thinned signals",
+      "finding": "P80/W5 has79 eligible detector configurations vs the other15cells",
+      "disposition": "chart",
+      "reason": "frequency-focused user priority"
+    },
+    {
+      "grain": "age \u00d7 endpoint",
+      "population": "primary dedup75 geometry; matched real/control support only",
+      "unit": "percentage-point real-control difference",
+      "finding": "positive touch point estimates do not survive pointwise uncertainty; endpoint changes matter",
+      "disposition": "chart",
+      "reason": "explicit user return/cross hypothesis"
+    },
+    {
+      "grain": "model on temporal test split",
+      "population": "100 held-later signals, four previously inspected sessions",
+      "unit": "Brier/log loss",
+      "finding": "no demonstrated improvement from extended features",
+      "disposition": "prose",
+      "reason": "support limitation is more important than tiny numeric gap"
+    }
+  ]
+}
