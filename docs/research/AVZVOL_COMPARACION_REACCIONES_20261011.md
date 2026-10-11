@@ -60,3 +60,7 @@ Los parámetros científicos y permisos existentes siguen sin modificación: P1 
 Referencias: [hipótesis y resultados ya disponibles](AVZVOL_LOGICAS_DE_ENTRADA_20261011.md), [campos de captura necesarios](AVZVOL_CONFIRMACION_OBSERVABILIDAD_20261011.md), [requisitos de captura](../../config/research/avzvol_interaction_capture_v1.json).
 
 Validación local: **24 pruebas del clasificador**, suite **785 + 25 subtests** y **18 pruebas de navegación**. [Casos sintéticos y alcance](avzvol_reaction_comparison_20261011/synthetic-evidence.json). Estos conteos no son observaciones de mercado.
+
+## Medición desde la decisión
+
+[Respuestas y censura explícita](AVZVOL_RESPUESTA_DESDE_CONFIRMACION_20261011.md): módulo sintético, sin nuevas estimaciones de mercado.
