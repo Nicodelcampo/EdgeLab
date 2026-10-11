@@ -1,0 +1,49 @@
+{
+  "scope": "exploratory existing-label interaction, not actual corridor memory or entry P&L",
+  "question": "Do original-anchor trend/momentum direction signs add selective excursion reach within prior wide-range and fast-wide contexts?",
+  "policies": {
+    "all": null,
+    "wide": [
+      "0:2",
+      "1:2",
+      "2:2"
+    ],
+    "fast_wide": [
+      "0:2"
+    ]
+  },
+  "contexts": [
+    "ALL",
+    "BOTH_ALIGNED",
+    "BOTH_OPPOSED",
+    "MIXED",
+    "NEUTRAL_OR_ZERO",
+    "SHORT_ALIGNED_LONG_OPPOSED",
+    "SHORT_OPPOSED_LONG_ALIGNED"
+  ],
+  "context_definition": "At confirmed-exit proxy ONLY, compare exported dir with exported trend sign (prior500bars) and sign(mom100_h) (prior100bars), both measured at original t0, NOT updated exit-time or spatial corridor activity. Either zero => neutral; otherwise both same/opposite or mixed.",
+  "population": "pos0 observed exits, O2resolved to exactly match prior excursion study; retest rates use own label denominator within same population and bounds retain uncertainty",
+  "thresholds": {
+    "ticks": [
+      5,
+      10,
+      20,
+      40
+    ],
+    "h": [
+      0.1,
+      0.25,
+      0.5,
+      0.75,
+      1,
+      1.5,
+      2
+    ]
+  },
+  "weights": "equal global session/contract/anchor/row within ALL exits of block, then restriction. Equal mean3blockrates, no averaging contexts without masses.",
+  "cuts": "reuse O2-trained delay/range terciles, no refit/new cut selection",
+  "support": "all contexts/controls/folds/contracts retained; no threshold on support used to delete rows",
+  "limitations": "Old covariates may be stale at exit; no timestamps of retest or price path; no genuine recent traversability, acceptance/rejection or corridor peaks; no blind confirmation/causal controls/quality promotion.",
+  "next_actual_corridor_test": "Record previous traversal efficiency, direction-specific revisit/rejection and confirmed obstacles inside forward price corridor using data known before each decision; must have prices/time and as-of geometry. These features are hypotheses, not measured here.",
+  "post_exposure_extension": "After seeing MIXED parent rates, split it into two directional mechanisms before examining their outcomes. Exploratory, not preregistered or blind."
+}
