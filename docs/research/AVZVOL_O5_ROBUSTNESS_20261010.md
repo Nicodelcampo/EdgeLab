@@ -171,3 +171,11 @@ Seis tests nuevos inventados cubren pesos por sesión, eliminación completa,
 soporte fijo, duplicados/faltantes, opt-in, hash de referencia con Python -O
 y no sobreescritura. Tres figuras canónicas: preflight estático exitoso.
 CI remoto se verifica sobre el head exacto antes de merge; no es certificación científica.
+
+
+## Chequeo posterior de toda la ventana
+
+[Las 200 barras, no sólo el extremo](AVZVOL_FILTROS_Y_VENTANAS_20261011.md):
+ninguna ventana tiene todas las etiquetas disponibles en los exports de eventos.
+Es UNKNOWN de anotación, no prueba de ventana rota ni efecto nulo. La sensibilidad
+del extremo conserva carácter seleccionado/descriptivo y no se rebautiza como corregida.

@@ -238,3 +238,11 @@ lo descarta. No outcomes nuevos ni certificación; P4 sigue prohibida.
 de un solo contrato/fecha, pero la selección por extremos anotados tiene cobertura
 3,61%, pierde nueve celdas y exhibe una reversión. Es revisión expuesta; no cumple
 P2/P3 ni libera P1/P4. Próximos pasos por propuesta y Kaggle en el informe.
+
+
+## Filtros justificables, no búsqueda del máximo efecto
+
+[Auditoría y política de revisión](AVZVOL_FILTROS_Y_VENTANAS_20261011.md):
+calidad por evidencia y comparabilidad previa al ancla; censura/postcompletitud
+no son features as-of. No quitar celdas/contratos por signo ni barrer ganadores.
+0 ventanas totalmente anotadas en exports; mapas y fuentes siguen pendientes.

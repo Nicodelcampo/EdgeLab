@@ -269,3 +269,12 @@ seis eliminaciones de contrato y 261 de fecha mantienen signo. No certifica sesg
 ni causalidad. Sólo 3,61% de extremos anotados; panel completo filtrado no computable;
 MNQ_09-25 casi pierde magnitud y 4_250_20 revierte en sensibilidad seleccionada.
 P1–P3 pendientes explícitos, Kaggle sin nuevo release; P4 prohibida.
+
+
+## Filtros y ventana O5 completa
+
+[Auditoría de 200 barras y reglas de filtros](research/AVZVOL_FILTROS_Y_VENTANAS_20261011.md):
+0/539.759 filas finitas tienen las 200 etiquetas exactas disponibles; todas con
+cobertura parcial/UNKNOWN. No demuestra huecos ni efecto nulo. El filtro de extremo
+3,61% no valida el interior. No búsqueda de umbrales ganadores; P1–P3 siguen pendientes,
+P4 prohibida y Kaggle sin nueva promoción.

@@ -127,3 +127,10 @@ lo descarta. No outcomes nuevos ni certificación; P4 sigue prohibida.
 resultados descriptivos sobre seis exports fijados. No nuevos datos/kernel,
 no certificación, no holdout ni economía. El filtro de extremo seleccionado no
 recupera el panel completo ni acredita continuidad/reloj; no convertirlo en release.
+
+
+## Completitud O5: anchors no son un mapa completo
+
+[QA de las 200 barras](research/AVZVOL_FILTROS_Y_VENTANAS_20261011.md):
+ninguna ventana se acredita completa con anotaciones de eventos. UNKNOWN no prueba
+faltantes raw; no liberar el gate ni convertir el filtro de extremo en release válido.
