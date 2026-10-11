@@ -35,9 +35,9 @@ No elegir el objetivo de mayor porcentaje como “ganador”: reducir distancia 
 
 ## Sensibilidad al precio supuesto de entrada
 **Ejemplo hipotético, no objetivo recomendado:** pedir 0,25h adicional después de una entrada posterior a la barra de salida. Si el precio de esa entrada estuviera más lejos del borde, el máximo registrado tendría que llegar a offset +0,25h.
-Se usa el máximo de toda la ventana, que puede haber ocurrido ANTES de la entrada hipotética: por eso es una **cota optimista**, no probabilidad de fill ni win-rate. Tampoco se sabe si un stop habría sido tocado antes. La barra de salida queda excluida: no aplicar esta cota a entradas intrabar en esa barra.
+Se usa el máximo de toda la ventana, que puede haber ocurrido ANTES de la entrada hipotética: por eso es una **cota optimista de cobertura geométrica**, no probabilidad de fill ni win-rate. El denominador son TODOS los casos del contexto favorable, incluso los que no cubren el avance supuesto hasta la entrada. No condicionar esta cifra como si fueran operaciones efectivamente llenadas. Tampoco se sabe si un stop habría sido tocado antes. La barra de salida queda excluida: no aplicar esta cota a entradas intrabar en esa barra.
 
-| Precio supuesto de entrada más allá del borde | Cota optimista para 0,25h adicional |
+| Precio supuesto de entrada más allá del borde | Fracción de todos los casos que cubre offset +0,25h |
 |---|---:|
 | 0h | 63.45% |
 | 0.1h | 52.72% |
