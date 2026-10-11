@@ -3,6 +3,14 @@
 ## Decisión
 La fuente queda habilitada para investigación exploratoria por contrato bajo la autorización explícita del usuario. No queda certificada; no se modifica ninguna certificación anterior ni se habilita promoción económica. La procedencia original NT8 no está disponible.
 
+## Corrección de alcance: selección del catálogo frente a archivo completo
+
+La revisión de 560 sesiones-contrato era QA de archivos completos, NO el universo de eventos seleccionado por el catálogo. El cruce posterior verifica las 261 identidades fecha+contrato seleccionadas y sus conteos, sin discrepancias. Las 153 sesiones con menos de 2500 registros están fuera de esa selección; ninguna sesión seleccionada tiene esa baja actividad. Hay 261 fechas seleccionadas distintas: el solapamiento entre contratos del archivo completo no describe la selección operativa.
+
+El salto de 1419 ticks de MNQ09-26 no es de una sesión seleccionada para eventos, pero su fecha está dentro de la ventana nominal de warmup. No se lo borra ni se prueba que sea un error; se separa su posible influencia en calibración del análisis de outcomes. El porcentaje de barras de duración cero comunicado anteriormente es del archivo completo: no se estimó su porcentaje específico dentro de las sesiones seleccionadas.
+
+La campaña exploratoria utilizará la lista versionada de 261 sesiones seleccionadas para sus eventos; el warmup se registra aparte y los intervalos/buckets suficientes se comprueban antes de cada formación. No se hereda automáticamente la selección retrospectiva del resolver como regla de una estrategia causal. Ver [conciliación y alcance](AVZVOL_SELECCION_WARMUP_Y_CORRECCION.md).
+
 ## Revisión ejecutada
 - 485,596,960 registros de seis archivos físicamente repinados. La auditoría estructural anterior y el censo de fórmula de agresor se reutilizan, sin confundirlos con certificación de feed.
 - Nuevo escaneo completo: 560 sesiones-contrato bajo una convención Chicago17h declarada, 325 etiquetas de sesión distintas; 222 aparecen en varios contratos. No son 560 días independientes.
