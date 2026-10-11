@@ -3,6 +3,8 @@
 ## Resultado para decidir
 **Mantener como prioridad una continuación temprana y selectiva, sin perseguir el precio.** El contexto rápido/rango-amplio mejora también el alcance en ticks fijos: no es sólo un objetivo más fácil en alturas de banda. Pero no está validada una entrada rentable y el precio al que se logra entrar puede consumir la ventaja.
 
+**Matiz posterior:** el descenso de alcance sobre TODOS los casos al aumentar el nivel es geométrico, no prueba que entradas tardías ejecutadas sean peores. La entrada temprana queda como hipótesis, no conclusión de esa curva. [Ablación y cambio de denominador](AVZVOL_APORTE_DE_RAPIDEZ_Y_DENOMINADORES_20261011.md).
+
 ## Recorrido desde el borde, no desde una operación
 Misma población que la exploración anterior: ancla dentro, salida observada, O2 resuelto; tres bloques temporales internos ya inspeccionados. Rápida/amplia es el grupo 0:2 de los terciles aprendidos exclusivamente del pasado, reutilizados sin volver a ajustar. No es una nueva confirmación ni un filtro promovido.
 La distancia es el máximo high/low observado desde el borde después de la barra de salida, hasta el primer cierre dentro o el fin acotado de ventana/sesión. Incluye el high/low de la barra que cierra dentro. No mide orden intrabar, fills, stops ni beneficio.
