@@ -260,3 +260,12 @@ real, protocolo y calidad siguen pendientes. No libera gates ni P4.
 instrumentado, sin loaders ni estados finales. Censo real pendiente. Desfase
 de una barra en el guard O5 documentado; QA acotada de etiquetas existentes no
 lo descarta. No outcomes nuevos ni certificación; P4 sigue prohibida.
+
+
+## Resultados descriptivos de robustez O5
+
+[Corrida y pendientes](research/AVZVOL_O5_ROBUSTNESS_20261010.md): gap relativo -6,48%;
+seis eliminaciones de contrato y 261 de fecha mantienen signo. No certifica sesgo
+ni causalidad. Sólo 3,61% de extremos anotados; panel completo filtrado no computable;
+MNQ_09-25 casi pierde magnitud y 4_250_20 revierte en sensibilidad seleccionada.
+P1–P3 pendientes explícitos, Kaggle sin nuevo release; P4 prohibida.
