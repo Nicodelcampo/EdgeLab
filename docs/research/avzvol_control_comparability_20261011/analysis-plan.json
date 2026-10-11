@@ -1,0 +1,59 @@
+{
+  "scope": "EXPOSED_COVARIATES_AND_CANDIDATE_HISTORY_ONLY_NO_OUTCOMES",
+  "columns_read": [
+    "contract",
+    "cell",
+    "kind",
+    "session",
+    "clock",
+    "trend",
+    "t0",
+    "occ",
+    "h",
+    "amp",
+    "trend_h",
+    "mom100_h",
+    "vol_occ",
+    "vol_100",
+    "dur_occ",
+    "dur_100"
+  ],
+  "outcome_columns_prohibited": [
+    "te",
+    "dir",
+    "o2",
+    "o3a",
+    "o3b",
+    "mx_h",
+    "o4",
+    "o5"
+  ],
+  "exact_strata": [
+    "contract",
+    "session",
+    "cell",
+    "clock",
+    "trend"
+  ],
+  "features": [
+    "occ",
+    "h",
+    "amp",
+    "trend_h",
+    "mom100_h",
+    "vol_occ",
+    "vol_100",
+    "dur_occ",
+    "dur_100"
+  ],
+  "nonfinite_policy": "retain accounting, joint complete-covariate support subset only; no imputation",
+  "weights": "all cells retained; common cells in six contracts for diagnostic panel; equal contracts/cells, supported sessions then supported clock/trend strata, equal rows per kind in stratum",
+  "smd_definition": "weighted mean real minus pseudo divided by sqrt((weighted population variance real + pseudo)/2); zero variance and equal means gives zero, unequal means undefined",
+  "candidate_history": "t0 minus500 for trend, minus499 for occupancy/activity; minus100 for momentum, minus99 for activity; complete timestamp map labels only, no price reconstruction or exclusion by this flag",
+  "collision": "pseudo shares exact contract/session/cell/t0 with observed real export anchor; separately any-cell overlap; not detector-negative classification or full contamination prevalence",
+  "effect_guided_filtering": false,
+  "calipers_chosen": false,
+  "scientific_acceptance_thresholds_chosen": false,
+  "blind_confirmation": false,
+  "subgroup_review": "weighted SMD separately per contract; no numerical acceptance threshold selected"
+}
