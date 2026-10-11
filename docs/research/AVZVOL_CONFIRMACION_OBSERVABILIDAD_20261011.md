@@ -62,3 +62,7 @@ No corresponde seguir probando filtros sobre los mismos resultados hasta consegu
 ## Seguimiento de fuente
 
 [Revisión parcial externa de vencimientos](AVZVOL_VENCIMIENTOS_Y_FUENTE_20261011.md): conflictos de fecha y excepción oficial preservados; no certificado ni nuevos outcomes.
+
+## Comparación implementada en casos inventados
+
+[Continuación frente a ruptura fallida](AVZVOL_COMPARACION_REACCIONES_20261011.md): clasificador de prefijos, sin nueva cinta de mercado ni efectos futuros.
