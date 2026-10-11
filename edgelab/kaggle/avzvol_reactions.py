@@ -50,7 +50,8 @@ def classify_synthetic_reaction(band: Band, bars: list[Bar], *, policy: Policy,
 
     Counts are synthetic policy choices, not approved scientific parameters.
     Exact edge intersection is the prototype retest observation. A later-bar
-    close is required: OHLC cannot establish intrabar touch/close sequencing.
+    close is required by this conservative prototype policy; it does not
+    reconstruct multiple intrabar traversals or test immediate confirmation.
     Both cohorts use the same algorithm; control eligibility is NOT certified.
     """
     if purpose != "synthetic":
@@ -140,7 +141,8 @@ def classify_synthetic_reaction(band: Band, bars: list[Bar], *, policy: Policy,
                 retest_index = index
                 state = "RETEST_OBSERVED"
                 emit(state, bar)
-                # Never infer order from OHLC on the retest bar itself.
+                # Explicit later-bar policy; not a claim that immediate
+                # completed-bar confirmation is inherently unobservable.
                 continue
             if close_side == -side:
                 state = "OPPOSITE_EXIT_WITHOUT_RETEST_OBSERVED"
