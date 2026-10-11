@@ -1,0 +1,133 @@
+{
+  "schema": "avzvol_exploratory_authorization_v1",
+  "user_authorization_literal": "No tengo el original. Autorizo la campaña, primero revisa bien los datos, declarando y mitigando cualquier riesgo de sesgo",
+  "scope": "EXPLORATORY_ONLY_PER_CONTRACT",
+  "status": "AUTHORIZED_SOURCE_RISK_REVIEW_COMPLETE_ADAPTER_PENDING",
+  "source_original_unavailable": true,
+  "source_quality_certified": false,
+  "old_certification_flags_modified": false,
+  "old_gate_file_sha256": "c138c3fdd3ec84460e82a74898301c6b5734b84c5f7a3ae3b9275ef7d4fb14a0",
+  "holdout_access_authorized": false,
+  "pnl_or_promotion_authorized": false,
+  "raw_outcome_trials_executed": 0,
+  "files": [
+    {
+      "contract": "MNQ_03-26",
+      "file": "MNQ_03-26_ticks_ext.parquet",
+      "dataset": "nicolasbuttaro/edgelab-ticks-nt8-canonical",
+      "version": 1,
+      "sha256": "1b3f6f17fbc1c189d627292bf8b1922ce58b7097a42ab498b546d36ad3b37afa",
+      "bytes": 910224741,
+      "rows": 103921542,
+      "max_ns": 1774013399800000000,
+      "preholdout": true,
+      "prior_structural_errors": 0,
+      "prior_evidence_byte_identical": true
+    },
+    {
+      "contract": "MNQ_06-26",
+      "file": "MNQ_06-26_ticks_ext.parquet",
+      "dataset": "nicolasbuttaro/edgelab-ticks-nt8-reexport-20261005",
+      "version": 2,
+      "sha256": "968210ac96d0357d0983bb30f9cef6042e9d25b510880160508c64fb9a381fbc",
+      "bytes": 1316253277,
+      "rows": 116002246,
+      "max_ns": 1781789399988000000,
+      "preholdout": true,
+      "prior_structural_errors": 0,
+      "prior_evidence_byte_identical": true
+    },
+    {
+      "contract": "MNQ_09-25",
+      "file": "MNQ_09-25_ticks_ext.parquet",
+      "dataset": "nicolasbuttaro/edgelab-ticks-nt8-canonical",
+      "version": 1,
+      "sha256": "c78ff5cebeca2130876409b27e00dbb9cab8c0007ab451e4ddb4319088a2be85",
+      "bytes": 296821013,
+      "rows": 34508845,
+      "max_ns": 1758489344084163900,
+      "preholdout": true,
+      "prior_structural_errors": 0,
+      "prior_evidence_byte_identical": true
+    },
+    {
+      "contract": "MNQ_09-26",
+      "file": "MNQ_09-26_ticks_ext.parquet",
+      "dataset": "nicolasbuttaro/edgelab-ticks-nt8-reexport-20261005",
+      "version": 2,
+      "sha256": "5b234b0f94888c44ba5e68fb0aaf2b52138c70d9485daa2875fa028f8ab24b77",
+      "bytes": 1251646827,
+      "rows": 110632331,
+      "max_ns": 1789738200000000000,
+      "preholdout": true,
+      "prior_structural_errors": 0,
+      "prior_evidence_byte_identical": true
+    },
+    {
+      "contract": "MNQ_12-25",
+      "file": "MNQ_12-25_ticks_ext.parquet",
+      "dataset": "nicolasbuttaro/edgelab-ticks-nt8-canonical",
+      "version": 1,
+      "sha256": "832533e504b7ae2c33a5575366974bc0d639ba8c65ebc406105939a70f63397f",
+      "bytes": 860641906,
+      "rows": 99091418,
+      "max_ns": 1766353956822849100,
+      "preholdout": true,
+      "prior_structural_errors": 0,
+      "prior_evidence_byte_identical": true
+    },
+    {
+      "contract": "MNQ_12-26",
+      "file": "MNQ_12-26_ticks_ext.parquet",
+      "dataset": "nicolasbuttaro/edgelab-ticks-nt8-reexport-20261005",
+      "version": 2,
+      "sha256": "7c0dfd811dcb059faf57926be08203031e9fff6bac1e8e234c7f158f6308f93e",
+      "bytes": 244126468,
+      "rows": 21440578,
+      "max_ns": 1790801999500000000,
+      "preholdout": true,
+      "prior_structural_errors": 0,
+      "prior_evidence_byte_identical": true
+    }
+  ],
+  "detector_configurations": 1536,
+  "partial_return_rules": 1260,
+  "nominal_pairs": 1935360,
+  "all_chat_variants_implemented": false,
+  "execution_order": [
+    "optimized adapter/reference parity and tiny market smoke test without optimizing outcomes",
+    "frequency census of all1536 detector configs (not predictive ranking)",
+    "primary45 partial-return rules on all declared preholdout contracts",
+    "extended1260 rules and incremental feature/context comparisons, cost benchmark/chunking before scale"
+  ],
+  "primary_observation_policy": {
+    "time": "UTC as supplied; Chicago IANA mapping declared, not attested",
+    "sequence": "stored local sequence; same-timestamp alternative kept",
+    "bars": "25 exported Last records, session-reset with explicit partial-bar policy; legacy continuous-bar parity separately",
+    "session": "Chicago 17h to next17h; maintenance records tagged, not deleted from raw",
+    "gap_censor_seconds": 10,
+    "gap_sensitivity_seconds": [
+      1,
+      60,
+      null
+    ],
+    "gap_interpretation": "unknown observations OR inactivity, not proven outage; censored episode retained",
+    "signals": "birth bounds and actual observed trigger; only completed bars known by trigger; running peak, never final peak"
+  },
+  "gates": {
+    "user_exploratory_authorized": true,
+    "physical_source_pins_verified": true,
+    "full_structural_qa_passed": true,
+    "risk_review_complete": true,
+    "source_certification_required_for_this_scope": false,
+    "optimized_market_adapter_validated": false
+  },
+  "evidence_sha256": {
+    "bias-review.json": "4a51ca6113d678fc2749ee64c076e2e78653816e19d24e6ef9bc0053137a09b3",
+    "session-risk-summary.csv": "77552430786f6ca2985e6926795a13a7e490efd44c7ea20628cb8f3653b0ce9d",
+    "bias_review.py": "deab0472aa7fc192935961d4ae0e59c9ce64d016a8d625d9b8fa191410a87fd6",
+    "causal_pivots.py": "6b94b39546be42cfce591904262399ed27604d1fd55300e96d9d62f6d101436c",
+    "test_causal_pivots.py": "ecc5203440f10fb96e4c8cbb2f8c11964e97bdd0b4aeea295040f9f82998176c",
+    "triage_jump.py": "391d71ce4218991483334a45a995477e4e2168b4657cef354e3ed02cede6425a"
+  }
+}
