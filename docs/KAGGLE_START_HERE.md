@@ -134,3 +134,7 @@ recupera el panel completo ni acredita continuidad/reloj; no convertirlo en rele
 [QA de las 200 barras](research/AVZVOL_FILTROS_Y_VENTANAS_20261011.md):
 ninguna ventana se acredita completa con anotaciones de eventos. UNKNOWN no prueba
 faltantes raw; no liberar el gate ni convertir el filtro de extremo en release válido.
+
+## Mapa candidato completo y prioridad de continuidad
+
+[Resultado y decisión](research/AVZVOL_MAPA_Y_DECISION_20261011.md): 27 cruces candidatos entre 539.759 O5 finitos; excluirlos cambia -6,4807893% a -6,4803799%, sin pérdida de grupos soportados ni cambios de signo por celda. El defecto puntual no explica materialmente el patrón bajo esta reconstrucción. Prioridad: procedencia/preventana y censo as-of con controles comparables; no filtros guiados por efecto. No certificación de fuentes, causalidad, nuevos outcomes de precios, económicos ni holdout.
