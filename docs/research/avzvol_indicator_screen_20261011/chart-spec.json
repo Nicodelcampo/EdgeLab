@@ -1,0 +1,136 @@
+{
+  "version": 1,
+  "form": "paired-panels",
+  "title": "El contexto de salida ayuda; no prueba rentabilidad",
+  "aside": "Exploración interna, 26 pruebas y 3 bloques temporales",
+  "panels": [
+    {
+      "version": 1,
+      "form": "categorical-bars",
+      "mode": "grouped",
+      "title": "Salida rápida + rango amplio: más continuación",
+      "aside": "O2, no ganancias; extremos ilustrativos, cortes variables del pasado",
+      "labels": [
+        "Ene–abr",
+        "Abr–jun",
+        "Jun–sep"
+      ],
+      "tooltipLabels": [
+        "20260112–20260402",
+        "20260406–20260625",
+        "20260626–20260930"
+      ],
+      "axis": {
+        "zero": true
+      },
+      "series": [
+        {
+          "label": "Rápida/amplia · real",
+          "valueKind": "percent",
+          "role": "subject",
+          "derived": true,
+          "derivationReason": "weighted O2 positive mass / eligible bucket mass x100",
+          "data": [
+            21.36934966535193,
+            28.32189405385263,
+            21.86658352147687
+          ]
+        },
+        {
+          "label": "Lenta/estrecha · real",
+          "valueKind": "percent",
+          "role": "base",
+          "derived": true,
+          "derivationReason": "weighted O2 positive mass / eligible bucket mass x100",
+          "data": [
+            9.23246986058472,
+            7.613413521625089,
+            9.17709609271389
+          ]
+        },
+        {
+          "label": "Rápida/amplia · control",
+          "valueKind": "percent",
+          "role": "base",
+          "derived": true,
+          "derivationReason": "weighted O2 positive mass / eligible bucket mass x100",
+          "data": [
+            25.93172813022942,
+            27.28744324508716,
+            25.76803515748267
+          ]
+        },
+        {
+          "label": "Lenta/estrecha · control",
+          "valueKind": "percent",
+          "role": "base",
+          "derived": true,
+          "derivationReason": "weighted O2 positive mass / eligible bucket mass x100",
+          "data": [
+            9.57725239340063,
+            9.1229456281079,
+            8.62754307218714
+          ]
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "form": "categorical-bars",
+      "mode": "grouped",
+      "title": "Rango/ancho falla solo en MNQ_12-26",
+      "aside": "ΔBrier ×1.000; positivo mejora; MNQ_12-26 sólo 10 sesiones",
+      "labels": [
+        "03-26",
+        "06-26",
+        "09-26",
+        "12-26"
+      ],
+      "tooltipLabels": [
+        "MNQ_03-26",
+        "MNQ_06-26",
+        "MNQ_09-26",
+        "MNQ_12-26"
+      ],
+      "axis": {
+        "zero": true
+      },
+      "series": [
+        {
+          "label": "Demora × rango/ancho",
+          "valueKind": "number",
+          "role": "subject",
+          "derived": true,
+          "derivationReason": "mean baseline Brier minus feature Brier over supported folds, x1000",
+          "data": [
+            0.9024259284931,
+            3.1960056835079,
+            2.5390026407912,
+            0.1737552776875
+          ]
+        },
+        {
+          "label": "Rango/ancho",
+          "valueKind": "number",
+          "role": "base",
+          "derived": true,
+          "derivationReason": "mean baseline Brier minus feature Brier over supported folds, x1000",
+          "data": [
+            0.9386520786438001,
+            3.05632510990625,
+            2.7137951717209003,
+            -0.6958619268848
+          ]
+        }
+      ]
+    }
+  ],
+  "colorMap": {
+    "Rápida/amplia · real": "blue",
+    "Lenta/estrecha · real": "purple",
+    "Rápida/amplia · control": "teal",
+    "Lenta/estrecha · control": "orange",
+    "Demora × rango/ancho": "green",
+    "Rango/ancho": "pink"
+  }
+}
