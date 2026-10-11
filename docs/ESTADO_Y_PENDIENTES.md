@@ -278,3 +278,7 @@ P1–P3 pendientes explícitos, Kaggle sin nuevo release; P4 prohibida.
 cobertura parcial/UNKNOWN. No demuestra huecos ni efecto nulo. El filtro de extremo
 3,61% no valida el interior. No búsqueda de umbrales ganadores; P1–P3 siguen pendientes,
 P4 prohibida y Kaggle sin nueva promoción.
+
+## Mapa candidato completo y prioridad de continuidad
+
+[Resultado y decisión](research/AVZVOL_MAPA_Y_DECISION_20261011.md): 27 cruces candidatos entre 539.759 O5 finitos; excluirlos cambia -6,4807893% a -6,4803799%, sin pérdida de grupos soportados ni cambios de signo por celda. El defecto puntual no explica materialmente el patrón bajo esta reconstrucción. Prioridad: procedencia/preventana y censo as-of con controles comparables; no filtros guiados por efecto. No certificación de fuentes, causalidad, nuevos outcomes de precios, económicos ni holdout.

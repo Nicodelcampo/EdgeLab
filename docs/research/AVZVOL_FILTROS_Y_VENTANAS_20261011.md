@@ -153,3 +153,7 @@ Pruebas de software no certifican el origen ni convierten UNKNOWN en una ventana
 navegación y catálogo sin errores. Verificación numérica independiente de todas
 las ventanas finitas. La integración remota requiere checks del head exacto
 y árbol verificado; esos checks no acreditan verdad científica del raw.
+
+## Mapa candidato completo y prioridad de continuidad
+
+[Resultado y decisión](AVZVOL_MAPA_Y_DECISION_20261011.md): 27 cruces candidatos entre 539.759 O5 finitos; excluirlos cambia -6,4807893% a -6,4803799%, sin pérdida de grupos soportados ni cambios de signo por celda. El defecto puntual no explica materialmente el patrón bajo esta reconstrucción. Prioridad: procedencia/preventana y censo as-of con controles comparables; no filtros guiados por efecto. No certificación de fuentes, causalidad, nuevos outcomes de precios, económicos ni holdout.
