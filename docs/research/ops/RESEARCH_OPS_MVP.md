@@ -62,3 +62,7 @@ Después de una caída, NO repetir un jobRUNNING. Revisar recibos y estado; `qua
 ## Observación de MNQ
 
 El comando`observe PATH_TO_CAMPAIGN_STATUS_JSON`lee un snapshot; no detiene, relanza ni adopta la corrida. El watchdog ya existente sigue separado y puede verificar procesos/recursos. Esta base no toca ni replica sus procesos activos.
+
+## Segundo hito: integración read-only y paridad sintética
+
+Se agregó un puente metadata-only al gate canónico y un candidato acotado de rango previo por sesión. No habilita ejecutor de mercado ni importa la autorización exploratoria como certificación. Alcance, límites y pruebas: [Integración y paridad](INTEGRATION_PREFLIGHT_AND_PARITY.md). Evidencia de este hito: `PHASE2_TEST_EVIDENCE.json`; la evidencia original se conserva sin reemplazar.

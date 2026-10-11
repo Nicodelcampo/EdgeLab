@@ -17,9 +17,17 @@ def main(argv=None):
     a=s.add_parser('quarantine');a.add_argument('job_id')
     a=s.add_parser('audit-draft');a.add_argument('proposal',type=Path)
     a=s.add_parser('observe');a.add_argument('campaign_state',type=Path)
+    a=s.add_parser('preflight-metadata');a.add_argument('bundle',type=Path);a.add_argument('--expected-sha256',required=True)
+    s.add_parser('benchmark-synthetic')
     a=s.add_parser('daemon');a.add_argument('--cycles',type=int,default=1);a.add_argument('--interval',type=float,default=5);a.add_argument('--expected-tip',required=True)
     args=p.parse_args(argv)
-    if args.command=='audit-draft':
+    if args.command=='preflight-metadata':
+        from .preflight import check_bundle
+        result=check_bundle(args.bundle,args.expected_sha256)
+    elif args.command=='benchmark-synthetic':
+        from .benchmark import run_benchmark
+        result=run_benchmark()
+    elif args.command=='audit-draft':
         if args.proposal.is_symlink() or args.proposal.stat().st_size>65536:raise ValueError('bounded regular proposal required')
         with args.proposal.open('rb') as f:raw=f.read(65537)
         if len(raw)>65536:raise ValueError('proposal grew beyond limit')
