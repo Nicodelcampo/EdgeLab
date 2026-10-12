@@ -11,7 +11,7 @@ Datos/custodia aprueba fuentes y particiones; el productor de features prepara s
 - `cheap_screen`: primitiva de screening, no simulador tick-exact; CPU/GPU de bajo nivel para pruebas.
 - `FunnelRunner`: orquestación CPU, salidas y diagnóstico; D2 cerrado incluso con el hash público del split.
 - `load_frozen_split` / `validate_split`: identidad, orden, no solapamiento y cobertura exacta; no autorización.
-- `tools/run_funnel_arrays.py`: entrada soportada con `--split` explícito y output nuevo.
+- `tools/run_funnel_arrays.py`: entrada soportada con `--split` explícito y output nuevo. Exige `--arrays-manifest` + `--expected-manifest-sha256` (arrays atados a evidencia `research_window_v1`, SHA de cada `.npy` antes de abrirlo) o `--technical-only` explícito; el modo queda en `data_gate` del output.
 
 ## Compatibilidad
 

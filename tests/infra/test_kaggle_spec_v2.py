@@ -258,3 +258,27 @@ def test_explicit_unknown_aggressor_conserved_unsigned():
     assert bars.unknown_volume.iloc[0]==7 and bars.signed_volume.iloc[0]==-1
     ticks.loc[2,'aggressor']='unexpected_vendor_label'
     with pytest.raises(ValueError,match='unsupported aggressor labels'):f.aggregate_frame(ticks,1)
+
+
+def _touch(p):
+    p.parent.mkdir(parents=True, exist_ok=True); p.write_bytes(b'x'); return p
+
+
+def test_exact_path_declared_layouts_only(tmp_path):
+    flat = _touch(tmp_path / 'fixture-ticks' / 'ticks.parquet')
+    assert f.exact_path(tmp_path, 'fixture-ticks', 'ticks.parquet', 'test') == flat.resolve()
+    flat.unlink()
+    nested = _touch(tmp_path / 'datasets' / 'test' / 'fixture-ticks' / 'ticks.parquet')
+    assert f.exact_path(tmp_path, 'fixture-ticks', 'ticks.parquet', 'test') == nested.resolve()
+
+
+@pytest.mark.parametrize('layout', ['other_owner', 'basename_elsewhere', 'deeper_copy', 'both_layouts'])
+def test_exact_path_never_selects_by_basename(tmp_path, layout):
+    if layout == 'other_owner': _touch(tmp_path / 'datasets' / 'intruder' / 'fixture-ticks' / 'ticks.parquet')
+    elif layout == 'basename_elsewhere': _touch(tmp_path / 'other-dataset' / 'ticks.parquet')
+    elif layout == 'deeper_copy': _touch(tmp_path / 'x' / 'fixture-ticks' / 'ticks.parquet')
+    else:
+        _touch(tmp_path / 'fixture-ticks' / 'ticks.parquet')
+        _touch(tmp_path / 'datasets' / 'test' / 'fixture-ticks' / 'ticks.parquet')
+    with pytest.raises(FileNotFoundError):
+        f.exact_path(tmp_path, 'fixture-ticks', 'ticks.parquet', 'test')
