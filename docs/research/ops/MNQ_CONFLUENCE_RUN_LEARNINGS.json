@@ -2,7 +2,7 @@
   "schema": "mnq_confluence_technical_learning_v1",
   "status": "PROPOSED_TECHNICAL_NOT_CANONICAL_ADJUDICATION",
   "v1_evidence_sha256": "4b49d32d18182d4776bf421151f77ab1d84b6af2a7d681f734425bf1b8993069",
-  "v2_status_last_observed": "RUNNING",
+  "v2_status_last_observed": "ERROR",
   "facts": {
     "v1_failed": true,
     "formation_sessions_completed": 25,
@@ -59,7 +59,7 @@
   "optimization_candidates": [
     {
       "id": "CAPTURE_STORAGE",
-      "status": "PROPOSED_NOT_BENCHMARKED",
+      "status": "PROFILE_PREPARED_NOT_MARKET_BENCHMARKED",
       "change": "Typed private storage and separated serialization/index timing, preserving ordered capture hashes and all records."
     },
     {
@@ -81,6 +81,11 @@
       "id": "RACIMO_FENWICK",
       "status": "V2_IMPLEMENTED_SYNTHETIC_EQUIVALENCE_ONLY",
       "change": "Exact band selection with preserved original tie order; full membership snapshots still cost linear work."
+    },
+    {
+      "id": "CLUSTERED_SQLITE",
+      "status": "SYNTHETIC_MICROBENCHMARK_BELOW_SPEED_SCREEN_NOT_ADOPTED",
+      "change": "WITHOUT ROWID clustered table preserves ordered captures; ~4% total microbenchmark gain and ~12% fewer bytes, not full-job speedup."
     }
   ],
   "canonical_brain_written": false,
@@ -88,5 +93,17 @@
   "edge_validated": false,
   "new_dataset_audit": false,
   "active_job_modified": false,
-  "automatic_retry_authorized": false
+  "automatic_retry_authorized": false,
+  "v2_new_observations": {
+    "target_session_reported_complete": true,
+    "capture_rows_after_target": 6296969,
+    "geometry_triads_reported_complete": [
+      0,
+      1
+    ],
+    "failure_category": "UNCLASSIFIED_ENGINE_ERROR",
+    "specific_root_cause_known": false,
+    "complete_census": false,
+    "stage_timing_receipt_available": false
+  }
 }

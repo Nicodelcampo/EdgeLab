@@ -180,3 +180,10 @@ V2 enviado después de persistir `8350d9dbb5281bd1b93aba083537eb43f984fa67`: ker
 
 
 V2 observado terminal **ERROR** y source/version verificados. Progreso reporta sesión target completada (2451028 ticks, 6296969 capturas acumuladas), dos tríadas (0,1) antes de UNCLASSIFIED_ENGINE_ERROR. Causa específica desconocida; no usar hipótesis v1 como explicación v2. Receipts agregados preservados con seal de failure verificado. Inventario MCP vacío, sin afirmar cobertura exhaustiva. Sin censo final ni timings por etapa/per-config exportados: próximo cambio conserva agregados parciales y sitio de fallo constante. No relanzar ciegamente.
+
+
+## Cierre terminal + perfil y conservación parcial preparados
+
+Nuevo `terminal_acquisition.py` vincula identidad terminal del journal a allowlist/limites de adquisición y review de failure/partial; aplicado al cierre real V2, sin inventario completo ni custodia firmada. No afirmar que el host ya tiene daemon/API adapter permanente. Nuevo `failure_telemetry.py` exporta categoría, tipo y sitio cerrado/line de source, nunca texto libre. Runner/BOOT preparados para partial receipts atómicas selladas, conteos/hashes 96cfg y tiempos nested almacenamiento; históricos V1/V2 permanecen intactos.
+
+Candidato SQLite clustered SIN activar: tres pares sintéticos de 100000 records con hashes/outputs exactos; ratio total ~1.04 y bytes ~0.88, writes más lentos, falta benchmark mercado/cold-warm/RSS. No adoptar por optimización marginal ni afirmar speedup de campaña. Pruebas **729 Research Ops +18 navegación PASS**, catálogo PASS_NAVIGATION_ONLY. Próximo: nuevo intento diagnóstico acotado, mismo universo/baseline, código persistido primero; no cambiar fuente, warmup, indicadores o presupuesto científico, no reauditar dataset.

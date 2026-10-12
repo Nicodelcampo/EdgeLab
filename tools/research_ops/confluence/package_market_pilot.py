@@ -10,7 +10,7 @@ from .package_synthetic_notebook import SOURCE_FILES
 from .source_footer import validate_pin
 from .build_target_free_pilot import digest
 
-EXTRA=['tools/research_ops/confluence/'+n+'.py' for n in ('avz_stream','bt2_stream','bt2a_stream','session_primitives','kaggle_session_reader','geometry_replay','market_pilot')]+['docs/research/ops/MNQ_CONFLUENCE_MARKET_PILOT_PLAN.json','docs/research/ops/MNQ_CONFLUENCE_MARKET_PILOT_RETRY_PLAN.json']
+EXTRA=['tools/research_ops/confluence/'+n+'.py' for n in ('avz_stream','bt2_stream','bt2a_stream','session_primitives','kaggle_session_reader','geometry_replay','market_pilot','failure_telemetry')]+['docs/research/ops/MNQ_CONFLUENCE_MARKET_PILOT_PLAN.json','docs/research/ops/MNQ_CONFLUENCE_MARKET_PILOT_RETRY_PLAN.json']
 BOOT='''import os,sys,json,pathlib,hashlib,base64,zlib,tempfile,subprocess,time,signal,resource,urllib.request
 os.environ.update(OPENBLAS_NUM_THREADS='1',OMP_NUM_THREADS='1',NUMBA_NUM_THREADS='1',PYTHONUNBUFFERED='1')
 URL=__URL__
@@ -63,6 +63,7 @@ try:
  lines=(root/'pilot-private.log').read_text(errors='replace').splitlines()
  (out/'aggregate-progress.log').write_text('\\n'.join(s for s in lines if s.startswith(('SESSION_COMPLETE ','GEOMETRY_TRIAD_COMPLETE ','TARGET_FREE_MARKET_PILOT_COMPLETE','PILOT_FAILED ')))+'\\n')
  state.update(status='TARGET_FREE_MARKET_PILOT_COMPLETE_NOT_VALIDATED_EDGE' if rc==0 and stop is None else 'MARKET_PILOT_FAILED_NO_EDGE_CLAIM',exit_code=rc,stop_reason=stop,sampled_child_peak_rss_bytes=peak,wall_seconds=time.monotonic()-started)
+ if (out/'partial-receipt.json').exists():state['partial_receipt_sha256']=hashlib.sha256((out/'partial-receipt.json').read_bytes()).hexdigest()
  if (out/'failure-receipt.json').exists():
   state['failure_receipt_sha256']=hashlib.sha256((out/'failure-receipt.json').read_bytes()).hexdigest()
   state['failure_category']=json.loads((out/'failure-receipt.json').read_bytes())['failure_category']

@@ -31,3 +31,8 @@ Prioridad propuesta tras recibir perfil V2:
 5. Sólo después diseñar checkpoint privado reutilizable para evitar formación repetida. No afirmar que ya existe ni extraer datos de mercado.
 
 Elegir una mejora por cuello medido; benchmark finito sobre mismas entradas y ordered-output parity, incluyendo cold/warm y memoria. No modificar kernel activo. No prometer GPU, aceleración global o campaña cartesiana ilimitada.
+
+
+## Actualización V2 terminal
+
+V2 ERROR después de target reportada completa y tríadas 0/1. Capturas acumuladas 6296969; no censo final ni perfil por etapa/per-config disponible. UNCLASSIFIED_ENGINE_ERROR sigue sin causa específica. El supervisor preservó/revisó el cierre agregado, sin custodia autenticada o inferencia de edge. Ver CONFLUENCE_TERMINAL_ACQUISITION.md y MNQ_CONFLUENCE_V2_SUPERVISOR_CLOSEOUT.json. Se preparó perfil nested y checkpoints agregados parciales para no perder trabajo útil tras un fallo. Candidato clustered conserva paridad sintética, pero no se adoptó.
