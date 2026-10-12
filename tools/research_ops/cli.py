@@ -21,6 +21,7 @@ def main(argv=None):
     s.add_parser('benchmark-synthetic')
     s.add_parser('benchmark-context-synthetic')
     a=s.add_parser('recall-brain');a.add_argument('ledger',type=Path);a.add_argument('query');a.add_argument('--expected-sha256',required=True);a.add_argument('--expected-tip',required=True)
+    a=s.add_parser('recall-anchored-brain');a.add_argument('root',type=Path);a.add_argument('binding',type=Path);a.add_argument('query');a.add_argument('--expected-binding-sha256',required=True)
     a=s.add_parser('recall-articles');a.add_argument('pack',type=Path);a.add_argument('query');a.add_argument('--expected-sha256',required=True);a.add_argument('--producer-commit',required=True)
     a=s.add_parser('snapshot-queue');a.add_argument('output',type=Path);a.add_argument('--snapshot-id',required=True);a.add_argument('--expected-tip',required=True)
     for name in ('inspect-snapshot','restore-queue'):
@@ -62,6 +63,9 @@ def main(argv=None):
     elif args.command=='recall-brain':
         from .knowledge import recall_brain
         result=recall_brain(args.ledger,expected_file_sha256=args.expected_sha256,expected_tip=args.expected_tip,query=args.query)
+    elif args.command=='recall-anchored-brain':
+        from .anchored_recall import recall_anchored_snapshot
+        result=recall_anchored_snapshot(args.root,args.binding,expected_binding_sha256=args.expected_binding_sha256,query=args.query)
     elif args.command=='recall-articles':
         from .knowledge import recall_literature
         result=recall_literature(args.pack,expected_file_sha256=args.expected_sha256,producer_commit=args.producer_commit,query=args.query)

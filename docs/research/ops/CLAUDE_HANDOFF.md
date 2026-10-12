@@ -1,6 +1,10 @@
 # Handoff para Claude — Research Ops autónomo
 
-## Latest continuation after the MNQ campaign review
+## Latest continuation: existing operational snapshot and technical replay
+
+Read `ANCHORED_MEMORY_AND_MNQ_REPLAY.md`, its evidence and `LATEST_CONTINUATION.json` first. Actual 10-record Kaggle operational ledger now bound read-only with both anchors/receipt. NOT a live writer destination or complete scientific history. MNQ resampling technical replay prespecified; see latest status before any launch, never relaunch the campaign.
+
+## Previous continuation after the MNQ campaign review
 
 Read `SIGNED_DELIVERY_AND_BOUNDED_EXPERIMENTS.md` and `LATEST_CONTINUATION.json` first. New offline signed-custody receiver, local reviewed canonical technical writer/ack, bounded experiment-charter review and single-process profiling are implemented/tested, not deployed or connected to production keys/ledger. Historical sections below preserve previous milestone limits. Final focal MNQ09-26 audit and five-replica interpretation are in research commit `eca53ec2277536b89f3b68cc39770c19dcba2483`; do not relaunch it. No real source selection or telemetry signing authority was fabricated.
 

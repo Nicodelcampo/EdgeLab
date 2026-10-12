@@ -1,7 +1,7 @@
 {
   "schema": "research_ops_latest_continuation_v1",
-  "recorded_utc": "2026-10-12T16:33:45.371945+00:00",
-  "status": "LOCAL_ADAPTERS_TESTED_PRODUCTION_BINDING_BLOCKED",
+  "recorded_utc": "2026-10-12T16:59:58.972465+00:00",
+  "status": "OPERATIONAL_SNAPSHOT_BOUND_READ_ONLY_PRODUCTION_WRITER_BLOCKED",
   "base_system_commit": "c90b50cfc0e188bb0edae389552d278c6a600470",
   "system_branch": "feat/research-ops-supervisor-mvp",
   "draft_pr": 117,
@@ -18,7 +18,14 @@
     "tools/research_ops/experiment_charter.py": "1cc3520b4fdea13054676bf0dfc14ffdf82cd7a4d3d1e297b28e686449e68732",
     "tools/research_ops/learning_outbox.py": "ef0c91298257ffd85e084800544039d8c022e81ec01160f5e253e1234c92771d",
     "tools/research_ops/signed_authority.py": "59208c182b0e5ce1270764d92522329b44e4fbec91d170da497dc368765c3ba5",
-    "tools/research_ops/stage_profile.py": "92ec79415e4f4bd4dc86a3ea21bb51bfec35112314791a2c830bb84e506d4d69"
+    "tools/research_ops/stage_profile.py": "92ec79415e4f4bd4dc86a3ea21bb51bfec35112314791a2c830bb84e506d4d69",
+    "tools/research_ops/anchored_recall.py": "4f7e872256021e6bd83cc2fb3c403e5848e18662cac6ab836b048373555ee21a",
+    "tools/research_ops/cli.py": "b47de843d94d8cabe84c336e6d1c2ed3b0f79ea92d7a928836e8654d78352701",
+    "config/research_ops_operational_snapshot.json": "e148203f349c0f24ee228990c22e2364805e1f29cc7a6dcfe3da92801c7933cd",
+    "config/research_ops_knowledge_sources.json": "6be061049eede96e9b432e395fcbaac63b04ffcdd61a762d2f58eecf6a52e639",
+    "tools/research_ops/benchmarks/mnq_resampling_replay.py": "80b5f2c160f41fb6f685860ca0777b2ce14dd1fd0b1046c2777b7f4a0472cc12",
+    "tests/research_ops/test_anchored_recall.py": "61ee6e6dd8ec8c333ed1f071f8ab7362e5e8738ef60daff5b5e1bd63cf461415",
+    "tests/research_ops/test_mnq_resampling_replay.py": "24ec65a190cfde455ac17621e6246689040921fedd27286f4d5937053747cc04"
   },
   "research_commit": "eca53ec2277536b89f3b68cc39770c19dcba2483",
   "frozen_scientific_commit": "9125197dc6098100459f36a3d90a5c7b7aa4f9c0",
@@ -28,7 +35,7 @@
   "holdout_opened": false,
   "pnl_computed": false,
   "local_tests": {
-    "research_ops": 418,
+    "research_ops": 441,
     "navigation": 18,
     "canonical_store": 19
   },
@@ -39,12 +46,13 @@
     "Outbox DELIVERED replay/snapshot support and identical-ingest noop after delivery.",
     "Canonical receipt dependency/invalidation blocks reuse.",
     "Structural bounded experiment charter and knowledge context binding.",
-    "Fresh-process serial substep instrumentation with synthetic parity self-check."
+    "Fresh-process serial substep instrumentation with synthetic parity self-check.",
+    "Existing 10-record operational snapshot bound read-only with all anchors/receipt; no new ledger."
   ],
   "real_custodian_keys_bound": false,
   "real_review_keys_bound": false,
   "real_brain_destination_bound": false,
-  "real_brain_export_bound": false,
+  "real_brain_export_bound": true,
   "real_literature_export_bound": false,
   "live_kaggle_coordinator_attached": false,
   "remote_latest_witness_bound": false,
@@ -55,10 +63,14 @@
     "Implement and independently review acquisition producer: complete pagination, immutable execution/input/build, original audit custody and measured whole-workload telemetry.",
     "Current historical MNQ jobs have no authenticated RSS receipt; do not impute or retrofit reruns.",
     "For actual multiprocess Kaggle drivers, add independently tested process-tree telemetry; single-process receiver must fail closed.",
-    "Bind approved target-free Brain export and canonical SSRN export/custody before charter progression.",
+    "Bind complete scientific trial history and canonical SSRN export/custody before scientific charter progression; small operational snapshot is now readable.",
     "Approve one bounded preholdout shard with exact formation/selection/source/build/protocol pins and cost reservation.",
     "Measure real longevity substeps, implement at most one candidate, require independent full-output parity, equivalent cold/warm pairs and authorization before adoption.",
     "Keep proposed stricter width/side control experiment separate from frozen recipes and all previous trial history."
   ],
-  "updated_entrypoint": "docs/research/ops/SIGNED_DELIVERY_AND_BOUNDED_EXPERIMENTS.md"
+  "updated_entrypoint": "docs/research/ops/ANCHORED_MEMORY_AND_MNQ_REPLAY.md",
+  "previous_system_commit": "3d363492453b12e5da4a32d49d677fea57e3f367",
+  "real_brain_export_scope": "TARGET_FREE_AGGREGATE_OPERATIONS_ONLY",
+  "scientific_trial_history_complete": false,
+  "real_resampling_replay_status": "PRESPECIFIED_NOT_LAUNCHED"
 }
