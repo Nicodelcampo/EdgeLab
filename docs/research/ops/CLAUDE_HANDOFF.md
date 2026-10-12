@@ -1,5 +1,11 @@
 # Handoff para Claude — Research Ops autónomo
 
+## Current coordination: review external autopilot before further changes
+
+User explicitly requested checking the other agent FIRST. Reviewed Claude branch `claude/vibrant-clarke-s9z6e2` PR64 snapshot `972cb39bcade89f3505550f8176fb3ef7fdc9820`, including real autopilot code, Debian preparation, SLOT-1 reported failure and new Brain records. Read `EXTERNAL_AGENT_ADVANCES_RECONCILIATION.md/.json` FIRST, then `CONFLUENCE_SUPERVISOR_CONTINUATION.json`. Do not claim no autopilot exists anywhere: PR117 remains a finite prototype, PR64 now contains another controller. Debian real deployment untested per its LEEME. Do not run competing controllers, blindly merge code or overwrite evolving Brain anchors.
+
+V3 MNQ still RUNNING, same immutable source/plan; query reserved durably and source/version checked. External SLOT-1 is a reported NO_FINDING/FAILED_REPLICATION, not an independently recounted MNQ result. Pin/layer budgets and review finite p-values, crash idempotency, single writer/global account reservations and canonical custody before integration. External sources were reviewed, not adopted into runtime. Main and other branches untouched. Historic sections below remain snapshots, not latest live state.
+
 ## Current continuation: dense confluence pilot V3 + finite supervisor
 
 Read `CONFLUENCE_SUPERVISOR_CONTINUATION.json`, `MNQ_CONFLUENCE_IMPLEMENTATION_CHECKPOINT.md` and `CONFLUENCE_TERMINAL_ACQUISITION.md` FIRST. The entries below are historical snapshots, not live status or the current order of work. User now requests dense AVZP2/racimo/BT2/BT2A exploration, useful and efficient runs, and continued supervisor development. Datasets already resolved: no repeated QA, frozen-campaign replay or exhaustive NT8 parity blocker. Near-100% NT8 is an estimate, not measured.

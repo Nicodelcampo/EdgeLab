@@ -193,3 +193,8 @@ Plan V3 diagnóstico separado (`MNQ_CONFLUENCE_MARKET_DIAGNOSTIC_PLAN.json`), v1
 
 
 V3 diagnóstico **enviado y RUNNING**: 138386707/v3, source `97cc93d40d531627381fe71ee4b9e70ca496512b`, metadata privado/CPU y source exacto verificados; consulta reservada en journal. Plan diagnóstico separado; no usar plan v2 para verificar futuros partials v3. **No relanzar por retomar checkpoint**. Source/ticks/SQLite y URLs permanecen privados Kaggle, sólo agregados recuperables. Próximo: al terminar, recuperar boot/partial y failure o pilot por versión3 con allowlist; cerrar journal, conservar parcial si falla, interpretar timings nested sin sumar doble, elegir sólo una mejora por costo observado. Nada de nueva QA de fuentes, inferencia/labels/P&L/holdout o escrituras Brain.
+
+
+## Revisión del otro agente antes de actualizar
+
+Claude PR64 snapshot `972cb39bcade89f3505550f8176fb3ef7fdc9820` agrega autopilot real/sync/heartbeat/preparación Debian y SLOT-1 reportada sin hallazgo. Ver EXTERNAL_AGENT_ADVANCES_RECONCILIATION.md/.json. No importar runtime/Brain/alpha automáticamente ni duplicar controlador. PR118 status/dispatch también inspeccionado. Nuestra V3 sigue RUNNING, identidad/source contrastados y consulta reservada. No nuevos resultados completos MNQ, source QA, mercado en sandbox o relanzamientos. Tests propios 731+18 corresponden al código previo intacto; sondas sintéticas puntuales de límites externos no son su suite completa.
