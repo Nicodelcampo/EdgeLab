@@ -60,8 +60,7 @@ def _module(family):
     if hashlib.sha256(raw).hexdigest()!=PINS[family]:raise ValueError('detector source changed; review hook locations before use')
     return mod
 
-@lru_cache(maxsize=3)
-def _code(family):
+def _capture_tree(family):
     mod=_module(family);tree=ast.parse(inspect.getsource(mod.run));counts={'birth':0,'remove':0,'classify':0,'log':0,'signature':0}
     class Hooks(ast.NodeTransformer):
         in_tape_loop=False
@@ -111,7 +110,11 @@ def _code(family):
     tree=Hooks().visit(tree);ast.fix_missing_locations(tree)
     expected={'BT2':{'log':1},'BT2A':{'birth':1,'remove':2,'signature':1,'flush_signature':1,'flush_call':3,'tape_loop':1},'AVZP2':{'birth':1,'classify':1,'immediate':1}}[family]
     if {k:v for k,v in counts.items() if v}!=expected:raise ValueError('hook location census drift')
-    return compile(tree,f'<pinned-capture-{family}>','exec')
+    return tree
+
+@lru_cache(maxsize=3)
+def _code(family):
+    return compile(_capture_tree(family),f'<pinned-capture-{family}>','exec')
 
 def _validate_tape(ticks):
     import numpy as np

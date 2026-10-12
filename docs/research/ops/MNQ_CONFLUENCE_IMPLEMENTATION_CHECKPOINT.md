@@ -137,3 +137,13 @@ Se encontró y corrigió una disponibilidad causal en el adaptador BT2A: el cier
 Siguiente trabajo: completar procesamiento estatal BT2A y primitives de barras/footprints, conectar runner Kaggle al scope existente y medir costos/densidad/ocupación en MNQ. Luego fijar escenarios/labels y análisis con controles de ocupación, dependencia y multiplicidad. No lanzar aún la enorme campaña cartesiana con un runner que reinicie historia por cada chunk.
 
 Regresión de esta etapa: **641 Research Ops + 18 navegación PASS**, catálogo PASS_NAVIGATION_ONLY. Doce pruebas nuevas de AVZ streaming, cuatro de cierre metadata y dos del cierre residual BT2A; todas sin cargar datos de mercado en el sandbox.
+
+## Etapa 6: las tres familias conservan estado
+
+Predecesor `dc65d490b04ca9ce28d93a1565ae8f6e61615b58`. `bt2_stream.py` y `bt2a_stream.py` completan las dos variantes BigTrap estatales junto con AVZ. Historial y activos sobreviven a las entregas sin acortar el warmup. Se comparte el árbol instrumentado hash-bound con captura de referencia; no se alteraron kernels fijados.
+
+Camino default sin serialización diagnóstica CSV, con capturas idénticas en pruebas específicas. Modo diagnóstico compara eventos/scores contra native en las 32 configs de cada variante. Integración de las tres familias conserva racimos/triples/llegadas e identidades al variar chunks. Evidencia sólo sintética, no paridad NT8 100% ni medición MNQ. Ver `MNQ_CONFLUENCE_STREAMING_ENGINE.md` para límites y pendientes concretos.
+
+No reabrir fuente ni corridas históricas. El siguiente módulo es barras/footprints por lotes con continuidad exacta, seguido del lector/runner Kaggle y perfil real. Fuente aprobada reutilizada, holdout cerrado, no nuevos resultados de mercado en esta etapa. No volver a lanzar probes de metadata.
+
+Regresión de esta etapa: **666 Research Ops + 18 navegación PASS**, catálogo PASS_NAVIGATION_ONLY. 25 tests nuevos (9 BT2, 14 BT2A, 2 integración) sin datos de mercado en el sandbox ni nuevas auditorías de datasets.
