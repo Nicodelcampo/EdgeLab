@@ -190,3 +190,6 @@ Candidato SQLite clustered SIN activar: tres pares sintéticos de 100000 records
 
 
 Plan V3 diagnóstico separado (`MNQ_CONFLUENCE_MARKET_DIAGNOSTIC_PLAN.json`), v1/v2 plans intactos. Mismos indicadores/configs/target/warmup, 12M captures/4GiB SQLite y todos los otros límites v2 sin cambio; sólo partial agregados y sitio de error nuevos. Candidato clustered excluido del bundle. Tests **731 Research Ops +18 navegación PASS**. Persistir source antes de enviar; no afirmar versión/estado hasta respuesta del proveedor. El microbenchmark publicado corresponde al source de `e6a7c6ff5ea314f4dccf72651578f7b03436e48b`, no una medición market de V3.
+
+
+V3 diagnóstico **enviado y RUNNING**: 138386707/v3, source `97cc93d40d531627381fe71ee4b9e70ca496512b`, metadata privado/CPU y source exacto verificados; consulta reservada en journal. Plan diagnóstico separado; no usar plan v2 para verificar futuros partials v3. **No relanzar por retomar checkpoint**. Source/ticks/SQLite y URLs permanecen privados Kaggle, sólo agregados recuperables. Próximo: al terminar, recuperar boot/partial y failure o pilot por versión3 con allowlist; cerrar journal, conservar parcial si falla, interpretar timings nested sin sumar doble, elegir sólo una mejora por costo observado. Nada de nueva QA de fuentes, inferencia/labels/P&L/holdout o escrituras Brain.

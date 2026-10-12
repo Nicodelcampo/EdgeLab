@@ -1,5 +1,15 @@
 # Handoff para Claude — Research Ops autónomo
 
+## Current continuation: dense confluence pilot V3 + finite supervisor
+
+Read `CONFLUENCE_SUPERVISOR_CONTINUATION.json`, `MNQ_CONFLUENCE_IMPLEMENTATION_CHECKPOINT.md` and `CONFLUENCE_TERMINAL_ACQUISITION.md` FIRST. The entries below are historical snapshots, not live status or the current order of work. User now requests dense AVZP2/racimo/BT2/BT2A exploration, useful and efficient runs, and continued supervisor development. Datasets already resolved: no repeated QA, frozen-campaign replay or exhaustive NT8 parity blocker. Near-100% NT8 is an estimate, not measured.
+
+Kaggle 138386707/v1 and v2 ERROR preserved. V2 reports target completed and two of 32 geometry triads, then UNCLASSIFIED_ENGINE_ERROR; no final census/edge. V3 diagnostic RUNNING with persisted source `97cc93d40d531627381fe71ee4b9e70ca496512b`, same 96configs/32aligned triads/history/target/resources. Private CPU notebook; source exact verified. NEVER relaunch an active attempt merely on recovery. Plan V3 adds aggregate prefix receipts and closed exception site/type; no raw export, labels/P&L, holdout or compact-storage activation.
+
+New finite remote-watch journal reserves status queries before provider access; bounded terminal aggregate planning/review applied to real V2. Host-mediated MCP, not daemon, signed remote custody or 24/7 deployment. Sampled child RSS cannot become strict measured RunObservation peak or a fake canonical handoff. Brain canonical writer/production authorities remain unbound; no automatic scientific learning/promotions. Tests **731 Research Ops +18 navigation PASS**, navigation-only catalog PASS. SQLite candidate synthetic parity measured but not adopted (modest gain, slower writes, no cold/warm or whole-job memory test).
+
+Next: recover only boot/partial/failure-or-pilot aggregates at V3 terminal; bind exact version/package/diagnostic plan, preserve partials/failures and nested timing semantics, then choose one exact measured optimization. Scientific usefulness requires common anchors, arrival vs geometry, occupancy/density controls, AVZ-racimo dependence, censures/carry, temporal uncertainty/multiplicity before outcomes. Continue finite supervisor integration without claiming autonomy24/7.
+
 ## Latest user priority: new MNQ results, not more historical auditing
 
 Read `MNQ_NEXT_RESULTS_PRIORITY.md` and `LATEST_CONTINUATION.json` first. User explicitly prioritized NEW scientific results and asked to push all work. Campaign compute complete. Pause new audit/parity/profiling/infra expansion; next is a separately specified EXPLORATORY incremental/ablation analysis using existing Kaggle outputs. Full live supervisor is NOT prerequisite for manual research. Two formerly local report-reproduction scripts are now saved portably. No new scientific job launched in this checkpoint.
