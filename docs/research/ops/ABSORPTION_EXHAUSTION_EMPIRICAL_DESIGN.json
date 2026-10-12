@@ -1,0 +1,74 @@
+{
+  "schema": "absorption_exhaustion_design_v1",
+  "status": "DESIGN_ONLY_NOT_PREREGISTERED",
+  "draft": {
+    "hypothesis_id": "MNQ-ABSORPTION-EXHAUSTION-ATLAS",
+    "question": "¿Los proxies causales de presión sin progreso y decaimiento tras impulso difieren en respuesta futura y añaden utilidad representacional o interacción espacial en MNQ?",
+    "mechanism": "Distinguir firmas compatibles con resistencia de liquidez y descenso de actividad sin afirmar reposición pasiva o final de metaorden.",
+    "event_unit": "Anchor común de reloj y episodio/sesión dependiente; no configuración ni trade independiente.",
+    "causal_availability": "Ventanas retrospectivas5/20/60s, corte(timestamp_ns,sequence), calibración pasada; UNKNOWN conservado.",
+    "control_definition": "Presión con progreso, baja actividad sin impulso, mismo contexto y geometría zone-free; censo propio del control.",
+    "outcome_definition": "Propuesta: primera pasada de midpoint en60s con barrera por anchor fijada usando rango previo; tres clases y censura separada, pendiente freeze.",
+    "multiplicity_family": "Propuesta: tres contrastes primarios conjuntos, Holm; zonas/ventanas/sensibilidades exploratorias registradas; historial no reiniciado.",
+    "validation_plan": "Tests sintéticos prefix/mirror/ties/gaps y oráculo lento para extensiones; walk-forward purgado sólo en research autorizado.",
+    "falsification_plan": "Bounce, cobertura de signo, controles de presión/geometría y nulos igualmente procesados; CI/MDE antes de equivalencia.",
+    "resource_budget": "P0 propuesto1–3 sesiones,900s,4GiB RSS medido,250000 anchors; costo de atlas completo pendiente medición.",
+    "campaign_authority_ref": "Diseño solicitado por Nico; selección/splits/builds/revisión específicos aún no vinculados, sin habilitación de ejecución.",
+    "status": "PROPOSED_UNAUTHORIZED"
+  },
+  "structural_review": {
+    "status": "STRUCTURALLY_COMPLETE_NOT_APPROVED",
+    "proposal_sha256": "e4fcb20530082a6641415484200a4ce33955b28aea049063d88f46f77087d938",
+    "scientific_validity_verified": false,
+    "authorization_verified": false,
+    "outcomes_authorized": false,
+    "holdout_authorized": false,
+    "execution_enabled": false,
+    "required_next_reviews": [
+      "campaign authority and frozen partitions",
+      "causal timing and control validity",
+      "multiplicity history and statistical design",
+      "costs, support and finite resources"
+    ]
+  },
+  "measurement_windows_seconds": [
+    5,
+    20,
+    60
+  ],
+  "primary_window_seconds": 20,
+  "common_anchor_grid_seconds": 5,
+  "primary_response_horizon_seconds": 60,
+  "states": [
+    "A_ONLY",
+    "E_ONLY",
+    "BOTH",
+    "NEITHER",
+    "UNKNOWN"
+  ],
+  "clock_order": [
+    "timestamp_ns",
+    "sequence"
+  ],
+  "data_scope": "EXPLORATION_KAGGLE_ONLY_PRE_2026_10_01",
+  "pending_freeze": [
+    "session_dates_and_splits",
+    "proxy_coverage_history_minimum",
+    "gaps_and_censoring",
+    "episode_dedupe",
+    "practical_margin_support_and_MDE",
+    "model_and_regularization",
+    "inference_family",
+    "measured_resources",
+    "new_builds_and_independent_review"
+  ],
+  "runtime_implemented": false,
+  "new_kaggle_run_launched": false,
+  "active_v3_modified": false,
+  "canonical_brain_written": false,
+  "pnl_enabled": false,
+  "holdout_enabled": false,
+  "auto_promotion_enabled": false,
+  "source_review_sha256": "b5d14a2092e3fcc767ca79a00c8067b5b1acea6a5d8ccd43d7cc293f749292d0",
+  "design_markdown_sha256": "25e4d534c7e6b9949711e6af22ef6ebc27a57071c1c3932c18071483004d49b4"
+}
