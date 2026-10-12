@@ -62,3 +62,8 @@ SHA/TIP son placeholders de pins verificados/custodiados, no credenciales. Los c
 No se importaron datos privados o outcomes de MNQ en una memoria operacional. Los tiempos recuperados de MNQ siguen siendo contexto técnico; todavía no hay un productor aprobado que complete ese sobre con RSS y todas las pruebas de custodia. No alegar ciclo Kaggle→Brain activo por haber completado una demo local.
 
 Próximo hito mínimo: productor read-only de cierre y telemetría confiables; después writer canónico operacional con revisión y deduplicación en destino. Activación de benchmarks/parches requiere presupuesto durable, ejecutor aislado y gates separados. La campaña científica permanece congelada.
+
+
+## Local MNQ receipt bridge
+
+See [MNQ_CLOSEOUT_PRODUCER.md](MNQ_CLOSEOUT_PRODUCER.md) and `MNQ_PRODUCER_TEST_EVIDENCE.json`. The technical-only producer now validates pinned, independently reviewed real receipt bundles, but blocks envelope output without measured RSS and verified execution/input/build binding. This is not live Kaggle ingestion, canonical-memory delivery or optimization activation.

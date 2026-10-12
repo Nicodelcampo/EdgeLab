@@ -81,3 +81,8 @@ No abrir holdout, calcular P&L, promover estrategias, certificar fuentes ni ampl
 ## Consigna para continuar
 
 > Trabajá sobre PR117/feat/research-ops-supervisor-mvp. Leé este handoff, verificá el estado remoto y corré las pruebas focales. Conservá EdgeBrain/artículos/research condicional y los controles de presupuesto, autoridad, multiplicidad y continuidad. Terminá la campaña MNQ congelada antes de modificar su motor. Proponé el siguiente hito mínimo con tests negativos, evidencia de paridad y límites explícitos; no declares autonomía de mercado ni servicio24/7 por tener una cola sintética.
+
+
+## Local MNQ receipt bridge
+
+See [MNQ_CLOSEOUT_PRODUCER.md](MNQ_CLOSEOUT_PRODUCER.md) and `MNQ_PRODUCER_TEST_EVIDENCE.json`. The technical-only producer now validates pinned, independently reviewed real receipt bundles, but blocks envelope output without measured RSS and verified execution/input/build binding. This is not live Kaggle ingestion, canonical-memory delivery or optimization activation.

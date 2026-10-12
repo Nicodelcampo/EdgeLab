@@ -90,3 +90,8 @@ Export/inspect/restore con proyecciones, eventos, recibos y presupuesto intactos
 ## Cierres y outbox de aprendizaje — importación local conectada
 
 [Contrato y CLI](CLOSEOUT_LEARNING_OUTBOX.md). `closeout.py` verifica sobres técnicos sellados y `learning_outbox.py` registra el plan poscorrida con idempotencia local, conflictos explícitos y evidencia preservada. Snapshot/restore mantienen pendientes e invalidaciones, sin entregar ni repetir jobs. Es una bandeja operacional, no memoria científica paralela. Polling/descarga remotos, producer de telemetría autenticada y writer Brain siguen pendientes.
+
+
+## Local MNQ receipt bridge
+
+See [MNQ_CLOSEOUT_PRODUCER.md](MNQ_CLOSEOUT_PRODUCER.md) and `MNQ_PRODUCER_TEST_EVIDENCE.json`. The technical-only producer now validates pinned, independently reviewed real receipt bundles, but blocks envelope output without measured RSS and verified execution/input/build binding. This is not live Kaggle ingestion, canonical-memory delivery or optimization activation.
