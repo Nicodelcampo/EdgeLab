@@ -82,3 +82,31 @@ read-only LOCAL capability probe passed, never claiming an approved leaf.
 No remote CI, live coordinator, exact job-tree RSS or actual cgroup-contained
 workload stress test is claimed. Existing analyzer/campaign and canonical
 ledgers are untouched; source checkpoint is saved before the Kaggle probe.
+
+## Actual Kaggle result and final validation
+
+Private data-free kernel138364980 v1, output execution357743635 COMPLETE.
+Source checkpoint74ecc896894f7c3d28e4d78738a68f666e8fa0ae and both program
+hashes verified. Probe body took0.045927seconds (not scheduler/startup time).
+Linux cgroup2 mount verified; memory.peak readable; memory controller available.
+Mount READ-ONLY and directory write-access hint false. No delegated job leaf,
+whole-job containment or usage measurement proven. Source contains no market
+inputs/download URLs and had internet disabled. Nothing changed in cgroup state.
+
+Consequences: the counter interface exists, but this kernel cannot provision an
+isolated leaf by writing through that mount. An externally prepared scope could
+in principle be readable even through a read-only mount; availability alone is
+not evidence that such a scope is present. Do NOT use its root/shared/unattested
+peak as the MNQ peak, change privileges or fake a new single-process receipt.
+Continue preserving historical RSS as unknown. Next production prerequisite is
+externally approved scope/lifecycle/provider custody, not another launch or a
+sampling fallback presented as exact memory. Market computation stays Kaggle.
+
+`CGROUP_KAGGLE_CAPABILITY_RESULT.json` preserves exact output; its offline review
+verifies externally supplied receipt/checkpoint/program pins and rigid flags.
+Even a fixture with writable hints returns execution_allowed=false.8new review
+tests block autoapproval, source changes, unknown/RSS fields, integer/bool aliases
+and invalid time/interface states. Final500Research Ops +18navigation +19canonical
+store tests PASS; catalog PASS_NAVIGATION_ONLY. No remote CI or live isolated
+multiprocess cgroup stress test claimed. Authenticated RSS receiver unchanged.
+The code/plan and all evidence are in the same PR117; no merge or deployment.

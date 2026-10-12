@@ -2,7 +2,7 @@
 
 ## Latest continuation: resource-kind-safe multiprocess telemetry
 
-Read `CGROUP_RESOURCE_TELEMETRY.md` and `LATEST_CONTINUATION.json` first. New read-only cgroup-v2 kernel-accounted-memory diagnostic is NOT RSS, custody or whole-job coverage. Existing receiver remains single-process RSS only. Check capability probe status before any repeat; no cgroup writes, new workloads or market data.492local Research Ops tests pass.
+Read `CGROUP_RESOURCE_TELEMETRY.md` and `LATEST_CONTINUATION.json` first. New read-only cgroup-v2 kernel-accounted-memory diagnostic is NOT RSS, custody or whole-job coverage. Existing receiver remains single-process RSS only. Kaggle probe COMPLETE: cgroup2/memory.peak readable but mount READ-ONLY; no delegated job scope. Do not rerun or substitute shared/root peak as MNQ RSS. No cgroup writes, resource-stress workloads or market data.500local Research Ops tests pass.
 
 ## Previous continuation: full primary-grid parity
 
