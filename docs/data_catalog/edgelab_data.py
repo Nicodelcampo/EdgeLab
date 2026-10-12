@@ -43,10 +43,16 @@ def sessions(inst: str, start: str = "1900-01-01", end: str = "2026-09-30", incl
 
 
 def _path(dataset: str, file: str) -> Path:
+    """Ruta del archivo exacto `file` dentro del dataset `dataset`. Si el nombre aparece más de una vez dentro del dataset (rutas distintas) NO elige: falla (nunca por parecido de nombre)."""
     for r in ROOTS:
-        for cand in (r / dataset / file, *(r / dataset).glob(f"**/{Path(file).name}")):
-            if cand.exists():
-                return cand
+        exact = r / dataset / file
+        if exact.exists():
+            return exact
+        found = sorted({c for c in (r / dataset).glob(f"**/{Path(file).name}") if c.exists()})
+        if len(found) > 1:
+            raise FileNotFoundError(f"ambiguo: {len(found)} archivos llamados {Path(file).name} en {dataset}: {[str(x) for x in found]}")
+        if found:
+            return found[0]
     raise FileNotFoundError(f"agregá el dataset '{dataset}' como input (falta {file}); raíces: {ROOTS}")
 
 
@@ -96,9 +102,38 @@ def _allow_missing() -> bool:
     return os.environ.get("EDGELAB_ALLOW_MISSING", "") == "1"
 
 
+def verify_launch_manifest(manifest=None) -> list:
+    """Compara los bytes de cada archivo montado contra el manifiesto que `tools/kaggle_launch.py` registró al lanzar (dataset, archivo, bytes).
+    Devuelve la lista de discrepancias y falla si hay alguna (archivo faltante o con otro tamaño = el dataset cambió desde el lanzamiento o falta una versión).
+    Sin manifiesto (EDGELAB_LAUNCH_MANIFEST vacío) no hace nada: corridas locales."""
+    if manifest is None:
+        raw = os.environ.get("EDGELAB_LAUNCH_MANIFEST")
+        if not raw:
+            return []
+        manifest = json.loads(raw)
+    bad = []
+    for e in manifest.get("files", []):
+        try:
+            p = _path(e["dataset"], e["file"])
+        except FileNotFoundError as ex:
+            bad.append(f"{e['dataset']}/{e['file']}: no montado ({str(ex)[:80]})"); continue
+        if p.stat().st_size != e["bytes"]:
+            bad.append(f"{e['dataset']}/{e['file']}: {p.stat().st_size} bytes montados, {e['bytes']} al lanzar")
+    if bad:
+        raise RuntimeError("los inputs montados no coinciden con el manifiesto de lanzamiento (versiones de datasets distintas):\n  " + "\n  ".join(bad[:20]) + (f"\n  ... y {len(bad) - 20} más" if len(bad) > 20 else ""))
+    print(f"[edgelab_data] manifiesto de lanzamiento verificado: {len(manifest.get('files', []))} archivos, versiones {manifest.get('versions')}", flush=True)
+    return bad
+
+
+_MANIFEST_OK = False
+
+
 def check_inputs(*requests) -> None:
     """Falla en segundos (no tras 25 minutos de proceso) si alguna sesión no tiene NINGUNA fuente montada. Avisa si se usan alternativas. requests: (inst, start, end).
     Con EDGELAB_ALLOW_MISSING=1 NO falla: omite esas sesiones, las lista en pantalla y las deja en `DROPPED` (decisión explícita del usuario, hay que declararla en el resultado)."""
+    global _MANIFEST_OK
+    if not _MANIFEST_OK:
+        verify_launch_manifest(); _MANIFEST_OK = True
     missing = {}; alt = {}
     for inst, a, b in requests:
         for r in resolve_sources(inst, a, b).itertuples(index=False):
