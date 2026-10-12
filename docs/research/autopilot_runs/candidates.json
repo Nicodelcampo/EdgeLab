@@ -119,5 +119,39 @@
   "notes": "mapa descriptivo de volatilidad por instrumento x franja x horizonte (dise\u00f1o del universo)",
   "decision_rule": "holm",
   "origin": {}
+ },
+ {
+  "run_id": "scan-1",
+  "kind": "study",
+  "family": "SLOT_SCAN",
+  "group": "MULTI",
+  "script": "tools/study_slot_effect.py",
+  "prereg": "docs/research/autopilot/drafts/SCAN-1.md",
+  "n_trials": 495,
+  "n_tests_holm": 20,
+  "needs": [
+   "6E:2025-07-01:2026-09-30",
+   "ES:2025-07-01:2026-09-30",
+   "GC:2025-07-01:2026-09-30",
+   "NQ:2025-07-01:2026-09-30",
+   "YM:2025-07-01:2026-09-30"
+  ],
+  "extra_datasets": [
+   "nicolasbuttaro/edgelab-dukascopy-es-usa500",
+   "nicolasbuttaro/edgelab-dukascopy-xauusd-ticks-m1"
+  ],
+  "internet": false,
+  "env": {
+   "STUDY_CFG": "{\"mode\": \"slot_scan\", \"n_planned\": 20, \"nperm\": 10000, \"scans\": [{\"disc\": \"ES_spot\", \"name\": \"ES\", \"rep\": \"ES\"}, {\"disc\": \"GC_spot_old\", \"name\": \"GC\", \"rep\": \"GC\"}, {\"disc\": \"NQ\", \"name\": \"NQ\", \"rep\": \"NQ\", \"split\": 0.6}, {\"disc\": \"YM\", \"name\": \"YM\", \"rep\": \"YM\", \"split\": 0.6}, {\"disc\": \"6E\", \"name\": \"6E\", \"rep\": \"6E\", \"split\": 0.6}], \"seed\": 20261016, \"spot_ranges\": {\"ES_spot\": [\"ES\", \"2018-01-01\", \"2025-06-30\"], \"GC_spot_old\": [\"GC\", \"2022-07-01\", \"2025-06-30\"]}}"
+  },
+  "est_seconds": 2400,
+  "decision_rule": "holm",
+  "notes": "Barrido de franjas (07:00-14:30 CT) en GC, NQ, ES, YM y 6E: momentum y reversi\u00f3n, descubrimiento \u2192 r\u00e9plica",
+  "origin": {
+   "UNIVERSE_SCAN_1": {
+    "sample": "scan_1",
+    "tests": null
+   }
+  }
  }
 ]
