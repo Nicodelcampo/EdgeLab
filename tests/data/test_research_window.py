@@ -8,6 +8,7 @@ from edgelab.data.contract_regime import build_contract_regime
 from edgelab.data.continuous_contract import ContinuousContractError, build_continuous_series
 from edgelab.data.research_data_gate import DataEligibilityError, REQUIRED_CHECKS, seal
 from edgelab.data.research_window import read_research_window
+from tests.synthetic_selection_evidence import add_selection_review
 
 DAYS = [20260327, 20260330, 20260331, 20260401]
 WINDOW = dict(start_trade_date=20260330, end_trade_date_exclusive=20260401)
@@ -39,6 +40,7 @@ def window_fixture(tmp_path):
          'allowed_trade_dates': DAYS[1:3], 'sessions': sessions}
     limits = {'root': 'MNQ', 'frozen_before_strategy': True, 'min_previous_session_volume': 1000,
               'max_previous_session_spread_p99_ticks': 2}
+    add_selection_review(c, r, 'MNQ')
     return paths, pin({'certificate': c, 'regime_manifest': r, 'root': 'MNQ', 'liquidity_limits': limits})
 
 
