@@ -6,6 +6,7 @@ from .worker import run_one,SCRIPT_SHA256
 from .observer import observe
 from .design import Draft,audit_draft
 from .dispatch import DispatchLedger,Reviewer
+from .checkpoints import CheckpointLedger
 
 def _bounded_json(path):
     if path.is_symlink() or path.stat().st_size>65536:raise ValueError('bounded regular file required')
@@ -39,6 +40,10 @@ def main(argv=None):
     a=s.add_parser('dispatch-reserve');a.add_argument('--dispatch-state',type=Path,required=True);a.add_argument('--reviewer-id',required=True);a.add_argument('directive_index',type=int)
     a=s.add_parser('dispatch-receipt');a.add_argument('--dispatch-state',type=Path,required=True);a.add_argument('directive_index',type=int);a.add_argument('--evidence-sha256',required=True);a.add_argument('--source-sha256',required=True);a.add_argument('--chars',type=int,required=True);a.add_argument('--cost',type=int,default=0)
     a=s.add_parser('dispatch-verify');a.add_argument('--dispatch-state',type=Path,required=True)
+    a=s.add_parser('checkpoint-init');a.add_argument('--checkpoint-state',type=Path,required=True);a.add_argument('plan',type=Path)
+    a=s.add_parser('checkpoint-record');a.add_argument('--checkpoint-state',type=Path,required=True);a.add_argument('receipt',type=Path)
+    a=s.add_parser('checkpoint-pending');a.add_argument('--checkpoint-state',type=Path,required=True)
+    a=s.add_parser('checkpoint-verify');a.add_argument('--checkpoint-state',type=Path,required=True)
     args=p.parse_args(argv)
     if args.command=='snapshot-queue':
         from .snapshots import export_queue
@@ -78,6 +83,14 @@ def main(argv=None):
         result=ledger.record_receipt(args.directive_index,evidence_sha256=args.evidence_sha256,source_url_sha256=args.source_sha256,char_count=args.chars,cost=args.cost)
     elif args.command=='dispatch-verify':
         result=DispatchLedger(args.dispatch_state).verify()
+    elif args.command=='checkpoint-init':
+        ledger=CheckpointLedger(args.checkpoint_state);ledger.initialize(_bounded_json(args.plan));result=ledger.verify()
+    elif args.command=='checkpoint-record':
+        ledger=CheckpointLedger(args.checkpoint_state);result=ledger.record(_bounded_json(args.receipt))
+    elif args.command=='checkpoint-pending':
+        result=CheckpointLedger(args.checkpoint_state).pending_units()
+    elif args.command=='checkpoint-verify':
+        result=CheckpointLedger(args.checkpoint_state).verify()
     else:
         store=Store(args.state)
         if args.command=='init':store.initialize(Policy(args.attempts,args.seconds));result=store.verify()
