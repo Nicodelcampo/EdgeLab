@@ -113,4 +113,14 @@ class AuthenticatedCloseoutTests(unittest.TestCase):
         self.assertEqual(len(next(iter(brain.memory.lessons.values()))),1)
         self.assertFalse(out['scientific_outcomes_written'])
 
+
+    def test_cgroup_accounted_peak_cannot_be_relabeled_rss(self):
+        self.memory['measurement']='LINUX_CGROUP_V2_MEMORY_PEAK_ACCOUNTED_BYTES_NOT_RSS'
+        self.save_memory()
+        with self.assertRaises(ValueError):self.call()
+    def test_diagnostic_schema_rejected_even_with_fixture_custody_signature(self):
+        self.memory={'schema':'research_ops_cgroup_memory_diagnostic_v1','peak_accounted_memory_bytes':8192,'authenticated_custody':False}
+        self.save_memory()
+        with self.assertRaises(ValueError):self.call()
+
 if __name__=='__main__':unittest.main()

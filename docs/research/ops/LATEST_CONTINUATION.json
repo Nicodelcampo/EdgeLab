@@ -1,14 +1,14 @@
 {
   "schema": "research_ops_latest_continuation_v1",
-  "recorded_utc": "2026-10-12T17:20:34.913838+00:00",
-  "status": "ALL_MNQ0926_STORED_PRIMARY_ROWS_EXACT_PARITY_PRODUCTION_BINDING_BLOCKED",
+  "recorded_utc": "2026-10-12T17:36:43.941852+00:00",
+  "status": "RESOURCE_KIND_SAFE_CGROUP_DIAGNOSTIC_IMPLEMENTED_PRODUCTION_BINDING_BLOCKED",
   "base_system_commit": "c90b50cfc0e188bb0edae389552d278c6a600470",
   "system_branch": "feat/research-ops-supervisor-mvp",
   "draft_pr": 117,
   "source_sha256": {
     ".github/workflows/research-ops.yml": "e0c7d82f44314750524ca903a6fc7487f841863e1d5c34eaefc3226d32e2ce73",
     "requirements/research-ops-authority.txt": "05abb8909b3432889039d298f85bc3cf13014a7516d8e51d45916f071a83da97",
-    "tests/research_ops/test_authenticated_closeout.py": "3a426b60127e9d0c2220d3e56c20de40c31eb06775399012000e5e56104ef0ff",
+    "tests/research_ops/test_authenticated_closeout.py": "47f7dcbd6de061cf43c9d5ad0efb1a3a35e9312f7cf7d478c930d201d50466fa",
     "tests/research_ops/test_experiment_charter.py": "60ab726d1eacc267fccc5000307d517690481f01e2188563417eb5d5117fa2f2",
     "tests/research_ops/test_signed_delivery.py": "99738603343046a6b6b9be00875ab532459267a41a20d97c29b041e7d912c19d",
     "tests/research_ops/test_stage_profile.py": "6f4431bfdfb8a81c4ae5ad7dccc021bbc60892fdcc48fb97081429b55a035c4c",
@@ -29,7 +29,9 @@
     "tools/research_ops/benchmarks/mnq_primary_grid_parity.py": "a32e07388e6d81630c3fe030c10450cca861ce87017d6c773e2404da7a8c047d",
     "tests/research_ops/test_mnq_primary_grid_parity.py": "f0b274a349d8341b5960e4986843f1baf31b9fa4b4a1dda29709c2e94e9bc853",
     "tools/research_ops/audits/review_primary_grid_receipt.py": "ded3f6f754829589101b76a028df15f096e1b4cfa7130ce81127f12c4aa27864",
-    "tests/research_ops/test_primary_grid_receipt_review.py": "7ffa301328a0e76a609c618a4087f259e41d3fed3406a9ef4fe6cb88d9f620b9"
+    "tests/research_ops/test_primary_grid_receipt_review.py": "7ffa301328a0e76a609c618a4087f259e41d3fed3406a9ef4fe6cb88d9f620b9",
+    "tools/research_ops/cgroup_telemetry.py": "892331daade53c4fa313710e0f00fcd00f0d42cb25a9176d207f0ed2dd8d2607",
+    "tests/research_ops/test_cgroup_telemetry.py": "39728629e43205c7ca28e345adfc90e57a97c1d010ee6f37e63e35a733c86c5e"
   },
   "research_commit": "eca53ec2277536b89f3b68cc39770c19dcba2483",
   "frozen_scientific_commit": "9125197dc6098100459f36a3d90a5c7b7aa4f9c0",
@@ -39,7 +41,7 @@
   "holdout_opened": false,
   "pnl_computed": false,
   "local_tests": {
-    "research_ops": 456,
+    "research_ops": 492,
     "navigation": 18,
     "canonical_store": 19
   },
@@ -53,7 +55,8 @@
     "Fresh-process serial substep instrumentation with synthetic parity self-check.",
     "Existing 10-record operational snapshot bound read-only with all anchors/receipt; no new ledger.",
     "Private Kaggle completed-input technical resampling replay: 60 prespecified cells, exact cold/warm output hashes across3pairs; candidate not adopted.",
-    "Manual private Kaggle replay all11340 stored MNQ09-26 primary-effects rows: exact 19-field parity including NaN/float round-trips; structural external-source-pin receiver with9negative/positive tests. No adoption, custody signature or detector rerun."
+    "Manual private Kaggle replay all11340 stored MNQ09-26 primary-effects rows: exact 19-field parity including NaN/float round-trips; structural external-source-pin receiver with9negative/positive tests. No adoption, custody signature or detector rerun.",
+    "Read-only fresh bounded cgroup-v2 ACCOUNTED-memory diagnostic, never RSS or approved whole-workload custody; kernel-limit failures retained and receiver unit/schema substitutions rejected."
   ],
   "real_custodian_keys_bound": false,
   "real_review_keys_bound": false,
@@ -74,10 +77,11 @@
     "Measure real longevity substeps, implement at most one candidate, require independent full-output parity, equivalent cold/warm pairs and authorization before adoption.",
     "Keep proposed stricter width/side control experiment separate from frozen recipes and all previous trial history.",
     "Review bounded resampling evidence and measure full longevity/primary-analysis substeps before any broader parity/adoption request; 3.38x substep improvement is not whole-job speedup.",
-    "Preserve completed full-primary-grid evidence; next scientific-performance gate still requires broader matched/model/full-pipeline coverage and approved integration, not relaunching campaign."
+    "Preserve completed full-primary-grid evidence; next scientific-performance gate still requires broader matched/model/full-pipeline coverage and approved integration, not relaunching campaign.",
+    "Externally authorize and provision isolated job leaf/lifecycle containment; independently stress-test multiprocess kernel peak. Migrate resource-kind-aware schema separately; raw probe/counter must not authorize receiver or writer."
   ],
-  "updated_entrypoint": "docs/research/ops/FULL_PRIMARY_GRID_PARITY.md",
-  "previous_system_commit": "241cc0cbb5d957caa8bab8d89c85507890c6daf8",
+  "updated_entrypoint": "docs/research/ops/CGROUP_RESOURCE_TELEMETRY.md",
+  "previous_system_commit": "a49e5705a2ff9146fbf5c7cc8d53d79df97df96a",
   "real_brain_export_scope": "TARGET_FREE_AGGREGATE_OPERATIONS_ONLY",
   "scientific_trial_history_complete": false,
   "real_resampling_replay_status": "COMPLETE_EXACT_SUBSTEP_PARITY_NOT_ADOPTED",
@@ -181,5 +185,9 @@
     "source_checkpoint": "8d08c657ac8eba76abe9959bd80a037f97e466a6",
     "aggregate_sha256": "47fbed738ea9d29d93a0c71bfa4ba3f44078063290c7d6705da271a7dd1b5bf6",
     "observed_utc": "2026-10-12T17:20:34.913838+00:00"
-  }
+  },
+  "cgroup_accounting_diagnostic_implemented": true,
+  "cgroup_isolated_workload_tested": false,
+  "cgroup_job_leaf_bound": false,
+  "cgroup_kaggle_capability_probe_status": "PRESPECIFIED_NOT_LAUNCHED"
 }

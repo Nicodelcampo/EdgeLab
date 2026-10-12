@@ -1,6 +1,10 @@
 # Handoff para Claude — Research Ops autónomo
 
-## Latest continuation: full primary-grid parity
+## Latest continuation: resource-kind-safe multiprocess telemetry
+
+Read `CGROUP_RESOURCE_TELEMETRY.md` and `LATEST_CONTINUATION.json` first. New read-only cgroup-v2 kernel-accounted-memory diagnostic is NOT RSS, custody or whole-job coverage. Existing receiver remains single-process RSS only. Check capability probe status before any repeat; no cgroup writes, new workloads or market data.492local Research Ops tests pass.
+
+## Previous continuation: full primary-grid parity
 
 Read `FULL_PRIMARY_GRID_PARITY.md` and `LATEST_CONTINUATION.json` first. All11,340 stored MNQ09-26 primary-effects rows PASSED all19fields (215,460 checks), including exact float round-trips against original CSV, on already-thinned events only. Kernel138362721 v1 COMPLETE. No new trial, full-pipeline claim or adoption.456local Research Ops tests. Do not rerun this completed replay.
 
