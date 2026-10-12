@@ -5,6 +5,12 @@ Propuesta científica nueva, no evidencia de edge, autorización de datos o apro
 La corrección de Nico es vinculante: el indicador principal es **aVolZonePOI2**, no aVolClusterPOI ni AVolZoneSimple.
 Los originales congelados, sus matrices/focales y el holdout permanecen intactos.
 
+## Actualización de Nico: continuar con paridad aproximada
+
+Nico aceptó avanzar sin exigir paridad 100%, estimando que está muy cerca por el trabajo previo. Se registra como **riesgo aceptado para EXPLORACIÓN**, no porcentaje medido o certificación nueva. Las demandas anteriores de cerrar exhaustivamente la paridad NT8/racimos dejan de bloquear este proyecto. Siguen la identidad de build y las salvedades conocidas; la equivalencia del código optimizado con su referencia sigue siendo un requisito contra bugs, no otra auditoría de NT8. No modifica holdout/P&L ni habilita autopromoción.
+
+Estado de implementación y piloto actualizado en `MNQ_CONFLUENCE_IMPLEMENTATION_CHECKPOINT.md`; el diseño original de hipótesis todavía no es un preregistro de outcomes aprobado.
+
 ## 1. Decisión científica
 
 Sí conviene explorar esta idea, pero como **nuevo observable: confluencia entre familias y estado de llegada**, no como rescate del supuesto de que una zona aislada es soporte/resistencia o un imán.
@@ -28,12 +34,12 @@ Fuentes de foundation fijadas en `f397a318be8b0acf68789070fe8064d83e172f7d`; ker
 
 | Objeto | Evidencia encontrada | Decisión para esta campaña |
 |---|---|---|
-| BigTrap2Absorption v1.1.1 | Firma final Puerta 0 GC DEC26: 365/365 zonas/fills AbsMagnitude y 626/626 AbsDirectional, sin diferencias en alcance post-burn-in. | Paridad histórica **sí validada**. No acredita MNQ/todos los valores de la grilla. Vincular hash y ramas realmente usadas. |
+| BigTrap2Absorption v1.1.1 | Firma final Puerta 0 GC DEC26: 365/365 zonas/fills AbsMagnitude y 626/626 AbsDirectional, sin diferencias en alcance post-burn-in. | Paridad histórica **sí validada**. No acredita MNQ/todos los valores de la grilla. Vincular hash y declarar ramas realmente usadas; no exigir cierre perfecto para explorar. |
 | BigTrap2 | PASS histórico time:1 v2.1: Diagonal, wick off y SameLevel. Contrato permite tolerancia temporal de 60 s, geometría exacta. | No decir «nunca validado». Tampoco extender ese PASS a tick:25/MNQ/kernel actual. |
 | BigTrap2 tick:25 v2.5.2 GC | La nota corregida de agosto registra mejora del oráculo y 81,15% de TRAPs exactos con anclaje; atribuye residuales a diferencias de cinta/frontera. | No es un PASS exacto completo para el sweep propuesto. El texto antiguo que decía «paridad imposible en general» fue retractado. |
 | aVolZonePOI2 MNQ12-26 25t | Bloques, zonas, clasificación OB y pertenencia/reconocimiento de racimos comparados exactamente en la configuración publicada. | Base de referencia adecuada para control positivo de implementación; no certificado de todas las resoluciones/umbrales. |
 | aVolZonePOI2 MNQ12-26 200t | PASS publicado en su configuración y serie NT8 back-adjusted. | Referencia de paridad; el research nuevo usa contratos naturales, no traslada precios ajustados al raw. |
-| Racimos: líneas low/high/start | El export NT8 de la comparación 25t no traía las filas C compiladas; pertenencia sí comparada, geometría final no. | No etiquetar como geometría certificada. Para confluencia geométrica, comparar el alcance necesario o declarar variante Python distinta y aprobarla separadamente. |
+| Racimos: líneas low/high/start | El export NT8 de la comparación 25t no traía las filas C compiladas; pertenencia sí comparada, geometría final no. | No etiquetar como geometría certificada. Para esta exploración se acepta la salvedad y se declara que la geometría Python no tiene certificación NT8 completa. No presentarla luego como exacta. |
 
 **Hashes Python:** Absorption certificado `0d162a6092c31228ec0f4f9539b4afc0cb5031737263db4369dea2ad03697ab2`; portable actual `0a0f312de5e1b4350a2a102cc051f2d6fd9484696c2a4762dc6f3006c1c54757`. BigTrap2 portable actual `59cc63904cf9c1a58d97f7fb4e847dd23c0105e4a6516e9681785da30f053c72`.
 Absorption tiene una corrección posterior de MinExportVolume no-default: el PASS original no habría detectado ese caso. No exigir reauditar todo; sí probar las ramas nuevas usadas antes de medir.
@@ -190,7 +196,7 @@ GPU sólo si el perfil demuestra un kernel apropiado y se compara la ruta comple
 
 **D0a — ingeniería sintética, sin mercado:** implementador de snapshots/joins/IDs; oracle lento y rápido; casos adversariales: mismo ns distinto sequence, medio tick, borders, creación/invalidation simultáneas, sesión/tail/DST, racimo reconocido tarde/expandido, OB tardío, calibration pending, detector negativo UNKNOWN, missing quotes, reanudación con hash distinto y masks equivalentes. No confundir synthetic PASS con paridad NT8/MNQ.
 
-**D0b — piloto target-free autorizado:** sesiones previamente elegibles y completas que permitan historia; subset/configs representativas congeladas antes de correr. Medir lectura, barras/footprints, detector/history, racimo, joins, features, escritura; mediana/rango, bytes, peak process-tree RSS y cgroup como métricas distintas; cold/warm/reversed-order. Comparar output ordenado completo con referencia, no sólo conteo. Cero labels/P&L. Resolver sólo paridad/defectos concretos del nuevo estudio, no reauditar matrices viejas.
+**D0b — piloto target-free autorizado:** sesiones previamente elegibles y completas que permitan historia; subset/configs representativas congeladas antes de correr. Medir lectura, barras/footprints, detector/history, racimo, joins, features, escritura; mediana/rango, bytes, peak process-tree RSS y cgroup como métricas distintas; cold/warm/reversed-order. Comparar output ordenado completo con referencia, no sólo conteo. Cero labels/P&L. No exigir cierre perfecto NT8: mantener sus salvedades aceptadas y resolver sólo defectos concretos de causalidad/implementación del nuevo estudio.
 
 **D1 — exploración amplia autorizada:** fijar roster, fuentes/sesiones, definición exacta de anchors/scenarios/cutpoints/response, MDE/support, modelo, bloques y embargo, familia/multiplicidad, presupuesto y regla STOP. Cortar por presupuesto implica cobertura incompleta explícita; no declarar matriz completa por tener algún resultado. Guardar todos los outcomes agregados/negativos y árbol completo de trials. No auto-lanzar la siguiente etapa.
 
@@ -198,7 +204,7 @@ GPU sólo si el perfil demuestra un kernel apropiado y se compara la ruta comple
 
 **Inferencia:** pérdida emparejada por anchor y agregación/dependencia por sesiones/bloques, con sensibilidad a bloques multisesión y clusters de eventos/controles compartidos. Purga/embargo por ventanas/outcomes y reglas de formación según protocolo. Folds temporales de desarrollo, no train/test aleatorio por fila. Hierarquía de familias y maxT/stepdown u otro control global justificado: implementación/distribución nula y prueba de tamaño/poder pendientes, no una etiqueta ya aplicada. Subgrupos de soporte bajo quedan descriptivos. Intervalos punto a punto no autorizan winner picking.
 
-**Antes del piloto falta:** pin de datos/sesiones habilitadas; identidad de detector y alcance de paridad relevante; snapshots/joins y tests negativos; subset determinista y presupuesto piloto; revisión independiente y autorización. **Antes del estudio de outcomes falta además** cerrar predicados/respuesta/MDE/controles/inferencia/roster. No dependen de terminar supervisor 24×7, cgroup delegado o writer científico autenticado.
+**Antes del piloto falta:** pin de datos/sesiones habilitadas; identidad de detector y salvedades de paridad aceptadas; snapshots/joins y tests negativos; subset determinista y presupuesto piloto; revisión independiente y autorización. **Antes del estudio de outcomes falta además** cerrar predicados/respuesta/MDE/controles/inferencia/roster. No dependen de terminar supervisor 24×7, cgroup delegado o writer científico autenticado.
 
 No se promete «optimización máxima» ni duración/RAM sin benchmark integral en Kaggle. Lo guardado es diseño, catálogo y revisión, no runner implementado ni preregistro aprobado.
 
