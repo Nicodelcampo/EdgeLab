@@ -1,0 +1,118 @@
+{
+  "status": "INCREMENTAL_DIAGNOSTIC_NOT_VIRGIN_HOLDOUT",
+  "contract": "MNQ_09-25",
+  "training_dates": [
+    "2025-08-04",
+    "2025-08-05",
+    "2025-08-06",
+    "2025-08-07",
+    "2025-08-08",
+    "2025-08-11",
+    "2025-08-12",
+    "2025-08-13",
+    "2025-08-14",
+    "2025-08-15",
+    "2025-08-18",
+    "2025-08-19",
+    "2025-08-20",
+    "2025-08-21",
+    "2025-08-22",
+    "2025-08-25",
+    "2025-08-26"
+  ],
+  "test_dates": [
+    "2025-08-27",
+    "2025-08-28",
+    "2025-08-29",
+    "2025-09-02",
+    "2025-09-03",
+    "2025-09-04",
+    "2025-09-05",
+    "2025-09-08",
+    "2025-09-09",
+    "2025-09-10",
+    "2025-09-11",
+    "2025-09-12"
+  ],
+  "training_signals": 305,
+  "test_signals": 256,
+  "fixed_ridge_lambda": 10,
+  "hyperparameter_tuning": false,
+  "source_certified": false,
+  "pnl_computed": false,
+  "multiplicity_corrected": false,
+  "context_only": {
+    "test_brier": 0.2514089721130427,
+    "test_log_loss": 0.6959944536451286,
+    "test_signals": 256,
+    "training_signals": 305
+  },
+  "plus_revisits_volume_speed_flow": {
+    "test_brier": 0.2556734468168421,
+    "test_log_loss": 0.7048208351195329,
+    "test_signals": 256,
+    "training_signals": 305
+  },
+  "extended_minus_baseline_brier": 0.004264474703799412,
+  "test_session_bootstrap95": [
+    -0.0005987713510755574,
+    0.00869887561073362
+  ],
+  "interpretation": "negative Brier gap is better prediction in this diagnostic, not causal interest, certified edge, costs or virgin validation",
+  "coefficients": {
+    "context_only": {
+      "feature_names": [
+        "intercept",
+        "log_age",
+        "log_remaining",
+        "log_span",
+        "hour_sin",
+        "hour_cos"
+      ],
+      "coefficients": [
+        -0.12479990095117859,
+        0.01694664779835257,
+        -0.015143632327964483,
+        -0.03711719248156466,
+        -0.09637078533691444,
+        0.14802463905514315
+      ],
+      "training_only_imputation_and_scaling": true
+    },
+    "plus_revisits_volume_speed_flow": {
+      "feature_names": [
+        "intercept",
+        "log_age",
+        "log_remaining",
+        "log_span",
+        "hour_sin",
+        "hour_cos",
+        "log_visits",
+        "volume_inside_fraction",
+        "speed_ratio",
+        "return_imbalance_proxy_toward",
+        "proxy_coverage",
+        "return_efficiency",
+        "log_recency",
+        "speed_ratio_missing"
+      ],
+      "coefficients": [
+        -0.12812931367959038,
+        -0.029718041831230696,
+        0.0027210366018439883,
+        -0.0751259613788033,
+        -0.13614929628399103,
+        0.17203630855161933,
+        0.06620873664807166,
+        -0.15272246826506775,
+        -0.14295921560013936,
+        0.01122258243751027,
+        0.16873325584570167,
+        0.09050588298524252,
+        -0.030154054946231867,
+        0.08182760900640591
+      ],
+      "training_only_imputation_and_scaling": true
+    }
+  }
+}
