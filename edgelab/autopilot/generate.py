@@ -125,8 +125,26 @@ def generate(outcomes: list, seed_evidence: str = "config/autopilot/evidence_see
 
 
 # --- borrador de pre-registro ------------------------------------------------------------------------------------------------------------------
+MODE_DEFS = {
+ "idm_jump": '''Definiciones congeladas (script `tools/study_slot_effect.py`, modo `idm_jump`, por fecha local CT):
+- Precio = apertura del minuto en una rejilla de 5 min (primer valor de cada bloque). Retornos r = log-diferencias sucesivas entre puntos de rejilla disponibles desde el 15:00 CT de la sesión anterior hasta el 14:30 CT (una brecha de mantenimiento/fin de semana cuenta como un retorno).
+- σ = 1,4826 · mediana(|r|) de las 20 sesiones previas (causal; se exige ≥ 5 sesiones previas). Salto = |r| > 4σ. ROD = Σ r; ROD_salto = Σ r de los saltos; ROD_cont = ROD − ROD_salto. LH = log(P 15:00 / P 14:30).
+- Modelo: OLS LH ~ 1 + ROD_salto + ROD_cont. Estadístico = coeficiente de ROD_salto. H1: > 0 (unilateral). Nulo: signo aleatorio independiente sobre LH, 20.000 sorteos, semilla 20261013.
+- `reference_sources` (GC futuro 2025-26) se informan pero NO entran en Holm: es la muestra que originó la pista. La prueba de la pista es `idmj/GC_spot_old` (spot 2022-07-01 → 2025-06-30).
+- Descriptivo (no es prueba): participación de sesiones con salto, coeficiente de ROD_cont, rango del coeficiente de salto al excluir cada trimestre.''',
+ "idm": "Ver docstring del script (modo `idm`): corr(resto del día, última media hora), unilateral positiva; diferencia por gamma bajo con permutación por bloques de 20.",
+ "slot_corr": "Ver docstring del script (modo `slot_corr`): corr(retorno previo, siguiente) de `horizon_min` minutos en cada franja; unilateral negativa.",
+}
+TRANSPARENCY = {
+ "IDM-2": '''## Transparencia sobre lo ya mirado (antes de este pre-registro)
+- En GC 2025-26 (futuro y spot, misma muestra que originó la pista) se miraron: correlación por trimestre, sin 2026Q1, sin los 10 días más influyentes, terciles de |ROD|, economía bruta de seguir el signo. Son descriptivos y no cuentan como pruebas.
+- En el spot 2022-2025 se miró **una** cosa antes de pre-registrar: el tercil de |ROD| alto (causal expansivo) dio corr +0,026 (n = 309). Por eso esa versión del refinamiento no se pre-registra ni se usa; la descomposición en saltos NO se calculó en ese tramo.
+- El pipeline de saltos se verificó en sintético y en spot 2025-26 (misma muestra de la pista, no la de la prueba primaria).''',
+}
+
+
 def draft_prereg(c: Candidate, lits: dict) -> str:
-    cfg = json.dumps(c.cfg, sort_keys=True)
+    cfg = json.dumps(c.cfg, sort_keys=True); mode_block = (MODE_DEFS.get(c.cfg.get("mode"), "") + "\n\n" if c.cfg else "") + (TRANSPARENCY.get(c.cid, "") + "\n\n" if c.cid in TRANSPARENCY else "")
     lit = {l["id"]: l for l in lits["leads"]}
     def fmt(ids): return "\n".join(f"- {i}: {lit[i]['claim']} ({'; '.join(lit[i]['refs'])})" for i in ids) or "- (ninguna)"
     return f"""# {c.cid} — {c.title}
@@ -148,7 +166,7 @@ Configuración exacta (se pasa al kernel tal cual y se verifica que figure aquí
 Pruebas planeadas: {c.n_trials} (se cuentan en el registro global antes de lanzar). Potencia supuesta: {c.power} (supuesto declarado, no medida).
 La muestra no reutiliza la que originó la pista (ver `unused_samples` de la evidencia).
 
-## Nulo y decisión
+{mode_block}## Nulo y decisión
 Nulo de signo aleatorio / permutación por bloques según el modo; Holm sobre {c.n_trials} pruebas planeadas al nivel familiar que apostó el alpha-investing del autopilot (≤ 0,05). Un estadístico no finito es «no evaluable» y no entra al ranking.
 **Falsación:** si ninguna prueba pasa Holm, la pista se degrada a NULL y no se vuelve a proponer sin datos nuevos.
 **Si pasa:** es un hallazgo exploratorio; promover requiere réplica pre-registrada en datos no usados. No hay P&L, holdout ni promoción en este estudio.
