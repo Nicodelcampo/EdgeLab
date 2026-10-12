@@ -134,8 +134,15 @@ def run_pilot(path,roster,plan,private_root,*,deadline_seconds=6600):
     store.db.close();return result
 
 def main():
-    ap=argparse.ArgumentParser();ap.add_argument('--source',type=Path,required=True);ap.add_argument('--root',type=Path,required=True);ap.add_argument('--out',type=Path,required=True);a=ap.parse_args();plan=json.loads((a.root/'docs/research/ops/MNQ_CONFLUENCE_MARKET_PILOT_PLAN.json').read_bytes());roster=json.loads((a.root/'docs/research/ops/MNQ_CONFLUENCE_TARGET_FREE_PILOT_ROSTER.json').read_bytes())
+    ap=argparse.ArgumentParser();ap.add_argument('--source',type=Path,required=True);ap.add_argument('--root',type=Path,required=True);ap.add_argument('--out',type=Path,required=True);a=ap.parse_args();plan_file=a.root/'docs/research/ops/MNQ_CONFLUENCE_MARKET_PILOT_RETRY_PLAN.json';plan_file=plan_file if plan_file.exists() else a.root/'docs/research/ops/MNQ_CONFLUENCE_MARKET_PILOT_PLAN.json';plan=json.loads(plan_file.read_bytes());roster=json.loads((a.root/'docs/research/ops/MNQ_CONFLUENCE_TARGET_FREE_PILOT_ROSTER.json').read_bytes())
     # Market entrypoint cannot execute in the assistant computer sandbox.
     if not Path('/kaggle/working').is_dir():raise RuntimeError('KAGGLE_ONLY entrypoint')
-    result=run_pilot(a.source,roster,plan,a.root,deadline_seconds=plan['deadline_seconds']);a.out.write_text(json.dumps(result,indent=2)+'\n');print(result['status'],flush=True)
+    try:
+        result=run_pilot(a.source,roster,plan,a.root,deadline_seconds=plan['deadline_seconds']);a.out.write_text(json.dumps(result,indent=2)+'\n');print(result['status'],flush=True)
+    except Exception as exc:
+        # Fixed categories only: never export traceback, values, IDs or raw text.
+        message=str(exc)
+        categories={'private capture budget; no truncation':'PRIVATE_CAPTURE_RECORD_BUDGET','private storage budget; no truncation':'PRIVATE_CAPTURE_STORAGE_BUDGET','full range exceeds tick budget; no silent prefix truncation':'TOTAL_TICK_BUDGET','natural session exceeds memory budget; no reset/truncation':'SESSION_TICK_BUDGET','stream state budget exceeded; no pruning beyond native rule':'AVZ_STATE_BUDGET','known zone budget exceeded':'KNOWN_ZONE_BUDGET','history budget exceeded; do not discard old state silently':'RACIMO_HISTORY_BUDGET','valid quotes/volume required; no quote fabrication':'INPUT_QUOTE_VOLUME_FORMAT','cooperative pilot deadline':'COOPERATIVE_DEADLINE'}
+        failure={'schema':'mnq_confluence_market_failure_v1','status':'FAILED_NO_COMPLETE_CENSUS','failure_category':categories.get(message,'MEMORY_ERROR' if isinstance(exc,MemoryError) else 'UNCLASSIFIED_ENGINE_ERROR'),'plan_sha256':digest(plan),'holdout_opened':False,'raw_payload_exported':False,'outcomes_or_edge_claim':False}
+        a.out.with_name('failure-receipt.json').write_text(json.dumps(failure,indent=2)+'\n');print('PILOT_FAILED',failure['failure_category'],flush=True);raise SystemExit(1)
 if __name__=='__main__':main()

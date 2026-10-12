@@ -94,30 +94,34 @@ class ArrivalObserver:
                 if old and (old.lo2,old.hi2)!=(ep.lo2,ep.hi2):moved.add(eid)
                 if e.action=='START':created.add(eid);self.encounters[eid]=0
                 self.active[eid]=ep;self.root=_put(self.root,_Node(_Band(eid,ep.lo2,ep.hi2)))
-            self.window.append(tick);f=self._features(tick)
+            self.window.append(tick)
             previous=self.previous;lo=min(previous.price2,tick.price2) if previous else tick.price2;hi=max(previous.price2,tick.price2) if previous else tick.price2
             candidates=set(created|moved)
             if len(candidates)>self.max_candidates:raise ValueError('candidate capacity exceeded; no partial anchors')
             for b in _intersect(self.root,lo,hi):
                 candidates.add(b.key)
                 if len(candidates)>self.max_candidates:raise ValueError('candidate capacity exceeded; no partial anchors')
-            out=[]
+            out=[];features=None
+            def emit(eid,kind,encounter,direction):
+                nonlocal features
+                if features is None:features=self._features(tick)
+                out.append(Anchor(eid,kind,tick.clock,encounter,direction,features))
             for eid in sorted(candidates):
                 ep=self.active[eid];inside=ep.lo2<=tick.price2<=ep.hi2
                 if eid in created:
-                    if inside:out.append(Anchor(eid,'AT_CREATION',tick.clock,0,0,f))
+                    if inside:emit(eid,'AT_CREATION',0,0)
                     continue
                 if eid in moved:
-                    if inside:out.append(Anchor(eid,'AT_GEOMETRY_REVISION',tick.clock,self.encounters[eid],0,f))
+                    if inside:emit(eid,'AT_GEOMETRY_REVISION',self.encounters[eid],0)
                     continue
                 if previous is None:continue
                 was_inside=ep.lo2<=previous.price2<=ep.hi2
                 direction=1 if previous.price2<ep.lo2 else (-1 if previous.price2>ep.hi2 else 0)
                 if inside and not was_inside:
-                    self.encounters[eid]+=1;n=self.encounters[eid];out.append(Anchor(eid,'FIRST_OBSERVED_TOUCH' if n==1 else 'REVISIT',tick.clock,n,direction,f))
-                elif was_inside and not inside:out.append(Anchor(eid,'OBSERVED_EXIT',tick.clock,self.encounters[eid],0,f))
+                    self.encounters[eid]+=1;n=self.encounters[eid];emit(eid,'FIRST_OBSERVED_TOUCH' if n==1 else 'REVISIT',n,direction)
+                elif was_inside and not inside:emit(eid,'OBSERVED_EXIT',self.encounters[eid],0)
                 elif not inside and not was_inside and ((previous.price2<ep.lo2 and tick.price2>ep.hi2) or (previous.price2>ep.hi2 and tick.price2<ep.lo2)):
-                    out.append(Anchor(eid,'GAP_THROUGH_NO_INSIDE_PRINT',tick.clock,self.encounters[eid],direction,f))
+                    emit(eid,'GAP_THROUGH_NO_INSIDE_PRINT',self.encounters[eid],direction)
             self.previous=tick
             return tuple(out)
         except BaseException:self.poisoned=True;raise

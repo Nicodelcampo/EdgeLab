@@ -1,4 +1,4 @@
-"""Causal observation adapter for the pinned AVZP2 racimo rule, synthetic only.
+"""Causal observation adapter for the pinned AVZP2 racimo rule; no access authority.
 
 The copied rule below is verbatim UTF-8 function source from foundation commit
 f397a318be8b0acf68789070fe8064d83e172f7d. It deliberately preserves legacy
@@ -9,6 +9,8 @@ Birth inputs must be immutable detector creations, not mutable final-zone tables
 from dataclasses import dataclass
 from datetime import date
 import hashlib
+import ast,inspect,bisect
+from functools import lru_cache
 from .asof_intersections import Clock,ZoneKey,Snapshot
 
 LEGACY_FUNCTION_SHA256="846aab2ee62074f91de17a64bf8b7ade3efbb5a842cf8ba36a9677ede6a33efe"
@@ -53,6 +55,39 @@ def _racimo(nz, zones, clusters, b, p):
         if m["racimo_bar"] < 0:
             m["racimo_bar"] = b
 
+def _best_members(cand,nz,A):
+    """Same maximum-inside band/tie order; sweep + Fenwick, no quadratic scans."""
+    lows={z['low_tick'] for z in cand if z['low_tick']<=nz['low_tick'] and z['low_tick']+A-1>=nz['high_tick']}
+    if not lows:return None
+    highs=sorted({z['high_tick'] for z in cand});ranks={v:i+1 for i,v in enumerate(highs)};tree=[0]*(len(highs)+1)
+    ordered=sorted(cand,key=lambda z:z['low_tick'],reverse=True);pos=0;counts={}
+    for lo in sorted(lows,reverse=True):
+        while pos<len(ordered) and ordered[pos]['low_tick']>=lo:
+            k=ranks[ordered[pos]['high_tick']]
+            while k<len(tree):tree[k]+=1;k+=k&-k
+            pos+=1
+        k=bisect.bisect_right(highs,lo+A-1);n=0
+        while k:n+=tree[k];k-=k&-k
+        counts[lo]=n
+    best_lo=None;best_n=-1
+    # Candidate order is legacy reversed history + new zone, NOT price order.
+    for z in cand:
+        lo=z['low_tick']
+        if lo in counts and counts[lo]>best_n:best_lo=lo;best_n=counts[lo]
+    return [z for z in cand if z['low_tick']>=best_lo and z['high_tick']<=best_lo+A-1]
+
+@lru_cache(maxsize=1)
+def _fast_rule():
+    raw=inspect.getsource(_racimo)
+    if hashlib.sha256(raw.encode()).hexdigest()!=LEGACY_FUNCTION_SHA256:raise ValueError('legacy racimo source drift')
+    fn=ast.parse(raw).body[0];count=0
+    for i,n in enumerate(fn.body):
+        if isinstance(n,ast.For) and ast.unparse(n.target)=='bz' and ast.unparse(n.iter)=='cand':
+            fn.body[i]=ast.parse('best=_best_members(cand,nz,A)').body[0];count+=1
+    if count!=1:raise ValueError('racimo selection hook census drift')
+    fn.name='_racimo_fast';tree=ast.Module(body=[fn],type_ignores=[]);ast.fix_missing_locations(tree);env={'_best_members':_best_members}
+    exec(compile(tree,'<pinned-racimo-fast-selection>','exec'),env);return env['_racimo_fast']
+
 @dataclass(frozen=True)
 class Creation:
     zone_id: str
@@ -94,13 +129,18 @@ class RacimoTape:
     Stable racimo IDs start at creation, geometry revisions available only now.
     Bounded seen history; overflow stops instead of dropping inputs. This first
     prototype indexes membership assignments and emits only touched racimos.
-    Complete membership snapshots still cost O(member count); no Kaggle speed claim.
+    Candidate selection uses an exact sweep/Fenwick implementation by default;
+    the pinned rule remains available for reference. Complete membership
+    snapshots still cost O(member count); no Kaggle speed claim.
     """
-    def __init__(self,*,params,config_sha256,build_sha256,max_zones=100000):
+    def __init__(self,*,params,config_sha256,build_sha256,max_zones=100000,optimized_candidates=True):
         if set(params)!={'racimo_min','racimo_bars','racimo_altura_ticks'} or any(type(v) is not int for v in params.values()):raise ValueError('exact racimo parameter declaration required')
         if params['racimo_min']<2 or params['racimo_bars']<1 or params['racimo_altura_ticks']<1:raise ValueError('positive racimo geometry/recognition rule required')
         ZoneKey('RACIMO',config_sha256,build_sha256,'0')
         if type(max_zones) is not int or max_zones<1:raise ValueError('explicit history budget required')
+        if type(optimized_candidates) is not bool:raise ValueError('explicit racimo implementation mode')
+        if hashlib.sha256(inspect.getsource(_racimo).encode()).hexdigest()!=LEGACY_FUNCTION_SHA256:raise ValueError('legacy racimo source drift')
+        self.rule=_fast_rule() if optimized_candidates else _racimo
         self.params=dict(params);self.config=config_sha256;self.build=build_sha256;self.max_zones=max_zones
         self.zones=[];self.clusters=[];self.ids=set();self.clock=None;self.last_bar=-1;self.last_session=None
         self.cluster_ids={};self.published={};self.members={};self.cluster_objects={};self.poisoned=False
@@ -128,7 +168,7 @@ class RacimoTape:
             for z in zs:
                 d=_ObservedZone(bar=z.bar,low_tick=z.low_tick,high_tick=z.high_tick,racimo_bar=-1,rac=None,
                        zone_id=z.zone_id,trade_date=z.trade_date,on_join=self._joined)
-                _racimo(d,self.zones,self.clusters,bar,self.params);self.zones.append(d);self.ids.add(z.zone_id)
+                self.rule(d,self.zones,self.clusters,bar,self.params);self.zones.append(d);self.ids.add(z.zone_id)
                 if d['rac'] is not None:self.touched.add(id(d['rac']))
             # The pinned rule changes at most the racimo assigned to the new
             # zone. Index assignment deltas instead of scanning every old zone.

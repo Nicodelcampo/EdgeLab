@@ -157,3 +157,13 @@ Plan fijado `MNQ_CONFLUENCE_MARKET_PILOT_PLAN.json`: primera sesión MNQ_09-26 d
 Regresión previa al lanzamiento: **682 Research Ops + 18 navegación PASS**, catálogo PASS_NAVIGATION_ONLY. 16 pruebas nuevas de primitivas/reader/geometría/runner/paquete, sin cargar mercado en el sandbox.
 
 Piloto real enviado después de persistir source `e39e5dca5af14bffa2f257ca4d0d92390ae328a2`: Kaggle kernel **138386707/v1**, `nicolasbuttaro/edgelab-mnq-dense-confluence-engineering-pilot`. Estado observado **RUNNING**. Metadata verifica privado/CPU, Internet sólo para transporte y código exacto al request; receipts de resultados todavía pendientes. No confundir estado RUNNING con éxito o edge. No volver a enviar el job por retomar el checkpoint.
+
+## Trabajo siguiente preparado mientras corre el piloto (no aplicado al job activo)
+
+`arrival.py` calcula features sólo al emitir anchors, conserva cálculo/orden exacto contra fuente eager fijada test-only. `first_passage.py` aporta labels por puntos observados con heaps compartidos y censuras explícitas. Parámetros/estimando/folds y controles siguen por congelar; no hubo etiquetado de mercado ni nuevas escrituras de EdgeBrain. Ver `MNQ_CONFLUENCE_ARRIVAL_RESPONSE_NEXT.md`. No cambiar código de la versión Kaggle activa para aplicar estos módulos.
+
+V1 kernel 138386707 terminó con API ERROR y child exit 1; no watchdog timeout/RSS. Completó 25 sesiones de formación hasta 2026-06-15, con 2899645 captures privadas frente a límite de 3000000. Target incompleto, no censo exitoso ni edge. Hipótesis de capacidad insuficiente aún no confirmada por excepción exacta: añadir telemetría sanitizada en el próximo intento. Fuente/indicadores/target no se cambian ni se reauditan. Receipts agregados de fallo guardados; ningún tick/evento privado descargado.
+
+Preparado intento V2: plan separado, mismo universo/indicadores/target, presupuesto 12M captures/4 GiB SQLite, diagnóstico sanitizado de fallo y selección de racimo equivalente Fenwick. No hay resume del estado privado del v1; no transportar SQLite ni source fuera de Kaggle. Source/código deben persistirse antes de guardar nueva versión del notebook. Documento `MNQ_CONFLUENCE_MARKET_RETRY.md` conserva incertidumbre sobre causa exacta de v1.
+
+Regresión antes de V2: **701 Research Ops + 18 navegación PASS**, catálogo PASS_NAVIGATION_ONLY. 19 tests nuevos desde etapa 7 para lazy features, first passage, binding agregado, racimo Fenwick y telemetría de fallo; todos con fixtures inventados. Ninguna nueva auditoría de datasets.
