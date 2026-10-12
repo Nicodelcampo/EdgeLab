@@ -14,6 +14,18 @@ def _bounded_json(path):
     if len(raw)>65536:raise ValueError('file grew beyond limit')
     return json.loads(raw)
 
+def _status(queue_path,dispatch_path,checkpoint_path):
+    """Read-only composite view across the three durable ledgers. Never writes, never
+    initializes anything: an absent/invalid ledger is reported, not created or repaired."""
+    def safe(fn):
+        try:return fn()
+        except ValueError as exc:return {'status':'NOT_INITIALIZED_OR_INVALID','detail':str(exc)}
+    out={}
+    out['queue']=safe(lambda:Store(queue_path).verify()) if queue_path else {'status':'NOT_CONFIGURED'}
+    out['dispatch']=safe(lambda:DispatchLedger(dispatch_path).verify()) if dispatch_path else {'status':'NOT_CONFIGURED'}
+    out['checkpoint']=safe(lambda:CheckpointLedger(checkpoint_path).verify()) if checkpoint_path else {'status':'NOT_CONFIGURED'}
+    return out
+
 def main(argv=None):
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--state',type=Path,default=Path('artifacts/research_ops/queue.sqlite'))
@@ -44,6 +56,7 @@ def main(argv=None):
     a=s.add_parser('checkpoint-record');a.add_argument('--checkpoint-state',type=Path,required=True);a.add_argument('receipt',type=Path)
     a=s.add_parser('checkpoint-pending');a.add_argument('--checkpoint-state',type=Path,required=True)
     a=s.add_parser('checkpoint-verify');a.add_argument('--checkpoint-state',type=Path,required=True)
+    a=s.add_parser('status');a.add_argument('--dispatch-state',type=Path);a.add_argument('--checkpoint-state',type=Path)
     args=p.parse_args(argv)
     if args.command=='snapshot-queue':
         from .snapshots import export_queue
@@ -91,6 +104,8 @@ def main(argv=None):
         result=CheckpointLedger(args.checkpoint_state).pending_units()
     elif args.command=='checkpoint-verify':
         result=CheckpointLedger(args.checkpoint_state).verify()
+    elif args.command=='status':
+        result=_status(args.state,args.dispatch_state,args.checkpoint_state)
     else:
         store=Store(args.state)
         if args.command=='init':store.initialize(Policy(args.attempts,args.seconds));result=store.verify()

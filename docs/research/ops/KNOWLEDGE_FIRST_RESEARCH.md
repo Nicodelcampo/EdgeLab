@@ -77,6 +77,8 @@ python -m tools.research_ops.cli dispatch-verify --dispatch-state DISPATCH_PATH
 
 `PLAN_JSON_FILE` es la salida de `plan_research` volcada a disco (≤64KiB, sin symlink, igual límite que `audit-draft`); ningún comando de esta lista abre un socket.
 
+`python -m tools.research_ops.cli status [--dispatch-state PATH] [--checkpoint-state PATH]` da una vista compuesta de solo lectura: `verify()` de la cola (`--state`, con su default habitual), del `DispatchLedger` y del `CheckpointLedger` en una sola llamada. Un ledger no configurado o aún no inicializado se reporta como tal (`NOT_CONFIGURED` / `NOT_INITIALIZED_OR_INVALID`); el comando nunca crea, repara ni escribe ningún archivo.
+
 ## Próximas integraciones
 
 - Vincular un export operacional real aprobado y el Cortex canónico una vez resuelta su custodia; probar consultas con recibos reales.
