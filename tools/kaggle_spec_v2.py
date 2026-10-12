@@ -116,16 +116,20 @@ def make_plan(spec, ed):
             'selected_sessions': len(chosen)}
 
 
-def exact_path(root, dataset, filename):
-    base = Path(root).resolve() / dataset
-    candidate = (base / filename).resolve()
-    if not candidate.is_relative_to(base):
-        raise ValueError('unsafe data path')
-    if candidate.is_file():
-        return candidate
-    # New Kaggle mount layout: /kaggle/input/datasets/<owner>/<slug>/...
-    matches = [p for p in Path(root).rglob(Path(filename).name)
-               if dataset in p.parts and p.is_file() and tuple(Path(filename).parts) == p.parts[-len(Path(filename).parts):]]
+def exact_path(root, dataset, filename, owner=None):
+    """Resolve only the two declared mount layouts; never search by basename."""
+    root = Path(root).resolve()
+    bases = [root / dataset]
+    if owner:
+        # New Kaggle mount layout: /kaggle/input/datasets/<owner>/<slug>/...
+        bases.append(root / 'datasets' / owner / dataset)
+    matches = []
+    for base in bases:
+        candidate = (base / filename).resolve()
+        if not candidate.is_relative_to(base):
+            raise ValueError('unsafe data path')
+        if candidate.is_file():
+            matches.append(candidate)
     if len(matches) != 1:
         raise FileNotFoundError(f'expected exactly one {dataset}/{filename}, got {len(matches)}')
     return matches[0]
@@ -197,7 +201,8 @@ def run_shard(plan, shard_id, ed, root, out):
     for row in shard['sessions']:
         groups.setdefault((row['instrument'], row['dataset'], row['file']), []).append(row)
     # Resolve EVERY mount before reading ticks; alternatives/missing mode prohibited.
-    paths = {key: exact_path(root, key[1], key[2]) for key in groups}
+    paths = {key: exact_path(root, key[1], key[2], spec['dataset_versions'][key[1]].split('/')[0])
+             for key in groups}
     results = {'status': 'PASS_INTEGRITY_NOT_EDGE', 'shard_id': shard_id, 'sources': [], 'bars': [],
                'research_allowed': False, 'raw_sanitation_certified': False, 'causal_liquidity_certified': False}
     if spec['mode'] == 'preflight':

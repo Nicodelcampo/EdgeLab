@@ -9,9 +9,9 @@ Esta matriz describe wiring de código, no certificación de datos ni permisos d
 | `nt8_reader.audit` | No | Parser de iterable; el caller controla fuente, fechas y permisos |
 | `research_window.read_research_window` | Sí, toda la ventana antes de abrir | Opt-in: cada sesión del calendario leída por el lector de sesión o declarada como exclusión con motivo; sin omisiones implícitas |
 | `continuous_contract.build_continuous_series` | No; exige `acknowledge_unaudited_legacy=True` | Ruta legacy: lee contratos enteros antes del filtro; sin el reconocimiento falla antes de leer. NO usar como firewall de reservas |
-| `tools/run_funnel_arrays.py` | No | Split validado antes de precios, sólo kernels CPU D0/D1 aislados; no gate de custodia/liquidez upstream |
+| `tools/run_funnel_arrays.py` | Sí con `--arrays-manifest`; si no, `--technical-only` explícito | Manifiesto fijado ata cada array (SHA/tamaño) a evidencia `research_window_v1` antes de abrir; split validado antes de precios; el gate upstream sigue siendo el del lector de ventana |
 | `databuild` / scripts MGC | No | Builders históricos; no aprobar por presencia o por tests del lector nuevo |
-| `tools/kaggle_spec_v2.py` | No gate de research | Infra técnica local; agregados/conservación no certifican calidad ni liquidez |
+| `tools/kaggle_spec_v2.py` | No gate de research | Infra técnica local; agregados/conservación no certifican calidad ni liquidez. Mounts sólo por layout declarado (`<slug>/` o `datasets/<owner>/<slug>/`), sin búsqueda por basename |
 | `kaggle.aggregate_audit` | Pins/footer antes de filas | QA sobre archivos preholdout aprobados; no saneamiento de ticks ni outcomes |
 | `kaggle.research_access` | Sí, opt-in | Cuarentena version/file conocida + política causal + evidencia/liq externa + cobertura diaria de toda la ventana; v15 bloqueado; todas las sesiones del archivo autorizadas antes de precios |
 | `kaggle.coverage_inventory` | QA, no research | Toda fecha solicitada y ausencia de observación declaradas; sólo payload identidad/timestamp; calendario no certificado |

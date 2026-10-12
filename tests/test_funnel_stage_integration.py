@@ -169,7 +169,7 @@ def test_stage_horizons_and_reindexing():
 
 
 def test_cli_requires_split_before_any_array_load(tmp_path):
-    p=subprocess.run([sys.executable,str(ROOT/"tools/run_funnel_arrays.py"),"--arrays",str(tmp_path/"missing"),"--registry",str(tmp_path/"missing.json"),"--out",str(tmp_path/"out")],capture_output=True,text=True)
+    p=subprocess.run([sys.executable,str(ROOT/"tools/run_funnel_arrays.py"),"--technical-only","--arrays",str(tmp_path/"missing"),"--registry",str(tmp_path/"missing.json"),"--out",str(tmp_path/"out")],capture_output=True,text=True)
     assert p.returncode==2 and "--split" in p.stderr
     assert not (tmp_path/"out").exists()
 
@@ -180,7 +180,7 @@ def test_cli_frozen_split_and_real_synthetic_arrays(tmp_path):
     for key,name in names.items():np.save(arrays/f"{name}.npy",raw[key],allow_pickle=False)
     split=tmp_path/"split.json";split.write_text(json.dumps(to_dict(make_splits(raw["trade_dates"]))))
     registry=tmp_path/"registry.json";registry.write_text(json.dumps(configs()))
-    command=[sys.executable,str(ROOT/"tools/run_funnel_arrays.py"),"--arrays",str(arrays),"--registry",str(registry),"--split",str(split),"--out",str(tmp_path/"cli"),"--max-hold-bars","2"]
+    command=[sys.executable,str(ROOT/"tools/run_funnel_arrays.py"),"--technical-only","--arrays",str(arrays),"--registry",str(registry),"--split",str(split),"--out",str(tmp_path/"cli"),"--max-hold-bars","2"]
     proc=subprocess.run(command,capture_output=True,text=True)
     assert proc.returncode==0,proc.stderr
     result=json.loads(proc.stdout)
@@ -201,7 +201,51 @@ def test_cli_changed_days_fail_before_price_file_open(tmp_path):
     raw=inputs();arrays=tmp_path/"metadata-only";arrays.mkdir()
     np.save(arrays/"trade_date.npy",raw["trade_dates"][:-8],allow_pickle=False)
     split=tmp_path/"split.json";split.write_text(json.dumps(to_dict(make_splits(raw["trade_dates"]))))
-    proc=subprocess.run([sys.executable,str(ROOT/"tools/run_funnel_arrays.py"),"--arrays",str(arrays),"--registry",str(tmp_path/"not-opened.json"),"--split",str(split),"--out",str(tmp_path/"out")],capture_output=True,text=True)
+    proc=subprocess.run([sys.executable,str(ROOT/"tools/run_funnel_arrays.py"),"--technical-only","--arrays",str(arrays),"--registry",str(tmp_path/"not-opened.json"),"--split",str(split),"--out",str(tmp_path/"out")],capture_output=True,text=True)
     assert proc.returncode!=0 and "coverage differs" in proc.stderr
     assert "FileNotFoundError" not in proc.stderr
     assert not (tmp_path/"out").exists()
+
+
+def _gated_cli(tmp_path, mutate=None):
+    from edgelab.data.research_data_gate import seal
+    raw=inputs();arrays=tmp_path/"arrays";arrays.mkdir()
+    names={"trade_dates":"trade_date","signal_idx":"signal_bar_idx","signal_dir":"signal_dir","high":"high_ticks","low":"low_ticks","bid_open":"bid_open_ticks","ask_open":"ask_open_ticks"}
+    for key,name in names.items():np.save(arrays/f"{name}.npy",raw[key],allow_pickle=False)
+    files={n:{"sha256":hashlib.sha256((arrays/f"{n}.npy").read_bytes()).hexdigest(),"size_bytes":(arrays/f"{n}.npy").stat().st_size} for n in names.values()}
+    manifest={"schema":"funnel_arrays_manifest_v1","files":files,"source_evidence":{"reader_contract":"research_window_v1",
+        "data_certificate_sha256":"a"*64,"roll_schedule_sha256":"b"*64,"liquidity_limits_sha256":"c"*64}}
+    pin=None
+    if mutate:pin=mutate(manifest,arrays)
+    mpath=tmp_path/"arrays_manifest.json";mpath.write_text(json.dumps(manifest))
+    split=tmp_path/"split.json";split.write_text(json.dumps(to_dict(make_splits(raw["trade_dates"]))))
+    registry=tmp_path/"registry.json";registry.write_text(json.dumps(configs()))
+    return subprocess.run([sys.executable,str(ROOT/"tools/run_funnel_arrays.py"),"--arrays",str(arrays),"--registry",str(registry),
+        "--split",str(split),"--out",str(tmp_path/"cli"),"--max-hold-bars","2","--arrays-manifest",str(mpath),
+        "--expected-manifest-sha256",pin or seal(manifest)],capture_output=True,text=True)
+
+
+def test_cli_gated_manifest_passes_and_reports_gate(tmp_path):
+    proc=_gated_cli(tmp_path)
+    assert proc.returncode==0,proc.stderr
+    gate=json.loads(proc.stdout)["data_gate"]
+    assert gate["mode"]=="GATED_WINDOW" and gate["authority_authenticated"] is False
+
+
+@pytest.mark.parametrize("change",["tampered_array","wrong_pin","legacy_reader","missing_pin","extra_array"])
+def test_cli_gated_manifest_rejects_before_outputs(tmp_path,change):
+    def mutate(m,arrays):
+        if change=="tampered_array":
+            a=np.load(arrays/"high_ticks.npy");a[0]+=1;np.save(arrays/"high_ticks.npy",a,allow_pickle=False)
+        elif change=="wrong_pin":return "d"*64
+        elif change=="legacy_reader":m["source_evidence"]["reader_contract"]="single_session_shard_v1"
+        elif change=="missing_pin":del m["source_evidence"]["data_certificate_sha256"]
+        elif change=="extra_array":m["files"]["volume"]=m["files"]["high_ticks"]
+    proc=_gated_cli(tmp_path,mutate)
+    assert proc.returncode!=0 and "DataEligibilityError" in proc.stderr
+    assert not (tmp_path/"cli").exists()
+
+
+def test_cli_requires_gate_or_explicit_technical_mode(tmp_path):
+    p=subprocess.run([sys.executable,str(ROOT/"tools/run_funnel_arrays.py"),"--arrays",str(tmp_path),"--registry","r.json","--split","s.json","--out",str(tmp_path/"out")],capture_output=True,text=True)
+    assert p.returncode==2 and "--technical-only" in p.stderr
