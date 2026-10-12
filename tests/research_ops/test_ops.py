@@ -137,6 +137,34 @@ class OpsTests(unittest.TestCase):
         tip=self.store.verify()['tip'];self.submit()
         with self.assertRaises(ValueError):main(['--state',str(self.store.path),'daemon','--expected-tip',tip])
 
+class StatusTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp=tempfile.TemporaryDirectory();self.root=Path(self.tmp.name)
+    def tearDown(self):self.tmp.cleanup()
+    def test_status_reports_not_initialized_without_raising(self):
+        from io import StringIO
+        import contextlib,json as _json
+        buf=StringIO()
+        with contextlib.redirect_stdout(buf):
+            main(['--state',str(self.root/'queue.sqlite'),'status','--dispatch-state',str(self.root/'dispatch.sqlite'),'--checkpoint-state',str(self.root/'checkpoints.sqlite')])
+        out=_json.loads(buf.getvalue())
+        for key in ('queue','dispatch','checkpoint'):
+            self.assertEqual(out[key]['status'],'NOT_INITIALIZED_OR_INVALID')
+    def test_status_reports_configured_queue(self):
+        from io import StringIO
+        import contextlib,json as _json
+        Store(self.root/'queue.sqlite').initialize()
+        buf=StringIO()
+        with contextlib.redirect_stdout(buf):
+            main(['--state',str(self.root/'queue.sqlite'),'status'])
+        out=_json.loads(buf.getvalue())
+        self.assertIn('tip',out['queue'])
+        self.assertEqual(out['dispatch']['status'],'NOT_CONFIGURED')
+        self.assertEqual(out['checkpoint']['status'],'NOT_CONFIGURED')
+    def test_status_never_writes_to_disk(self):
+        main(['--state',str(self.root/'queue.sqlite'),'status','--dispatch-state',str(self.root/'dispatch.sqlite')])
+        self.assertEqual(list(self.root.iterdir()),[])
+
 class DraftTests(unittest.TestCase):
     def draft(self):
         from tools.research_ops.design import Draft
@@ -153,5 +181,16 @@ class DraftTests(unittest.TestCase):
     def test_unknown_execution_field(self):
         from tools.research_ops.design import Draft
         with self.assertRaises(TypeError):Draft(**{**self.draft().__dict__,'execute':True})
+    def test_cli_audit_draft(self):
+        tmp=tempfile.TemporaryDirectory();path=Path(tmp.name)/'draft.json'
+        path.write_text(json.dumps(self.draft().__dict__))
+        try:main(['audit-draft',str(path)])
+        finally:tmp.cleanup()
+    def test_cli_audit_draft_rejects_oversize(self):
+        tmp=tempfile.TemporaryDirectory();path=Path(tmp.name)/'draft.json'
+        path.write_bytes(b' '*65537)
+        try:
+            with self.assertRaises(ValueError):main(['audit-draft',str(path)])
+        finally:tmp.cleanup()
 
 if __name__=='__main__':unittest.main()

@@ -58,6 +58,19 @@ No se cambió el worker, su entorno Python, los datos, pins o parámetros. La he
 - Compartir readonly memmaps/cache de datos y medir buffers privados por tarea antes de aprobar concurrencia. Un supervisor confiable debe mantener admisión y reserva atómicas, parada por presión/timeout y alertas externas.
 - Evaluar máquina con más cores/RAM sólo con perfil y benchmark completo. GPU después de paridad y evidencia de que ayuda a estos recorridos; no asumir que scans ramificados/causales se aceleran sólo por disponer de GPU.
 
+### Store durable de checkpoints: `tools/research_ops/checkpoints.py`
+
+Cierra el "external durable receipt store" que `work_plan.py` ya listaba en `required_before_execution`. `CheckpointLedger` es otro ledger SQLite encadenado por hash, hermano de `Store` y `DispatchLedger`:
+
+- **Plan congelado una vez:** `initialize(plan)` fija el `plan_sha256` de un plan válido (`validate_work_plan`); reabrir el mismo archivo con un plan distinto falla.
+- **Checkpoint durable, nunca completitud:** `record(receipt)` reusa `validate_checkpoint_identity` (identidad de `unit_id`/`fingerprint`/`output_sha256`, nunca contenido) y lo graba de forma permanente. Cada `status` que devuelve mantiene `skip_allowed=False` y `execution_allowed=False`, igual que el resto del módulo: un checkpoint grabado es identidad verificada, no autorización para omitir trabajo.
+- **Sin duplicar ni perder entre reinicios:** grabar dos veces el mismo `unit_id` falla; reabrir el ledger después de un crash/reinicio conserva exactamente lo ya grabado, ni más ni menos.
+- **`pending_units()`:** la utilidad que importa para rendimiento. Devuelve los `unit_id` del plan sin checkpoint grabado. Un kernel de Kaggle que reinicia (o cualquiera de los hasta cinco notebooks simultáneos del límite operacional) puede consultar esto antes de gastar más presupuesto de horas, en vez de volver a correr unidades ya identificadas como completas o perder de vista cuáles faltan. La decisión de *efectivamente* omitir una unidad sigue siendo externa y revisada aparte; este módulo sólo deja esa decisión informada y a prueba de manipulación.
+
+CLI: `checkpoint-init PLAN_JSON --checkpoint-state PATH`, `checkpoint-record RECEIPT_JSON --checkpoint-state PATH`, `checkpoint-pending --checkpoint-state PATH`, `checkpoint-verify --checkpoint-state PATH`. Ambos archivos de entrada usan el mismo límite acotado/sin symlink que `audit-draft` y `dispatch-bind-plan`.
+
+Tests: `tests/research_ops/test_checkpoints.py` (16 casos): plan congelado, checkpoint duplicado rechazado, fingerprint/unidad desconocida rechazados, reinicio no pierde ni regala checkpoints, cadena de eventos y fila de checkpoint verificadas contra manipulación, y el ciclo completo por CLI.
+
 ## Criterio de aceptación
 
 No instalar candidatos en la corrida actual. Para una versión futura: mismos pins, sesiones/particiones, configuración, decisiones de trigger, targets/opposite, último observado, censuras, rows y features. Tests adversariales y referencia independiente. Si el uso de flotantes cambia orden de acumulación, revisar tolerancia fija y demostrar que no cambia decisiones, no aceptar una tolerancia post-hoc. Registrar todos los intentos fallidos del benchmark y los costos; una mejora técnica no es edge.
