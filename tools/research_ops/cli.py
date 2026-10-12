@@ -20,9 +20,17 @@ def main(argv=None):
     a=s.add_parser('preflight-metadata');a.add_argument('bundle',type=Path);a.add_argument('--expected-sha256',required=True)
     s.add_parser('benchmark-synthetic')
     s.add_parser('benchmark-context-synthetic')
+    a=s.add_parser('recall-brain');a.add_argument('ledger',type=Path);a.add_argument('query');a.add_argument('--expected-sha256',required=True);a.add_argument('--expected-tip',required=True)
+    a=s.add_parser('recall-articles');a.add_argument('pack',type=Path);a.add_argument('query');a.add_argument('--expected-sha256',required=True);a.add_argument('--producer-commit',required=True)
     a=s.add_parser('daemon');a.add_argument('--cycles',type=int,default=1);a.add_argument('--interval',type=float,default=5);a.add_argument('--expected-tip',required=True)
     args=p.parse_args(argv)
-    if args.command=='preflight-metadata':
+    if args.command=='recall-brain':
+        from .knowledge import recall_brain
+        result=recall_brain(args.ledger,expected_file_sha256=args.expected_sha256,expected_tip=args.expected_tip,query=args.query)
+    elif args.command=='recall-articles':
+        from .knowledge import recall_literature
+        result=recall_literature(args.pack,expected_file_sha256=args.expected_sha256,producer_commit=args.producer_commit,query=args.query)
+    elif args.command=='preflight-metadata':
         from .preflight import check_bundle
         result=check_bundle(args.bundle,args.expected_sha256)
     elif args.command=='benchmark-context-synthetic':

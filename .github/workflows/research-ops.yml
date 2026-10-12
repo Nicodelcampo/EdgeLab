@@ -8,6 +8,8 @@ on:
       - 'edgelab/data/research_data_gate.py'
       - 'edgelab/data/contract_regime.py'
       - 'config/component_registry.json'
+      - 'config/research_ops_knowledge_sources.json'
+      - 'edgelab/edge_brain/**'
       - 'docs/research/ops/**'
       - '.github/workflows/research-ops.yml'
   workflow_dispatch:
@@ -24,6 +26,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Install packaged Brain core schema dependency
+        run: python -m pip install jsonschema==4.23.0
       - name: Synthetic queue, guards, receipts and draft tests only
         run: python -m unittest discover -s tests/research_ops -v
       - name: Navigation only, not research certification

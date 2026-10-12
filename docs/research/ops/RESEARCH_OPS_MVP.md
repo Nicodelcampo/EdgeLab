@@ -47,7 +47,7 @@ Después de una caída, NO repetir un jobRUNNING. Revisar recibos y estado; `qua
 - El reloj, SQLite y el filesystem pueden fallar. Un recibo puede quedar escrito antes de que el estado terminal confirme: se conserva, el job continúaRUNNING, no se repite ciegamente.
 - El observador sólo permite el diagnóstico operacional; no certifica fuente, causalidad, éxito de una corrida ni oportunidades. No interpreta el contenido de archivos como instrucciones.
 - Cada cola tiene presupuesto estático; no se reinicia diariamente ni tras un crash. Crear colas nuevas para eludirlo no está controlado contra un administrador del host.
-- Todavía no hay generador LLM, scheduler científico, integración Brain, adaptador aprobado de mercado, control de costo API, servicio aislado de reservas, notificaciones ni benchmark de aceleración.
+- Todavía no hay generador LLM, scheduler científico, fuentes Brain/artículos reales vinculadas, dispatcher de research, adaptador aprobado de mercado, control durable de costo API, servicio aislado de reservas ni notificaciones. Hay adaptadores de lectura y benchmarks sintéticos, no aceleración integral demostrada.
 - Tests focales no equivalen a toda la suite del repo; workflow publicado no implica CI remota pasada. Presencia en esta rama no es integración enmain.
 
 ## Camino a24/7, por hitos
@@ -70,3 +70,7 @@ Se agregó un puente metadata-only al gate canónico y un candidato acotado de r
 ## Tercer hito: presupuesto por unidades y rendimiento
 
 Se agregaron inventario sellado de18familias, evaluación conservadora de admisión (sin lanzamiento), memo causal acotado y microbenchmark de las expresiones existentes con inputs sintéticos. Se conserva el ejecutor exclusivamente sintético. Detalle: [Rendimiento y unidades](PERFORMANCE_AND_FROZEN_WORK_UNITS.md). La medición demuestra tanto beneficio con hits como penalización sin repetición; no demuestra aceleración de la campaña completa.
+
+## Cuarto hito: conocimiento y research condicional
+
+Adaptadores del core canónico EdgeBrain y exports de la biblioteca SSRN existente, sin duplicarla; planner explícito para investigar vacíos o contradicciones y devolver referencias al Brain. Ningún dispatch de red o append científico automático. [Arquitectura, interfaces y límites](KNOWLEDGE_FIRST_RESEARCH.md). Evidencia focal: `PHASE4_TEST_EVIDENCE.json`.

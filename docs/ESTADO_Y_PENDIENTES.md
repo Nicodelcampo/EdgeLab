@@ -298,3 +298,5 @@ P4 prohibida y Kaggle sin nueva promoción.
 ## Research Ops — nuevo prototipo autorizado, pendiente de integración
 
 [Alcance y próximos hitos](research/ops/RESEARCH_OPS_MVP.md): cola operativa durable, presupuesto reservado, worker fijo sintético, recibos y observador read-only. Desarrollo nuevo en rama separada; no reemplaza ccbus/planeamiento local ni modifica los límites históricos de las tareas anteriores. Sin nuevos outcomes, acceso de mercado, reservas, promociones o despliegue24/7. No está integrado enmain por existir este documento en una rama.
+
+Hito de conocimiento: [EdgeBrain, artículos y research condicional](research/ops/KNOWLEDGE_FIRST_RESEARCH.md). Adaptadores implementados contra el core canónico y `context_pack` de PR67; planner acotado con búsqueda favorable y contradictoria. Fuentes reales, custodia completa del corpus, dispatcher/budget durable y append canónico siguen pendientes. Sin cambio de autoridad o procesos de MNQ.
