@@ -65,6 +65,18 @@ python -m unittest discover -s tests/research_ops -v
 
 Ambos comandos de recall se resuelven antes de abrir la cola SQLite. La composición y planificación se exponen como API Python (`knowledge_context`, `plan_research`), no como comandos de red. Un archivo creado por el propio modelo y su hash no satisfacen aprobación/custodia externa.
 
+El presupuesto durable (`dispatch.py`) también tiene CLI, sobre un archivo SQLite separado (`--dispatch-state`) del de la cola de jobs:
+
+```bash
+python -m tools.research_ops.cli dispatch-init --dispatch-state DISPATCH_PATH --reviewer-id REVIEWER_ID
+python -m tools.research_ops.cli dispatch-bind-plan --dispatch-state DISPATCH_PATH PLAN_JSON_FILE
+python -m tools.research_ops.cli dispatch-reserve --dispatch-state DISPATCH_PATH --reviewer-id REVIEWER_ID DIRECTIVE_INDEX
+python -m tools.research_ops.cli dispatch-receipt --dispatch-state DISPATCH_PATH DIRECTIVE_INDEX --evidence-sha256 EXTERNAL_CONTENT_SHA256 --source-sha256 EXTERNAL_URL_SHA256 --chars CHAR_COUNT
+python -m tools.research_ops.cli dispatch-verify --dispatch-state DISPATCH_PATH
+```
+
+`PLAN_JSON_FILE` es la salida de `plan_research` volcada a disco (≤64KiB, sin symlink, igual límite que `audit-draft`); ningún comando de esta lista abre un socket.
+
 ## Próximas integraciones
 
 - Vincular un export operacional real aprobado y el Cortex canónico una vez resuelta su custodia; probar consultas con recibos reales.

@@ -153,5 +153,16 @@ class DraftTests(unittest.TestCase):
     def test_unknown_execution_field(self):
         from tools.research_ops.design import Draft
         with self.assertRaises(TypeError):Draft(**{**self.draft().__dict__,'execute':True})
+    def test_cli_audit_draft(self):
+        tmp=tempfile.TemporaryDirectory();path=Path(tmp.name)/'draft.json'
+        path.write_text(json.dumps(self.draft().__dict__))
+        try:main(['audit-draft',str(path)])
+        finally:tmp.cleanup()
+    def test_cli_audit_draft_rejects_oversize(self):
+        tmp=tempfile.TemporaryDirectory();path=Path(tmp.name)/'draft.json'
+        path.write_bytes(b' '*65537)
+        try:
+            with self.assertRaises(ValueError):main(['audit-draft',str(path)])
+        finally:tmp.cleanup()
 
 if __name__=='__main__':unittest.main()

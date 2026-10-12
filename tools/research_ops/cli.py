@@ -5,6 +5,13 @@ from .store import Store,Policy,Plan
 from .worker import run_one,SCRIPT_SHA256
 from .observer import observe
 from .design import Draft,audit_draft
+from .dispatch import DispatchLedger,Reviewer
+
+def _bounded_json(path):
+    if path.is_symlink() or path.stat().st_size>65536:raise ValueError('bounded regular file required')
+    with path.open('rb') as f:raw=f.read(65537)
+    if len(raw)>65536:raise ValueError('file grew beyond limit')
+    return json.loads(raw)
 
 def main(argv=None):
     p=argparse.ArgumentParser(description=__doc__)
@@ -27,6 +34,11 @@ def main(argv=None):
         a=s.add_parser(name);a.add_argument('snapshot',type=Path);a.add_argument('--expected-sha256',required=True);a.add_argument('--expected-tip',required=True)
         if name=='restore-queue':a.add_argument('destination',type=Path)
     a=s.add_parser('daemon');a.add_argument('--cycles',type=int,default=1);a.add_argument('--interval',type=float,default=5);a.add_argument('--expected-tip',required=True)
+    a=s.add_parser('dispatch-init');a.add_argument('--dispatch-state',type=Path,required=True);a.add_argument('--reviewer-id',required=True)
+    a=s.add_parser('dispatch-bind-plan');a.add_argument('--dispatch-state',type=Path,required=True);a.add_argument('plan',type=Path)
+    a=s.add_parser('dispatch-reserve');a.add_argument('--dispatch-state',type=Path,required=True);a.add_argument('--reviewer-id',required=True);a.add_argument('directive_index',type=int)
+    a=s.add_parser('dispatch-receipt');a.add_argument('--dispatch-state',type=Path,required=True);a.add_argument('directive_index',type=int);a.add_argument('--evidence-sha256',required=True);a.add_argument('--source-sha256',required=True);a.add_argument('--chars',type=int,required=True);a.add_argument('--cost',type=int,default=0)
+    a=s.add_parser('dispatch-verify');a.add_argument('--dispatch-state',type=Path,required=True)
     args=p.parse_args(argv)
     if args.command=='snapshot-queue':
         from .snapshots import export_queue
@@ -53,11 +65,19 @@ def main(argv=None):
         from .benchmark import run_benchmark
         result=run_benchmark()
     elif args.command=='audit-draft':
-        if args.proposal.is_symlink() or args.proposal.stat().st_size>65536:raise ValueError('bounded regular proposal required')
-        with args.proposal.open('rb') as f:raw=f.read(65537)
-        if len(raw)>65536:raise ValueError('proposal grew beyond limit')
-        result=audit_draft(Draft(**json.loads(raw)))
+        result=audit_draft(Draft(**_bounded_json(args.proposal)))
     elif args.command=='observe': result=observe(args.campaign_state)
+    elif args.command=='dispatch-init':
+        ledger=DispatchLedger(args.dispatch_state);ledger.initialize(Reviewer(args.reviewer_id));result=ledger.verify()
+    elif args.command=='dispatch-bind-plan':
+        ledger=DispatchLedger(args.dispatch_state);ledger.bind_plan(_bounded_json(args.plan));result=ledger.verify()
+    elif args.command=='dispatch-reserve':
+        ledger=DispatchLedger(args.dispatch_state);result=ledger.reserve(args.directive_index,reviewer_id=args.reviewer_id)
+    elif args.command=='dispatch-receipt':
+        ledger=DispatchLedger(args.dispatch_state)
+        result=ledger.record_receipt(args.directive_index,evidence_sha256=args.evidence_sha256,source_url_sha256=args.source_sha256,char_count=args.chars,cost=args.cost)
+    elif args.command=='dispatch-verify':
+        result=DispatchLedger(args.dispatch_state).verify()
     else:
         store=Store(args.state)
         if args.command=='init':store.initialize(Policy(args.attempts,args.seconds));result=store.verify()

@@ -4,6 +4,7 @@ from pathlib import Path
 from tools.research_ops.dispatch import DispatchLedger, Reviewer
 from tools.research_ops.knowledge import knowledge_context, validate_literature_pack
 from tools.research_ops.research_cycle import ResearchBudget, plan_research
+from tools.research_ops.cli import main
 
 QUESTION = 'liquidity context causal control'
 COMMIT = '5c10da451b164c54133bdb9a4674de43d6fa2d22'
@@ -138,3 +139,35 @@ class DispatchTests(unittest.TestCase):
         src = Path(mod.__file__).read_text()
         for forbidden in ('requests', 'urllib', 'socket', 'http.client'):
             self.assertNotIn(forbidden, src)
+
+
+class DispatchCliTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory(); self.root = Path(self.tmp.name)
+        self.state = self.root / 'dispatch.sqlite'
+        self.plan_path = self.root / 'plan.json'
+        self.plan_path.write_text(json.dumps(ready_plan()))
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def test_cli_full_cycle(self):
+        main(['dispatch-init', '--dispatch-state', str(self.state), '--reviewer-id', 'reviewer-one'])
+        main(['dispatch-bind-plan', '--dispatch-state', str(self.state), str(self.plan_path)])
+        main(['dispatch-reserve', '--dispatch-state', str(self.state), '--reviewer-id', 'reviewer-one', '0'])
+        main(['dispatch-receipt', '--dispatch-state', str(self.state), '0',
+              '--evidence-sha256', 'a' * 64, '--source-sha256', 'b' * 64, '--chars', '100'])
+        ledger = DispatchLedger(self.state)
+        state = ledger.verify()
+        self.assertEqual(state['reserved'], [0])
+        self.assertEqual(state['receipts'][0], 'a' * 64)
+
+    def test_cli_rejects_oversize_plan_file(self):
+        main(['dispatch-init', '--dispatch-state', str(self.state), '--reviewer-id', 'reviewer-one'])
+        self.plan_path.write_bytes(b' ' * 65537)
+        with self.assertRaises(ValueError):
+            main(['dispatch-bind-plan', '--dispatch-state', str(self.state), str(self.plan_path)])
+
+    def test_cli_reserve_without_init_fails_closed(self):
+        with self.assertRaises(ValueError):
+            main(['dispatch-reserve', '--dispatch-state', str(self.state), '--reviewer-id', 'reviewer-one', '0'])
