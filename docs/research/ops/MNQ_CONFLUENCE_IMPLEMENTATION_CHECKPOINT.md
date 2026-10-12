@@ -167,3 +167,6 @@ V1 kernel 138386707 terminó con API ERROR y child exit 1; no watchdog timeout/R
 Preparado intento V2: plan separado, mismo universo/indicadores/target, presupuesto 12M captures/4 GiB SQLite, diagnóstico sanitizado de fallo y selección de racimo equivalente Fenwick. No hay resume del estado privado del v1; no transportar SQLite ni source fuera de Kaggle. Source/código deben persistirse antes de guardar nueva versión del notebook. Documento `MNQ_CONFLUENCE_MARKET_RETRY.md` conserva incertidumbre sobre causa exacta de v1.
 
 Regresión antes de V2: **701 Research Ops + 18 navegación PASS**, catálogo PASS_NAVIGATION_ONLY. 19 tests nuevos desde etapa 7 para lazy features, first passage, binding agregado, racimo Fenwick y telemetría de fallo; todos con fixtures inventados. Ninguna nueva auditoría de datasets.
+
+
+V2 enviado después de persistir `8350d9dbb5281bd1b93aba083537eb43f984fa67`: kernel **138386707/v2**, estado observado **RUNNING**, privado/CPU y source exacto verificados. Mismos 96 configs, 32 triadas, warmup y target. No reenviar por retomar este checkpoint; consultar primero estado. Ampliación de capacidad y racimo equivalente no equivalen a éxito, velocidad real medida ni edge. Receipts finales pendientes.
