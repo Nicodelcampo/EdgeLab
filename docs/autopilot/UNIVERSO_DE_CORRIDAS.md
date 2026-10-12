@@ -19,5 +19,8 @@ Idea (pedida por Nico): no se corre «lo que parece interesante»; se corre dond
 ## Hallazgo sobre las cuentas: el valor de opción
 Con las reglas y cuotas cargadas (todas sin verificar), varias cuentas dan **EV ≥ 0 aun con ventaja bruta cero o negativa** (p. ej. Topstep con cuota 95; ρ\* ≈ −0,04 en `THRESHOLDS.md`): el riesgo está acotado a la cuota y los retiros dan una opción. Es lo que advierte Hall (2026): pasar o «ganar» con la cuenta no prueba habilidad. EdgeLab **no persigue ese valor de opción**: depende de cuotas y retiros no verificados, de descuentos, de la conducta en la cuenta fondeada y de las reglas contra el abuso. Por eso el umbral que se usa para diseñar es el **efectivo = máx(EV ≥ 0 del ciclo, esperanza neta ≥ 0)**, es decir, la estrategia debe tener ventaja neta positiva por sí misma, y el aporte sobre el control sin ventaja debe ser positivo.
 
+## Los umbrales no descartan
+Son una cota de referencia para ordenar y dimensionar, no un criterio de exclusión (ver `MANDATO.md`): la factibilidad tiene piso de 0,25, las celdas con ρ\* alto siguen en el universo y un efecto por debajo del umbral de hoy puede servir combinado, con otro tamaño/cadencia o como ingrediente.
+
 ## Límites
 Es una cota necesaria, no suficiente: una celda con ρ\* bajo no tiene edge; una con ρ\* alto probablemente no sirva. No modela correlación entre estrategias ni consistencia por día más allá de lo que trae `ev.py`.

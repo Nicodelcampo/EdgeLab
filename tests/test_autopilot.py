@@ -223,3 +223,10 @@ def test_universe_thresholds_and_matching():
     assert 0 < cheap["z_bruto_min"] < costly["z_bruto_min"] < 1                                                              # más costo relativo ⇒ más ventaja requerida
     assert U.cost_ratio("GC", 40) > U.cost_ratio("GC", 160) and "6E" in U.INSTRUMENTS and "GC" in U.INSTRUMENTS
     m = U.best_accounts("GC", 40, 0.30, cat, n_paths=800); assert m and m[0]["ev"] > 0                                      # con z bruto alto la cuenta deja EV positivo
+
+
+def test_thresholds_prioritise_but_never_exclude():
+    from edgelab.autopilot.generate import Candidate, score, FEAS_FLOOR
+    base = dict(cid="X", title="t", rule="r", gap_kind="NO_PRIOR_EVIDENCE", evidence=[], power=0.5, est_seconds=600, group="G", family="F")
+    easy = score(Candidate(required_rho=0.05, **base), [], {}); hard = score(Candidate(required_rho=2.0, **base), [], {})
+    assert hard.score > 0 and hard.score_parts["feasibility"] == FEAS_FLOOR and easy.score > hard.score >= 0.25 * easy.score - 1e-12              # prioridad más baja, nunca cero

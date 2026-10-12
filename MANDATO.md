@@ -18,6 +18,8 @@ Un efecto estadísticamente significativo **no cumple el objetivo por serlo**. N
 - Reglas de conducta que cambian el diseño (ejemplo Lucid; cada firma tiene las suyas): sin límite de tiempo en la evaluación (decide P(objetivo antes del piso)); consistencia del 40-60 % (el mayor día ≤ esa fracción del beneficio) que castiga los edges de pocos días grandes; intradía estricto (cierre antes de 15:45 CT); prohibido HFT, microscalping y **cobertura entre cuentas** (dos estrategias en cuentas distintas no pueden estar en lados opuestos del mismo instrumento a la vez); 10 cuentas de evaluación y 5 fondeadas.
 - Un participante **sin ventaja** pasa poco y paga la cuota: toda estrategia se compara contra ese control (techo geométrico L/(T+L) = 40 %; con costos reales y 1 contrato ≈ 3,5 % con brackets de USD 100 y ≈ 0 con brackets chicos).
 
+**Los umbrales son referencia, no un filtro.** Sirven para **priorizar** celdas, **dimensionar** (tamaño, cuenta, cadencia) y saber cuánto margen falta; **no bastan para descartar** un edge ni una estrategia. Un efecto que hoy no supera el umbral de ninguna cuenta puede servir igual: combinado con otros, con otro tamaño o cadencia, como filtro o ingrediente de otra estrategia, o si cambian las reglas o los costos. Solo se descarta por invalidez estadística, artefacto o no replicación, nunca por un umbral. Las celdas «poco plausibles» bajan de prioridad como máximo a la cuarta parte y siguen en el universo; el selector conserva una chance mínima de explorar lo no probado.
+
 ## 2. Por qué
 Un challenge impone reglas duras (objetivo de ganancia, drawdown máximo que suele ser de tipo *trailing*, a veces límite de pérdida diaria, días mínimos y tiempo máximo, a veces consistencia). Una estrategia sola, con rachas y drawdown, rara vez los supera de forma confiable; **varias estrategias pequeñas, estables y poco correlacionadas suavizan la curva y aumentan la probabilidad de pase**. Lo que importa es la **probabilidad de pasar y de sostener la cuenta**, no el p-valor de un efecto.
 
@@ -44,7 +46,7 @@ Hoy **no hay ninguna estrategia en nivel A**. La pista de GC (último 30 min) es
 ## 5. Cómo lo usa el agente
 - **Selección de candidatas**: la puntuación se multiplica por un peso de utilidad (`tradeable` 1,0 · `bridgeable` 0,6 · `info` 0,3). Se prefieren estudios que terminan en una regla operable evaluable neta de costos y que agregan **diversificación** (otro activo, otra franja horaria, otra lógica) por sobre el refinamiento de un efecto ya conocido.
 - **Interpretación**: todo informe dice el tier. «Pasó Holm» no es éxito; es solo validez estadística.
-- **Cuando una pista llega a C sin camino a B**, el agente lo dice y la archiva en vez de gastar más cómputo.
+- **Cuando una pista llega a C sin camino a B**, el agente lo dice y la deja **en reserva** (no se descarta): se retoma si hay datos nuevos, otra cuenta, otro tamaño o una combinación con otras estrategias; mientras tanto no se le gasta más cómputo.
 - **Presupuesto**: no se gasta alfa ni cómputo en información pura salvo que sea ingrediente explícito de una estrategia (filtro de régimen, condición de entrada).
 - **Honestidad**: no se maquillan resultados chicos ni se eligen ventanas para que pasen; los negativos y los tier C/D se conservan.
 
