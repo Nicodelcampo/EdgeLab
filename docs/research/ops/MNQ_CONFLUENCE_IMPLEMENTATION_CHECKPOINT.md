@@ -170,3 +170,10 @@ Regresión antes de V2: **701 Research Ops + 18 navegación PASS**, catálogo PA
 
 
 V2 enviado después de persistir `8350d9dbb5281bd1b93aba083537eb43f984fa67`: kernel **138386707/v2**, estado observado **RUNNING**, privado/CPU y source exacto verificados. Mismos 96 configs, 32 triadas, warmup y target. No reenviar por retomar este checkpoint; consultar primero estado. Ampliación de capacidad y racimo equivalente no equivalen a éxito, velocidad real medida ni edge. Receipts finales pendientes.
+
+
+## Aprendizajes y retorno al supervisor
+
+`MNQ_CONFLUENCE_RUN_LEARNINGS.md/.json` conserva hechos, hipótesis y límites de v1/v2; V2 continúa RUNNING, sin resultados completos ni speedup científico. No cambiar kernel activo, ampliar estudio ni reauditar fuentes por este checkpoint. Optimizaciones próximas dependen del perfil; separar captura/serialización/index de detector antes de atribuir costos.
+
+`REMOTE_ATTEMPT_WATCH.md` describe journal local finito: identidad inmutable, reserva de consulta antes de provider, presupuesto no reembolsado tras fallo/crash, estado API terminal sin inferir éxito, source/metadata contrastados por host. Una consulta real V2 pasó por el nuevo circuito; snapshot agregado persistido. No daemon, custodian firmado, writer canónico ni witness/fencing/restore remoto. No fabricar RunObservation a partir de RSS muestreado. Regresión **715 Research Ops + 18 navegación PASS**, catálogo PASS_NAVIGATION_ONLY, 14 tests nuevos. Siguiente hito: adquisición terminal agregada acotada y revisión semántica vinculadas al journal, sin extracción de privados.
