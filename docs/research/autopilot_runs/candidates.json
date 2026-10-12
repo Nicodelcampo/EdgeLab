@@ -60,5 +60,42 @@
   "origin": {
    "GC_0430_REV15": "other_assets_same_slot"
   }
+ },
+ {
+  "run_id": "idm-2",
+  "kind": "study",
+  "family": "IDM_JUMP",
+  "group": "GC_MULTI",
+  "script": "tools/study_slot_effect.py",
+  "prereg": "docs/research/autopilot/drafts/IDM-2.md",
+  "n_trials": 8,
+  "needs": [
+   "ES:2025-07-01:2026-09-30",
+   "NQ:2025-07-01:2026-09-30",
+   "YM:2025-07-01:2026-09-30",
+   "ZB:2025-07-01:2026-09-30",
+   "6E:2025-07-01:2026-09-30",
+   "6J:2025-07-01:2026-09-30",
+   "GC:2025-07-01:2026-09-30"
+  ],
+  "extra_datasets": [
+   "nicolasbuttaro/edgelab-dukascopy-es-usa500",
+   "nicolasbuttaro/edgelab-dukascopy-xauusd-ticks-m1"
+  ],
+  "internet": false,
+  "env": {
+   "STUDY_CFG": "{\"mode\": \"idm_jump\", \"n_planned\": 8, \"reference_sources\": [\"GC\"], \"sources\": [\"GC_spot_old\", \"ES_spot\", \"ES\", \"NQ\", \"YM\", \"ZB\", \"6E\", \"6J\"], \"spot_ranges\": {\"ES_spot\": [\"ES\", \"2018-01-01\", \"2025-06-30\"], \"GC_spot_old\": [\"GC\", \"2022-07-01\", \"2025-06-30\"]}}"
+  },
+  "est_seconds": 1200,
+  "decision_rule": "holm",
+  "notes": "Momentum de la \u00faltima media hora en GC: \u00bflo explican los saltos del d\u00eda? Prueba en spot 2022-2025 (muestra no usada para esta versi\u00f3n) y en otros activos",
+  "origin": {
+   "GC_LH_MOMENTUM": {
+    "sample": "older_spot_jump_decomposition",
+    "tests": [
+     "idmj/GC_spot_old"
+    ]
+   }
+  }
  }
 ]
