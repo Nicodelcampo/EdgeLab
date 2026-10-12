@@ -86,3 +86,7 @@ Export/inspect/restore con proyecciones, eventos, recibos y presupuesto intactos
 ## Aprendizaje poscorrida y mejora continua — diseño/prototipo offline
 
 [Diseño y límites](POST_RUN_LEARNING_AND_OPTIMIZATION.md): cierre verificado → recall canónico → borradores separados científicos/técnicos → experimento finito → paridad/benchmark → revisión → canary futuro → recall del próximo plan. `post_run.py` propone y filtra, no escribe Brain, ejecuta, promueve ni despliega. Cada cierre se revisa; si no hay mejora demostrada se conserva baseline. Las optimizaciones no se instalan en corridas activas.
+
+## Cierres y outbox de aprendizaje — importación local conectada
+
+[Contrato y CLI](CLOSEOUT_LEARNING_OUTBOX.md). `closeout.py` verifica sobres técnicos sellados y `learning_outbox.py` registra el plan poscorrida con idempotencia local, conflictos explícitos y evidencia preservada. Snapshot/restore mantienen pendientes e invalidaciones, sin entregar ni repetir jobs. Es una bandeja operacional, no memoria científica paralela. Polling/descarga remotos, producer de telemetría autenticada y writer Brain siguen pendientes.

@@ -81,3 +81,7 @@ No incluye LLM, lectura de datos de mercado, red, patch generation, ejecutor de 
 `python -m unittest tests.research_ops.test_post_run -v`
 
 39 pruebas sintéticas de terminales, negativos, idempotencia declarada, incompletos, paridad, regresión, presupuesto, política y límites. Evidencia de suites en `POST_RUN_TEST_EVIDENCE.json`; no acreditan corridas reales del agente, escritura canónica ni ciclo desplegado. La campaña MNQ activa se conserva intacta.
+
+## Extensión posterior: ingest y outbox local
+
+Se conectó el planificador a [sobres técnicos externos y outbox idempotente](CLOSEOUT_LEARNING_OUTBOX.md), con CLI y snapshot/restore. Esto cubre la importación local/registro, no el productor Kaggle, la escritura al Brain o la activación. La exigencia de custodia y la separación científica/técnica no cambian.

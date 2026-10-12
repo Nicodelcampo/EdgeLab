@@ -26,9 +26,31 @@ def main(argv=None):
     for name in ('inspect-snapshot','restore-queue'):
         a=s.add_parser(name);a.add_argument('snapshot',type=Path);a.add_argument('--expected-sha256',required=True);a.add_argument('--expected-tip',required=True)
         if name=='restore-queue':a.add_argument('destination',type=Path)
+    a=s.add_parser('outbox-init');a.add_argument('--outbox',type=Path,required=True);a.add_argument('--max-items',type=int,default=32)
+    for name in ('outbox-verify','snapshot-outbox'):
+        a=s.add_parser(name);a.add_argument('--outbox',type=Path,required=True);a.add_argument('--expected-tip',required=True)
+        if name=='snapshot-outbox':a.add_argument('output',type=Path)
+    a=s.add_parser('ingest-closeout');a.add_argument('envelope',type=Path);a.add_argument('--outbox',type=Path,required=True);a.add_argument('--expected-sha256',required=True);a.add_argument('--expected-tip',required=True);a.add_argument('--provider',choices=['synthetic','kaggle'],required=True);a.add_argument('--job-id',required=True);a.add_argument('--version',type=int,required=True)
+    a=s.add_parser('restore-outbox');a.add_argument('snapshot',type=Path);a.add_argument('destination',type=Path);a.add_argument('--expected-sha256',required=True);a.add_argument('--expected-tip',required=True)
     a=s.add_parser('daemon');a.add_argument('--cycles',type=int,default=1);a.add_argument('--interval',type=float,default=5);a.add_argument('--expected-tip',required=True)
     args=p.parse_args(argv)
-    if args.command=='snapshot-queue':
+    if args.command=='outbox-init':
+        from .learning_outbox import LearningOutbox
+        result=LearningOutbox(args.outbox).initialize(args.max_items)
+    elif args.command=='outbox-verify':
+        from .learning_outbox import LearningOutbox
+        result=LearningOutbox(args.outbox).verify(args.expected_tip)
+    elif args.command=='ingest-closeout':
+        from .learning_outbox import LearningOutbox
+        from .closeout import ingest_closeout
+        result=ingest_closeout(args.envelope,LearningOutbox(args.outbox),expected_sha256=args.expected_sha256,expected_provider=args.provider,expected_job_id=args.job_id,expected_version=args.version,expected_tip=args.expected_tip)
+    elif args.command=='snapshot-outbox':
+        from .learning_outbox import LearningOutbox, export_outbox
+        result=export_outbox(LearningOutbox(args.outbox),args.output,expected_tip=args.expected_tip)
+    elif args.command=='restore-outbox':
+        from .learning_outbox import restore_outbox
+        result=restore_outbox(args.snapshot,args.destination,expected_sha256=args.expected_sha256,expected_tip=args.expected_tip)
+    elif args.command=='snapshot-queue':
         from .snapshots import export_queue
         result=export_queue(Store(args.state),args.output,snapshot_id=args.snapshot_id,expected_tip=args.expected_tip)
     elif args.command=='inspect-snapshot':

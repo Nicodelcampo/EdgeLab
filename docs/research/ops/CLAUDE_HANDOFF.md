@@ -18,6 +18,8 @@ El usuario pidió un sistema que diseñe, audite, ejecute y analice investigaci�
 
 ### Lectura recomendada
 
+- **Nuevo hito: [Importación local de cierres + outbox durable](CLOSEOUT_LEARNING_OUTBOX.md).** CLI explícita, idempotencia transaccional y snapshot/restore sin entrega. No productor remoto ni writer canónico; pendientes de integración. Evidencia `CLOSEOUT_OUTBOX_TEST_EVIDENCE.json`.
+
 - **Nuevo: [Aprendizaje poscorrida y optimización continua](POST_RUN_LEARNING_AND_OPTIMIZATION.md).** Planificador offline y screen de benchmarks, sin permisos de ejecución o activación. Código `tools/research_ops/post_run.py`; evidencia `POST_RUN_TEST_EVIDENCE.json` y telemetría técnica `POST_RUN_MNQ_TELEMETRY.json`.
 
 - [Base y demo](RESEARCH_OPS_MVP.md).
