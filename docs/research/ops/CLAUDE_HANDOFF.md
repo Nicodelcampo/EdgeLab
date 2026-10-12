@@ -86,3 +86,8 @@ No abrir holdout, calcular P&L, promover estrategias, certificar fuentes ni ampl
 ## Local MNQ receipt bridge
 
 See [MNQ_CLOSEOUT_PRODUCER.md](MNQ_CLOSEOUT_PRODUCER.md) and `MNQ_PRODUCER_TEST_EVIDENCE.json`. The technical-only producer now validates pinned, independently reviewed real receipt bundles, but blocks envelope output without measured RSS and verified execution/input/build binding. This is not live Kaggle ingestion, canonical-memory delivery or optimization activation.
+
+
+## Performance and scientific information investigation
+
+Read [FASTER_RUNS_AND_EDGE_INFORMATION.md](FASTER_RUNS_AND_EDGE_INFORMATION.md). Exact session-resampling reuse has a local synthetic prototype/benchmark, not real-MNQ or full-job certification. Recovery checkpoint and auditors were persisted first. Next priority is measured longevity substep profiling and exact batch parity on a bounded future shard; keep active jobs/frozen protocol untouched. Scientific information-gain design remains proposed, not enforced.
