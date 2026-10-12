@@ -1,0 +1,24 @@
+[Unit]
+Description=EdgeLab autopilot (un ciclo: cerrar corridas, analizar, proponer/lanzar)
+After=network-online.target
+Wants=network-online.target
+ConditionPathExists=!/var/lib/edgelab-autopilot/PAUSE
+
+[Service]
+Type=oneshot
+User=edgelab
+Group=edgelab
+WorkingDirectory=/opt/edgelab/EdgeLab
+EnvironmentFile=/etc/edgelab/autopilot.env
+ExecStart=/opt/edgelab/venv/bin/python -m edgelab.autopilot --root /var/lib/edgelab-autopilot --config /etc/edgelab/autopilot.json --candidates /etc/edgelab/candidates.json
+TimeoutStartSec=900
+# endurecimiento: solo escribe su estado y el repo de trabajo
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/edgelab-autopilot /opt/edgelab/EdgeLab/docs/research
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+CapabilityBoundingSet=
+SystemCallFilter=@system-service
+MemoryMax=2G
