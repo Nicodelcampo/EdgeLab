@@ -12,6 +12,7 @@ on:
       - 'edgelab/edge_brain/**'
       - 'docs/research/ops/**'
       - '.github/workflows/research-ops.yml'
+      - 'requirements/research-ops-authority.txt'
   workflow_dispatch:
 permissions:
   contents: read
@@ -27,7 +28,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install packaged Brain core schema dependency
-        run: python -m pip install jsonschema==4.23.0
+        run: python -m pip install -r requirements/research-ops-authority.txt
       - name: Synthetic queue, guards, receipts and draft tests only
         run: python -m unittest discover -s tests/research_ops -v
       - name: Navigation only, not research certification

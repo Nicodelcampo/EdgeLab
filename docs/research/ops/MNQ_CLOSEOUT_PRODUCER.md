@@ -1,5 +1,7 @@
 # MNQ local closeout producer: technical-only receipt projection
 
+Later extension: `authenticated_closeout.py` verifies externally provisioned signed custody and bound single-process measured RSS before producing a candidate. `canonical_delivery.py` adds an explicit signed-review-gated local writer. See `SIGNED_DELIVERY_AND_BOUNDED_EXPERIMENTS.md`; neither adapter is deployed, and historical MNQ receipts remain missing real signing/memory authority.
+
 Status: implemented and tested locally; NOT a deployed Kaggle hook, remote attestation, canonical-memory writer or optimization activation path.
 
 ## What is implemented

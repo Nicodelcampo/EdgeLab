@@ -1,5 +1,9 @@
 # Handoff para Claude — Research Ops autónomo
 
+## Latest continuation after the MNQ campaign review
+
+Read `SIGNED_DELIVERY_AND_BOUNDED_EXPERIMENTS.md` and `LATEST_CONTINUATION.json` first. New offline signed-custody receiver, local reviewed canonical technical writer/ack, bounded experiment-charter review and single-process profiling are implemented/tested, not deployed or connected to production keys/ledger. Historical sections below preserve previous milestone limits. Final focal MNQ09-26 audit and five-replica interpretation are in research commit `eca53ec2277536b89f3b68cc39770c19dcba2483`; do not relaunch it. No real source selection or telemetry signing authority was fabricated.
+
 ## Entrada y estado real
 
 Continuar en **`feat/research-ops-supervisor-mvp`**, PR [#117](https://github.com/Nicodelcampo/EdgeLab/pull/117), todavía **draft**. El código fuente verificado antes de este handoff es `ae3dfd3f42106f6d33e0a5f53112ac9d73129d02`, sobre base `4579f5512b150a440d0bd6ea3115a5032ec8d0f0`.

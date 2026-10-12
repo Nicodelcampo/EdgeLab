@@ -1,5 +1,7 @@
 # Cierres verificables y bandeja durable de aprendizaje
 
+**Extensión posterior:** existe ahora un writer LOCAL explícito con revisión firmada, deduplicación canónica y ack `DELIVERED`; ver `SIGNED_DELIVERY_AND_BOUNDED_EXPERIMENTS.md`. No está vinculado a claves, destino o servicio reales. Los límites y pruebas históricos de este documento describen el hito anterior.
+
 Estado: **importación local + planificación + outbox transaccional probados**. No polling remoto, autenticación Kaggle, descarga automática, escritor Brain, adjudicación científica ni activación de optimizaciones. No se modifica el motor de la campaña activa. Continúa [el ciclo poscorrida](POST_RUN_LEARNING_AND_OPTIMIZATION.md).
 
 ## Qué quedó conectado

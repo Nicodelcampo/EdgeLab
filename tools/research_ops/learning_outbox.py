@@ -143,6 +143,15 @@ class LearningOutbox:
                 if payload['reason'] not in ('SOURCE_INVALIDATED','MEASUREMENT_ERROR','SUPERSEDED_REQUIRES_REVIEW'):
                     raise ValueError('closed invalidation reason required')
                 _id(payload['review_id']); expected[key][2]='INVALIDATED'
+            elif kind=='DELIVERED':
+                if key not in expected or expected[key][2]!='REVIEW_PENDING' or type(payload) is not dict:
+                    raise ValueError('invalid delivery transition')
+                if set(payload)!={'destination_id','episode_id','lesson_id','draft_sha256','review_sha256','ledger_tip'}:
+                    raise ValueError('closed canonical ack required')
+                for name in ('destination_id','episode_id','lesson_id'): _id(payload[name])
+                for name in ('draft_sha256','review_sha256','ledger_tip'): _sha(payload[name])
+                if payload['draft_sha256']!=expected[key][1]: raise ValueError('ack/draft mismatch')
+                expected[key][2]='DELIVERED'
             else:
                 raise ValueError('unknown outbox event')
             if capacity is None or len(expected)>capacity or count>1+2*capacity:
@@ -169,7 +178,7 @@ class LearningOutbox:
             old=db.execute('SELECT * FROM outbox_drafts WHERE key=?',(key,)).fetchone()
             if old:
                 if old['body']!=raw: raise ValueError('different closeout for same provider/job/version; review conflict')
-                if old['status']!='REVIEW_PENDING': raise ValueError('invalidated draft cannot be silently reused')
+                if old['status'] not in ('REVIEW_PENDING','DELIVERED'): raise ValueError('invalidated draft cannot be silently reused')
                 return dict(key=key,duplicate=True,outbox=state)
             if state['items']>=state['max_items']: raise ValueError('outbox capacity exhausted')
             db.execute('INSERT INTO outbox_drafts VALUES (?,?,?,?)',(key,raw,pin,'REVIEW_PENDING'))
