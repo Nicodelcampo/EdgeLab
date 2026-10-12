@@ -147,3 +147,11 @@ Camino default sin serialización diagnóstica CSV, con capturas idénticas en p
 No reabrir fuente ni corridas históricas. El siguiente módulo es barras/footprints por lotes con continuidad exacta, seguido del lector/runner Kaggle y perfil real. Fuente aprobada reutilizada, holdout cerrado, no nuevos resultados de mercado en esta etapa. No volver a lanzar probes de metadata.
 
 Regresión de esta etapa: **666 Research Ops + 18 navegación PASS**, catálogo PASS_NAVIGATION_ONLY. 25 tests nuevos (9 BT2, 14 BT2A, 2 integración) sin datos de mercado en el sandbox ni nuevas auditorías de datasets.
+
+## Etapa 7: runner real acotado, listo para persistir y lanzar
+
+Predecesor `da6b54215371545b81511c2d0bb37b38495c0251`. Primitivas compartidas por sesión/bar spec, continuidad exacta TOTAL de cohortes/carry, clasificación agresora global, reader por batches, almacenamiento privado y geometry replay incremental completados. El runner de 96 configs reproduce hashes de captura de referencia sobre el fixture inventado, y evalúa 32 triadas sin inventar ticks/arrivals ni correr un cubo config×tick.
+
+Plan fijado `MNQ_CONFLUENCE_MARKET_PILOT_PLAN.json`: primera sesión MNQ_09-26 del scope exploratorio aprobado (2026-06-16), warmup observado dentro de ventana histórica desde 2026-05-02. Es censo técnico target-free de densidad y geometría; no es el cartesiano amplio, análisis de outcomes, P&L o validación de edge. Fuente resuelta, sin nueva QA, holdout cerrado. `MNQ_CONFLUENCE_MARKET_PILOT.md` documenta sesgos, límites, cobertura y siguiente análisis.
+
+Regresión previa al lanzamiento: **682 Research Ops + 18 navegación PASS**, catálogo PASS_NAVIGATION_ONLY. 16 pruebas nuevas de primitivas/reader/geometría/runner/paquete, sin cargar mercado en el sandbox.
