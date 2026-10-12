@@ -19,6 +19,7 @@ class KaggleExecutor:
         cmd = [sys.executable, str(REPO / "tools/kaggle_launch.py"), "--slug", slug, "--script", spec.script, "--allow-missing"]
         for n in spec.needs: cmd += ["--need", n]
         for d in spec.extra_datasets: cmd += ["--extra-dataset", d]
+        for k, v in spec.env.items(): cmd += ["--env", f"{k}={v}"]
         cmd += (["--internet"] if spec.internet else []) + (["--gpu"] if spec.gpu else [])
         r = subprocess.run(cmd, cwd=REPO, capture_output=True, text=True, timeout=900)
         if '"hasError":false' not in r.stdout and '"error":""' not in r.stdout:

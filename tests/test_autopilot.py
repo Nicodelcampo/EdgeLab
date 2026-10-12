@@ -118,3 +118,26 @@ def test_brain_sink_records_hit_and_miss(tmp_path):
     s(spec("m1"), dict(hit=False, rejections=0, family_alpha=0.02, n_planned=4, top=top)); s(spec("h1"), dict(hit=True, rejections=1, family_alpha=0.02, n_planned=4, top=top))   # idempotente
     from edgelab.edge_brain import DurableHippocampus
     h = DurableHippocampus(tmp_path / "h.jsonl"); assert {"AUTOPILOT-h1", "AUTOPILOT-m1"} <= set(h.memory.episodes)
+
+
+def test_generator_scores_learns_and_drafts_match_env(repo, tmp_path):
+    from edgelab.autopilot import evidence
+    from edgelab.autopilot.generate import draft_prereg, generate, load_json, research_gaps, to_runspec
+    cs = generate([]); ids = [c.cid for c in cs]; assert {"IDM-1", "SLOT-1", "OU-2", "GEX-2", "AVCL-2"} <= set(ids) and cs[0].score >= cs[-1].score
+    lits = load_json("config/autopilot/literature_leads.json"); c = next(x for x in cs if x.cid == "IDM-1"); assert len(c.pro) == 2 and len(c.contra) == 1     # procedencia a favor y en contra
+    base = c.score; boosted = next(x for x in generate([("IDM", "MULTI", True)] * 4) if x.cid == "IDM-1").score; assert boosted > base                          # aprende de aciertos de su familia
+    # el borrador contiene la configuración textual: el guard acepta el RunSpec una vez committeado
+    rs = to_runspec(c); (repo / "docs/research/autopilot/drafts").mkdir(parents=True); (repo / rs["prereg"]).write_text(draft_prereg(c, lits)); (repo / "tools/study_slot_effect.py").write_text("x=1\n")
+    _git(repo, "add", "-A"); _git(repo, "commit", "-qm", "d"); assert guard.all_checks(RunSpec.from_dict(rs), allow_internet={rs["script"]}, repo=repo) == []
+    bad = dict(rs, env={"STUDY_CFG": '{"otra": "config"}'}); assert any("no figura textualmente" in e for e in guard.all_checks(RunSpec.from_dict(bad), allow_internet={rs["script"]}, repo=repo))
+    assert research_gaps(c)["public_query_reviewed"] is False
+    # evidencia viva: un fracaso degrada la pista y consume la muestra; la candidata deja de proponerse
+    rt = tmp_path / "ev.jsonl"; spec_ = RunSpec.from_dict(rs); evidence.record_outcome(rt, spec_, dict(hit=False, rejections=0, top=[]), evidence.current_states(rt))
+    assert "IDM-1" not in [x.cid for x in generate([], runtime=rt)]
+    assert next(e for e in evidence.apply_runtime(load_json("config/autopilot/evidence_seed.json"), rt)["entries"] if e["id"] == "GEX_I2D_ROD_LH")["status"] == "FAILED_REPLICATION"
+
+
+def test_benchmark_kind_spends_no_alpha_and_is_not_counted(repo, tmp_path):
+    ex = FakeExecutor({"bm": {}}); reg = Reg(); ap = Autopilot(tmp_path / "root", ex, _cfg(tmp_path), repo=repo, registry=reg)
+    b = RunSpec(run_id="bm", kind="benchmark", family="INFRA", group="X", script="tools/s.py", prereg="docs/pre.md", n_trials=0, needs=[]); w = ap.fdr.wealth
+    ap.tick([b]); assert reg.rows == [] and "bm" not in ap.fdr.state["open"]; assert ap.tick([b])["closed"] == [("bm", "BENCHMARK")] and ap.fdr.wealth == w

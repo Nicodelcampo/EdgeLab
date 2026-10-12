@@ -41,6 +41,14 @@ def check_script_committed(spec: RunSpec, repo: Path = REPO) -> list:
     return []
 
 
+def check_env_in_prereg(spec: RunSpec, repo: Path = REPO) -> list:
+    """La configuración que llega al kernel (spec.env) debe estar escrita TEXTUALMENTE en el pre-registro ya committeado: no se puede lanzar una configuración distinta de la registrada."""
+    if not spec.env: return []
+    try: txt = (repo / spec.prereg).read_text(encoding="utf-8")
+    except OSError: return []                                   # el error de pre-registro ya lo informa check_prereg_committed
+    return [f"env {k} no figura textualmente en el pre-registro" for k, v in spec.env.items() if str(v) not in txt]
+
+
 def check_internet(spec: RunSpec, allow: set) -> list:
     return [] if (not spec.internet or spec.script in allow) else [f"internet no permitido para {spec.script} (lista blanca vacía para él)"]
 
@@ -61,6 +69,6 @@ def check_protected(manifest_path: Path, repo: Path = REPO) -> list:
 
 
 def all_checks(spec: RunSpec, allow_internet: set = frozenset(), repo: Path = REPO, protected: Path | None = None) -> list:
-    e = spec.validate_shape() + check_holdout(spec) + check_prereg_committed(spec, repo) + check_script_committed(spec, repo) + check_internet(spec, set(allow_internet))
+    e = spec.validate_shape() + check_holdout(spec) + check_prereg_committed(spec, repo) + check_script_committed(spec, repo) + check_env_in_prereg(spec, repo) + check_internet(spec, set(allow_internet))
     if protected: e += check_protected(protected, repo)
     return e

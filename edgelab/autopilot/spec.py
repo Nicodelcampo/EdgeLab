@@ -26,6 +26,7 @@ class RunSpec:
     est_gb: float = 8.0
     decision_rule: str = "holm"                # cómo se interpreta el resultado; identificador que entiende analyze.py
     notes: str = ""
+    origin: dict = field(default_factory=dict)  # {evidence_id: muestra consumida}: qué pista originó la corrida y qué muestra independiente gasta
 
     def spec_hash(self) -> str:
         d = asdict(self); d.pop("run_id"); d.pop("notes")
@@ -35,7 +36,7 @@ class RunSpec:
         e = []
         if self.kind not in KINDS: e.append(f"kind {self.kind!r} no está en {KINDS}")
         if not self.script.startswith("tools/") or ".." in self.script: e.append("script debe estar bajo tools/")
-        if self.n_trials < 1: e.append("n_trials ≥ 1 (toda corrida cuenta en el contador global)")
+        if self.kind != "benchmark" and self.n_trials < 1: e.append("n_trials ≥ 1 (toda corrida de hipótesis cuenta en el contador global)")
         if not self.prereg: e.append("falta pre-registro")
         if not self.needs and self.kind != "benchmark": e.append("falta `needs` (sin datos declarados no se puede comprobar el holdout)")
         return e

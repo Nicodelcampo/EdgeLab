@@ -18,7 +18,7 @@ def version_of(ds):
     owner,slug=ds.split("/");return _curl(f"https://www.kaggle.com/api/v1/datasets/view/{owner}/{slug}").get("currentVersionNumber")
 def files_of(ds):
     return {f["name"]:f["bytes"] for f in list_files(ds.split("/")[1])}
-def inject_manifest(script,manifest):
+def inject_manifest(script,manifest,env=None):
     """Copia del script con EDGELAB_LAUNCH_MANIFEST fijado tras el docstring y los `from __future__` (edgelab_data lo verifica en el primer check_inputs)."""
     import ast,tempfile
     src=Path(script).read_text(encoding="utf-8");tree=ast.parse(src);k=0
@@ -26,11 +26,11 @@ def inject_manifest(script,manifest):
         if (i==0 and isinstance(n,ast.Expr) and isinstance(getattr(n,"value",None),ast.Constant) and isinstance(n.value.value,str)) or (isinstance(n,ast.ImportFrom) and n.module=="__future__"):k=i+1
         else:break
     lines=src.splitlines(keepends=True);at=tree.body[k].lineno-1 if k<len(tree.body) else len(lines)
-    ins="import os as _os\n_os.environ['EDGELAB_LAUNCH_MANIFEST']="+repr(json.dumps(manifest))+"\n"
+    ins="import os as _os\n_os.environ['EDGELAB_LAUNCH_MANIFEST']="+repr(json.dumps(manifest))+"\n"+"".join(f"_os.environ[{k!r}]={v!r}\n" for k,v in (env or {}).items())
     out=Path(tempfile.mkdtemp())/Path(script).name;out.write_text("".join(lines[:at])+ins+"".join(lines[at:]),encoding="utf-8");return str(out)
 def main():
     ap=argparse.ArgumentParser();ap.add_argument("--slug",required=True);ap.add_argument("--script",required=True);ap.add_argument("--title");ap.add_argument("--need",action="append",default=[],help="INST:DESDE:HASTA")
-    ap.add_argument("--extra-dataset",action="append",default=[]);ap.add_argument("--internet",action="store_true");ap.add_argument("--gpu",action="store_true");ap.add_argument("--dry-run",action="store_true");ap.add_argument("--allow-missing",action="store_true",help="lanza igual omitiendo las sesiones sin fuente (decisión explícita; el script debe declararlas)");a=ap.parse_args()
+    ap.add_argument("--extra-dataset",action="append",default=[]);ap.add_argument("--internet",action="store_true");ap.add_argument("--gpu",action="store_true");ap.add_argument("--dry-run",action="store_true");ap.add_argument("--env",action="append",default=[],help="KEY=VALOR inyectado como variable de entorno en el kernel (debe figurar en el pre-registro)");ap.add_argument("--allow-missing",action="store_true",help="lanza igual omitiendo las sesiones sin fuente (decisión explícita; el script debe declararlas)");a=ap.parse_args()
     reqs=[tuple(x.split(":")) for x in a.need];live={};sizes={};used=set();missing={};alt_used={};pins={}
     def files(ds):
         if ds not in live:
@@ -62,7 +62,7 @@ def main():
     (ROOT/"docs/data_catalog/launches").mkdir(exist_ok=True);(ROOT/"docs/data_catalog/launches"/(a.slug.split("/")[1]+".json")).write_text(json.dumps(manifest,indent=1),encoding="utf-8")
     print(f"manifiesto de lanzamiento: {len(pins)} archivos, versiones {versions}")
     if a.dry_run:return
-    script_path=inject_manifest(a.script,manifest)
+    script_path=inject_manifest(a.script,manifest,dict(x.split('=',1) for x in a.env))
     cmd=[sys.executable,str(ROOT/"tools/kaggle_kernel.py"),"push","--slug",a.slug,"--title",a.title or a.slug.split("/")[1],"--script",script_path]+(["--gpu"] if a.gpu else [])+(["--internet"] if a.internet else [])
     for d in datasets:cmd+=["--dataset",d]
     print(subprocess.run(cmd,capture_output=True,text=True).stdout)

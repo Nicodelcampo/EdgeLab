@@ -17,6 +17,10 @@ def records(result: dict) -> list:
             ph = next((v for k, v in r.items() if k.startswith("p_holm_")), None)
             out.append(dict(test=f"{r.get('asset', r.get('source'))}/{r.get('bar_min', r.get('slot'))}/{r.get('win_min', '')}", p=r.get("p", r.get("p_one_sided_neg")),
                             p_holm=ph, evaluable=r.get("evaluable", False), effect=r.get("z", r.get("corr"))))
+    if "results_flat" in result:                       # tools/study_slot_effect.py
+        for r in result["results_flat"]:
+            ph = next((v for k, v in r.items() if k.startswith("p_holm_")), None)
+            out.append(dict(test=r.get("test", "?"), p=r.get("p"), p_holm=ph, evaluable=bool(r.get("evaluable")), effect=r.get("corr", r.get("diff"))))
     if "rth" in result and result["rth"] and "kind" in result["rth"][0]:
         for r in result["rth"]:
             out.append(dict(test=f"{r['kind']}/H{r['H']}/{r['channel']}", p=r["p"], p_holm=r.get("p_holm"), evaluable=True, effect=r["D"]))

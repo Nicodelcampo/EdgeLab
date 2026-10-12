@@ -6,7 +6,7 @@ import json
 import time
 from pathlib import Path
 
-from . import analyze, guard
+from . import analyze, guard, evidence
 from .fdr import AlphaInvesting
 from .ledger import RunLedger
 from .selector import rank
@@ -38,9 +38,12 @@ class Autopilot:
             if st in ("complete", "COMPLETE"):
                 spec = RunSpec.from_dict(json.loads(self.ledger.db.execute("SELECT spec FROM runs WHERE run_id=?", (r["run_id"],)).fetchone()[0]))
                 res = self.ex.fetch(r["handle"], self.cfg["result_files"].get(spec.family, "RESULTS.json"))
+                if spec.kind == "benchmark":                                        # infraestructura: sin hipótesis, sin alfa
+                    self.ledger.finish(spec.run_id, "BENCHMARK_DONE", dict(hit=False, benchmark=True)); rep["closed"].append((spec.run_id, "BENCHMARK")); continue
                 bid = self.fdr.state["open"][f"{spec.run_id}"]
                 d = analyze.decide(res, bid["alpha"], spec.n_trials)
                 self.fdr.settle(spec.run_id, d["rejections"]); self.ledger.finish(spec.run_id, "ANALYZED", d); rep["closed"].append((spec.run_id, d["hit"]))
+                if self.cfg.get("evidence_runtime"): evidence.record_outcome(Path(self.cfg["evidence_runtime"]), spec, d, evidence.current_states(Path(self.cfg["evidence_runtime"])))
                 if self.brain: self.brain(spec, d)
             elif st in ("error", "ERROR", "cancelAcknowledged"):
                 self.ledger.finish(r["run_id"], "FAILED", failure=f"estado {st}"); rep["closed"].append((r["run_id"], "FAILED"))
@@ -54,11 +57,13 @@ class Autopilot:
             if errs: rep["blocked"].append((spec.run_id, errs)); continue
             if self.cfg.get("mode", "propose") != "execute":
                 rep["proposed"] = (spec.run_id, why); break
-            if self.registry: self.registry.ensure(f"autopilot/{spec.run_id}", spec.family, spec.n_trials, spec.notes or "autopilot")   # se cuenta ANTES de lanzar
-            self.fdr.bid(spec.run_id, spec.n_trials)
+            if spec.kind != "benchmark":
+                if self.registry: self.registry.ensure(f"autopilot/{spec.run_id}", spec.family, spec.n_trials, spec.notes or "autopilot")   # se cuenta ANTES de lanzar
+                self.fdr.bid(spec.run_id, spec.n_trials)
             try:
                 handle = self.ex.launch(spec)
             except Exception as e:
-                self.fdr.settle(spec.run_id, 0); rep["blocked"].append((spec.run_id, [str(e)[:200]])); continue
+                if spec.kind != "benchmark": self.fdr.settle(spec.run_id, 0)
+                rep["blocked"].append((spec.run_id, [str(e)[:200]])); continue
             self.ledger.add(spec, handle); rep["launched"] = (spec.run_id, why); break
         return self._note(event="tick", **rep)
