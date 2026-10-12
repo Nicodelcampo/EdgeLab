@@ -1,0 +1,9 @@
+import json,hashlib,csv,os
+from pathlib import Path
+import numpy as np
+P=Path('/data/analysis/avzvol-matrix-run');C=os.environ.get('MATRIX_CONTRACT','MNQ_12-26');R=P/C;m=json.load(open(R/'manifest.json'));files=sorted(R.glob('config-*.npz'));assert len(files)==1536;ids=[];empty=0;formations=0;labels=0;frequencies=[]
+for f in files:
+ a=np.load(f);cid=int(a['config_id']);births=int(a['births']);raw=a['counts'];daily=a['daily'];thin=a['thinned_daily'];assert str(a['source_pin'])==m['source']['sha256'] and str(a['engine_pin'])==m['engine_sha256'];assert np.array_equal(a['rule_ids'],np.arange(1260));assert raw.shape==(1260,10) and daily.shape==thin.shape==(1260,len(m['event_dates']),10);assert np.all(raw>=0) and np.all(thin>=0) and np.all(raw.sum(axis=1)==births);assert np.array_equal(daily.sum(axis=1),raw);assert np.all(thin.sum(axis=1)<=raw);ids.append(cid);empty+=births==0;formations+=births;labels+=int(raw.sum());frequencies.append({'config_id':cid,'births':births})
+assert sorted(ids)==list(range(1536)) and labels==formations*1260
+out={'status':'PASS_CURRENT_CONTRACT_GRID_COVERAGE','contract':C,'selected_sessions':len(m['event_dates']),'configurations':1536,'rule_count':1260,'config_rule_pairs':1935360,'empty_configurations':empty,'configurations_with_births':1536-empty,'birth_counts_across_overlapping_configs_not_independent':formations,'label_evaluations_not_independent':labels,'all_six_contracts_complete':False,'independent_batch_test':json.load(open('/data/analysis/avzvol-longevity/matrix-batch-test-evidence.json')),'source_certified':False,'holdout_opened':False,'pnl_computed':False,'performance_or_best_cell_not_selected':True}
+(R/'coverage-verification.json').write_text(json.dumps(out,indent=2)+'\n');(R/'frequency-verified.json').write_text(json.dumps(frequencies)+'\n');print(out)

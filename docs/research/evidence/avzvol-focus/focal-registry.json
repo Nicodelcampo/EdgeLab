@@ -1,0 +1,166 @@
+{
+  "status": "FROZEN_FOCAL_EXPLORATORY_SEARCH",
+  "registry_version": 2,
+  "registration_v1_replaced_before_any_new_outcome_evaluation": true,
+  "gate_definitions": {
+    "speed": [
+      "all",
+      "return_ge_outgoing",
+      "return_lt_outgoing"
+    ],
+    "efficiency": [
+      "all",
+      "ge_0.50",
+      "ge_0.75"
+    ],
+    "flow": [
+      "all",
+      "toward_positive_cov80",
+      "toward_ge_0.25_cov80",
+      "away_negative_cov80",
+      "away_le_neg0.25_cov80"
+    ],
+    "revisits": [
+      "all",
+      "ge_5",
+      "ge_10",
+      "ge_20",
+      "ge_50"
+    ],
+    "volume": [
+      "all",
+      "inside_fraction_ge_0.25",
+      "inside_fraction_ge_0.50"
+    ],
+    "density": [
+      "all",
+      "le_0.5",
+      "le_1",
+      "gt_1"
+    ],
+    "gaps": [
+      "observed",
+      "gap_free"
+    ]
+  },
+  "previous_pilot_inspected": true,
+  "source_campaign": "corrected longevity campaign version2 / verified lossless repair",
+  "source_raw_unchanged": true,
+  "baseline_campaign_unchanged": true,
+  "contracts": [
+    "MNQ_12-26",
+    "MNQ_09-25",
+    "MNQ_12-25",
+    "MNQ_03-26",
+    "MNQ_06-26",
+    "MNQ_09-26"
+  ],
+  "families": [
+    "P80_W5_R8_1000_20",
+    "P80_W5_R8_2000_20",
+    "P80_W5_R8_3000_20",
+    "P80_W5_R18_1000_20",
+    "P80_W5_R18_2000_20",
+    "P80_W5_R18_3000_20",
+    "P90_W5_R8_1000_20",
+    "P90_W5_R8_2000_20",
+    "P90_W5_R8_3000_20",
+    "P90_W5_R18_1000_20",
+    "P90_W5_R18_2000_20",
+    "P90_W5_R18_3000_20",
+    "P80_W10_R8_1000_20",
+    "P80_W10_R8_2000_20",
+    "P80_W10_R8_3000_20",
+    "P80_W10_R18_1000_20",
+    "P80_W10_R18_2000_20",
+    "P80_W10_R18_3000_20"
+  ],
+  "age_landmarks": [
+    1000,
+    2000,
+    3000
+  ],
+  "rules": [
+    {
+      "D": 20,
+      "q": 0.25,
+      "endpoint": 0
+    },
+    {
+      "D": 20,
+      "q": 0.5,
+      "endpoint": 0
+    },
+    {
+      "D": 20,
+      "q": 0.75,
+      "endpoint": 0
+    },
+    {
+      "D": 40,
+      "q": 0.25,
+      "endpoint": 0
+    },
+    {
+      "D": 40,
+      "q": 0.5,
+      "endpoint": 0
+    },
+    {
+      "D": 40,
+      "q": 0.75,
+      "endpoint": 0
+    },
+    {
+      "D": 80,
+      "q": 0.25,
+      "endpoint": 0
+    },
+    {
+      "D": 80,
+      "q": 0.5,
+      "endpoint": 0
+    },
+    {
+      "D": 80,
+      "q": 0.75,
+      "endpoint": 0
+    },
+    {
+      "D": 40,
+      "q": 0.5,
+      "endpoint": 1
+    },
+    {
+      "D": 40,
+      "q": 0.5,
+      "endpoint": 2
+    }
+  ],
+  "condition_count": 5400,
+  "base_cohorts": 594,
+  "nominal_event_condition_pairs_per_contract": 3207600,
+  "real_and_control_evaluations_per_contract": 6415200,
+  "not_independent_strategies_or_samples": true,
+  "deduplication": "first chronological signal per family/origin/age/rule/selected-session/6250-record bin BEFORE frozen birth dedup75 and all feature gates; identical paired masks collapsed within cohort",
+  "visit_definition": "actual prior visits separated by one fully outside closed25-Last-record bar; not OHLC intersections",
+  "feature_clock": "causal at trigger; no later excursions, final lifetimes or outcome-based threshold fitting",
+  "control": "same filters on real and translated-geometry250 control; common session/hour3/span40/rem-distance10 strata with min count weights; not randomized",
+  "support": {
+    "real_resolved": 100,
+    "control_resolved": 100,
+    "active_fraction": 0.8,
+    "minimum_matched_weight": 50,
+    "matched_active_fraction": 0.5
+  },
+  "uncertainty": "all eligible unique-mask hypotheses jointly: whole-session paired influence scores and max-absolute Rademacher multiplier statistic; exploratory simultaneous approximate bands, dependent on independent-session/symmetry/linearization assumptions; not exact finite-sample or causal significance",
+  "multipliers": 4096,
+  "multiplier_seed": 17411,
+  "selection": "rank for review by support, then simultaneous lower-band difference; never describe rank as validated edge; require other-contract stability, neighborhood robustness and later fresh validation",
+  "geometry_height_20_only_in_this_feature_search": true,
+  "original_1536_by_1260_matrix_preserved": true,
+  "not_tested_here": "new distances/retracement levels, new dense age landmarks, other heights or cross-session carry require new tick replay; this pass reuses measured signals only",
+  "holdout_opened": false,
+  "source_certified": false,
+  "pnl_computed": false
+}

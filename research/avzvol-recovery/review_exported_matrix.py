@@ -1,0 +1,19 @@
+import sys,json,pathlib,hashlib,csv,gzip,collections,array,math
+R=pathlib.Path(sys.argv[1]);assert R.is_dir()
+inv=json.load((R/'artifact-inventory.json').open());index={pathlib.PurePosixPath(x['path']).name:x for x in inv['artifacts']};verified=[]
+for name in ['coverage-verification.json','support-evidence.json','campaign-status.json','configuration-support.csv','cell-support-private.csv.gz']:
+ if name=='artifact-inventory.json':continue
+ p=R/name;assert p.stat().st_size==index[name]['bytes'];assert hashlib.file_digest(p.open('rb'),'sha256').hexdigest()==index[name]['sha256'];verified.append(name)
+coverage=json.load((R/'coverage-verification.json').open());support=json.load((R/'support-evidence.json').open());state=json.load((R/'campaign-status.json').open());assert coverage['status']=='PASS_CURRENT_CONTRACT_GRID_COVERAGE' and coverage['config_rule_pairs']==1935360;assert state['status']=='MATRIX_1935360_PAIRS_COMPLETE_NOT_VALIDATED_EDGE';assert support['status']=='ALL_CELLS_DESCRIPTIVE_SUPPORT_COMPLETE';assert coverage['contract']==support['contract']==state['contract']
+configs={int(x['config_id']):x for x in csv.DictReader((R/'configuration-support.csv').open())};assert set(configs)==set(range(1536));seen=array.array('B',[0])*1935360;tiers=collections.Counter();total=0;signals=resolved=0;config_rules_100=collections.Counter();config_rules_100_dates=collections.Counter()
+with gzip.open(R/'cell-support-private.csv.gz','rt',newline='') as f:
+ for x in csv.DictReader(f):
+  ci=int(x['config_id']);ri=int(x['rule_id']);assert 0<=ci<1536 and 0<=ri<1260;pos=ci*1260+ri;assert not seen[pos];seen[pos]=1;total+=1
+  n=int(x['thinned_resolved']);sg=int(x['thinned_signals']);raw=int(x['raw_signals']);w=int(x['target_first']);l=int(x['opposite_first']);b=int(x['births']);ad=int(x['active_resolved_dates']);assert n==w+l and 0<=n<=sg<=raw<=b and int(x['unresolved'])==sg-n and b==int(configs[ci]['births']);signals+=sg;resolved+=n
+  tier='no_signal' if sg==0 else 'signals_none_resolved' if n==0 else '1-29_resolved' if n<30 else '30-99_resolved' if n<100 else '100-299_resolved' if n<300 else '300+_resolved';tiers[tier]+=1
+  if n>=100:config_rules_100[ci]+=1
+  if n>=100 and ad>=math.ceil(.8*coverage['selected_sessions']):config_rules_100_dates[ci]+=1
+assert total==1935360 and sum(seen)==total and dict(tiers)==support['support_tiers'];assert signals==support['all_cell_signal_assignments_not_independent'] and resolved==support['all_cell_resolved_assignments_not_independent'];assert len(config_rules_100)==support['configuration_with_any_100_resolved'] and len(config_rules_100_dates)==support['configuration_with_any_100_resolved_80pct_dates']
+for ci,x in configs.items():assert config_rules_100[ci]==int(x['rules_with_100_resolved']) and config_rules_100_dates[ci]==int(x['rules_with_100_resolved_80pct_dates'])
+out=dict(status='PASS_EXPORTED_MATRIX_INDEPENDENT_REVIEW',contract=state['contract'],configurations=1536,rules=1260,config_rule_pairs=total,selected_sessions=coverage['selected_sessions'],export_hash_verified_files=verified,all_pairs_unique_and_present=True,support_tiers=dict(tiers),configuration_with_any_100_resolved=len(config_rules_100),configuration_with_any_100_resolved_80pct_dates=len(config_rules_100_dates),all_cell_signal_assignments_not_independent=signals,all_cell_resolved_assignments_not_independent=resolved,review_scope='coverage, output hashes, row uniqueness, cross-footed support and per-configuration counts; no winners selected, no strategy validation',holdout_opened=False,pnl_computed=False,source_certified=False,other_contracts_pending=True)
+(R/'independent-review.json').write_text(json.dumps(out,indent=2)+'\n');print('INDEPENDENT_REVIEW_PASS',json.dumps({k:out[k] for k in ['config_rule_pairs','selected_sessions','support_tiers','configuration_with_any_100_resolved','configuration_with_any_100_resolved_80pct_dates']}),flush=True)
