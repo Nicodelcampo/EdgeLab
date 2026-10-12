@@ -143,7 +143,7 @@ def run_pilot(path,roster,plan,private_root,*,deadline_seconds=6600,partial_rece
     store.db.close();return result
 
 def main():
-    ap=argparse.ArgumentParser();ap.add_argument('--source',type=Path,required=True);ap.add_argument('--root',type=Path,required=True);ap.add_argument('--out',type=Path,required=True);a=ap.parse_args();plan_file=a.root/'docs/research/ops/MNQ_CONFLUENCE_MARKET_PILOT_RETRY_PLAN.json';plan_file=plan_file if plan_file.exists() else a.root/'docs/research/ops/MNQ_CONFLUENCE_MARKET_PILOT_PLAN.json';plan=json.loads(plan_file.read_bytes());roster=json.loads((a.root/'docs/research/ops/MNQ_CONFLUENCE_TARGET_FREE_PILOT_ROSTER.json').read_bytes())
+    ap=argparse.ArgumentParser();ap.add_argument('--source',type=Path,required=True);ap.add_argument('--root',type=Path,required=True);ap.add_argument('--out',type=Path,required=True);a=ap.parse_args();plan_file=next((a.root/'docs/research/ops'/name for name in ('MNQ_CONFLUENCE_MARKET_DIAGNOSTIC_PLAN.json','MNQ_CONFLUENCE_MARKET_PILOT_RETRY_PLAN.json','MNQ_CONFLUENCE_MARKET_PILOT_PLAN.json') if (a.root/'docs/research/ops'/name).is_file()));plan=json.loads(plan_file.read_bytes());roster=json.loads((a.root/'docs/research/ops/MNQ_CONFLUENCE_TARGET_FREE_PILOT_ROSTER.json').read_bytes())
     # Market entrypoint cannot execute in the assistant computer sandbox.
     if not Path('/kaggle/working').is_dir():raise RuntimeError('KAGGLE_ONLY entrypoint')
     try:

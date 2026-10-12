@@ -40,3 +40,8 @@ No control de OS cache cold/warm ni peak RSS completo, por lo que este microbenc
 Antes del cartesiano grande: completar censo técnico, separar oportunidades de exposición de arrivals y fijar respuesta/horizonte/controles. Comparar aporte incremental de interacciones sobre mismos anchors, controlar densidad/ocupación y dependencia AVZ-racimo, conservar censuras/negativos/carry. No seleccionar configuraciones por número de coincidencias ni outcomes. Dataset resuelto, sin nuevas auditorías, holdout cerrado y sin P&L.
 
 Próximo intento sólo después de persistir este source: mismo estudio acotado, diagnóstico/partial agregados nuevos y almacenamiento baseline. No expansión del universo ni adopción del candidato. Su propósito es localizar el fallo y conservar trabajo útil; no contar el reintento como muestra independiente. Producción autónoma/custodia/writer aprobados siguen pendientes.
+
+
+## Plan diagnóstico V3
+
+Plan separado, recursos/universo idénticos a V2. El próximo job usa baseline PrivateStore, partials y diagnósticos constantes; no prueba el candidato clustered. No necesita volver a auditar datos. Guarda conteos/tiempos técnicos nuevos aunque vuelva a fallar la geometría; esas prefixes no autorizan inferencia ni ranking científico. Candidato futuro de geometría: enumerar sólo familias permitidas mediante intersecciones de vecinos en lugar de combinaciones descartadas; requiere referencia independiente, prueba de exactitud y benchmark, no está implementado/adoptado aquí.
