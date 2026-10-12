@@ -80,8 +80,9 @@ def build_roster(design):
         'firewall':{'market_data_read':False,'outcomes_read':False,'pnl_computed':False,'holdout_opened':False},
         'source_manifest':None,'selected_sessions':None,'hardware_budget':None,
         'parity_policy':{'indicator_parity_perfection_required':False,'near_100_percent_is_user_estimate_not_measurement':True,'approximate_identity_risk_accepted_for_exploration':True,'fast_reference_output_equivalence_still_required':True},
-        'tasks':['pin eligible sources and warmup/session roster','wire immutable detector births and lifecycle events into scoped snapshots','profile detector generation, racimo reference scan, as-of interval joins, features and IO','compare exact output of reference/optimized implementation (not NT8 perfection)','export only sanitized counts/coverage/cost receipts'],
-        'not_implemented':['market detector adapters','triples and price-arrival anchors','eligibility-bound Kaggle execution','end-to-end resource measurement','scientific labels/inference'],
+        'tasks':['pin eligible sources and warmup/session roster','validate immutable capture hooks and scoped replay on eligible market inputs','profile detector generation, racimo reference scan, as-of interval joins, features and IO','compare exact output of reference/optimized implementation (not NT8 perfection)','export only sanitized counts/coverage/cost receipts'],
+        'implemented_synthetic_only':['hash-pinned detector birth/lifecycle captures','incremental pair/triple episodes and price-arrival anchors','declared-array causal replay'],
+        'not_implemented':['eligibility-bound Kaggle execution','end-to-end resource measurement','scientific labels/inference'],
         'launch_ready':False}
 
 def main():

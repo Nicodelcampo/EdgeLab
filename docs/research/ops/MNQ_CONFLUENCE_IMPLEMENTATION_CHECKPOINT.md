@@ -18,7 +18,7 @@ No implica acceso al holdout desde 2026-10-01, otras particiones previamente res
 - Revisiones ordenadas, reconocimiento no retroactivo, IDs inactivos que no resucitan. No reemitir cada coincidencia en cada tick sin cambio.
 - Límites de activos, IDs históricos y pares; desbordamiento rechaza, no trunca. Error durante mutación envenena la instancia: reconstruir desde checkpoint verificado antes de reutilizar.
 
-**Límites:** un scope de contrato/tape/sesión declarado por instancia. Los adapters deben verificar que cada input pertenece a ese scope; el módulo no demuestra la verdad de las declaraciones. No tiene loaders, quotes, anchors de llegada, triples, persistencia de episodios de coincidencia ni eventos de fin de par; no es el runner científico completo. La guardia de fecha tampoco certifica el calendario/split completo.
+**Límites:** un scope de contrato/tape/sesión declarado por instancia. Los adapters deben verificar que cada input pertenece a ese scope; el módulo no demuestra la verdad de las declaraciones. El índice por sí solo no tiene loaders ni certifica quotes. La etapa 2 agrega triples, persistencia de episodios, fin de coincidencias y anchors de llegada mediante módulos separados; todavía no es el runner científico completo. La guardia de fecha tampoco certifica el calendario/split completo.
 
 ### 2. Racimos causales, sin modificar su regla
 
@@ -55,15 +55,49 @@ Fallos de desarrollo conservados como aprendizaje:
 
 No se abrió mercado ni outcomes durante esos fallos. No se afirma speedup real, paridad NT8 nueva, memoria pico en Kaggle o inferencia calibrada a partir de tests sintéticos.
 
+## Etapa 2: detectores reales conectados, evaluados sólo con tapes inventados
+
+Predecesor persistido: `3ca579ee3386392393de58ffccbfb2582c4e7367`. Esta sección actualiza el siguiente hito; los 43 tests anteriores siguen siendo evidencia histórica de la etapa 1.
+
+### Captura al momento observable
+
+`detector_capture.py` instrumenta ubicaciones AST exactas del `run` fijado por SHA256, sin sustituir reglas detectoras. Captura copias de nacimiento, touch, clasificación OB e invalidación; nunca toma el estado final mutable como feature disponible al nacer.
+
+- BT2 y BT2A usan los módulos portables cuyo hash coincide con la fuente fijada. AVZP2 se conserva completo en `_pinned_avzp2.py`, sin editar su detección.
+- `_pinned_total_footprint.py` conserva la construcción TOTAL NT8 de foundation para AVZP2; no sustituirla por el footprint agresor utilizado por BigTrap. Mantiene sus reglas de desempate/asignación y clipping.
+- Los outputs nativos con y sin hooks se comparan exactamente en tests inventados de las tres familias. No se presenta esto como certificación NT8 ni como validación del universo MNQ.
+- Disponibilidad por membresía real de barras: tick-bar completo en su último miembro; cola parcial recién después de la siguiente observación. Barra temporal después de su cierre, no al último tick dentro de ella. EOF sin evidencia observable queda diagnóstico, no birth retroactivo.
+- `ns` compartidos mantienen `sequence`. OB inmediato y OB decidido después tienen sus propios clocks. Logs/fills finales nativos se retienen para regresión pero no otorgan disponibilidad.
+
+### Episodios y llegadas
+
+`episodes.py` mantiene pares y triples AVZP2/BT2/BT2A y RACIMO/BT2/BT2A, con START/UPDATE/END. Una revisión geométrica conserva el origen/ID del episodio; no inventa muestras independientes. Usa adyacencias incrementales, estado final del lote y la intersección común cerrada.
+
+`arrival.py` indexa bandas para encontrar sólo las afectadas por el movimiento observado. Separa primer toque, revisita, salida, gap sin print interior, banda nacida sobre precio y banda revisada sobre precio. Genera ventana causal de desplazamiento, recorrido, eficiencia, tasa, volumen y proxy firmado; ventana incompleta o lado desconocido no se imputa. `window_ticks=256` es un default técnico, todavía no un predicado científico congelado.
+
+`replay.py` une los receipts por heap, preserva el orden interno por detector/barra y procesa atomicamente el reloj de tape. Renueva exposición primaria por sesión, conserva historia legacy de racimos separadamente y termina racimos que incorporan miembros de otra sesión. Sólo revisa observaciones modificadas: se eliminó un barrido configuración × estado activo por tick. Un racimo retirado del brazo primario no resucita al volver a parecer elegible. Hay límite global explícito de IDs conocidos, sin poda silenciosa.
+
+TOUCH/CLASSIFY están capturados pero aún no entran como covariables predictivas del replay. Las pairs AVZP2/RACIMO son descriptivas y dependientes por construcción, no dos votos independientes. Los Frames derivados de mercado serán privados; no subirlos a GitHub ni descargarlos fuera de Kaggle.
+
+### Verificación y límites actuales
+
+**41 tests adicionales de etapa 2; 84 tests de confluencias acumulados; 596 Research Ops y 18 navegación PASS; catálogo PASS_NAVIGATION_ONLY.**
+
+- 130 lotes sintéticos de geometría mutable comparados contra enumeración exhaustiva de todos los pares/triples.
+- Pipeline completo con los tres kernels reales sobre tape inventado: genera triples y llegadas, no retrofecha reconocimiento y produce los mismos Frames al invertir el orden de receipts.
+- Casos negativos de fuente modificada, parámetros renderer, clocks inexistentes/futuros, reserved dates, capacidad, carry y resurrección.
+- Tests detectaron footprint TOTAL ausente en portable y guardia de candidatos aplicada demasiado tarde. Se conservó la implementación TOTAL fijada y se añadió guardia antes de consultar el índice. Ningún fallo implicó acceso a mercado.
+
+**No hay nuevos resultados MNQ, medición de RAM/walltime en Kaggle, speedup real, labels, inferencia, P&L ni lanzamiento.** Las capturas actualmente retienen outputs/logs nativos en memoria; falta streaming/IO columnar y presupuesto conjunto de configuraciones. El builder TOTAL lineariza índices int64: antes de producción hay que verificar rango, overflow y memoria. Los triples densos pueden crecer combinatoriamente; los límites rechazan sin truncar pero no sustituyen el perfil real.
+
 ## Próximo paso operativo (no otra auditoría de paridad)
 
-1. Conectar creación/lifecycle observables de los tres detectores al stream de snapshots; no consumir sus objetos finales mutados ni el PIT v1 invalidado.
-2. Bindear fuentes preholdout elegibles, contratos naturales, historia de formación/warmup y sesiones aprobadas. Declarar todos los gaps/splits; no fabricar certificados o usar el catálogo legacy como bypass.
-3. Completar eventos triples, anchors de llegada y fin de episodios de confluencia. Las comparaciones de pares implementadas son sólo un subconjunto.
-4. Empaquetar runner privado Kaggle, verificar mounts/builds y límites reales; ejecutar piloto target-free acotado con receipts agregados, sin sacar eventos/ticks.
-5. Con esos costos/soportes fijar roster amplio, predicados, labels, modelos/ablaciones, controles, MDE/dependencia/multiplicidad y budget del estudio científico nuevo. Sin elección de ganadores en datos previamente inspeccionados ni declarar esa división holdout virgen.
+1. Bindear fuentes preholdout elegibles, contratos naturales, formación/warmup y sesiones aprobadas **antes de cargar ticks**. Declarar todos los gaps/splits; el replay de arrays no es un permiso ni certificado de fuente.
+2. Empaquetar runner privado Kaggle acotado con caches compartidos, captura/IO por lotes, mounts/builds verificados y límites de memoria/costo. Guardar sólo agregados sanitizados; ticks/eventos nunca salen de Kaggle.
+3. Perfilar el piloto preparado de 96 configs sin outcomes: detectar densidad/ocupación, soporte y costos por etapa, y comprobar equivalencia exacta referencia/optimización sobre entradas idénticas. No recortar parámetros por winners.
+4. Con esas mediciones congelar roster amplio, escenarios, covariables de llegada/volumen, labels, ablaciones aditivas/interacciones, controles de densidad/geometría, estabilidad temporal/contrato, carry separado y multiplicidad/dependencia/MDE. Los temas científicos están diseñados, no resueltos por este pipeline.
 
-**No queda un bloqueo de paridad 100%.** Lo pendiente es conectar y completar el experimento, no terminar infraestructura autónoma o repetir matrices/focales existentes.
+**No queda un bloqueo de paridad 100%.** Lo pendiente es ejecutar el nuevo experimento con inputs/costos trazables, no terminar autonomía 24×7 o repetir matrices/focales cerradas.
 
 ## Reproducir sin datos reales
 
