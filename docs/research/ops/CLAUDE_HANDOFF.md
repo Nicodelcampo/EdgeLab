@@ -1,6 +1,10 @@
 # Handoff para Claude — Research Ops autónomo
 
-## Latest continuation: resource-kind-safe multiprocess telemetry
+## Latest user priority: new MNQ results, not more historical auditing
+
+Read `MNQ_NEXT_RESULTS_PRIORITY.md` and `LATEST_CONTINUATION.json` first. User explicitly prioritized NEW scientific results and asked to push all work. Campaign compute complete. Pause new audit/parity/profiling/infra expansion; next is a separately specified EXPLORATORY incremental/ablation analysis using existing Kaggle outputs. Full live supervisor is NOT prerequisite for manual research. Two formerly local report-reproduction scripts are now saved portably. No new scientific job launched in this checkpoint.
+
+## Previous continuation: resource-kind-safe multiprocess telemetry
 
 Read `CGROUP_RESOURCE_TELEMETRY.md` and `LATEST_CONTINUATION.json` first. New read-only cgroup-v2 kernel-accounted-memory diagnostic is NOT RSS, custody or whole-job coverage. Existing receiver remains single-process RSS only. Kaggle probe COMPLETE: cgroup2/memory.peak readable but mount READ-ONLY; no delegated job scope. Do not rerun or substitute shared/root peak as MNQ RSS. No cgroup writes, resource-stress workloads or market data.500local Research Ops tests pass.
 
