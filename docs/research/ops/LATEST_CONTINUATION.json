@@ -1,7 +1,7 @@
 {
   "schema": "research_ops_latest_continuation_v1",
-  "recorded_utc": "2026-10-12T17:15:08.192955+00:00",
-  "status": "OPERATIONAL_SNAPSHOT_BOUND_READ_ONLY_PRODUCTION_WRITER_BLOCKED",
+  "recorded_utc": "2026-10-12T17:20:34.913838+00:00",
+  "status": "ALL_MNQ0926_STORED_PRIMARY_ROWS_EXACT_PARITY_PRODUCTION_BINDING_BLOCKED",
   "base_system_commit": "c90b50cfc0e188bb0edae389552d278c6a600470",
   "system_branch": "feat/research-ops-supervisor-mvp",
   "draft_pr": 117,
@@ -27,7 +27,9 @@
     "tests/research_ops/test_anchored_recall.py": "61ee6e6dd8ec8c333ed1f071f8ab7362e5e8738ef60daff5b5e1bd63cf461415",
     "tests/research_ops/test_mnq_resampling_replay.py": "24ec65a190cfde455ac17621e6246689040921fedd27286f4d5937053747cc04",
     "tools/research_ops/benchmarks/mnq_primary_grid_parity.py": "a32e07388e6d81630c3fe030c10450cca861ce87017d6c773e2404da7a8c047d",
-    "tests/research_ops/test_mnq_primary_grid_parity.py": "f0b274a349d8341b5960e4986843f1baf31b9fa4b4a1dda29709c2e94e9bc853"
+    "tests/research_ops/test_mnq_primary_grid_parity.py": "f0b274a349d8341b5960e4986843f1baf31b9fa4b4a1dda29709c2e94e9bc853",
+    "tools/research_ops/audits/review_primary_grid_receipt.py": "ded3f6f754829589101b76a028df15f096e1b4cfa7130ce81127f12c4aa27864",
+    "tests/research_ops/test_primary_grid_receipt_review.py": "7ffa301328a0e76a609c618a4087f259e41d3fed3406a9ef4fe6cb88d9f620b9"
   },
   "research_commit": "eca53ec2277536b89f3b68cc39770c19dcba2483",
   "frozen_scientific_commit": "9125197dc6098100459f36a3d90a5c7b7aa4f9c0",
@@ -37,7 +39,7 @@
   "holdout_opened": false,
   "pnl_computed": false,
   "local_tests": {
-    "research_ops": 447,
+    "research_ops": 456,
     "navigation": 18,
     "canonical_store": 19
   },
@@ -50,7 +52,8 @@
     "Structural bounded experiment charter and knowledge context binding.",
     "Fresh-process serial substep instrumentation with synthetic parity self-check.",
     "Existing 10-record operational snapshot bound read-only with all anchors/receipt; no new ledger.",
-    "Private Kaggle completed-input technical resampling replay: 60 prespecified cells, exact cold/warm output hashes across3pairs; candidate not adopted."
+    "Private Kaggle completed-input technical resampling replay: 60 prespecified cells, exact cold/warm output hashes across3pairs; candidate not adopted.",
+    "Manual private Kaggle replay all11340 stored MNQ09-26 primary-effects rows: exact 19-field parity including NaN/float round-trips; structural external-source-pin receiver with9negative/positive tests. No adoption, custody signature or detector rerun."
   ],
   "real_custodian_keys_bound": false,
   "real_review_keys_bound": false,
@@ -70,7 +73,8 @@
     "Approve one bounded preholdout shard with exact formation/selection/source/build/protocol pins and cost reservation.",
     "Measure real longevity substeps, implement at most one candidate, require independent full-output parity, equivalent cold/warm pairs and authorization before adoption.",
     "Keep proposed stricter width/side control experiment separate from frozen recipes and all previous trial history.",
-    "Review bounded resampling evidence and measure full longevity/primary-analysis substeps before any broader parity/adoption request; 3.38x substep improvement is not whole-job speedup."
+    "Review bounded resampling evidence and measure full longevity/primary-analysis substeps before any broader parity/adoption request; 3.38x substep improvement is not whole-job speedup.",
+    "Preserve completed full-primary-grid evidence; next scientific-performance gate still requires broader matched/model/full-pipeline coverage and approved integration, not relaunching campaign."
   ],
   "updated_entrypoint": "docs/research/ops/FULL_PRIMARY_GRID_PARITY.md",
   "previous_system_commit": "241cc0cbb5d957caa8bab8d89c85507890c6daf8",
@@ -90,9 +94,92 @@
     "interpretation": "docs/research/ops/MNQ_RESAMPLING_REPLAY_INTERPRETATION.json"
   },
   "full_primary_grid_parity": {
-    "status": "PRESPECIFIED_NOT_LAUNCHED",
+    "plan": {
+      "schema": "mnq_full_primary_grid_parity_plan_v1",
+      "contract": "MNQ_09-26",
+      "frozen_commit": "9125197dc6098100459f36a3d90a5c7b7aa4f9c0",
+      "original_kernel": 138263097,
+      "original_version": 1,
+      "original_execution": 357535155,
+      "inputs": {
+        "manifest": {
+          "bytes": 4261,
+          "sha256": "4ac38a080ed98a60769f3f1bf29a4e8ed087c9202a3cceb31d8920c541549e2b"
+        },
+        "events": {
+          "bytes": 19848426,
+          "sha256": "9683c791331b57be8243f89c1092958aa8e1da5b4f65a70a16e020a5a754b31b"
+        },
+        "effects": {
+          "bytes": 1496171,
+          "sha256": "ba401ba7c5e836a9be2fc9d8e54c242b73cd0d11015a5664c47d116e1e26b00e"
+        }
+      },
+      "origins": [
+        "real",
+        "translated_geometry250"
+      ],
+      "landmarks": [
+        0,
+        250,
+        500,
+        1000,
+        2000,
+        3000,
+        5000
+      ],
+      "dedups": [
+        "all",
+        "dedup75",
+        "dedup50"
+      ],
+      "endpoints": [
+        0,
+        1,
+        2
+      ],
+      "visit_definitions": [
+        "visits1",
+        "visits5",
+        "visits_clock10s"
+      ],
+      "visits": [
+        "all",
+        "0",
+        "1",
+        "2-4",
+        "5+"
+      ],
+      "speeds": [
+        "all",
+        "return_faster",
+        "return_slower"
+      ],
+      "gaps": [
+        "observed",
+        "gap_free"
+      ],
+      "rows": 11340,
+      "sessions": 46,
+      "draws": 10000,
+      "seed": 17331,
+      "deadline_seconds": 900,
+      "memory_bytes": 4294967296,
+      "scope": "ALL_STORED_PRIMARY_EFFECTS_FROM_EXISTING_THINNED_EVENTS",
+      "no_full_pipeline_claim": true,
+      "holdout_opened": false,
+      "pnl_computed": false,
+      "scientific_trial": false,
+      "adoption_authorized": false
+    },
     "plan_sha256": "22140b597991f27024b2bd32df281fbf6d72f0ad6db1339d75bde3081230f92e",
-    "rows": 11340,
-    "adoption_authorized": false
+    "status": "COMPLETE_EXACT_STORED_REFERENCE_PARITY_NOT_ADOPTED",
+    "kernel_id": 138362721,
+    "version": 1,
+    "execution_output_id": 357738247,
+    "url": "https://www.kaggle.com/code/nicolasbuttaro/edgelab-mnq-full-primary-grid-parity",
+    "source_checkpoint": "8d08c657ac8eba76abe9959bd80a037f97e466a6",
+    "aggregate_sha256": "47fbed738ea9d29d93a0c71bfa4ba3f44078063290c7d6705da271a7dd1b5bf6",
+    "observed_utc": "2026-10-12T17:20:34.913838+00:00"
   }
 }

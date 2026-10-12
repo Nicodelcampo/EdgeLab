@@ -2,7 +2,7 @@
 
 ## Latest continuation: full primary-grid parity
 
-Read `FULL_PRIMARY_GRID_PARITY.md` and `LATEST_CONTINUATION.json` first. All11,340 stored primary-effects rows will be compared with exact hashes/counts/float round-trips against original CSV, on already-thinned events only. Check status; no new trial, full-pipeline claim or adoption.
+Read `FULL_PRIMARY_GRID_PARITY.md` and `LATEST_CONTINUATION.json` first. All11,340 stored MNQ09-26 primary-effects rows PASSED all19fields (215,460 checks), including exact float round-trips against original CSV, on already-thinned events only. Kernel138362721 v1 COMPLETE. No new trial, full-pipeline claim or adoption.456local Research Ops tests. Do not rerun this completed replay.
 
 ## Previous continuation: existing operational snapshot and technical replay
 
