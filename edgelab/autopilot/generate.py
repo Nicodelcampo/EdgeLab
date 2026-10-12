@@ -56,7 +56,7 @@ def score(c: Candidate, outcomes: list, lits: dict) -> Candidate:
     p0 = (PRIOR[0] + hit + lh) / (PRIOR[0] + PRIOR[1] + tot + ln)
     from .mandate import load as _mandate, utility_weight
     from .universe import RHO_PLAUSIBLE
-    cost = np.sqrt(max(c.est_seconds, 60) / 600.0); u = utility_weight(c.utility_class, _mandate()); feas = 1.0 if not c.required_rho or c.required_rho <= 0 else max(FEAS_FLOOR, min(1.0, RHO_PLAUSIBLE / c.required_rho))      # el umbral PRIORIZA, nunca descarta: piso de factibilidad; voi = p0 * c.power * u * feas / cost
+    cost = np.sqrt(max(c.est_seconds, 60) / 600.0); u = utility_weight(c.utility_class, _mandate()); feas = 1.0 if not c.required_rho or c.required_rho <= 0 else max(FEAS_FLOOR, min(1.0, RHO_PLAUSIBLE / c.required_rho)); voi = p0 * c.power * u * feas / cost      # el umbral PRIORIZA, nunca descarta: piso de factibilidad
     if c.owner == "human-decision": voi = 0.0                       # bloqueada: no compite por cómputo, queda visible para decisión humana
     c.score = float(voi); c.score_parts = dict(p0=round(p0, 4), power=c.power, utility=f"{c.utility_class}={u}", rho_required=None if not c.required_rho else round(c.required_rho, 3), feasibility=round(feas, 3), cost_factor=round(float(cost), 3), prior_hits=f"{hit}/{tot}", literature_pro=len(c.pro), literature_contra=len(c.contra))
     return c
