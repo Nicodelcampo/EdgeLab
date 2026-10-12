@@ -90,6 +90,14 @@ TOUCH/CLASSIFY están capturados pero aún no entran como covariables predictiva
 
 **No hay nuevos resultados MNQ, medición de RAM/walltime en Kaggle, speedup real, labels, inferencia, P&L ni lanzamiento.** Las capturas actualmente retienen outputs/logs nativos en memoria; falta streaming/IO columnar y presupuesto conjunto de configuraciones. El builder TOTAL lineariza índices int64: antes de producción hay que verificar rango, overflow y memoria. Los triples densos pueden crecer combinatoriamente; los límites rechazan sin truncar pero no sustituyen el perfil real.
 
+## Etapa 3: piloto técnico finito empaquetado
+
+Predecesor `a05b39c3ef574da30a7f3db764066511106e436c`. Ver `MNQ_CONFLUENCE_KAGGLE_PILOT.md` y su plan: nuevo runner de fixture inventado, caches exactos compartidos, comparación nativa de 96 configs, replay de 32 triadas alineadas y paquete offline privado con límites del proceso. El piloto local completo termina; es evidencia de ingeniería, no resultado MNQ, perfil real o cobertura cartesiana.
+
+Se recuperó sólo metadata de la autorización histórica exploratoria de fuentes; original no disponible y fuente no certificada. No elevarla a certificado ni generalizar su alcance sin binding explícito del experimento nuevo. No reabrir auditoría de paridad 100%.
+
+La prueba aislada del paquete encontró y corrigió una dependencia `sessions.py` faltante; vuelve a pasar. Estado Kaggle y receipts se guardan por separado, no se deducen del éxito local.
+
 ## Próximo paso operativo (no otra auditoría de paridad)
 
 1. Bindear fuentes preholdout elegibles, contratos naturales, formación/warmup y sesiones aprobadas **antes de cargar ticks**. Declarar todos los gaps/splits; el replay de arrays no es un permiso ni certificado de fuente.
