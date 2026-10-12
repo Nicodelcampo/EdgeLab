@@ -78,3 +78,7 @@ Adaptadores del core canónico EdgeBrain y exports de la biblioteca SSRN existen
 ## Quinto hito: snapshots de cola y recuperación sintética
 
 Export/inspect/restore con proyecciones, eventos, recibos y presupuesto intactos; pérdida de host simulada sólo en fixtures. RUNNING no se reejecuta ni se declara completado. [Recuperación portable y límites](PORTABLE_QUEUE_RECOVERY.md). NO hay host/store remoto/witness vinculados ni checkpoints del motor MNQ recuperados.
+
+## Handoff de continuación
+
+[CLAUDE_HANDOFF.md](CLAUDE_HANDOFF.md) reúne los cinco hitos implementados, fuentes/autoridad, pruebas verificadas, campaña Kaggle separada y próximos pasos. [CONTINUATION_STATE.json](CONTINUATION_STATE.json) es un snapshot, no estado vivo. Inventario de los40archivos del commit fuente: `HANDOFF_SOURCE_INVENTORY.json`; revalidación limpia: `HANDOFF_TEST_EVIDENCE.json`. No habilita autonomía de mercado ni servicio24/7.
