@@ -102,7 +102,7 @@ Se persistió código antes de enviar el probe. Kaggle creó `nicolasbuttaro/edg
 
 ## Próximo paso operativo (no otra auditoría de paridad)
 
-1. Bindear fuentes preholdout elegibles, contratos naturales, formación/warmup y sesiones aprobadas **antes de cargar ticks**. Declarar todos los gaps/splits; el replay de arrays no es un permiso ni certificado de fuente.
+1. Reutilizar fuentes y sesiones exploratorias aprobadas, sin reabrir auditorías de datasets. Configurar targets/formation y reservas del nuevo experimento antes de cargar ticks; mantener holdout cerrado y KAGGLE_ONLY.
 2. Empaquetar runner privado Kaggle acotado con caches compartidos, captura/IO por lotes, mounts/builds verificados y límites de memoria/costo. Guardar sólo agregados sanitizados; ticks/eventos nunca salen de Kaggle.
 3. Perfilar el piloto preparado de 96 configs sin outcomes: detectar densidad/ocupación, soporte y costos por etapa, y comprobar equivalencia exacta referencia/optimización sobre entradas idénticas. No recortar parámetros por winners.
 4. Con esas mediciones congelar roster amplio, escenarios, covariables de llegada/volumen, labels, ablaciones aditivas/interacciones, controles de densidad/geometría, estabilidad temporal/contrato, carry separado y multiplicidad/dependencia/MDE. Los temas científicos están diseñados, no resueltos por este pipeline.
@@ -122,3 +122,18 @@ python tools/research_ops/confluence/build_target_free_pilot.py \
 ```
 
 El output debe ser nuevo: no sobrescribir evidencia anterior. Los módulos de estas pruebas no consultan red ni datos privados.
+
+
+## Etapa 5: cierre de fuente y avance del motor por bloques
+
+Instrucción actual del usuario: los datasets ya están resueltos; no hacer constantes validaciones. Se conserva la autorización exploratoria existente y sus riesgos, sin exigir nueva certificación de fuente ni repetir corridas históricas. El trabajo siguiente debe producir resultados nuevos.
+
+El preflight anterior terminó en Kaggle (kernel 138381058/v1): bytes/schema de MNQ_09-26 fijados, 110632331 filas y 295 row groups; no se deserializaron precios ni se ejecutaron detectores. Receipts agregados y verificación de salidas guardados. No volver a lanzarlo. Los flags false de certificación científica se preservan; no constituyen un nuevo bloqueo solicitado al usuario.
+
+`avz_stream.py` conserva el loop AVZP2 fijado como generador por barras: mantiene historia/calibración, bloques parciales y zonas pendientes de OB entre entregas, descartando outputs nativos finalizados. Las 32 configuraciones AVZ del roster conservan eventos/scores y blocks exactamente contra referencia sobre fixture inventado. Mantiene parámetros completos y warmup; racimo_min=0 como el roster, racimos por adaptador separado. No hay todavía lector/constructor de barras raw por chunks ni certificado de velocidad real.
+
+Se encontró y corrigió una disponibilidad causal en el adaptador BT2A: el cierre residual por cambio de sesión puede retirar una zona, pero esa baja sólo es observable con el primer tick de la nueva sesión, no en el último tick del bloque anterior. Al EOF desconocido no emite baja observable. Consumo y disponibilidad se registran por separado. Los outputs del kernel nativo permanecen idénticos; dos pruebas negativas nuevas cubren ambos casos. No se editó el indicador ni se reabrió paridad NT8. Las receipts históricas del piloto sintético permanecen sin cambios; no certifican el adaptador nuevo.
+
+Siguiente trabajo: completar procesamiento estatal BT2A y primitives de barras/footprints, conectar runner Kaggle al scope existente y medir costos/densidad/ocupación en MNQ. Luego fijar escenarios/labels y análisis con controles de ocupación, dependencia y multiplicidad. No lanzar aún la enorme campaña cartesiana con un runner que reinicie historia por cada chunk.
+
+Regresión de esta etapa: **641 Research Ops + 18 navegación PASS**, catálogo PASS_NAVIGATION_ONLY. Doce pruebas nuevas de AVZ streaming, cuatro de cierre metadata y dos del cierre residual BT2A; todas sin cargar datos de mercado en el sandbox.

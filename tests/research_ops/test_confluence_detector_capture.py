@@ -45,6 +45,24 @@ class CaptureTests(unittest.TestCase):
         expected=bigtrap2absorption.run(t,params=p);got,r=capture_run('BT2A',t,params=p)
         self.assertEqual(normalized(expected),normalized(got));self.assertTrue(any(x.kind=='BIRTH' for x in r.records));self.assertTrue(any(x.kind=='REMOVE' for x in r.records))
         self.assertTrue(all(x.clock.sequence==int(t.sequence[x.consumed_tick_index]) for x in r.records))
+    def test_bt2a_eof_partial_removal_is_not_observable(self):
+        t=trap_tape(21)
+        p={'TapeWindowTicks':10,'AbsorptionPct':0,'UseWickFilter':False,'ImbalanceRatio':1.,'MinStackedRows':1,'MinTrapFrac':0,'RequireFlowSideMatch':False,'MaxAgeBars':1}
+        got,r=capture_run('BT2A',t,params=p)
+        self.assertEqual(normalized(got),normalized(bigtrap2absorption.run(t,params=p)))
+        self.assertEqual(r.unavailable_time_events,1)
+        self.assertFalse(any(x.source_bar==3 for x in r.records))
+    def test_bt2a_session_partial_removal_waits_for_next_tick(self):
+        t=trap_tape(31);t.ts_ns[21:]+=86400000000000
+        p={'TapeWindowTicks':10,'AbsorptionPct':0,'UseWickFilter':False,'ImbalanceRatio':1.,'MinStackedRows':1,'MinTrapFrac':0,'RequireFlowSideMatch':False,'MaxAgeBars':1}
+        got,r=capture_run('BT2A',t,params=p)
+        self.assertEqual(normalized(got),normalized(bigtrap2absorption.run(t,params=p)))
+        partial=[x for x in r.records if x.kind=='REMOVE' and x.source_bar==3]
+        self.assertEqual(len(partial),1)
+        self.assertEqual(partial[0].consumed_tick_index,20)
+        self.assertEqual(partial[0].clock.sequence,21)
+        self.assertEqual(partial[0].clock.ns,int(t.ts_ns[21]))
+        self.assertGreater(partial[0].clock.ns,int(t.ts_ns[20]))
     def test_avz_birth_and_ob_classification_not_final_state(self):
         t=avz_tape();b=B.build_tick_bars(t,5);f=build_total_footprint_csr_nt8(t,b);ses=B.session_ids(b.end_ns)
         p={'window_bars':1,'min_samples':2,'lookback_sessions':3,'ob_bars':2,'racimo_min':0}

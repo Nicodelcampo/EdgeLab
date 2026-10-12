@@ -64,24 +64,37 @@ def _module(family):
 def _code(family):
     mod=_module(family);tree=ast.parse(inspect.getsource(mod.run));counts={'birth':0,'remove':0,'classify':0,'log':0,'signature':0}
     class Hooks(ast.NodeTransformer):
+        in_tape_loop=False
+        def visit_For(self,n):
+            is_tape=family=='BT2A' and ast.unparse(n.target)=='i' and ast.unparse(n.iter)=='range(n_ticks)'
+            before=self.in_tape_loop
+            if is_tape:
+                self.in_tape_loop=True;counts['tape_loop']=counts.get('tape_loop',0)+1
+            n=self.generic_visit(n);self.in_tape_loop=before
+            return n
         def visit_FunctionDef(self,n):
             if family=='BT2' and n.name=='log_event':
                 n=self.generic_visit(n);n.body.extend(ast.parse("_observe_log(etype, zone, bar, t_ns, reason)").body);counts['log']+=1;return n
             if family=='BT2A' and n.name=='update_active_zones':
-                n.args.args.append(ast.arg(arg='_current_tick_index'));counts['signature']+=1
+                n.args.args.extend([ast.arg(arg='_current_tick_index'),ast.arg(arg='_available_index')]);counts['signature']+=1
+            if family=='BT2A' and n.name=='flush_block':
+                n.args.args.append(ast.arg(arg='_available_index'));counts['flush_signature']=counts.get('flush_signature',0)+1
             return self.generic_visit(n)
         def visit_Call(self,n):
             n=self.generic_visit(n)
-            if family=='BT2A' and isinstance(n.func,ast.Name) and n.func.id=='update_active_zones':n.args.append(ast.parse('blk[-1]',mode='eval').body)
+            if family=='BT2A' and isinstance(n.func,ast.Name):
+                if n.func.id=='update_active_zones':n.args.extend([ast.parse('blk[-1]',mode='eval').body,ast.Name(id='_available_index',ctx=ast.Load())])
+                elif n.func.id=='flush_block':
+                    n.args.append(ast.Name(id='i',ctx=ast.Load()) if self.in_tape_loop else ast.Constant(value=None));counts['flush_call']=counts.get('flush_call',0)+1
             return n
         def visit_Expr(self,n):
             n=self.generic_visit(n);v=n.value
             if not isinstance(v,ast.Call) or not isinstance(v.func,ast.Attribute) or not isinstance(v.func.value,ast.Name):return n
             target,op=v.func.value.id,v.func.attr
             if family=='BT2A' and target=='active_zones' and op=='append':
-                counts['birth']+=1;return [n,*ast.parse("_observe_raw('BIRTH', z_entry, b_idx, int(blk[-1]), int(blk_ts[-1]))").body]
+                counts['birth']+=1;return [n,*ast.parse("_observe_raw('BIRTH', z_entry, b_idx, int(blk[-1]), int(blk_ts[-1]), _available_index)").body]
             if family=='BT2A' and target=='active_zones' and op=='remove':
-                counts['remove']+=1;return [n,*ast.parse("_observe_raw('REMOVE', z, bar_idx, int(_current_tick_index), int(t_ns))").body]
+                counts['remove']+=1;return [n,*ast.parse("_observe_raw('REMOVE', z, bar_idx, int(_current_tick_index), int(t_ns), _available_index)").body]
             if family=='AVZP2' and target=='zones' and op=='append':
                 counts['birth']+=1;return [n,*ast.parse("_observe_avz('BIRTH', z, b)").body]
             return n
@@ -96,7 +109,7 @@ def _code(family):
                 counts['classify']+=1;return [n,*ast.parse("_observe_avz('CLASSIFY', z, b)").body]
             return n
     tree=Hooks().visit(tree);ast.fix_missing_locations(tree)
-    expected={'BT2':{'log':1},'BT2A':{'birth':1,'remove':2,'signature':1},'AVZP2':{'birth':1,'classify':1,'immediate':1}}[family]
+    expected={'BT2':{'log':1},'BT2A':{'birth':1,'remove':2,'signature':1,'flush_signature':1,'flush_call':3,'tape_loop':1},'AVZP2':{'birth':1,'classify':1,'immediate':1}}[family]
     if {k:v for k,v in counts.items() if v}!=expected:raise ValueError('hook location census drift')
     return compile(tree,f'<pinned-capture-{family}>','exec')
 
@@ -191,9 +204,13 @@ def capture_run(family,ticks,*,bars=None,footprints=None,sessions=None,params=No
         at=clocks[b]
         if at is None:unavailable+=1;return
         i,c=at;add(mapping[etype],z,b,i,c,reason)
-    def observe_raw(kind,z,b,i,t_ns):
+    def observe_raw(kind,z,b,i,t_ns,available_index):
+        nonlocal unavailable
         if not 0<=i<n or t_ns!=int(ticks.ts_ns[i]):raise ValueError('bucket event/member mismatch')
-        add(kind,z,b,i,Clock(t_ns,int(ticks.sequence[i])),z.get('end_reason') or '')
+        if available_index is None:
+            unavailable+=1;return
+        if not i<=available_index<n:raise ValueError('bucket availability precedes consumption')
+        add(kind,z,b,i,Clock(int(ticks.ts_ns[available_index]),int(ticks.sequence[available_index])),z.get('end_reason') or '')
     identity_by_object={}
     def observe_avz(kind,z,b):
         nonlocal unavailable
