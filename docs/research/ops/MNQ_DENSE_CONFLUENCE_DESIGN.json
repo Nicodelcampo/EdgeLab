@@ -1,0 +1,414 @@
+{
+  "schema": "mnq_dense_confluence_design_v1",
+  "status": "DESIGN_ONLY_NOT_PREREGISTERED",
+  "proposal_not_evidence": true,
+  "asserts_edge": false,
+  "authorization": {
+    "launch_authorized": false,
+    "market_reads_authorized_by_this_file": false,
+    "outcomes_opened": false,
+    "pnl_allowed": false,
+    "canonical_brain_write_authorized": false,
+    "independent_review_completed": false
+  },
+  "source_pins": {
+    "system_commit": "722edd0ab5b47a1b5bf5eb1177f8092c54ec38e0",
+    "foundation_commit": "f397a318be8b0acf68789070fe8064d83e172f7d",
+    "previous_research_commit": "eca53ec2277536b89f3b68cc39770c19dcba2483",
+    "frozen_campaign_commit": "9125197dc6098100459f36a3d90a5c7b7aa4f9c0"
+  },
+  "data_policy": {
+    "instrument": "MNQ",
+    "market_and_private_events_location": "KAGGLE_ONLY",
+    "holdout_start_trade_date": "2026-10-01",
+    "frozen_or_previously_reserved_partitions_also_excluded": true,
+    "previously_inspected_data_label": "EXPLORATION_NOT_VIRGIN_HOLDOUT",
+    "natural_contract_prices_required": true,
+    "approved_source_manifest": null,
+    "approved_sessions": null
+  },
+  "catalog": {
+    "execution_status": "NOT_EXECUTED",
+    "selection_rule": "target-free coverage/cost/density diversity only; freeze before outcomes",
+    "axes": {
+      "avolzonepoi2": {
+        "bar_spec": [
+          "tick:25",
+          "tick:50",
+          "tick:100",
+          "tick:200"
+        ],
+        "window_bars": [
+          5,
+          10,
+          20
+        ],
+        "median_multiplier": [
+          1.25,
+          1.5,
+          2.0
+        ],
+        "max_gap_ticks": [
+          0,
+          1,
+          2
+        ],
+        "min_cluster_ticks": [
+          2,
+          3
+        ],
+        "score_mode": [
+          "Suma",
+          "Densidad"
+        ],
+        "detection_percentile": [
+          70.0,
+          80.0,
+          90.0,
+          95.0
+        ]
+      },
+      "racimo": {
+        "racimo_min": [
+          3,
+          4,
+          6,
+          8
+        ],
+        "racimo_bars": [
+          250,
+          500,
+          1000
+        ],
+        "racimo_altura_ticks": [
+          20,
+          30,
+          45,
+          60
+        ]
+      },
+      "bigtrap2": {
+        "bar_spec": [
+          "time:1",
+          "tick:25",
+          "tick:50",
+          "tick:100",
+          "tick:200"
+        ],
+        "ticks_per_row": [
+          1,
+          2,
+          4
+        ],
+        "imbalance_mode": [
+          "Diagonal",
+          "SameLevel"
+        ],
+        "trap_volume_source": [
+          "AggressiveSide",
+          "TotalLevel"
+        ],
+        "imbalance_ratio": [
+          1.5,
+          2.0,
+          3.0,
+          4.0
+        ],
+        "wick_policy": [
+          "OFF",
+          "ON_30",
+          "ON_50"
+        ],
+        "min_trap_volume": [
+          1.0,
+          5.0,
+          15.0,
+          30.0
+        ]
+      },
+      "bigtrap2absorption": {
+        "TapeWindowTicks": [
+          10,
+          25,
+          50,
+          100
+        ],
+        "ScoreMode": [
+          "AbsMagnitude",
+          "AbsDirectional"
+        ],
+        "AbsorptionPct": [
+          50.0,
+          70.0,
+          80.0,
+          90.0,
+          95.0
+        ],
+        "TicksPerRow": [
+          1,
+          2
+        ],
+        "ImbalanceMode": [
+          "Diagonal",
+          "SameLevel"
+        ],
+        "ImbalanceRatio": [
+          1.5,
+          2.0,
+          3.0
+        ],
+        "MinStackedRows": [
+          1,
+          2,
+          3
+        ],
+        "MinTrapFrac": [
+          0.0,
+          0.1,
+          0.2
+        ],
+        "RequireFlowSideMatch": [
+          true,
+          false
+        ],
+        "wick_policy": [
+          "OFF",
+          "ON_30"
+        ]
+      }
+    },
+    "fixed_parameters": {
+      "avolzonepoi2": {
+        "bucket_min": 15,
+        "lookback_sessions": 20,
+        "min_samples": 20,
+        "ob_bars": 100,
+        "ob_away_heights": 6.0,
+        "ob_min_away_ticks": 8,
+        "ob_max_inside_pct": 4.0,
+        "racimo_min": 0,
+        "racimo_bars": 500,
+        "racimo_altura_ticks": 30
+      },
+      "bigtrap2": {
+        "min_delta_filter": 0.0,
+        "min_export_volume": 1.0,
+        "invalidation_mode": "CloseThrough",
+        "max_age_bars": 2000,
+        "max_touches": 0
+      },
+      "bigtrap2absorption": {
+        "AbsorptionLookback": 500,
+        "MinHistoryBuckets": 200,
+        "TrapVolumeSource": "AggressiveSide",
+        "MinDeltaFilter": 0.0,
+        "MinTrapVolume": 0.0,
+        "MinExportVolume": 1.0,
+        "InvalidationMode": "CloseThrough",
+        "MaxAgeBars": 2000,
+        "MaxTouches": 0,
+        "DrawZoneBand": true
+      }
+    },
+    "nominal_counts": {
+      "avolzonepoi2": 1728,
+      "racimo": 48,
+      "bigtrap2": 2880,
+      "bigtrap2absorption": 17280
+    },
+    "avz_racimo_combined_definitions": 82944,
+    "detector_definitions_total": 21888,
+    "full_cross_indicator_cartesian_execution": false,
+    "all_nominal_trials_and_aliases_retained": true,
+    "exact_defaults_and_parity_reference_configs_added_separately": true,
+    "wick_mapping": {
+      "OFF": {
+        "enabled": false,
+        "percent": 30.0
+      },
+      "ON_30": {
+        "enabled": true,
+        "percent": 30.0
+      },
+      "ON_50": {
+        "enabled": true,
+        "percent": 50.0
+      }
+    }
+  },
+  "scenario_catalog": [
+    {
+      "id": "S01",
+      "description": "AVZ × BT2: solapamiento parcial",
+      "status": "PROPOSED_NEEDS_FROZEN_PREDICATE"
+    },
+    {
+      "id": "S02",
+      "description": "AVZ × BT2A: solapamiento parcial",
+      "status": "PROPOSED_NEEDS_FROZEN_PREDICATE"
+    },
+    {
+      "id": "S03",
+      "description": "racimo × BT2: geometría as-of",
+      "status": "PROPOSED_NEEDS_FROZEN_PREDICATE"
+    },
+    {
+      "id": "S04",
+      "description": "racimo × BT2A: geometría as-of",
+      "status": "PROPOSED_NEEDS_FROZEN_PREDICATE"
+    },
+    {
+      "id": "S05",
+      "description": "AVZ × BT2 × BT2A: intersección triple",
+      "status": "PROPOSED_NEEDS_FROZEN_PREDICATE"
+    },
+    {
+      "id": "S06",
+      "description": "racimo × BT2 × BT2A: intersección triple",
+      "status": "PROPOSED_NEEDS_FROZEN_PREDICATE"
+    },
+    {
+      "id": "S07",
+      "description": "zona contenida dentro de otra",
+      "status": "PROPOSED_NEEDS_FROZEN_PREDICATE"
+    },
+    {
+      "id": "S08",
+      "description": "contacto de bordes sin área positiva",
+      "status": "PROPOSED_NEEDS_FROZEN_PREDICATE"
+    },
+    {
+      "id": "S09",
+      "description": "zonas próximas sin solapar: control geométrico",
+      "status": "PROPOSED_NEEDS_FROZEN_PREDICATE"
+    },
+    {
+      "id": "S10",
+      "description": "coincidencia con orden temporal AVZ primero",
+      "status": "PROPOSED_NEEDS_FROZEN_PREDICATE"
+    },
+    {
+      "id": "S11",
+      "description": "coincidencia con orden temporal BT primero",
+      "status": "PROPOSED_NEEDS_FROZEN_PREDICATE"
+    },
+    {
+      "id": "S12",
+      "description": "coincidencia en mismo timestamp con secuencia distinta",
+      "status": "PROPOSED_NEEDS_FROZEN_PREDICATE"
+    },
+    {
+      "id": "S13",
+      "description": "BigTrap con orientación concordante",
+      "status": "PROPOSED_NEEDS_FROZEN_PREDICATE"
+    },
+    {
+      "id": "S14",
+      "description": "BigTrap con orientación enfrentada",
+      "status": "PROPOSED_NEEDS_FROZEN_PREDICATE"
+    },
+    {
+      "id": "S15",
+      "description": "confluencia reconocida antes del primer contacto",
+      "status": "PROPOSED_NEEDS_FROZEN_PREDICATE"
+    },
+    {
+      "id": "S16",
+      "description": "confluencia creada después de un contacto: nuevo evento",
+      "status": "PROPOSED_NEEDS_FROZEN_PREDICATE"
+    },
+    {
+      "id": "S17",
+      "description": "primer contacto con aproximación rápida/directa",
+      "status": "PROPOSED_NEEDS_FROZEN_PREDICATE"
+    },
+    {
+      "id": "S18",
+      "description": "primer contacto con aproximación lenta/oscilante",
+      "status": "PROPOSED_NEEDS_FROZEN_PREDICATE"
+    },
+    {
+      "id": "S19",
+      "description": "revisita con flujo y volumen interior as-of",
+      "status": "PROPOSED_NEEDS_FROZEN_PREDICATE"
+    },
+    {
+      "id": "S20",
+      "description": "salida y retest causal",
+      "status": "PROPOSED_NEEDS_FROZEN_PREDICATE"
+    },
+    {
+      "id": "S21",
+      "description": "geometría de racimo expandida: nueva versión",
+      "status": "PROPOSED_NEEDS_FROZEN_PREDICATE"
+    },
+    {
+      "id": "S22",
+      "description": "confluencia envejecida vs reciente",
+      "status": "PROPOSED_NEEDS_FROZEN_PREDICATE"
+    },
+    {
+      "id": "S23",
+      "description": "carry entre sesiones: brazo independiente bloqueado",
+      "status": "PROPOSED_NEEDS_FROZEN_PREDICATE"
+    },
+    {
+      "id": "S24",
+      "description": "pérdida de confluencia por invalidación/expiración",
+      "status": "PROPOSED_NEEDS_FROZEN_PREDICATE"
+    }
+  ],
+  "scientific_questions": [
+    "interaction beyond additive indicator effects",
+    "density/occupancy/geometry versus indicator mechanism",
+    "individual and joint incremental revisit/volume/flow/efficiency information",
+    "temporal and natural-contract stability",
+    "nonprimary geometry generalization",
+    "carry separately, never silently inherit final-state geometry"
+  ],
+  "analysis_contract": {
+    "primary_estimand": "PROPOSED paired OOS Brier-loss reduction of context+individual-main-effects+arrival+confluence interactions versus context+individual-main-effects+arrival (same eligible anchors)",
+    "response_label": "PENDING: tick-ordered first-passage, fixed distances/horizon, no trading P&L",
+    "same_eligible_anchor_population_for_ablations": true,
+    "scaling_imputation_bins_train_only": true,
+    "missing_detector_or_feature_status": "UNKNOWN_NOT_NEGATIVE",
+    "density_controls_required": true,
+    "control_own_census_required": true,
+    "session_and_shared_event_dependence_required": true,
+    "pointwise_intervals_not_global_significance": true,
+    "multiplicity_procedure": "PENDING frozen hierarchical family tests and dependence-aware maxT/stepdown implementation; never infer effective N from Jaccard",
+    "support_mde_thresholds": null,
+    "confirmation_authorized": false
+  },
+  "execution_contract": {
+    "runner_implemented": false,
+    "end_to_end_optimization_validated": false,
+    "hardware_walltime_ram_estimate": null,
+    "warmup_not_independent_per_session": true,
+    "asof_key": [
+      "contract",
+      "source_sha256",
+      "detector_build_sha256",
+      "full_config_sha256",
+      "bar_or_bucket_identity",
+      "zone_identity",
+      "available_ts_ns",
+      "available_sequence"
+    ],
+    "reuse_only_full_semantic_key": true,
+    "fastmath_allowed": false,
+    "canonical_fs_durability_may_be_weakened": false,
+    "export_private_events": false,
+    "legacy_pit_v1_allowed": false,
+    "legacy_all_inputs_loader_allowed": false
+  },
+  "launch_blockers": [
+    "bind eligible immutable sources/sessions and all reserved partitions",
+    "pin detector identity and resolve relevant parity branches (especially BigTrap2 tick and racimo geometry)",
+    "implement as-of creation/lifecycle/racimo mutations and confluence joins with negative tests",
+    "freeze scenario predicates, primary response, support/MDE, dependence, multiplicity and selection rules",
+    "authorized target-free bounded pilot + end-to-end profiling and exact fast/reference comparison",
+    "freeze actual config/scenario/trial roster and hard runtime/RAM/output budgets",
+    "independent review and explicit launch approval"
+  ]
+}
