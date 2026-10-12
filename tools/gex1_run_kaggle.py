@@ -124,8 +124,9 @@ def run(name, s):
     zc = norm.ppf(1 - 0.05 / NTESTS)
     for k, v in obs.items():
         nv = np.array(null[k]); nv = nv[np.isfinite(nv)]
-        res[k] = dict(obs=float(v), p=float((1 + np.sum(nv >= v)) / (1 + len(nv))), null_mean=float(nv.mean()),
-                      null_sd=float(nv.std()), mde=float((zc + 0.84) * nv.std()))
+        ev = bool(np.isfinite(v) and len(nv) > 100)                      # estadístico no finito = «no evaluable», NO tiene p (corrección posterior al primer GEX-1: comparar con NaN daba p=0,0001)
+        res[k] = dict(obs=float(v), evaluable=ev, p=float((1 + np.sum(nv >= v)) / (1 + len(nv))) if ev else None, null_mean=float(nv.mean()) if len(nv) else None,
+                      null_sd=float(nv.std()) if len(nv) else None, mde=float((zc + 0.84) * nv.std()) if len(nv) else None)
     q = pd.qcut(s.sig_prev, 5, labels=False)                         # control por volatilidad previa
     for k in obs:
         if k == "I2d":
@@ -145,8 +146,8 @@ def main():
         s = label(session_metrics(m), dix); s = s[s.date < "2026-10-01"]
         print(name, "sesiones", len(s), "gex<0", int(s.neg.sum()), flush=True)
         results.append(run(name, s))
-    ps = [(r["source"], k, t["p"]) for r in results for k, t in r["tests"].items()]
-    order = sorted(range(len(ps)), key=lambda i: ps[i][2]); m = len(ps); adj = [None] * m; run_max = 0
+    ps = [(r["source"], k, t["p"]) for r in results for k, t in r["tests"].items() if t["evaluable"]]
+    order = sorted(range(len(ps)), key=lambda i: ps[i][2]); m = NTESTS; adj = [None] * m; run_max = 0
     for rank, i in enumerate(order):
         run_max = max(run_max, min(1.0, (m - rank) * ps[i][2])); adj[i] = run_max
     for (src, k, _), a in zip(ps, adj):
@@ -157,7 +158,7 @@ def main():
     for r in results:
         print(r["source"], r["n"], r["n_neg"], r["first"], r["last"])
         for k, t in r["tests"].items():
-            print(f"  {k:7s} obs={t['obs']:+.4f} p={t['p']:.4f} holm={t['p_holm']:.4f} mde={t['mde']:.4f} volstrat={t.get('vol_stratified_diff')}")
+            print(f"  {k:7s} obs={t['obs']:+.4f} p={t['p']} holm={t.get('p_holm')} mde={t['mde']} volstrat={t.get('vol_stratified_diff')}")
 
 
 if __name__ == "__main__":
