@@ -82,3 +82,7 @@ Export/inspect/restore con proyecciones, eventos, recibos y presupuesto intactos
 ## Handoff de continuación
 
 [CLAUDE_HANDOFF.md](CLAUDE_HANDOFF.md) reúne los cinco hitos implementados, fuentes/autoridad, pruebas verificadas, campaña Kaggle separada y próximos pasos. [CONTINUATION_STATE.json](CONTINUATION_STATE.json) es un snapshot, no estado vivo. Inventario de los40archivos del commit fuente: `HANDOFF_SOURCE_INVENTORY.json`; revalidación limpia: `HANDOFF_TEST_EVIDENCE.json`. No habilita autonomía de mercado ni servicio24/7.
+
+## Aprendizaje poscorrida y mejora continua — diseño/prototipo offline
+
+[Diseño y límites](POST_RUN_LEARNING_AND_OPTIMIZATION.md): cierre verificado → recall canónico → borradores separados científicos/técnicos → experimento finito → paridad/benchmark → revisión → canary futuro → recall del próximo plan. `post_run.py` propone y filtra, no escribe Brain, ejecuta, promueve ni despliega. Cada cierre se revisa; si no hay mejora demostrada se conserva baseline. Las optimizaciones no se instalan en corridas activas.
