@@ -22,9 +22,22 @@ def main(argv=None):
     s.add_parser('benchmark-context-synthetic')
     a=s.add_parser('recall-brain');a.add_argument('ledger',type=Path);a.add_argument('query');a.add_argument('--expected-sha256',required=True);a.add_argument('--expected-tip',required=True)
     a=s.add_parser('recall-articles');a.add_argument('pack',type=Path);a.add_argument('query');a.add_argument('--expected-sha256',required=True);a.add_argument('--producer-commit',required=True)
+    a=s.add_parser('snapshot-queue');a.add_argument('output',type=Path);a.add_argument('--snapshot-id',required=True);a.add_argument('--expected-tip',required=True)
+    for name in ('inspect-snapshot','restore-queue'):
+        a=s.add_parser(name);a.add_argument('snapshot',type=Path);a.add_argument('--expected-sha256',required=True);a.add_argument('--expected-tip',required=True)
+        if name=='restore-queue':a.add_argument('destination',type=Path)
     a=s.add_parser('daemon');a.add_argument('--cycles',type=int,default=1);a.add_argument('--interval',type=float,default=5);a.add_argument('--expected-tip',required=True)
     args=p.parse_args(argv)
-    if args.command=='recall-brain':
+    if args.command=='snapshot-queue':
+        from .snapshots import export_queue
+        result=export_queue(Store(args.state),args.output,snapshot_id=args.snapshot_id,expected_tip=args.expected_tip)
+    elif args.command=='inspect-snapshot':
+        from .snapshots import inspect_snapshot
+        result=inspect_snapshot(args.snapshot,expected_sha256=args.expected_sha256,expected_tip=args.expected_tip)
+    elif args.command=='restore-queue':
+        from .snapshots import restore_queue
+        result=restore_queue(args.snapshot,args.destination,expected_sha256=args.expected_sha256,expected_tip=args.expected_tip)
+    elif args.command=='recall-brain':
         from .knowledge import recall_brain
         result=recall_brain(args.ledger,expected_file_sha256=args.expected_sha256,expected_tip=args.expected_tip,query=args.query)
     elif args.command=='recall-articles':

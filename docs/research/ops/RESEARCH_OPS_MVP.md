@@ -74,3 +74,7 @@ Se agregaron inventario sellado de18familias, evaluación conservadora de admisi
 ## Cuarto hito: conocimiento y research condicional
 
 Adaptadores del core canónico EdgeBrain y exports de la biblioteca SSRN existente, sin duplicarla; planner explícito para investigar vacíos o contradicciones y devolver referencias al Brain. Ningún dispatch de red o append científico automático. [Arquitectura, interfaces y límites](KNOWLEDGE_FIRST_RESEARCH.md). Evidencia focal: `PHASE4_TEST_EVIDENCE.json`.
+
+## Quinto hito: snapshots de cola y recuperación sintética
+
+Export/inspect/restore con proyecciones, eventos, recibos y presupuesto intactos; pérdida de host simulada sólo en fixtures. RUNNING no se reejecuta ni se declara completado. [Recuperación portable y límites](PORTABLE_QUEUE_RECOVERY.md). NO hay host/store remoto/witness vinculados ni checkpoints del motor MNQ recuperados.
