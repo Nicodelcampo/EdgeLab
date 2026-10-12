@@ -2,7 +2,7 @@
 Usage: python review_exported_focal.py EXPORT_DIRECTORY
 Private SQLite is an input only. The output is aggregate evidence, not edge validation.
 """
-import collections,csv,hashlib,json,math,pathlib,sqlite3,sys
+import collections,csv,gzip,hashlib,json,math,pathlib,sqlite3,sys
 root=pathlib.Path(sys.argv[1]);load=lambda p:json.load(open(p));rows=lambda p:list(csv.DictReader(open(p)))
 def digest(p):
  with open(p,'rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
@@ -50,6 +50,30 @@ for recipe in review['candidates']:
  lower=m['difference_points']-fe['approx_joint95_critical']*m['standard_error_points'];assert math.isclose(lower,recipe['approx_joint95_lower_points'],abs_tol=1e-8) and lower>0
  recounted.append({k:recipe[k] for k in ['family','landmark','D','q','endpoint','condition_id','condition','review_priority']}|m)
 supported=rows(F/'supported-results.csv');assert len(supported)==fe['supported_unique_hypotheses']
+# Cross-foot every exported unique joint-mask representative and its alias count.
+# This verifies represented definition coverage, not a fresh independent proof of mask identity.
+represented=collections.Counter();mask_seen=set();eligible_keys=set();cohort_identity={}
+with gzip.open(F/'condition-results-private.csv.gz','rt',newline='') as stream:
+ for row in csv.DictReader(stream):
+  cohort=int(row['cohort_id']);rep=int(row['representative_condition_id']);assert 0<=cohort<594 and 0<=rep<5400
+  key=(cohort,rep);assert key not in mask_seen;mask_seen.add(key)
+  aliases=int(row['condition_aliases']);assert 1<=aliases<=5400;represented[cohort]+=aliases
+  identity=(row['family'],int(float(row['landmark'])),int(float(row['D'])),float(row['q']),int(float(row['endpoint'])))
+  if cohort in cohort_identity:assert cohort_identity[cohort]==identity
+  cohort_identity[cohort]=identity
+  nr=int(row['real_resolved']);nc=int(row['control_resolved']);rs=int(row['real_signals']);cs=int(row['control_signals'])
+  assert 0<=nr<=rs and 0<=nc<=cs
+  se=float(row['standard_error_points']) if row['standard_error_points'] else float('nan')
+  eligible=nr>=100 and nc>=100 and min(int(row['real_active_dates']),int(row['control_active_dates']))>=math.ceil(.8*nd) and float(row['matched_weight'])>=50 and int(row['matched_active_dates'])>=math.ceil(.5*nd) and math.isfinite(se) and se>1e-10
+  assert eligible==(int(row['eligible_for_joint_band'])==1)
+  if eligible:eligible_keys.add(key)
+assert set(represented)==set(range(594)) and set(represented.values())=={5400}
+assert sum(represented.values())==3207600 and len(mask_seen)==fe['distinct_paired_masks']
+families={x['family'] for x in frequency} if 'frequency' in globals() else {x['family'] for x in rows(L/'frequency.csv')}
+rules={(int(float(x['D'])),float(x['q']),int(float(x['endpoint']))) for x in counts}
+assert set(cohort_identity.values())=={(fam,age,d,q,ep) for fam in families for age in [1000,2000,3000] for d,q,ep in rules}
+assert eligible_keys=={(int(x['cohort_id']),int(x['representative_condition_id'])) for x in supported}
+
 assert sum(float(x['approx_joint95_lower_points'])>0 for x in supported)==len(recounted)==review['screen_positive_cells']
 absolute=rows(F/'absolute-and-control-results.csv');assert len(absolute)==len(supported);both=0
 for row in absolute:
@@ -61,5 +85,5 @@ for recipe in bank['recipes']:
  for key in ['real_resolved','control_resolved','matched_weight']:assert math.isclose(m[key],float(r[key]),abs_tol=1e-8)
  if m['matched_weight']:assert math.isclose(m['difference_points'],float(r['difference_points']),abs_tol=1e-8)
 con.close()
-evidence=dict(status='PASS_EXPORTED_FOCAL_INDEPENDENT_SQL_RECOUNT',contract=C,verified_artifact_count=verified,selected_sessions=nd,families=18,landmark_rule_groups=2772,focal_definitions=3207600,signal_rows_not_independent=le['signal_rows_not_independent'],supported_unique_masks=len(supported),matched_positive_candidates=len(recounted),priority_candidates=sum(x['review_priority'] for x in recounted),absolute_and_control_positive_cells=both,bank_recipes_independently_recounted=34,candidates=recounted,source_certified=False,holdout_opened=False,pnl_computed=False,validated_edge=False,qualification='Exploratory, previously inspected sessions; within-contract approximate bands only. Private thinned SQLite independently grouped via SQL, not reusing the scientific gate or reviewer functions. Unknown gates fail closed.',profiler_warning_disposition='Constant eligibility/development/contract flags are expected by construction, not cleaning exclusions.')
+evidence=dict(status='PASS_EXPORTED_FOCAL_INDEPENDENT_SQL_RECOUNT',contract=C,verified_artifact_count=verified,selected_sessions=nd,families=18,landmark_rule_groups=2772,focal_definitions=3207600,all_594_cohorts_have_5400_represented_definitions=True,unique_joint_mask_representatives_checked=len(mask_seen),signal_rows_not_independent=le['signal_rows_not_independent'],supported_unique_masks=len(supported),matched_positive_candidates=len(recounted),priority_candidates=sum(x['review_priority'] for x in recounted),absolute_and_control_positive_cells=both,bank_recipes_independently_recounted=34,candidates=recounted,source_certified=False,holdout_opened=False,pnl_computed=False,validated_edge=False,qualification='Exploratory, previously inspected sessions; within-contract approximate bands only. Private thinned SQLite independently grouped via SQL, not reusing the scientific gate or reviewer functions. Unknown gates fail closed.',profiler_warning_disposition='Constant eligibility/development/contract flags are expected by construction, not cleaning exclusions.')
 (root/'independent-review.json').write_text(json.dumps(evidence,indent=2,allow_nan=False)+'\n');print(json.dumps({k:v for k,v in evidence.items() if k!='candidates'},indent=2))
