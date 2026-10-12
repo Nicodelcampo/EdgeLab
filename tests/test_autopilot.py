@@ -151,3 +151,14 @@ def test_concurrent_bids_never_overdraw(tmp_path):
 
 def test_missing_protected_manifest_stops(repo, tmp_path):
     assert "ausente" in guard.check_protected(tmp_path / "nada.json", repo)[0]
+
+
+def test_hit_is_attributed_per_lead_and_new_leads_are_opened(tmp_path):
+    from edgelab.autopilot import evidence
+    sp = RunSpec(run_id="x", kind="study", family="IDM", group="G", script="tools/s.py", prereg="docs/pre.md", n_trials=3, needs=["ES:2025-07-01:2026-09-30"],
+                 origin={"LEAD": {"sample": "s1", "tests": ["idm/ES_spot"]}})
+    res = {"results_flat": [{"test": "idm/ES_spot", "p": 0.4, "evaluable": True}, {"test": "idm/GC", "p": 0.0001, "evaluable": True}, {"test": "idm/NQ", "p": 0.6, "evaluable": True}]}
+    d = analyze.decide(res, 0.05, 3); assert d["hit"]                                            # la campaña tuvo un hallazgo...
+    recs = evidence.record_outcome(tmp_path / "e.jsonl", sp, d, {}, result=res)
+    lead = next(r for r in recs if r["evidence_id"] == "LEAD"); assert lead["hit"] is False and lead["status"] == "FAILED_REPLICATION"   # ...pero NO es de la pista de origen
+    new = next(r for r in recs if r["evidence_id"] == "x:idm/GC"); assert new["status"] == "WEAK_LEAD" and new["new_entry"]["unused_samples"] == ["new_data_after_holdout"]

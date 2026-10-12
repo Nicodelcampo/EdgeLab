@@ -45,7 +45,7 @@ class Autopilot:
                 bid = self.fdr.state["open"][f"{spec.run_id}"]
                 d = analyze.decide(res, bid["alpha"], spec.n_trials)
                 self.fdr.settle(spec.run_id, d["rejections"]); self.ledger.finish(spec.run_id, "ANALYZED", d); rep["closed"].append((spec.run_id, d["hit"]))
-                if self.cfg.get("evidence_runtime"): evidence.record_outcome(Path(self.cfg["evidence_runtime"]), spec, d, evidence.current_states(Path(self.cfg["evidence_runtime"])))
+                if self.cfg.get("evidence_runtime"): evidence.record_outcome(Path(self.cfg["evidence_runtime"]), spec, d, evidence.current_states(Path(self.cfg["evidence_runtime"])), result=res)
                 if self.brain: self.brain(spec, d)
             elif st in ("error", "ERROR", "cancelAcknowledged"):
                 self.ledger.finish(r["run_id"], "FAILED", failure=f"estado {st}"); rep["closed"].append((r["run_id"], "FAILED"))

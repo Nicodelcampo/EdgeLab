@@ -32,6 +32,7 @@ class Candidate:
     family: str = ""
     owner: str = "autopilot"
     consumes: dict = field(default_factory=dict)        # {evidence_id: muestra independiente que esta candidata gasta}
+    lead_tests: dict = field(default_factory=dict)      # {evidence_id: [prefijos de las pruebas que miden ESA pista]}
     why: str = ""
     score: float = 0.0
     score_parts: dict = field(default_factory=dict)
@@ -51,6 +52,7 @@ def score(c: Candidate, outcomes: list, lits: dict) -> Candidate:
     lh, ln = lit_adjust(c, lits)
     p0 = (PRIOR[0] + hit + lh) / (PRIOR[0] + PRIOR[1] + tot + ln)
     cost = np.sqrt(max(c.est_seconds, 60) / 600.0); voi = p0 * c.power / cost
+    if c.owner == "human-decision": voi = 0.0                       # bloqueada: no compite por cómputo, queda visible para decisión humana
     c.score = float(voi); c.score_parts = dict(p0=round(p0, 4), power=c.power, cost_factor=round(float(cost), 3), prior_hits=f"{hit}/{tot}", literature_pro=len(c.pro), literature_contra=len(c.contra))
     return c
 
@@ -64,7 +66,7 @@ def rules(ev: dict, lits: dict) -> list:
         out.append(Candidate("SLOT-1", "Reversión de 15 min a las 04:30 CT en otros activos (generalización del hallazgo débil de GC)", "R1_REPLICATE_WEAK_LEAD_IN_UNUSED_SAMPLE", "NO_PRIOR_EVIDENCE",
                              ["GC_0430_REV15", "OU_OTHER"], pro=lit("GC_0430_REV15", ("pro",)), contra=lit("GC_0430_REV15", ("contra",)), template="slot_corr",
                              cfg=dict(mode="slot_corr", sources=["ES", "NQ", "YM", "6E", "6J", "ZB", "ES_spot"], slots=["04:30"], horizon_min=15, spot_ranges={"ES_spot": ["ES", "2018-01-01", "2025-06-30"]}, n_planned=7),
-                             n_trials=7, power=0.35, est_seconds=900, group="MULTI", family="SLOT_REVERSAL", consumes={"GC_0430_REV15": "other_assets_same_slot"},
+                             n_trials=7, power=0.35, est_seconds=900, group="MULTI", family="SLOT_REVERSAL", consumes={"GC_0430_REV15": "other_assets_same_slot"}, lead_tests={"GC_0430_REV15": ["slot/"]},
                              why="GC 04:30 tiene el mismo signo en dos muestras pero no pasa Holm; GC ya consumió sus datos, así que la prueba limpia es otros activos con el mismo horario."))
     e = E.get("GEX_I2D_ROD_LH")
     if e and e["status"] == "WEAK_LEAD" and "30min_window" in e["unused_samples"]:
@@ -72,7 +74,7 @@ def rules(ev: dict, lits: dict) -> list:
                              ["GEX_I2D_ROD_LH", "GEX_AMPLITUDE"], pro=lit("GEX_I2D_ROD_LH", ("pro",)), contra=lit("GEX_I2D_ROD_LH", ("contra",)), template="idm",
                              cfg=dict(mode="idm", sources=["ES", "NQ", "YM", "GC", "ZB", "6E", "6J", "ES_spot", "GC_spot"], gamma_source="ES_spot",
                                       spot_ranges={"ES_spot": ["ES", "2018-01-01", "2025-06-30"], "GC_spot": ["GC", "2022-07-01", "2025-06-30"]}, n_planned=10),
-                             n_trials=10, power=0.55, est_seconds=1500, internet=True, group="MULTI", family="IDM", consumes={"GEX_I2D_ROD_LH": "30min_window"},
+                             n_trials=10, power=0.55, est_seconds=1500, internet=True, group="MULTI", family="IDM", consumes={"GEX_I2D_ROD_LH": "30min_window"}, lead_tests={"GEX_I2D_ROD_LH": ["idm/ES_spot", "idm_gamma_diff/ES_spot"]},
                              why="GEX-1 midió la interacción en una ventana de 90 min (p Holm 0,43, signo esperado); la literatura define 30 min en muchas clases de activos. La ventana nueva y el cruce con gamma son pruebas nuevas, no repeticiones."))
     e = E.get("ZB_REV_5_15")
     if e and e["status"] == "ARTIFACT_SUSPECT" and "mid_price_version" in e["unused_samples"]:
@@ -88,6 +90,11 @@ def rules(ev: dict, lits: dict) -> list:
         out.append(Candidate("AVCL-2", "Dirección tras la creación de un cluster de volumen (etapa 2 de AVCL-VOL-1)", "R5_INFO_TO_DIRECTION", "NEW_MECHANISM", ["AVCL_RANGE"], template=None, n_trials=12, power=0.5,
                              est_seconds=14400, group="MNQ", family="AVCL", owner="local-session",
                              why="El rango adelante sube tras el cluster (Holm 0,0006); falta la dirección. Es campaña de la sesión local (necesita su manifiesto)."))
+    for e in ev["entries"]:                       # pistas nuevas nacidas de resultados del propio autopilot
+        if e["status"] == "WEAK_LEAD" and e.get("unused_samples") == ["new_data_after_holdout"]:
+            out.append(Candidate("WAIT-" + __import__("re").sub(r"[^A-Za-z0-9_-]", "_", e["id"]), f"Réplica pendiente de datos nuevos: {e['asset']} ({e['indicator']})", "R6_NEW_LEAD_NEEDS_UNSEEN_DATA", "NO_PRIOR_EVIDENCE", [e["id"]], template=None, n_trials=1, power=0.5,
+                                 est_seconds=600, group="BLOCKED", family="WAIT", owner="human-decision",
+                                 why="Hallazgo exploratorio del autopilot sin muestra independiente disponible: solo datos posteriores al 2026-09-30 (holdout cerrado) o de otra fuente. No se lanza: requiere decisión humana sobre el holdout o una fuente nueva."))
     return out
 
 
@@ -138,7 +145,7 @@ def to_runspec(c: Candidate) -> dict | None:
     return dict(run_id=c.cid.lower(), kind="study", family=c.family, group=c.group, script="tools/study_slot_effect.py", prereg=f"docs/research/autopilot/drafts/{c.cid}.md", n_trials=c.n_trials,
                 needs=[f"{s}:2025-07-01:2026-09-30" for s in c.cfg["sources"] if s not in c.cfg.get("spot_ranges", {})], extra_datasets=[
                     "nicolasbuttaro/edgelab-dukascopy-es-usa500"] + (["nicolasbuttaro/edgelab-dukascopy-xauusd-ticks-m1"] if "GC_spot" in c.cfg.get("spot_ranges", {}) else []),
-                internet=c.internet, env={"STUDY_CFG": json.dumps(c.cfg, sort_keys=True)}, est_seconds=c.est_seconds, decision_rule="holm", notes=c.title, origin=c.consumes)
+                internet=c.internet, env={"STUDY_CFG": json.dumps(c.cfg, sort_keys=True)}, est_seconds=c.est_seconds, decision_rule="holm", notes=c.title, origin={k: dict(sample=v, tests=c.lead_tests.get(k)) for k, v in c.consumes.items()})
 
 
 def research_gaps(c: Candidate) -> dict:

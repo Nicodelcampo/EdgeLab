@@ -33,3 +33,12 @@ def decide(result: dict, family_alpha: float, n_planned: int) -> dict:
     rej = holm_rejections([r["p"] for r in rec], family_alpha, n_planned)
     return dict(hit=rej > 0, rejections=rej, n_evaluable=len(rec), n_planned=n_planned, family_alpha=family_alpha,
                 top=sorted(rec, key=lambda r: r["p"])[:5], note="hallazgo exploratorio: requiere réplica pre-registrada; no es edge")
+
+
+def rejected_tests(result: dict, family_alpha: float, n_planned: int) -> set:
+    """Nombres de las pruebas rechazadas por Holm al nivel familiar (mismo procedimiento que `decide`)."""
+    rec = sorted([r for r in records(result) if r["evaluable"] and r["p"] is not None], key=lambda r: r["p"]); m = max(n_planned, len(rec)); out = set()
+    for k, r in enumerate(rec):
+        if r["p"] <= family_alpha / (m - k): out.add(r["test"])
+        else: break
+    return out
