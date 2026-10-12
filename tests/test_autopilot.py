@@ -162,3 +162,11 @@ def test_hit_is_attributed_per_lead_and_new_leads_are_opened(tmp_path):
     recs = evidence.record_outcome(tmp_path / "e.jsonl", sp, d, {}, result=res)
     lead = next(r for r in recs if r["evidence_id"] == "LEAD"); assert lead["hit"] is False and lead["status"] == "FAILED_REPLICATION"   # ...pero NO es de la pista de origen
     new = next(r for r in recs if r["evidence_id"] == "x:idm/GC"); assert new["status"] == "WEAK_LEAD" and new["new_entry"]["unused_samples"] == ["new_data_after_holdout"]
+
+
+def test_idm2_candidate_is_wired_to_the_gc_lead():
+    from edgelab.autopilot.generate import generate, to_runspec
+    c = next(x for x in generate([]) if x.cid == "IDM-2"); rs = to_runspec(c)
+    assert rs["origin"]["GC_LH_MOMENTUM"]["tests"] == ["idmj/GC_spot_old"] and any(n.startswith("GC:") for n in rs["needs"])        # la referencia (GC futuro) también necesita datos
+    assert c.cfg["n_planned"] == 8 and "GC" in c.cfg["reference_sources"] and "GC" not in c.cfg["sources"]                        # la referencia no cuenta en Holm
+    assert any(x.cid == "WAIT-GC_LH_MOMENTUM" and x.score == 0.0 for x in generate([])) and any(x.cid == "DATA-METALS" for x in generate([]))

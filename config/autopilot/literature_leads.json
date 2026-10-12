@@ -5,15 +5,126 @@
  "note": "Ronda de investigación 2026-10-12 (4 consultas públicas, sin contexto privado). Los resultados de artículos NO se transfieren como evidencia propia: solo ajustan priors con un peso reducido (literature_weight) y siempre conviven con los contrarios.",
  "literature_weight": 0.5,
  "leads": [
-  {"id": "L_IDM_GAMMA", "claim": "El retorno del día hasta 30 min antes del cierre predice (positivamente) el de la última media hora en futuros de varias clases de activos; es más fuerte cuando los creadores de mercado están cortos en gamma.",
-   "refs": ["Baltussen, Da, Lammers, Martens (2021), Hedging demand and market intraday momentum, J. Financial Economics, https://www.sciencedirect.com/science/article/abs/pii/S0304405X21001598"], "supports": ["GEX_I2D_ROD_LH"], "direction": "pro", "tags": ["intraday_momentum", "gamma"]},
-  {"id": "L_IDM_FIRST_HALF_HOUR", "claim": "El primer retorno de media hora (y el overnight) predice el de la última media hora en ETF/índices.",
-   "refs": ["Gao, Han, Li, Zhou, Market Intraday Momentum (JFE 2018)", "Li, Sakkas, Urquhart, Intraday Time Series Momentum: International Evidence"], "supports": ["GEX_I2D_ROD_LH"], "direction": "pro", "tags": ["intraday_momentum"]},
-  {"id": "L_IDM_CONTRA", "claim": "Fuera de muestra y con costos la estrategia de momentum intradía con el retorno overnight desaparece o se debilita; la predictibilidad intradía varía con el período.",
-   "refs": ["Understanding intraday momentum strategies, Journal of Futures Markets, https://onlinelibrary.wiley.com/doi/10.1002/fut.22375", "Aleti, Bollerslev, Siggaard (2025), Intraday Market Return Predictability Culled from the Factor Zoo"], "supports": ["GEX_I2D_ROD_LH"], "direction": "contra", "tags": ["intraday_momentum", "decay"]},
-  {"id": "L_BOUNCE", "claim": "La autocorrelación negativa intradía en precios de transacción es mayormente rebote bid-ask para escalas < 20 min; desaparece al muestrear a 5 min o más en FX; se ve más en futuros de tick grueso.",
-   "refs": ["Goodhart (1989); Cont (2001) stylized facts; resumen en finance.martinsewell.com/stylized-facts/dependence", "arXiv 2606.29591 (rebote bid-ask y reversión de horizonte corto en índices)"], "supports": ["ZB_REV_5_15"], "direction": "contra_signal", "tags": ["microstructure"]},
-  {"id": "L_IDX_REVERSALS", "claim": "Existen reversiones intradía en futuros de índices de EE. UU. tras grandes cambios de precio en ciertas horas (estudio de 15 años).",
-   "refs": ["Intraday price reversals in the US stock index futures market: A 15-year study, https://www.researchgate.net/publication/222520781"], "supports": ["GC_0430_REV15", "OU_OTHER"], "direction": "pro", "tags": ["reversal", "index"]}
+  {
+   "id": "L_IDM_GAMMA",
+   "claim": "El retorno del día hasta 30 min antes del cierre predice (positivamente) el de la última media hora en futuros de varias clases de activos; es más fuerte cuando los creadores de mercado están cortos en gamma.",
+   "refs": [
+    "Baltussen, Da, Lammers, Martens (2021), Hedging demand and market intraday momentum, J. Financial Economics, https://www.sciencedirect.com/science/article/abs/pii/S0304405X21001598"
+   ],
+   "supports": [
+    "GEX_I2D_ROD_LH"
+   ],
+   "direction": "pro",
+   "tags": [
+    "intraday_momentum",
+    "gamma"
+   ]
+  },
+  {
+   "id": "L_IDM_FIRST_HALF_HOUR",
+   "claim": "El primer retorno de media hora (y el overnight) predice el de la última media hora en ETF/índices.",
+   "refs": [
+    "Gao, Han, Li, Zhou, Market Intraday Momentum (JFE 2018)",
+    "Li, Sakkas, Urquhart, Intraday Time Series Momentum: International Evidence"
+   ],
+   "supports": [
+    "GEX_I2D_ROD_LH"
+   ],
+   "direction": "pro",
+   "tags": [
+    "intraday_momentum"
+   ]
+  },
+  {
+   "id": "L_IDM_CONTRA",
+   "claim": "Fuera de muestra y con costos la estrategia de momentum intradía con el retorno overnight desaparece o se debilita; la predictibilidad intradía varía con el período.",
+   "refs": [
+    "Understanding intraday momentum strategies, Journal of Futures Markets, https://onlinelibrary.wiley.com/doi/10.1002/fut.22375",
+    "Aleti, Bollerslev, Siggaard (2025), Intraday Market Return Predictability Culled from the Factor Zoo"
+   ],
+   "supports": [
+    "GEX_I2D_ROD_LH"
+   ],
+   "direction": "contra",
+   "tags": [
+    "intraday_momentum",
+    "decay"
+   ]
+  },
+  {
+   "id": "L_BOUNCE",
+   "claim": "La autocorrelación negativa intradía en precios de transacción es mayormente rebote bid-ask para escalas < 20 min; desaparece al muestrear a 5 min o más en FX; se ve más en futuros de tick grueso.",
+   "refs": [
+    "Goodhart (1989); Cont (2001) stylized facts; resumen en finance.martinsewell.com/stylized-facts/dependence",
+    "arXiv 2606.29591 (rebote bid-ask y reversión de horizonte corto en índices)"
+   ],
+   "supports": [
+    "ZB_REV_5_15"
+   ],
+   "direction": "contra_signal",
+   "tags": [
+    "microstructure"
+   ]
+  },
+  {
+   "id": "L_IDX_REVERSALS",
+   "claim": "Existen reversiones intradía en futuros de índices de EE. UU. tras grandes cambios de precio en ciertas horas (estudio de 15 años).",
+   "refs": [
+    "Intraday price reversals in the US stock index futures market: A 15-year study, https://www.researchgate.net/publication/222520781"
+   ],
+   "supports": [
+    "GC_0430_REV15",
+    "OU_OTHER"
+   ],
+   "direction": "pro",
+   "tags": [
+    "reversal",
+    "index"
+   ]
+  },
+  {
+   "id": "L_IDM_JUMPS",
+   "claim": "Los saltos del día (retornos extremos) predicen positivamente el retorno de la última media hora: los grandes movimientos disparan cobertura parcial intradía y una parte queda para el final del día; en mercados con volatilidad creciente (gamma corto de los creadores) se exacerba.",
+   "refs": [
+    "Baltussen, Da, Lammers, Martens (2021), Hedging demand and market intraday momentum, JFE — secciones de saltos y volatilidad (lectura 2026-10-13 vía consulta sobre el PDF de academicweb.nd.edu/~zda/intramom.pdf)"
+   ],
+   "supports": [
+    "GC_LH_MOMENTUM"
+   ],
+   "direction": "pro",
+   "tags": [
+    "intraday_momentum",
+    "jumps"
+   ]
+  },
+  {
+   "id": "L_IDM_COMMODITIES",
+   "claim": "El estudio incluye futuros de commodities (oro, plata, cobre, platino, paladio, crudo, etc.): el coeficiente conjunto del resto del día sobre la última media hora es positivo y significativo (1,21; t 3,63), Sharpe 1,42 de una estrategia de timing; la predictibilidad fuera de muestra es positiva solo en ~40-50 % de los contratos de commodities y monedas; el efecto es estable entre 1974-1999 y 2000-2020.",
+   "refs": [
+    "Baltussen et al. (2021), mismo artículo (lectura vía consulta sobre el PDF)"
+   ],
+   "supports": [
+    "GC_LH_MOMENTUM"
+   ],
+   "direction": "pro",
+   "tags": [
+    "intraday_momentum",
+    "commodities"
+   ]
+  },
+  {
+   "id": "L_IDM_COMMODITIES_LIMIT",
+   "claim": "En commodities la predictibilidad fuera de muestra es débil o inconsistente por contrato (≈ 40-50 % de contratos con R² OOS positivo): un único activo en un período corto no es evidencia fuerte.",
+   "refs": [
+    "Baltussen et al. (2021), resultados fuera de muestra; Understanding intraday momentum strategies, J. Futures Markets"
+   ],
+   "supports": [
+    "GC_LH_MOMENTUM"
+   ],
+   "direction": "contra",
+   "tags": [
+    "decay"
+   ]
+  }
  ]
 }

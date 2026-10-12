@@ -1,5 +1,21 @@
 [
  {
+  "candidate": "DATA-METALS",
+  "gap_kind": "NO_PRIOR_EVIDENCE",
+  "missing_evidence": "Es la \u00fanica fuente de activos independientes en el MISMO per\u00edodo del hallazgo (el per\u00edodo no se puede repetir y el holdout est\u00e1 cerrado). Pide a la sesi\u00f3n local extraer con JForex XAGUSD, XPTUSD, XPDUSD y WTI/Brent (M1) y subirlos como un dataset con calidad.json; luego se corre IDM-2 sobre ellos.",
+  "public_query": "intraday momentum metals silver platinum palladium crude oil futures",
+  "contrary_query": "evidence against or limitations: intraday momentum metals silver platinum palladium crude oil futures",
+  "public_query_reviewed": false
+ },
+ {
+  "candidate": "IDM-2",
+  "gap_kind": "NEW_MECHANISM",
+  "missing_evidence": "La literatura asocia el efecto a los saltos del d\u00eda (cobertura de gamma tras grandes movimientos). En GC 2025-26 la correlaci\u00f3n se concentra en movimientos grandes (+0,376 contra \u22120,051) y en 2026Q1. Esta prueba separa saltos y movimiento continuo y la corre sobre spot 2022-2025 de GC, donde esta descomposici\u00f3n no se mir\u00f3 (la versi\u00f3n \u00abtercil grande\u00bb s\u00ed se mir\u00f3 y dio +0,026, por eso no se pre-registra).",
+  "public_query": "jumps rest-of-day return last half-hour return commodity futures gold intraday momentum",
+  "contrary_query": "evidence against or limitations: jumps rest-of-day return last half-hour return commodity futures gold intraday momentum",
+  "public_query_reviewed": false
+ },
+ {
   "candidate": "GEX-2",
   "gap_kind": "NO_PRIOR_EVIDENCE",
   "missing_evidence": "El efecto existe en USA500 spot y MES no tiene potencia (9 sesiones). Instrumentos correlacionados: r\u00e9plica parcialmente independiente. Necesita adaptar gex1b_run a otros spots.",
@@ -24,11 +40,11 @@
   "public_query_reviewed": false
  },
  {
-  "candidate": "WAIT-idm-1_idm_GC",
+  "candidate": "WAIT-GC_LH_MOMENTUM",
   "gap_kind": "NO_PRIOR_EVIDENCE",
-  "missing_evidence": "Hallazgo exploratorio del autopilot sin muestra independiente disponible: solo datos posteriores al 2026-09-30 (holdout cerrado) o de otra fuente. No se lanza: requiere decisi\u00f3n humana sobre el holdout o una fuente nueva.",
-  "public_query": "R\u00e9plica pendiente de datos nuevos: idm/GC (IDM)",
-  "contrary_query": "evidence against or limitations: R\u00e9plica pendiente de datos nuevos: idm/GC (IDM)",
+  "missing_evidence": "La \u00fanica muestra realmente independiente en el tiempo es posterior a 2026-09-30 (holdout cerrado). Requiere una decisi\u00f3n humana: pre-registro espec\u00edfico y apertura controlada, o esperar a que haya sesiones nuevas fuera del holdout formal.",
+  "public_query": "Confirmaci\u00f3n prospectiva de GC (\u00faltimo 30 min) con datos posteriores al 2026-09-30",
+  "contrary_query": "evidence against or limitations: Confirmaci\u00f3n prospectiva de GC (\u00faltimo 30 min) con datos posteriores al 2026-09-30",
   "public_query_reviewed": false
  }
 ]

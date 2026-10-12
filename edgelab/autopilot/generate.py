@@ -90,6 +90,24 @@ def rules(ev: dict, lits: dict) -> list:
         out.append(Candidate("AVCL-2", "Dirección tras la creación de un cluster de volumen (etapa 2 de AVCL-VOL-1)", "R5_INFO_TO_DIRECTION", "NEW_MECHANISM", ["AVCL_RANGE"], template=None, n_trials=12, power=0.5,
                              est_seconds=14400, group="MNQ", family="AVCL", owner="local-session",
                              why="El rango adelante sube tras el cluster (Holm 0,0006); falta la dirección. Es campaña de la sesión local (necesita su manifiesto)."))
+    e = E.get("GC_LH_MOMENTUM")
+    if e and e["status"] in ("WEAK_LEAD", "REPLICATED_ONCE"):
+        if "older_spot_jump_decomposition" in e["unused_samples"]:
+            out.append(Candidate("IDM-2", "Momentum de la última media hora en GC: ¿lo explican los saltos del día? Prueba en spot 2022-2025 (muestra no usada para esta versión) y en otros activos", "R7_MECHANISM_COMPLEMENT_OF_LEAD", "NEW_MECHANISM",
+                                 ["GC_LH_MOMENTUM"], pro=lit("GC_LH_MOMENTUM", ("pro",)), contra=lit("GC_LH_MOMENTUM", ("contra",)), template="idm_jump",
+                                 cfg=dict(mode="idm_jump", sources=["GC_spot_old", "ES_spot", "ES", "NQ", "YM", "ZB", "6E", "6J"], reference_sources=["GC"],
+                                          spot_ranges={"GC_spot_old": ["GC", "2022-07-01", "2025-06-30"], "ES_spot": ["ES", "2018-01-01", "2025-06-30"]}, n_planned=8),
+                                 n_trials=8, power=0.35, est_seconds=1200, group="GC_MULTI", family="IDM_JUMP", consumes={"GC_LH_MOMENTUM": "older_spot_jump_decomposition"},
+                                 lead_tests={"GC_LH_MOMENTUM": ["idmj/GC_spot_old"]},
+                                 why="La literatura asocia el efecto a los saltos del día (cobertura de gamma tras grandes movimientos). En GC 2025-26 la correlación se concentra en movimientos grandes (+0,376 contra −0,051) y en 2026Q1. Esta prueba separa saltos y movimiento continuo y la corre sobre spot 2022-2025 de GC, donde esta descomposición no se miró (la versión «tercil grande» sí se miró y dio +0,026, por eso no se pre-registra)."))
+        if "metals_basket" in e["unused_samples"]:
+            out.append(Candidate("DATA-METALS", "Datos nuevos: plata, platino, paladio y petróleo spot (Dukascopy) 2022-07 → 2026-09 para replicar el momentum de la última media hora en activos hermanos", "R8_REQUEST_INDEPENDENT_ASSETS", "NO_PRIOR_EVIDENCE",
+                                 ["GC_LH_MOMENTUM"], pro=lit("GC_LH_MOMENTUM", ("pro",)), contra=lit("GC_LH_MOMENTUM", ("contra",)), template=None, n_trials=0, power=0.6, est_seconds=600, group="DATA", family="DATA", owner="local-session",
+                                 why="Es la única fuente de activos independientes en el MISMO período del hallazgo (el período no se puede repetir y el holdout está cerrado). Pide a la sesión local extraer con JForex XAGUSD, XPTUSD, XPDUSD y WTI/Brent (M1) y subirlos como un dataset con calidad.json; luego se corre IDM-2 sobre ellos."))
+        if "new_data_after_holdout" in e["unused_samples"]:
+            out.append(Candidate("WAIT-GC_LH_MOMENTUM", "Confirmación prospectiva de GC (último 30 min) con datos posteriores al 2026-09-30", "R6_NEW_LEAD_NEEDS_UNSEEN_DATA", "NO_PRIOR_EVIDENCE", ["GC_LH_MOMENTUM"], template=None, n_trials=1, power=0.5,
+                                 est_seconds=600, group="BLOCKED", family="WAIT", owner="human-decision",
+                                 why="La única muestra realmente independiente en el tiempo es posterior a 2026-09-30 (holdout cerrado). Requiere una decisión humana: pre-registro específico y apertura controlada, o esperar a que haya sesiones nuevas fuera del holdout formal."))
     for e in ev["entries"]:                       # pistas nuevas nacidas de resultados del propio autopilot
         if e["status"] == "WEAK_LEAD" and e.get("unused_samples") == ["new_data_after_holdout"]:
             out.append(Candidate("WAIT-" + __import__("re").sub(r"[^A-Za-z0-9_-]", "_", e["id"]), f"Réplica pendiente de datos nuevos: {e['asset']} ({e['indicator']})", "R6_NEW_LEAD_NEEDS_UNSEEN_DATA", "NO_PRIOR_EVIDENCE", [e["id"]], template=None, n_trials=1, power=0.5,
@@ -143,8 +161,8 @@ Nulo de signo aleatorio / permutación por bloques según el modo; Holm sobre {c
 def to_runspec(c: Candidate) -> dict | None:
     if not c.template: return None
     return dict(run_id=c.cid.lower(), kind="study", family=c.family, group=c.group, script="tools/study_slot_effect.py", prereg=f"docs/research/autopilot/drafts/{c.cid}.md", n_trials=c.n_trials,
-                needs=[f"{s}:2025-07-01:2026-09-30" for s in c.cfg["sources"] if s not in c.cfg.get("spot_ranges", {})], extra_datasets=[
-                    "nicolasbuttaro/edgelab-dukascopy-es-usa500"] + (["nicolasbuttaro/edgelab-dukascopy-xauusd-ticks-m1"] if "GC_spot" in c.cfg.get("spot_ranges", {}) else []),
+                needs=[f"{s}:2025-07-01:2026-09-30" for s in c.cfg["sources"] + c.cfg.get("reference_sources", []) if s not in c.cfg.get("spot_ranges", {})], extra_datasets=[
+                    "nicolasbuttaro/edgelab-dukascopy-es-usa500"] + (["nicolasbuttaro/edgelab-dukascopy-xauusd-ticks-m1"] if any(k.startswith("GC_spot") for k in c.cfg.get("spot_ranges", {})) else []),
                 internet=c.internet, env={"STUDY_CFG": json.dumps(c.cfg, sort_keys=True)}, est_seconds=c.est_seconds, decision_rule="holm", notes=c.title, origin={k: dict(sample=v, tests=c.lead_tests.get(k)) for k, v in c.consumes.items()})
 
 
@@ -153,5 +171,5 @@ def research_gaps(c: Candidate) -> dict:
     `public_query_reviewed` queda en False: la revisión es humana."""
     topic = {"SLOT-1": "intraday return reversal at fixed time of day across futures markets", "IDM-1": "intraday momentum last half-hour return predicted by rest-of-day return gamma hedging",
              "OU-2": "short-horizon negative autocorrelation futures bid-ask bounce mid-quote versus transaction prices", "GEX-2": "dealer gamma exposure and intraday volatility index futures",
-             "AVCL-2": "volume clusters order flow direction after high volume nodes futures"}.get(c.cid, c.title)
+             "AVCL-2": "volume clusters order flow direction after high volume nodes futures", "IDM-2": "jumps rest-of-day return last half-hour return commodity futures gold intraday momentum", "DATA-METALS": "intraday momentum metals silver platinum palladium crude oil futures"}.get(c.cid, c.title)
     return dict(candidate=c.cid, gap_kind=c.gap_kind, missing_evidence=c.why[:2048], public_query=topic, contrary_query=f"evidence against or limitations: {topic}", public_query_reviewed=False)
