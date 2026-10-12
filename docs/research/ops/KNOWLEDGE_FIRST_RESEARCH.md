@@ -37,9 +37,21 @@ No se materializó ni se validó el corpus completo. Antes de vincularlo: resolv
 
 Con ambas fuentes y una pregunta pública separadamente revisada genera dos directivas: evidencia/metodología favorable y evidencia contraria/límites de transferencia. No copia automáticamente contexto privado a proveedores externos. `public_query_reviewed` es una declaración del caller, NO aprobación autenticada; el host futuro debe vincular revisor, credenciales y permisos.
 
-Defaults por episodio:2rondas,4consultas,8documentos,24.000caracteres,300segundos y gasto API0. Máximos cerrados:3/8/12/24.000/600; no gasto pago habilitado. Son límites del PLAN: todavía no existe dispatcher ni presupuesto durable que los ejecute/controle entre reinicios. `provider_dispatch_attached=false`, `durable_research_budget_enforced=false`, `network_executed=false`.
+Defaults por episodio:2rondas,4consultas,8documentos,24.000caracteres,300segundos y gasto API0. Máximos cerrados:3/8/12/24.000/600; no gasto pago habilitado. Son límites del PLAN: todavía no existe dispatcher que ejecute una llamada de red real. `provider_dispatch_attached=false`, `network_executed=false`.
 
 Detener por presupuesto/tiempo, falta de nueva evidencia útil, proveedor bloqueado, custodia contradictoria o causalidad/autoridad sin resolver. No ciclar indefinidamente variaciones de búsquedas. El host deberá permitir sólo herramientas de lectura aprobadas y guardar recibos de fuente y de costo ANTES de nuevos intentos.
+
+### Presupuesto durable entre reinicios: `tools/research_ops/dispatch.py`
+
+`DispatchLedger` cierra la parte de durabilidad del hito 3 sin abrir ningún socket. Es otro ledger SQLite encadenado por hash, hermano de `Store`, pero nunca despacha una llamada de red:
+
+- **Revisor fijo:** `Reviewer(reviewer_id, scope='public_web_readonly')` se congela en `initialize()`, igual que `Store.Policy`. Un ledger sirve a un solo revisor.
+- **Plan fijado una vez:** `bind_plan(plan)` exige un plan `READY_READONLY_RESEARCH_DIRECTIVES_NOT_EXECUTED` sin `blockers`, verifica `plan_sha256` contra el propio plan y congela su cantidad de directivas (`max_queries`). No se puede reasignar ni ampliar.
+- **Reserva durable:** `reserve(directive_index, reviewer_id=...)` marca una directiva como gastada en el ledger antes de que exista ningún intento de red. Si el proceso se reinicia o crashea, reabrir el mismo archivo y reservar de nuevo la misma directiva falla: el presupuesto no se regala dos veces. Esto es lo que resuelve `durable_research_budget_enforced=false` del plan.
+- **Recibo, no fetch:** `record_receipt(...)` sólo acepta evidencia ya obtenida por un paso externo y autorizado aparte, identificada por SHA256 de contenido y de URL, con `cost=0` forzado (gasto pago sigue deshabilitado). Este módulo no importa `requests`/`urllib`/sockets; un test lo verifica a nivel de archivo fuente.
+- **Qué sigue pendiente:** el propio fetch autorizado (adaptador de proveedor + allowlist de herramientas + identidad/credenciales), que es deliberadamente un paso separado y fuera de este módulo.
+
+Tests: `tests/research_ops/test_dispatch.py` (20 casos): revisor congelado, plan fijado una sola vez, índice fuera de presupuesto rechazado, reserva doble rechazada, reinicio no regala presupuesto, recibo exige reserva previa y SHA externo, gasto pago rechazado, y cadena de eventos verificada contra manipulación.
 
 ## Uso del prototipo
 
