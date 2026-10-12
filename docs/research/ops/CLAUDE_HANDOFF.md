@@ -1,6 +1,10 @@
 # Handoff para Claude — Research Ops autónomo
 
-## Latest continuation: existing operational snapshot and technical replay
+## Latest continuation: full primary-grid parity
+
+Read `FULL_PRIMARY_GRID_PARITY.md` and `LATEST_CONTINUATION.json` first. All11,340 stored primary-effects rows will be compared with exact hashes/counts/float round-trips against original CSV, on already-thinned events only. Check status; no new trial, full-pipeline claim or adoption.
+
+## Previous continuation: existing operational snapshot and technical replay
 
 Read `ANCHORED_MEMORY_AND_MNQ_REPLAY.md`, its evidence and `LATEST_CONTINUATION.json` first. Actual 10-record Kaggle operational ledger now bound read-only with both anchors/receipt. NOT a live writer destination or complete scientific history. MNQ resampling technical replay COMPLETE: exact parity on60 fixed cells, ~3.38x resampling-substep ratio of medians only. Candidate not adopted; preserve aggregate/interpretation, never relaunch the campaign.
 
