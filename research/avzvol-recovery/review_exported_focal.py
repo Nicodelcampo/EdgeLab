@@ -26,10 +26,10 @@ def recount(recipe):
  params=[recipe[k] for k in ['family','landmark','D','q','endpoint']]
  if c['speed']!='all':
   assert c['speed'] in ['return_ge_outgoing','return_lt_outgoing'];where.append('speed_ratio>=1' if c['speed']=='return_ge_outgoing' else 'speed_ratio<1')
- for axis,field,options in [('efficiency','return_efficiency',{'ge_0.50':.5,'ge_0.75':.75}),('revisits','visits1',{'ge_5':5,'ge_10':10,'ge_20':20,'ge_50':50}),('volume','volume_inside_fraction',{'ge_0.25':.25,'ge_0.50':.5})]:
+ for axis,field,options in [('efficiency','return_efficiency',{'ge_0.50':.5,'ge_0.75':.75}),('revisits','visits1',{'ge_5':5,'ge_10':10,'ge_20':20,'ge_50':50}),('volume','volume_inside_fraction',{'inside_fraction_ge_0.25':.25,'inside_fraction_ge_0.50':.5})]:
   if c[axis]!='all':where.append(field+'>=?');params.append(options[c[axis]])
  if c['flow']!='all':
-  assert c['flow']=='away_negative_cov80';where+=['proxy_coverage>=0.8','return_imbalance_proxy_toward<0']
+  where+=['proxy_coverage>=0.8',{'away_negative_cov80':'return_imbalance_proxy_toward<0','away_le_neg0.25_cov80':'return_imbalance_proxy_toward<=-0.25','toward_positive_cov80':'return_imbalance_proxy_toward>0','toward_ge_0.25_cov80':'return_imbalance_proxy_toward>=0.25'}[c['flow']]]
  if c['density']!='all':where.append({'le_0.5':'return_bars_per_tick<=0.5','le_1':'return_bars_per_tick<=1','gt_1':'return_bars_per_tick>1'}[c['density']])
  if c['gaps']!='observed':assert c['gaps']=='gap_free';where.append('prior_gap_count=0')
  sql="""SELECT session,CAST(hour/3 AS INT),min(CAST(COALESCE(volatility256_ticks,-40)/40 AS INT),4),min(CAST(remaining_ticks/10 AS INT),8),origin,count(*),sum(status='TARGET_FIRST') FROM signals WHERE """+' AND '.join(where)+' GROUP BY 1,2,3,4,5'
