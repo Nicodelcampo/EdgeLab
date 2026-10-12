@@ -46,3 +46,7 @@ python tools/data_catalog_build.py --scan-root /data/catalog --out docs/data_cat
 python tools/data_curate.py                                  # veredictos, rangos aprobados, roles y lista de re-exportación
 ```
 El escaneo por sesión (`scan/…json`) queda además en el dataset privado `nicolasbuttaro/edgelab-data-catalog` (minutos por sesión, trades, volumen).
+
+## Lanzamientos con manifiesto (2026-10-12)
+`tools/kaggle_launch.py` registra, en `docs/data_catalog/launches/<kernel>.json`, la versión de cada dataset adjuntado y los bytes de cada archivo que el resolver eligió (primarios o alternativas), y copia el script inyectando `EDGELAB_LAUNCH_MANIFEST`. `edgelab_data.check_inputs` (llamado por `load_m1`/`load_ticks`) llama a `verify_launch_manifest`: si un archivo montado no existe o tiene otro tamaño, el kernel falla en segundos con la lista exacta. `_path` falla ante dos archivos con el mismo nombre en un dataset (no elige por nombre). Corridas locales (sin manifiesto) no cambian.
+Límites: el manifiesto fija tamaños, no SHA256 (la API de listado no los da); Kaggle adjunta la versión vigente al lanzar, por eso se guardan las versiones para auditar.

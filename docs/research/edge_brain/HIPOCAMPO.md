@@ -14,3 +14,14 @@
 - 📘 **L5** [PROPOSED/LOW/UNRATED] Los datos derivados que se reusan (M1 por archivo) conviene publicarlos como dataset propio (edgelab-m1-bars) para que una corrida no recalcule nada. Propuesta, aún no construida.
 - 📘 **L6** [PROPOSED/LOW/UNRATED] Lanzá kernels con tools/kaggle_launch.py: comprueba contra la lista VIVA de Kaggle que cada sesión aprobada tenga fuente (primaria o alternativa consistente) y no lanza si falta alguna. Un resolver que apunta a archivos que aún no están subidos hace fallar el kernel tarde.
 - 📘 **L7** [PROPOSED/LOW/UNRATED] Un resolver debe guardar, por sesión, fuentes alternativas del mismo contrato y fecha con una marca de consistencia (trades a 1 %), y la lectura debe usarlas con aviso. Una fuente inconsistente no se usa en silencio.
+
+## KAGGLE-SPEED-AND-DATA-20261012 — PLANNING
+
+**Goal**: Corridas de Kaggle más rápidas y sin sorpresas de datos (AVCL-VOL-1, GEX, OU-1)
+- ❌ **SLOW_ANALYSIS**: AVCL-VOL-1: estimación de 1-2 h contaba solo el procesamiento de contratos (root: el análisis posterior (12 pruebas x 20.000 permutaciones con np.lexsort, y emparejamiento de controles con máscaras de texto por estrato) costaba ≈ 44 min por prueba a escala real: ≈ 10 h en total)
+- ❌ **SILENT_LAUNCH_FAILURE**: Tres kernels GEX fallaron sin log legible (root: se lanzaron sin --internet y el script bajaba DIX de la web; la API de Kaggle no devuelve el log de un kernel con error; el código se había probado solo en parte)
+- ❌ **INVALID_STATISTIC**: GEX-1 daba p = 0,0001 para un estadístico NaN (root: la comparación nulo >= NaN daba verdadero; un estadístico no finito debe ser «no evaluable» y quedar fuera del ranking de Holm)
+- 📘 **L8** [PROPOSED/LOW/UNRATED] Perfilá el análisis posterior (permutaciones, matching, bootstrap) a escala real antes de estimar el tiempo de una corrida: el costo puede estar ahí y no en el procesamiento de datos. Usá argsort en vez de lexsort, índices por estrato en vez de máscaras de texto, y verificá que las salidas sean idénticas.
+- 📘 **L9** [PROPOSED/LOW/UNRATED] Al lanzar un kernel registrá las versiones de los datasets y los bytes de cada archivo usado, y verificalos al arrancar: si el dataset cambió o falta algo, falla en segundos con el detalle. Nunca elegir un archivo por parecido de nombre dentro de un dataset.
+- 📘 **L10** [PROPOSED/LOW/UNRATED] Un estadístico estacionario por construcción (p. ej. precio menos su media móvil) rechaza ADF aunque el precio sea una caminata aleatoria: compará siempre contra un nulo procesado igual (signo aleatorio por retorno) y reportá el exceso, no el valor crudo.
+- 📘 **L11** [PROPOSED/LOW/UNRATED] Un estadístico no finito es «no evaluable»: no tiene p ni entra en el ranking de Holm (el denominador sigue siendo el número de pruebas planeadas). Y un kernel de Kaggle con error no devuelve log por la API: probá local con datos parciales y activá --internet si el script descarga algo.
