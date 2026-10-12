@@ -29,6 +29,8 @@ class Autopilot:
 
     def tick(self, candidates: list, now: float | None = None) -> dict:
         now = now or time.time(); rep = dict(closed=[], launched=None, proposed=None, blocked=[])
+        self.root.mkdir(parents=True, exist_ok=True)
+        (self.root / "heartbeat.json").write_text(json.dumps(dict(ts=now, wealth=self.fdr.wealth, running=[r["run_id"] for r in self.ledger.running()], mode=self.cfg.get("mode", "propose"))))
         if self._paused(): return self._note(event="paused", **rep)
         prot = self.cfg.get("protected")
         if prot and (bad := guard.check_protected(Path(prot), self.repo)):
@@ -67,3 +69,10 @@ class Autopilot:
                 rep["blocked"].append((spec.run_id, [str(e)[:200]])); continue
             self.ledger.add(spec, handle); rep["launched"] = (spec.run_id, why); break
         return self._note(event="tick", **rep)
+
+    def status(self) -> dict:
+        led = self.ledger.db.execute("SELECT status, COUNT(*) FROM runs GROUP BY status").fetchall()
+        last = [json.loads(l) for l in self.log.read_text().splitlines()[-5:]] if self.log.exists() else []
+        hb = json.loads((self.root / "heartbeat.json").read_text()) if (self.root / "heartbeat.json").exists() else None
+        return dict(mode=self.cfg.get("mode", "propose"), paused=self._paused(), alpha_wealth=self.fdr.wealth, open_bids=list(self.fdr.state["open"]), runs=dict(led), running=self.ledger.running(),
+                    heartbeat_age_s=None if not hb else round(time.time() - hb["ts"]), last_events=[{k: v for k, v in e.items() if k in ("event", "launched", "closed", "blocked")} for e in last])

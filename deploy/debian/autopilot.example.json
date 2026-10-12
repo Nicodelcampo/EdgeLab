@@ -1,13 +1,24 @@
 {
   "mode": "propose",
   "owner": "nicolasbuttaro",
-  "max_concurrent": 1,
+  "max_concurrent": 2,
   "max_per_day": 2,
-  "allow_internet": [],
+  "allow_internet": [
+    "tools/study_slot_effect.py"
+  ],
   "kill_switch": "/var/lib/edgelab-autopilot/PAUSE",
-  "registry": "/opt/edgelab/EdgeLab/docs/research/TRIAL_REGISTRY_GLOBAL.jsonl",
-  "brain_ledger": "/opt/edgelab/EdgeLab/docs/research/edge_brain/hippocampus_ledger.jsonl",
+  "registry": "/var/lib/edgelab-autopilot/state/autopilot_runs/trial_registry.jsonl",
+  "brain_ledger": "/var/lib/edgelab-autopilot/state/autopilot_runs/edge_brain_ledger.jsonl",
   "protected": "/opt/edgelab/EdgeLab/config/autopilot/protected.json",
-  "alpha": {"w0": 0.05, "payout": 0.05, "spend_fraction": 0.5},
-  "result_files": {"OU1_REVERSION": "OU1_RESULTADOS.json", "GEX": "GEX1_RESULTADOS_20261006.json"}
+  "alpha": {
+    "w0": 0.05,
+    "payout": 0.05,
+    "spend_fraction": 0.5
+  },
+  "result_files": {
+    "IDM": "STUDY_RESULTS.json",
+    "SLOT_REVERSAL": "STUDY_RESULTS.json",
+    "INFRA": "SMOKE.json"
+  },
+  "evidence_runtime": "/var/lib/edgelab-autopilot/state/autopilot_runs/evidence_runtime.jsonl"
 }

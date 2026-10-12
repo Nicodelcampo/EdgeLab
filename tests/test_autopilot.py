@@ -141,3 +141,13 @@ def test_benchmark_kind_spends_no_alpha_and_is_not_counted(repo, tmp_path):
     ex = FakeExecutor({"bm": {}}); reg = Reg(); ap = Autopilot(tmp_path / "root", ex, _cfg(tmp_path), repo=repo, registry=reg)
     b = RunSpec(run_id="bm", kind="benchmark", family="INFRA", group="X", script="tools/s.py", prereg="docs/pre.md", n_trials=0, needs=[]); w = ap.fdr.wealth
     ap.tick([b]); assert reg.rows == [] and "bm" not in ap.fdr.state["open"]; assert ap.tick([b])["closed"] == [("bm", "BENCHMARK")] and ap.fdr.wealth == w
+
+
+def test_concurrent_bids_never_overdraw(tmp_path):
+    a = AlphaInvesting(tmp_path / "a.json", spend_fraction=1.0)
+    for i in range(30): a.bid(f"c{i}", 5)
+    assert sum(b["alpha"] / (1 - b["alpha"]) for b in a.state["open"].values()) <= a.wealth + 1e-12
+
+
+def test_missing_protected_manifest_stops(repo, tmp_path):
+    assert "ausente" in guard.check_protected(tmp_path / "nada.json", repo)[0]

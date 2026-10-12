@@ -59,6 +59,7 @@ def snapshot_protected(paths: list, repo: Path = REPO) -> dict:
 
 def check_protected(manifest_path: Path, repo: Path = REPO) -> list:
     """Compara contra un manifiesto de hashes (gates, holdout, registro, pre-registros pasados). Cualquier diferencia detiene el ciclo hasta revisión humana."""
+    if not Path(manifest_path).exists(): return [f"manifiesto de protegidos ausente: {manifest_path}"]            # sin manifiesto no se arranca
     m = json.loads(Path(manifest_path).read_text())
     bad = []
     for p, h in m.items():

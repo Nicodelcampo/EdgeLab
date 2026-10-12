@@ -18,9 +18,11 @@ class AlphaInvesting:
         return self.state["wealth"]
 
     def bid(self, campaign_id: str, n_tests: int) -> float:
-        """Nivel familiar de la campaña (se reparte con Holm dentro). Es a = f·W/(1+W), de modo que el costo a/(1−a) nunca supera W."""
+        """Nivel familiar de la campaña (se reparte con Holm dentro). Es a = f·A/(1+A) con A = riqueza − costo ya comprometido por campañas abiertas, de modo que la suma de costos posibles nunca supera W aunque corran varias a la vez."""
         if campaign_id in self.state["open"]: return self.state["open"][campaign_id]["alpha"]
-        a = self.f * self.wealth / (1 + self.wealth)
+        committed = sum(b["alpha"] / (1 - b["alpha"]) for b in self.state["open"].values())      # costo máximo ya comprometido por campañas abiertas
+        avail = max(self.wealth - committed, 0.0)
+        a = self.f * avail / (1 + avail)
         self.state["open"][campaign_id] = dict(alpha=a, n_tests=n_tests); self._save(); return a
 
     def settle(self, campaign_id: str, rejections: int) -> float:
