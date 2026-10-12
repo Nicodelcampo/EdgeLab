@@ -23,4 +23,4 @@ Nulo de signo aleatorio / permutación por bloques según el modo; Holm sobre 4 
 **Si pasa:** es un hallazgo exploratorio; promover requiere réplica pre-registrada en datos no usados. No hay P&L, holdout ni promoción en este estudio.
 
 ## Puntuación de valor esperado de información
-{"p0": 0.1818, "power": 0.6, "utility": "info=0.3", "cost_factor": 2.449, "prior_hits": "0/0", "literature_pro": 0, "literature_contra": 1} → 0.0134
+{"p0": 0.1818, "power": 0.6, "utility": "info=0.3", "rho_required": null, "feasibility": 1.0, "cost_factor": 2.449, "prior_hits": "0/0", "literature_pro": 0, "literature_contra": 1} → 0.0134
