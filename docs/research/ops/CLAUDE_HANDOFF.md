@@ -1,3 +1,15 @@
+# Entrada actual: handoff al agente Debian y piloto de fenómenos
+
+Leer primero `DEBIAN_AGENT_HANDOFF.md`, su source review y `DEBIAN_AGENT_HANDOFF_RECEIPT.json`. Usuario pidió completar trabajo posible y entregar implementación correcta al servidor Debian. Autopilot externo recién revisado en `d19629fd5df4317aaef2ac2cecbd51198f86a127`; sigue separado de PR117. `propose` NO es read-only; no enable execute/timers ni auto-pull por doctor LISTO. Python package requiere3.12 aunque Debian12 default sea3.11.
+
+Nuevo `dispatch_intent.py`: journal transaccional de intención antes de send; SEND_UNCERTAIN bloquea reenvío/abandono/reembolso y exige reconciliar identidad exacta. Componente sin red/autoridad, todavía no integrado al controlador externo; no segundo daemon. No copiar APIs de ramas ni resetear presupuestos al recuperar.
+
+Motor/runner P0 fenómenos ya pusheados en `d1eda03ea76812384c622a066d94230adb986138`; medir presión/progreso/decaimiento antes de clasificar A/E o outcomes. Leer `MNQ_PHENOMENA_IMPLEMENTATION_CHECKPOINT.md`; notebook/host todavía no enviado. Última consulta de confluencia RUNNING, no estado vivo perpetuo. Recuperar V3 exacta y agregados solamente; no relanzar. Dataset resuelto, no otra QA/paridad histórica. Holdout/P&L cerrados, writer canónico real aún no vinculado.
+
+Las entradas que siguen son históricas, no prioridades/estados vivos. El handoff Debian prevalece como orden actual dentro de este scope; no autoriza despliegue ni merge automático.
+
+---
+
 # Handoff para Claude — Research Ops autónomo
 
 ## Current coordination: review external autopilot before further changes
