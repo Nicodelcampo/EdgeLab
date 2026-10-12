@@ -46,3 +46,13 @@ python -m tools.research_ops.confluence.package_synthetic_notebook \
 ```
 
 El segundo comando sólo prepara: no lanza ni accede a Kaggle. El CLI del primero no ofrece modo mercado ni bypass de elegibilidad.
+
+## Resultado terminal del probe Kaggle
+
+Kernel 138379047/v1, ref real `nicolasbuttaro/edgelab-confluence-synthetic-engineering-pilot`. Privado/offline y source exactamente igual al request sobre commit `958fe7de249d3ffdc1a888e1b3d779bc3c83046b`. La API eligió slug por título y `versionLabel` no acepta inferir un label a partir del número: la verificación usó metadata v1 y el status actual, sin relanzar.
+
+COMPLETE técnico seguido de verificación semántica del receipt. `verify_synthetic_receipts.py` comprueba hashes de bytes/pins externos, flags sin mercado, cobertura exacta 96 configs/32 triadas, comparación nativa para cada config y las mismas salidas/hashes detectoras y de replay que el receipt local de fixture idéntico. Test de outputs inválidos no los eleva a aprobaciones.
+
+Los archivos de la API se listaron como basenames; su ruta real es `confluence-synthetic-pilot/`. Primer download al basename dio HTTP404, corregido con la ruta escrita por el notebook. No fue fallo de cómputo ni se relanzó el job. El listado también informó tamaños diferentes de los bytes descargados: no se usó como inventario de integridad. Los bytes reales del pilot coinciden con el SHA256 escrito en boot, el seal interno del pilot y los hashes de salida local. La discrepancia de listing se conserva en el launch receipt. URLs firmadas quedan fuera del repo.
+
+Se guardan boot/pilot receipts completos y verificación: medidas de proceso hijo conocido con RSS muestreado y rusage Linux, no cgroup ni benchmark de MNQ. El job terminó dentro de los presupuestos declarados. **No produjo datos/resultados de mercado, outcomes o inferencia.**

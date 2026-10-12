@@ -96,7 +96,9 @@ Predecesor `a05b39c3ef574da30a7f3db764066511106e436c`. Ver `MNQ_CONFLUENCE_KAGGL
 
 Se recuperó sólo metadata de la autorización histórica exploratoria de fuentes; original no disponible y fuente no certificada. No elevarla a certificado ni generalizar su alcance sin binding explícito del experimento nuevo. No reabrir auditoría de paridad 100%.
 
-La prueba aislada del paquete encontró y corrigió una dependencia `sessions.py` faltante; vuelve a pasar. Estado Kaggle y receipts se guardan por separado, no se deducen del éxito local.
+La prueba aislada del paquete encontró y corrigió una dependencia `sessions.py` faltante; vuelve a pasar. **613 Research Ops + 18 navegación PASS**, incluidos 101 tests específicos acumulados de confluencias (cinco nuevos para receipts).
+
+Se persistió código antes de enviar el probe. Kaggle creó `nicolasbuttaro/edgelab-confluence-synthetic-engineering-pilot`, kernel 138379047/v1; metadata confirma privado, CPU, Internet apagado y source idéntica al request. La API eligió el slug a partir del título, no el solicitado. **Estado terminal observado: COMPLETE**, con boot/pilot receipts descargados por su ruta real y SHA256 de bytes, bundle, source/roster y cobertura comprobados. Las salidas detectoras de las 96 configs y los hashes/conteos de las 32 triadas coinciden exactamente entre local y Kaggle sobre el mismo fixture. Ver `MNQ_CONFLUENCE_SYNTHETIC_KAGGLE_OUTPUT_VERIFICATION.json`. No es paridad NT8 de mercado ni lanzamiento científico. No relanzar el probe por retomar este checkpoint. Estado y receipts están separados del éxito local.
 
 ## Próximo paso operativo (no otra auditoría de paridad)
 
