@@ -214,3 +214,12 @@ def test_lucid_catalog_loads_and_is_marked_unverified():
     c = {x.plan: x for x in load_catalog(REPO / "config/propfirms/catalogo_lucid_50k.json")}
     f = c["LucidFlex_50K"]; assert (f.profit_target, f.max_loss, f.consistency_cap, f.lock_at_profit) == (3000, 2000, 0.5, 2100) and not f.verified and f.flat_by.startswith("16:45")
     assert c["LucidPro_50K"].daily_loss_limit == 1200 and c["LucidPro_50K"].funded_consistency_cap == 0.4
+
+
+def test_universe_thresholds_and_matching():
+    from edgelab.autopilot import universe as U
+    cat = [r for r in U.catalog() if r.plan == "LucidFlex_50K"]; assert cat and all(r.eval_fee > 0 for r in U.catalog())      # sin cuota no hay umbral válido
+    cheap = U.threshold_usd(cat[0], 250, 0.02, n_paths=800, eval_days=200); costly = U.threshold_usd(cat[0], 250, 0.15, n_paths=800, eval_days=200)
+    assert 0 < cheap["z_bruto_min"] < costly["z_bruto_min"] < 1                                                              # más costo relativo ⇒ más ventaja requerida
+    assert U.cost_ratio("GC", 40) > U.cost_ratio("GC", 160) and "6E" in U.INSTRUMENTS and "GC" in U.INSTRUMENTS
+    m = U.best_accounts("GC", 40, 0.30, cat, n_paths=800); assert m and m[0]["ev"] > 0                                      # con z bruto alto la cuenta deja EV positivo

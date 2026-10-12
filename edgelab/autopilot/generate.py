@@ -31,6 +31,7 @@ class Candidate:
     group: str = ""
     family: str = ""
     owner: str = "autopilot"
+    required_rho: float | None = None                   # correlación mínima que la señal debe tener para que la mejor cuenta deje EV ≥ 0 (universo guiado por umbrales)
     utility_class: str = "bridgeable"                  # tradeable | bridgeable | info (ver config/autopilot/mandate.json): ¿puede acabar en una estrategia útil para challenges?
     consumes: dict = field(default_factory=dict)        # {evidence_id: muestra independiente que esta candidata gasta}
     lead_tests: dict = field(default_factory=dict)      # {evidence_id: [prefijos de las pruebas que miden ESA pista]}
@@ -53,9 +54,10 @@ def score(c: Candidate, outcomes: list, lits: dict) -> Candidate:
     lh, ln = lit_adjust(c, lits)
     p0 = (PRIOR[0] + hit + lh) / (PRIOR[0] + PRIOR[1] + tot + ln)
     from .mandate import load as _mandate, utility_weight
-    cost = np.sqrt(max(c.est_seconds, 60) / 600.0); u = utility_weight(c.utility_class, _mandate()); voi = p0 * c.power * u / cost
+    from .universe import RHO_PLAUSIBLE
+    cost = np.sqrt(max(c.est_seconds, 60) / 600.0); u = utility_weight(c.utility_class, _mandate()); feas = 1.0 if not c.required_rho or c.required_rho <= 0 else min(1.0, RHO_PLAUSIBLE / c.required_rho); voi = p0 * c.power * u * feas / cost
     if c.owner == "human-decision": voi = 0.0                       # bloqueada: no compite por cómputo, queda visible para decisión humana
-    c.score = float(voi); c.score_parts = dict(p0=round(p0, 4), power=c.power, utility=f"{c.utility_class}={u}", cost_factor=round(float(cost), 3), prior_hits=f"{hit}/{tot}", literature_pro=len(c.pro), literature_contra=len(c.contra))
+    c.score = float(voi); c.score_parts = dict(p0=round(p0, 4), power=c.power, utility=f"{c.utility_class}={u}", rho_required=None if not c.required_rho else round(c.required_rho, 3), feasibility=round(feas, 3), cost_factor=round(float(cost), 3), prior_hits=f"{hit}/{tot}", literature_pro=len(c.pro), literature_contra=len(c.contra))
     return c
 
 
@@ -110,6 +112,15 @@ def rules(ev: dict, lits: dict) -> list:
             out.append(Candidate("WAIT-GC_LH_MOMENTUM", "Confirmación prospectiva de GC (último 30 min) con datos posteriores al 2026-09-30", "R6_NEW_LEAD_NEEDS_UNSEEN_DATA", "NO_PRIOR_EVIDENCE", ["GC_LH_MOMENTUM"], template=None, n_trials=1, power=0.5,
                                  est_seconds=600, group="BLOCKED", family="WAIT", owner="human-decision",
                                  why="La única muestra realmente independiente en el tiempo es posterior a 2026-09-30 (holdout cerrado). Requiere una decisión humana: pre-registro específico y apertura controlada, o esperar a que haya sesiones nuevas fuera del holdout formal."))
+    uni = REPO / "docs/research/propfirm_thresholds/UNIVERSO.json"
+    if uni.exists():                                # R9: celdas del universo con el menor ρ requerido (umbral de las cuentas), una candidata por instrumento
+        cells = json.loads(uni.read_text())["cells"]; seen = set()
+        for c in cells:
+            if c["inst"] in seen or c["rho_required"] > 0.25 or len(seen) >= 5: continue
+            seen.add(c["inst"]); same = [x for x in cells if x["inst"] == c["inst"] and x["horizon_min"] == c["horizon_min"]][:6]
+            out.append(Candidate(f"UNIV-{c['inst']}-{c['horizon_min']}m", f"Barrido de franjas de {c['horizon_min']} min en {c['inst']} (celdas con menor umbral de cuenta)", "R9_UNIVERSE_BY_ACCOUNT_THRESHOLD", "NO_PRIOR_EVIDENCE", [],
+                                 template=None, n_trials=len(same) * 2, power=0.3, est_seconds=1800, group=c["inst"], family="UNIVERSE", utility_class="tradeable", required_rho=c["rho_required"],
+                                 why=f"Mejores franjas por umbral: " + "; ".join(f"{x['slot']} CT (ρ* {x['rho_required']:.3f}, {x['contracts']} {x['symbol']}, {x['best_account']})" for x in same[:4]) + ". Requiere un script de barrido de esas franjas (momentum y reversión, bilateral, nulo de máximo) y su pre-registro."))
     for e in ev["entries"]:                       # pistas nuevas nacidas de resultados del propio autopilot
         if e["status"] == "WEAK_LEAD" and e.get("unused_samples") == ["new_data_after_holdout"]:
             out.append(Candidate("WAIT-" + __import__("re").sub(r"[^A-Za-z0-9_-]", "_", e["id"]), f"Réplica pendiente de datos nuevos: {e['asset']} ({e['indicator']})", "R6_NEW_LEAD_NEEDS_UNSEEN_DATA", "NO_PRIOR_EVIDENCE", [e["id"]], template=None, n_trials=1, power=0.5,

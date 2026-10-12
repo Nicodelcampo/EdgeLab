@@ -27,7 +27,7 @@ RHO_PLAUSIBLE = 0.12            # corr típica «generosa» de un efecto intrad�
 
 def catalog(path: str | Path | None = None, skip_refs: bool = True) -> list:
     cat = load_catalog(Path(path) if path else REPO / "config/propfirms")
-    return [r for r in cat if not (skip_refs and r.firm.startswith("Referencia"))]
+    return [r for r in cat if not (skip_refs and r.firm.startswith("Referencia")) and r.eval_fee > 0]      # sin cuota el EV es trivialmente ≥ 0: no sirve para umbrales
 
 
 def threshold(rules, inst: str, sigma_ticks: float, trades_per_day: int = 2, contracts: int = 1, n_paths: int = 3000, eval_days: int = 400, seed: int = 20261015) -> dict:
@@ -37,6 +37,15 @@ def threshold(rules, inst: str, sigma_ticks: float, trades_per_day: int = 2, con
     return dict(cuenta=rules.key, verificada=rules.verified, inst=inst, sigma_ticks=sigma_ticks, trades_por_dia=trades_per_day, contratos=contracts, p_min=p, z_bruto_min=z,
                 rho_requerido=z / 0.8 if z == z else float("nan"), ventaja_neta_min_usd=out["ventaja_neta_min_usd"], ventaja_neta_min_ticks=out["ventaja_neta_min_ticks"],
                 cost_rt_usd=INSTRUMENTS[inst]["cost_rt"])
+
+
+def threshold_usd(rules, sigma_usd: float, ratio: float, trades_per_day: int = 2, n_paths: int = 2500, eval_days: int = 400, seed: int = 20261015) -> dict:
+    """Umbral independiente del instrumento: operación con desvío σ (USD, ya multiplicado por contratos) y costo de ida y vuelta = ratio·σ. Devuelve p*, z* (= 2p* − 1) y ρ* (= z*/0,8)."""
+    from dataclasses import replace
+    from edgelab.propfirm.ev import Strategy
+    base = Strategy(p_win=0.5, tp=sigma_usd, sl=sigma_usd, cost_rt=ratio * sigma_usd, trades_per_day=trades_per_day, contracts=1)
+    p = R.min_win_rate(rules, base, n_paths=n_paths, eval_days=eval_days, seed=seed); z = 2 * p - 1 if p == p else float("nan")
+    return dict(cuenta=rules.key, verificada=rules.verified, sigma_usd=sigma_usd, ratio=ratio, trades_por_dia=trades_per_day, p_min=p, z_bruto_min=z, rho_requerido=z / 0.8 if z == z else float("nan"))
 
 
 def cost_ratio(inst: str, sigma_ticks: float) -> float:
