@@ -2,6 +2,9 @@
 
 Estado: **implementado y probado con ejecutores simulados** (11 pruebas). No está desplegado, no se corrió contra Kaggle real y por defecto no lanza nada (`mode: propose`). Complementa —no reemplaza— el prototipo Research Ops (#117/#118: cola durable, presupuesto, recuperación, planificador knowledge-first); ver §7.
 
+## 0. Mandato
+Lo que el agente busca está en [`MANDATO.md`](../../MANDATO.md): edges **útiles para pasar challenges y combinables entre varias estrategias**; chicos, inestables o sin margen de diversificación no sirven. El mandato pesa la selección de candidatas (`utility_class`), exige un nivel (A/B/C/D) en cada informe y está protegido por hash (`config/autopilot/mandate.json`, `edgelab/autopilot/mandate.py`, `MANDATO.md`).
+
 ## 1. Objetivo y qué significa «mejorar las chances de edge»
 El sistema debe (a) crear y seleccionar corridas, (b) lanzarlas y analizarlas, (c) aprender a optimizarlas y (d) aumentar de forma sostenida la probabilidad de hallar edge real. Con muchas pruebas la multiplicidad crece: **no se mejora bajando el listón sino gastando mejor un presupuesto de alfa fijo**. Por eso hay tres mecanismos separados:
 1. **Control en línea de falsos descubrimientos (`fdr.py`, alpha-investing):** cada campaña apuesta un nivel familiar `a = f·W/(1+W)`; un hallazgo recarga la riqueza `W`, un fracaso la gasta. Sin réplicas la riqueza decae y el sistema deja de lanzar campañas nuevas. Dentro de cada campaña rige Holm sobre las pruebas planeadas.

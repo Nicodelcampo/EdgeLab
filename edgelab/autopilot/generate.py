@@ -31,6 +31,7 @@ class Candidate:
     group: str = ""
     family: str = ""
     owner: str = "autopilot"
+    utility_class: str = "bridgeable"                  # tradeable | bridgeable | info (ver config/autopilot/mandate.json): ¿puede acabar en una estrategia útil para challenges?
     consumes: dict = field(default_factory=dict)        # {evidence_id: muestra independiente que esta candidata gasta}
     lead_tests: dict = field(default_factory=dict)      # {evidence_id: [prefijos de las pruebas que miden ESA pista]}
     why: str = ""
@@ -51,9 +52,10 @@ def score(c: Candidate, outcomes: list, lits: dict) -> Candidate:
     hit = sum(1 for f, g, ok in outcomes if f == c.family and g == c.group and ok); tot = sum(1 for f, g, _ in outcomes if f == c.family and g == c.group)
     lh, ln = lit_adjust(c, lits)
     p0 = (PRIOR[0] + hit + lh) / (PRIOR[0] + PRIOR[1] + tot + ln)
-    cost = np.sqrt(max(c.est_seconds, 60) / 600.0); voi = p0 * c.power / cost
+    from .mandate import load as _mandate, utility_weight
+    cost = np.sqrt(max(c.est_seconds, 60) / 600.0); u = utility_weight(c.utility_class, _mandate()); voi = p0 * c.power * u / cost
     if c.owner == "human-decision": voi = 0.0                       # bloqueada: no compite por cómputo, queda visible para decisión humana
-    c.score = float(voi); c.score_parts = dict(p0=round(p0, 4), power=c.power, cost_factor=round(float(cost), 3), prior_hits=f"{hit}/{tot}", literature_pro=len(c.pro), literature_contra=len(c.contra))
+    c.score = float(voi); c.score_parts = dict(p0=round(p0, 4), power=c.power, utility=f"{c.utility_class}={u}", cost_factor=round(float(cost), 3), prior_hits=f"{hit}/{tot}", literature_pro=len(c.pro), literature_contra=len(c.contra))
     return c
 
 
@@ -79,11 +81,11 @@ def rules(ev: dict, lits: dict) -> list:
     e = E.get("ZB_REV_5_15")
     if e and e["status"] == "ARTIFACT_SUSPECT" and "mid_price_version" in e["unused_samples"]:
         out.append(Candidate("OU-2", "Reversión de ZB a 5-15 min con precio medio bid/ask (descarta rebote bid-ask)", "R3_ARTIFACT_CHECK", "DATA_DEFINITION", ["ZB_REV_5_15"], pro=[], contra=lit("ZB_REV_5_15", ("contra_signal",)),
-                             template=None, n_trials=4, power=0.6, est_seconds=3600, group="ZB", family="OU_MID", consumes={"ZB_REV_5_15": "mid_price_version"},
+                             template=None, n_trials=4, power=0.6, utility_class="info", est_seconds=3600, group="ZB", family="OU_MID", consumes={"ZB_REV_5_15": "mid_price_version"},
                              why="Si la reversión sobrevive con precio medio es de otra naturaleza; si desaparece, queda cerrado. Requiere un script que reconstruya mid desde bid_ticks/ask_ticks (no existe aún)."))
     e = E.get("GEX_AMPLITUDE")
     if e and e["status"] == "LEAD_INFO" and "nq_ym_spot" in e["unused_samples"]:
-        out.append(Candidate("GEX-2", "Amplitud intradía con gamma bajo en NQ y YM spot (réplica con instrumentos distintos)", "R4_EXTEND_POWER", "NO_PRIOR_EVIDENCE", ["GEX_AMPLITUDE"], template=None, n_trials=12, power=0.6, consumes={"GEX_AMPLITUDE": "nq_ym_spot"},
+        out.append(Candidate("GEX-2", "Amplitud intradía con gamma bajo en NQ y YM spot (réplica con instrumentos distintos)", "R4_EXTEND_POWER", "NO_PRIOR_EVIDENCE", ["GEX_AMPLITUDE"], template=None, n_trials=12, power=0.6, utility_class="info", consumes={"GEX_AMPLITUDE": "nq_ym_spot"},
                              est_seconds=1500, internet=True, group="NQ_YM", family="GEX", why="El efecto existe en USA500 spot y MES no tiene potencia (9 sesiones). Instrumentos correlacionados: réplica parcialmente independiente. Necesita adaptar gex1b_run a otros spots."))
     e = E.get("AVCL_RANGE")
     if e and e["status"] == "LEAD_INFO" and "direction" in e["unused_samples"]:

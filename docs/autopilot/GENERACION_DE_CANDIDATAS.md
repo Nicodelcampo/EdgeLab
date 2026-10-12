@@ -14,8 +14,8 @@ Objetivo: que cada ronda proponga corridas con más chance de aportar informaci�
 | R4 ampliar potencia | efecto grande en una muestra y sin potencia en otra | GEX-2: NQ/YM spot |
 | R5 información → dirección | efecto en amplitud sin dirección probada | AVCL-2 (dueño: sesión local) |
 
-## Puntuación (valor esperado de información)
-`score = p0 · potencia / √(costo/600 s)`, con `p0 = (1 + aciertos_familia + w·pro) / (5 + n_familia + w·(pro+contra))` (w = 0,5). Los aciertos son los del libro de corridas ya analizadas; la literatura pesa la mitad que un resultado propio y las afirmaciones **en contra** suben el denominador (bajan p0). La potencia es un supuesto declarado por regla, no una medición.
+## Puntuación (valor esperado de información, ponderado por el mandato)
+`score = p0 · potencia · U / √(costo/600 s)`, con U = peso de utilidad de `MANDATO.md` (`tradeable` 1,0 · `bridgeable` 0,6 · `info` 0,3), con `p0 = (1 + aciertos_familia + w·pro) / (5 + n_familia + w·(pro+contra))` (w = 0,5). Los aciertos son los del libro de corridas ya analizadas; la literatura pesa la mitad que un resultado propio y las afirmaciones **en contra** suben el denominador (bajan p0). La potencia es un supuesto declarado por regla, no una medición.
 
 ## Qué impide que esto se convierta en pesca de resultados
 - Toda candidata paga multiplicidad: se cuenta en el registro global antes de lanzar y apuesta alfa (alpha-investing). Priorizar no regala significancia.

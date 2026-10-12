@@ -1,0 +1,29 @@
+{
+ "schema": "edgelab_mandate_v1",
+ "status": "BORRADOR_A_CONFIRMAR_POR_NICO",
+ "objective": "Encontrar estrategias intradía de futuros que sirvan para superar challenges de cuentas fondeadas y operarlas, combinando VARIAS estrategias poco correlacionadas. Un efecto estadísticamente significativo pero pequeño, inestable o sin margen para diversificar NO cumple el objetivo.",
+ "challenge": {
+  "note": "VALORES DE EJEMPLO para poder simular. Nico debe fijar las reglas reales de la firma (objetivo de ganancia, drawdown, límite diario, días mínimos, regla de consistencia) antes de usar `pass_probability` para decidir.",
+  "account_usd": 50000, "profit_target_usd": 3000, "max_trailing_drawdown_usd": 2000, "daily_loss_limit_usd": null, "min_trading_days": 5, "max_days": 30, "consistency_max_best_day_share": null
+ },
+ "thresholds": {
+  "note": "Propuestas del agente, a confirmar. Se evalúan con P&L NETO de costos (comisión, spread, 1 tick de deslizamiento por lado).",
+  "cost_stress_multiplier": 1.5,
+  "min_trades_per_month": 10,
+  "min_fraction_positive_quarters": 0.70,
+  "min_quarters_observed": 4,
+  "max_share_of_pnl_top5_days": 0.50,
+  "max_abs_corr_with_portfolio": 0.30,
+  "min_pass_probability_single": 0.15,
+  "min_pass_probability_portfolio": 0.50,
+  "max_drawdown_to_target_ratio": 1.0,
+  "target_independent_strategies": 3
+ },
+ "tiers": {
+  "A": "Candidata a challenge: validez estadística (multiplicidad, réplica, holdout) + cumple TODOS los criterios de utilidad (neto de costos, estable, diversifica, probabilidad de pase).",
+  "B": "Prometedora: válida estadísticamente pero falla algún criterio de utilidad (tamaño, estabilidad, diversificación, drawdown); se estudia cómo corregirlo o combinarla.",
+  "C": "Información: efecto real o posible, sin forma operable todavía (o inestable/pequeño). Sirve como ingrediente o filtro; no se promueve sola.",
+  "D": "Descartada o artefacto."
+ },
+ "utility_weight": {"tradeable": 1.0, "bridgeable": 0.6, "info": 0.3}
+}

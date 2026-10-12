@@ -1,3 +1,5 @@
+> **Ya no es prioritario (2026-10-13):** IDM-2 no confirmó el mecanismo y la pista de GC está degradada. Conviene tener esos datos solo si se quiere ampliar la cobertura de activos para otros estudios.
+
 # Prompt para la sesión local (copiar y pegar)
 
 Necesito datos nuevos de Dukascopy (JForex) para replicar un hallazgo de oro en activos hermanos. Misma metodología y mismo formato que el dataset del oro (`edgelab-dukascopy-xauusd-ticks-m1`):

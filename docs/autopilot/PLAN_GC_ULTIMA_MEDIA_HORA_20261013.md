@@ -2,6 +2,10 @@
 
 Referencia: IDM-1, prueba `idm/GC` (futuro 2025-07→2026-09: corr +0,309, n = 274, Holm 10 = 0,009). Todo lo de abajo es **descriptivo** salvo lo que se pre-registra en IDM-2.
 
+**ACTUALIZACIÓN: IDM-2 no confirma el mecanismo de saltos fuera de la muestra de origen (0 rechazos; GC spot 2022-25 b_salto +0,0088, p 0,083). La pista queda `FAILED_REPLICATION`, se deja de proponer y la petición de datos de metales ya no es prioritaria (ver `docs/research/autopilot_runs/RESULTADO_IDM2.md`).**
+
+**Nivel según el mandato (`MANDATO.md`): C (información).** Significativo pero episódico (un trimestre y días de crash), sin P&L neto ni diversificación evaluados; hoy no es una estrategia útil para challenges.
+
 ## 1. ¿Quedan datos? (corrección de una lectura)
 «Hasta mayo» era solo mi caché local (126 sesiones). La corrida de Kaggle usó **todo** el futuro hasta 2026-09-30 (274 sesiones), así que no queda muestra sin usar *en el futuro de GC*. Sí hay datos distintos:
 - **Spot XAUUSD (otra fuente), 2022-07 → 2026-09 continuo.** En el mismo período del hallazgo da +0,244 (n = 385): el efecto **no es un artefacto de los datos del futuro**. No es replicación (mismo mercado y mismo tiempo).

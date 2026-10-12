@@ -39,9 +39,12 @@ class Autopilot:
             st = self.ex.status(r["handle"])
             if st in ("complete", "COMPLETE"):
                 spec = RunSpec.from_dict(json.loads(self.ledger.db.execute("SELECT spec FROM runs WHERE run_id=?", (r["run_id"],)).fetchone()[0]))
-                res = self.ex.fetch(r["handle"], self.cfg["result_files"].get(spec.family, "RESULTS.json"))
-                if spec.kind == "benchmark":                                        # infraestructura: sin hipótesis, sin alfa
+                if spec.kind == "benchmark":                                        # infraestructura: sin hipótesis, sin alfa, sin traer resultado
                     self.ledger.finish(spec.run_id, "BENCHMARK_DONE", dict(hit=False, benchmark=True)); rep["closed"].append((spec.run_id, "BENCHMARK")); continue
+                try:
+                    res = self.ex.fetch(r["handle"], self.cfg["result_files"][spec.family])
+                except Exception as e:                                                 # error de configuración o de red: no tumba el ciclo, queda registrado y se reintenta
+                    self.ledger.event(spec.run_id, "fetch_failed", repr(e)[:200]); rep["blocked"].append((spec.run_id, [f"no se pudo traer el resultado: {e!r}"[:200]])); continue
                 bid = self.fdr.state["open"][f"{spec.run_id}"]
                 d = analyze.decide(res, bid["alpha"], spec.n_trials)
                 self.fdr.settle(spec.run_id, d["rejections"]); self.ledger.finish(spec.run_id, "ANALYZED", d); rep["closed"].append((spec.run_id, d["hit"]))

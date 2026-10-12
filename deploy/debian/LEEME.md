@@ -5,6 +5,9 @@ Estado: probado con ejecutores simulados (15 tests), una corrida de humo real en
 ## Lo que ya está hecho
 Instalador, servicios systemd endurecidos (ciclo cada 10 min, regeneración diaria de borradores), sincronización de estado a la rama `autopilot/state` (único escritor), doctor de preflight, kill switch, latido, `--status`, guardas (holdout, pre-registro committeado, configuración textual en el pre-registro, archivos protegidos), alpha-investing, selector, generador de candidatas, evidencia viva, puente al Edge Brain.
 
+## Mandato del agente
+El agente se rige por [`MANDATO.md`](../../MANDATO.md) (edges útiles para challenges y combinables; no pequeños, inestables ni sin diversificación). Está protegido por hash. **Antes de arrancar en modo `execute`, confirmá en `config/autopilot/mandate.json` las reglas reales del challenge y los umbrales** (hoy son valores de ejemplo).
+
 ## Lo que falta de tu lado (los «pocos detalles»)
 1. **Máquina:** Debian 12+, 2 vCPU / 4 GB RAM / 20 GB disco, salida HTTPS a `www.kaggle.com`, `github.com`, `storage.googleapis.com`, `squeezemetrics.com` (DIX). No necesita GPU (el cómputo pesado va a Kaggle).
 2. **Instalar:** `sudo CODE_BRANCH=<rama de código> bash deploy/debian/install.sh` (clona el repo y el clon de estado, crea el venv y copia los servicios).

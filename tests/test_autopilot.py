@@ -170,3 +170,28 @@ def test_idm2_candidate_is_wired_to_the_gc_lead():
     assert rs["origin"]["GC_LH_MOMENTUM"]["tests"] == ["idmj/GC_spot_old"] and any(n.startswith("GC:") for n in rs["needs"])        # la referencia (GC futuro) también necesita datos
     assert c.cfg["n_planned"] == 8 and "GC" in c.cfg["reference_sources"] and "GC" not in c.cfg["sources"]                        # la referencia no cuenta en Holm
     assert any(x.cid == "WAIT-GC_LH_MOMENTUM" and x.score == 0.0 for x in generate([])) and any(x.cid == "DATA-METALS" for x in generate([]))
+
+
+def test_mandate_pass_probability_and_viability():
+    from edgelab.autopilot import mandate
+    rng = __import__("numpy").random.default_rng(1); rules = mandate.load()["challenge"]
+    flat = rng.normal(0, 150, 300); good = rng.normal(40, 150, 300)
+    assert mandate.pass_probability(flat, rules, 800)["p_pass"] < mandate.pass_probability(good, rules, 800)["p_pass"]          # más edge, más probabilidad de pase
+    ok = dict(daily_pnl_usd=list(rng.normal(60, 120, 250)), quarterly_pnl_usd=[2000, 1500, 1800, 900, 2200], trades_per_month=30, net_pnl_stress_usd=9000, corr_with_portfolio=[0.1], max_drawdown_usd=1500)
+    v = mandate.viability(ok); assert "no_depende_de_5_dias" in v["criteria"] and isinstance(v["useful"], bool)
+    bad = dict(ok, quarterly_pnl_usd=[9000, -500, -300, -200], corr_with_portfolio=[0.8], trades_per_month=3)                      # un trimestre, correlada, poco frecuente
+    vb = mandate.viability(bad); assert not vb["useful"] and {"trimestres_positivos", "diversifica", "frecuencia"} <= set(vb["failed"])
+    assert mandate.tier(True, True, v if v["useful"] else None) in ("A", "B") and mandate.tier(True, False, None) == "C" and mandate.tier(True, True, vb) == "B" and mandate.tier(True, True, vb, artifact=True) == "D"
+
+
+def test_utility_weight_changes_ranking():
+    from edgelab.autopilot.generate import Candidate, score
+    base = dict(cid="X", title="t", rule="r", gap_kind="NO_PRIOR_EVIDENCE", evidence=[], power=0.5, est_seconds=600, group="G", family="F")
+    a = score(Candidate(utility_class="tradeable", **base), [], {}); b = score(Candidate(utility_class="info", **base), [], {}); assert a.score > b.score
+
+
+def test_fetch_failure_does_not_crash_the_cycle(repo, tmp_path):
+    class Boom(FakeExecutor):
+        def fetch(self, handle, filename): raise FileNotFoundError("nada")
+    ap = Autopilot(tmp_path / "root", Boom({}), _cfg(tmp_path), repo=repo, registry=Reg()); ap.tick([spec()])
+    t = ap.tick([spec("r2", grp="Z")]); assert t["blocked"] and ap.ledger.running()                  # sigue RUNNING, se reintentará

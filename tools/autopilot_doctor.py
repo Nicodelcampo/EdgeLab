@@ -23,6 +23,9 @@ def main():
         bad = check_protected(Path(prot), ROOT); chk("archivos protegidos sin cambios", not bad, "; ".join(bad[:3]))
     st = subprocess.run(["git", "status", "--porcelain", "--", "tools", "edgelab", "config"], cwd=ROOT, capture_output=True, text=True).stdout.strip()
     chk("código del repo limpio (lo lanzado queda atado a un commit)", not st, st[:120], fatal=False)
+    try:
+        from edgelab.autopilot.mandate import load as _ml; mm = _ml(); chk("mandato presente", True); chk("mandato confirmado por Nico (status != BORRADOR)", not str(mm.get("status", "")).startswith("BORRADOR"), mm.get("status"), fatal=False)
+    except Exception as e: chk("mandato presente", False, str(e))
     chk("git", bool(shutil.which("git"))); chk("curl", bool(shutil.which("curl")))
     netrc = Path.home() / ".netrc"; chk("credencial de Kaggle (~/.netrc 0600 o KAGGLE_KEY)", (netrc.exists() and oct(netrc.stat().st_mode)[-3:] == "600" and "kaggle.com" in netrc.read_text()) or bool(os.environ.get("KAGGLE_KEY")), "")
     r = subprocess.run(["curl", "-sS", "-m", "30", "-o", "/dev/null", "-w", "%{http_code}", "https://www.kaggle.com/api/v1/kernels/list?user=nicolasbuttaro&pageSize=1"], capture_output=True, text=True)
