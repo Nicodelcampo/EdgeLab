@@ -2,7 +2,7 @@
 
 ## Latest continuation: existing operational snapshot and technical replay
 
-Read `ANCHORED_MEMORY_AND_MNQ_REPLAY.md`, its evidence and `LATEST_CONTINUATION.json` first. Actual 10-record Kaggle operational ledger now bound read-only with both anchors/receipt. NOT a live writer destination or complete scientific history. MNQ resampling technical replay prespecified; see latest status before any launch, never relaunch the campaign.
+Read `ANCHORED_MEMORY_AND_MNQ_REPLAY.md`, its evidence and `LATEST_CONTINUATION.json` first. Actual 10-record Kaggle operational ledger now bound read-only with both anchors/receipt. NOT a live writer destination or complete scientific history. MNQ resampling technical replay COMPLETE: exact parity on60 fixed cells, ~3.38x resampling-substep ratio of medians only. Candidate not adopted; preserve aggregate/interpretation, never relaunch the campaign.
 
 ## Previous continuation after the MNQ campaign review
 

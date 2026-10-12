@@ -66,3 +66,32 @@ The old probe kernels edgelab-probe-mount-a/b/c can be deleted separately.
 19 canonical hippocampus tests pass. Catalog PASS_NAVIGATION_ONLY. A separate
 synthetic fresh-worker smoke passed exact hashes. Local tests do not constitute
 remote CI or real-data performance evidence. See ANCHORED_MEMORY_TEST_EVIDENCE.json.
+
+## Observed result (private Kaggle replay v1)
+
+Kernel138361151, output execution357734641, source checkpoint
+`4e3ecb3cdd2b005272547c3cec94b47de548e9c8`: COMPLETE. Identity-pinned original
+CSV had68,499 primary-thinned rows; all46 sessions retained.60 cells including20
+empty cells. Both algorithms produced the same complete-result digest across
+all12 passes (3pairs x2methods x cold/warm), including pointwise-quantile bytes.
+
+| Compute pass | Frozen median seconds | Candidate median seconds | Ratio of medians |
+| --- | --- | --- | --- |
+| First (cold worker) | 0.758649 | 0.224386 | 3.3810x |
+| Second (warm worker) | 0.751016 | 0.222210 | 3.3798x |
+
+Paired speedup range: cold3.21–3.88x, warm3.30–3.52x. Preparation4.31seconds;
+outer elapsed13.63seconds including acquisition. Only3pairs on this CPU/image:
+no confidence/performance guarantee beyond this fixed substep. Identical
+Linux ru_maxrss counters150,224,896bytes give NO evidence of a memory reduction;
+the process-creation counter may retain pre-exec inherited footprint. Not
+historical whole-job telemetry or an authenticated custodian receipt.
+
+`MNQ_RESAMPLING_REPLAY_AGGREGATE.json` preserves aggregate output unchanged;
+`MNQ_RESAMPLING_REPLAY_INTERPRETATION.json` preserves provenance, exact hashes,
+independent median cross-check and comparison scope. Nested aggregate JSON was
+not tabular-profiler-readable; normalized12timing rows were profiled, no missing
+or duplicate records, only the constant-RSS warning addressed above. Candidate
+has NOT been wired into analyzer/driver and no frozen campaign was modified.
+The next safe performance milestone is actual longevity substep profiling and
+broader independent output parity, not a claim of3.38x whole-job acceleration.
