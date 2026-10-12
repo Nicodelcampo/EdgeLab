@@ -48,7 +48,7 @@ def viability(summary: dict, cfg: dict | None = None) -> dict:
     """summary (todo NETO de costos): daily_pnl_usd (lista), quarterly_pnl_usd (lista), trades_per_month, net_pnl_stress_usd (P&L total con costos × multiplicador),
     corr_with_portfolio (lista de correlaciones de P&L diario con estrategias ya aceptadas, vacía si es la primera), max_drawdown_usd.
     Devuelve cada criterio y si los cumple; `useful` solo si cumple todos."""
-    c = cfg or load(); t = c["thresholds"]; ch = c["challenge"]; dp = np.asarray(summary["daily_pnl_usd"], float); q = np.asarray(summary["quarterly_pnl_usd"], float)
+    c = cfg or load(); t = c["thresholds"]; ch = c["challenge_reference"]; dp = np.asarray(summary["daily_pnl_usd"], float); q = np.asarray(summary["quarterly_pnl_usd"], float)
     top5 = np.sort(dp)[::-1][:5].sum() / dp.sum() if dp.sum() > 0 else np.inf
     pp = pass_probability(dp, ch)
     crit = {

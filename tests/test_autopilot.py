@@ -174,7 +174,7 @@ def test_idm2_candidate_is_wired_to_the_gc_lead():
 
 def test_mandate_pass_probability_and_viability():
     from edgelab.autopilot import mandate
-    rng = __import__("numpy").random.default_rng(1); rules = mandate.load()["challenge"]
+    rng = __import__("numpy").random.default_rng(1); rules = mandate.load()["challenge_reference"]
     flat = rng.normal(0, 150, 300); good = rng.normal(40, 150, 300)
     assert mandate.pass_probability(flat, rules, 800)["p_pass"] < mandate.pass_probability(good, rules, 800)["p_pass"]          # más edge, más probabilidad de pase
     ok = dict(daily_pnl_usd=list(rng.normal(60, 120, 250)), quarterly_pnl_usd=[2000, 1500, 1800, 900, 2200], trades_per_month=30, net_pnl_stress_usd=9000, corr_with_portfolio=[0.1], max_drawdown_usd=1500)
@@ -200,7 +200,7 @@ def test_fetch_failure_does_not_crash_the_cycle(repo, tmp_path):
 def test_challenge_simulator_models_consistency_lock_and_no_time_limit():
     import numpy as np
     from edgelab.autopilot import mandate
-    r = mandate.load()["challenge"]; assert r["max_days"] is None and r["consistency_max_best_day_share"] == 0.5 and r["lock_profit_usd"] == 2100
+    r = mandate.load()["challenge_reference"]; assert r["max_days"] is None and r["consistency_max_best_day_share"] == 0.5 and r["lock_profit_usd"] == 2100
     steady = mandate.pass_probability(np.full(50, 100.0), r, 100, block=1); assert steady["p_pass"] == 1.0 and steady["median_days_to_pass"] == 30      # +100 por día: 3.000 en 30 días, consistencia 1/30
     rng = np.random.default_rng(3); weak = rng.normal(15, 130, 500)
     base = mandate.pass_probability(weak, r, 800); strict = mandate.pass_probability(weak, dict(r, consistency_max_best_day_share=0.15), 800)

@@ -34,8 +34,9 @@ class RunLedger:
     def running(self):
         return [dict(zip(("run_id", "handle", "launched_at"), x)) for x in self.db.execute("SELECT run_id,handle,launched_at FROM runs WHERE status='RUNNING'")]
 
-    def launched_since(self, t: float) -> int:
-        return self.db.execute("SELECT COUNT(*) FROM runs WHERE launched_at>=?", (t,)).fetchone()[0]
+    def launched_since(self, t: float, benchmark: bool = False) -> int:
+        q = "SELECT COUNT(*) FROM runs WHERE launched_at>=? AND kind" + ("=" if benchmark else "!=") + "'benchmark'"
+        return self.db.execute(q, (t,)).fetchone()[0]
 
     def outcomes(self):
         """(family, group, hit) de las corridas ya analizadas: alimenta al selector."""

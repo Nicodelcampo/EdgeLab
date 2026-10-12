@@ -1,9 +1,39 @@
 {
  "schema": "edgelab_mandate_v1",
- "status": "BORRADOR_REGLAS_LUCID_EXTRAIDAS_POR_EL_AGENTE_A_CONFIRMAR_POR_NICO",
- "objective": "Encontrar estrategias intradía de futuros que sirvan para superar challenges de cuentas fondeadas y operarlas, combinando VARIAS estrategias poco correlacionadas. Un efecto estadísticamente significativo pero pequeño, inestable o sin margen para diversificar NO cumple el objetivo.",
- "challenge": {
-  "note": "Reglas de LucidFlex 50K extraídas por el agente del centro de ayuda de Lucid (crawl 2026-10-13; páginas actualizadas jul-ago 2026), NO verificadas por una persona. Nico debe confirmar qué producto usa (Flex, Pro, Daily, Black, Direct) y el precio. Catálogo completo: config/propfirms/catalogo_lucid_50k.json; inventario: artifacts/propfirm/crawl/Lucid/.",
+ "status": "BORRADOR_A_CONFIRMAR_POR_NICO",
+ "objective": "Ganar más de lo que se invierte en challenges de cuentas fondeadas, en CUALQUIER firma: la estrategia busca la cuenta que mejor le calza (o la cuenta fija los umbrales y se diseña la estrategia para superarlos). Se maximiza el valor esperado neto de cuotas, resets y comisiones por dólar invertido, combinando varias estrategias poco correlacionadas. Un efecto estadísticamente significativo pero pequeño, inestable o sin margen para diversificar NO cumple el objetivo.",
+ "thresholds": {
+  "note": "Propuestas del agente, a confirmar. Se evalúan con P&L NETO de costos (comisión, spread, 1 tick de deslizamiento por lado).",
+  "cost_stress_multiplier": 1.5,
+  "min_trades_per_month": 10,
+  "min_fraction_positive_quarters": 0.7,
+  "min_quarters_observed": 4,
+  "max_share_of_pnl_top5_days": 0.5,
+  "max_abs_corr_with_portfolio": 0.3,
+  "min_pass_probability_single": 0.15,
+  "min_pass_probability_portfolio": 0.5,
+  "max_drawdown_to_target_ratio": 1.0,
+  "target_independent_strategies": 3
+ },
+ "tiers": {
+  "A": "Candidata a challenge: validez estadística (multiplicidad, réplica, holdout) + cumple TODOS los criterios de utilidad (neto de costos, estable, diversifica, probabilidad de pase).",
+  "B": "Prometedora: válida estadísticamente pero falla algún criterio de utilidad (tamaño, estabilidad, diversificación, drawdown); se estudia cómo corregirlo o combinarla.",
+  "C": "Información: efecto real o posible, sin forma operable todavía (o inestable/pequeño). Sirve como ingrediente o filtro; no se promueve sola.",
+  "D": "Descartada o artefacto."
+ },
+ "utility_weight": {
+  "tradeable": 1.0,
+  "bridgeable": 0.6,
+  "info": 0.3
+ },
+ "roi": {
+  "note": "ROI = (retiros esperados − cuotas − resets − costos de datos) / (cuotas + resets). Meta: > 0 con el límite inferior del IC y > 0 el aporte sobre el control sin ventaja.",
+  "min_roi_lower_bound": 0.0,
+  "catalog": "config/propfirms/",
+  "fees_verified_required_for_roi": true
+ },
+ "challenge_reference": {
+  "note": "Cuenta de REFERENCIA para simular pases (LucidFlex 50K, reglas extraídas por el agente del centro de ayuda, crawl 2026-10-13, sin verificar). No es la cuenta elegida: el agente evalúa contra todo el catálogo (`config/propfirms/`) y elige la de mejor ajuste.",
   "firm": "Lucid",
   "product": "LucidFlex",
   "account_usd": 50000,
@@ -38,29 +68,5 @@
    "La consistencia de la evaluación (mayor día ≤ 50 % del beneficio total) castiga los edges que ganan en pocos días grandes.",
    "Sin límite de tiempo en la evaluación: lo que decide es P(llegar al objetivo antes del piso), no el tiempo."
   ]
- },
- "thresholds": {
-  "note": "Propuestas del agente, a confirmar. Se evalúan con P&L NETO de costos (comisión, spread, 1 tick de deslizamiento por lado).",
-  "cost_stress_multiplier": 1.5,
-  "min_trades_per_month": 10,
-  "min_fraction_positive_quarters": 0.7,
-  "min_quarters_observed": 4,
-  "max_share_of_pnl_top5_days": 0.5,
-  "max_abs_corr_with_portfolio": 0.3,
-  "min_pass_probability_single": 0.15,
-  "min_pass_probability_portfolio": 0.5,
-  "max_drawdown_to_target_ratio": 1.0,
-  "target_independent_strategies": 3
- },
- "tiers": {
-  "A": "Candidata a challenge: validez estadística (multiplicidad, réplica, holdout) + cumple TODOS los criterios de utilidad (neto de costos, estable, diversifica, probabilidad de pase).",
-  "B": "Prometedora: válida estadísticamente pero falla algún criterio de utilidad (tamaño, estabilidad, diversificación, drawdown); se estudia cómo corregirlo o combinarla.",
-  "C": "Información: efecto real o posible, sin forma operable todavía (o inestable/pequeño). Sirve como ingrediente o filtro; no se promueve sola.",
-  "D": "Descartada o artefacto."
- },
- "utility_weight": {
-  "tradeable": 1.0,
-  "bridgeable": 0.6,
-  "info": 0.3
  }
 }

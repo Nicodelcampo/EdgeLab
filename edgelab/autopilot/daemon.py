@@ -53,10 +53,13 @@ class Autopilot:
             elif st in ("error", "ERROR", "cancelAcknowledged"):
                 self.ledger.finish(r["run_id"], "FAILED", failure=f"estado {st}"); rep["closed"].append((r["run_id"], "FAILED"))
         running = self.ledger.running()                                              # 2) ¿cupo y presupuesto?
-        if len(running) >= self.cfg.get("max_concurrent", 1) or self.ledger.launched_since(now - 86400) >= self.cfg.get("max_per_day", 2):
+        if len(running) >= self.cfg.get("max_concurrent", 1):
             return self._note(event="tick_no_capacity", **rep)
+        hyp_full = self.ledger.launched_since(now - 86400) >= self.cfg.get("max_per_day", 2); bm_full = self.ledger.launched_since(now - 86400, benchmark=True) >= self.cfg.get("max_benchmarks_per_day", 4)
+        if hyp_full and bm_full: return self._note(event="tick_no_capacity", **rep)
         ranked = rank(candidates, self.ledger.outcomes(), self.ledger, seed=int(now) // 3600)
         for score, spec, why in ranked:                                              # 3) la mejor que pase todas las guardas
+            if (spec.kind == "benchmark" and bm_full) or (spec.kind != "benchmark" and hyp_full): continue      # los topes diarios son por tipo: hipótesis y benchmarks
             errs = guard.all_checks(spec, set(self.cfg.get("allow_internet", [])), self.repo, Path(prot) if prot else None)
             if self.fdr.wealth < 1e-4: errs.append("riqueza de alfa agotada: no se lanzan campañas nuevas hasta que haya replicaciones que la recarguen")
             if errs: rep["blocked"].append((spec.run_id, errs)); continue
