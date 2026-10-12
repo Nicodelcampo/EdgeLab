@@ -15,8 +15,9 @@ class RunLedger:
     def __init__(self, path: Path):
         Path(path).parent.mkdir(parents=True, exist_ok=True); self.db = sqlite3.connect(str(path)); self.db.executescript(SCHEMA)
 
-    def seen(self, spec_hash: str) -> bool:
-        return self.db.execute("SELECT 1 FROM runs WHERE spec_hash=?", (spec_hash,)).fetchone() is not None
+    def seen(self, spec_hash: str, run_id: str | None = None) -> bool:
+        """Un spec ya corrido (mismo hash) o un run_id ya usado no se lanzan de nuevo."""
+        return self.db.execute("SELECT 1 FROM runs WHERE spec_hash=? OR run_id=?", (spec_hash, run_id)).fetchone() is not None
 
     def add(self, spec, handle: str) -> None:
         self.db.execute("INSERT INTO runs VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)", (spec.run_id, spec.spec_hash(), spec.family, spec.group, spec.kind,

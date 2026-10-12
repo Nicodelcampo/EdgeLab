@@ -31,6 +31,7 @@ class RunSpec:
 
     def spec_hash(self) -> str:
         d = asdict(self); d.pop("run_id"); d.pop("notes")
+        if d.get("n_tests_holm") is None: d.pop("n_tests_holm", None)          # compatibilidad: agregar el campo no cambia el hash de los specs anteriores
         return hashlib.sha256(json.dumps(d, sort_keys=True).encode()).hexdigest()
 
     def validate_shape(self) -> list:

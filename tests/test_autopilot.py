@@ -237,3 +237,10 @@ def test_scan1_candidate_is_ready_and_counts_cells_not_just_tests():
     c = next(x for x in generate([]) if x.cid == "SCAN-1"); rs = to_runspec(c)
     assert c.template == "slot_scan" and rs["n_trials"] == 495 and rs["n_tests_holm"] == 20 and rs["kind"] == "study" and not rs["internet"]
     assert {"ES", "GC", "NQ", "YM", "6E"} <= {n.split(":")[0] for n in rs["needs"]} and rs["origin"]["UNIVERSE_SCAN_1"]["sample"] == "scan_1"
+
+
+def test_adding_a_spec_field_does_not_relaunch_old_specs_and_run_ids_are_unique(repo, tmp_path):
+    ex = FakeExecutor({}); ap = Autopilot(tmp_path / "root", ex, _cfg(tmp_path), repo=repo, registry=Reg()); a = spec("same")
+    ap.tick([a]); ap.tick([a]); assert ex.launched == ["same"]
+    renamed_hash = spec("same", grp="OTRO"); ap.tick([renamed_hash]); assert ex.launched == ["same"]            # mismo run_id con otro hash: no se relanza ni revienta
+    assert spec("x").spec_hash() == RunSpec(**{k: v for k, v in spec("x").__dict__.items() if k != "n_tests_holm"}).spec_hash()

@@ -13,7 +13,7 @@ def rank(candidates: list, outcomes: list, ledger, seed: int, explore_floor: flo
         h, n = tally.get((fam, grp), (0, 0)); tally[(fam, grp)] = (h + hit, n + 1)
     out = []
     for c in candidates:
-        if ledger.seen(c.spec_hash()): continue                       # nunca repetir lo ya corrido
+        if ledger.seen(c.spec_hash(), c.run_id if hasattr(c, "run_id") else None): continue                       # nunca repetir lo ya corrido
         h, n = tally.get((c.family, c.group), (0, 0))
         draw = rng.beta(prior[0] + h, prior[1] + n - h)
         explore = n == 0 and rng.random() < explore_floor            # grupos nunca probados reciben una chance mínima
