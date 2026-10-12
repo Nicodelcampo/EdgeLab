@@ -1,0 +1,571 @@
+Graphical Abstract
+Exogenous Factors in Statistical Arbitrage: A Novel AI-powered
+Approach
+Irene Aldridge and Claire Li
+
+Highlights
+Exogenous Factors in Statistical Arbitrage: A Novel AI-powered
+Approach
+Irene Aldridge and Claire Li
+• We construct a novel methodology for assessing factor importance for
+models with collinear independent variables.
+• Our methodology can be applied to identify the most relevant factors
+from the “Factor Zoo.”
+
+Exogenous Factors in Statistical Arbitrage: A Novel
+AI-powered Approach
+Irene Aldridge and Claire Lib,1
+aCornell University ORIE, Financial Engineering, New York, 10044, NY, USA
+bAbleMarkets, , New York, , NY, USA
+Abstract
+This study introduces an innovative AI-powered methodology for identifying external factors that drive informational inefficiencies across in a given
+dataset. Our secondary objective is to shed light on the widely observed pairs
+trading phenomenon, commonly referred to as statistical arbitrage. By zooming into the factors that drive pairs trading strategies, we aim to contribute to
+the creation of a more stable market environment and foster broader benefits.
+Keywords:
+Factors, Information Asymmetry, Statistical Arbitrage, AI, Market
+Efficiency, Pairs Trading Strategies, Risk Management, Regulatory
+Frameworks
+JEL Classification: G10, G14, C22
+1. Introduction
+The study of pairs trading originated with Gatev et al. (2006), who aimed
+to evaluate a popular Wall Street strategy.
+Their findings confirmed the
+effectiveness of the strategy while also questioning the prevailing explanation
+for its success: the notion that traders were being compensated for bringing
+market prices into equilibrium, thus enforcing the Law of One Price. The
+Law of One Price, as established by Deardorff (1979), suggests that no onesided arbitrage is possible. However, Gatev et al. (2006) proposed that the
+observed profitability of pairs trading may be attributed to an undisclosed
+factor, which is the focus of our research.
+The investigation into the influence of asymmetric information on market
+dynamics was initiated by Fama (1970), with subsequent contributions from
+Grossman (1976), Grossman and Stiglitz (1976 and 1980), and Friedman et
+Preprint submitted to Journal of Financial Economics
+August 27, 2024
+
+al. (1983). These scholars posited that an informationally-efficient market is
+characterized by prices that accurately reflect all available information. As
+per this theory, if our markets were truly informationally-efficient at present,
+it would be unattainable to generate profits through any trading or investment strategies.
+However, contemporary studies indicate that inefficiencies continue to exist and can emerge due to various factors. Notable recent examples include
+the work of DeMiguel et al. (2023), who employ machine learning techniques
+to identify mutual funds exhibiting a positive alpha, indicating their potential
+for outperforming the market. Additionally, Ying (2024) observes that stocks
+with concentrated institutional ownership incorporate information into the
+markets at a slower pace compared to their counterparts, presenting opportunities for arbitrage.
+These information inefficiencies can be categorized and quantified as factors, which are time-series data that convey specific information to the market. If the returns on a particular financial instrument can be accurately
+predicted in advance by any factor, it indicates that the current returns fail
+to incorporate all the available information in a timely manner. As a result,
+this creates opportunities for arbitrage. Consequently, numerous researchers
+have endeavored to develop factors that can better explain the unexplained
+aspects of market information. Prominent examples include the Capital Asset Pricing Model (CAPM) proposed by Sharpe (1964) and Lintner (1965),
+Arbitrage Pricing Theory by Ross (1976), as well as the three-factor model introduced by Fama and French (1993), among others. Harvey and Liu (2018)
+document the recent proliferation of factors in the literature on return factorization, many of which are highly correlated. Our paper also adds to this
+growing body of research in identifying and systematizing such factors.
+In line with previous studies conducted by DeMiguel et al. (2017), Freyberger et al. (2017), Feng et al. (2017), and Kozak, Nagel, and Santosh
+(2020), our research utilizes a supervised machine learning approach to identify the number of factors at play. DeMiguel et al. (2017), Freyberger et
+al. (2017), and Feng et al. (2017) employ the Least Absolute Shrinkage and
+Selection Operator (LASSO) technique to ascertain the necessary predictors
+for adequately assessing the cross-sectional variation of different financial instruments. Our methodology closely aligns with that of Kozak, Nagel, and
+Santosh (2020), who construct a Stochastic Discount Factor using Principal
+Components.
+In our study, we adopt a popular strategy for capitalizing on these in2
+
+efficiencies, commonly referred to as a long-short strategy or pairs trading.
+This approach, as outlined by Vidyamurthy (2004) and Gatev et al. (2006),
+involves identifying a pair of assets that exhibit consistent and statistically
+significant relative value disparities.
+The selection of an appropriate pair is typically conducted using cointegration techniques such as Engle and Granger (1987) or Johansen (1991).
+In a similar vein, Elliott et al. (2005) introduce the stochastic spread model,
+which involves modeling the price differential between the two instruments
+as an Ornstein-Uhlenbeck process and subsequently filtering the outcome.
+Building on this approach, Do et al.
+(2006) extend the methodology by
+substituting prices with asset returns in Elliott et al. (2006)’s framework.
+In addition to traditional approaches, more advanced techniques incorporating machine learning have emerged. For instance, Dunis et al. (2006,
+2015) utilize neural networks to forecast spreads, demonstrating the potential of this methodology. Furthermore, Ko et al. (2023) compare traditional
+statistical methods with genetic algorithms (GA) and non-dominated sorting
+genetic algorithm II (NSGA-II) specifically in the context of cryptocurrency
+markets. Their study reveals that NSGA-II outperforms other methods, underscoring the advantages of employing sophisticated algorithms to optimize
+pairs trading strategies.
+Until now, most pairs trading strategies did not incorporate exogenous
+factors. Recent methodologies, similar to our own approach yet rooted in
+pure statistical arbitrage without exogenous factors, have demonstrated sustained positive returns. Notable examples include the work of Avellaneda
+and Lee (2010) and Focardi, Fabozzi, and Mitov (2016). However, failure to
+explain the profitability phenomenon may result in models that are potentially flawed and susceptible to instability. This oversight can even contribute
+to market-wide contagion, as highlighted by Gao and Ladley (2022).
+According to the Financial Economics literature, the observable differences between two assets are likely to originate from informational inefficiencies. For instance, Lee et al. (2024) highlight the presence of an informational
+lead-lag effect among stocks within the same industries, indicating profitable
+opportunities arising from information asymmetries. Bartram and Grinblatt
+(2021) demonstrate that informational inefficiencies directly drive returns in
+the Asia-Pacific markets. Empirical studies consistently support the information asymmetry hypothesis as the primary driver of pairs trading models,
+as evidenced by Engleberg et al. (2009), Chen et al., and other relevant
+research.
+3
+
+The groundbreaking works of Glosten and Milgrom (1985) and Kyle
+(1985) established the link between informational asymmetries and asset
+returns, a relationship that remains prevalent in the current financial landscape. Ongoing research continues to shed light on these asymmetries. For
+instance, Ranaldo and Somogyi (2021) investigate market flows and reveal
+the presence of informational asymmetries in foreign exchange markets. Similarly, Guo and Mota (2021) demonstrate the value of equity analysis for
+predicting future stock returns. These studies collectively emphasize the enduring significance of informational asymmetries in driving market dynamics.
+Informational asymmetries can be attributed to a range of factors, as evidenced by research in the field. For instance, Krishnaswami and Subramaniam (1999) demonstrate that more complex firms tend to have higher levels
+of information asymmetry compared to streamlined firms that undergo spinoffs. Baik et al. (2010) discover that the geographic location of investors is
+correlated with their knowledge, with local investors exhibiting greater familiarity with local companies compared to foreign investors. Moreover, Huang
+et al. (2022) identify differences in investor attention to specific patterns
+of information arrival as a contributing factor to the emergence of informational inefficiencies. Collectively, these studies provide insights into the
+diverse sources of informational asymmetries.
+Our research presents an innovative approach that bridges the information
+asymmetry literature with the realm of statistical arbitrage. Specifically, we
+enhance the classic co-integration model developed by Vidyamurthy (2004)
+by introducing exogenous variables. To identify these factors, we propose a
+novel AI methodology, which helps determine the potential drivers of informational asymmetries in statistical arbitrage, pairs trading strategies, and
+other lead-lag relationships among asset prices.
+To evaluate the model’s effectiveness, we conduct simulations to assess
+its performance and characteristics. Furthermore, we provide an empirical
+study focused on futures, where we include variables such as macroeconomic
+indicators, bond yields, and market indices as factors. Through the implementation of real-world data, we showcase the practical application of our
+model.
+By leveraging AI in our framework, we contribute to the ongoing discussion on reducing the universe of factors. Moreover, our approach enhances
+the robustness and performance of pairs trading strategies, ultimately leading
+to improved market stability overall.
+4
+
+2. Methodology
+2.1. Pairs Identification
+To identify a promising pair of securities, we follow Gatev et al. (2006)
+and Vidyamurthy (2004) in defining the residual returns, also known as
+spread, as the simple difference between two returns.
+Using a simple return formulation, Given two assets, i and j with prices pi,t and pj,t, and their
+log returns ri,t = log(pi,t) −log(pi,t−1), the residual can be represented as:
+ϵij = log(pi,t) −log(pi,t−1) −log(pj,t) + log(pj,t−1)
+(1)
+If we pick two assets with identical prices at time t-1, Pi,t−1 = pj,t−1 or simply
+invest identical dollar amount into i and j at time t, then we can represent
+the residual formula as:
+ϵij,t = log(pi,t) −log(pj,t)
+(2)
+Further assuming that the residuals are random with mean 0, we can estimate
+the above equation as:
+log(pi,t) = α + βlog(pj,t) + ϵij,t
+(3)
+This specification was provided by Vidyamurthy (2004). He proposes a
+pairs trading strategy where we buy $1 of asset i and short-sell β dollars of
+asset j whenever α is small. When α is large, we short-sell $1 of asset i and
+buy β units of asset j whenever. An example of “small” and “large” α can
+be this simple rule:
+• If α > 0, buy $1 of asset i, short-sell β units of asset j
+• If α < 0, short-sell $1 of asset i, buy β units of asset j
+A more precise formulation that would allow divergent securities prices
+at time t-1 can be found similar to Rad et al. (2016) as:
+log(pi,t) = α + βlog(pj,t) + γlog( pi,t−1
+pj,t−1) + ϵij,t
+(4)
+Both Vidyamurthy (2004) and Rad et al. (2016) assume persistence of
+relationships between the prices of the two securities. This persistence can
+be measured as the statistical significance of the coefficient β in equation
+5
+
+(3). The statistical significance of β can be measured by its accompanying
+t-ratio, where the t-ratio measures the precision of the β, and is computed
+as the estimate divided by the standard deviation of the coefficient, as estimated by the regression. Whenever the t-ratio corresponds to the Z-score
+probability of 90% (99%) or greater, the coefficient is assumed to be (highly)
+statistically significant and persistent. As a result of the strategy assuming
+a given expected relationship between two securities and essentially trading
+away the deviations from that relationship, the strategy is often referred to
+as mean-reverting.
+2.2. Pairs Trading with Exogenous Factors
+The pairs trading strategy often hedges away at least some of the influence
+of the markets. Correlated stocks are likely to have similar dependency on
+the markets, that can be assessed via a classic CAPM equation of Sharpe
+(1964) and Lintner (1965):
+ri,t = αiM + βiMrM + εiM,t
+(5)
+We can rewrite this in a log form as:
+log(pi,t) = αiM + βiMlog(Mt) + γiMlog(pi,t−1/Mt−1) + ϵiM,t
+(6)
+where Mt is the price of the aggregate market at time t.
+The log residual log(pi,t/pj,t) can then be expressed as the following difference:
+log(pi,t
+pj,t
+) = α + βlog(pj,t) + βMlog(Mt) + γiMlog(pi,t−1) −γjMlog(pj,t−1) + ϵM,t (7)
+where α = αiM −αjM, βM = βiM −βjM and ϵM = ϵiM,t −ϵjM,t,
+The results can be generalized to any factors beyond market returns:
+log(pit) = α+βlog(pjt)+
+X
+k
+βFklog(Fkt)+γiMlog(pi,t−1)−γjMlog(pj,t−1)+ϵM,t
+(8)
+The above relation allows us to construct a statistical arbitrage (or pairs
+trading) strategy that is explicitly dependent on prior realizations of exogenous factors without relying on just the prices of the two instruments. As
+such, we are creating a more precise and tailored solution.
+However, the estimation of such a process is non-trivial. Since price time
+series pi and pj are themselves dependent on the market and, possibly, each
+other, the OLS Regression will not work.
+6
+
+2.3. Why OLS Fails
+It is easy to see why OLS fails in the presence of collinearity.
+Consider two correlated time series: x and z, where z is an affine transformation of x,
+z = αz + βzx + ϵz
+(9)
+Depending on the relative magnitude of the βz = coefficient, the following
+OLS regression may fail right away:
+y = α + βxx + βzz + εy
+(10)
+If the right-hand-side variables are represented as X = [x, z] and the lefthand-side variable is Y = [y], then β = (XTY )/(XTX)−1. If {x} and {z}
+variables are highly correlated, however, there is not enough variability in
+the X and the necessary inverse of XTX may not exist, and β cannot be
+estimated.
+2.4. Eigenvalues, Eigenvectors and Eigenfactors Construction
+To overcome this problem, we propose to use auxiliary variables that are
+orthogonal to each other by construction. These variables are often referred
+to as eigenfactors and are already used in portfolio construction (e.g., [31])
+and other applications dependent on the matrix inverse.
+where Xk is the kth column of the original data input matrix X, λ(n) is
+the nth eigenvalue, V (n) is the nth eigenvector, and V (n)
+k
+is the kth element
+of the nth eigenvector.
+As shown in [29], the eigenvectors are uncorrelated by construction. The
+eigenfactors represent mapping of X columns onto the new eigenvector bases,
+with each V (n)
+k
+assigning relative dataset-intrinsic importance to each X column ([30]).
+We can further show that the fact that the eigenvectors are orthogonal
+by construction, the resulting eigenfactors are uncorrelated and, thus, are
+suitable for a linear regression.
+The idea of eigenvalue or principal component decomposition is to find
+the ”dimensions” or components within a given data set that is responsible
+for the most variation in the data. Thus, we are actively looking for ”moverand-shaker” data drivers that actually makes our data valuable. To identify
+the key drivers from all the potentially strongly correlated columns, we are
+seeking the columns that add maximum richness to the data, but such that
+can be linearly combined with other drivers in the data for maximum effect.
+7
+
+As such, we seek a set of orthogonal unit vectors Vi, |Vi| = 1 that impose
+such linear transformation V TX on our dataset to maximize the variance
+of the resulting product (see [29] for the details of the algorithm). In our
+application, the dataset of interest is X, the set of independent variables in
+our regression, equation (10).
+To find the vectors V = {Vi} that maximize the variance of V TX, we
+need to solve
+max
+Vi
+V ar (V T
+i X)
+(11)
+s.t. Vi
+TVi = 1
+(12)
+and Vi
+TVj = 0
+(13)
+If the variance of X is Σ, then
+V ar (V T
+i X) = Vi
+TΣVi
+(14)
+and the maximization of equation (11) can be solved using a Lagrangean and
+differentiating to find the solution to the maximization problem:
+L(Vi, λi) = Vi
+TΣVi −λi(Vi
+TVi −1)
+(15)
+∂L(Vi, λi)
+∂Vi
+= 2ΣVi −2λiVi = 0
+(16)
+The solution to equation (16) is the Principal Component equation:
+ΣVi = λiVi
+(17)
+or, rewritten in a more familiar way:
+Σ = V TΛV
+(18)
+where V is a matrix of unit vectors Vi, and Λ is a diagonal matrix with {λi}
+on the diagonal and zeros elsewhere.
+Most relevant to our cause, however, is the observation that the new,
+transformed vectors, Vi
+TX, are uncorrelated with each other:
+cov(Vi
+TX, Vj
+TX) = Vi
+TΣVj = λjVi
+TVj
+(19)
+Since, by construction, Vi
+TVi = 1 and Vi
+TVj = 0 (equation (11)),
+cov(Vi
+TX, Vj
+TX) =
+(
+1
+for i = j
+0
+for ∀i̸ = j
+8
+
+Therefore, Vi
+TX∀i presents an uncorrelated factor for X, often known as
+eigenfactor.
+As shown in [29], the ith eigenfactor is often normalized as follows:
+Fi = ViX/
+p
+λi
+(20)
+2.5. Identifying Dominant Factors with Eigenregressions
+The idea of using eigenfactors for identifying relevant drivers has been
+explored in the financial literature. However, the adoption of the technique
+has been slow mostly due to the lack of interpretability of the factors. As
+[30] show, however, the factor composition is readily reflected in its respective
+eigenvector, making the explanatory process fully transparent.
+Thus, the OLS regression y = α + βxx + βzz + εy with correlated x
+and z from equation (10) can be transformed into a new regression with
+independent variables (equation (20) that are orthogonal by construction
+and can, therefore, be estimated using OLS;
+y = α + βF + ϵ
+(21)
+where F is a matrix with each column i representing factor Fi from equation
+(20).
+The corresponding regression coefficients βi will help us identify the factors Fi that are most relevant to explaining the given variable y. Once we
+identify statistically-significant factors, we can peer inside the factor construction to examine the relative weights of the original variables in each
+significant factor, following [30].
+Thus, to estimate the optimal drivers of a time series from a set of highly
+collinear candidates, we propose to:
+1. Perform an eigenvalue decomposition of the candidate variable set
+2. Construct eigenfactors
+3. Regress the time series of interest on the resulting eigenfactors
+4. Explain the eigenfactors by the dominant coefficients in their respective
+underlying eigenvectors.
+We next confirm our methodology with in a simulated scenario.
+9
+
+Model
+S
+Z
+Intercept
+Adj R2 (%)
+1
+0.1 (5.9)*
+94.0 (48.1)*
+3.3
+2
+0.6 (47.1)*
+37.9 (47.1)*
+68.9
+3
+0.0 (2.8)
+0.6 (46.2)*
+35.4 (21.1)*
+69.1
+Table 1: Regression of simulated time series, Y = α + βSS + βZZ + ϵY
+3. Simulation
+For a toy example, consider a time series {y} that is linearly dependent
+on the time series {x} and {z}. The number of time series can be extended
+to any arbitrary number, but here we will only consider two to simplify our
+exposition.
+Suppose further that {x} is directly related to {z} via an affine transformation:
+Z = αx + βxx
+(22)
+We next simulate a possible path of {x} using the traditional binomial
+model and then derive z.
+In our simulation, We followed a simple binomial model to simulate a
+possible path of our ”underlying” variable S: starting from S0 = 100, S
+was equally-likely to either move up by 0.005 or down by 0.005 in every
+simulation step. Figure 1 shows 1,000-step binomial tree simulation for a
+sample variable S.
+Suppose further that there exist two variables that are weakly dependent
+on S via the following relationships:
+• Variable Y moves in the same direction as S 80% of the time. The
+other 20%, Y moves in the opposite way.
+• Variable Z moves in the same direction as S 70% of the time. The
+other 30% of the time, the variable Z either does not move at all or
+moves in the opposite way to S with equal probability.
+Figure 1 shows a possible realization of the three time series. In the example shown, the correlations between each pair of simulated time series were
+Corr(S, Y ) = 18%, Corr(S, Z) = 16%, Corr(Y, Z) = 83%.
+When we regress Y on S and Z, we obtain results shown in Table 1.
+The resulting eigenvectors from the SVD decomposition are documented
+in Table 2 and shown in Figure 2.
+10
+
+Figure 1: A Sample Simulated Time Series Following a Binomial Tree Model
+The results of the eigenfactor regression are shown in Table 3. The intercept of the eigenfactor regression (Model 4) is nearly identical to that of the
+regression on both dependent variables (Model 3), further underscoring the
+equivalence between the two techniques.
+In the eigenfactor regression, the absolute value of the coefficient corresponding to the first eigenfactor, however, is much larger than that of the
+second eigenfactor, suggesting that the first eigenfactor is more important to
+the dependent variable Y . Note that this does not always hold: even though
+the SVD orders factors in the order of importance from the largest to the
+smallest, the largest factor(s) may not be the most relevant ones to the given
+time series Y .
+11
+
+Figure 2: Eigenfactors of the Sample Simulated Time Series
+Looking into the composition of the sample eigenfactors (shown in Table
+2), we see that the largest coefficient by absolute value in V 1 is | −0.7191|
+that belongs to the time series S. This implies that S is more dominant in
+the first eigenvector, which in turn drives most of the variation in our variable
+of interest, Y . As such, we can focus on S and discard Z.
+4. Explaining Pairs Trading Strategy – An Empirical Example
+To provide a practical example of our proposed methodology, we examine
+several futures contracts, specifically:
+• The E-mini S&P 500 futures,
+12
+
+Independent Variable
+V 1
+V 2
+S
+-0.7191
+0.6948
+Z
+-0.6948
+-0.7191
+Table 2: Eigenvectors of [s z] matrix
+Model
+F1
+F2
+Intercept
+Adj R2 (%)
+4
+29.2 (32.4)*
+-6.2 (-42.5)*
+35.4 (21.1)*
+69.1
+Table 3: Regression of simulated time series on Eigenfactors, Y = α + βF F + ϵY
+• NASDAQ 100 futures, and
+• Mini Dow Jones Industrial futures.
+When discussing futures on a non-dividend financial instrument, like an
+index, we usually describe them in relation to the underlying spot price using
+the equation
+Ft = St(1 + RF,t(T −t))
+(23)
+where Ft represents the futures price at time t, St is the spot price at
+time t, RF,t is the risk-free rate at time t, and (T −t) is the time until the
+futures contract matures.
+We aim to profit by forming pairs based on the spot prices and risk-free
+rates. The following exogenous variables were tested:
+• the S&P 500 ETF (SPY),
+• SPDR Dow Jones Industrial Average ETF Trust (DIA),
+• U.S. Treasury Yield Index-5 Year Notes,
+• U.S. Treasury Yield Index-13 Week T-Bill,
+• U.S. Treasury Yield 30 Years, and
+• CBOE Interest Rate 10 Year T-Note.
+To analyze the results, we performed regression analysis, specifically regressing the logarithm of the residuals of the futures pairs on lagged variables
+using ordinary least squares (OLS). This regression yielded a 99% Adjusted
+R-squared value, indicating a strong relationship, and t-statistics showed high
+13
+
+significance for most coefficients. However, when we individually regressed
+the futures pairs residuals on each independent variable using various lags
+ranging from 1 day to 60 trading days, the Adjusted R-squared values ranged
+from -0.5% to 3.2%, significantly lower than the collinear OLS regression.
+To determine the significant factors, we considered a random forest methodology, which identified lagged market indices as the most significant features
+according to the random forest model.
+Finally, we applied the methodology proposed in this paper. The first
+singular vectors alone explained 6%-10% of the variation in the residuals of
+our pairs. Notably, the U.S. Treasury Yield Index-5 Year Note emerged as
+the most important feature within the first singular vector, aligning with the
+fundamental futures pricing equation (23).
+5. Conclusion
+Our research presents a novel AI-based methodology that effectively identifies informational inefficiencies between financial instruments utilizing exogenous factors. By leveraging Unsupervised AI techniques, we are able to
+uncover previously hidden relationships and better comprehend the factors
+influencing pairs trading outcomes.
+Through comprehensive analysis, we
+provide empirical evidence of the significance of these exogenous factors in
+driving the observed statistical arbitrage.
+Understanding the mechanics and determinants of pairs trading opens up
+avenues for a range of potential benefits. By gaining insights into the reasons
+behind successful statistical arbitrage, market participants and policymakers
+can work towards creating more stable market conditions. Additionally, the
+knowledge gained from this study can inform the development of new trading
+strategies, risk management approaches, and regulatory frameworks.
+Overall, our research adds to the existing literature by introducing a
+novel approach to analyzing pairs trading, facilitating a deeper understanding of market dynamics. We believe that this investigation contributes to
+the broader goal of enhancing market efficiency and fostering a more robust
+financial ecosystem.
+References
+[1] Jie Ying, 2024. ”Gradual information diffusion across commonly owned
+firms.”, Journal of Financial Economics, Vol. 156, 38-52.
+14
+
+[2] Ganapathy Vidyamurthy, (2004). Pairs Trading Quantitative Methods
+and Analysis. John Wiley Sons, Inc., Hoboken, New Jersey.
+[3] Goetzmann, William and Rouwenhorst, K. and Gatev, Evan, 2006.
+”Pairs Trading: Performance.”, Review of Financial Studies, Vol. 19,
+797-827.
+[4] Po-Chang Ko and Ping-Chen Lin and Hoang-Thu Do and Yuan-Heng
+Kuo and Linh My Mai and You-Fu Huang, 2024. ”Pairs trading in cryptocurrency markets: A comparative study of statistical methods.”, Investment Analysts Journal, Vol. 53, 102-119.
+[5] Lintner, John. 1965. “The Valuation of Risk Assets and the Selection of
+Risky Investments in Stock Portfolios and Capital Budgets.” Review of
+Economics and Statistics. Vol. 47(1), 13–37.
+[6] Hossein Rad, Rand Kwong Yew Low and Robert Faff, 2016. ”The profitability of pairs trading strategies: distance, cointegration and copula
+methods”, Quantitative Finance, Vol. 16(10), 1541-1558.
+[7] , Sharpe, William F. 1964. “Capital Asset Prices: A Theory of Market
+Equilibrium under Conditions of Risk.” Journal of Finance. Vol. 19(3),
+425– 42.
+[8] David Ardia and Laurent Barras and Patrick Gagliardini and Olivier
+Scaillet, 2024. ”Is it alpha or beta? Decomposing hedge fund returns
+when models are misspecified.”, Journal of Financial Economics, Vol.
+154, 103-805.
+[9] Victor DeMiguel and Javier Gil-Bazo and Francisco J. Nogales and
+Andr´e A.P. Santos, 2023. ”Machine learning and fund characteristics
+help to select mutual funds with positive alpha.” Journal of Financial
+Economics, Vol. 150(3), 103-737.
+[10] Serhiy Kozak and Stefan Nagel and Shrihari Santosh, 2020. ”Shrinking
+the cross-section.”, Journal of Financial Economics, Vol, 135(2), 271292.
+[11] S¨ohnke M. Bartram and Mark Grinblatt, 2021. ”Global market inefficiencies.” Journal of Financial Economics, Vol. 139 (1), 234-259.
+15
+
+[12] Charles M.C. Lee and Terrence Tianshuo Shi and Stephen Teng Sun
+and Ran Zhang, 2024. ”Production complementarity and information
+transmission across industries”, Journal of Financial Economics, Vol.
+155, 103-812.
+[13] Shiyang Huang and Charles M.C. Lee and Yang Song and Hong Xiang,
+2022. ”A frog in every pan: Information discreteness and the lead-lag
+returns puzzle”, Journal of Financial Economics, Vol. 145, 83-102.
+[14] Angelo Ranaldo and Fabricius Somogyi, 2021. ”Asymmetric information
+risk in FX markets”, Journal of Financial Economics, Vol. 140(2), 391411.
+[15] Yifeng Guo and Lira Mota, 2021. ”Should information be sold separately? Evidence from MiFID II”, Journal of Financial Economics, Vol.
+142(1), 97-126.
+[16] Bok Baik and Jun-Koo Kang and Jin-Mo Kim, 2010. ”Local institutional investors, information asymmetries, and equity returns”, Journal
+of Financial Economics, Vol. 97(1), 81-106.
+[17] Marco Avellaneda and Jeong-Hyun Lee, 2010. ”Statistical arbitrage in
+the US equities market.” Quantitative Finance, 10(7), 761–782.
+[18] Sergio M. Focardi, Frank J. Fabozzi, and Ivan K. Mitov, 2016. ”A new
+approach to statistical arbitrage: Strategies based on dynamic factor
+models of prices and their performance.” Journal of Banking & Finance,
+Vol. 65, 134–155.
+[19] Xing Gao and Daniel Ladley, 2022, ”Statistical arbitrage and risk contagion.” Journal of Economic Dynamics and Control, Vol. 144, 104-528.
+[20] Elliott, R. J., Van Der Hoek *, J., & Malcolm, W. P., 2005. ”Pairs
+trading.” Quantitative Finance, Vol.5(3), 271–276.
+[21] Dunis, C. L., Laws, J., & Evans, B., 2006. ”Modelling and trading the
+gasoline crack spread: A non-linear story.” Derivatives Use, Trading &
+Regulation, Vol. 12 (1), 126–145.
+16
+
+[22] Dunis, C. L., Laws, J., Middleton, P. W., & Karathanasopoulos, A.,
+2015. Trading and hedging the corn/ethanol crush spread using timevarying leverage and nonlinear models. The European Journal of Finance, Vol. 21 (4), 352–375.
+[23] Do, B., Faff, R., & Hamza, K., 2006. ”A new approach to modeling and
+estimation for pairs trading.” Proceedings of 2006 Financial Management Association European Conference, Monash Uni, 31.
+[24] C. W. S., Chen, M., and Chen, S.-Y., 2014. ”Pairs trading via threeregime threshold autoregressive GARCH models.” Modeling Dependence
+in Econometrics, 127–140. Springer.
+[25] Chen, H., Chen, S. J., and Li, F., 2012. ”Empirical investigation of an
+equity pairs trading strategy.” SSRN Electronic Journal.
+[26] Jacobs, H. and Weber, M. (2015). ”On the determinants of pairs trading
+profitability.” Journal of Financial Markets, Vol. 23, 75–97.
+[27] Deardorff, A.V., 1979. ”One-way arbitrage and its implications for
+the foreign exchange markets.” Journal of Political Economy, Vol. 87,
+351–364.
+[28] Eugene F. Fama, 2017. ”Efficient Capital Markets A Review of Theory
+and Empirical Work”, The Fama Portfolio: Selected Papers of Eugene
+F. Fama, John H. Cochrane and Tobias J. Moskowitz eds, University of
+Chicago Press, 76-121.
+[29] Aldridge, I. and M. Avellaneda, 2021. Big Data Science in Finance.
+Wiley.
+[30] Aldridge, Irene and Ying Guan, 2022. ”What Data Series Matter?”
+Working Paper, SSRN.
+[31] Irene Aldridge, 2019. ”Big Data in Portfolio Allocation: A New Approach to Successful Portfolio Optimization.” The Journal of Financial
+Data Science Winter 2019, 1(1), 45 - 63.
+17

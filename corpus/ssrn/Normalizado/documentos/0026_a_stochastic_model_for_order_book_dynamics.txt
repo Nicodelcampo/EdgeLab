@@ -1,0 +1,1675 @@
+Electronic copy available at: http://ssrn.com/abstract=1273160
+A stochastic model for order book dynamics
+Rama Cont, Sasha Stoikov, Rishi Talreja
+IEOR Dept, Columbia University, New York
+Rama.Cont@columbia.edu, sashastoikov@gmail.com, rt2146@columbia.edu
+We propose a continuous-time stochastic model for the dynamics of a limit order book. The model strikes
+a balance between three desirable features: it can be estimated easily from data, it captures key empirical
+properties of order book dynamics and its analytical tractability allows for fast computation of various
+quantities of interest without resorting to simulation. We describe a simple parameter estimation procedure
+based on high-frequency observations of the order book and illustrate the results on data from the Tokyo
+stock exchange. Using simple matrix computations and Laplace transform methods, we are able to eﬃciently
+compute probabilities of various events, conditional on the state of the order book: an increase in the midprice, execution of an order at the bid before the ask quote moves, and execution of both a buy and a sell
+order at the best quotes before the price moves. Using high-frequency data, we show that our model can
+eﬀectively capture the short-term dynamics of a limit order book. We also evaluate the performance of a
+simple trading strategy based on our results.
+Key words : Limit order book, ﬁnancial engineering, Laplace transform inversion, queueing systems,
+simulation.
+Contents
+1
+A continuous-time model for a stylized limit order book
+3
+1.1
+Limit order books
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+3
+1.2
+Dynamics of the order book . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+4
+2
+Parameter estimation
+6
+2.1
+Description of the data set . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+6
+2.2
+Estimation procedure
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+7
+3
+Laplace transform methods for computing conditional probabilities
+9
+3.1
+Laplace transforms and ﬁrst-passage times of birth-death processes . . . . . . . . . .
+9
+3.2
+Direction of price moves . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+10
+3.3
+Executing an order before the mid-price moves . . . . . . . . . . . . . . . . . . . . .
+12
+3.4
+Making the spread . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+13
+4
+Numerical Results
+15
+4.1
+Long term behavior
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+16
+4.1.1
+Steady-state shape of the book . . . . . . . . . . . . . . . . . . . . . . . . . .
+16
+4.1.2
+Volatility
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+17
+4.2
+Conditional distributions
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+17
+4.2.1
+One-step transition probabilities . . . . . . . . . . . . . . . . . . . . . . . . .
+17
+4.2.2
+Direction of price moves . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+18
+4.2.3
+Executing an order before the mid-price moves . . . . . . . . . . . . . . . . .
+18
+4.2.4
+Making the spread . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+19
+4.3
+An application to high-frequency trading
+. . . . . . . . . . . . . . . . . . . . . . . .
+19
+5
+Conclusion
+21
+1
+Electronic copy available at: https://ssrn.com/abstract=1273160
+
+Electronic copy available at: http://ssrn.com/abstract=1273160
+Cont, Stoikov and Talreja: A stochastic model for order book dynamics
+2
+The evolution of prices in ﬁnancial markets results from the interaction of buy and sell orders
+through a rather complex dynamic process. Studies of the mechanisms involved in trading ﬁnancial
+assets have traditionally focused on quote-driven markets, where a market maker or dealer centralizes buy and sell orders and provides liquidity by setting bid and ask quotes. The NYSE specialist
+system is an example of this mechanism. In recent years, Electronic Communications Networks
+(ECN’s) such as Archipelago, Instinet, Brut and Tradebook have captured a large share of the
+order ﬂow by providing an alternative order-driven trading system. These electronic platforms
+aggregate all outstanding limit orders in a limit order book that is available to market participants
+and market orders are executed against the best available prices. As a result of the ECN’s popularity, established exchanges such as the NYSE, Nasdaq, the Tokyo Stock Exchange and the London
+Stock Exchange have adopted electronic order-driven platforms, either fully or partially through
+“hybrid” systems.
+The absence of a centralized market maker, the mechanical nature of execution of orders and,
+last but not least, the availability of data have made order-driven markets interesting candidates
+for stochastic modelling.
+At a fundamental level, models of order book dynamics may provide some insight into the
+interplay between order ﬂow, liquidity and price dynamics Bouchaud et al. (2002), Smith et al.
+(2003), Farmer et al. (2004), Foucault et al. (2005). At the level of applications, such models
+provide a quantitative framework in which investors and trading desks can optimize trade execution
+strategies Alfonsi et al. (2007), Obizhaeva and Wang (2006). An important motivation for modelling
+high-frequency dynamics of order books is to use the information on the current state of the order
+book to predict its short-term behavior. We focus, therefore, on conditional probabilities of events,
+given the state of the order book.
+The dynamics of a limit order book resembles in many aspects that of a queuing system. Limit
+orders wait in a queue to be executed against market orders (or canceled). Drawing inspiration
+from this analogy, we model a limit order book as a continuous-time Markov process that tracks
+the number of limit orders at each price level in the book. The model strikes a balance between
+three desirable features: it can be estimated easily using high-frequency data, it reproduces various
+empirical features of order books and it is analytically tractable. In particular, we show that
+our model is simple enough to allow the use of Laplace transform techniques from the queueing
+literature to compute various conditional probabilities. These include the probability of the midprice increasing in the next move, the probability of executing an order at the bid before the ask
+quote moves and the probability of executing both a buy and a sell order at the best quotes before
+the price moves, given the state of the order book. Although here we only focus on these events,
+the methods we introduce allow one to compute conditional probabilities involving much more
+general events such as those involving latency associated with order processing (see Remark 1).
+We illustrate our techniques on a model estimated from order book data for a stock on the Tokyo
+stock exchange.
+Related literature. Various recent studies have focused on limit order books. Given the complexity of the structure and dynamics of order books, it has been diﬃcult to construct models
+that are both statistically realistic and amenable to rigorous quantitative analysis. Parlour (1998)
+and Foucault et al. (2005), Rosu (forthcoming) propose equilibrium models of limit order books.
+These models provide interesting insights into the price formation process but contain unobservable parameters that govern agent preferences. Thus, they are diﬃcult to estimate and use in
+applications. Some empirical studies on properties of limit order books are Bouchaud et al. (2002),
+Farmer et al. (2004), and Holliﬁeld et al. (2004). These studies provide an extensive list of statistical features of order book dynamics that are challenging to incorporate in a single model.
+Bouchaud et al. (2008), Smith et al. (2003), Bovier et al. (2006), Luckock (2003), and Maslov and
+Mills (2001) propose stochastic models of order book dynamics in the spirit of the one proposed
+Electronic copy available at: https://ssrn.com/abstract=1273160
+
+Cont, Stoikov and Talreja: A stochastic model for order book dynamics
+3
+here but focus on unconditional/steady–state distributions of various quantities rather than the
+conditional quantities we focus on here.
+The model proposed here is admittedly simpler in structure than some others existing in the
+literature: it does not incorporate strategic interaction of traders as in game theoretic approaches
+Parlour (1998), Foucault et al. (2005) and Rosu (forthcoming), nor does it account for “long
+memory” features of the order ﬂow as pointed out by Bouchaud et al. (2002) and Bouchaud et al.
+(2008). However, contrarily to these models, it leads to an analytically tractable framework where
+parameters can be easily estimated from empirical data and various quantities of interest may be
+computed eﬃciently.
+Outline. The paper is organized as follows. §1 describes a stylized model for the dynamics of
+a limit order book, where the order ﬂow is described by independent Poisson processes. Estimation of model parameters from high-frequency order book time series data is described in §2 and
+illustrated using data from the Tokyo Stock Exchange. In §3 we show how this model can be used
+to compute conditional probabilities of various types of events relevant for trade execution using
+Laplace transform methods. §4 explores steady state properties of the model using Monte Carlo
+simulation, compares conditional probabilities computed by simulation to those computed with the
+Laplace transform methods presented in §3 and analyze a high frequency trading strategy based
+on our results in §4.3. §5 concludes.
+1. A continuous-time model for a stylized limit order book
+1.1. Limit order books
+Consider a ﬁnancial asset traded in an order-driven market. Market participants can post two types
+of buy/sell orders. A limit order is an order to trade a certain amount of a security at a given price.
+Limit orders are posted to a electronic trading system and the state of outstanding limit orders
+can be summarized by stating the quantities posted at each price level: this is known as the limit
+order book. The lowest price for which there is an outstanding limit sell order is called the ask price
+and the highest buy price is called the bid price.
+A market order is an order to buy/sell a certain quantity of the asset at the best available price
+in the limit order book. When a market order arrives it is matched with the best available price
+in the limit order book and a trade occurs. The quantities available in the limit order book are
+updated accordingly.
+A limit order sits in the order book until it is either executed against a market order or it is
+canceled. A limit order may be executed very quickly if it corresponds to a price near the bid and
+the ask, but may take a long time if the market price moves away from the requested price or if
+the requested price is too far from the bid/ask. Alternatively, a limit order can be canceled at any
+time.
+We consider a market where limit orders can be placed on a price grid {1,...,n} representing
+multiples of a price tick. The upper boundary n is chosen large enough so that it is highly unlikely
+that orders for the stock in question are placed at prices higher than n within the time frame of
+our analysis. Since the model is intended to be used on the time scale of hours or days this ﬁnite
+boundary assumption is reasonable. We track the state of the order book with a continuous-time
+process X(t) ≡(X1(t),...,Xn(t))t≥0, where |Xp(t)| is the number of outstanding limit orders at
+price p, 1 ≤p ≤n. If Xp(t) < 0, then there are −Xp(t) bid orders at price p; if Xp(t) > 0, then there
+are Xp(t) ask orders at price p.
+The ask price pA(t) at time t is then deﬁned by
+pA(t) = inf{p = 1,...,n, Xp(t) > 0} ∧(n + 1).
+Electronic copy available at: https://ssrn.com/abstract=1273160
+
+Cont, Stoikov and Talreja: A stochastic model for order book dynamics
+4
+Similarly, the bid price pB(t) is deﬁned by
+pB(t) ≡sup{p = 1,...,n, Xp(t) < 0, } ∨0
+Notice that when there are no ask orders in the book we force an ask price of n+1 and when there
+are no bid orders in the book we force a bid price of 0. The mid-price pM(t) and the bid-ask spread
+pS(t) are deﬁned by
+pM(t) ≡pB(t) + pA(t)
+2
+and
+pS(t) ≡pA(t) −pB(t).
+Since most of the trading activity takes place in the vicinity of the bid and ask prices, it is useful
+to keep track of the number of outstanding orders at a given distance from the bid/ask. To this
+end, we deﬁne
+QB
+i (t) =
+(
+XpA(t)−i(t)
+0 < i < pA(t)
+0
+pA(t) ≤i < n,
+(1)
+the number of buy orders at a distance i from the ask and
+QA
+i (t) =
+(
+XpB(t)+i(t)
+0 < i < n −pB(t)
+0
+n −pB(t) ≤i < n,
+(2)
+the number of sell orders at a distance i from the bid. Although X(t) and (pA(t),pB(t),QA(t),QB(t))
+contain the same information, the second representation highlights the shape or depth of the book
+relative to the best quotes.
+1.2. Dynamics of the order book
+Let us now describe how the limit order book is updated by the inﬂow of new orders. For a state
+x ∈Zn and 1 ≤p ≤n, deﬁne
+xp±1 ≡x ± (0,...,1,...,0),
+where the 1 in the vector on the right-hand side is in the pth component. Assuming that all orders
+are of unit size (in empirical examples we will take this unit to be the average size of limit orders
+observed for the asset),
+• a limit buy order at price level p < pA(t) increases the quantity at level p: x →xp−1
+• a limit sell order at price level p > pB(t) increases the quantity at level p: x →xp+1
+• a market buy order decreases the quantity at the ask price: x →xpA(t)−1
+• a market sell order decreases the quantity at the bid price: x →xpB(t)+1
+• a cancellation of an oustanding limit buy order at price level p < pA(t) decreases the quantity
+at level p: x →xp+1
+• a cancellation of an oustanding limit sell order at price level p > pB(t) decreases the quantity
+at level p: x →xp−1
+The evolution of the order book is thus driven by the incoming ﬂow of market orders, limit orders
+and cancellations at each price level, each of which can be represented as a counting process. It
+is empirically observed Bouchaud et al. (2002) that incoming orders arrive more frequently in the
+vicinity of the current bid/ask price and the rate of arrival of these orders depends on the distance
+to the bid/ask.
+To capture these empirical features in a model that is analytically tractable and allows to
+compute quantities of interest in applications, most notably conditional probabilities of various
+events, we propose a stochastic model where the events outlined above are modelled using
+independent Poisson processes. More precisely, we assume that, for i ≥1,
+Electronic copy available at: https://ssrn.com/abstract=1273160
+
+Cont, Stoikov and Talreja: A stochastic model for order book dynamics
+5
+• Limit buy (resp. sell) orders arrive at a distance of i ticks from the opposite best quote at
+independent, exponential times with rate λ(i),
+• Market buy (resp. sell) orders arrive at independent, exponential times with rate µ,
+• Cancellations of limit orders at a distance of i ticks from the opposite best quote occur at a
+rate proportional to the number of outstanding orders: if the number of outstanding orders at that
+level is x then the cancellation rate is θ(i)x. This assumption can be understood as follows: if we
+have a batch of x outstanding orders, each of which can be canceled at an exponential time with
+parameter θ(i), then the overall cancellation rate for the batch is θ(i)x.
+• The above events are mutually independent.
+Order arrival rates depend on the distance to the bid/ask with most orders being placed close
+to the current price. We model the arrival rate as a function λ : {1,...,n} →[0,∞) of the distance
+to the bid/ask. Empirical studies (Zovko and Farmer (2002) or Bouchaud et al. (2002)) suggest a
+power law,
+λ(i) = k
+iα ,
+as a plausible speciﬁcation.
+Given the above assumptions, X is a continuous-time Markov chain with state space Zn and
+transition rates given by
+x →xp−1
+with rate
+λ(pA(t) −p)
+for p < pA(t),
+x →xp+1
+with rate
+λ(p −pB(t))
+for p > pB(t),
+x →xpB(t)+1 with rate
+µ
+x →xpA(t)−1 with rate
+µ
+x →xp+1
+with rate θ(pA(t) −p)|xp| for p < pA(t),
+x →xp−1
+with rate θ(p −pB(t))|xp| for p > pB(t).
+In practice, the ask price is always greater than the bid price. We say a state is admissible if it
+fulﬁlls this requirement:
+A ≡{x ∈Zn | ∃k,l ∈Z s.t. 1 ≤k ≤l ≤n, xp ≥0 for p ≥l, xp = 0 for k ≤p ≤l, xp ≤0 for p ≤k},
+(3)
+If the initial state of the book is admissible, it remains admissible with probability one:
+Proposition 1 If X(0) ∈A, then P[X(t) ∈A, ∀t ≥0] = 1.
+Proof.
+It is easily veriﬁed that A is stable under each of the six transitions deﬁned above, which
+leads to our assertion.
+□
+Proposition 2 If θ ≡min1≤i≤n θ(i) > 0, then X is an ergodic Markov process. In particular, X
+has a proper stationary distribution.
+Proof.
+Let N ≡(N(t), t ≥0), where N(t) ≡Pn
+p=1 |Xp(t)|, and let ˜N be a birth-death process
+with birth rate given by λ ≡2Pn
+p=1 λ(p) and death rate in state i, µi ≡2µ + iθ. Notice that N
+increases by one at rate bounded from above by λ and decreases by one at rate bounded from below
+by µi ≡2µ+iθ when in state i. Thus, for all t ≥0, N is stochastically bounded by ˜N. For k ≥1, let
+T k
+0 and T k
+−0 denote the duration of the kth visit to 0 and the duration between the (k −1)th and
+kth visit to 0 of process N, respectively. Deﬁne random variables ˜T k
+0 and ˜T k
+−0, k ≥1, for process ˜N
+similarly. Then the point process with interarrival times T 1
+−0,T 1
+0 ,T 2
+−0,T 2
+0 ,... and the point process
+with interarrival times ˜T 1
+−0, ˜T 1
+0 , ˜T 2
+−0, ˜T 2
+0 ,... are alternating renewal processes. By Theorem VI.1.2
+Electronic copy available at: https://ssrn.com/abstract=1273160
+
+Cont, Stoikov and Talreja: A stochastic model for order book dynamics
+6
+of Asmussen (2003) and the fact that N is stochastically dominated by ˜N, we then have for each
+k ≥1,
+E[T k
+0 ]
+E[T k
+0 ] + E[T k
+−0] = lim
+t→∞P[N(t) = 0] ≥lim
+t→∞P[ ˜N(t) = 0] =
+E[ ˜T k
+0 ]
+E[ ˜T k
+0 ] + E[ ˜T k
+−0]
+.
+(4)
+Notice that in state 0 both N and ˜N have birth rate λ. Thus,
+E[T k
+0 ] = E[ ˜T k
+0 ] = 1
+λ.
+(5)
+Combining (4) and (5) gives us
+E[T k
+−0] ≤E[ ˜T k
+−0].
+(6)
+To show ˜N is ergodic, notice the inequalities
+∞
+X
+i=1
+λi
+µ1 ···µi
+<
+∞
+X
+i=1
+1
+i!
+λ
+θ
+i
+= e
+λ
+θ −1 < ∞,
+(7)
+and
+∞
+X
+i=1
+µ1 ···µi
+λi
+>
+M
+X
+i=1
+µ1 ···µi
+λi
++
+∞
+X
+i=M+1
+2µ + Mθ
+λ
+i
+= ∞,
+(8)
+for M > 0 chosen large enough so that 2µ + Mθ > λ. Therefore, by Corollary 2.5 of Asmussen
+(2003), ˜N is ergodic so that E[ ˜T k
+−0] < ∞. Combining this with the bound (6) and the fact that for
+each t ≥0 X(t) = (0,...,0) if and only if N(t) = 0 shows that X is positive recurrent. Since X is
+clearly also irreducible, it follows that X is ergodic.
+□
+The ergodicity of X is a desirable feature of theoretical interest: it allows to compare time
+averages of various quantities in simulations (average shape of the order book, average price impact,
+etc.) to unconditional expectations of these quantities computed in the model. The steady-state
+behavior of X will be further discussed in §4.1. We note, however, that our results involving
+conditional probabilities in §3 and applications discussed in §4.3 do not rely on this ergodicity
+result.
+2. Parameter estimation
+2.1. Description of the data set
+Our data consists of time-stamped sequences of trades (market orders) and quotes (prices and
+quantities of outstanding limit orders) for the 5 best price levels on each side of the order book,
+for stocks traded on the Tokyo stock exchange, over a period of 125 days (Aug. - Dec. 2006). This
+data set, referred to as Level II order book data, provides a more detailed view of price dynamics
+than the Trade and Quotes (TAQ) data often used for high frequency data analysis, which consist
+of prices and sizes of trades (market orders) and time-stamped updates in the price and size of the
+bid and ask quotes.
+In Table 1, we display a sample of three consecutive trades for Sky Perfect Communications.
+Each row provides the time, size and price of a market order. We also display a sample of Level
+II bid side quotes. Each row displays the 5 bid prices (pb1, pb2, pb3, pb4, pb5), as well as the
+quantity of shares bid at these respective prices (qb1, qb2, qb3, qb4, qb5).
+Electronic copy available at: https://ssrn.com/abstract=1273160
+
+Cont, Stoikov and Talreja: A stochastic model for order book dynamics
+7
+time
+price size
+9:11:01 74300
+1
+9:11:04 74600
+2
+9:11:19 74400
+1
+time
+pb1
+pb2
+pb3
+pb4
+pb5
+qb1 qb2 qb3 qb4 qb5
+9:11:01 74300 74200 74000 73900 73800
+12
+13
+1
+52
+11
+9:11:03 74400 74300 74200 74000 73900
+20
+12
+13
+1
+52
+9:11:04 74400 74300 74200 74000 73900
+21
+11
+13
+1
+52
+9:11:05 74400 74300 74200 74000 73900
+34
+4
+13
+1
+52
+9:11:19 74400 74300 74200 74000 73900
+33
+4
+13
+1
+52
+Table 1
+A sample of 3 trades and 5 quotes for Sky Perfect Communications
+2.2. Estimation procedure
+Recall that in our stylized model we assume orders to be of “unit” size. In the data set, we ﬁrst
+compute the average sizes of market orders Sm, limit orders Sl, and canceled orders Sc and choose
+the size unit to be the average size of a limit order Sl. The limit order arrival rate function for
+1 ≤i ≤5 can be estimated by
+ˆλ(i) = Nl(i)
+T∗
+,
+where Nl(i) is the total number of limit orders that arrived at a distance i from the opposite best
+quote and T∗is the total trading time in the sample (in minutes). Nl(i) is obtained by enumerating
+the number of times that a quote increases in size at a distance of 1 ≤i ≤5 ticks from the opposite
+best quote. We then extrapolate by ﬁtting a power law function of the form
+ˆλ(i) = k
+iα
+(suggested by Zovko and Farmer (2002) or Bouchaud et al. (2002)). The power law parameters k
+and α are obtained by a least squares ﬁt
+min
+k,α
+5
+X
+i=1
+
+ˆλ(i) −k
+iα
+2
+.
+Estimated arrival rates at distances 0 ≤i ≤10 from the opposite best quote are displayed in Figure
+1(a).
+The arrival rate of market orders is then estimated by
+ˆµ = Nm
+T∗
+Sm
+Sl
+,
+where T∗is the total trading time in the sample (in minutes) and Nm is the number of market
+orders. Note that we ignore market orders that do not aﬀect the best quotes, as is the case when
+a market order is matched by a hidden order.
+Since the cancellation rate in our model is proportional to the number of orders at a particular
+price level, in order to estimate the cancellation rates we ﬁrst need to estimate the steady-state
+shape of the order book Qi, which is the average number of orders at a distance of i ticks from
+Electronic copy available at: https://ssrn.com/abstract=1273160
+
+Cont, Stoikov and Talreja: A stochastic model for order book dynamics
+8
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+0
+0.2
+0.4
+0.6
+0.8
+1
+1.2
+1.4
+1.6
+1.8
+2
+Distance from opposite quote
+data
+model
+(a) Limit orders rates
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+0
+0.1
+0.2
+0.3
+0.4
+0.5
+0.6
+0.7
+0.8
+0.9
+Distance from opposite quote
+data
+model
+(b) Cancellation rates
+Figure 1
+The arrival rates as a function of the distance from the opposite quote
+i
+1
+2
+3
+4
+5
+ˆλ(i) 1.85 1.51 1.09 0.88 0.77
+ˆθ(i)
+0.71 0.81 0.68 0.56 0.47
+ˆµ
+0.94
+k
+1.92
+α
+0.52
+Table 2
+Estimated parameters: Sky Perfect Communications.
+the opposite best quote, for 1 ≤i ≤5. If M is the number of quote rows and SB
+i (j) the number of
+shares bid at a distance of i ticks from the ask on the jth row, for 1 ≤j ≤M, we have
+QB
+i = 1
+Sl
+1
+M
+M
+X
+j=1
+SB
+i (j)
+The vector QA
+i is obtained analogously and Qi is the average of QA
+i and QB
+i .
+An estimator for the cancellation rate function is then given by
+ˆθ(i) = Nc(i)
+TQi
+Sc
+Sl
+for
+i ≤5
+and
+ˆθ(i) = ˆθ(5)
+for
+i > 5,
+(9)
+where Nc(i) is obtained by counting the number of times that a quote decreases in size at a distance
+of 1 ≤i ≤5 ticks from the opposite best quote, excluding decreases due to market orders. The ﬁtted
+values are displayed in Figure 1(b).
+Estimated parameter values for Sky Perfect Communications are given in Table 2.
+Electronic copy available at: https://ssrn.com/abstract=1273160
+
+Cont, Stoikov and Talreja: A stochastic model for order book dynamics
+9
+3. Laplace transform methods for computing conditional probabilities
+As noted above, an important motivation for modelling high-frequency dynamics of order books
+is to use the information provided by the limit order book for predicting short-term behavior of
+various quantities which are useful in trade execution and algorithmic trading. For instance, the
+probability of the mid-price moving up versus down, the probability of executing a limit order
+at the bid before the ask quote moves and the probability of executing both a buy and a sell
+order at the best quotes before the price moves. These quantities can be expressed in terms of
+conditional probabilities of events, given the state of the order book. In this section we show that
+the model proposed in §1 allows such conditional probabilities to be analytically computed using
+Laplace methods. After presenting some background on Laplace transforms in §3.1, we give various
+examples of these computations. The probability of an increase in the mid-price is discussed in
+§3.2, the probability that a limit order executes before the price moves is discussed in §3.3 and
+the probability of executing both a buy and a sell limit order before the price moves is discussed
+in §3.4. Laplace transform methods allow eﬃcient computation of these quantities, bypassing the
+need for Monte Carlo simulation.
+3.1. Laplace transforms and ﬁrst-passage times of birth-death processes
+We ﬁrst recall some basic facts about two-sided Laplace transforms and discuss the computation
+of Laplace transforms for ﬁrst-passage times of birth-death processes (Abate and Whitt (1999)).
+Given a function f : R →R, its two-sided Laplace transform is given by
+ˆf(s) =
+Z ∞
+−∞
+e−stf(t)dt,
+where s is a complex numbers. When f is the probability density function (pdf) of some random
+variable X, we also say that ˆf is the two-sided Laplace transform of the random variable X. We
+work with two-sided Laplace transforms here because for our purposes the function f will usually
+correspond to the pdf of a random variable with both positive and negative support. From now
+on, we drop the preﬁx “two-sided” when referring to two-sided Laplace transforms. When we say
+conditional Laplace-transform of the random variable X conditional on the event A, we mean the
+Laplace transform of the conditional pdf of X given A. Recall that if X and Y are independent
+random variables with well-deﬁned Laplace transforms, then
+ˆfX+Y (s) = E[e−s(X+Y )] = E[e−sX]E[e−sY ] = ˆfX(s) ˆfY (s).
+(10)
+If for some γ ∈R we have
+R ∞
+−∞| ˆf(γ + iω)|dω < ∞and f(t) is continuous at t, then the inverse
+transform is given by the Bromwich contour integral
+f(t) = 1
+2πi
+Z γ+i∞
+γ−i∞
+ets ˆf(s)ds.
+(11)
+The continued fraction associated with a sequence {an, n ≥1} of partial numerators and {bn, n ≥1}
+of partial denominators, which are complex numbers with an̸ = 0 for all n ≥1, is the sequence
+{wn, n ≥1}, where
+wn = t1 ◦t2 ◦··· ◦tn(0),
+n ≥1,
+tk(u) =
+ak
+bk + u,
+k ≥1,
+and ◦denotes the composition operator. If w ≡limn→∞wn, then the continued fraction is said to
+be convergent and the limit w is said to be the value of the continued fraction (Abate and Whitt
+(1999)). In this case, we write
+w ≡Φ∞
+n=1
+an
+bn
+.
+Electronic copy available at: https://ssrn.com/abstract=1273160
+
+Cont, Stoikov and Talreja: A stochastic model for order book dynamics
+10
+Consider now a birth-death process with constant birth rate λ and death rates µi in state i ≥1,
+and let σb denote the ﬁrst-passage time of this process to 0 given it begins in state b. Next, notice
+that we can write σB as the sum
+σb = σb,b−1 + σb−1,b−2 + ··· + σ1,0,
+where σi,i−1 denotes the ﬁrst-passage time of the birth-death process from the state i to the state
+i−1, for i = 1,...,b, and all terms on the right-hand side are independent. If ˆfb denotes the Laplace
+transform of σb and ˆfi,i−1 denotes the Laplace transform of σi,i−1, for i = 1,...,b, then we have by
+(10),
+ˆfb(s) =
+bY
+i=1
+ˆfi,i−1(s).
+(12)
+Therefore, in order to compute ˆfb, it suﬃces to compute the simpler Laplace transforms ˆfi,i−1, for
+i = 1,...,b. By Equation (4.9) of Abate and Whitt (1999), we see that the Laplace transform of
+ˆfi,i−1 is given by
+ˆfi,i−1(s) = −1
+λΦ∞
+k=i
+−λµk
+λ + µk + s.
+(13)
+The computation there is based on a recursive relationship between the ˆfi,i−1, i = 1,...,b, which
+is derived by considering the ﬁrst transition of the birth-death process. Combining (12) and (13),
+we obtain
+ˆfb(s) =
+
+−1
+λ
+b bY
+i=1
+Φ∞
+k=i
+−λµk
+λ + µk + s
+!
+.
+(14)
+We will use this result in all our computations below.
+3.2. Direction of price moves
+We now compute the probability that the mid-price increases at its next move. The ﬁrst move in the
+mid-price occurs at the ﬁrst-passage time of the bid or ask queue to zero or, if the bid/ask spread is
+greater than one, the ﬁrst time a limit order arrives inside the spread. Throughout this section, let
+XA ≡XpA(·)(·) and XB ≡|XpB(·)(·)|. Furthermore, let WB ≡{WB(t), t ≥0} (WA ≡{WA(t), t ≥0}),
+where WB(t) (WA(t)) denotes the number of orders remaining at the bid (ask) at time t of the initial
+XB(0) (XA(0)) orders and let ϵB (ϵA) be the ﬁrst-passage time of WB (WA) to 0. Furthermore, let
+T be the time of the ﬁrst change in mid-price:
+T ≡inf{t ≥0, pM(t)̸ = pM(0)}.
+Given an initial conﬁguration of the book, the probability that the next change in mid-price is an
+increase can then be written as
+P[pM(T) > pM(0)|XA(0) = a,XB(0) = b,pS(0) = S],
+(15)
+where S > 0. For ease of notation, we will omit the condition in (15) in all proofs below.
+The idea for computing (15) is to use a coupling argument.
+Lemma 3 Let pS(0) = S. Then
+1. There exist independent birth-death processes ˜XA and ˜XB with constant birth rates λ(S) and
+death rates µ + iθ(S), i ≥1, such that for all 0 ≤t ≤T, ˜XA(t) = XA(t) and ˜XB(t) = XB(t).
+2. There exist independent pure death processes ˜WA and ˜WB with death rate µ+iθ(S) in state i ≥
+1, such that for all 0 ≤t ≤T, ˜WA(t) = WA(t) and ˜WB(t) = WB(t). Furthermore, ˜WA is independent
+of ˜XB, ˜WB is independent of ˜XA, ˜WA ≤˜XA and ˜WB ≤˜XB.
+Electronic copy available at: https://ssrn.com/abstract=1273160
+
+Cont, Stoikov and Talreja: A stochastic model for order book dynamics
+11
+Proof.
+We prove Part 1. Part 2 can be proven analogously. X is a continuous-time Markov
+chain, with transition rates given by (1.2). For 0 ≤t ≤T, pA(t) = pA(0) and pB(t) = pB(0) so
+substituting in (1.2) yields that XA(t) and XB(t) have the following (identical) transition rates for
+0 ≤t ≤T
+n →n + 1 with rate
+λ(S)
+(16)
+n →n −1 with rate
+µ + nθ(S)
+(17)
+Deﬁne ˜XA and ˜XB such that
+• ˜XA(t) = XA(t) and ˜XB(t) = XB(t) for t ≤T and
+• ˜XA(t), ˜XB(t),t ≥T follow independent birth-death processes with rates given by (16) and (17).
+The above remarks show that in fact ( ˜XA(t))t≥0 (resp. ( ˜XB(t))t≥0 ) has the same law as a birthdeath process with rates (16)-(17). To show that ˜XA and ˜XB are independent, we note that, since
+the transition rates of XA (resp. XB) do not depend on (Xp(t),p̸ = pA(0)) (resp. (Xp(t),p̸ = pB(0)))
+for 0 ≤t ≤T, we have, in particular, conditional independence of XA(t) and XB(t) given X(0) and
+{t ≤T}.
+□
+Henceforth, we let σA and σB denote the ﬁrst-passage times of ˜XA and ˜XB to 0, respectively.
+The conditional probability (15) can then be computed as follows:
+Proposition 4 (Probability of increase in mid-price) Let ˆf S
+j be given by
+ˆf S
+j (s) =
+
+−
+1
+λ(S)
+j bY
+i=1
+Φ∞
+k=i
+−λ(S)(µ + kθ(S))
+λ(S) + µ + kθ(S) + s
+!
+,
+(18)
+for j ≥1, and let ΛS ≡PS−1
+i=1 λ(i). Then (15) is given by the inverse Laplace transform of
+ˆF S
+a,b(s) = 1
+s
+
+ˆf S
+a (ΛS + s) +
+ΛS
+ΛS + s(1 −ˆf S
+a (ΛS + s))
+
+ˆf S
+b (ΛS −s) +
+ΛS
+ΛS −s(1 −ˆf S
+b (ΛS −s))
+
+,
+(19)
+evaluated at 0. When S = 1, (19) reduces to
+ˆF 1
+a,b(s) = 1
+s
+ˆf 1
+a(s) ˆf 1
+b (−s).
+(20)
+Proof.
+We will ﬁrst focus on the special case when S = 1 and then extend the analysis to the
+case S > 1 using Lemma 5 below. Construct the independent birth-death processes ˜XA and ˜XB as
+in Lemma 3. When S = 1, the price changes for the ﬁrst time exactly when one of the two processes
+˜XA and ˜XB reaches the state 0 for the ﬁrst time. Thus, given our initial conditions, the distribution
+of T is given by the minimum of the independent ﬁrst-passage times σA and σB. Furthermore, the
+quantity (15) is given by P[σA < σB]. By (14), the conditional Laplace transform of σA −σB given
+the initial conditions is given by ˆf 1
+a(s) ˆf 1
+b (−s) so that the conditional Laplace transform of the
+cumulative distribution function (cdf) of σA −σB is given by (20). Thus, our desired probability is
+given by the inverse Laplace transform of (20) evaluated at 0.
+We now move on to the case where S > 1. Let σi
+A denote the ﬁrst time an ask order arrives i
+ticks away from the bid and σi
+B denote the ﬁrst time a bid order arrives i ticks away from the ask,
+for i = 1,...,S −1. The time of the ﬁrst change in mid-price is now given by
+T = σA ∧σB ∧min{σi
+A,σi
+B, i = 1,...,S −1}.
+Notice that ˜XA and ˜XB are independent of the mutually independent arrival times σi
+A, σi
+B, for
+i = 1,...,S −1. Also, notice that σi
+A and σi
+B are exponentially distributed with rates λ(i) for
+Electronic copy available at: https://ssrn.com/abstract=1273160
+
+Cont, Stoikov and Talreja: A stochastic model for order book dynamics
+12
+i = 1,...,S −1. The ﬁrst change in mid-price is an increase if there is an arrival of a limit bid order
+within S −1 ticks of the best ask or ˜XA hits zero, before there is an arrival of a limit ask order
+within S −1 ticks of the best bid or ˜XB hits zero. Thus, the quantity (15) can be written as
+P[σA ∧σ1
+B ∧... ∧σS−1
+B
+< σB ∧σ1
+A ∧... ∧σS−1
+A
+] = P[σA ∧σΣ
+B < σB ∧σΣ
+A],
+(21)
+where σΣ
+A and σΣ
+B are independent exponential random variables both with rate ΛS. In order to
+compute (21), we ﬁrst need to compute the conditional Laplace transform of the minimum σB ∧σΣ
+A.
+This is given in Lemma 5, substituting σΣ
+A for Z. The conditional Laplace transform of the random
+variable σB ∧σΣ
+A −σA ∧σΣ
+B can then be computed using (10) and the probability (15) can be
+computed by inverting the conditional Laplace transform of the cdf of this random variable and
+evaluating at 0 as in the case S = 1.
+□
+Lemma 5 Let Z be an exponentially distributed random variable with parameter Λ. Then the
+Laplace transform of the random variable σB ∧Z is given by
+ˆf 1
+b (Λ + s) +
+Λ
+Λ + s(1 −ˆf 1
+b (Λ + s)),
+where ˆf 1
+b is given in (18).
+Proof.
+We ﬁrst compute the density fσB∧Z of the random variable σB ∧Z in terms of the density
+fb of the random variable σB. Since Z is exponential with rate Λ, we have for all t ≥0,
+P[σB ∧Z < t] = 1 −P[σB > t]P[Z > t] = 1 −(1 −FσB(t))e−Λt.
+Taking derivatives with respect to t gives
+fσB∧Z(t) = f 1
+b (t)e−Λt + Λ(1 −F 1
+b (t))e−Λt,
+(22)
+for t ≥0, where F 1
+b (t) (f 1
+b (t)) is the cdf (pdf) of σB. Also, fσB∧Z(t) = 0 for t < 0. The Laplace
+transform of σB ∧Z is thus given by
+ˆfσB∧Z(s) =
+Z ∞
+−∞
+e−stfσB∧σΣ
+B(t)dt
+=
+Z ∞
+0
+e−st  f 1
+b (t)e−Λt + Λ
+ 1 −F 1
+b (t)
+
+e−Λt
+ds
+=
+Z ∞
+0
+e−t(s+Λ)f 1
+b (t)dt + Λ
+Z ∞
+0
+ 1 −F 1
+b (t)
+
+e−t(s+Λ)dt
+= ˆf 1
+b (s + Λ) +
+Λ
+Λ + s
+
+1 −ˆf 1
+b (s + Λ)
+
+,
+where the last equality follows from integration by parts.
+□
+Proposition 4 yields a numerical procedure for computing the probability that the next change
+in the mid-price will be an increase. We discuss implementation of the procedure in §4.2.2.
+3.3. Executing an order before the mid-price moves
+A trader that submits a limit order at a given time obtains a better price than a trader that
+submits a market order at that same time but face the risk of non-execution and the “winner’s
+curse”. Whereas a market order executes with certainty, a limit order stays in the order book until
+either a matching order is entered or the order is canceled. The probability that a limit order is
+executed before the price moves is therefore useful in quantifying the choice between placing a limit
+Electronic copy available at: https://ssrn.com/abstract=1273160
+
+Cont, Stoikov and Talreja: A stochastic model for order book dynamics
+13
+order and placing a market order. We now compute the probability that an order placed at the
+bid price is executed before any movement in the mid-price, given that the order is not canceled.
+Our result holds for initial spread S ≡pS(0) ≥1, but we remark that in the case where S = 1 the
+probability we are interested in is equal to the probability that the order is executed before the
+mid-price moves away from the desired price, given the order is not canceled. Although we focus
+here on an order placed at the bid price, since our model is symmetric in bids and asks, our result
+also holds for orders placed at the ask price.
+We introduce some new notation, which we will use in this subsection as well as the next. Let
+NCb (NCa) denote the event that an order that never gets canceled is placed at the bid (ask)
+at time 0. Then, the probability that an order placed at the bid is executed before the mid-price
+moves is given by
+P[ϵB < T|XB(0) = b,XA(0) = a,pS(0) = S,NCb].
+(23)
+Proposition 6 (Probability of order execution before mid-price moves) Deﬁne ˆf S
+a (s) as
+in (18), let ˆgS
+j be given by
+ˆgS
+j (s) =
+jY
+i=1
+µ + θ(S)(i −1)
+µ + θ(S)(i −1) + s,
+(24)
+for j ≥1, and let ΛS ≡PS−1
+i=1 λ(i). Then the quantity (23) is given by the inverse Laplace transform
+of
+ˆF S
+a,b(s) = 1
+s ˆgS
+b (s)
+
+ˆf S
+b (2ΛS −s) +
+2ΛS
+2ΛS −s(1 −ˆf S
+b (2ΛS −s))
+
+,
+(25)
+evaluated at 0. When S = 1, (25) reduces to
+ˆF 1
+a,b(s) = 1
+s ˆg1
+b(s) ˆf 1
+a(−s).
+(26)
+Proof.
+Construct ˜XA and ˜WB using Lemma 3. Let us ﬁrst consider the case S = 1. Let T ′ ≡
+ϵB ∧T denote the ﬁrst time when either the process ˜WB hits 0 or the mid-price changes. Conditional
+on an inﬁnitely patient order being placed at the bid price at time 0, T ′ is the ﬁrst time when either
+that order gets executed or the mid-price changes. Notice that conditional on our initial conditions,
+ϵB is given by a sum of b independent exponentially distributed random variables with parameters
+µ+(i−1)θ(1), for i = 1,...,b, and independent of ˜XA. Thus, the conditional Laplace transform of
+ϵB given our initial conditions is given by (24). Since, in the case S = 1 the mid-price can change
+before time ϵB if and only if σA < ϵB, the quantity (23) can be written simply as P[ϵB < σA]. Using
+(10) with the conditional Laplace transforms of ϵB and σA, given in (24) and (18) respectively, we
+obtain (26).
+This analysis can be extended to the case where S > 1 just as in the proof of Proposition 4.
+When S > 1, our desired quantity can be written as P[ϵB < σA ∧σΣ
+B ∧σΣ
+A]. Since the conditional
+distribution of σΣ
+B ∧σΣ
+A is exponential with parameter 2ΛS, Lemma 5 then yields the result.
+□
+3.4. Making the spread
+We now compute the probability that two orders, one placed at the bid price and one placed at the
+ask price, are both executed before the mid-price moves, given that the orders are not canceled.
+If the probability of executing both a buy and a sell limit order before the price moves is high, a
+statistical arbitrage strategy can be designed by submitting limit orders at the bid and the ask and
+wait for both orders to execute. If both orders execute before the price moves, the strategy has paid
+oﬀthe bid-ask spread: we refer to this situation as “making the spread”. Otherwise, losses may be
+Electronic copy available at: https://ssrn.com/abstract=1273160
+
+Cont, Stoikov and Talreja: A stochastic model for order book dynamics
+14
+minimized by submitting a market order and losing the bid-ask spread. We restrict attention to
+the case where the initial spread is one tick: S = 1. The probability of making the spread can be
+expressed as
+P[max{ϵA,ϵB} < T|XB(0) = b,XA(0) = a,pS(0) = 1,NCa,NCb].
+(27)
+The following result allows one to compute this probability using Laplace transform methods:
+Proposition 7 The probability (27) of making the spread is given by ha,b + hb,a, where
+ha,b =
+∞
+X
+i=0
+a
+X
+j=1
+P[ϵj < σi]
+Z ∞
+0
+P X
+0,i(t)P W
+a,j(t)g1
+b(t)dt,
+(28)
+where
+P X
+0,i(t) ≡e−λX(t)λX(t)i
+i!
+,
+λX(t) ≡λ
+θ
+ 1 −e−θt
+(29)
+P W
+a,j(t) ≡
+
+eQW
+a t
+a,j ≡
+ ∞
+X
+k=0
+tk
+k!(QW
+a )k
+!
+a,j
+(30)
+QW
+a ≡
+
+
+0
+0
+0
+···
+0
+µ −µ
+0
+···
+0
+0 µ + θ −µ −θ
+···
+0
+...
+...
+...
+...
+...
+0
+0
+···
+µ + (a −1)θ −µ −(a −1)θ
+
+
+.
+(31)
+and g1
+b is the inverse Laplace transform of ˆg1
+b, which is given in (24).
+Proof.
+Since S = 1, T = min{σA,σB}, and the quantity (27) can be written as
+P[max{ϵB,ϵA} < min{σB,σA}].
+(32)
+Construct ˜XA, ˜XB, ˜WA and ˜WB using Lemma 3. Let T ′ = max{ϵA,ϵB} ∧T denote the ﬁrst time
+when either both the processes ˜WA and ˜WB have hit 0 or the mid-price has changed. Conditional
+on inﬁnitely patient orders being placed at the best bid and ask prices at time 0, T ′ is the ﬁrst
+time when either both the orders get executed or the mid-price changes. Furthermore, by Lemma
+3, ˜WA and ˜WB are independent pure death processes with death rate µ + iθ(1) in state i ≥1, and
+˜WA(t) ≤˜XA(t) and ˜WB(t) ≤˜XB(t). This implies that ϵA and ϵB are independent of each other and
+σA and σB are independent of each other with ϵA ≤σA and ϵB ≤σB. Using these properties we
+obtain
+P[max{ϵB,ϵA} < min{σB,σA}] = P[ϵB < σA,ϵA < σB]
+= P[ϵB < σA,ϵA < σB,ϵB < ϵA] + P[ϵB < σA,ϵA < σB,ϵA < ϵB]
+= P[ϵA < σB,ϵB < ϵA] + P[ϵB < σA,ϵA < ϵB]
+= ha,b + hb,a
+(33)
+where we deﬁne ha,b ≡P[ϵB < ϵA < σB], the probability that the order placed at the bid is executed
+before the order placed at the ask and the order at the ask is executed before the bid quote
+disappears. We now focus on computing ha,b. Conditioning on the value of ϵB gives
+ha,b =
+Z ∞
+0
+P[ϵB < ϵA < σB|ϵB = t]g1
+b(t)dt.
+(34)
+Electronic copy available at: https://ssrn.com/abstract=1273160
+
+Cont, Stoikov and Talreja: A stochastic model for order book dynamics
+15
+Focusing on the ﬁrst factor in the integrand in (34) and conditioning on the values of ˜XB(t) and
+˜WA(t) gives us
+P[ϵB < ϵA < σB|ϵB = t] =
+∞
+X
+i=0
+a
+X
+j=0
+P[ϵB < ϵA < σB|ϵB = t, ˜XB(t) = i, ˜WA(t) = j]P[ ˜XB(t) = i, ˜WA(t) = j|ϵB = t].
+(35)
+The ﬁrst conditional probability on the right-hand of (35) can now be simpliﬁed as follows. For
+i = 0 or j = 0 it is simply 0. For i,j ≥1, under the condition of the probability, at time t there are j
+orders in the ask queue that have been placed before time 0 that have yet to be executed and there
+are a total of i orders in the bid queue. Thus, the probability of interest is simply the probability
+that the j ask orders get executed before the number of orders in the bid queue hits 0. Thus,
+P[ϵB < ϵA < σB|ϵB = t, ˜XB(t) = i, ˜WA(t) = j] = P[ϵj < σi].
+(36)
+Furthermore, the second probability on the right-hand side of (35) can be written as
+P[ ˜XB(t) = i, ˜WA(t) = j|ϵB = t] = P[ ˜XB(t) = i|ϵB = t]P[ ˜WA(t) = j|ϵB = t]
+= P[ ˜XB(t) = i|ϵB = t]P[ ˜WA(t) = j].
+(37)
+Combining the equations (33)-(35) and using Tonelli’s theorem to interchange the integral and
+the summation gives us
+ha,b =
+∞
+X
+i=0
+a
+X
+j=1
+P[ϵj < σi]
+Z ∞
+0
+P[ ˜XB(t) = i|ϵB = t]P[ ˜WA(t) = j]g1
+b(t)dt.
+The quantity P[ ˜XB(t) = i|ϵB = t] can be computed using an analogy with the M/M/∞queue.
+The number of orders in the bid queue at the time when the bid order placed at time 0 has executed
+is simply the number of customers at time t in an initially empty M/M/∞queue with arrival rate
+λ and service rate θ, which has a Poisson distribution with mean given by λX(t) in (29). This leads
+to the expression for P X
+0,i(t) in (29).
+The quantity P[ ˜WA(t) = j] is the probability that a pure death process with death rate µ + (k −
+1)θ(1) in state k ≥1 is in state j at time t, given it begins in state a. The inﬁnitesimal generator of
+this pure death process is given by (31). Thus, by Corollary II.3.5 of Asmussen (2003), P[ ˜WA(t) = j]
+is given by (30).
+□
+Remark 1. We note here that the probabilities computed in this section can also be computed
+using transition matrices of appropriately deﬁned transient discrete-time Markov chains. In general, for a continuous-time Markov chain the probability of hitting state i before state j can be
+determined by constructing a corresponding embedded discrete-time Markov chain with states i
+and j absorbing states and computing the fundamental matrices of this Markov chain (see, for
+example, §4.4 of Ross (1996)). However, our Laplace transform approach has the advantage of
+computing full distributions of random variables such as σA, σB, ϵA, and ϵB. This could be used, for
+example, to compute probabilities such as P[σA + δ < σB], for δ > 0 which are useful when latency
+in order processing is an issue.
+4. Numerical Results
+Our stochastic model allows one to compute various quantities of interest both by simulating the
+evolution of the order book and and by using the Laplace transform methods presented in §3,
+based on parameters µ, λ and θ estimated from the order ﬂow. In this section we compute these
+Electronic copy available at: https://ssrn.com/abstract=1273160
+
+Cont, Stoikov and Talreja: A stochastic model for order book dynamics
+16
+0
+5
+10
+15
+20
+25
+30
+0.8
+1
+1.2
+1.4
+1.6
+1.8
+2
+Distance from opposite best quote in ticks
+Average number of orders
+Figure 2
+Simulation of the steady-state proﬁle of the order book: Sky Perfect Communications.
+quantities for example of Sky Perfect Communications and compare them to empirically observed
+values, in order to assess the precision of the description provided by our model.
+In §4.1, we compare empirically observed long-term behavior (e.g. unconditional properties) of
+the order book to simulations of the ﬁtted model. Although these quantities may not be particularly
+important for traders who are interested in trading in a short time scale, they indicate how well
+the model reproduces the average properties of the order book. In §4.2, we compare conditional
+probabilities of various events in our model to frequencies of the events in the data. We also compare
+results using the Laplace transform methods developed in §3 to our simulation results.
+4.1. Long term behavior
+Recent empirical studies on order books Bouchaud et al. (2002, 2008) have mainly focused on average properties of the order book, which, in our context correspond to unconditional expectations of
+quantities under the stationary measure of X: the steady-state shape of the book and the volatility
+of the mid-price. The ergodicity of the Markov chain X, shown in Proposition 2, implies that such
+expectations E[f(X∞)] can be computed in the model by simulating the order book over a large
+horizon T and averaging f(X(t)) over the simulated path:
+1
+T
+Z T
+0
+f(X(t))dt →E[f(X∞)]
+a.s.
+as
+T →∞.
+4.1.1. Steady-state shape of the book
+We simulate the order book over a long horizon
+(n = 106 events) and observe the mean number of orders Qi at distances 1 ≤i ≤30 ticks from the
+opposite best quote. The results are displayed in Figure 2. The steady-state proﬁle of the order
+book describes the average market impact of trades Farmer et al. (2004), Bouchaud et al. (2008).
+Figure 2 shows that the average proﬁle of the order book displays a hump (in this case, at two
+ticks from the bid/ask), as observed in empirical studies Bouchaud et al. (2008). Note that this
+hump feature does not result from any ﬁne-tuning of model parameters or additional ingredients
+such as correlation between order ﬂow and past price moves.
+Electronic copy available at: https://ssrn.com/abstract=1273160
+
+Cont, Stoikov and Talreja: A stochastic model for order book dynamics
+17
+4.1.2. Volatility
+Deﬁne the realized volatility of the asset over a day by
+RVn =
+v
+u
+u
+t
+n
+X
+i=1
+
+log
+Pi+1
+Pi
+2
+,
+(38)
+where n is the number of quotes in the day and the prices Pi represent the mid-price of the stock,
+for i = 1,...,n. In the ﬁrst day of the sample, we compute a realized volatility of 0.0219 after
+a total of 370 trades. After repeatedly simulating our model for 370 trades we obtained a 95%
+conﬁdence interval for realized volatility of 0.0228 ± 0.0003. Interestingly, this estimator yields the
+correct order of magnitude for realized volatility solely based on intensity parameters for the order
+ﬂow (λ,µ,θ).
+4.2. Conditional distributions
+As discussed in the introduction, conditional distributions are the main quantities of interest for
+applications in high-frequency trading. A good description of conditional distributions of variables
+characterizing the order book gives one the ability to predict their behavior in the short term,
+which is of obvious interest in optimal trade execution and the design of trading strategies.
+4.2.1. One-step transition probabilities
+In order to assess the model’s usefulness for shortterm prediction of order book behavior, we compare one-step transition probabilities implied by
+our model to corresponding empirical frequencies. In particular, we consider the probability that
+the number of orders at a given price level increases given that it changes.
+Deﬁne Tm as the time of the mth event in the order book:
+T0 = 0,
+Tm+1 ≡inf{t ≥Tm|X(t)̸ = X(Tm)}.
+(39)
+The probability that the number of orders at a distance i from the opposite best quote moves from
+n to n + 1 at the next change is given by
+Pi(n) ≡P[QA
+i (Tm+1) = n + 1 | QA
+i (Tm) = n,QA
+i (Tm+1)̸ = n] =
+(
+λ(1)
+λ(1)+µ+nθ(1),
+i = 1,
+λ(i)
+λ(i)+nθ(i),
+i > 1.
+(40)
+To see how the above expression arises, consider the case i = 1. The next change in QA
+1 is an increase
+if an arrival of a limit order at price QA
+1 occurs before any of the limit orders at QA
+1 cancel or a
+market buy order occurs. But since an arrival of a limit order at price QA
+1 occurs with rate λ(1)
+and a cancellation or market buy order occurs at rate µ + nθ(1), the probability that an arrival of
+a limit order occurs ﬁrst is given by λ(1)/(λ(1) + µ + nθ(1)).
+Denoting empirical quantities with a hat, e.g. ˆQB
+i (t) is the empirically observed number of bid
+orders at a distance of i units from the ask price at time t, an estimator for the above probability
+is given by
+ˆPi(n) ≡
+ˆBup + ˆAup
+ˆBchange + ˆAchange
+,
+where
+ˆBup =
+{m| ˆQB
+i ( ˆTm) = n, ˆQB
+i ( ˆTm+1) > n}
+
+ˆAup =
+{m| ˆQA
+i ( ˆTm) = n, ˆQA
+i ( ˆTm+1) > n}
+
+ˆBchange =
+{m| ˆQB
+i ( ˆTm) = n, ˆQB
+i ( ˆTm+1)̸ = n}
+
+ˆAchange =
+{m| ˆQA
+i ( ˆTm) = n, ˆQA
+i ( ˆTm+1)̸ = n}
+
+Electronic copy available at: https://ssrn.com/abstract=1273160
+
+Cont, Stoikov and Talreja: A stochastic model for order book dynamics
+18
+0
+1
+2
+3
+4
+5
+6
+7
+0
+0.5
+1
+Queue size
+Probability of increase
+1 tick from opposite quote
+ 
+ 
+Empirical
+Model
+0
+1
+2
+3
+4
+5
+6
+7
+0
+0.5
+1
+Queue size
+Probability of increase
+2 ticks from opposite quote
+ 
+ 
+Empirical
+Model
+0
+1
+2
+3
+4
+5
+6
+7
+0
+0.5
+1
+Queue size
+Probability of increase
+3 ticks from opposite quote
+ 
+ 
+Empirical
+Model
+0
+1
+2
+3
+4
+5
+6
+7
+0
+0.5
+1
+Queue size
+Probability of increase
+4 ticks from opposite quote
+ 
+ 
+Empirical
+Model
+0
+1
+2
+3
+4
+5
+6
+7
+0
+0.5
+1
+Queue size
+Probability of increase
+5 ticks from opposite quote
+ 
+ 
+Empirical
+Model
+Figure 3
+Probability of an increase in the number of orders at distance i from the opposite best quote in the next
+change, for i = 1,...,5.
+In Figure 3, Pi(n) and ˆPi(n) for 1 ≤i ≤5 are shown for Sky Perfect Communications. We see that
+these probabilities are reasonably close in most cases, indicating that the transition probabilities
+of the order book are well described by the model.
+4.2.2. Direction of price moves
+This subsection and the next two are devoted to the computation of conditional probabilities using the Laplace transform methods described in §3. These
+computations require the numerical inversion of Laplace transforms. The inversions are performed
+by shifting the random variable X under study by a constant c such that P[X + c ≥0] ≈1, then
+inverting the corresponding one-sided Laplace transform using the methods proposed in Abate
+and Whitt (1992) and Abate and Whitt (1995). When computing the probability of an increase
+in mid-price, one can ﬁnd a good shift c by using the fact that when a = b the probability of an
+increase in mid-price is .5. This shift c should also serve well for cases where a̸ = b.
+Table 3 compares the empirical frequencies of an increase in mid-price to model-implied probabilities, given an initial conﬁguration of b orders at the bid price, a orders at the ask price and a
+spread of 1, for various values of a and b. We computed these quantities using Monte Carlo simulation (using 30,000 replications) and the Laplace transform methods described in §3. The simulation
+results, reported as 95% conﬁdence intervals, agree with the Laplace transform computations and
+show that the probability of an increase in the mid-price is well captured by the model.
+4.2.3. Executing an order before the mid-price moves
+Table 4 gives probabilities computed using both simulation and our Laplace transform method for executing a bid order before a
+change in mid-price for various values of a and b and for S = 1. Since our data set does not allow
+us to track speciﬁc orders, empirical values for these quantities, as well as the quantities in §4.2.4,
+are not obtainable.
+Electronic copy available at: https://ssrn.com/abstract=1273160
+
+Cont, Stoikov and Talreja: A stochastic model for order book dynamics
+19
+a
+b
+1
+2
+3
+4
+5
+1 .512 .304 .263 .242 .226
+2 .691 .502 .444 .376 .359
+3 .757 .601 .533 .472 .409
+4 .806 .672 .580 .529 .484
+5 .822 .731 .640 .714 .606
+a
+b
+1
+2
+3
+4
+5
+1 .499 ± .006 .333 ± .005 .258 ± .005 .213 ± .005 .187 ± .005
+2 .663 ± .005 .495 ± .006 .411 ± .006 .346 ± .005 .307 ± .005
+3 .743 ± .006
+.589 ± 006
+.506 ± .006 .434 ± .006 .389 ± .006
+4 .788 ± .005 .652 ± .006 .564 ± .006 .503 ± .006 .452 ± .006
+5 .811 ± .004 .693 ± .005 .615 ± .006 .547 ± .006 .504 ± .006
+a
+b
+1
+2
+3
+4
+5
+1 .500 .336 .259 .216 .188
+2 .664 .500 .407 .348 .307
+3 .741 .593 .500 .437 .391
+4 .784 .652 .563 .500 .452
+5 .812 .693 .609 .548 .500
+Table 3
+Probability of an increase in mid-price: empirical frequencies (top), simulation results (95% conﬁdence
+intervals) (middle), and Laplace transform method results (bottom).
+4.2.4. Making the spread
+Table 5 gives probabilities computed using both simulation and
+our Laplace transform method for executing both a bid and an ask order at the best quotes before
+the mid-price changes. One interesting observation here is that for a ﬁxed value of a, as b is
+increased, the probability of making the spread is not monotone. Thus, for a ﬁxed number of orders
+at the ask price the probability of making the spread is maximized for a nontrivial optimal number
+of orders at the bid price.
+4.3. An application to high-frequency trading
+The conditional probabilities described in the above section may be used as a building block to
+construct systematic trading strategies. Such strategies fall into the realm of statistical arbitrage
+since they do not guarantee a proﬁt, but lead to trades with positive expected returns and bounded
+losses. As a ﬁnal exercise, we provide the reader with one such example based on our results in
+§3.2 on the probability that the mid price increases, conditional on the conﬁguration of the book.
+In particular, using equation (19), we can compute the probability that the mid price increases
+given that the spread is S = 2, the number of orders at the bid is XB(0) = b = 3 and the number of
+orders at the ask XA(0) = a = 1. A simple application of our Laplace transform results, with our
+estimated parameters for Sky Perfect Communications given in Table 2, yields a probability 0.62
+of the mid price increasing. We use this as the basis for the following strategy, which we test in
+simulation:
+Electronic copy available at: https://ssrn.com/abstract=1273160
+
+Cont, Stoikov and Talreja: A stochastic model for order book dynamics
+20
+a
+b
+1
+2
+3
+4
+5
+1 .498 ± .004 .642 ± .004 .709 ± .004 .748 ± .004 .779 ± .004
+2 .299 ± .004 .451 ± .004 .536 ± .004 .592 ± .004 .632 ± .004
+3 .204 ± .004 .335 ± .004 .422 ± .004 .484 ± .004 .532 ± .004
+4 .152 ± .003 .264 ± .004 .344 ± .004 .403 ± .004 .450 ± .004
+5 .117 ± .003 .213 ± .004 .291 ± .004 .342 ± .004 .394 ± .004
+a
+b
+1
+2
+3
+4
+5
+1 .497 .641 .709 .749 .776
+2 .302 .449 .535 .591 .631
+3 .206 .336 .422 .483 .528
+4 .152 .263 .344 .404 .452
+5 .118 .213 .287 .346 .393
+Table 4
+Probability of executing a bid order before a change in mid-price: simulation results (95% conﬁdence
+intervals) (top) and Laplace transform method results (bottom).
+a
+b
+1
+2
+3
+4
+5
+1 .268 ± .004 .306 ± .004 .312 ± .004 .301 ± .004 .286 ± .004
+2 .306 ± .004 .384 ± .004 .406 ± .004 .411 ± .004 .401 ± .004
+3 .312 ± .004 .406 ± .004 .441 ± .004 .455 ± .004 .456 ± .004
+4 .301 ± .004 .411 ± .004 .455 ± .004 .473 ± .004 .485 ± .004
+5 .286 ± .004 .401 ± .004 .456 ± .004 .485 ± .004 .491 ± .004
+a
+b
+1
+2
+3
+4
+5
+1 .266 .308 .309 .300 .288
+2 .308 .386 .406 .406 .400
+3 .309 .406 .441 .452 .452
+4 .300 .406 .452 .471 .479
+5 .288 .400 .452 .479 .491
+Table 5
+Probability of making the spread: simulation results (95% conﬁdence intervals) (top) and Laplace
+transform method results (bottom).
+Entering the position: If the spread is S = 1, the number of orders at the bid is XB(0) ≥3,
+the number of orders at the ask is XA(0) = 1 and the number of orders at the second-best ask is
+XpA(0)+1(0) ≤1, then submit a market buy order. Right after this trade, if XpA(0)+1(0) = 1, the new
+conﬁguration of the order book will have XB(0+) = XB(0) ≥3, XA(0+) = XpA(0)+1(0) = 1 and the
+spread will be S = 2. In this scenario, the probability of the mid price increasing is now 0.62, as
+stated above, and we have entered the position at the current mid price. Thus, we are in a good
+position to make a proﬁt. In the case where XpA(0)+1(0) = 0, the order was bought at a price XA(0),
+Electronic copy available at: https://ssrn.com/abstract=1273160
+
+Cont, Stoikov and Talreja: A stochastic model for order book dynamics
+21
+Figure 4
+Probability distribution of P&L per roundtrip trade, in ticks.
+which is strictly lower than the new mid price
+XB(0+)+XA(0+)
+2
+≥XA(0)−1+XA(0)+2
+2
+= XA(0) + 1
+2. In
+order for the trade to be well-deﬁned we must deﬁne an exit strategy.
+Exiting the position: We submit a market sell order at the ﬁrst time τ such that either
+1. pB(τ) > pA(0), in which case we are selling at a price that is strictly greater than our buying
+price, or
+2. pB(τ) = pB(0) and XB(τ) = 1, which results in a loss of one tick.
+The probability of success of this round-trip transaction need not be recomputed in real time : if
+an “oﬄine” computation (for example using Laplace transform methods described in §3 ) indicates
+that the probability in (19) is large, this suggests that this strategy would perform well. Comparing
+this probability across diﬀerent stocks may be a good indicator of the proﬁtability of this strategy.
+After running our simulation for 15,788 trades, roughly the equivalent of 30 days of trading,
+our algorithm does a total of 2,376 roundtrip trades, and we display the P&L distribution in
+Figure 4. Note that the computed probability of 0.62 is not directly linked to the probability of the
+trade being successful, which may only be computed through simulation. Indeed, the probability
+of success of each round-trip transaction is less than 0.5, though the average proﬁt of each trade
+was 0.068 ticks, or 6.8 yen. The analysis of the above trading strategy does not take into account
+transaction costs, but these can be easily included in the analysis.
+5. Conclusion
+We have proposed a stylized stochastic model describing the dynamics of a limit order book, where
+the occurrences of market events – market orders, limit orders and cancellations – are governed by
+independent Poisson processes.
+The formulation of the model, which can be viewed as a queuing system, is entirely based on
+observable quantities so that its parameters can be easily estimated from observations of events in
+an actual order book. The model is simple enough to allow semi-analytical computation of various
+conditional probabilities of order book events via Laplace transform methods, yet rich enough to
+capture adequately the short-term behavior of the order book: conditional distributions of various
+quantities of interest show good agreement with the corresponding empirical distributions for
+parameters estimated from data sets from the Tokyo Stock Exchange. The ability of our model
+to compute conditional distributions is useful for short-term prediction and design of automated
+trading strategies. Finally, simulation results illustrate that our model also yields realistic features
+for long-term (steady state) average behavior of the order book proﬁle and of price volatility.
+One by-product of this study is to show how far a stochastic model can go in reproducing the
+dynamic properties of a limit order book without resorting to detailed behavioral assumptions
+Electronic copy available at: https://ssrn.com/abstract=1273160
+
+Cont, Stoikov and Talreja: A stochastic model for order book dynamics
+22
+about market participants or introducing unobservable parameters describing agent preferences,
+as in the market microstructure literature.
+This model can be extended in various ways to take into account a richer set of empirically
+observed properties Bouchaud et al. (2008). Correlation of the order ﬂow with recent price behavior
+can be modeled by introducing state-dependent intensities of order arrivals. The heterogeneity of
+order sizes, which appears to be an important ingredient in actual order book dynamics, can be
+incorporated by making order sizes independent and identically distributed random variables. Both
+of these features would conserve the Markovian nature of the process. A more realistic distribution
+of inter-event times may also be introduced by modelling the event arrivals via renewal processes.
+It remains to be seen whether the analytical tractability of the model can be preserved when such
+generalities are introduced. We look forward to exploring some of these extensions in future work.
+Acknowledgments
+The authors thank Ning Cai, Alexander Cherny, Jim Gatheral, Zongjian Liu, Peter Randolph and Ward
+Whitt for useful discussions.
+References
+Abate, J., W. Whitt. 1992. The Fourier-series method for inverting transforms of probability distributions.
+Queueing Systems 10 5–88.
+Abate, J., W. Whitt. 1995. Numerical inversion of Laplace transforms of probability distributions. ORSA
+Journal on Computing 7(1) 36–43.
+Abate, J., W. Whitt. 1999. Computing Laplace transforms for numerical inversion via continued fractions.
+INFORMS Journal on Computing 11(4) 394–405.
+Alfonsi, A., A. Schied, A. Schulz. 2007. Optimal execution strategies in limit order books with general shape
+functions. Working paper.
+Asmussen, S. 2003. Applied Probability and Queues. Springer-Verlag.
+Bouchaud, J.-P., D. Farmer, F. Lillo. 2008.
+How markets slowly digest changes in supply and demand.
+T. Hens, K. Schenk-Hoppe, eds., Handbook of Financial Markets: Dynamics and Evolution. Elsevier:
+Academic Press.
+Bouchaud, J.-P., M. M´ezard, M. Potters. 2002. Statistical properties of stock order books: empirical results
+and models. Quantitative Finance 2 251–256.
+Bovier, A., J. ˘Cern´y, O. Hryniv. 2006. The opinion game: Stock price evolution from microscopic market
+modelling. Int. J. Theor. Appl. Finance 9 91–111.
+Farmer, J. D., L. Gillemot, F. Lillo, S. Mike, A. Sen. 2004. What really causes large price changes? Quantitative Finance 4 383–397.
+Foucault, T., O. Kadan, E. Kandel. 2005. Limit order book as a market for liquidity. Review of Financial
+Studies 18(4) 1171–1217.
+Holliﬁeld, B., R. A. Miller, P. Sandas. 2004. Empirical analysis of limit order markets. Review of Economic
+Studies 71(4) 1027–1063.
+Luckock, H. 2003. A steady-state model of the continuous double auction. Quantitative Finance 3 385–404.
+Maslov, S., M. Mills. 2001. Price ﬂuctuations from the order book perspective - empirical facts and a simple
+model. PHYSICA A 299 234.
+Obizhaeva, A., J. Wang. 2006. Optimal trading strategy and supply/demand dynamics. Working paper,
+MIT.
+Parlour, Ch. A. 1998. Price dynamics in limit order markets. Review of Financial Studies 11(4) 789–816.
+Ross, S. 1996. Stochastic Processes. John Wiley and Sons.
+Rosu, I. forthcoming. A dynamic model of the limit order book. Review of Financial Studies .
+Electronic copy available at: https://ssrn.com/abstract=1273160
+
+Cont, Stoikov and Talreja: A stochastic model for order book dynamics
+23
+Smith, E., J. D. Farmer, L. Gillemot, S. Krishnamurthy. 2003. Statistical theory of the continuous double
+auction. Quantitative Finance 3(6) 481–514.
+Zovko, I., J. D. Farmer. 2002. The power of patience; A behavioral regularity in limit order placement.
+Quantitative Finance 2 387–392.
+Electronic copy available at: https://ssrn.com/abstract=1273160

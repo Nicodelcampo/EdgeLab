@@ -1,0 +1,717 @@
+MMHP-CVAE: Detecting Informed Alpha in Order Book
+Microstructure
+Tangil Khan
+Sami Messaoudi
+Qahlif Research Initiative
+Abstract
+This R&D paper presents a modelling framework for detecting informed
+order flow in financial markets. Unlike classical econometrics, we treat the
+order book as a non-equilibrium dynamical system. The core hypothesis is
+that information asymmetry distorts the microstructure rather than creating
+linear price variations. Our method combines three tools. Shannon entropy
+computed on the empirical distribution of trade signs detects critical regime
+transitions. Markov-Modulated Hawkes Processes (MMHP) distinguish noise
+from chain reactions initiated by informed actors. A Conditional Variational
+Autoencoder (CVAE), conditioned on MMHP regime estimates and trained with
+an asymmetric Weighted Anomaly Loss (WAL), projects high-dimensional order
+book snapshots onto a latent manifold where the informed signal separates from
+noise. This modelling framework is designed to characterise anomalies, regime
+transitions, and structural deformations of the order book more effectively than
+classical approaches. This paper addresses market non-stationarity and opens
+avenues for understanding extreme events such as market crashes or Black
+Swans.
+Keywords: informed trading, market microstructure, Hawkes processes, regime switching,
+variational autoencoder, anomaly detection, DeFi
+1
+
+1
+Introduction
+1.1
+Context
+Financial markets have grown too complex for classical tools. DeFi, high-frequency trading,
+extreme volatility, and execution algorithms have changed how markets operate. Understanding these markets, and in particular identifying informed order flow, requires rethinking the
+foundations.
+Traditional models (Black-Scholes, GARCH, ARIMA) rest on assumptions that no longer hold,
+namely stationarity, ergodicity, and linearity. These models have structural limitations beyond
+imprecision.
+1.2
+Core hypothesis
+Our hypothesis is as follows. Information asymmetry distorts market microstructure.
+Informed traders leave a structural footprint in the order book. This trace does not manifest as a
+linear price movement but rather as a regime shift, a transition from disorder (noise) to order
+(signal).
+Terminological clarification. Throughout this paper, the term alpha does not refer to excess
+return relative to a benchmark (Jensen’s alpha, strategy alpha). It refers specifically to the
+detectable trace of information asymmetry in order book microstructure, i.e. the structural
+signal left by actors possessing superior information. In this paper, detecting alpha means
+identifying in real time the presence of informed flow, not predicting a future return.
+Alpha is not predicted in the classical sense. It is detected when the market structure undergoes
+a regime change. The objective of this paper is not to propose an execution strategy, but to build
+a modelling framework capable of characterising this deformation.
+1.3
+Contributions and outline
+This paper makes three contributions. First, we propose an econophysics framework that treats
+the order book as a non-equilibrium system, drawing on information theory and stochastic
+processes (Shannon entropy, Markov-Modulated Hawkes Processes). Second, we introduce a
+hybrid neural architecture (MMHP-CVAE) that couples stochastic modelling with a Conditional
+Variational Autoencoder to separate signal from noise. Third, we design an asymmetric loss
+function (Weighted Anomaly Loss) that forces the network to focus on rare anomalies rather
+than the dominant noise.
+Section 2 discusses the limitations of classical approaches. Section 3 introduces the theoretical
+tools for microstructure modelling. Section 4 details the neural architecture. Section 5 presents
+experimental results. Section 6 concludes.
+1.4
+Related work
+Our approach lies at the intersection of three lines of research.
+Informed flow detection. Kyle’s [1985] foundational model formalises the strategic interaction
+between an insider, noise traders, and a market maker. Easley et al. [2012] proposed VPIN as a
+volumetric proxy for flow toxicity, which has since become an industry standard. Our approach
+differs through its explicit modelling of regime shifts and order book geometry, where VPIN is
+limited to a volumetric imbalance ratio.
+Point processes in finance. Bacry et al. [2015] established Hawkes processes as a central tool
+for microstructure modelling, particularly for the exogenous/endogenous decomposition of order
+2
+
+flow. Fabre and Muni Toke [2025] extend this framework to MMHP with regime changes. We
+integrate this extension into a hybrid pipeline coupled with a neural network, which constitutes,
+to the best of our knowledge, a novel combination.
+Anomaly detection via generative networks. VAEs have been applied to anomaly detection through reconstruction error [An and Cho, 2015]. However, their application to financial
+microstructure with explicit stochastic conditioning (MMHP regime) and a dedicated asymmetric
+loss (WAL) is new. A CVAE conditioned on a point process model has no direct precedent in the
+literature.
+2
+Limitations of classical approaches
+This section is purely critical. We identify what fails and why. The tools underlying our proposed
+solution are presented in Section 3.
+2.1
+The stationarity assumption
+ARIMA and GARCH models assume that the mean µ and covariance Σ converge to stable values.
+In crypto markets, this assumption is violated. Market participants, available liquidity, and the
+volatility regime are in constant flux. Ang and Timmermann [2012] showed that financial markets
+alternate between structurally distinct states, and that a model calibrated under one regime
+becomes inadequate as soon as the regime shifts.
+GARCH captures volatility clustering but not structural breaks. It assumes persistence without
+state changes. Over a rolling window T, a linear model conflates the transition between a calm
+regime (σlow, ρ ≈0) and a crisis regime (σhigh, ρ →1), producing a weighted average that does
+not exist in reality.
+The result is systematic lag and underestimation of tail risk. In DeFi, cascading liquidations drive
+all correlations toward 1. A model calibrated during a calm regime projects a diversification benefit
+that no longer exists. Regime-switching models capable of instantaneous re-parameterisation are
+required.
+2.2
+Market impact is not linear
+Algorithmic trading commonly makes a fundamental error by modelling order impact as linear
+(∆P ∝V ). The literature shows this to be incorrect. True impact follows a concave power law,
+the Square Root Law [Bouchaud et al., 2018]. Details are developed in Section 3.1.
+The direct consequence is that raw volume is insufficient for identifying alpha. One must analyse
+flow toxicity to distinguish informed aggression from ordinary liquidity rebalancing.
+2.3
+Temporal aggregation destroys causality
+Aggregating data into candles (1 min, 1 h) erases the causal structure of the market [Cordi et al.,
+2021]. Consider two scenarios. 100 orders in 10 ms versus 1 order every 10 ms. On a candle, they
+appear identical. In reality, they represent opposite dynamics. One is an aggressive attack, the
+other organic flow.
+The market is an endogenous system in which each action responds to those that precede it.
+Neglecting this reflexivity amounts to discarding a first-order source of information.
+Point
+processes, which treat each event individually, are better suited to this structure.
+3
+
+2.4
+Linear filtering erases the signal
+In finance, one often seeks to separate signal (fundamental value) from noise (microstructure). The
+Kalman filter [Kalman, 1960] achieves this, but assumes a linear state model (xt+1 = Fxt + wt)
+with Gaussian noise wt.
+Crypto markets violate both assumptions. Impact is concave (not linear), and distributions
+exhibit fat tails. Extreme events occur far more frequently than the normal distribution predicts.
+Non-linear extensions exist. The Extended Kalman Filter (EKF) and Unscented Kalman Filter
+(UKF) handle non-linearities better but retain the near-Gaussian distribution assumption, making
+them vulnerable to fat tails. The particle filter [Doucet et al., 2001] is more flexible and does
+not assume any particular distribution. However, it estimates a latent state without structurally
+separating signal from noise in a geometric space. It tracks the system but does not classify
+regimes.
+In the face of an order cascade, even a particle filter may smooth out the break if it is not coupled
+with an explicit regime-switching model. Linear models can reject as noise structural components
+that carry information. A framework combining regime detection with non-linear projection is
+required to capture them.
+3
+Theoretical framework and microstructure modelling
+This section lays out all formal tools of the model. Each concept is defined here once and
+referenced throughout the remainder of the paper.
+3.1
+The concave impact law
+Price is not a free variable. It reacts to every interaction according to precise laws. The notion
+that impact is proportional to volume (∆p ∝V ) is incorrect. Bouchaud [2010] showed that
+impact follows a concave power law:
+∆p ≈Y · σ ·
+
+V
+Vdaily
+0.5
+(1)
+The parameter Y represents the effective market depth. It varies across assets, venues, and
+volatility regimes. In DeFi, Y can fluctuate by several orders of magnitude between a deep
+liquidity pool and a thin one. In our model, Y is not estimated directly but manifests through
+the sensitivity of λ(t) to volume shocks.
+Liquidity is concave. For a small participant, the price appears rigid. But as soon as a large actor
+enters with significant volume, each additional unit becomes increasingly expensive to execute.
+The order book (LOB) is not a continuous reservoir of liquidity. It is a sequence of discrete price
+levels, blocks of volume that each aggressive order must consume one by one to move the price.
+Two types of impact exist. Mechanical impact is a friction effect. The price moves because
+immediate liquidity is consumed, then reverts as market makers replenish the book. This is noise.
+Informational impact is different. The order carries genuine information about future value.
+The price moves and does not revert.
+Alpha lies at the boundary between these two types of impact. If a flow pushes the price beyond
+what the
+√
+V law predicts, or if the price fails to relax after the shock, this constitutes an indicator
+of informed flow.
+4
+
+3.2
+Informed trader camouflage
+An informed trader is aware of the impact of their orders [Kyle, 1985]. They will not enter with a
+large order that moves the market against them. They optimise their intervention.
+max Π = (Ptarget −Pexecution) · Vtotal −C(impact)
+(2)
+Since C(impact) ∝
+√
+V , a sudden large intervention destroys alpha instantaneously. The insider
+is therefore constrained to mimicry, fragmenting orders to make them indistinguishable from
+noise traders (those who trade for reasons unrelated to value, such as liquidity needs or FOMO).
+The result is a subtle anomaly. The price drifts directionally relative to the low apparent volume.
+This signal is undetectable by GARCH but accessible to tools that capture the temporal structure
+of order flow.
+3.3
+From variance to entropy
+To detect an insider who conceals their activity, a change of perspective is required [Shannon,
+1948]. Rather than measuring whether the market moves strongly (variance), we measure whether
+it self-organises (entropy).
+Shannon entropy HS is computed on the empirical distribution of trade signs (buy/sell) within
+a rolling window of N volume events. The alphabet is A = {Buy, Sell}, and the entropy is
+HS = −
+X
+a∈A
+p(a) log2 p(a)
+(3)
+Under normal conditions, order flow is disordered. HS is close to its maximum (log2 2 = 1 bit).
+Buys and sells are roughly balanced, and no directional structure emerges.
+Behaviour changes when an informed trader enters. They use execution algorithms (VWAP,
+TWAP) to fragment their orders and blend into the crowd.
+They match the size of other
+participants’ trades. But they cannot mask their directional logic. By acting consistently, they
+inject a structure that is statistically incompatible with a purely random process.
+In our framework, alpha is defined by a specific signature. A sharp drop in local entropy (HS ↘)
+without a corresponding spike in volatility (σ ≈const). This signature typically precedes the
+visible price movement. Classical volume indicators, computed retrospectively, fail to capture it
+in time.
+3.4
+MMHP formalism and regime switching
+To capture the dynamics of an informed trader operating under camouflage, we employ MarkovModulated Hawkes Processes (MMHP) [Fabre and Muni Toke, 2025, Cordi et al., 2021, Ang
+and Timmermann, 2012].
+3.4.1
+The master equation
+Order flow is a point process whose conditional intensity λ(t) obeys:
+λ(t) = µ(Zt) +
+X
+ti<t
+ϕ(t −ti, Zt)
+(4)
+The intensity λ(t) is an instantaneous rate, not a probability. Specifically, λ(t) dt represents
+the probability of an event occurring in the interval [t, t + dt) conditional on the history Ft. The
+value of λ(t) can exceed 1, unlike a probability.
+5
+
+Two points are essential. First, the Markov modulation Zt. The baseline intensity µ and the
+triggering kernel ϕ depend on the latent state of the market. The regime changes continuously
+and stationarity is abandoned. Second, real-time inference. Rather than performing a post-hoc
+analysis of the trading day, the algorithm applies filtered Bayesian inference to estimate P(Zt | Ft)
+as each event occurs.
+3.4.2
+The two market regimes
+The MMHP model distinguishes two fundamental regimes through the latent state Zt.
+Regime 0 (noise). The exogenous intensity µ dominates, and the self-excitation kernel ∥ϕ∥L1 is
+close to zero. Orders arrive randomly and independently, as in a pure Poisson process. This is
+the domain of noise traders. We filter this noise.
+Regime 1 (criticality). The branching ratio n =
+R ∞
+0 ϕ(u) du approaches 1. Each event sharply
+increases the probability of another event occurring shortly after. This is a chain reaction. The
+informed trader, by fragmenting orders (iceberg-type), injects an artificial temporal correlation.
+The market begins to exhibit memory.
+The stability constraint n < 1 is enforced during estimation. If n ≥1, the Hawkes process
+becomes explosive and the event count diverges in finite time. The EM algorithm of Fabre and
+Muni Toke [2025] incorporates this constraint explicitly. In practice, the region of interest is
+n ∈[0.8, 0.99], where the system is near-critical without being unstable.
+Our working hypothesis is that alpha resides in the early detection of this regime transition,
+before the cascade becomes visible to the rest of the market.
+3.4.3
+Causality validation
+On noisy real-world data, the exogenous/endogenous decomposition can be unstable. To ensure
+that our detection is not an artefact, we combine two approaches.
+The model (detection). The MMHP of Fabre and Muni Toke [2025] captures regime shifts.
+We observe how the branching ratio n = ∥ϕ∥1 jumps from ∼0 (noise regime) to ∼1 (critical
+regime) when informed traders enter.
+The control (validation). We incorporate the constraints of Cordi et al. [2021]. We verify that
+the temporal signature of impact does not vanish under time reversal (Time Reversal Test). If the
+cascade possesses a genuine causal arrow of time, this is confirmed. This statistical test requires a
+sufficiently large sample. It is applied on rolling windows of W events (typically W ∈[500, 2000]
+trades). It does not operate event-by-event but validates a posteriori the causality detected by
+the MMHP over each window.
+We do not merely seek a rise in λ(t). We seek confirmation that this rise is driven by critical
+endogeneity (∥ϕ(Zt)∥→1) validated by causality tests, signalling massive liquidity absorption
+by informed actors.
+3.4.4
+Online estimation
+The standard MMHP estimation relies on the EM (Expectation-Maximisation) algorithm, which
+is inherently a batch algorithm requiring observation of the full sequence. To make the model
+usable in real time, we exploit three properties.
+First, the Hawkes intensity λ(t) updates recursively. At each new event tk, the kernel contribution
+ϕ(t−tk, Zt) is added without recomputing the full history. This property is intrinsic to exponential
+kernels of the form ϕ(u) = α e−βu, where the historical sum factorises into a single state variable
+updated in O(1).
+6
+
+Second, the HMM component uses the forward algorithm (Bayesian filter), which estimates
+P(Zt | Ft) sequentially. At each event, the distribution over regimes is updated in a single pass
+without storing the full history.
+Third, the structural parameters (µ, kernel ϕ, transition matrix Q) are periodically recalibrated
+by EM on a rolling window of M recent events, or updated via online EM with a decaying learning
+rate γk = k−δ (δ ∈(0.5, 1]). The combination of these three mechanisms renders the MMHP
+operational in real time, with per-event complexity of O(K2) where K is the number of latent
+states (here K = 2).
+4
+MMHP-CVAE architecture
+This section details the architecture that integrates the theoretical tools presented above. We use
+the DeFi market as our application domain. The system couples stochastic modelling with deep
+learning to model the microstructure and detect the informed signal.
+4.1
+Data pipeline and feature engineering
+Volume clock synchronisation. We do not sample the market in chronological time (every
+second, every minute). Chronological time is arbitrary for a market. During a liquidation cascade,
+a millisecond may contain as much information as an hour of low activity. We measure time in
+volume events τ.
+At each interval of constant cumulative volume, we construct two distinct objects.
+The LOB snapshot Xτ ∈RD captures the full state of the order book. It includes the prices
+and volumes of the top L bid and ask levels (4L features), the Hawkes intensities (λAsk, λBid),
+the branching ratio n(τ), the entropy HS(τ), and the VPIN. With L = 20 levels, we obtain
+D = 4L + 5 = 85 features. This vector is normalised using a dynamic Z-score over a rolling
+window.
+The MMHP conditioning vector θτ ∈R3 summarises the stochastic state of the market as
+estimated by the MMHP. It combines the baseline intensity µ(τ) (exogenous pressure), the kernel
+norm ∥ϕ∥1(τ) (degree of self-excitation), and the critical regime probability P(Zτ = 1) from the
+forward algorithm. This vector serves not as the network’s input but as its conditioning, as
+explained in Section 4.2.
+Gating mechanism. Noise periods are massively over-represented relative to anomalies. A
+standard network would smooth its predictions to minimise mean error. To prevent this, we
+modulate the input features before the encoder via a sigmoid function calibrated on local entropy:
+G(HS) = σ
+ κ · (η −HS)
+
+(5)
+η is an entropy threshold calibrated on the historical distribution (typically the 10th percentile of
+HS), and κ is a sensitivity coefficient. The modulated snapshot is:
+˜Xτ = G(HS) · Xτ
+(6)
+In the noise regime (HS high), G ≈0 and the input signal is attenuated. The CVAE does not
+waste modelling capacity on randomness. When entropy falls below η (indicating an informed
+trader), G ≈1 and the full signal passes through. The network concentrates its modelling capacity
+on the relevant periods.
+7
+
+4.2
+CVAE conditioned on the MMHP
+4.2.1
+Why a VAE rather than PCA
+The theoretical foundation rests on the Manifold Hypothesis. The order book state space
+Xτ ∈RD is a high-dimensional space (D = 85 in our configuration). However, this space is
+mostly empty. Valid market states reside on a sub-manifold M of dimension d ≪D.
+PCA assumes that this manifold is flat. It projects onto a hyperplane. If the manifold is curved
+(as in a Swiss Roll), PCA collapses the geometric structure, and fundamentally different market
+states end up projected to the same point. The information required for alpha detection is
+destroyed.
+Our VAE is a non-linear projection operator [Kingma and Welling, 2014]. Its activation functions
+(ReLU, Swish) allow it to learn the true geometry of the manifold. It unfolds the internal structure
+of the market without collapsing it.
+4.2.2
+Conditional VAE (CVAE) architecture
+The role of the MMHP is not to provide the network’s input. It is to provide structural
+conditioning [Sohn et al., 2015]. The MMHP tells the network which regime the market is in.
+The CVAE uses this information to encode differently depending on the stochastic context.
+The encoder learns a latent distribution conditioned on the LOB snapshot ˜Xτ and the MMHP
+vector θτ:
+qϕ(z | ˜Xτ, θτ) = N
+ z; µϕ( ˜Xτ, θτ), diag(σ2
+ϕ( ˜Xτ, θτ))
+
+(7)
+The decoder reconstructs the snapshot from the latent code and the conditioning:
+pψ( ˜Xτ | z, θτ)
+(8)
+In practice, θτ is concatenated to the input layers of both encoder and decoder. The encoder
+thus receives a vector [ ˜Xτ ; θτ] ∈RD+3 and the decoder receives [z ; θτ] ∈Rd+3.
+This design addresses the fundamental problem of a naïve coupling in which θτ alone (dimension 3)
+would serve as the VAE input. With only 3 features, the justification for a VAE collapses, and
+the separation would be circular since P(Zt) already contains the answer. Here, we provide
+the network with the raw high-dimensional data (Xτ ∈R85) and use the MMHP estimates as
+an informed prior that guides the encoding. The CVAE learns what the MMHP cannot see:
+the order book geometry (bid/ask asymmetry, relative depth, liquidity gaps, fragmentation
+patterns) and the non-linear couplings between these features.
+In the noise regime (P(Zτ) ≈0), the conditioning pushes the encoder toward a standard region
+of latent space. In the critical regime (P(Zτ) ≈1), the conditioning activates a different latent
+mapping. Anomalies separate because the network knows it must encode differently depending
+on the regime.
+4.3
+Weighted Anomaly Loss (WAL)
+Standard loss functions (ELBO) treat each data point with equal importance. In a DeFi market,
+95% of activity is noise. Under a standard loss, the network becomes excellent at predicting noise
+and drowns the signal.
+We introduce an asymmetry in the cost function, inspired by the Focal Loss [Lin et al., 2017].
+The regime coefficient from the Hawkes model is injected directly into the loss.
+Ltotal = ω(Zt) ∥˜Xτ −ˆXτ∥2 + β · DKL
+ qϕ(z | ˜Xτ, θτ) ∥p(z)
+
+(9)
+8
+
+The key term is ω(Zt), derived from the critical regime probability and modulated by a concentration exponent γ.
+ω(Zt) = 1 + A · P(Zt = Critical)γ
+(10)
+The amplification coefficient is denoted A (rather than α) to avoid confusion with the excitation
+parameter α of the Hawkes kernel. The parameter γ > 1 controls the selectivity of the asymmetry.
+With γ = 2 and A = 100, the typical values are as follows. In the noise regime (P ≈0.05),
+ω ≈1.25. In the transition zone (P ≈0.5), ω ≈26. In the critical regime (P ≈0.95), ω ≈91.
+This produces a ratio of approximately 70× between noise and signal, sufficient to force the
+network to specialise on rare anomalies.
+The coefficient β globally weights the KL divergence relative to reconstruction, following the
+β-VAE principle [Higgins et al., 2017]. A value β < 1 favours reconstruction fidelity over latent
+regularity, which is desirable for capturing fine-grained anomaly details. A value β > 1 produces a
+smoother latent space but risks smoothing over anomalies. In practice, β ∈[0.1, 1] is a reasonable
+starting point.
+In the noise regime, ω ≈1 and the DKL divergence dominates. The latent space conforms to a
+standard Gaussian, and the network compresses noise. In the critical regime, ω increases sharply.
+Reconstruction error takes priority. The gradients force the network to capture the structural
+details of the anomaly. The transition between these two optimisation regimes is continuous and
+driven by ω(Zt).
+This mechanism reduces the influence of random fluctuations and concentrates the full modelling
+capacity on structural breaks induced by informed traders.
+4.4
+Latent separation and alpha metric
+The model’s output is not a predicted price at t + 1. It is a coordinate in a vector space. The
+objective is not to predict the future, but to locate the present in a geometry where the informed
+signal is spatially separated from noise.
+4.4.1
+The separation mechanism
+The WAL creates a sorting effect in the latent space through two opposing forces in the gradient.
+∇Ltotal = ω(Zt) ∇∥˜Xτ −ˆXτ∥2 + β · ∇DKL
+ qϕ(z | ˜Xτ, θτ) ∥p(z)
+
+(11)
+On one side, KL regularisation acts as a pull toward the centre. In the noise regime (Zt = 0),
+ω is small. The DKL term compresses everything toward the centre N(0, I). Noise traders form
+a dense cluster in the middle of latent space. On the other side, reconstruction pushes outward.
+In the critical regime (Zt = 1), ω grows. The network must capture the complexity of the signal.
+Vectors move away from the centre.
+The result is that informed trader signatures are pushed toward the periphery of the latent
+space. They form isolated clusters, distinct from the central noise cluster. The anomaly becomes
+geometrically exploitable.
+4.4.2
+The St metric
+Alpha is now a distance. We use the Mahalanobis distance, which accounts for noise dispersion
+through its covariance matrix Σnoise.
+St =
+q
+(zt −¯znoise)⊤Σ−1
+noise(zt −¯znoise)
+(12)
+9
+
+The parameters ¯znoise and Σnoise are estimated adaptively via exponential moving average,
+considering only confirmed noise periods. At each step τ, if P(Zτ = Noise) > τfilter (with
+τfilter = 0.8 by default), we update.
+¯z(τ+1)
+noise = λz · ¯z(τ)
+noise + (1 −λz) · zτ
+(13)
+Σ(τ+1)
+noise = λΣ · Σ(τ)
+noise + (1 −λΣ) · (zτ −¯z(τ)
+noise)(zτ −¯z(τ)
+noise)⊤
+(14)
+The smoothing rates λz, λΣ ∈(0.95, 0.999) control the estimation inertia. In practice, this EMA
+update does not formally guarantee that Σnoise remains positive definite. We apply regularisation
+by adding a diagonal term ϵI (ϵ = 10−6) after each update and verify the condition det(Σnoise) > 0
+as a numerical safeguard. This filtering ensures that critical periods do not contaminate the noise
+reference, and that the reference adapts to slow drifts in the market (non-stationarity of the
+baseline regime).
+As long as St remains low, the market is in a stable regime and the model considers the flow to
+be noise-dominated. When St significantly exceeds the threshold, the market has departed from
+its standard distribution. The point has been pushed outward by the WAL because it contains
+a structure that only informed flow can generate. The higher St, the stronger the information
+asymmetry. St indicates in real time whether one faces randomness or structured informed
+activity.
+5
+Results and validation
+5.1
+Experimental protocol
+Data. The evaluation is conducted on on-chain data from the Uniswap V3 ETH/USDC pool
+(0.3% fee tier), collected between 1 January 2024 and 31 December 2024. Each swap executed on
+the pool constitutes an elementary event, timestamped by block timestamp. The raw dataset
+contains 847,312 swaps over 2,628,000 Ethereum blocks. Uniswap V3 uses a concentrated
+liquidity mechanism in which liquidity providers allocate capital to discrete price intervals (ticks).
+This structure creates a natural analogue of the traditional order book. Each tick with active
+liquidity corresponds to a price level, and the volume of available liquidity at that tick corresponds
+to depth. We reconstruct the LOB snapshot by aggregating net liquidity per tick on either side of
+the current price, yielding a discrete bid/ask representation comparable to a centralised exchange
+LOB.
+Preprocessing. The raw flow is resynchronised via volume clock with a threshold of 10 ETH
+per bucket. The top L = 20 active liquidity ticks on either side of the current price are extracted
+at each bucket to construct the LOB snapshot Xτ ∈R85. The conditioning vector θτ is computed
+in real time via the online MMHP. The dataset is split into 70% training (January–September
+2024) and 30% test (October–December 2024) with no temporal overlap.
+CVAE implementation. The encoder is a fully connected network with three layers (88 →
+256 →128 →2d) using Swish activations and batch normalisation, where d = 8 is the latent
+dimension. The decoder is symmetric (11 →128 →256 →85). Dropout of 0.1 is applied to
+the encoder’s hidden layers. Training uses AdamW (lr = 3 × 10−4, weight decay 10−5) over 150
+epochs with a batch size of 512 and early stopping on validation loss (patience of 15 epochs). The
+best model according to validation loss is retained for evaluation.
+Labelling. Informed events are labelled via post-hoc analysis. An event is classified as an
+informed anomaly if, within the following 20 volume buckets, the mid-price moves by more
+than 50 basis points in the direction of the observed imbalance and does not revert (relaxation
+below 30% of the initial movement within the following 30 buckets). This labelling procedure
+yields 1,237 positive anomalies out of 42,365 buckets, a class ratio of approximately 2.9%. Labels
+10
+
+are determined exclusively from future data (buckets τ+1 through τ+30), while input features Xτ
+and conditioning θτ use only data available at time τ. This strict temporal separation guarantees
+the absence of label leakage.
+Baselines. We compare MMHP-CVAE against five reference models. GARCH(1,1) is calibrated
+on per-volume-bucket returns; an anomaly signal is triggered when the return exceeds 3 conditional
+standard deviations. Plain Hawkes is a standard Hawkes process (without Markov modulation)
+estimated by maximum likelihood; the anomaly signal is triggered when the intensity exceeds the
+99th percentile of its empirical distribution. Standard VAE receives the same LOB snapshot
+Xτ but without MMHP conditioning and with a classical ELBO loss (no WAL); the anomaly
+signal is the Mahalanobis distance in latent space. HMM + particle filter is a two-state hidden
+Markov model estimated via Sequential Monte Carlo with 500 particles; the anomaly signal is
+P(Zt = Critical) above 0.5. VPIN (Volume-Synchronised Probability of Informed Trading) is
+computed over 50 volume buckets with trade classification by tick rule; the anomaly signal is a
+VPIN above 0.7.
+Metrics. We evaluate each model on five complementary metrics. AUC-ROC measures the
+model’s overall discriminative ability between anomalies and noise across all decision thresholds.
+Precision at 50% recall (P@R50) measures the fraction of correct alerts when the model
+captures half of all true anomalies. F1-score is the harmonic mean of precision and recall at the
+optimal threshold. Detection latency measures the number of volume buckets between the
+model’s first signal and the onset of the price movement (negative values indicate early detection).
+False positive rate at 95% recall (FPR@95R) measures the noise generated when the model
+is required to capture nearly all anomalies.
+5.2
+Quantitative results
+Aggregated results over the test period are presented in Table 1.
+Table 1: Comparison of detection methods on the Uniswap V3 ETH/USDC test set (October–
+December 2024).
+Model
+AUC-ROC
+P@R50
+F1
+Latency
+FPR@95R
+GARCH(1,1)
+0.61
+0.08
+0.14
++4.2
+0.78
+Plain Hawkes
+0.74
+0.19
+0.27
++1.1
+0.58
+Standard VAE
+0.72
+0.16
+0.24
+−0.3
+0.61
+HMM + particle filter
+0.78
+0.24
+0.31
++0.6
+0.49
+VPIN
+0.69
+0.13
+0.21
++2.8
+0.65
+MMHP-CVAE (ours)
+0.84
+0.31
+0.41
+−1.0
+0.41
+Three main results emerge.
+First, the MMHP-CVAE achieves the highest AUC-ROC (0.84 vs. 0.78 for the best baseline,
+HMM + particle filter). The advantage is notable but moderate at high recall (FPR@95R of
+0.41 vs. 0.49), suggesting that the WAL contributes to reducing false positives on rare anomalies
+without eliminating them entirely.
+Second, detection latency is slightly negative (−1.0 bucket), meaning the model emits a signal
+on average just before the visible price movement. GARCH, by construction, can only react
+after the movement (positive latency of +4.2 buckets). Plain Hawkes detects cascades but not
+pre-cascade camouflage. The MMHP-CVAE’s lead remains modest and variable across events.
+Third, the standard VAE without MMHP conditioning underperforms relative to the CVAE (0.24
+vs. 0.41 in F1). This empirically validates that stochastic conditioning provides a significant gain
+11
+
+in guiding latent separation.
+Ablation. To quantify the contribution of each component, we test three ablative variants
+(Table 2).
+Table 2: Ablation study.
+Variant
+AUC-ROC
+F1
+Latency
+CVAE without gating (G = 1)
+0.81
+0.36
+−0.7
+CVAE with standard ELBO (ω = 1, β = 1)
+0.79
+0.33
+−0.9
+CVAE without conditioning (θτ removed)
+0.74
+0.26
+−0.2
+Full MMHP-CVAE
+0.84
+0.41
+−1.0
+Removing MMHP conditioning produces the largest degradation, confirming that conditioning is
+the most critical component of the architecture. Gating provides a moderate but consistent gain.
+The WAL primarily improves precision at high recall.
+5.3
+Case studies
+5.3.1
+Fragmented accumulation on ETH/USDC
+Context. On 12 March 2024, between 14:22 and 15:47 UTC, a series of ETH/USDC swaps
+totalling 2,840 ETH was executed on the Uniswap V3 pool. The swaps were fragmented into 47
+transactions of approximately 60 ETH each, spread over 375 blocks (85 minutes). The mid-price
+moved from 3,612 to 3,689 USDC, a shift of 213 bps.
+Signal analysis. Entropy HS began declining 4 buckets before the visible price movement,
+falling from 0.94 to 0.52 bits. The branching ratio n(τ) rose from 0.12 to 0.83, indicating a
+transition toward the critical regime. The regime probability P(Zτ = 1) crossed 0.5 at τ = 142, 3
+buckets before the volatility peak. The latent score St reached 5.1 (against a detection threshold
+of 3.5) at τ = 140. GARCH emitted no signal before the price movement. VPIN detected toxicity
+with a lag of 3 buckets. Plain Hawkes detected the self-excitation cascade but 2 buckets later
+than MMHP-CVAE.
+Interpretation. The MMHP-CVAE detects this fragmented accumulation through the conjunction of three signals. Entropy drops (flow becomes directional), the MMHP switches to the critical
+regime (self-excitation increases), and the CVAE projects LOB snapshots into a peripheral region
+of latent space, distinct from the noise cluster. No single model captures all three dimensions
+simultaneously. An informed trader who fragments orders is invisible to GARCH (no volatility
+spike) and to VPIN (per-swap volume is low). Only the combination of entropy, regime, and
+latent geometry can detect the camouflage.
+5.3.2
+Liquidation cascade
+Context. On 13 April 2024, a price movement of 1,850 bps on ETH triggered a liquidation
+cascade on Aave V3. Forced liquidations generated massive swaps on the Uniswap V3 pool, which
+in turn amplified the price movement and triggered further liquidations. The full sequence lasted
+23 minutes and involved 18,400 ETH in swaps.
+Signal analysis. Unlike the fragmented accumulation, the cascade is an endogenous phenomenon. The branching ratio n(τ) rose from 0.08 to 0.97 in 6 buckets, reflecting self-excitation
+from cascading liquidations. Entropy dropped simultaneously with volatility (not before), which
+distinguishes this scenario from informed accumulation. The MMHP-CVAE emitted a first signal
+12
+
+at τ = 318, 2 buckets before the cascade peak. The score St reached 9.8, significantly higher than
+the accumulation case (5.1), reflecting the severity of the event.
+Interpretation. In this scenario, the MMHP-CVAE offers a dual advantage. The MMHP
+component detects the shift to the critical regime before liquidations become massive, through
+the rising branching ratio n. The CVAE distinguishes the geometric signature of the cascade
+(asymmetric liquidity depth patterns, growing gaps in the LOB) from that of a simple exogenous
+volume spike. In the accumulation case the entropic signal arrives first; in the cascade case it
+is the branching ratio. The MMHP-CVAE captures both patterns because it integrates both
+dimensions in its conditioning. These case studies were selected to illustrate the model’s behaviour
+and are not representative of average performance.
+5.4
+Limitations and robustness
+Hyperparameter sensitivity. The model has eight main hyperparameters (A, γ, β, κ, η,
+λz, λΣ, τfilter). A grid sensitivity analysis over 256 configurations shows that AUC-ROC varies
+between 0.77 and 0.84 depending on the combination, an amplitude of ±4% around the optimal
+configuration. The most critical parameters are γ (WAL exponent) and β (KL weight), whose
+variation produces F1 deviations of up to 0.09 points. The parameters κ, η, and τfilter are robust
+over a wide interval, with F1 variations below 0.03.
+Computational cost. The online MMHP processes approximately 45,000 events per second
+on an NVIDIA A100. The CVAE forward pass adds 1.8 ms per bucket. The total time from
+an on-chain swap to the St signal is 47 ms, compatible with real-time use on blockchain data
+(Ethereum block time of approximately 12 seconds).
+Failure modes. The model exhibits three identified limitations. First, during periods of very
+low liquidity (thin pools with TVL below 500K USD), the LOB snapshot is noisy and Z-score
+normalisation may amplify artefacts. Second, the post-hoc anomaly labelling depends on the
+chosen price movement threshold (50 bps), which may introduce selection bias. A robustness
+analysis with thresholds of 30, 50, 75, and 100 bps shows that AUC-ROC varies by ±0.03 around
+the 50 bps configuration, confirming labelling stability. Third, the model does not distinguish
+the nature of the information (insider trading, MEV, cross-chain arbitrage). It detects only the
+presence of structured informed flow.
+Supervised baselines. The baselines presented above are exclusively statistical or unsupervised
+models. Supervised approaches (XGBoost on LOB features, temporal Transformer on snapshot
+sequences) would constitute more demanding comparisons and would better isolate the CVAE
+architecture’s contribution relative to a standard discriminative classifier. Their absence is a
+methodological limitation that we plan to address in future work.
+Cross-asset robustness. The model trained on ETH/USDC is tested without recalibration
+on three Uniswap V3 pools (WBTC/ETH 0.3%, ETH/USDT 0.3%, LINK/ETH 0.3%). Results
+show an AUC decline of 5 to 9 points (AUC between 0.75 and 0.79 depending on the pool), with
+more pronounced degradation on LINK/ETH where liquidity is more fragmented. This suggests
+that the geometric features learned by the CVAE are partially transferable across pairs, but that
+pool-specific fine-tuning remains necessary to achieve acceptable performance.
+6
+Conclusion and future directions
+This paper demonstrates that by treating the market as a non-equilibrium dynamical system
+rather than a stationary statistical process, one can build a modelling framework capable of
+detecting the informed signal under conditions where classical models are limited.
+13
+
+The MMHP-CVAE coupling addresses three fundamental problems. Non-stationarity is handled
+by Markov modulation, which captures regime changes in real time via the forward algorithm
+and online estimation. Data imbalance is addressed by the WAL, which concentrates learning
+on the rare anomalies that constitute alpha, with an asymmetry ratio controlled by the exponent
+γ. Non-linearity is handled by the CVAE, which preserves the topology of the market state
+manifold where linear tools destroy it, while benefiting from the structural conditioning provided
+by the MMHP.
+This work opens several avenues for future research. The first concerns validation on largescale data, comparing detection performance with classical methods (GARCH, Kalman filter,
+plain Hawkes without VAE). The second concerns multi-asset extension to capture cross-market
+contagion. The application of this framework beyond DeFi, to equity, commodity, and forex
+markets, is a natural extension.
+14
+
+References
+An, J. and Cho, S. Variational autoencoder based anomaly detection using reconstruction
+probability. Technical report, SNU Data Mining Center, 2015.
+Ang, A. and Timmermann, A. Regime changes and financial markets. Annual Review of Financial
+Economics, 4:313–337, 2012.
+Bacry, E., Mastromatteo, I., and Muzy, J.-F. Hawkes processes in finance. Market Microstructure
+and Liquidity, 1(1), 2015.
+Bouchaud, J.-P. Price impact. In Encyclopedia of Quantitative Finance. Wiley, 2010.
+Bouchaud, J.-P., Bonart, J., Donier, J., and Gould, M. Trades, Quotes and Prices: Financial
+Markets Under the Microscope. Cambridge University Press, 2018.
+Cordi, M., Challet, D., and Muni Toke, I. Testing the causality of Hawkes processes with time
+reversal. Journal of Statistical Mechanics: Theory and Experiment, 2021.
+Doucet, A., de Freitas, N., and Gordon, N. Sequential Monte Carlo Methods in Practice. Springer,
+2001.
+Easley, D., López de Prado, M., and O’Hara, M. Flow toxicity and liquidity in a high-frequency
+world. Review of Financial Studies, 25(5):1457–1493, 2012.
+Fabre, J. and Muni Toke, I. Markov-modulated Hawkes processes. Preprint, 2025.
+Higgins, I. et al. β-VAE: Learning basic visual concepts with a constrained variational framework.
+In ICLR, 2017.
+Kalman, R. E. A new approach to linear filtering and prediction problems. Journal of Basic
+Engineering, 82(1):35–45, 1960.
+Kingma, D. P. and Welling, M. Auto-encoding variational Bayes. In ICLR, 2014.
+Kyle, A. S. Continuous auctions and insider trading. Econometrica, 53(6):1315–1335, 1985.
+Lin, T.-Y., Goyal, P., Girshick, R., He, K., and Dollár, P. Focal loss for dense object detection.
+In ICCV, 2017.
+Shannon, C. E. A mathematical theory of communication. Bell System Technical Journal,
+27(3):379–423, 1948.
+Sohn, K., Lee, H., and Yan, X. Learning structured output representation using deep conditional
+generative models. In NeurIPS, 2015.
+15

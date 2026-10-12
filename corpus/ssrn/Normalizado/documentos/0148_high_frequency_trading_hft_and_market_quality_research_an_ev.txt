@@ -1,0 +1,5407 @@
+The Intersectionality of High Frequency Trading
+(HFT) and Market Fragmentation and their impact
+on Liquidity: New Evidence
+Shahadat Hossain Ph.D.
+Department of Finance
+University of Chittagong
+Chittagong-4331, Bangladesh.
+First Version: June 2018
+Second Version: 30 April 2022
+Third Version: 12 July 2022
+This Version: 17 October 2022
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+The Intersectionality of High Frequency Trading
+(HFT) and Market Fragmentation, and their Impact
+on Liquidity: New Evidence
+Shahadat Hossain¹
+Abstracts: We address two important recent trends in global equity markets—high-frequency trading
+(HFT) and trade fragmentation, in this paper and join the debate regarding their social benefits. We take
+the European equity market as a laboratory as it has been confronting both the issues since its adoption
+of Market in Financial Instruments and Directives (MiFID) in 2007. We employ a unique extraordinarily
+large millisecond time-stamped trades and quotes dataset of the London Stock Exchange (LSE) listed securities which use the trading platform of the LSE and three dominant European multilateral trading facilities
+(MTFs)—CHIX, Bats and Turquoise. We take a novel approach and evaluate the impact of HFT and fragmentation on market liquidity jointly. The results reveal a fresh evidence that the there exists an interlinkage
+between HFT and trade fragmentation, and it determines, at least partially, the size of the individual effect
+of HFT and fragmentation on liquidity. We find that higher HFT is beneficial for market liquidity, however
+fragmentation is liquidity damaging. HFT has contributed positively over the past in reducing both the realized spreads and adverse selection costs, whereas market fragmentation appears detrimental to the both
+during the same period. We show that HFT’s liquidity benefits are greater for large stocks, and small stocks
+take more harms from the market fragmentation. The dynamic effect shows that the directions of association
+between HFT and market fragmentation, and liquidity remain the same over time but the size of the impact
+is time-varying. Our results manifest the simultaneity that exists between HFT, market fragmentation and
+liquidity. We show that the results are robust.
+¹University of Chittagong (shahadat@cu.ac.bd) & University of Naples Federico II (shahadat.hossain@unina.it)
+I thank Marco Pagano, Annamaria Menichini, Maria Grazia Romano, Riccardo Palumbo,Annalisa Scognamiglio,
+Can Inci for insightful comments and suggestions. I also thank the participant of the 15ᵗʰ IRMC 2022 conference for
+their comments. Financial support from the University of Naples Federico II and ERC advanced Grant on Finance and
+Labor project is gratefully acknowledged.
+1
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+1
+Introduction
+The financial market places have been undergoing pathbreaking changes due to the advent of sophisticated computing technology for the last two decades (Biais and Foucault, 2014; O’Hara, 2015).
+The rise of machine intelligence have empowered human civilization to do things at ease, speed,
+and low-cost, and at the same time, raised the concern of welfare damaging inequitable competition between man and machines. High-frequency trading (HFT) is one of the recent changes in
+market microstructure that attracted most attention to the regulators, practitioners and academics.
+A large share of trading volume in today’s equity market is traded by high-frequency traders (HFTs)
+(Boehmer, Fong and Wu, 2021). There has been public debate since 2009 about its effect (Menkveld,
+2016). The rise of machines has also given rise to the proliferation of machine-friendly trading
+venues and their high speed connecting channels. The two remarkable financial market regulation
+changes in the recent past, Reg NMS (in the US) and MiFID (in EU) broke the long dominated
+concentration rule, and opened the avenue for dispersing trades across the venues. The effects of
+the new exchange competition and the trade fragmentation on market quality have also raised concern(O’Hara and Ye, 2011; Degryse, De Jong and Kervel, 2015).
+As academics, practitioners and regulators strive on these issues , the hidden mechanisms of
+the high-frequency world is becoming visible more and more. A conjecture is on its way that HFT
+and market fragmentation have ridden on each other in their advancement. Menkveld (2014, 2016)
+argues “...the two most salient trends in securities markets since the turn of the century—order flow
+fragmentation and HFT entry—are intimately related and both driven by technology and regulation. ... There is arguably a symbiotic relationship between new electronic venues and HFTs. These
+new venues need HFTs to insert aggressively priced bid and ask quotes, and HFTs need the new
+venues to satisfy their requirements in terms of automation, speed, and low fees.’’ We take this
+novel aspect of market complexity and look into the deeper of the problem—how HFT and market
+fragmentation interact and impact the market quality? In doing so, we find the European equity
+market as a suitable laboratory since it has been experiencing both the influx of HFT and market
+fragmentation and, to the best of our knowledge, no study to date address this issue.
+MiFID repealed the concentration rule² in European equity market and paved the way for the
+²The concentration rule led to a situation where a single stock exchange dominated each member state in EU.
+2
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+new electronic trading venues to compete with the traditional stock exchanges. Afterwards, exchanges have been investing heavily (Linton and Mahmoodzadeh, 2018) to minimize the latency³and
+several alternative exchanges have been launched. Consequently, order flow has spread across many
+trading floors, creating a fragmented market place. The beneficiaries from this massive investment
+in technology appear to be a new breed of high-frequency traders who implement low-latency strategies (Hasbrouck and Saar, 2013). MiFID has made the necessary breakthrough in creating HFT
+market access across European equity markets. The motivation of this paper is centred on the view
+that HFT and fragmentation of order flows are closely related, and examining the impact of HFT
+on market quality without taking market fragmentation into account or vice versa, oversimplify
+the high-frequency market microstructure complexities, and consequently fails to explain the channel that exists between these two modern aspects of financial markets. Our paper contributes to
+this research niche where we study the joint impact of HFT and visible market fragmentation on
+liquidity—a principal component of market quality, which is relatively new and so far unexplored
+in the context of the European equity market. We investigate several aspects: i) how HFT impacts
+market liquidity; ii) how order flow fragmentation impacts market liquidity; iii) how the interaction
+of HFT and order flow fragmentation impacts market liquidity; iv) whether the impact varies across
+stocks and over time; and v) the sources of liquidity changes.
+To investigate those questions, we get access to a novel millisecond time-stamped TRTH (Thomson Reuters Tick History) intraday dataset of the period 2005–2016, from which we exploit both
+the HFT footprint and order flow fragmentation across European trading platforms. We finalize a
+sample of 132 stocks which are primarily listed in the LSE and also traded across the main European alternative exchanges/MTFs—CHIX, BATS and Turquoise. The dataset provides the coverage
+for both pre and post-MiFID eras. Our analyses use the daily measures for the liquidity, HFT and
+fragmentation developed on the millisecond time-stamped records. Our empirical approach target
+to establish a causal relationship between HFT, market fragmentation and liquidity in several steps.
+We specify relevant models and use a set of control variables from the prior studies. To address the
+unknown heterogeneity across firms and between time, we use both day (time) and firm (stocks)
+fixed effect. We primarily estimate our models employing OLS where we use the standard errors
+³According to Hasbrouck and Saar (2013), latency is viewed as the time it takes to learn about an event, generate
+a response, and have the exchange act on the response.
+3
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+computed by a heteroscedasticity and autocorrelation consistence covariance matrix estimator. To
+address the possible endogeneity between HFT and liquidity, or market fragmentation and liquidity,
+we finally adopt two different approaches: i) a two-stage IV-GMM regression (H2SLS) estimation
+and ii) a simultaneous equation model, so that we establish the robustness of the OLS estimates and
+detect the possible channels which interlink HFT and market fragmentation.
+The results showing the individual effect suggest that HFT improves liquidity, whereas market
+fragmentation is detrimental to the same. The interaction effect reveals an important channel that
+interlinks the HFT and market fragmentation. The evidence suggests that a rise in HFT in a highly
+fragmented stock improves liquidity more than that of its low fragmented counterpart. Conversely,
+the liquidity damaging nature of the market fragmentation improves with the increases of the HFT
+intensity on the same stocks. The decomposition of the effective spread into the realized spread
+and the adverse selection cost (price impact) shows that HFT has contributed positively over the
+past in both the better execution and the less adverse selection cost , whereas market fragmentation
+appears detrimental to the both during the same period.
+The cross-sectional analysis documents that the impact of HFT and market fragmentation on
+large stocks is more profound than that of their small stocks counterpart. In other words, a rise
+in HFT in large stock provides more liquidity, and a higher market fragmentation in small stocks
+damages the liquidity more. The interaction between HFT and market fragmentation demonstrates
+contrasting effects on large and small stocks. Unlike large stocks, a rise in HFT in a highly fragmented small stock harms the liquidity. On the other hand, the liquidity damaging nature of market
+fragmentation in small stocks becomes more prevailing with the increases of the HFT intensity on
+the same stocks.
+The analyses on the dynamic nature of HFT show that the directions of association between HFT
+and market fragmentation, and liquidity remain the same over time but the size of the impact is
+time-varying. HFT even appears to provide liquidity in a high volatility period of financial crisis,
+2008-2010 , an evidence which goes against the popular belief. We also find that the average level of
+HFT intensity and fragmentation in all stock in the latter period of the sample was high. It appears
+that the increased trade fragmentation in the same period took away at least some of the additional
+liquidity deriving from the increased HFT.
+The alternative estimation methods, IV-GMM and the simultaneous equations model, confirm that
+4
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+estimates obtained in OLS are robust. The use of the simultaneous equations model extends our understanding on the suspected reverse causality between HFT, market fragmentation and liquidity. It
+appears that simultaneity exists, the level of HFT intensity and fragmentation both affect each other,
+which in turn impact liquidity. However, the effect of HFT seems stronger than fragmentation.
+The rest of the paper is structured as follows. Section 2 associates our study with the relevant
+literature. Section 3 describes the market, data and relevant variables. Sections 4 and 5 explain the
+research strategies and interpret the results, and finally Section 6 concludes the study.
+2
+Relevant Literature
+Our study is relevant to two main strands of market microstructure literature—HFT and market
+fragmentation. The HFT literature is relatively young and growing with respect to the research in
+fragmentation. The main contribution of our study is to focus on a relatively new issue, i.e. the
+interaction of HFT and order flow fragmentation and it covers three related aspects: (i) HFT, (ii)
+order flow fragmentation, and (iii) interaction of HFT and order flow fragmentation and their impacts on market liquidity.
+Before moving to the literature, we find it useful to clarify our stand on some relevant terminologies. Our studies deals with a subsection of Algorithmic Trading (AT) known as HFT and by
+market fragmentation we deal only the visible or lit order flow fragmentation across exchanges.
+Many prior studies attempt to distinguish between HFT and Algorithmic Trading (AT). Often, it
+creates confusion when they are used interchangeably without mentioning the context, as both are
+dominant in literature but have different roles to play in the market (Gomber, Arndt, Lutat and Uhle,
+2011; The Netherlands Authority for the Financial Markets, 2010; Aldridge, 2013). To be on the
+safe side, we take the definitions which are well founded in academic literature and use them within
+the context interchangeably to refer a HFT firm or high-frequency traders (HFTs). Practically, HFT
+and AT share features like low-latency in order routing and execution, use of algorithms, requires
+less human intervention, maintains direct and high speed market access; but differ in the use of
+algorithms, inventory position taking, proprietary/agency trading, frequency of quote update, market strategy and others. Gomber et al. (2011) provide an excellent coverage on the concepts of
+HFT and AT. The distinct characteristics of HFT are high-speed quote updates reflected in huge
+5
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+number of orders and rapid order cancellation, proprietary trading, generation of profit from market
+making, keeping very short holding period with zero net inventory, use of low-latency technology
+like colocation, sponsored market access and direct data feeds and other criterias. On the contrary,
+AT represent the features like agent trading, trading strategies to minimize price impacts (from a
+large order), keeping inventory for relatively a long holding period. Therefore, HFT is considered
+a subset of AT.
+2.1
+Theoretical predictions
+The HFT literature suggests the possible mechanisms using which HFT and fragmentation and also
+their interaction affect the market liquidity. Biais and Foucault (2014) explain the economic channels through which HFT could impact market liquidity. HFTs can be imagined as modern traders
+which perform the traditional market making role using computing technology. HFT firms used
+to develop dynamic algorithms taking exchange feeds in real time, and carry out market making
+function where they become ultra-fast. Modern technology enables HFTs to, (i) get fastest access
+to the market; (ii) acquire and processes information in almost real time; and (iii) watch and routes
+orders across markets. Thus, a general conjecture is that HFT should be able to provide liquidity at
+a lower cost. On the flip of the coin is that slow traders are at an information disadvantage relative
+to HFT, which might create adverse selection cost.
+Foucault, Pagano and Roell (2013) and Cantillon and Yin (2011) explain the possible effects
+of order flow fragmentation. As per as market fragmentation concerns, there are two opposite
+views— one holds that fragmentation improves liquidity, and the other is that it harms liquidity.
+The main arguments against fragmentation or in favour of exchange floor monopoly are scale economics and the existence of network externalities in trading. In a concentrated market, it is easier
+to find a counter party, which minimizes search costs. Pagano (1989) shows “If trade is equally
+costly across markets, this externality leads to the concentration of trade on one market. If not,
+it can produce multiple conjectural equilibria, some where trade concentrates on one market and
+others where large traders resort to a separate market or to search for a trading partner.” Again, the
+price impact of transactions also tends to be smaller in markets that attract higher trading volume.
+6
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+The dominant argument in favour of order flow fragmentation is that it places competitive pressure
+on the transaction fees charged by exchanges. To attract traders, the modern exchange platforms
+used to make huge investment for minimizing their latency time, which consequently intensifies
+competition among modern market makers like HFTs.
+Menkveld (2014) has explained the possible channels through which HFT and market fragmentation might impact the market. The economics is HFTs need new electronic venues for low fees
+and faster trading, and new trading venues need HFTs for better quotes. It is argued that cost and
+benefit of HFT and market fragmentation should be calculated jointly. We design our study on this
+theoretical support, taking into account both HFT and fragmentation in the same empirical structure, and examine their joint impact on liquidity.
+Models describing the effect of HFT on market liquidity are not enormous, limited to a few
+aspects of HFT and fragmentation, and generate varying predictions, mostly depending on their
+assumptions and focuses. Goettler, Parlour and Rajan (2009) predict when market makers like
+HFT are more informed about fundamental value it can improve liquidity. In Biais, Foucault and
+Moinas (2011), HFT generates adverse selection problem which harms market liquidity. Some
+other models also predict detrimental liquidity effect of HFT through front-running (Li, 2014),
+winner’s curse (Han, Khapko and Kyle, 2014) and a wasteful arms race for speed (Budish, Cramton
+and Shim, 2015). In contrast, Jovanovic and Menkveld (2015) and Ait-Sahalia and Saglam (2017)
+predict both positive and negative liquidity effects of HFT depending on the market environments
+in which HFT works.
+2.2
+Empirical evidence
+The empirical HFT literature has been growing on several strands. We limit our discussion on
+those which are particularly relevant to our paper. Hendershott, Jones and Menkveld (2011) and
+Hasbrouck and Saar (2013), two seminal papers in HFT, first propose the idea of proxy in detecting
+HFT footprint using the limit order book updates. Hendershott et al. (2011) is the first to examine causality between AT and market quality, where they introduce an algorithmic trading proxy
+based on electronic message rate (order book update). Using monthly observations for NYSE listed
+7
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+943 common stocks for the period 2001–2005, they report positive impact of AT on liquidity, for
+large stocks in particular. Hasbrouck and Saar (2013) propose a different low-latency measure,
+‘strategic-run’ based on a particular trade executing behaviour of HFT and use the same to assess
+the impact of low-latency trading on market quality. Their findings suggest that low-latency activity improves liquidity. Boehmer et al. (2021) study the effect of AT on market quality using data
+on 42 equity markets for the period 2001–2011. They use colocation as an instrument variable to
+tackle the endogeneity and provide evidence that AT improves liquidity. Use of colocation in HFT
+research is quite common but also controversial. Michael Aitken, Douglas Cumming (2021) show
+that colocation does not qualify the criteria for being used as an instrument—it is not exogenously
+determined and and highly correlated with market quality measures.
+Exchange platforms in Europe and US updated their latency technology and related value added
+services enormously over the past few decades so that they can attract more and more HFTs. This
+feature of market competition has eventually empowered the HFTs market making capacity more
+than ever. Many papers examine the impact of speed on market quality. Riordan and Storkenmaier
+(2012) study the system upgrade of Deutsche Boerse with the 8.0 release of Xetra on April 23,
+2007 which reduced system latency from 50ms to 10ms. Frino, Mollica and Webb (2014) examine
+the impact of allowing traders to co-locate near exchange server on the liquidity of future contracts
+traded on the Australian Securities Exchange. Murray, Pham and Singh (2016) investigate the role
+of latency in market quality in the Australian Securities Exchange following the introduction of the
+Integrated Trading Platform and ASXTrade which reduced latency from 70 ms to 30 ms. Frino,
+Mollica, Monaco and Palumbo (2017) examine the impact of AT on market liquidity following the
+implementation of proximity hosting service by Borsa Italiana. Hendershott and Moulton (2011)
+study the impact of introducing hybrid market in New York Stock Exchange in 2006 which reduced
+the execution time of market order from 10 seconds to less than one second. Brogaard, Hagströmer,
+Nordén and Riordan (2015) exploit an optional colocation upgrade at NASDAQ OMX Stockholm
+to assess how speed affects market liquidity. All of these papers on external HFT shocks other than
+Hendershott and Moulton (2011) provide evidence that reduction in system latency or enhancing
+the speed improves liquidity, and the converse is shown in Hendershott and Moulton (2011).
+Several recent papers examine the impact of market fragmentation on market quality with contradictory results. O’Hara and Ye (2011) is one of the first study to documents the causality between
+8
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+fragmentation and market quality. They use a dataset of 262 U.S. stocks over the six months in
+2008. They find that more fragmented stocks are associated with lower transaction cost and fastest
+execution speed. Unlike O’Hara and Ye (2011), some recent papers, mostly focused on order flow
+fragmentation, analyse the cross market liquidity. Upson and Van Ness (2017) study the volume
+fragmentation, cross market competition of AT, and their impact on liquidity using NYSE data only
+for the first quarter of 2012. They find that volume fragmentation has a positive effect on the best
+depth level across markets but venue competition and excess AT activities harm market liquidity.
+Degryse et al. (2015) is the first study to address the issue of fragmentation in European equity markets by introducing cross market measures of depth and spreads similar to Foucault and Menkveld
+(2008), however they does not consider any aspect of HFT. They study 51 Dutch stocks across
+European venues for the initial post-MiFID period (November 2007–December 2009) and provide
+evidence that lit fragmentation lowers liquidity at the traditional market. Gresse (2017) also assesses the impact of both lit and dark fragmentation in European markets in a cross market setting.
+She uses data on the LSE and Euronext’s blue-chip stocks for the period October 2007–November
+2009 and establishes control for AT in regressions. Her findings suggest that lit fragmentation improves liquidity across markets.
+The literature examining the effect of both HFT and market fragmentation on market quality—
+the research niche where we design our study, is comparatively new. Brogaard, Hendershott and
+Riordan (2014b) study the interaction of HFT and fragmentation with the aim to explain the role
+HFT on market quality through market integration. Based on Canadian market data, their preliminary results show that HFTs play a key role in tying market together, but results are inconclusive
+regarding the impact on liquidity. Aitken, Cumming and Zhan (2014) study the joint impact of AT
+and market fragmentation in U.S. equity market following the fragmentation regulation RegNMS.
+They show that fragmentation of the lit market order flow improves market liquidity and reduces
+manipulation, and the dark market order flow fragmentation damages the liquidity and increases
+the manipulation. Our study mainly contributes in the area of intersection between HFT and lit
+fragmentation.
+9
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+3
+Market, Data, Variables and Measures
+3.1
+Market Background
+Two of the most recent striking changes in global equity market design (those have been proliferating trading venues) are the adoption of ‘Regulation National Market System (RegNMS)’ in the
+US in 2005, and the enactment of MiFID in Europe in 2007, following the development in the
+US. The adoption of MiFID in 2007 ( MiFID II in 2018) has been proliferating the trading venues
+across European equity market. One of the vital change it brought into affect was abolishing the
+monopoly power of traditional exchanges in trading securities and liberalizing them into many trading platforms like regulated markets (RMS), multilateral trading facilities (MTFs), and systematic
+internaliser (SIs). These platforms have different market structure and reporting system that are
+defined under MiFID directives⁴.
+In broad terms, RMs and MTFs operate in a similar fashion, providing an electronic multilateral platform for users. These trading venues generally match orders on a non-discretionary basis
+according to pre-defined rules that establish price and time priority for submitted orders. RMs and
+MTFs are required to publish pre-trade quotes and report details of executed trades to the market (CFA Institute, 2011). Both RMs and MTFs are allowed to organize primary listing. However,
+RMs facilitate the listing of regulated instrument and MTFs do the same for the unregulated one. In
+practice, only RMs offer primary listing service. MTFs prefer not to do so and they may be viewed
+as equivalent to electronic trading networks (ECNs) in the US (Gresse, 2017). A firm choose on
+which RM to list, and once listed, MTFs may decide to organize trading for that firm as well. SIs
+are investment firm that internalise order flow to deal on their own account on an organised, frequent and systematic basis. Trades executed through SIs are reported as the over-the-counter (OTC)
+trades. Some of the large RMs in European equity market include the LSE Group (operator of the
+London Stock Exchange and Borsa Italiana), NYSE Euronext (which operates exchanges in France,
+Belgium, the Netherlands, Portugal, and the United Kingdom), and Deutsche Borse Group (operator of the Frankfurt Exchange and the Xetra trading system).
+The LSE runs electronic order books on which buy and sell orders are continuously matched
+⁴In order to capture ‘dark pool’ operators and other alike trading systems, a new category of trading venue called
+Organised Trading Facility (OTF) is introduced for non-equity instruments in MIFID II which came into effect on 3
+January 2018.
+10
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+from the open to the close according to the price-time priority rules. Automated trading sessions
+start at 8:00 and close at 16:30 in local time. As a supply side response, LSE invested heavily in
+technology against on growing HFT demands for low latency⁵ tradings for the last two decades. The
+implementation of Millenium trading platform has improved its latency to 113 microseconds which
+was 600 milliseconds before the year 2000 (Linton and Mahmoodzadeh, 2018). Beside RMs, the
+main MTFs are CHIX, BATS, and Turquoise. These exchanges are well equipped with modern latency based technologies and have become main rivals of primary exchanges like LSE. The LSE has
+lost significant market share to those exchanges in the recent past (see Figure 4).
+MTFs also run
+transparent order books in which anonymous orders are matched continuously for the same trading
+hours relative to primary exchanges. MTFs differ in terms of the speed of execution, the number of
+securities traded, and trading fee structure (Degryse et al., 2015). Their market models are adapted
+to the needs of high-frequency traders by offering low-latency trading with high throughput rates.
+Most MTFs follow a so-called maker/taker fees model—offer a transaction rebate to those who
+provide liquidity (the market maker), while charging customers who take that liquidity. The LSE
+also followed the maker/taker fees model before switching back to a traditional fee schedule on
+September 1st, 2009.
+3.2
+Data
+Generally, papers studying HFT and fragmentation have a small data coverage, ranging from couple
+of months to few years, due to huge management and computational burden. We take the computational and data management burden to minimize the limitations of using a small dataset. Our
+sample covers the period January 2005–December 2016 which provides, to the best of our knowledge, the most recent and longest coverage of data in HFT research. The dataset has the footprint
+of all economic shocks and recoveries of the last decade (see Figure 1), and provides enough data
+points for implementing sound econometric tools. The post-MiFID period is prominently characterized by the proliferation of modern electronic trading venues, through which markets have been
+experiencing a large influx of HFT investment.
+⁵The turnaround time between a message from a trader and its receipt at exchange platform
+11
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+In constructing our sample, we take the STOXX 800 ⁶ as our population stocks and we try to get
+as many sampe as possible from there. The primary source of our data is Thomson Reuters Tick History (TRTH), a product of the Securities Industry Research Centre of Asia-Pacific (SIRCA), which
+is compiled from the Global Thomson Reuters exchange feeds. Two resilient London based recording devices provide the millisecond time stamp to each recorded message. The primary analysis of
+TRTH data structure reveals that time synchronization of trades and respective quote messages is
+not uniform across trading venues. TRTH provides better quotes and trades time synchronization
+for the trading venues which are physically closer to the IDN Collection LAN in London (e.g. LSE,
+CHIX, Bats, Turquoise) compare to those which remotely located out of London (e.g. Deutche
+Boerse (Xetra) , Euronext Paris ). This issue raises some real challenges in determining trades and
+quotes based measure of transaction cost, which is particularly true for the effective spread.
+Considering the TRTH time synchronization issue, we narrow down our sample choices only
+to the UK-based LSE listed stocks that are included in STOXX 800. To address the fragmented
+environment of these stocks appropriately, we select CHIX, BATS, and Turquoise as their alternative venue counterparts. These four trading venues facilitated around 99% of lit trading during the
+period 2014–2016 for the stocks that are primarily listed in LSE, and this pattern is quite regular
+over the sample period (see Table 1, Panel C ). Trades and quotes data are available from TRTH
+since 1996 for most of the primary trading venues, which for alternative trading venues in MiFID
+zone started to be available from mid of 2008. Among the 220 primarily selected stocks from the
+LSE, TRTH provides data support only for 204 stocks⁸.
+TRTH supplies quotes and trades records through two main files, the Time and Sales (TS) and
+the Market Depth (MD). The time and sales file provides transaction records and the best quote
+updates, and the market depth file comes with the queue of bid and ask limit prices and respective
+quantities (displayed in the limit order book). The records in market depth can be extracted to 25
+best limit prices (based upon their availability) of which we extract up to the best 10 levels. We
+⁶STOXX 800 constitutes the largest 800 market capitalized stocks in Europe. Table 1: Panel A⁷ shows the STOXX
+800 composition at the end of year 2016. It reports that top 50% stocks of the list are coming from only three primary
+trading venues, the London Stock Exchange, Deutche Boerse (Xetra) and Euronext Paris, of which LSE listed stocks are
+more than 50%. Table 1 (Panel B) shows the market share of both primary and alternative lit trading venues in European
+equity markets. Among the trading venues, CHIX, BATS and Turquoise facilitate most of the lit trading besides the
+primary platforms. Remarkably, the present market share of CHIX exceeds that of any other trading venues. We choose
+these three alternative trading venues/MTFs for measuring the trade dispersion outside of the listing exchange LSE.
+⁸Table 2 shows the TRTH data availability for the sample stocks across trading venues.
+12
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+download and process these two files for all stocks primarily selected in the sample ( see Table 2:
+Panel A ). It requires us to dedicate substantial computing resources and data processing time. We
+processed about 885 files of market depth data of 70 million records each and 300 files of Time and
+Sales data of 110 million records each, on average, in several phases before harvesting the usable
+output.
+At this point, a primary analysis shows that among those 204 securities, some are not compatible for further analysis due to reasons like delisting, takeovers or mergers with other firms or
+liquidation at some point or do not have enough data coverage for all four trading venues for unknown reasons, and we set a final filter to ensure uniform data coverage of the selected stocks and
+exclude them if they do not satisfy the following conditions: (i) data availability in LSE at least from
+2006; (ii) data availability in alternative trading venues from 2008 or at least from the 1st quarter of
+2009⁹. We are left with 149 stocks after setting the final filter. To be in the safe side and to avoid
+the possible econometric pitfalls of an unbalanced panel estimation, we reduce our sample again
+to 132 stocks so that all stocks in our sample can confirm uniform coverage over the study period.
+Our final sample is a balanced panel of 132 stocks with the coverage of 2624 days each (Table 3).
+We also rely on the Thomson Reuters’s Datastream for the relevant data, which are not supported
+from TRTH but used in this study (e.g. daily market capitalization).
+3.3
+Variables and Measures
+3.3.1
+High-Frequency Trading
+Market microstructure literature has so far used either one of the two approaches— i) to use an
+exchange provided HFT flaaged dataset (direct method) or ii) to use a proxy (indirect method), for
+measuring HFT. The choice is primarily determined by the nature of access to relevant datasets. The
+supply of the datasets with HFT-flag are quite limited and subject to some criticisms due to their
+possible sample selection bias and data coverage (Conrad, Wahal and Xiang, 2015). Conversely,
+studies relying on a proxy for HFT identification are also diverse in their selection criteria. One of
+the main reasons is that the features by which HFTs are identified are many, and every dataset is
+not commonly enriched with all HFT tracing information. As our datasets do not have any direct
+⁹Table 2 (Panel B) shows the reduced list of quarterly data used to construct the panel for the period 2005–2016
+13
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+HFT flag, we rely on a proxy for measuring HFT. Among the available proxies, we take a modified
+definition of Hendershott et al. (2011)’s electronic message rate. We measure the speed of limit
+order book updates for the best 5 levels of market depth. We define the electronic message rate
+(ℎ𝑓𝑡𝑖𝑡)proxy is defined for stock ′𝑖′ on day ′𝑡′ by
+ℎ𝑓𝑡𝑖𝑡= 𝑞𝑢𝑝𝑑𝑎𝑡𝑒_5𝑏𝑜𝑖𝑡/𝑇,
+where ℎ𝑓𝑡𝑖𝑡is the average number of per minute messages or the electronic message rate, 𝑞𝑢𝑝𝑑𝑎𝑡𝑒1𝑖𝑡
+is the aggregate intraday limit order book quote updates for the continuous trading session and 𝑇is
+the length of the trading session (in minutes). In our dataset wee see every quote update that happen up to all its 10 best prices at the fraction of millisecond. A limit order book update is generally
+attributed to any of the following causes: i) execution of an order ii) arrival of a new limit order iii)
+cancellation of an existing limit order and iv) revision or modification of an existing limit order. We
+track and flag every intraday change in the limit order book for it 5 best prices that happen with in
+the daily trading session and aggregate them to get the 𝑞𝑢𝑝𝑑𝑎𝑡𝑒_5𝑏𝑜, We then divide them by the
+number minutes allocated for each daily trading session i.e. 𝑇. The span of the automated trading
+session at LSE is last between 8.00 and 16.30.
+We explain briefly why our measure takes the 5 best prices unlike to Hendershott et al. (2011)
+where they use only the BBO level updates, and why we do not use the limit order book update up
+to the 10 levels though we have the access. Recent evidence indicate that high-frequency traders
+(HFTs) participate in both competitive (narrow)— at the BBO level, and passive (wider)—-quoting
+beyond the BBO, quoting as a market making strategy; however, they do not participate in passive
+quoting excessively—too far from the BBO (Hossain, 2022; AMF, 2017). In one of our recent
+studies we also show that the HFT proxy defined on the 5 best LOB prices can explain the market
+microstructure changes better, particularly in the European market, than the one defined on the first
+best prices (BBO). We suggest here the study Hossain (2022) for a detail discussion over the choices
+of HFT proxy, and why we do not use also the other proxies available from the prior studies.
+Figure 2a together with Table 6 shows that HFT intensity increased remarkably over the years.
+The trend reflects the phenomenon which started to explode in European markets at the beginning
+of 2008 and has grown monotonically over the periods except a small bump in 2012. As can be seen,
+HFT intensity increased significantly across cross sections but in different magnitude. The average
+14
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+message traffic rate (ℎ𝑓𝑡) in 2005 starts at 8.5 messages per-minute and rises to 154 messages in
+2016. It can also be seen that HFT activities are more intensive in the large stocks. For example, the
+quintile of the large capitalized stocks (Large) starts from 14 messages in 2005 (whereas the smallest starts from below 5 messages) and rises to around 325 messages per-minute at the beginning of
+2016 (whereas the smallest-cap rises to 74 messages) before falling to around 182 messages at the
+end of 2016 (the smallest falls to 51 messages). It can also be seen that the general trend of rising
+HFT during this long period has not been interrupted by any mid or long-term economic shocks
+(see Figure 1) through which European markets have undergone during the last decade, rather, these
+shocks have magnified the HFT intensity manifold, instead.
+3.3.2
+Market fragmentation
+We use the Herfindahl-Hirschman Index (𝐻𝐻𝐼)—the most commonly used definition of market
+concentration in literature—as the proxy of market fragmentation. Market fragmentation refers to
+the extent to which order flow of a security is split across exchanges. Fragmentation measures used
+in this study refer to the fragmentation of order flows across lit trading venues (where HFTs only
+participate). 𝐻𝐻𝐼𝑖𝑡, is defined by
+𝐻𝐻𝐼𝑖𝑡= 1/
+𝑛
+Õ
+𝑗
+𝑣𝑖𝑗,
+where 𝑣𝑖𝑗is the square of the trading volume share on venue 𝑗among 𝑛for security 𝑖at day 𝑡.
+This is a normalized measure which ranges from 1 to 𝑛, where 1 stands for no fragmentation or
+full concentration in the primary venue and 𝑛for evenly distributed order flow across 𝑛exchanges.
+Since our study considers one primary venue (LSE) and three alternative exchanges (𝑛= 4) , the
+range is defined as, 1 <= 𝐻𝐻𝐼𝑖𝑡<= 4.
+The fragmentation index for the period 2005–2016 across quintiles are illustrated in Figure 2b.
+The index, 𝐻𝐻𝐼, reflects the fragmentation of the sample stocks across four venues—LSE, CHIX,
+BATS and Turquoise. These four trading venues share around 100% lit turnover market share (see
+Table 1 :Panel C ), the stocks in our sample¹⁰. Since the starting of the post-MiFID era in 2008,
+we see stocks, both large and small, started to fragment sharply across alternative trading venues.
+¹⁰So, not considering the remaining alternative trading venue’s in our calculation should not make any difference
+in the fragmentation scenario already presented
+15
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+Consistently, Figure 4a shows that LSE’s trading volume declined at the same time, which indicates
+that LSE lost its substantial market share to the competing trading venues (see Figure 4b). It can
+be seen that large stocks are relatively more fragmented. Over the sample period, the fragmentation gap between large and small stocks decreased but did not close completely. Until 2011, the
+order fragmentation in venue market share grew steeply and started to slow down afterwards. With
+few small bumps, stocks across the quintiles reached the maximum fragmentation point at the end
+of 2015, before starting to fall at the beginning of 2016. The fragmentation index never reached
+the theoretical maximum (which is four(4)) which suggests the gain from alternative floors has not
+come to substitute for the heterogeneous users’ needs that can be fulfilled by a primary trading floor
+as LSE.
+3.3.3
+Liquidity
+We compute several standard measures of liquidity available in the literature. The market microstructure literature classifies liquidity into several dimensions, like transaction costs, quantity,
+time, and so on. We use the relative quoted spread (𝑠𝑝𝑟𝑒𝑎𝑑𝑖𝑡) and the effective-half spread (𝑒𝑠𝑝𝑟𝑒𝑎𝑑𝑖𝑡)
+which measure the transaction costs dimension of liquidity. We decompose the effective half-spread
+into the price impact (𝑝𝑖𝑚𝑝𝑎𝑐𝑡𝑖𝑡) and the realized half-spread (𝑟𝑠𝑝𝑟𝑒𝑎𝑑𝑖𝑡). The price impact measures the gross losses to liquidity demanders which is also known as the adverse selection cost. On
+the other hand, realized spreads measures the revenue earned by liquidity providers.
+To address the quantity dimension of liquidity, the quoted depth is measured at and beyond
+the BBO. The recent evidence (AMF, 2017) suggests that HFTs’ liquidity supply surrounds several
+depth levels of the limit order book. The quoted depth refers to the available buy and sell quantities at prices close to the best bid and offer (BBO) price, practically at mid price. The measures,
+𝑎𝑑𝑒𝑝𝑡ℎ_𝑏𝑏𝑜𝑖𝑡and 𝑎𝑑𝑒𝑝𝑡ℎ_3𝑏𝑜𝑖𝑡, refer the average quoted depth and cumulative depth at the BBO
+and beyond the BBO (up to the best three limit prices) respectively.
+For the 𝑡𝑡ℎquote in stock j, quoted spreads in basis points (bps) (𝑠𝑝𝑟𝑒𝑎𝑑_𝑏𝑝𝑠𝑖𝑡) is defined as
+𝑠𝑝𝑟𝑒𝑎𝑑𝑖𝑡= ((𝑎𝑠𝑘𝑖𝑡−𝑏𝑖𝑑𝑖𝑡)/𝑚𝑝𝑖𝑡) ∗10000,
+16
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+where 𝑎𝑠𝑘𝑖𝑡is the best quoted ask price, 𝑏𝑖𝑑𝑖𝑡is the best quoted bid price, and 𝑚𝑝𝑖𝑡is quote midpoint
+at BBO calculated as (𝑎𝑠𝑘𝑖𝑡+ 𝑏𝑖𝑑𝑖𝑡)/2. For the 𝑡𝑡ℎtrade in stock 𝑖, the effective half-spread in bps,
+𝑒𝑠𝑝𝑟𝑒𝑎𝑑𝑖𝑡, is defined as
+𝑒𝑠𝑝𝑟𝑒𝑎𝑑𝑖𝑡= (𝑑𝑖𝑡∗(𝑝𝑖𝑡−𝑚𝑝𝑖𝑡)/𝑚𝑝𝑖𝑡) ∗10000,
+where 𝑑𝑖𝑡is an indicator variable that equals +1 if the 𝑘𝑡ℎtrade is a liquidity demander’s buy and −1
+if the 𝑘𝑡ℎtrade is a liquidity demander’s sell, 𝑝𝑖𝑡is the trade price, and 𝑚𝑝𝑖𝑡is the quote midpoint
+prevailing at the time of the 𝑘𝑡ℎtrade.
+Academics often find the studying effective spreads challenging due to the trade signing requirements. This becomes even more complicated in the low-latency environment due to the involvement of enormous masses of quote updates, even within a millisecond. Empirical studies
+usually use the readily available trade signing approaches from literature, for example, Lee and
+Ready (1991). Signing a trade with these methods come with a high price of inaccuracy due to the
+fact that exchange platforms and data providers do not follow a uniform data synchronization system. In contrast to common practices, we develop algorithms which are capable of signing trade
+precisely in TRTH European data structure. This approach makes this study unique in terms of
+measuring the effective spread. The algorithm is same as we followed in Hossain (2022).
+For the 𝑘𝑡ℎtrade in stock 𝑖, the percentage realized half-spread in bps, 𝑟𝑠𝑝𝑟𝑒𝑎𝑑𝑖𝑡is defined as
+𝑟𝑠𝑝𝑟𝑒𝑎𝑑𝑖𝑡= (𝑑𝑖𝑡∗(𝑝𝑖𝑡−𝑚𝑝𝑖,𝑡+Δ)/𝑚𝑝𝑖𝑡) ∗10000,
+where 𝑑𝑖𝑡is an indicator variable that equals +1 if the 𝑘𝑡ℎtrade is a liquidity demander’s buy and
+−1 if the 𝑘𝑡ℎtrade is a liquidity demander’s sell, 𝑝𝑖𝑡is the trade price, 𝑚𝑝𝑖𝑡is the quote midpoint
+prevailing at the time of the 𝑘𝑡ℎtrade, and 𝑚𝑝𝑖,𝑡+Δ is the quote midpoint after Δ. To reflect the price
+pressure reasonably, an appropriate time gap (Δ) between a transaction and the post transaction
+quote adjustment is sought. In transparent and active markets adjustment is generally fast, so a
+modest value of Δ is appropriate (Foucault et al., 2013). In a low-latency environment, HFT traders
+should have the capacity to close their position in a very short period of time. We try out a range
+of values—10 seconds, 30 seconds, 1 minute and 5 minutes, for Δ in some of our experiment and
+finalize the ’5 minutes’ gap as the reasonable choice for measuring price impacts. The gross losses
+to liquidity demanders, 𝑝𝑖𝑚𝑝𝑎𝑐𝑡𝑖𝑡, due to adverse selection (using the same variable) can be given
+17
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+by
+𝑝𝑖𝑚𝑝𝑎𝑐𝑡𝑖𝑡= ((𝑚𝑝𝑖,𝑡+Δ −𝑚𝑝𝑖𝑡)/𝑚𝑝𝑖𝑡) ∗10000.
+As an identity, a two-way decomposition of the effective spread can be established by
+𝑒𝑠𝑝𝑟𝑒𝑎𝑑𝑖𝑡= 𝑟𝑠𝑝𝑟𝑒𝑎𝑑𝑖𝑡+ 𝑝𝑖𝑚𝑝𝑎𝑐𝑡𝑖𝑡.
+We also use the average market depth or quoted depth as a quantity based liquidity measure.
+We measure the market depth on two different limit order depth levels—the first best prices (BBO)
+and the first three best prices. The average quoted depth can be decomposed into the offer depth—
+the specified quantity that a liquidity supplier is willing to sell at ask price, and the bid depth—
+the specified quantity that a liquidity supplier is willing to buy at the bid price. The first of the
+two quantity based liquidity measures, 𝑎𝑑𝑒𝑝𝑡ℎ_𝑏𝑏𝑜𝑖𝑡, refers to the average offer and bid quantity
+available at the best bid and offer prices (𝐵𝐵𝑂), or at the best depth level. At time 𝑡, for stock 𝑖, the
+average market depth 𝑎𝑑𝑒𝑝𝑡ℎ𝑖𝑡is defined as
+𝑎𝑑𝑒𝑝𝑡ℎ_𝑏𝑏𝑜𝑖𝑡= (𝑂𝑓𝑓𝑒𝑟𝑑𝑒𝑝𝑡ℎ∗𝑜𝑓𝑓𝑒𝑟𝑝𝑟𝑖𝑐𝑒+ 𝑏𝑖𝑑𝑑𝑒𝑝𝑡ℎ∗𝑏𝑖𝑑𝑝𝑟𝑖𝑐𝑒) ∗0.5.
+We use the average cumulative depth (𝑎𝑑𝑒𝑝𝑡ℎ_3𝑏𝑜𝑖𝑡) for measuring the depth level supplied up to
+the three best prices.
+The time series of liquidity measures can be seen in Figure 3. All measures, except 𝑎𝑑𝑒𝑝𝑡ℎ_𝑏𝑏𝑜
+and 𝑎𝑑𝑒𝑝𝑡ℎ_3𝑏𝑜, reveal substantial improvement of liquidity. For instance, overall spreads decreased about one third to 13 bps at the end of 2016 compared to 35 bps in 2005. Spreads decreased
+asymmetrically across the quintiles. The quoted spreads in the large and small stock narrowed
+around 38% and that for the for 67%. Between 2005–2016, both realized spreads and price impacts
+declined, which explains the same trend observed in effective spreads. One of the possible reasons
+for declining realized spreads is that, in the presence of HFT the market has achieved better execution quality over the past. This evidence of decreased realized spread differs from Hendershott
+et al. (2011), who report the opposite after the introduction of auto quote in NYSE (which they also
+refer to as an unexpected finding). We also see large stocks have smaller realized spreads and price
+impacts—a well evident stylized fact commonly observed in liquidity analysis.
+The study of the time-series evolution of liquidity, along with general equity market trend (see
+18
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+Figure 1) reveals that liquidity as measured by quoted and effective spreads is sensitive to economic
+and financial shocks. Events such as the financial crisis in 2008-2009, the euro-area sovereign debt
+crisis in 2011, the Chinese market crash in 2015, Brexit, US presidential election in 2015-2016
+explain the extreme illiquidity conditions illustrated in the graph during the same periods.
+It can be seen from the Table 6 and Figure 2c shows that BBO level’s depth started to decrease
+steeply for large stocks since 2005, long before the implementation of MIFID. This might be attributable to the common driving forces of the similar trend that is also observed in average trade
+sizes and a monotonically rising message traffic rate during the same period. The trend showing
+decreasing depth might be attributable to the narrowed spreads as market makers have less incentive
+to offer a large depth as usually done for wider spreads.
+3.3.4
+Correlation Analysis
+A primary analysis of correlation is presented in Table 5. The Correlation between liquidity, HFT
+proxy (ℎ𝑓𝑡) and fragmentation proxy (𝐻𝐻𝐼) show that HFT intensity is negatively correlated with
+liquidity as measured by quoted spreads (-0.78), effective spreads (-0.77), realized spreads (-0.15)
+and price impacts (-0.58), and positively correlated with fragmentation proxy (0.55) and depth base
+liquidity measures—BBO level depth (0.38), and cumulative depths (0.47). On the other hand, fragmentation proxy (HHI) is also negatively correlated with liquidity as measure by quoted spreads
+(-0.40), effective spreads (-0.45), BBO level depth (-0.09), realized spreads (-0.04), price impacts
+(-0.58) and positively correlated with cumulative depths (0.08). Overall, these estimates show a
+positive association between liquidity and HFT and also between liquidity and market fragmentation; however, the correlation between HFT and liquidity is quite stronger. The next, we build a
+sound empirical framework so that the direction of causality between HFT, market fragmentation
+and liquidity can be established.
+19
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+4
+Methods, Results and Discussions
+4.1
+Methods
+We specify a multivariate regression model so that we can measure the impact of HFT, market
+fragmentation and their possible interaction on the market liquidity. We incorporate our two main
+explanatory variables in the model in three steps which allow us to keep track on the changes of
+coefficient estimates. We start our main specification taking HFT as main explanatory variables of
+liquidity, then we add fragmentation, and finally we also add an interaction term of these two. The
+models are
+𝐿𝐼𝑄𝑖𝑡= 𝛼𝑖+ 𝛾𝑡+ 𝛽1𝐻𝐹𝑇𝑖𝑡+ 𝜎′𝑋𝑖𝑡+ 𝜖𝑖𝑡,
+(1)
+𝐿𝐼𝑄𝑖𝑡= 𝛼𝑖+ 𝛾𝑡+ 𝛽1𝐻𝐹𝑇𝑖𝑡+ 𝛽2𝐿𝐹𝑟𝑎𝑔𝑖𝑡+ 𝜎′𝑋𝑖𝑡+ 𝜖𝑖𝑡,
+(2)
+and
+𝐿𝐼𝑄𝑖𝑡= 𝛼𝑖+ 𝛾𝑡+ 𝛽1𝐻𝐹𝑇𝑖𝑡+ 𝛽2𝐿𝐹𝑟𝑎𝑔𝑖𝑡+ 𝛽3𝐻𝐹𝑇𝑖𝑡∗𝐿𝐹𝑟𝑎𝑔𝑖𝑡
++ 𝜎′𝑋𝑖𝑡+ 𝜖𝑖𝑡,
+(3)
+where 𝐿𝐼𝑄𝑖𝑡represents one of the six market liquidity measures (𝑠𝑝𝑟𝑒𝑎𝑑, 𝑒𝑠𝑝𝑟𝑒𝑎𝑑, 𝑟𝑠𝑝𝑟𝑒𝑎𝑑,
+𝑝𝑖𝑚𝑝𝑎𝑐𝑡, 𝑎𝑑𝑒𝑝𝑡ℎ_𝑏𝑏𝑜, 𝑎𝑑𝑒𝑝𝑡ℎ_3𝑏𝑜) for stock 𝑖on day ’t’, 𝐻𝐹𝑇𝑖𝑡represents the HFT proxy,
+𝐿𝐹𝑟𝑎𝑔𝑖𝑡is the visible (lit)s market fragmentation proxy measured by 𝐻𝐻𝐼, the vector 𝑋𝑖𝑡includes
+three control variables— log normalized market capitalization (𝑙𝑜𝑔(𝑚𝑘𝑡𝑐𝑎𝑝)), log normalized intraday mid price volatility (𝑙𝑜𝑔(𝑣𝑜𝑙𝑡𝑖𝑛𝑡𝑟𝑎)) and inverse of daily average prices (𝑖𝑛𝑣𝑝𝑟𝑖𝑐𝑒), which
+are commonly evident as liquidity determinant in empirical market microstructure literature (Hendershott et al., 2011; Boehmer et al., 2021). To address the potential heterogeneity across firms and
+over the period , we introduce Firms (stocks) and time (days) fixed effect 𝛼𝑖and 𝛾𝑡respectively.
+The expanded second specification on (1) includes the daily market fragmentation proxy, 𝐿𝐹𝑟𝑎𝑔𝑖𝑡,
+with 𝐻𝐹𝑇𝑖𝑡, so that the impact of both HFT and market fragmentation can be assessed in the same
+model. The additional term in the third specification, 𝐻𝐹𝑇𝑖𝑡∗𝐿𝐹𝑟𝑎𝑔𝑖𝑡, captures the interaction between HFT and market fragmentation. The idea of the interaction effect between HFT and market
+20
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+fragmentation arises from the fact that the level of fragmentation and HFT are likely to influence
+each other. For example, if HFT firms wish to engage in market making across markets they must
+rely on stocks which are fragmented. Consequently, the level of HFT participation across markets
+is likely to impact the fragmentation level itself. It can be argued that if there exists an impact of
+HFT and fragmentation on market quality, then the level of each on which the other ride might also
+play a role in determining the extent of impact. It might be the case that the effect of HFT on the
+market quality of a low fragmented stock is different from that of a high fragmented stock, or that
+the level of HFT participation also determines the extent to which market fragmentation impacts
+stock’s liquidity or both.
+4.2
+The impact of HFT and market fragmentation on liquidity
+Table 7, divided into two panels (A and B), reports the all coefficients estimates for the specification
+(1)–(3) on our balanced panel of 132 stocks with coverage of 2624 days each for the priod December
+2005 to December 2016. The coefficient estimates in all models are OLS, and the stand errors
+are computed using the Newey & West HAC estimator, a heteroscedasticity and autocorrelation
+consistent covariance matrix estimator (lags for autocorrelation are optimally determined). All
+estimates include both time (day) and stock fixed effect.
+4.2.1
+Transaction cost dimension of liquidity
+The coefficients of 𝑙𝑜𝑔(ℎ𝑓𝑡) and 𝐻𝐻𝐼measure the association of HFT intensity and market fragmentation with the market liquidity measures respectively. It can be seen that higher HFT intensity is associated with lower quoted and effective spreads, lower depth (for both 𝑎𝑑𝑒𝑝𝑡ℎ_𝑏𝑏𝑜
+and 𝑎𝑑𝑒𝑝𝑡ℎ_3𝑏𝑜), lower realized spreads and price impacts. On the contrary, the coefficients of
+𝐿𝐹𝑟𝑎𝑔𝑖𝑡reveal that higher fragmentation is associated with higher quoted and effective spreads,
+lower BBO depths, lower realized spreads and higher price impacts. Among the three specifications, the net impact of HFT and market fragmentation is explained by Model 3. Model 1 and
+Model 2 illustrate the evolution path of the estimated coefficients. The final specification Model
+3, illustrate how important it is to include both HFT and market fragmentation in the same model.
+21
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+The interpretation of the interaction term 𝑙𝑜𝑔(ℎ𝑓𝑡) ∗𝐻𝐻𝐼would make it more appealing.
+Since both ℎ𝑓𝑡and market quality measures are log normalized, the estimate on 𝑙𝑜𝑔(ℎ𝑓𝑡) is
+−0.283 (Panel A, column III), means that 1% increase in the HFT is associated with 0.283% decrease in quoted spread. For instance, a one standard deviation (135 messages) increase in HFT
+from its sample mean of 95 messages/per-minute to 230 ( ≈142% ) suggests that quoted spreads
+narrow by 40.2%. More explicitly, the sample mean of quoted spreads would go down from 18.37
+bps to 10.99 bps (for reference value, see Table 4). The coefficient of 𝐻𝐻𝐼is 0.052 (Panel A,
+column II) which implies that a unit increase in 𝐻𝐻𝐼, for example, from the sample mean of 2.17
+to 3.17 is associated with decrease of quoted spreads by 5.34% ( exp 0.052−1) .The interpretations
+of the coefficients so far provided are valid if it is imagined that HFT and market fragmentation do
+not affect each other which is not true.¹¹
+We now turn to explain our novel term, 𝑙𝑜𝑔(ℎ𝑓𝑡)∗𝐻𝐻𝐼, represents the interaction between HFT
+and fragmentation in of our study. The estimated coefficient against the liquidity measure 𝑒𝑠𝑝𝑟𝑒𝑎𝑑
+is −0.02, implies that an increase in HFT is associated with higher liquidity when fragmentation
+is also higher. On the contrary, an increase in fragmentation is associated with less liquidity damaging when HFT is higher. The interaction between HFT and market fragmentation reveals an
+interlinkage that exists between HFT and market fragmentation that often 0overlooked. We see that
+higher HFT is beneficial for market liquidity. However, if it is performed in a highly fragmented
+market the benefit is more. On the other hand, it seems that a higher market fragmentation can only
+improves market liquidity when HFTs are more active in the market. The intuition is that a highly
+fragmented market not only increase the search costs but also increases the competition among exchanges. It is the HFT which can minimize the searching cost through their searching technology
+¹¹Since in the presence of interaction term (𝑙𝑜𝑔(ℎ𝑓𝑡) ∗𝐻𝐻𝐼) the interpretation of the coefficient estimates of
+the variables ℎ𝑓𝑡and 𝐻𝐻𝐼become tricky, it is useful here to explain the interpretation of the parameters in model
+(2.3). In the given setting, the partial effect of ℎ𝑓𝑡on liquidity depends on the average level of 𝐻𝐻𝐼, and vice versa.
+The Partial effects of ℎ𝑓𝑡and 𝐻𝐻𝐼(on liquidity) can be defined as 𝜕(𝐿𝐼𝑄𝑖𝑡)/𝜕(𝐻𝐹𝑇𝑖𝑡) = 𝛽1 + 𝛽3 ∗𝐿𝐹𝑟𝑎𝑔𝑖𝑡and
+𝜕(𝐿𝐼𝑄𝑖𝑡)/𝜕(𝐿𝐹𝑟𝑎𝑔𝑖𝑡) = 𝛽2 + 𝛽3 ∗𝐻𝐹𝑇𝑖𝑡respectively. To interpret partial effects, these expressions should be evaluated at some interesting values e.g. mean. We evaluate them at their sample means, which is a well-practised norm
+among academics. For instance, the estimated coefficient on the interaction term between HFT and market fragmentation against the response variable effective-half spread is −0.02 ( Table 7, Panel A, Column VI), and the respective
+estimates for the partial effects of HFT (𝜕(𝑒𝑠𝑝𝑟𝑒𝑎𝑑)/𝜕(𝑙𝑜𝑔(ℎ𝑓𝑡)) and market fragmentation (𝜕(𝑒𝑠𝑝𝑟𝑒𝑎𝑑)/𝜕(𝐻𝐻𝐼)
+are (−0.282 −0.02 ∗2.17 ≈) −0.32 and (0.144 −0.02 ∗𝑙𝑜𝑔(96) ≈) 0.053 respectively. The general expressions for
+the partial effect are evaluated at the sample means of HFT (96) and market fragmentation (2.17) as reported in Table
+4.. These estimates are close to the estimated coefficients on the same variables where the interaction effects are not
+introduced (column V of Panel A). We do not report joint significance tests for partial effects, which are trivial as both
+interaction and main effects are significant.
+22
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+and can also take the benefit of increased competition.
+The model (3) greatly expands the understanding of the relationship between 𝐻𝐹𝑇𝑖𝑡and 𝐿𝐹𝑟𝑎𝑔𝑖𝑡.
+The results indicate that models without interaction effects could lead to a misspecification as the
+effect is statistically significant, and it also open the argument that the model (1) and model (2) are
+poorly specified as no interaction terms are included there. Our results do not support the liquidity
+improving evidence of lit volume fragmentation provided in O’Hara and Ye (2011), Gresse (2017),
+even so confirms its role in lowering liquidity in primary exchanges that documents in Degryse et al.
+(2015). Regarding HFT’s impact on liquidity, our results confirm its liquidity improving evidence
+documented in Hendershott et al. (2011), Hasbrouck and Saar (2013) and Boehmer et al. (2021).
+The evidence we provide here regarding the interaction between HFT and market fragmentation is
+quite original and no studies so far demonstrated this linkage. Our evidence confirms the arguments
+of Menkveld (2016) regarding the symbiotic relationship between HFT and new electronic venues
+and the general conjecture of Hendershott et al. (2011) regarding the role of HFT in improving market linkage. We document that order flow fragmentation is one of the economic channels through
+which HFT affects market quality.
+4.2.2
+Quantity dimension of liquidity
+The coefficient estimates for 𝐻𝐹𝑇on two quoted depth measure in column IX (Panel A) and Column III (Panel B) are all significant but those for 𝐿𝐹𝑟𝑎𝑔are only significant for the BBO level
+quoted depth. Quoted depth, both at the BBO and beyond the BBO, declines with the rise of HFT.
+The role of HFT in declining quoted depth is quite strong but the results shows that market fragmentation has the opposite role on quoted depth—the higher the market fragmentation, the higher the
+market depth. After all, market fragmentation does not have any impact on the market depth beyond
+the BBO. We believe, the impact of HFT and market fragmentation on market depth require more
+explanation. One argument is that whether the market liquidity that improves through HFT is also
+offset by the decline of quoted depth as a direct consequence of higher HFT intensity in markets
+(positive impact of HFT on transaction costs is offset by the lower market depth). Hendershott et al.
+(2011) perform a calibration exercise to overcome the doubt and show that the effect of reduced
+market depth is relatively small compare to the added advantage which coming from the reduction
+of both quoted and effective spreads. The average BBO level quoted depth is GBP 35815. The
+23
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+reduction of depth would not make any negative affect on the market as long as a traders’ trade size
+is below the average level. It is also noteworthy that the role of HFT in providing liquidity beyond
+the BBO is positive, and the reduction of depth size is not also indiscriminate. It can be seen that
+quoted depth associated with higher liquid stocks in large stocks group (GBP 59000) is about four
+times larger than the less liquid stocks in small group (GBP 12700).
+The prior studies (Hendershott et al., 2011; Gresse, 2017; Aitken, Aspris, Foley and Harris,
+2014) argue for the possible link between the rising HFT intensity and decreasing trade sizes around
+the global financial marketplaces, especially in the last decade. HFTs typically trade in small lots
+and prominently use slice-and-dice strategy in executing large orders. Aitken, Cumming and Zhan
+(2014) provide evidence that substantial changes in trade size is linked to the rise of HFT. Trends
+revealed in trade sizes and quoted depths as we described earlier are consistent with the argument
+that recent changes in market microstructure, particularly the rise of HFT has impacted trade sizes,
+which in turn have affected the average depth level.
+4.2.3
+The sources of liquidity change
+We reported earlier about the significant decrease in quoted and effective spreads during the sample period. As we know, the quoted and effective spreads both take the liquidity demanders view.
+Beside, it can also be seen as a gain from the context of liquidity suppliers (realized spreads). However, the possible lasting pressure on prices due to buy and sell orders also add risk to the liquidity
+suppliers inventory position(Foucault et al., 2013) which in turn decreases their revenues (price
+impacts). To show the impact of effective spreads on liquidity suppliers, we decompose it into realized spreads and price impacts following Hendershott et al. (2011). A narrower (greater) effective
+spreads implies either less (more) revenue per trade for liquidity providers, or smaller (larger) gross
+loss due to informed liquidity demanders, or both (Hendershott et al., 2011).
+Respective columns in both tables show that HFT helps to decrease both realized-half spread
+and the price impact measured at 5-minute intervals over the past, whereas, market fragmentation
+does the same for realized spreads but hindrances the adverse selection costs. Apparently, HFT has
+improved the execution quality, and it can be seen in the descriptive statistics (Table 4 and 6) that
+the realized spread has turned to almost negative in the post-MiFID era. The negative realized-half
+spreads imply that liquidity providers are earning less revenue per trade than before. It also im24
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+plies that HFT liquidity providers are now able to provide liquidity at a lower cost which eventually
+improves the market liquidity. Our results do not agree with the evidence of increasing realized
+spreads in NYSE after the adoption of autoquote as shown in Hendershott et al. (2011) what they
+describe as surprising for not meeting their prior expectation before going into the analysis.
+On the other hand, price impacts also decreased over the past, indicating that liquidity providers
+are losing less to liquidity demanders (less adverse selection cost) as documented in Hendershott
+et al. (2011). Even so, the interaction effect between 𝐻𝐻𝐼and ℎ𝑓𝑡shows negative ‘-’ signs for
+realized spreads and positive ’+’ sign for price impacts, indicating that when HFTs are more active
+on highly fragmented stocks or order flows become highly fragmented in a more intense HFT environment, increases realized-half spreads but decreases price impacts more. The results confirms
+the increasing realized spreads in Hendershott et al. (2011) due to autoquote conditionally. Overall,
+it seem that the recent usage of computing technology has increased the market making capability of HFT in every side of an order book, which in turn reduces both realized spreads and price
+impacts. HFTs as a technologically equipped low-cost market making agent can trade on informational advantage which eventually expected to minimize their adverse selection cost. However,
+HFT as a liquidity demander would also try to do the same for getting better execution. We excerpt
+few relevant lines from a recent trading magazine’s article by Rick Baert that explains how market
+quality changed over the past. (http://www.pionline.com).¹²
+4.2.4
+Control variables
+The coefficients of the control variables have the expected signs and are significant. The higher
+market capitalized stocks are associated with lower quoted and effective spreads, lower price impacts, greater depth and higher realized spreads. The inverse price coefficient implies that a stock
+with higher price is associated with lower quoted and effective spreads, higher depth and lower
+¹²“Money managers and internally managed pension funds are expected to follow the lead of T. Rowe Price Group
+Inc. in sending direct equity order flow to high-frequency trading firms, which could chip away at the established
+use of brokers to direct institutional trades, sources said...Added Valerie Bogard, equity analyst at TABB Group LLC,
+New York: ‘The buy side has gotten more comfortable with high-frequency trading firms, and they weren’t before. A
+lot of their strategies used to make the buy side uncomfortable. But now the buy side understands much better how
+those firms work and they’re ramping up their transaction cost analysis, and HFT firms are providing the liquidity
+they need.’...T. Rowe Price executives said in the past two years the real success of the program has been in finding
+liquidity—a growing problem for institutions as fewer stocks trade on public markets and more institutional investors
+move toward passive investing...‘ The execution quality has been solid,’ said Mehmet Kinak, vice president and head
+of global equity market structure and electronic trading at T. Rowe Price, Baltimore...”
+25
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+realized spreads and price impacts. The positive estimate of the volatility coefficient implies that a
+higher intraday volatility increases quoted and effective spreads, provides greater depth in the best
+price, and is associated with higher price impacts and lower realized spreads.
+4.3
+The impact of HFT and market fragmentation: Cross-sectional comparison (Large vs small stocks)
+For cross sectional comparison, we divide the 132 stocks into two equal groups—large and small,
+and we estimate all three models for all liquidity variables as we report in the previous section.
+All estimates are reported in Table 8 classified in four sub-panels. For brevity, we do not report
+the estimates for control variables which are significant and have the same signs as they appear
+in Table 7. Moreover, the results of the Wald test—a test for joint hypothesis, are reported where
+marginal effect of market fragmentation (𝐻𝐻𝐼), or interaction between market fragmentation and
+HFT (𝐻𝐹𝑇∗𝐿𝐹𝑟𝑎𝑔), or both are not significant. The coefficient estimates in all models are OLS,
+and the stand errors are computed using the Newey & West HAC estimator, a heteroscedasticity
+and autocorrelation consistent covariance matrix estimator (lags for autocorrelation are optimally
+determined). All estimates include both time (day) and stock fixed effect.
+The estimated coefficients for 𝑙𝑜𝑔(ℎ𝑓𝑡) and 𝐻𝐻𝐼are significant and larger than the respective
+estimates for small stocks, indicating that HFT benefits are greater for large stocks , and order flow
+fragmentation detriments are larger for small stocks (column I, II, IV, V of both Panel A1 and
+A2). As can be seen from Table 8, the estimated interaction coefficients on HFT and fragmentation
+against quoted and effective spreads for large stocks are negative, similar to Table 7, however, those
+for small stocks are positive. Apart from that, the individual impact of market fragmentation is
+no more significant in model 3’s estimates for small stocks except for the join impact of HFT and
+fragmentation. We need to explain the apparent contradiction that we see in small stocks¹³. Our
+results indicate that fragmentation is always detrimental to market liquidity for small stocks, and
+in the presence of HFT, it becomes more liquidity harming. As before, HFT is associated with
+narrower spreads in both small and large stocks, even so, the liquidity of small stocks becomes
+¹³We already explained the interaction effect in our previous discussion where the sample is not divided into groups
+and the sign is negative. So, the large stocks group follow the same explanation with a much stronger effect as we
+provide for all stocks.
+26
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+more scarce when trading are highly fragmented across exchanges.
+The decomposition of effective spreads shows the similar effect across stocks as we reported
+earlier for all stocks’ estimates with the exception that the impact is greater for small stocks when
+it is realized spreads, and for price impacts, the effect on large stocks is higher. It indicates that
+over the past, liquidity providers, on average, not only earn less revenue in small stocks but also the
+execution quality in large stocks get better. Table 8 reports an interesting finding regarding the effect
+of HFT and market fragmentation on the quoted depth. The estimated coefficients on fragmentation
+(𝐻𝐻𝐼) and HFT (ℎ𝑓𝑡) against the average quoted depth at best price (𝑎𝑑𝑒𝑝𝑡ℎ_𝑏𝑏𝑜) appear to have
+the same sign in all three group of samples—all stocks, large stocks, and small stocks. Moreover,
+the coefficient for fragmentation (𝐻𝐻𝐼) is positive and significant (Panel B1 , column III), which
+implies that market fragmentation contributed more liquidity to the deeper of the order book in
+contrast to the HFT which decreased quoted depth at both the BBO(𝑎𝑑𝑒𝑝𝑡ℎ_𝑏𝑏𝑜) and beyond the
+BBO (𝑎𝑑𝑒𝑝𝑡ℎ_3𝑏𝑜).
+4.4
+The impact of HFT and market fragmentation: Time-varying impact
+analysis
+The models defined so far are time-invariant. If the impacts of HFT and market fragmentation are
+not static then the above three models only provide an over the period average estimates. To see
+the dynamics of the previous model estimates, the models 4–6 are extended on the models 1–3
+respectively to include period dummies. The extended new specifications address the time-varying
+impact of HFT, market fragmentation and their interaction. The models are :
+𝐿𝐼𝑄𝑖𝑡= 𝛼𝑖+ 𝛾𝑡+ 𝛽1𝐻𝐹𝑇𝑖𝑡+ 𝛽2𝐿𝐹𝑟𝑎𝑔𝑖𝑡+ 𝛽3𝐻𝐹𝑇𝑖𝑡∗𝐿𝐹𝑟𝑎𝑔𝑖𝑡
++ 𝛽4𝐻𝐹𝑇𝑖𝑡∗𝐷𝑌𝑟(8, 9, 10) + 𝛽5𝐻𝐹𝑇𝑖𝑡∗𝐷𝑌𝑟(11, 12, 13)
++ 𝛽6𝐻𝐹𝑇𝑖𝑡∗𝐷𝑌𝑟(14, 15, 16) + 𝜎′𝑋𝑖𝑡+ 𝜖𝑖𝑡.
+(4)
+𝐿𝐼𝑄𝑖𝑡= 𝛼𝑖+ 𝛾𝑡+ 𝛽1𝐻𝐹𝑇𝑖𝑡+ 𝛽2𝐿𝐹𝑟𝑎𝑔𝑖𝑡+ 𝛽3𝐻𝐹𝑇𝑖𝑡∗𝐿𝐹𝑟𝑎𝑔𝑖𝑡
++ 𝛽4𝐿𝐹𝑟𝑎𝑔𝑖𝑡∗𝐷𝑌𝑟(11, 12, 13) + 𝛽5𝐿𝐹𝑟𝑎𝑔𝑖𝑡∗𝐷𝑌𝑟(14, 15, 16)+
++ 𝜎′𝑋𝑖𝑡+ 𝜖𝑖𝑡,
+(5)
+27
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+and
+𝐿𝐼𝑄𝑖𝑡= 𝛼𝑖+ 𝛾𝑡+ 𝛽1𝐻𝐹𝑇𝑖𝑡+ 𝛽2𝐿𝐹𝑟𝑎𝑔𝑖𝑡
++ 𝛽3𝐻𝐹𝑇𝑖𝑡∗𝐿𝐹𝑟𝑎𝑔𝑖𝑡+ 𝛽4𝐻𝐹𝑇𝑖𝑡∗𝐿𝐹𝑟𝑎𝑔𝑖𝑡∗𝐷𝑌𝑟(11, 12, 13)
++ 𝛽4𝐻𝐹𝑇𝑖𝑡∗𝐿𝐹𝑟𝑎𝑔𝑖𝑡∗𝐷𝑌𝑟(14, 15, 16) + 𝜎′𝑋𝑖𝑡+ 𝜖𝑖𝑡,
+(6)
+where three additional time interaction dummies, 𝐷𝑌𝑟(8, 9, 10), 𝐷𝑌𝑟(11, 12, 13) and 𝐷𝑌𝑟(14, 15, 16)
+with 𝐻𝐹𝑇represent the period dummy for the three equally divided post-MiFID eras, (2008–
+2010), (2011–2013), (2014–2016) respectively, the two time interaction dummies with 𝐿𝐹𝑟𝑎𝑔𝑖𝑡,
+𝐷𝑌𝑟(11, 12, 13) and 𝐷𝑌𝑟(14, 15, 16) represent two evenly divided terms of the post MiFID period
+2011-206. Model-4 compares the HFT impact on liquidity in the subsequent three specified periods with that averagely observed in the pre-MiFID period (2005–2007), Model-5 and Model-6
+compare the market fragmentation and interaction impact on liquidity respectively in the two sub
+sample periods with that averagely observed in the immediately after MiFID fragmentation period
+(2008–2010).
+To facilitate time-varying analyses, the sample is further divided into four periods: (i) 2005–
+2007, represents the pre-MiFID era; and (ii) three equally divided periods, 2008–2010, 2011-2013
+and 2014-2016, represent the post-MiFID distinct phases. We estimate them using the same methods as we described before. Model 4 examines the incremental impact of HFT for the last three
+three-year consecutive periods. Model 4 essentially examines the incremental HFT impact for the
+last 9 years sample period, in three equally divided blocks, compare to the three beginning years
+estimates. Model 5 examines the incremental impact of market fragmentation for the last six years
+divided into two three-year consecutive blocks. Model 6 examines the incremental interaction effect of HFT and market fragmentation for the last 6 years of the sample divided into two equally
+three-year blocks. Table 9 reports the results.
+It can be seen that the incremental effects of HFT (ℎ𝑓𝑡), market fragmentation (𝐻𝐻𝐼) and interaction of market fragmentation and HFT (ℎ𝑓𝑡∗𝐻𝐻𝐼), measured by time dummy variables, are
+highly significant. The average impact of HFT and market fragmentation (as reported previously in
+Table 7) remain the same.¹⁴ We also observe a similar effect during this period in effective spreads,
+¹⁴For example, the coefficient of 𝑙𝑜𝑔(ℎ𝑓𝑡) ∗𝐷𝑌𝑟8, 9, 10 (Panel A, column I) is −0.03, implies that 1% increase in
+HFT during 2008-2010 is associated with 0.03% extra narrower spreads compared to the period 2005–2007. It is also
+28
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+realized-half spreads and price impacts. This result is very significant in the sense that the period
+2008-2010 is a period of high illiquidity and high volatility due to global financial crisis (as can be
+seen in Figure 3). The evidence provided in Hasbrouck and Saar (2013) also confirm the similar
+effect.
+There might be different reasons why HFT could create positive externality in the market at the
+time that the market needs it the most. A higher volatility might create more profitable opportunity
+for HFT traders. In a high illiquid period, HFT even might find small stocks, which are generally
+less liquid, profitable (Hasbrouck and Saar, 2013). Table 7 also shows that in the subsequent periods higher HFT in small cap stocks is associated with less narrower quoted and effective spreads.
+But among them, the incremental impact was the lowest during 2008–2010. As long as the quoted
+depth is concerned, HFT has impacted the depth mostly during 2008–2010. One of the possible
+explanations might be that after the enactment of MiFID, the influx of HFT impacted the trade sizes
+and quoted depths significantly. The coefficients of 𝐻𝐻𝐼∗𝐷𝑌𝑟11, 12, 13 and 𝐻𝐻𝐼∗𝐷𝑌𝑟14, 15, 16
+(panel A, column II,IV) are positive which confirm the implication of the result provided in Table
+7. This means that increased market fragmentation has depleted more liquidity during this period
+as measured by quoted and effective spreads.
+The previous results on HFT and market fragmentation show that HFT has improved more liquidity in the latter periods (2011-2016) whereas in the same period market fragmentation has been
+seen to be more detrimental to liquidity. The columns (III) and (VI) of Panel A (Table 9) show
+how the coefficient of HFT and market fragmentation interaction changed over the periods. As
+can be seen, the sign of the interaction effect has turned to be less intense during 2011–2013 and
+2014–2016 compared to the period 2008–2010, though the interaction effect is still negative and
+significant. It seems that the increased fragmentation has offset, at least partially, the additional liquidity which has been generated by the higher HFT during the latter periods. Column (II) of Panel
+B again confirms that higher fragmentation is associated with higher quoted depth in the deeper of
+the order book whereas at the best price both HFT and fragmentation decreased the quoted depth.
+Column (VI-IX) of Panel B shows that both HFT and market fragmentation improved price impacts
+noteworthy to recall that all period-dummy interactions show the incremental effect which should be compared with
+the beginning base period. For example, in Table 9, the coefficient of 𝑙𝑜𝑔(ℎ𝑓𝑡) ∗𝐷𝑌𝑟8, 9, 10 (Column I, Panel A) is
+-0.03 (incremental effect), has to be compared with −0.278 (the base coefficient of 𝑙𝑜𝑔(ℎ𝑓𝑡)). The base coefficient
+of 𝑙𝑜𝑔(ℎ𝑓𝑡) during 2008–2009 can be found by adding the incremental coefficient with the base coefficient which is
+0.308 (−0.27 −0.03).
+29
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+positively over the period.
+5
+Robustness Tests
+5.1
+A two-stage optimal IV-GMM regression (H2SLS) approach
+Endogeneity issues are commonly admitted in the HFT and fragmentation literature (e.g. Hendershott et al. (2011); Hasbrouck and Saar (2013); Degryse et al. (2015); Gresse (2017)). In the
+presence of endogeneity, establishing the causal link between HFT and market liquidity or fragmentation and market liquidity is challenging. It might be the case that HFT and market liquidity,
+or market fragmentation and market liquidity, or both are simultaneously determined in equilibrium, so that there may be bi-directional causality. For example, as Hasbrouck and Saar (2013)
+explain “an exogenous drop in spreads might establish a more attractive environment for, and lead
+to increase in, low-latency activity.” This mechanism would induce correlation between HFT proxy
+and the error terms, which makes OLS estimates inconsistent. It might also be the case that a highly
+liquid stock is more fragmented than an illiquid one. There is also the possibility that fragmentation is driven by the HFT, or a highly fragmented market attracts more HFT, and eventually both
+impact market liquidity. If this is the case then it poses the challenge on all previous specifications,
+whether they are truly identified or not.
+To tackle the possible biases arising from the endogeneity, one solution is to adopt an IV approach where it is necessary to find out at least one or more distinct instruments which are correlated
+with the endogenous variable but not with the errors. In our case, we need two instruments, at least
+one for each of the two endogenous variables 𝐻𝐹𝑇𝑖𝑡and 𝐿𝐹𝑟𝑎𝑔𝑖𝑡, which should be correlated with
+𝐻𝐹𝑇𝑖𝑡and 𝐿𝐹𝑟𝑎𝑔𝑖𝑡but not with the error terms (𝜖𝑖𝑡), also maintain the same consistency in association with the variables over the period under study.
+We choose a similar approach to Hasbrouck and Saar (2013), Degryse et al. (2015) and Gresse
+(2017) where they develop instruments from the existing available measures of 𝐻𝐹𝑇𝑖𝑡and 𝐿𝐹𝑟𝑎𝑔𝑖𝑡.
+Hasbrouck and Saar (2013) argue that if low-latency activity has a significant market wide compo30
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+nent then a market wide average of 𝐻𝐹𝑇𝑖𝑡is likely to satisfy the first requirement. They explain that
+funding constraints or inventory risk management might be the causes for which HFT participate
+across stocks, which means that 𝐻𝐹𝑇𝑖𝑡is related with 𝐻𝐹𝑇−𝑖𝑡, and determined by the market wide
+HFT factors.
+The redefined IV-GMM Models on our original specification (1), (2) and (3) are
+𝐻𝐹𝑇𝑖𝑡= 𝑎1,𝑖+
+𝑊
+Õ
+𝑡=1
+𝜔1,𝑡+ 𝑏′
+1𝑍𝑖𝑡+ 𝑐′
+1𝑊𝑖𝑡+ 𝜀1,𝑖𝑡,
+(7)
+𝐿𝐹𝑟𝑎𝑔𝑖𝑡= 𝑎2,𝑖+
+𝑊
+Õ
+𝑡=1
+𝜔2,𝑡+ 𝑏′
+2𝑍𝑖𝑡+ 𝑐′
+2𝑊𝑖𝑡+ 𝜀2,𝑖𝑡,
+(8)
+𝐻𝐹𝑇∗𝐿𝐹𝑟𝑎𝑔𝑖𝑡= 𝑎3,𝑖+
+𝑊
+Õ
+𝑡=1
+𝜔3,𝑡+ 𝑏′
+3𝑍𝑖𝑡+ 𝑐′
+3𝑊𝑖𝑡+ 𝜀3,𝑖𝑡,
+(9)
+𝐿𝐼𝑄𝑖𝑡= 𝛼𝑖+
+𝑊
+Õ
+𝑡=1
+𝛾𝑡+ 𝜃1
+𝐻𝐹𝑇𝑖𝑡+ 𝜇′𝑊𝑖𝑡+ 𝜂1,𝑖𝑡,
+(10)
+𝐿𝐼𝑄𝑖𝑡= 𝛼𝑖+
+𝑊
+Õ
+𝑡=1
+𝛾𝑡+ 𝜃1
+𝐻𝐹𝑇𝑖𝑡+ 𝜃2 
+𝐿𝐹𝑟𝑎𝑔𝑖𝑡+ 𝜇′𝑊𝑖𝑡+ 𝜂2,𝑖𝑡,
+(11)
+𝐿𝐼𝑄𝑖𝑡= 𝛼𝑖+
+𝑊
+Õ
+𝑡=1
+𝛾𝑡+ 𝜃1
+𝐻𝐹𝑇𝑖𝑡+ 𝜃2 
+𝐿𝐹𝑟𝑎𝑔𝑖𝑡+ 𝜃3
+
+𝐻𝐹𝑇∗𝐿𝐹𝑟𝑎𝑔𝑖𝑡+ 𝜇′𝑊𝑖𝑡+ 𝜂3,𝑖𝑡,
+(12)
+where the vector 𝑍𝑖𝑡represents the instrumental variables which are excluded from the secondstage regressions (7), (8), and (9), the vector 𝑋𝑖𝑡includes control variables, 
+𝐻𝐹𝑇𝑖𝑡, 
+𝐿𝐹𝑟𝑎𝑔𝑖𝑡and
+
+𝐻𝐹𝑇∗𝐿𝐹𝑟𝑎𝑔𝑖𝑡representing the predicted values of 𝐻𝐹𝑇𝑖𝑡, 𝐿𝐹𝑟𝑎𝑔𝑖𝑡and 𝐻𝐹𝑇∗𝐿𝐹𝑟𝑎𝑔𝑖𝑡, respectively, generated from the three first-stage regression equations (7) (8) and (9) and used into the
+respective second-stage regression equations (10) (11) and (12), Í𝑊
+𝑡=1 𝜔𝑡, and Í𝑊
+𝑡=1 𝛾𝑡are the time
+fixed- effect, 𝑎𝑖and 𝛼𝑖are the firm-fixed effect in the first and second stage regression respectively.
+To ease the computational burden, we use week time dummies instead of day dummies for each
+of the 591 weeks for the period December 2005–December2016. 𝑋𝑖𝑡includes log market capitalization (𝐿𝑜𝑔(𝑚𝑘𝑡𝑐𝑎𝑝)), log intraday mid price range volatility (𝐿𝑜𝑔(𝑣𝑜𝑙𝑡𝑖𝑛𝑡𝑟𝑎)), price inverse
+(𝑖𝑛𝑣𝑝𝑟𝑖𝑐𝑒) and the average degree of liquidity of stocks in the same size group excluding stock 𝑖
+(𝐿𝐼𝑄−𝑖𝑡), calculated from the four equally divided firm size group based on market capitalization.
+31
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+We add an additional variable, 𝐿𝐼𝑄−𝑖𝑡, in our original control vector by following Degryse et al.
+(2015). If we apply this new control vector in our original OLS estimation it does not change any
+existing results.
+Instruments: In the above specification (7), (8) and (9), 𝐻𝐹𝑇𝑖𝑡and 𝐿𝐹𝑟𝑎𝑔𝑖𝑡and 𝐻𝐹𝑇∗𝐿𝐹𝑟𝑎𝑔𝑖𝑡
+are the potential endogenous variables. The first set of instruments we consider for those three variables are the daily average of each variables over all stocks in the same market cap size group
+excluding stock 𝑖. Hasbrouck and Saar (2013) adopted this approach which was latter also applied
+in Degryse et al. (2015) and Buti, Rindi and Werner (2011). We are aware that using only those instruments, by construction, would decrease both between and within variations of the variables that
+originally prevail in our dataset. To compensate that, we follow Gresse (2017) and add three more
+instruments— log trading volumes (𝐿𝑜𝑔(𝑣𝑎𝑙𝑢𝑒)), average trade sizes (𝐿𝑜𝑔(𝑠𝑖𝑧𝑒)), and relative tick
+sizes (𝑟𝑡𝑖𝑐𝑘)—the GBX tick size divided by the price of the stock, in the first stage regression to
+increase the predictive power of 
+𝐻𝐹𝑇𝑖𝑡, 
+𝐿𝐹𝑟𝑎𝑔𝑖𝑡and
+
+𝐻𝐹𝑇∗𝐿𝐹𝑟𝑎𝑔𝑖𝑡.¹⁵
+We use the two-stage optimal IV-GMM (H2SLS) estimator on our panel dataset of 132 stocks
+and 2624 days for the period December 2005–December 2016. The inference is based on standard errors that are robust to heteroskedasticity and autocorrelation ( Newey-West HAC, based on
+5 lags). We apply IV-GMM setting to estimate again the results produced in Table 7 and 8 only for
+the transaction base liquidity measures 𝑠𝑝𝑟𝑒𝑎𝑑and 𝑒𝑠𝑝𝑟𝑒𝑎𝑑so that we present our results more
+concisely.We perform this alternative estimation to show that our previous OLS estimates are robust
+even in IV setting due to employing large samples, heteroscedasticity and autocorrelation consistent covariance matrix estimator and implemented control. We do not run the IV-GMM procedure
+¹⁵we explain here the rationale of choosing these variables as instruments. Evidence shows that recent influx of
+HFT across financial market places is associated with the changes of some particular market microstructures. For example, O’Hara, Saar and Zhong (2014) and Hagströmer and Nordén (2013) report how variations in relative tick sizes
+affects the HFT activities. In a large relative tick size environment, HFTs leave orders in the book longer, trade more
+aggressively, and have higher profit margins than a small one.
+Trading volume is also directly related to both HFT intensity and market fragmentation. Gresse (2017) explains that
+the portion of AT corresponding to HFT market making is expected to be more profitable and thus more developed for
+heavily traded stocks. The evidence in Hendershott et al. (2011) and Brogaard, Hendershott and Riordan (2014a) also
+show that large stocks attract more HFTs.
+HFTs typically trade in small lots and prominently use slice-and-dice strategy in executing the large order. Hendershott and Riordan (2013) show that by splitting large orders into smaller slices, algorithmic traders reduce their own
+market impact but also the volatility of liquidity in general. The literature supports the link between the rising HFT
+intensity and decreasing trade size in the recent years and attribute the causality from HFT to trade sizes (Hendershott
+et al., 2011; Aitken, Cumming and Zhan, 2014).
+32
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+for estimating Table 9 as we believe the implication of estimating Table 9 after estimating Table 7
+and 8 is trivial. Table 10 reports the estimates for IV-GMM models (10)–(12) (equivalent to (1),
+(2) and (3) respectively in OLS) for our panel of 132 stocks. For conserving space, estimates for
+control variables are not reported which are all significant. To avoid repetition, we do not discuss
+the results which are mostly similar to OLS.
+The results¹⁶ in Table 10 suggest that higher HFT intensity is associated with lower quoted
+and effective spreads, while higher fragmentation is associated with higher quoted and effective
+spreads. In fact, the estimates appear to be stronger for IV-GMM. Hasbrouck and Saar (2013) also
+find similar magnification when they switched from OLS to IV which they attributed to market wide
+role of HFT. We find only non-matching exception with OLS in sub column (3), but the partial effect generates the same sign as is observed in OLS. For example, coefficient of 𝐻𝐻𝐼(column IX)
+shows a non-significant negative sign (−0.019), and if the partial effect is evaluated at average log
+normalize value of HFT (𝐿𝑜𝑔(95.91) = 4.56), then the estimate becomes 0.045, and is consistent
+with the previous OLS results. The control variables appear with same signs as in OLS and the sign
+in the additional control variable, average market liquidity, is positive as expected and significant.
+Table 11 reports the same estimates for large and small stocks samples. It can be seen that models (1)-(5) for both small and large stocks confirm the same signs of OLS estimates more consistently compare to all stocks. The only contradiction we find is that HFT and market fragmentation
+appear to have much stronger effect on small stocks where OLS estimates reported the same for
+large stocks. We attribute this apparent contradiction to the probable weakness our instrument in
+some extent which is generally recognized as one of the a classical problem in implementing IV.
+Finally, it can be seen that IV-GMM estimates confirm most of our results documented under the
+OLS estimation even though our instruments reveals some weakness.
+¹⁶To keep consistency with the previous table, sub columns(1)–(5) represent the equivalent IV-GMM estimation of
+OLS models (1)–(5). For a comparison between OLS and IV-GMM estimates, sub columns (1)–(3) of table 10 should
+be matched with the respective sub columns of Table 7, and sub columns (4)–(5) with the same sub columns of Table
+9. For small and large stocks, sub columns of Table 11 should be compared with the same sub columns in Table 8.
+33
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+5.2
+A simultaneous equations model approach
+We adopt now a second approach, the simultaneous equations model estimation, to tackle the possible endogeneity among the market liquidity, HFT and market fragmentation with the aim of overcoming some weakness reveled in the previous IV-GMM estimation. As explained in section 5.1,
+there exist at least two possible mechanisms through which market liquidity and HFT could affect
+each other: (i) the long trend of declining spread based transaction measures in the financial market
+places might be attributable to the low market making cost of HFTs; and (ii) the rising competition among HFT firms through huge investment in high speed trading technology. There is also
+evidence that both the level of liquidity or volatility affect the level of HFTs participation in market. On the other hand, if we consider HFT from the demand perspective, then the proliferation
+of modern low-latency-based trading venues should be attributed to response by the supply side
+(exchanges).
+Market liquidity seems to play a role, being one of the determinants of order flow fragmentation
+where we see that more liquid stocks are more fragmented. It is more likely that liquidity affects the
+fragmentation decision than the other way round, though it is commonly accepted in the literature
+that market fragmentation also impacts liquidity. Over the last few years, the most active channel
+which affected the quoting and trading activities across markets is HFT. In this connection, the
+recent responses of the supply side on the rising HFT demand have rapidly increased the number of
+electronic exchanges with low-latency technology across the European equity market. It is apparent
+that there are simultaneity among HFT, market fragmentation and liquidity.
+To tackle the simultaneity among HFT, market fragmentation and market liquidity, we consider
+simultaneous equations model which is relatively a new approach in market microstructure research.
+Buti et al. (2011) and Aitken, Cumming and Zhan (2014) use similar arguments that market liquidity, fragmentation and HFT are jointly determined in equilibrium and they used simultaneous
+equations model in their setting. Hasbrouck and Saar (2013) also use the same approach in a more
+simple setting where an attempt has been made to determine the impact of low-latency on market
+liquidity.
+We consider market liquidity (𝐿𝐼𝑄𝑖𝑡), HFT (𝐻𝐹𝑇𝑖𝑡) and market fragmentation (𝑀𝐹𝑟𝑎𝑔𝑖𝑡) are
+determined in equilibrium, and three equations are defined accordingly, one for each of the vari34
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+ables. We include the variables on the right hand side of 𝐿𝐼𝑄𝑖𝑡, 𝐻𝐹𝑇𝑖𝑡and 𝑀𝐹𝑟𝑎𝑔𝑖𝑡which are
+found to be determinants of each of the variables by the literature, and also explained in the IVGMM section (5.1). This setup should overcome the limitations of IV-GMM specifications. The
+three-equation simultaneous model is:
+𝐿𝐼𝑄𝑖𝑡= 𝛼𝑖(𝑙𝑖𝑞) +
+𝑀
+Õ
+𝑚=1
+𝛾(𝑙𝑖𝑞)𝑚+ 𝛽1(𝑙𝑖𝑞) 𝐻𝐹𝑇𝑖𝑡+ 𝛽2(𝑙𝑖𝑞) 𝑀𝐹𝑟𝑎𝑔𝑖𝑡+ 𝛽3(𝑙𝑖𝑞) 𝐿𝐼𝑄−𝑖𝑡
++ 𝛽4(𝑙𝑖𝑞) 𝐿𝑜𝑔(𝑚𝑘𝑡𝑐𝑎𝑝)𝑖𝑡+ 𝛽5(𝑙𝑖𝑞) 𝐿𝑜𝑔(𝑣𝑜𝑙𝑡𝑖𝑛𝑡𝑟𝑎)𝑖𝑡+ 𝛽6(𝑙𝑖𝑞)𝑖𝑛𝑣(𝑝𝑟𝑖𝑐𝑒)𝑖𝑡+ 𝜖𝑖𝑡(𝑙𝑖𝑞),
+(13)
+𝐻𝐹𝑇𝑖𝑡= 𝛼𝑖(ℎ𝑓𝑡) +
+𝑀
+Õ
+𝑚=1
+𝛾(ℎ𝑓𝑡)𝑚+ 𝛽1(ℎ𝑓𝑡) 𝐿𝐼𝑄𝑖𝑡+ 𝛽2(ℎ𝑓𝑡) 𝑀𝐹𝑟𝑎𝑔𝑖𝑡+ 𝛽3(ℎ𝑓𝑡) 𝐻𝐹𝑇−𝑖𝑡
++ 𝛽4(ℎ𝑓𝑡) 𝐿𝑜𝑔(𝑠𝑖𝑧𝑒)𝑖𝑡+ 𝛽5(ℎ𝑓𝑡) 𝐿𝑜𝑔(𝑣𝑎𝑙𝑢𝑒)𝑖𝑡+ 𝛽6(ℎ𝑓𝑡)𝑟𝑡𝑘𝑖𝑡+ 𝛽7(ℎ𝑓𝑡) 𝐿𝑜𝑔(𝑚𝑘𝑡𝑐𝑎𝑝)𝑖𝑡
++ 𝛽8(ℎ𝑓𝑡) 𝐿𝑜𝑔(𝑣𝑜𝑙𝑡𝑖𝑛𝑡𝑟𝑎)𝑖𝑡+ 𝜖𝑖𝑡(ℎ𝑓𝑡),
+(14)
+𝑀𝐹𝑟𝑎𝑔𝑖𝑡= 𝛼𝑖( 𝑓𝑟𝑔) +
+𝑀
+Õ
+𝑚=1
+𝛾( 𝑓𝑟𝑔)𝑚+ 𝛽1( 𝑓𝑟𝑔) 𝐻𝐹𝑇𝑖𝑡+ 𝛽2( 𝑓𝑟𝑔) 𝐿𝐼𝑄𝑖𝑡+ 𝛽3(ℎ𝑓𝑡) 𝑀𝐹𝑟𝑎𝑔−𝑖𝑡
++ 𝛽4( 𝑓𝑟𝑔) 𝐿𝑜𝑔(𝑣𝑎𝑙𝑢𝑒)𝑖𝑡+ 𝛽5( 𝑓𝑟𝑔) 𝐿𝑜𝑔(𝑚𝑘𝑡𝑐𝑎𝑝)𝑖𝑡+ 𝛽6( 𝑓𝑟𝑔) 𝐿𝑜𝑔(𝑣𝑜𝑙𝑡𝑖𝑛𝑡𝑟𝑎)𝑖𝑡+ 𝜖𝑖𝑡( 𝑓𝑟𝑔),
+(15)
+where indices 𝑖and 𝑡represent stocks and day respectively, 𝐿𝐼𝑄𝑖𝑡represents one of the two
+log normalized market liquidity measures (𝑠𝑝𝑟𝑒𝑎𝑑𝑖𝑡, 𝑒𝑠𝑝𝑟𝑒𝑎𝑑𝑖𝑡), 𝐻𝐹𝑇𝑖𝑡represents the HFT proxy
+(ℎ𝑓𝑡2) , 𝐿𝐹𝑟𝑎𝑔𝑖𝑡represents the market fragmentation proxy (𝐻𝐻𝐼), 𝐿𝐼𝑄𝑖𝑡represents average market liquidity level over all stocks in the same size group excluding stock 𝑖, 𝐿𝐹𝑟𝑎𝑔𝑖𝑡represents
+the average market fragmentation level over all stocks in the same size group excluding stock 𝑖,
+𝐻𝐹𝑇𝑖𝑡represents the average HFT intensity over all stocks in the same size group excluding stock
+𝑖, 𝐿𝑜𝑔(𝑚𝑘𝑡𝑐𝑎𝑝) is the log normalized market capitalization, 𝐿𝑜𝑔(𝑣𝑜𝑙𝑡𝑖𝑛𝑡𝑟𝑎) is the log normalized
+intraday mid price range volatility, 𝑖𝑛𝑣𝑝𝑟𝑖𝑐𝑒is the inverse of daily average price, 𝐿𝑜𝑔(𝑠𝑖𝑧𝑒) is the
+log normalized trade sizes, 𝐿𝑜𝑔(𝑣𝑎𝑙𝑢𝑒) is the log normalized trading volumes, 𝑟𝑡𝑘𝑖𝑡is the relative
+tick size, 𝛼𝑖is the firm fixed effects, Í𝑀
+𝑚=1 𝛾𝑚is the time (month) fixed effects, index (𝑙𝑖𝑞), (ℎ𝑓𝑡),
+( 𝑓𝑟𝑔) refer the respective coefficient of the equations 𝐿𝐼𝑄𝑖𝑡, 𝐻𝐹𝑇𝑖𝑡and 𝑀𝐹𝑟𝑎𝑔𝑖𝑡respectively.
+We employ a balanced panel of 132 stocks (the same panel used previously in OLS and IV-GMM
+35
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+estimations) for the period 2008–2016 (2240 days). The selected period essentially represents the
+fragmented era of European equity market. We also estimate them both for large and small stocks
+separately and also for three equally divided periods (2008-2010), (2011-2013) and (2014-2016).
+We use GMM approach (H3SLS) to estimate the simultaneous equations model, an approach
+that is robust to unknown heteroscedastic error structure. It is a three-stage estimation and asymptotically the same as 3SLS if the disturbance are homoscedastic (Greene, 2003). This approach
+derives estimation efficiency over two-stage (Zellner and Theil, 1962) and which is relevant to our
+study in at least two ways. The first, the European equity market structure which rationalises the use
+of simultaneous equations model also gives rise to the probability that existing simultaneity among
+𝐿𝐼𝑄𝑖𝑡, 𝐻𝐹𝑇𝑖𝑡and 𝐿𝐹𝑟𝑎𝑔𝑖𝑡might produce non-zero contemporaneous covariance in the structural
+disturbances. And the second, the use of disproportionate instruments for 𝐻𝐹𝑇𝑖𝑡, 𝐿𝐹𝑟𝑎𝑔𝑖𝑡and
+𝐿𝐼𝑄𝑖𝑡produces both identified and over-identified equations in the system. In both cases, 3SLS has
+full information characteristics. The coefficient estimated through three-stage least squares are also
+reported to compare the robustness of the estimates. All estimations include monthly time-fixed
+effect for each of the 108 months for the period January 2008– December 2016, and stock level
+fixed effects.
+Table 12, 13 and 14 report the estimates for the whole sample, large and small stocks, three
+sub-sample periods respectively. Table 12 presents two set of estimates using GMM and 3SLS for
+each liquidity measure and the others only report GMM estimates. The discussions on estimates
+for the model (2.13), (2.14) and (2.15) are presented below.
+Market liquidity (𝐿𝐼𝑄𝑖𝑡)
+Table 12 shows that all the coefficients estimated through GMM and 3SLS for each model are
+highly significant, and as expected, 3SLS’s estimates are much stronger than those obtained by
+using GMM. However, only one exception is seen where the coefficient of 𝐿𝐼𝑄𝑖𝑡in column (III) is
+not significant but the corresponding 3SLS estimates are highly significant. The model in which we
+are most interested is (2.13), Columns I, IV and VII, X report the estimated coefficient for quoted
+spreads and effective half-spreads respectively. We see that higher HFT is associated with narrower
+36
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+quoted and effective spreads whereas higher fragmentation is associated with wider quoted and
+effective spreads. Other estimates show that average liquidity level in the same group of other stocks,
+firm sizes measured by market capitalization, volatility and price level are also the determinants of
+liquidity, where higher market liquidity in the same size group and higher volatilities are associated
+with wider spreads, conversely, larger firm sizes (market capitalization), and higher price levels are
+associated with narrower spreads. The results not only confirm the evidence documented in OLS
+but also provide stronger estimates.
+The estimates in Table 13 confirm the same sign of the estimates, as observed in full sample,
+across large and small stock groups with different magnitude which implies that both HFT and
+fragmentation in smaller cap stocks seems to have more striking effect. The coefficients in Table
+14 show that both the impact of HFT and market fragmentation on liquidity has narrowed and
+even turn out to non significant during 2014-2016 for market fragmentation. This might be due the
+fact that fragmentation has reached its saturation stage for the employed stocks where variations in
+fragmentation does not create enough space to explain the changes in liquidity econometrically.
+High frequency trading (𝐻𝐹𝑇𝑖𝑡)
+The coefficient estimates of the Model 𝐻𝐹𝑇𝑖𝑡, as reported in Table 12 (column II, V, VIII, XI),
+necessarily explain the factors influencing the HFT intensity, and extend the understanding about
+the bi-direction causality that flows between HFT, market fragmentation and liquidity. Now, it can
+be seen that there are some indirect impacts which channelise to liquidity through HFT. The coefficient of 𝐿𝐼𝑄𝑖𝑡is positive which implies that there is one or more mechanisms which associate
+wider quoted and effective spreads with higher HFT. This is likely to indicate the phenomenon
+where HFTs post non-marketable limit order as a part of their regular market making activities.
+Aitken, Harris and Harris (2015) has found similar results and argued accordingly. Then Evidence
+suggests that HFT participation is not limited to the best bid and ask price of the limit order book
+(AMF, 2017). HFTs also post quotes around the BBO and even in the deeper of the order book
+depending on the market conditions. The result is consistent with the evidence provided in Hossain
+(2022).
+The estimate of 𝐿𝐹𝑟𝑎𝑔𝑖𝑡implies that a higher fragmentation level is also associated with a
+higher HFT intensity as expected. As can be seen, market wide factors (𝐻𝐹𝑇𝑖𝑡) play a good role in
+37
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+determining HFT which supports the argument and methodology of HFT instruments development
+on market level HFT activities (Hasbrouck and Saar, 2013). Among others, larger firm size and
+larger trading volume are associated with higher HFT. On the contrary, higher volatility, higher
+relative tick sizes and higher trade sizes indicative of lower HFT . All the findings support the hypothesis and evidences on which HFT instruments are developed during IV-GMM in section (5.1).
+Table 13 provides more insight on the determinants of HFT activities across stocks. A higher
+estimate of the coefficient 𝐿𝐼𝑄𝑖𝑡for small stocks may indicate that spreads in non-marketable limit
+orders become wider when HFTs post them for relatively illiquid stocks. Other results also show
+that larger stocks are associated with more intense market wide factors, relative tick sizes and trade
+sizes. Volatility in small and large stocks appears to have different impact on HFT, though estimates
+seem not significant in GMM. Higher volatility in large stocks tends to reduce the HFT intensity,
+which is consistent with the explanation of Hasbrouck and Saar (2013). It is argued that during
+the period of high illiquidity HFT creates externalities by participating more in illiquid stocks. A
+similar evidence is also observed in the previous OLS estimation that HFT provided more liquidity
+during the crisis period 2008-2009. But the same estimates for effective spreads are negative, which
+imply that mere HFT participation by providing non-marketable quotes may not benefit to reduce
+the actual trading cost.
+Table 14 shows the similar effect observed in Table 12 over the periods other than few exceptions. HFT appears to provide more intense non-marketable quotes during 2014-2016 which is
+consistent with less intense HFT impact on liquidity (column VII) in the same period.
+Market fragmentation (𝐿𝐹𝑟𝑎𝑔𝑖𝑡)
+The estimates for Model 15 are likely to explain the factors those determine the market fragmentation which in turn affect HFT and liquidity indirectly. The result in Table 12 shows that HFT,
+market wide factor of fragmentation, firm sizes, trade volumes and volatility have statistically significant impact on liquidity. Stocks with a higher HFT participation, larger market capitalization
+and wider spreads seem to be related to a higher fragmentation. A positive association between liquidity and fragmentation may indicate that a higher fragmented stock is exposed to a higher market
+making cost across markets.
+38
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+6
+Conclusion
+The liquidity , one of the important components of market quality, in global market places, particularly in US and European equity market, improved over the past , which many empirical papers
+attribute to two important changes in recent market microstructures—HFT and trade fragmentation.
+However, prior studies have considered these two astounding trends mostly unconnected, and consequently produced mixed evidence regarding their impact on liquidity. We believe, this is partly
+due to insufficient empirical specifications and data limitation. So, the debate regarding the social
+benefit of HFT is far from closed, and the evaluation of HFT effects is becoming more and more
+complex due to its multifaceted exposures in financial marketplaces. We take the European equity
+market as a laboratory since it has encountered the invasion of both HFT and market fragmentation
+after its adoption of MiFID in 2007. We use a unique millisecond time stamped intraday dataset
+for a considerable long period and study the joint impact of HFT and order flow fragmentation on
+market liquidity. We not only incorporate HFT and market fragmentation in the same empirical
+setup but also allow them to interact so that we can explore and provide evidence on their symbiotic relationship as suggested in (Menkveld, 2016).
+our paper makes at least one original contribution that no papers documented before. We show
+that there is an interlinkage between HFT and market fragmentation, and it determines, at least partially, the size of their individual effect on liquidity. We demonstrate that higher HFT is beneficial
+for market liquidity. However, if HFT becomes more intense in highly fragmented stocks across
+markets, the benefit is more. Our results suggest, market fragmentation only improves liquidity, ,
+though it is mostly liquidity detrimental, when HFTs are more profound in the market. Our results
+document that the recent usage of computing technology has increased the market making capability of HFTs on both sides of the order books (as liquidity demanders and providers), which reduces
+both both realized spreads and adverse selection costs. As per as the quantity dimension of liquidity or market depth is concerned, HFT decreases trade sizes, and quoted depths, on the contrary,
+fragmentation appears to have opposite role on quoted depth.
+Apart from general impact of HFT and fragmentation on Liquidity, our results on cross-sectional
+analyses show that HFT is associated with narrower spreads in both small and large stocks, even
+so, the liquidity of small stocks becomes more scarce when trading are highly fragmented across
+39
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+exchanges. We also demonstrate that trade fragmentation becomes more liquidity harming when
+HFTs are more intense on those stocks. Our study also uniquely produce a dynamic analysis where
+we document that the directions of association between HFT and market fragmentation, and liquidity remain the same over time but the size of the impact is time-varying. HFT even appears to
+provide liquidity in a high volatility period of financial crisis, 2008-2010 , an evidence which goes
+against the popular belief. It appears that the increased trade fragmentation in the latter period of
+the sample took away at least some of the additional liquidity deriving from the increased HFT in
+the same period.
+We have address the endogeneity but we would like to be cautious with respect to the crossmarket role of HFT (The Netherlands Authority for the Financial Markets, 2016) that could link the
+order books, order flows and price behaviour across markets. O’Hara (2015) argues that traditionally employed empirical methods might no longer be appropriate to tackle this cross-market HFT
+complexity. We already demonstrated the riding of HFT and order flow fragmentation on each other
+through their interlinkage. There is also the possibility that fragmentation is driven by the HFT, or
+a highly fragmented market attracts more HFT, and eventually both impact market quality. What
+would be the more compelling in the present market order is to show how the cross-market connectivity determine market liquidity in equilibrium. An appropriate research design supplemented by
+sufficient cross-market intraday data is worthy to address this issue.
+In a nutshell, our findings confirm the stand of market microstructure literature with regard to
+overall liquidity improving role of HFT, however it goes contrary to the liquidity improving view of
+market fragmentation as documented in prior studies. We supplement both the HFT and fragmentation literature by establishing their interlinkage, identifying the sources of liquidity and expanding
+the analysis across stocks and over time. The evidence provided in this paper has strong policy implications due to the rising popular concern on curving HFT. The regulators should go carefully and
+consider the nonuniform cross-sectional and time variant characteristics of HFT. MiFID II has recently come out with strict HFT monitoring rules without implementing any direct measures which
+seems to provide European equity market with a good device so that the regulation can trade-off
+the concern of HFT for its benefit.
+40
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+References
+Ait-Sahalia, Y. and Saglam, M. (2017). High frequency market making: Implications for liquidity.
+URL: http://dx.doi.org/10.2139/ssrn.2908438
+Aitken, M., Aspris, A., Foley, S. and Harris, F. H. D. (2014). Market Fairness: The Poor Country Cousin of
+Market Efficiency.
+Aitken, M., Cumming, D. and Zhan, F. (2014). Trade size, high-frequency trading, and colocation around
+the world, European Journal of Finance 23(7-9): 781–801.
+Aitken, M., Harris, D. and Harris, F. H. D. (2015). Fragmentation and Algorithmic Trading: Joint impact
+on Market Quality.
+URL: https://dx.doi.org/10.2139/ssrn.2587314
+Aldridge, I. (2013). High Frequency Trading: A Practical Guide to Algorithmic Strategies and Trading
+System, 2nd edn, John Wiley & Sons, Inc.
+AMF (2017). Study of the behaviour of high-frequency traders on Euronext Paris, Technical Report January,
+Autorité des marchés financiers.
+Biais, B. and Foucault, T. (2014). HFT and market quality, Bankers, Markets and Investors (128): 5–19.
+Biais, B., Foucault, T. and Moinas, S. (2011). Equilibrium high frequency trading. AFA 2013 San Diego
+Meetings Paper; HEC Paris Research Paper No. 968/2013.
+URL: http://dx.doi.org/10.2139/ssrn.2024360
+Boehmer, E., Fong, K. and Wu, J. (2021). Algorithmic Trading and Market Quality: International Evidence,
+Journal of Financial and Quantitative Analysis 56(8): 2659 – 2688.
+Brogaard, J., Hagströmer, B., Nordén, L. and Riordan, R. (2015). Trading fast and slow: colocation and
+liquidity, Review of Financial Studies 28(12): 3407–3443.
+Brogaard, J., Hendershott, T. and Riordan, R. (2014a). High-frequency trading and price discovery, Review
+of Financial Studies 27(8): 2267–2306.
+Brogaard, J., Hendershott, T. and Riordan, R. (2014b). Market integration and high frequency intermediation.
+URL: http://dx.doi.org/10.2139/ssrn.2908438
+Budish, E., Cramton, P. and Shim, J. (2015). The high-frequency trading arms race: Frequent batch auctions
+as a market design response, The Quarterly Journal of Economics 130(4): 1547–1621.
+Buti, S., Rindi, B. and Werner, I. M. (2011). Dividing into dark pools. Charles A. Dice Center Working
+Paper No. 2010-10; Fisher College of Business Working Paper No. 2010-03-010.
+URL: http://dx.doi.org/10.2139/ssrn.1630499
+Cantillon, E. and Yin, P. L. (2011). Competition between exchanges: A research agenda, International
+Journal of Industrial Organization 29(3): 329–336.
+CFA Institute (2011). The structure, regulation, and transparency of European equity markets under MiFID,
+Technical report.
+URL: http://www.cfapubs.org/doi/pdf/10.2469/ccb.v2011.n3.1
+41
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+Conrad, J., Wahal, S. and Xiang, J. (2015). High-frequency quoting, trading, and the efficiency of prices,
+Journal of Financial Economics 116(2): 271–291.
+Degryse, H., De Jong, F. and Kervel, V. V. (2015). The impact of dark trading and visible fragmentation on
+market quality, Review of Finance 19(4): 1587–1622.
+Foucault, T. and Menkveld, A. J. (2008). Competition for order flow and Smart order routing systems, The
+Journal of Finance 63(1): 119–158.
+Foucault, T., Pagano, M. and Roell, A. (2013). Market Liquidity: Theory, Evidence, and Policy, Oxford
+University Press.
+Frino, A., Mollica, V., Monaco, E. and Palumbo, R. (2017). The effect of algorithmic trading on market
+liquidity: Evidence around earnings announcements on Borsa Italiana, Pacific Basin Finance Journal
+45: 82–90.
+Frino, A., Mollica, V. and Webb, R. I. (2014). The impact of co-location of security exchanges’ and traders’
+computer servers on market liquidity, The Journal of Futures Markets 34(1): 20–33.
+Goettler, R. L., Parlour, C. A. and Rajan, U. (2009). Informed traders and limit order markets, Journal of
+Financial Economics 93(1): 67–87.
+Gomber, P., Arndt, B., Lutat, M. and Uhle, T. (2011). High-frequency Trading.
+URL: http://dx.doi.org/10.2139/ssrn.1858626
+Greene, W. (2003). Econometric Analysis, 5th edn, Prentice Hall.
+Gresse, C. (2017). Effects of lit and dark market fragmentation on liquidity, Journal of Financial Markets
+35: 1–20.
+Hagströmer, B. and Nordén, L. (2013). The diversity of high-frequency traders, Journal of Financial Markets
+16(4): 741–770.
+Han, J., Khapko, M. and Kyle, A. S. (2014). Liquidity with high-frequency market making. Swedish House
+of Finance Research Paper No 14-06 Liquidity.
+URL: https://dx.doi.org/10.2139/ssrn.2416396
+Hasbrouck, J. and Saar, G. (2013). Low-latency trading, Journal of Financial Markets 16(4): 646–679.
+Hendershott, T., Jones, C. M. and Menkveld, A. J. (2011). Does algorithmic trading improve liquidity?, The
+Journal of Finance 66(1): 1–34.
+Hendershott, T. and Moulton, P. C. (2011). Automation, speed, and stock market quality: The NYSE’s
+Hybrid, Journal of Financial Markets 14(4): 568–604.
+Hendershott, T. and Riordan, R. (2013). Algorithmic trading and the market for liquidity, Journal of Financial
+and Quantitative Analysis 48(4): 1001–1024.
+Hossain, S. (2022). High-Frequency Trading (HFT) and Market Quality Research : An Evaluation of the
+Alternative HFT Proxies, Journal of Risk and Financial Management 15(54).
+Jovanovic, B. and Menkveld, A. J. (2015). Middlemen in limit order markets.
+URL: https://dx.doi.org/10.2139/ssrn.1624329
+42
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+Lee, C. M. C. and Ready, M. J. (1991). Inferring trade direction from intraday data, Journal of Finance
+46(2): 733–746.
+Li, W. (2014). High frequency trading with speed hierarchies.
+URL: https://dx.doi.org/10.2139/ssrn.2365121
+Linton, O. and Mahmoodzadeh, S. (2018). Implications of High-Frequency Trading for Security Markets,
+Annual Review of Economics 10: 237–259.
+Menkveld, A. J. (2014). High-frequency traders and market structure, The Financial Review 49: 333–344.
+Menkveld, A. J. (2016). The economics of high-frequency trading: Taking stock, Annual Review of Financial
+Economics 8: 1–24.
+Michael Aitken, Douglas Cumming, F. Z. (2021). Algorithmic rading andMarket Quality:International Evidence of the Impact of Errors in Colocation Dates.
+URL: https://ssrn.com/abstract=3868966
+Murray, H., Pham, T. P. and Singh, H. (2016). Latency reduction and market quality: The case of the
+Australian Stock Exchange, International Review of Financial Analysis 46: 257–265.
+O’Hara, M. (2015). High frequency market microstructure, Journal of Financial Economics 116(2): 257–
+270.
+O’Hara, M., Saar, G. and Zhong, Z. (2014). Relative tick size and the trading environment.
+URL: https://dx.doi.org/10.2139/ssrn.2463360
+O’Hara, M. and Ye, M. (2011). Is market fragmentation harming market quality?, Journal of Financial
+Economics 100(3): 459–474.
+Pagano, M. (1989). Trading Volume and Asset Liquidity, The Quartely Journal of Economics 104(2): 255–
+274.
+Riordan, R. and Storkenmaier, A. (2012). Latency, liquidity and price discovery, Journal of Financial Markets 15(4): 416–437.
+The Netherlands Authority for the Financial Markets (2010). High frequency trading: The application of advanced trading technology in the European marketplace. AFM report on High Frequency Trading (HFT).
+URL: https://www.afm.nl/ /profmedia/files/rapporten/2010/hft-report-engels.pdf
+The Netherlands Authority for the Financial Markets (2016). A Case analysis of critiques on high frequency
+trading. Technical report.
+URL: https://www.afm.nl/en/nieuws/2016/jun/onderzoek-handelsstrategieen-hft
+Upson, J. and Van Ness, R. A. (2017). Multiple markets, algorithmic trading, and market liquidity, Journal
+of Financial Markets 32: 49–68.
+Zellner, A. and Theil, H. (1962). Three-stage least squares: Simultaneous estimation of simultaneous squations, Econometrica 30(1): 54–78.
+43
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+Tables and Figures
+44
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+Table 1: The universe of Sample Stocks
+This table shows the decomposition of large-cap stocks across European countries (Panel A) as presented in the STOXX 800 index at the end of
+year 2016, and relative position of the European lit trading venues based upon total European equity trading volumes (Panel B) and trading volumes
+of LSE listed stocks (Panel C).
+Panel A : STOXX 800’s Composition
+Country
+(primary
+listing
+venues)
+No.
+of Instruments
+(%)
+UK (LSE)
+220
+27.50
+France (Euronext Paris)
+95
+11.88
+Germany (Xerta)
+84
+10.50
+Switzerland (Six Swiss)
+61
+7.63
+Sweden
+60
+7.50
+Italy
+47
+5.88
+Spain
+37
+4.63
+The Netherlands
+28
+3.50
+Denmark
+25
+3.13
+Panel B: Market Share of European Lit Trading Venues (Jan 2014 to Dec 2016)
+Exchanges
+Turnover
+(Eurobn)
+(%)
+Batx CXE
+5500.47
+18.48
+LSE
+3514.16
+11.81
+Paris
+3239.61
+10.89
+Deutsche Borse
+3060.42
+10.28
+Turquoise
+3051.43
+10.25
+Milan
+2111.71
+7.10
+Bats BXE
+1732.77
+5.82
+SIX Swiss
+1531.50
+5.15
+Amsterdam
+1474.64
+4.96
+Madrid
+1020.24
+3.43
+Stockholm
+954.50
+3.21
+Swiss Exchange
+424.97
+1.43
+Copenhagen
+352.76
+1.19
+Brussels
+322.49
+1.08
+Panel C: Market Share of Europen Lit trading Venues for LSE listed stock (Jan 2014 to Dec 2016)
+Exchanges
+Turnover
+(Eurobn)
+(%)
+LSE
+2736.05
+56.19
+Bats CXE
+1003.66
+20.61
+Turquoise
+729.17
+14.97
+Bats BXE
+355.05
+7.29
+Aquis
+30.96
+0.64
+Equiduct
+8.04
+0.17
+ICAP Securities
+6.4
+0.13
+Source: Fidessa (https://fragmentation.fidessa.com/)
+45
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+Table 2: TRTH’s data support over the sample period
+This table shows the data availability (from TRTH) for the LSE listed stocks primarily selected for the sample (across major trading venues). Panel
+A reports the data availability for the LSE and other three alternative trading venues, BATS, CHIX, Turquoise (TURQ), since 2008. Panel B reports
+the data availability for the stocks finally selected for the sample.
+PANEL A
+Post MiFID TRTH DATA availability for LSE stocks included in STOXX 800
+Year
+BATS
+CHIX
+LSE
+TURQ
+Jan05–Dec07
+0
+0
+180*
+0
+Jan-08
+n.a.**
+n.a.
+182
+n.a.
+Jan-09
+159
+159
+184
+156
+Jan-10
+160
+160
+185
+162
+Jan-11
+165
+166
+190
+167
+Jan-12
+183
+183
+192
+171
+Jan-13
+189
+189
+194
+174
+Jan-14
+197
+197
+198
+197
+Jan-15
+204
+203
+204
+203
+Jan-16
+205
+204
+205
+204
+* availability varies over the period
+** not available
+PANEL B
+Unbalanced panel constructed by taking eligible stocks from PANEL A
+year
+Qtr
+LSE
+CHIX
+BATS
+TURQ
+2005
+1
+118
+n.a
+n.a
+n.a
+2005
+2
+122
+n.a
+n.a
+n.a
+2005
+3
+131
+n.a
+n.a
+n.a
+2005
+4
+136
+n.a
+n.a
+n.a
+2006
+1
+138
+n.a
+n.a
+n.a
+2006
+2
+139
+n.a
+n.a
+n.a
+2006
+3
+140
+n.a
+n.a
+n.a
+2006
+4
+142
+n.a
+n.a
+n.a
+2007
+1
+143
+n.a
+n.a
+n.a
+2007
+2
+146
+n.a
+n.a
+n.a
+2007
+3
+149
+n.a
+n.a
+n.a
+2007
+4
+149
+n.a
+n.a
+n.a
+2008
+1
+149
+n.a
+n.a
+n.a
+2008
+2
+149
+138
+n.a
+n.a
+2008
+3
+149
+143
+n.a
+70
+2008
+4
+149
+149
+136
+75
+2009
+1
+149
+149
+148
+85
+2009
+2
+149
+149
+149
+147
+2009
+3
+149
+149
+149
+148
+2009
+4
+149
+149
+149
+148
+2010
+all
+149
+149
+149
+149
+2011
+all
+149
+149
+149
+149
+2012
+all
+149
+149
+149
+149
+2013
+all
+149
+149
+149
+149
+2014
+all
+149
+149
+149
+149
+2015
+all
+149
+149
+149
+149
+2016
+1
+149
+149
+149
+149
+46
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+Table 3: List of the sample securities
+The table lists all 132 LSE listed securities (by their RICs) included in the sample for the period 2005 to
+2016 with the number of trading days coverage.
+RIC
+Days
+RIC
+Days
+RIC
+Days
+RIC
+Days
+RIC
+Days
+RIC
+Days
+AAL
+2624
+BWY
+2624
+GOG
+2624
+JMAT
+2624
+PZC
+2624
+SPX
+2624
+ABF
+2624
+BYG
+2624
+GPOR
+2624
+KGF
+2624
+RAT
+2624
+SRP
+2624
+ADN
+2624
+CCL
+2624
+GRG
+2624
+KIE
+2624
+RB
+2624
+SSE
+2624
+AHT
+2624
+CLLN
+2624
+GRI
+2624
+LAND
+2624
+RBS
+2624
+STAN
+2624
+ANTO
+2624
+CNA
+2624
+GSK
+2624
+LGEN
+2624
+REL
+2624
+SVS
+2624
+AV
+2624
+CNE
+2624
+HIK
+2624
+LLOY
+2624
+RIO
+2624
+SVT
+2624
+AVV
+2624
+COB
+2624
+HLMA
+2624
+LSE
+2624
+ROR
+2624
+SXS
+2624
+AZN
+2624
+CPG
+2624
+HMSO
+2624
+MCRO
+2624
+RR
+2624
+TATE
+2624
+BAB
+2624
+CPI
+2624
+HSBA
+2624
+MGGT
+2624
+RRS
+2624
+TLW
+2624
+BARC
+2624
+CRDA
+2624
+HSV
+2624
+MKS
+2624
+RSA
+2624
+TPK
+2624
+BATS
+2624
+DGE
+2624
+HSX
+2624
+MRW
+2624
+RTO
+2624
+TSCO
+2624
+BBA
+2624
+DOM
+2624
+ICP
+2624
+MTO
+2624
+SBRY
+2624
+UBM
+2624
+BDEV
+2624
+DRX
+2624
+IGG
+2624
+NEX
+2624
+SDR
+2624
+ULE
+2624
+BLND
+2624
+DTY
+2624
+IHG
+2624
+NG
+2624
+SGC
+2624
+ULVR
+2624
+BLT
+2624
+ECM
+2624
+III
+2624
+NXT
+2624
+SGE
+2624
+UTG
+2624
+BNZL
+2624
+ELM
+2624
+IMI
+2624
+OML
+2624
+SHB
+2624
+UU
+2624
+BOY
+2624
+EMG
+2624
+INCH
+2624
+PFC
+2624
+SHP
+2624
+VOD
+2624
+BP
+2624
+EZJ
+2624
+INF
+2624
+PFG
+2624
+SMDS
+2624
+WEIR
+2624
+BRBY
+2624
+FGP
+2624
+INVP
+2624
+PNN
+2624
+SMIN
+2624
+WG
+2624
+BT
+2624
+GFS
+2624
+ITRK
+2624
+PRU
+2624
+SMWH
+2624
+WMH
+2624
+BVIC
+2624
+GKN
+2624
+ITV
+2624
+PSN
+2624
+SN
+2624
+WPP
+2624
+BVS
+2624
+GNK
+2624
+JLT
+2624
+PSON
+2624
+SNR
+2624
+WTB
+2624
+47
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+Table 4: Descriptive statistics for regression variables
+This table presents the descriptive statistics calculated using the balanced sample of 132 stocks for all variables employed in the regression analyses divided into four periods: 2005–2016 represents the full
+sample; 2005–2007 represents the pre-MiFID era and 2008–2010, 2011-2013, 2014–2016 represent the three equally divided post-MiFID periods. ℎ𝑓𝑡represents the per minute quote update for the best 5
+depth levels in the limit order book, 𝐻𝐻𝐼is the Herfindhal-Hirchman index (HHI) showing the degree of market fragmentation, 𝑠𝑝𝑟𝑒𝑎𝑑is the time weighted daily quoted spread in basis point, 𝑒𝑠𝑝𝑟𝑒𝑎𝑑
+is the volume weighted effective half-spread in basis point, 𝑟𝑠𝑝𝑟𝑒𝑎𝑑is the volume weighted 5-minute realized half-spreads in basis point, 𝑝.𝑖𝑚𝑝𝑎𝑐𝑡is the volume weighted 5-minute price impacts in
+basis point, 𝑎𝑑𝑒𝑝𝑡ℎ_𝑏𝑏𝑜is the average BBO level quoted depth measured in GBP100, 𝑎𝑑𝑒𝑝𝑡ℎ_3𝑏𝑜is the average cumulative depth upto three best limit price measured in GBP100, 𝑣𝑜𝑙𝑡𝑖𝑛𝑡𝑟𝑎is the
+intraday mid price range volatility measured in basis point, 𝑚𝑘𝑡𝑐𝑎𝑝is the average market capitalization measured in million GBP, 𝑝𝑟𝑖𝑐𝑒is the daily average price level measured in GBX, 𝑣𝑎𝑙𝑢𝑒is the
+average daily trading volume in GBP1000, 𝑟𝑡𝑖𝑐𝑘is the relative tick size, and 𝑠𝑖𝑧𝑒is the average trade size. All are daily measures constructed from the intraday millisecond records. This table presents the
+reference value (mean) for all regression estimates.
+Year
+Observations
+ℎ𝑓𝑡
+𝐻𝐻𝐼
+𝑠𝑝𝑟𝑒𝑎𝑑
+𝑒𝑠𝑝𝑟𝑒𝑎𝑑
+𝑟𝑠𝑝𝑟𝑒𝑎𝑑
+𝑝.𝑖𝑚𝑝𝑎𝑐𝑡𝑠
+𝑎𝑑𝑒𝑝𝑡ℎ_𝑏𝑏𝑜
+𝑎𝑑𝑒𝑝𝑡ℎ_3𝑏𝑜
+𝑣𝑜𝑙𝑡𝑖𝑛𝑡𝑟𝑎
+𝑚𝑘𝑡𝑐𝑎𝑝
+𝑝𝑟𝑖𝑐𝑒
+𝑣𝑎𝑙𝑢𝑒
+𝑟𝑡𝑖𝑐𝑘
+𝑠𝑖𝑧𝑒
+All stocks
+2005-2016
+346368
+Mean
+95.91
+2.17
+18.37
+6.41
+-0.47
+6.89
+358.15
+1636.19
+286.23
+9666
+934.35
+19.25
+0.0006
+5159.34
+346368
+StdDev
+135.38
+0.74
+19.83
+6.92
+4.93
+6.61
+869.90
+3613.90
+542.32
+17853
+0.00
+973.37
+39.3631
+0.00
+2005-2007
+50688
+Mean
+20.08
+1.00
+23.20
+8.38
+0.46
+7.93
+867.15
+3175.77
+252.56
+9187
+847.28
+31.46
+0.0008
+11298.30
+50688
+StdDev
+20.06
+0.00
+25.53
+9.33
+7.62
+7.04
+2072.99
+8391.49
+190.24
+18521
+0.00
+726.75
+60.9117
+0.00
+2008-2010
+97284
+Mean
+76.92
+1.83
+24.64
+8.65
+-1.11
+9.76
+272.68
+1087.78
+412.36
+8113
+697.27
+22.63
+0.0008
+5097.49
+97284
+StdDev
+108.80
+0.61
+27.07
+9.47
+6.38
+8.92
+334.17
+1480.89
+961.92
+16814
+0.00
+734.27
+47.8480
+0.00
+2011-2013
+99528
+Mean
+113.88
+2.52
+15.46
+5.36
+-0.36
+5.74
+278.93
+1488.97
+242.37
+9926
+928.25
+13.54
+0.0005
+3761.03
+99528
+StdDev
+144.43
+0.37
+12.26
+3.99
+3.12
+4.84
+313.53
+1745.04
+214.38
+18218
+0.00
+923.22
+24.0534
+0.00
+2014-2016
+98868
+Mean
+135.39
+2.76
+12.63
+4.27
+-0.43
+4.70
+261.04
+1534.68
+223.52
+11179
+1218.41
+15.42
+0.0005
+3480.48
+98868
+StdDev
+161.76
+0.38
+8.94
+2.53
+2.13
+3.35
+288.70
+1699.08
+181.64
+17990
+0.00
+1232.89
+23.5760
+0.00
+Large stocks
+2005-2016
+173184
+Mean
+155.91
+2.27
+10.57
+4.07
+-0.44
+4.52
+589.80
+2742.64
+278.33
+17694
+1153.90
+35.05
+0.0006
+7390.96
+173184
+StdDev
+168.21
+0.73
+6.63
+2.51
+1.78
+3.21
+1179.95
+4838.50
+707.51
+22524
+0.00
+1169.33
+50.8014
+0.00
+2005-2007
+25344
+Mean
+30.40
+1.00
+13.16
+5.27
+-0.27
+5.54
+1491.49
+5565.18
+232.64
+17077
+960.57
+57.75
+0.0007
+16670.92
+25344
+StdDev
+22.80
+0.00
+8.03
+2.51
+2.02
+3.04
+2788.67
+11357.79
+152.99
+23684
+0.00
+722.96
+77.4727
+0.00
+2008-2010
+48642
+Mean
+125.88
+1.99
+12.97
+5.10
+-1.04
+6.15
+432.65
+1794.20
+428.60
+15155
+881.05
+41.61
+0.0007
+7142.37
+48642
+StdDev
+135.03
+0.61
+8.71
+3.46
+2.18
+4.31
+407.33
+1821.45
+1299.02
+21581
+0.00
+871.62
+61.9440
+0.00
+2011-2013
+49764
+Mean
+184.08
+2.65
+9.42
+3.59
+-0.15
+3.75
+460.11
+2529.89
+218.59
+18184
+1176.01
+24.53
+0.0005
+5403.99
+49764
+StdDev
+175.06
+0.28
+3.81
+1.41
+1.59
+2.14
+354.29
+1933.14
+174.88
+22943
+0.00
+1121.60
+30.1011
+0.00
+2014-2016
+49434
+Mean
+221.47
+2.80
+8.03
+2.92
+-0.24
+3.16
+412.69
+2442.97
+214.02
+20015
+1499.25
+27.56
+0.0005
+4878.09
+49434
+StdDev
+189.75
+0.32
+3.84
+1.27
+1.12
+1.72
+334.27
+1936.97
+139.65
+22123
+0.00
+1515.32
+28.3290
+0.00
+Small stocks
+2005-2016
+173184
+Mean
+35.91
+2.08
+26.16
+8.76
+-0.50
+9.27
+126.50
+529.73
+294.13
+1639
+714.80
+3.45
+0.0007
+2927.72
+173184
+StdDev
+34.06
+0.74
+24.93
+8.86
+6.74
+8.11
+117.72
+510.99
+295.84
+1125
+0.00
+656.64
+4.3365
+0.00
+2005-2007
+25344
+Mean
+9.75
+1.00
+33.24
+11.49
+1.20
+10.31
+242.80
+786.37
+272.48
+1297
+733.99
+5.17
+0.0008
+5925.68
+25344
+StdDev
+8.44
+0.00
+32.21
+12.19
+10.54
+8.85
+196.13
+646.99
+219.51
+801
+0.00
+712.75
+5.9952
+0.00
+2008-2010
+48642
+Mean
+27.96
+1.66
+36.30
+12.20
+-1.18
+13.38
+112.70
+381.36
+396.12
+1072
+513.49
+3.65
+0.0008
+3052.61
+48642
+StdDev
+25.45
+0.56
+33.42
+11.92
+8.76
+10.70
+79.02
+265.26
+403.26
+729
+0.00
+501.06
+4.5993
+0.00
+2011-2013
+49764
+Mean
+43.68
+2.40
+21.50
+7.13
+-0.58
+7.73
+97.75
+448.05
+266.16
+1667
+680.49
+2.55
+0.0005
+2118.07
+49764
+StdDev
+34.89
+0.41
+14.61
+4.86
+4.11
+5.85
+73.73
+431.59
+245.37
+1000
+0.00
+569.12
+3.0905
+0.00
+2014-2016
+49434
+Mean
+49.32
+2.72
+17.24
+5.62
+-0.62
+6.25
+109.40
+626.38
+233.01
+2343
+937.58
+3.29
+0.0006
+2082.86
+49434
+StdDev
+38.87
+0.42
+10.13
+2.74
+2.78
+3.83
+94.69
+609.85
+215.18
+1305
+0.00
+765.59
+3.8267
+0.00
+48
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+Table 5: Pearson correlation coefficient matrix for regression variables
+This table presents the Pearson correlation coefficient matrix for the variables employed in the regression analysis, calculated on the same balanced sample employed in the regression analyses. The sample
+comprises 132 stocks for the period December 2005–December 2016 (2624 days). ℎ𝑓𝑡represents the per minute quote update for the best 5 depth levels in the limit order book, 𝐻𝐻𝐼is the HerfindhalHirchman index (HHI) showing the degree of market fragmentation, 𝑠𝑝𝑟𝑒𝑎𝑑is the time weighted daily quoted spread in basis point, 𝑒𝑠𝑝𝑟𝑒𝑎𝑑is the volume weighted effective half-spread in basis point,
+𝑟𝑒𝑎𝑙𝑖𝑧𝑒𝑑𝑠𝑝𝑟𝑒𝑎𝑑_5𝑚𝑖𝑛is the volume weighted 5-minute realized half-spreads in basis point, 𝑝𝑟𝑖𝑐𝑒𝑖𝑚𝑝𝑎𝑐𝑡_5𝑚𝑖𝑛is the volume weighted 5-minute price impacts in basis point, 𝑎𝑑𝑒𝑝𝑡ℎ_𝑏𝑏𝑜is the
+average BBO level quoted depth measured in GBP100, 𝑎𝑑𝑒𝑝𝑡ℎ_3𝑏𝑜is the average cumulative depth upto three best limit price measured in GBP100, 𝑣𝑜𝑙𝑡𝑖𝑛𝑡𝑟𝑎is the intraday mid price range volatility
+measured in basis point, 𝑚𝑘𝑡𝑐𝑎𝑝is the average market capitalization measured in million GBP, 𝑖𝑛𝑣𝑝𝑟𝑖𝑐𝑒is the inverse of daily average price level measured in GBX, value is the average daily trading
+volume in GBP1000, 𝑟𝑡𝑖𝑐𝑘is the relative tick size, and 𝑠𝑖𝑧𝑒is the value of the average executed trade, 𝑠𝑝𝑟𝑒𝑎𝑑_𝑚𝑘𝑡𝑣𝑎𝑔represents the average 𝑠𝑝𝑟𝑒𝑎𝑑level over all stocks in the same size group
+excluding stock 𝑖, 𝑒𝑠𝑝𝑟𝑒𝑎𝑑_𝑚𝑘𝑡𝑣𝑎𝑔represents the average 𝑒𝑠𝑝𝑟𝑒𝑎𝑑level over all stocks in the same size group excluding stock 𝑖, 𝑎𝑑𝑒𝑝𝑡ℎ_𝑏𝑏𝑜_𝑚𝑘𝑡𝑣𝑎𝑔represents the average 𝑎𝑑𝑒𝑝𝑡ℎ_𝑏𝑏𝑜level
+over all stocks in the same size group excluding stock 𝑖, ℎ𝑓𝑡_𝑚𝑘𝑡𝑎𝑣𝑔represents the average HFT intensity over all stocks in the same size group excluding stock 𝑖, 𝐻𝐻𝐼_𝑚𝑘𝑡𝑎𝑣𝑔represents the average
+market fragmentation level over all stocks in the same size group excluding stock 𝑖.
+ID
+Variables
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+1
+𝑙𝑜𝑔(ℎ𝑓𝑡)
+1.00
+2
+𝐻𝐻𝐼
+0.55
+3
+𝑙𝑜𝑔(𝑠𝑝𝑟𝑒𝑎𝑑)
+-0.78
+-0.40
+4
+𝑙𝑜𝑔(𝑒𝑠𝑝𝑟𝑒𝑎𝑑)
+-0.77
+-0.45
+0.95
+5
+𝑙𝑜𝑔(𝑎𝑑𝑒𝑝𝑡ℎ_𝑏𝑏𝑜)
+0.38
+-0.09
+-0.52
+-0.41
+6
+𝑙𝑜𝑔(𝑎𝑑𝑒𝑝𝑡ℎ_3𝑏𝑜)
+0.47
+0.08
+-0.59
+-0.49
+0.97
+7
+𝑙𝑜𝑔(𝑣𝑜𝑙𝑡𝑖𝑛𝑡𝑟𝑎)
+-0.03
+-0.24
+0.36
+0.37
+-0.21
+-0.28
+8
+𝑙𝑜𝑔(𝑚𝑘𝑡𝑐𝑎𝑝)
+0.75
+0.27
+-0.83
+-0.77
+0.72
+0.77
+-0.23
+9
+𝑙𝑜𝑔(𝑣𝑎𝑙𝑢𝑒)
+0.72
+-0.01
+-0.74
+-0.66
+0.78
+0.76
+0.01
+0.85
+10
+𝑟𝑡𝑖𝑐𝑘
+-0.39
+-0.29
+0.46
+0.54
+0.10
+0.05
+0.19
+-0.28
+-0.16
+11
+𝑙𝑜𝑔(𝑠𝑖𝑧𝑒)
+0.28
+-0.35
+-0.45
+-0.34
+0.87
+0.79
+-0.06
+0.67
+0.82
+0.03
+12
+𝑟𝑒𝑎𝑙𝑖𝑧𝑒𝑑𝑠𝑝𝑟𝑒𝑎𝑑_5𝑚𝑖𝑛
+-0.15
+-0.04
+0.10
+0.13
+0.00
+0.01
+-0.18
+-0.01
+-0.10
+0.09
+0.00
+13
+𝑙𝑜𝑔(𝑝𝑟𝑖𝑐𝑒𝑖𝑚𝑝𝑎𝑐𝑡𝑠_5𝑚𝑖𝑛)
+-0.58
+-0.36
+0.77
+0.79
+-0.36
+-0.43
+0.44
+-0.65
+-0.52
+0.40
+-0.29
+-0.32
+14
+𝑖𝑛𝑣𝑝𝑟𝑖𝑐𝑒
+-0.11
+-0.09
+0.24
+0.26
+-0.16
+-0.19
+0.21
+-0.16
+-0.12
+0.41
+-0.15
+0.10
+15
+ℎ𝑓𝑡_𝑚𝑘𝑡𝑎𝑣𝑔
+0.87
+0.60
+-0.68
+-0.66
+0.40
+0.51
+-0.11
+0.73
+0.59
+-0.24
+0.22
+-0.05
+-0.53
+-0.04
+16
+𝐻𝐻𝐼_𝑚𝑘𝑡𝑎𝑣𝑔
+0.52
+0.91
+-0.34
+-0.40
+-0.20
+-0.03
+-0.21
+0.19
+-0.08
+-0.30
+-0.45
+-0.02
+-0.33
+-0.05
+0.58
+17
+𝑙𝑜𝑔(𝑠𝑝𝑟𝑒𝑎𝑑_𝑚𝑘𝑡𝑎𝑣𝑔)
+-0.73
+-0.47
+0.79
+0.75
+-0.58
+-0.67
+0.32
+-0.82
+-0.66
+0.25
+-0.42
+-0.01
+0.63
+0.11
+-0.84
+-0.42
+18
+𝑙𝑜𝑔(𝑒𝑠𝑝𝑟𝑒𝑎𝑑_𝑚𝑘𝑡𝑎𝑣𝑔)
+-0.74
+-0.55
+0.78
+0.75
+-0.52
+-0.63
+0.33
+-0.78
+-0.60
+0.27
+-0.33
+-0.01
+0.64
+0.11
+-0.85
+-0.50
+0.98
+19
+𝑙𝑜𝑔(𝑎𝑑𝑒𝑝𝑡ℎ_𝑏𝑏𝑜_𝑚𝑘𝑡𝑎𝑣𝑔)
+0.41
+-0.14
+-0.58
+-0.49
+0.81
+0.79
+-0.18
+0.76
+0.78
+-0.05
+0.81
+0.03
+-0.43
+-0.06
+0.47
+-0.24
+-0.71
+-0.63
+all coefficients are significant at the 1% level
+49
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+Table 6: Descriptive Statistics: Year average
+This table presents the yearly average calculated using the balanced sample of 132 stocks for all variables liquidity, HFT and market fragmentation
+variables divided into two groups—small and large. ℎ𝑓𝑡represents the per minute quote update for the best 5 depth levels in the limit order book,
+𝐻𝐻𝐼is the Herfindhal-Hirchman index (HHI) showing the degree of market fragmentation, 𝑠𝑝𝑟𝑒𝑎𝑑is the time weighted daily quoted spread in
+basis point, 𝑒𝑠𝑝𝑟𝑒𝑎𝑑is the volume weighted effective half-spread in basis point, 𝑟𝑠𝑝𝑟𝑒𝑎𝑑is the volume weighted 5-minute realized half-spreads in
+basis point, 𝑝𝑖𝑚𝑝𝑎𝑐𝑡is the volume weighted 5-minute price impacts in basis point, 𝑎𝑑𝑒𝑝𝑡ℎ_𝑏𝑏𝑜is the average BBO level quoted depth measured
+in GBP100, 𝑑𝑒𝑝𝑡_3𝑏𝑜is the average cumulative depth upto three best limit price measured in GBP100,
+year
+ℎ𝑓𝑡
+𝑠𝑝𝑟𝑒𝑎𝑑
+𝑒𝑠𝑝𝑟𝑒𝑎𝑑
+𝑎𝑑𝑒𝑝𝑡ℎ_𝑏𝑏𝑜
+𝑎𝑑𝑒𝑝𝑡ℎ_3𝑏𝑜
+𝐻𝐻𝐼
+𝑟𝑠𝑝𝑟𝑒𝑎𝑑
+𝑝𝑖𝑚𝑝𝑎𝑐𝑡
+All stocks
+2005
+8.50
+34.60
+12.66
+954.74
+3425.70
+1.00
+3.37
+9.37
+2006
+12.28
+28.31
+10.27
+990.26
+3619.49
+1.00
+1.54
+8.73
+2007
+24.20
+20.45
+7.36
+803.09
+2945.66
+1.00
+-0.12
+7.50
+2008
+53.71
+26.62
+9.46
+322.11
+1089.89
+1.24
+-1.27
+10.72
+2009
+65.34
+28.06
+9.77
+211.82
+802.35
+1.87
+-1.47
+11.25
+2010
+111.05
+19.29
+6.75
+285.50
+1371.16
+2.36
+-0.60
+7.35
+2011
+121.85
+17.14
+5.85
+261.62
+1329.65
+2.51
+-0.18
+6.06
+2012
+103.70
+15.51
+5.32
+285.88
+1476.17
+2.44
+-0.47
+5.80
+2013
+116.17
+13.77
+4.91
+289.04
+1658.54
+2.62
+-0.44
+5.36
+2014
+110.36
+12.67
+4.54
+290.01
+1706.51
+2.68
+-0.45
+5.00
+2015
+141.45
+12.00
+4.30
+271.01
+1597.45
+2.69
+-0.45
+4.75
+2016
+154.20
+13.23
+3.98
+222.12
+1300.00
+2.90
+-0.39
+4.37
+small stocks
+2005
+3.17
+54.53
+19.44
+107.35
+340.55
+1.00
+6.28
+13.33
+2006
+4.88
+43.76
+15.29
+192.00
+626.77
+1.00
+3.41
+11.90
+2007
+11.21
+29.71
+10.04
+222.62
+709.37
+1.00
+0.05
+10.02
+2008
+24.53
+37.93
+13.06
+140.18
+438.17
+1.16
+-1.68
+14.75
+2009
+22.20
+43.40
+14.55
+100.19
+347.40
+1.64
+-1.53
+16.09
+2010
+34.47
+29.92
+9.93
+92.34
+328.42
+2.14
+-0.50
+10.43
+2011
+46.41
+24.92
+8.05
+76.59
+294.32
+2.34
+-0.50
+8.58
+2012
+36.11
+22.41
+7.32
+81.68
+337.89
+2.35
+-0.67
+8.00
+2013
+39.70
+19.29
+6.67
+99.83
+487.40
+2.45
+-0.66
+7.34
+2014
+38.50
+18.23
+6.24
+94.82
+526.43
+2.66
+-0.70
+6.95
+2015
+48.34
+16.61
+5.73
+96.38
+547.93
+2.60
+-0.67
+6.41
+2016
+57.62
+18.06
+5.24
+89.50
+503.14
+2.85
+-0.57
+5.81
+large stocks
+2005
+14.06
+13.85
+5.61
+1837.07
+6638.07
+1.00
+0.34
+5.24
+2006
+19.41
+13.41
+5.42
+1759.96
+6505.18
+1.00
+-0.26
+5.68
+2007
+36.45
+11.72
+4.83
+1350.20
+5053.44
+1.00
+-0.29
+5.12
+2008
+86.25
+14.00
+5.44
+524.98
+1816.66
+1.33
+-0.80
+6.23
+2009
+110.20
+12.12
+4.80
+327.89
+1275.38
+2.10
+-1.41
+6.22
+2010
+179.53
+9.78
+3.90
+458.21
+2303.49
+2.56
+-0.69
+4.59
+2011
+190.61
+10.05
+3.86
+430.24
+2273.22
+2.66
+0.11
+3.77
+2012
+163.27
+9.43
+3.56
+465.88
+2479.62
+2.52
+-0.30
+3.85
+2013
+184.44
+8.83
+3.35
+457.98
+2704.21
+2.78
+-0.24
+3.59
+2014
+174.42
+7.73
+3.02
+464.02
+2758.53
+2.70
+-0.24
+3.26
+2015
+228.79
+7.68
+2.95
+434.80
+2581.91
+2.78
+-0.24
+3.19
+2016
+245.83
+8.65
+2.78
+347.94
+2056.04
+2.95
+-0.21
+3.00
+50
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+Table 7: The effects of HFT and market fragmentation on liquidity
+This table presents the panel regression results of Models (2.1)–(2.3) where various liquidity measures are regressed on HFT (ℎ𝑓𝑡), market fragmentation (𝐻𝐻𝐼) proxy. ℎ𝑓𝑡represents the per minute quote update for the best 5 depth levels in the limit order book. 𝐻𝐻𝐼is the Herfindhal-Hirchman
+index (HHI), shows the degree of market fragmentation. The liquidity measures are time weighted quoted spread (𝑠𝑝𝑟𝑒𝑎𝑑), volume weighted
+effective-half spread (𝑒𝑠𝑝𝑟𝑒𝑎𝑑), average quoted depth at best limit price (𝑎𝑑𝑒𝑝𝑡ℎ_𝑏𝑏𝑜), accumulated average quoted depth up to best three limit
+price (𝑎𝑑𝑒𝑝𝑡ℎ_3𝑏𝑜), volume weighted 5-minute realized-half spread ( 𝑟𝑠𝑝𝑟𝑒𝑎𝑑), and volume weighted 5-minute price impacts ( 𝑝𝑖𝑚𝑝𝑎𝑐𝑡).
+All dependent variables are log transformed except 𝑟𝑠𝑝𝑟𝑒𝑎𝑑, all spreads based measures are in basis point and depth in 100GBP. Panel A shows
+the result for 𝑠𝑝𝑟𝑒𝑎𝑑, 𝑒𝑠𝑝𝑟𝑒𝑎𝑑and 𝑎𝑑𝑒𝑝𝑡ℎ_𝑏𝑏𝑜and Panel B shows the rest. Control variables are log market capitalization (𝑙𝑜𝑔(𝑚𝑘𝑡𝑐𝑎𝑝)),
+log normalized intraday mid-price volatility (𝑙𝑜𝑔(𝑣𝑜𝑙𝑡𝑖𝑛𝑡𝑟𝑎)) and inverse of average daily price level (𝑖𝑛𝑣𝑝𝑟𝑖𝑐𝑒). The regression is based on a
+balanced panel of 132 stocks and 2624 days ( December2005–December2016) and have both time (daily) and stock fixed effects. Coefficient estimates are OLS , t-statistics shown in the parentheses below the coefficient, calculated using Newey-West (HAC) standard errors (lags are optimally
+determined). ***, **, * denote significance at 1%, 5%, and 10% levels, respectively.
+PANEL A
+I
+II
+III
+IV
+V
+VI
+VII
+VIII
+IX
+log(spread)
+log(espread)
+log(adepth_bbo)
+(1)
+(2)
+(3)
+(1)
+(2)
+(3)
+(1)
+(2)
+(3)
+log(hft)
+-0.288***
+-0.289***
+-0.283***
+-0.322***
+-0.324***
+-0.282***
+-0.25***
+-0.247***
+-0.155***
+(-92.96)
+(-93.21)
+(-54.74)
+(-99.98)
+(-100.38)
+(-51.56)
+(-40.36)
+(-40.14)
+(-14.76)
+HHI
+0.052***
+0.065***
+0.065***
+0.144***
+-0.105***
+0.068***
+-17.72
+-9.09
+-20.72
+-18.81
+(-19.51)
+-4.5
+log(hft)*HHI
+-0.003*
+-0.02***
+-0.044***
+(-1.96)
+(-11.24)
+(-11.27)
+log(mktcap)
+-0.198***
+-0.201***
+-0.202***
+-0.127***
+-0.131***
+-0.139***
+0.811***
+0.818***
+0.801***
+(-49.14)
+(-49.93)
+(-49.97)
+(-29.43)
+(-30.41)
+(-32.17)
+-85.82
+-86.18
+-86.22
+log(voltintra)
+0.167***
+0.169***
+0.168***
+0.21***
+0.213***
+0.209***
+0.029***
+0.025***
+0.018***
+-58.38
+-59.99
+-59.69
+-63.96
+-65.83
+-64.35
+-7.69
+-6.42
+-4.59
+Inv(price)
+17.159***
+17.205***
+17.335***
+19.847***
+19.904***
+20.694***
+1.584
+1.492
+3.227*
+-22.65
+-22.68
+-22.7
+-21.99
+-22.04
+-22.83
+-0.82
+-0.77
+-1.69
+stock fixed effect
+YES
+YES
+YES
+YES
+YES
+YES
+YES
+YES
+YES
+time fixed effect
+YES
+YES
+YES
+YES
+YES
+YES
+YES
+YES
+YES
+Observations
+346368
+346368
+346368
+346368
+346368
+346368
+346368
+346368
+346368
+R-Square
+0.87
+0.87
+0.87
+0.84
+0.84
+0.84
+0.82
+0.82
+0.82
+PANEL B
+I
+II
+III
+IV
+V
+VI
+VII
+VIII
+IX
+log(adepth_3bo)
+rspread
+log(pimpact)
+(1)
+(2)
+(3)
+(1)
+(2)
+(3)
+(1)
+(2)
+(3)
+log(hft)
+-0.268***
+-0.268***
+-0.264***
+-1.871***
+-1.866***
+-4.251***
+-0.239***
+-0.242***
+-0.08***
+(-39.84)
+(-39.78)
+(-22.66)
+(-16.17)
+(-16.18)
+(-19.34)
+(-65.29)
+(-66)
+(-13.69)
+HHI
+0.003
+0.01
+-0.245***
+-4.711***
+0.133***
+0.433***
+-0.52
+-0.62
+(-3.86)
+(-20.12)
+(33.12)
+(50.34)
+log(hft)*HHI
+-0.002
+1.125***
+-0.076***
+(-0.43)
+(20)
+(-38.8)
+log(mktcap)
+0.863***
+0.863***
+0.862***
+0.472***
+0.488***
+0.929***
+-0.112***
+-0.121***
+-0.15***
+-82.97
+-82.75
+-83.75
+(8.3)
+(8.3)
+(15.55)
+(-24.13)
+(-26.01)
+(-33.11)
+log(voltintra)
+-0.007*
+-0.007*
+-0.007*
+-1.44***
+-1.451***
+-1.272***
+0.399***
+0.405***
+0.393***
+(-1.71)
+(-1.68)
+(-1.75)
+(-33.23)
+(-34.24)
+(-29.22)
+(69.93)
+(72.22)
+(69.25)
+Inv(price)
+0.173
+0.176
+0.249
+212.544***
+212.328***
+167.51***
+10.844***
+10.963***
+13.937***
+-0.09
+-0.09
+-0.13
+(13.19)
+(13.2)
+(11.77)
+(13.7)
+(13.84)
+(18.23)
+stock fixed effects
+YES
+YES
+YES
+YES
+YES
+YES
+YES
+YES
+YES
+time fixed effects
+YES
+YES
+YES
+YES
+YES
+YES
+YES
+YES
+YES
+Observations
+346368
+346368
+346368
+346368
+346368
+346368
+346368
+346368
+346368
+R-Square
+0.81
+0.81
+0.81
+0.16
+0.16
+0.19
+0.64
+0.64
+0.64
+51
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+Table 8: The effects of HFT and market fragmentation on liquidity: large and small stocks
+This table presents the panel regression results of Models (2.1)–(2.3) for large and small stocks in the panels A1, B1 and A2, B2 respectively, where
+various liquidity measures are regressed on HFT (ℎ𝑓𝑡), market fragmentation (𝐻𝐻𝐼) proxy. ℎ𝑓𝑡represents the per minute quote update for the
+best 5 depth levels in the limit order book. 𝐻𝐻𝐼is the Herfindhal-Hirchman index (HHI), shows the degree of market fragmentation. The liquidity
+measures are time weighted quoted spreads (𝑠𝑝𝑟𝑒𝑎𝑑), volume weighted effective-half spreads (𝑒𝑠𝑝𝑟𝑒𝑎𝑑), average quoted depths at best limit
+price (𝑎𝑑𝑒𝑝𝑡ℎ_𝑏𝑏𝑜), accumulated average quoted depths up to best three limit price (𝑎𝑑𝑒𝑝𝑡ℎ_3𝑏𝑜), volume weighted 5-minute realized-half
+spreads ( 𝑟𝑠𝑝𝑟𝑒𝑎𝑑), and volume weighted 5-minute price impacts ( 𝑝𝑖𝑚𝑝𝑎𝑐𝑡). All dependent variables are log transformed except 𝑟𝑠𝑝𝑟𝑒𝑎𝑑,
+all spreads based measures are in basis point and depth in GBP100. Panel (A1, A2 )show the result for 𝑠𝑝𝑟𝑒𝑎𝑑, 𝑒𝑠𝑝𝑟𝑒𝑎𝑑and 𝑎𝑑𝑒𝑝𝑡ℎ_𝑏𝑏𝑜
+and Panel (B1, B2) show the rests. Control variables are log market capitalization (𝑙𝑜𝑔(𝑚𝑘𝑡𝑐𝑎𝑝)), log normalized intraday mid-price volatility
+(𝑙𝑜𝑔(𝑣𝑜𝑙𝑡𝑖𝑛𝑡𝑟𝑎)) and inverse of average daily price level (𝑖𝑛𝑣𝑝𝑟𝑖𝑐𝑒) are significant with expected sign but not shown. The regression is based
+on a balanced panel of 66 stocks and 2624 days ( December2005–December2016) for each group and have both time (daily) and stock fixed effects.
+Coefficient estimates are OLS, t-statistics shown in the parentheses below the coefficient, calculated using Newey-West (HAC) standard errors (lags
+are optimally determined). ***, **, * denote significance at 1%, 5%, and 10% levels, respectively.
+PANEL A1 Large-cap stocks
+I
+II
+III
+IV
+V
+VI
+VII
+VIII
+IX
+log(spread)
+log(espread)
+log(adepth_bbo)
+(1)
+(2)
+(3)
+(1)
+(2)
+(3)
+(1)
+(2)
+(3)
+log(hft)
+-0.392***
+-0.391***
+-0.283***
+-0.455***
+-0.454***
+-0.248***
+-0.649***
+-0.65***
+-0.099***
+(-84.62)
+(-84.42)
+(-30.17)
+(-87.43)
+(-87.11)
+(-25.48)
+(-49.23)
+(-49.49)
+(-3.28)
+HHI
+0.035***
+0.241***
+0.033***
+0.427***
+-0.044***
+1.01***
+(8.29)
+(15.52)
+(6.89)
+(25.6)
+(-4.78)
+(21.74)
+log(hft)*HHI
+-0.043***
+-0.083***
+-0.222***
+(-13.64)
+(-24.78)
+(-22.81)
+Observations
+173184
+173184
+173184
+173184
+173184
+173184
+173184
+173184
+173184
+R-Square
+0.83
+0.84
+0.84
+0.81
+0.81
+0.81
+0.75
+0.75
+0.76
+PANEL A2 Small-cap stocks
+I
+II
+III
+IV
+V
+VI
+VII
+VIII
+IX
+log(spread)
+log(espread)
+log(adepth_bbo)
+(1)
+(2)
+(3)
+(1)
+(2)
+(3)
+(1)
+(2)
+(3)
+log(hft)
+-0.237***
+-0.239***
+-0.282***
+-0.251***
+-0.254***
+-0.294***
+-0.087***
+-0.084***
+-0.03**
+(-57.62)
+(-58.09)
+(-36.79)
+(-59.59)
+(-60.2)
+(-36.41)
+(-15.96)
+(-15.46)
+(-2.49)
+HHI
+0.076***
+-0.004
+0.086***
+0.011
+-0.093***
+0.009
+(20.02)
+(-0.34)
+(21.6)
+(1)
+(-16.83)
+(0.53)
+log(hft)*HHI
+0.023***
+0.022***
+-0.03***
+(7.87)
+(7.01)
+(-5.93)
+Wald test (𝛽2 + 𝛽3 = 0)
+5.85**
+15.09***
+2.87*
+Observations
+173184
+173184
+173184
+173184
+173184
+173184
+173184
+173184
+173184
+R-Square
+0.80
+0.81
+0.81
+0.78
+0.78
+0.78
+0.72
+0.73
+0.73
+PANEL B1 Large-cap stocks
+I
+II
+III
+IV
+V
+VI
+VII
+VIII
+IX
+log(adepth_3bo)
+rspread
+log(pimpact)
+(1)
+(2)
+(3)
+(1)
+(2)
+(3)
+(1)
+(2)
+(3)
+log(hft)
+-0.664***
+-0.662***
+-0.09***
+-0.074***
+-0.081***
+-0.178**
+-0.431***
+-0.428***
+-0.172***
+(-47.96)
+(-47.88)
+(-2.88)
+(-2.7)
+(-2.93)
+(-2.45)
+(-74.74)
+(-73.99)
+(-15.37)
+HHI
+0.061***
+1.156***
+-0.217***
+-0.404***
+0.101***
+0.59***
+(5.93)
+(23.69)
+(-9.66)
+(-3.79)
+(15.96)
+(31.41)
+log(hft)*HHI
+-0.231***
+0.039*
+-0.103***
+(-22.68)
+(1.87)
+(-27.15)
+Observations
+173184
+173184
+173184
+173184
+173184
+173184
+173184
+173184
+173184
+R-Square
+0.72
+0.72
+0.74
+0.20
+0.20
+0.20
+0.61
+0.61
+0.62
+PANEL B2 Small-cap stocks
+I
+II
+III
+IV
+V
+VI
+VII
+VIII
+IX
+log(adepth_3bo)
+rspread
+log(pimpact)
+(1)
+(2)
+(3)
+(1)
+(2)
+(3)
+(1)
+(2)
+(3)
+log(hft)
+-0.117***
+-0.117***
+-0.135***
+-2.488***
+-2.475***
+-6.718***
+-0.146***
+-0.152***
+-0.039***
+(-18.58)
+(-18.59)
+(-10.1)
+(-16.3)
+(-16.31)
+(-20.97)
+(-33.17)
+(-34.26)
+(-4.43)
+HHI
+0.01
+-0.023
+-0.436***
+-8.366***
+0.178***
+0.387***
+(1.56)
+(-1.17)
+(-5.23)
+(-21.8)
+(35.03)
+(28.56)
+log(hft)*HHI
+0.01*
+2.318***
+-0.061***
+(1.69)
+(21.57)
+(-17.14)
+Wald test (𝛽2 + 𝛽3 = 0)
+0.85
+Observations
+173184
+173184
+173184
+173184
+173184
+173184
+173184
+173184
+173184
+R-Square
+0.69
+0.69
+0.69
+0.20
+0.21
+0.24
+0.53
+0.54
+0.54
+52
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+Table 9: The time-varying effects of HFT and market fragmentation on liquidity
+This table presents the panel regression results of Models (2.4)–(2.6) where various liquidity measures are regressed on HFT (ℎ𝑓𝑡), market fragmentation (𝐻𝐻𝐼) proxy. ℎ𝑓𝑡represents the per minute quote update for the best 5 depth levels in the limit order book. 𝐻𝐻𝐼is the Herfindhal-Hirchman
+index (HHI) , shows the degree of market fragmentation. The liquidity measures are time weighted quoted spreads (𝑠𝑝𝑟𝑒𝑎𝑑), volume weighted
+effective-half spreads (𝑒𝑠𝑝𝑟𝑒𝑎𝑑), average quoted depths at best limit price (𝑎𝑑𝑒𝑝𝑡ℎ_𝑏𝑏𝑜), accumulated average quoted depths up to best three limit
+price (𝑎𝑑𝑒𝑝𝑡ℎ_3𝑏𝑜), volume weighted 5-minute realized-half spreads ( 𝑟𝑠𝑝𝑟𝑒𝑎𝑑), and volume weighted 5-minute price impacts ( 𝑝𝑖𝑚𝑝𝑎𝑐𝑡).
+All dependent variables are log transformed except 𝑟𝑠𝑝𝑟𝑒𝑎𝑑, all spreads based measures are in basis point and depth in GBP100. Panel A shows
+the result for 𝑠𝑝𝑟𝑒𝑎𝑑, 𝑒𝑠𝑝𝑟𝑒𝑎𝑑and 𝑎𝑑𝑒𝑝𝑡ℎ_𝑏𝑏𝑜and Panel B shows the rest. 𝐷𝑌𝑟8, 9, 10, 𝐷𝑌𝑟11, 12, 13, 𝐷𝑌𝑟14, 15, 16 represent the period dummies for the three three-year blocks 2008–2010 , 201–2013 and 2014–2016, respectively. Control variables are log market capitalization
+(𝑙𝑜𝑔(𝑚𝑘𝑡𝑐𝑎𝑝) ), log normalized intraday mid-price volatility (𝑙𝑜𝑔(𝑣𝑜𝑙𝑡𝑖𝑛𝑡𝑟𝑎)) and inverse of average daily price level (𝑖𝑛𝑣𝑝𝑟𝑖𝑐𝑒). Models (4),
+(5), (6) examine the time-varying effect of HFT, market fragmentation and their interaction in the latter three three-year block periods of the sample,
+respectively. The regression is based on a balanced panel of 132 stocks and 2624 days ( December 2005–December 2016) and have both time (daily)
+and stock fixed effects. Coefficient estimates are OLS, t-statistics shown in the parentheses below the coefficient, calculated using Newey-West
+(HAC) standard errors (lags are optimally determined). ***, **, * denote significance at 1%, 5%, and 10% levels, respectively.
+PANEL A
+I
+II
+III
+IV
+V
+VI
+VII
+VIII
+IX
+log(spread)
+log(espread)
+log(adepth_bbo)
+(4)
+(5)
+(6)
+(4)
+(5)
+(6)
+(4)
+(5)
+(6)
+log(hft)
+-0.278***
+-0.288***
+-0.252***
+-0.294***
+-0.323***
+-0.268***
+-0.004
+-0.245***
+-0.081***
+(-56.67)
+(-94.17)
+(-46.5)
+(-54.92)
+(-101.01)
+(-46.63)
+(-0.44)
+(-39.83)
+(-7.25)
+HHI
+0.056***
+-0.024***
+0.122***
+0.067***
+0.021***
+0.166***
+-0.034***
+-0.195***
+0.208***
+-19.63
+(-3.8)
+-15.65
+-21.74
+-3.06
+-20.17
+(-6.83)
+(-18.8)
+-12.66
+log(hft)*DYr8,9,10
+-0.03***
+-0.034***
+-0.353***
+(-6.92)
+(-7.26)
+(-39.26)
+log(hft)*DYr11,12,13
+0.005
+-0.012***
+-0.232***
+-1.17
+(-2.74)
+(-25.83)
+log(hft)*DYr14,15,16
+-0.013***
+-0.052***
+-0.246***
+(-3.09)
+(-11.1)
+(-25.81)
+HHI*DYr11,12,13
+0.106***
+0.072***
+0.136***
+-13.46
+-8.85
+-11.5
+HHI*DYr14,15,16
+0.112***
+0.054***
+0.119***
+-14.57
+-6.68
+-9.08
+log(hft)*HHI
+-0.029***
+-0.032***
+-0.105***
+(-12.52)
+(-13.21)
+(-21.07)
+log(hft)*HHI*DYr11,12,13
+0.018***
+0.013***
+0.039***
+-17.17
+-12.35
+-23.37
+log(hft)*HHI*DYr14,15,16
+0.015***
+0.003***
+0.038***
+-13.15
+-2.98
+-18.84
+log(mktcap)
+-0.201***
+-0.2***
+-0.198***
+-0.143***
+-0.13***
+-0.14***
+0.791***
+0.819***
+0.813***
+(-48.23)
+(-49.51)
+(-48.19)
+(-32.24)
+(-30.2)
+(-31.83)
+-84.74
+-86.04
+-85.69
+log(voltintra)
+0.17***
+0.169***
+0.168***
+0.212***
+0.213***
+0.21***
+0.02***
+0.024***
+0.017***
+-61.17
+-59.04
+-59.15
+-65.73
+-65.23
+-64.05
+-5.76
+-6.34
+-4.46
+Inv(price)
+16.421***
+16.784***
+17.052***
+19.32***
+19.611***
+20.132***
+-0.699
+0.941
+2.878
+-21.55
+-21.81
+-22.09
+-21.24
+-21.53
+-21.9
+(-0.39)
+-0.48
+-1.51
+stock fixed effects
+YES
+YES
+YES
+YES
+YES
+YES
+YES
+YES
+YES
+time fixed effects
+YES
+YES
+YES
+YES
+YES
+YES
+YES
+YES
+YES
+Observations
+346368
+346368
+346368
+346368
+346368
+346368
+346368
+346368
+346368
+R-Square
+0.87
+0.87
+0.87
+0.84
+0.84
+0.84
+0.83
+0.82
+0.82
+PANEL B
+I
+II
+III
+IV
+V
+VI
+VII
+VIII
+IX
+log(adepth_3bo)
+rspread
+pimpact
+(4)
+(5)
+(6)
+(4)
+(5)
+(6)
+(4)
+(5)
+(6)
+log(hft)
+-0.058***
+-0.264***
+-0.169***
+-3.953***
+-1.844***
+-4.345***
+-0.107***
+-0.242***
+-0.072***
+(-5.65)
+(-39.33)
+(-13.49)
+(-18.84)
+(-16.24)
+(-19.46)
+(-18.43)
+(-66.16)
+(-11.58)
+HHI
+0.074***
+-0.18***
+0.191***
+-0.599***
+-1.217***
+-4.888***
+0.153***
+0.163***
+0.447***
+-12.59
+(-14.6)
+-10.47
+(-12.6)
+(-6.75)
+(-20.21)
+-37.84
+-21.8
+-46.72
+log(hft)*DYr8,9,10
+-0.361***
+1.931***
+-0.126***
+(-37.5)
+-10.88
+(-25.42)
+log(hft)*DYr11,12,13
+-0.165***
+2.415***
+-0.144***
+(-17.2)
+-15.69
+(-28.66)
+log(hft)*DYr14,15,16
+-0.195***
+2.691***
+-0.179***
+(-19)
+-17.49
+(-36.22)
+HHI*DYr11,12,13
+0.258***
+1.417***
+-0.038***
+-18.33
+-7.5
+(-3.95)
+HHI*DYr14,15,16
+0.26***
+1.341***
+-0.044***
+-16.92
+-7.48
+(-4.61)
+log(hft)*HHI
+-0.082***
+1.204***
+-0.083***
+(-14.76)
+-17.91
+(-30.86)
+log(hft)*HHI*DYr11,12,13
+0.055***
+-0.053***
+0.007***
+-26.87
+(-2.72)
+-6.05
+log(hft)*HHI*DYr14,15,16
+0.047***
+-0.047**
+0.002*
+-19.7
+(-2.25)
+-1.84
+log(mktcap)
+0.856***
+0.866***
+0.876***
+1.122***
+0.505***
+0.915***
+-0.163***
+-0.121***
+-0.151***
+-83.24
+-82.91
+-83.74
+-17.76
+-8.46
+-14.56
+(-34.74)
+(-26.14)
+(-32.64)
+log(voltintra)
+-0.005
+-0.007*
+-0.007*
+-1.313***
+-1.453***
+-1.272***
+0.397***
+0.405***
+0.393***
+(-1.34)
+(-1.74)
+(-1.81)
+(-31.5)
+(-34.82)
+(-29.16)
+-71.75
+-72.56
+-69.08
+Inv(price)
+-3.629**
+-0.856
+-0.493
+201.111***
+206.635***
+168.227***
+11.336***
+11.111***
+13.636***
+(-2.01)
+(-0.44)
+(-0.26)
+-12.89
+-13.14
+-11.81
+-14.52
+-14.05
+-17.66if
+53
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+Table 10: The effects of HFT and market fragmentation on liquidity: a two-stage IV-GMM estimation
+This table presents the second stage result of the two-stage optimal IV-GMM estimation of the Models (2.10)–(2.13) for time weighted quoted
+spreads (𝑠𝑝𝑟𝑒𝑎𝑑) and volume weighted effective half-spreads (𝑒𝑠𝑝𝑟𝑒𝑎𝑑). Sub columns (1)–(5) represent the equivalent IV-GMM estimation of
+Models (2.1)–(2.5) in OLS. The three suspected endogenous variables 𝐻𝐹𝑇𝑖𝑡, 𝐿𝐹𝑟𝑎𝑔𝑖𝑡, and 𝐻𝐹𝑇∗𝐿𝐹𝑟𝑎𝑔𝑖𝑡are predicted by the three firststage Models (2.7), (2.8), and (2.9) respectively. ℎ𝑓𝑡represents the per minute quote update for the best 5 depth levels in the limit order book.
+𝐻𝐻𝐼is the Herfindhal-Hirchman index (HHI), shows the degree of market fragmentation. The liquidity measures are time weighted quoted spreads
+(𝑠𝑝𝑟𝑒𝑎𝑑), and volume weighted effective-half spreads (𝑒𝑠𝑝𝑟𝑒𝑎𝑑). All dependent variables are log transformed and liquidity measures are in basis
+point. Control variables are log market capitalization (𝑙𝑜𝑔(𝑚𝑘𝑡𝑐𝑎𝑝)), log intraday mid price range volatility (𝑙𝑜𝑔(𝑣𝑜𝑙𝑡𝑖𝑛𝑡𝑟𝑎)), price inverse
+(𝑖𝑛𝑣𝑝𝑟𝑖𝑐𝑒) and the average degree of liquidity of stocks in the same size group excluding stock 𝑖(𝐿𝐼𝑄−𝑖𝑡), calculated from four equally divided
+firm size group based on market capitalization. The regression is based on a balanced panel of 132 stocks and 2624 days ( December 2005–December
+2016), have both time (weekly time dummy for each of 591 weeks) and stock fixed effects. Coefficient estimates are IV-GMM, t-statistics shown in
+the parentheses below the coefficient, calculated using Newey-West (HAC) standard errors (based on 5 day lags). ***, **, * denote significance at
+1%, 5%, and 10% levels, respectively.
+I
+II
+III
+IV
+VI
+VII
+VIII
+IX
+X
+XI
+log(spread)
+log(espread)
+(1)
+(2)
+(3)
+(4)
+(5)
+(1)
+(2)
+(3)
+(4)
+(5)
+log(hft)
+-0.442***
+-0.413***
+-0.456***
+-0.402***
+-0.407***
+-0.425***
+-0.418***
+-0.457***
+-0.409***
+-0.415***
+(-127.12)
+(-116.04)
+(-78.56)
+(-64.16)
+(-112.43)
+(-115.36)
+(-111.42)
+(-79.64)
+(-66.25)
+(-105.87)
+HHI
+0.254***
+0.147***
+0.27***
+0.161***
+0.085***
+-0.019
+0.077***
+0.056***
+(25.78)
+(10.86)
+-8.82
+(8.24)
+(-1.42)
+-6.67
+-2.86
+log(hft)*HHI
+0.016***
+0.015***
+(7.72)
+(7.7)
+log(hft)*DYr8,9,10
+-23.86
+-0.017***
+-0.037***
+(-3)
+log(hft)*DYr11,12,13
+(-6.42)
+0.018***
+0.003
+-3.46
+log(hft)*DYr14,15,16
+-0.47
+-0.031***
+-0.012**
+(-5.99)
+HHI*DYr11,12,13
+(-2.31)
+0.07**
+0.01
+-2.57
+-0.34
+HHI*DYr14,15,16
+0.269***
+0.101***
+-8.14
+-2.78
+log(𝐿𝐼𝑄−𝑖𝑡)
+0.367***
+0.391***
+0.38***
+0.365***
+0.338***
+0.249***
+0.252***
+0.25***
+0.262***
+0.235***
+(42.53)
+(45.56)
+(49.48)
+-39.46
+-30.4
+(24.85)
+(25.16)
+(28.81)
+-25.1
+-18.38
+log(mktcap)
+-0.117***
+-0.152***
+-0.137***
+-0.148***
+-0.152***
+-0.09***
+-0.101***
+-0.087***
+-0.107***
+-0.101***
+(-29.98)
+(-37.23)
+(-37.71)
+(-33.94)
+(-36.72)
+(-21.66)
+(-23.06)
+(-22.09)
+(-23.05)
+(-22.88)
+log(voltintra)
+0.225***
+0.232***
+0.232***
+0.233***
+0.237***
+0.266***
+0.27***
+0.268***
+0.269***
+0.271***
+(78.56)
+(82.4)
+(91.63)
+-84.82
+-82.24
+(82.51)
+(82.01)
+(88.38)
+-83.03
+-82.62
+Inv(price)
+9.968***
+10.507***
+9.655***
+9.973***
+10.212***
+9.588***
+9.705***
+8.772***
+8.587***
+9.633***
+(14.26)
+(15.01)
+(16.71)
+-14.05
+-14.36
+(11.72)
+(11.85)
+(12.41)
+-10.48
+-11.69
+stock fixed effects
+YES
+YES
+YES
+YES
+YES
+YES
+YES
+YES
+YES
+YES
+time fixed effects
+YES
+YES
+YES
+YES
+YES
+YES
+YES
+YES
+YES
+YES
+Observations
+346368
+346368
+346368
+346368
+346368
+346368
+346368
+346368
+346368
+346368
+adj_Rsqr
+0.85
+0.85
+0.85
+0.85
+0.85
+0.81
+0.82
+0.81
+0.82
+0.82
+54
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+Table 11: The effects of HFT and market fragmentation on liquidity: a two-stage IV-GMM estimation for large and small stocks
+This table presents the second stage result of the two-stage optimal IV-GMM estimation of the Models (2.10)–(2.13) employing large (Panel A)
+and small (Panel B) stocks for time weighted quoted spreads (𝑠𝑝𝑟𝑒𝑎𝑑) and volume weighted effective half-spreads (𝑒𝑠𝑝𝑟𝑒𝑎𝑑). Sub columns
+(1)–(5) represent the equivalent IV-GMM estimation of Models (2.1)–(2.5) in OLS. The three suspected endogenous variables 𝐻𝐹𝑇𝑖𝑡, 𝐿𝐹𝑟𝑎𝑔𝑖𝑡,
+and 𝐻𝐹𝑇∗𝐿𝐹𝑟𝑎𝑔𝑖𝑡are predicted by the three first-stage equations (2.7), (2.8), and (2.9) respectively. ℎ𝑓𝑡represents the per minute quote update
+for the best 5 depth levels in the limit order book. 𝐻𝐻𝐼is the Herfindhal-Hirchman index (HHI), shows the degree of market fragmentation. The
+liquidity measures are time weighted quoted spread (𝑠𝑝𝑟𝑒𝑎𝑑), and volume weighted effective-half spread (𝑒𝑠𝑝𝑟𝑒𝑎𝑑). All dependent variables are
+log transformed and liquidity measures are in basis point. Control variables are log market capitalization (𝑙𝑜𝑔(𝑚𝑘𝑡𝑐𝑎𝑝)), log intraday mid price
+range volatility (𝑙𝑜𝑔(𝑣𝑜𝑙𝑡𝑖𝑛𝑡𝑟𝑎)), price inverse (𝑖𝑛𝑣𝑝𝑟𝑖𝑐𝑒) and the average degree of liquidity of stocks in the same size group excluding stock
+𝑖(𝐿𝐼𝑄−𝑖𝑡), calculated from four equally divided firm size group based on market capitalization. Estimates on the coefficient of control variables
+are not shown, all are significant, and have the expected sign. The regression is based on a balanced panel of 66 stocks and 2624 days ( December
+2005–December 2016) for each group of stock, have both time (weekly time dummy for each of 591 weeks) and stock fixed effects. Coefficient
+estimates are IV-GMM, t-statistics shown in the parentheses below the coefficient , calculated using Newey-West (HAC) standard errors (based on
+5 day lags). ***, **, * denote significance at 1%, 5%, and 10% levels, respectively.
+Panel A : Large stocks
+I
+II
+III
+IV
+VI
+VII
+VIII
+IX
+X
+XI
+log(spread)
+log(espread)
+(1)
+(2)
+(3)
+(4)
+(5)
+(1)
+(2)
+(3)
+(4)
+(5)
+log(hft)
+-0.408***
+-0.398***
+-0.293***
+-0.312***
+-0.409***
+-0.376***
+-0.406***
+-0.201***
+-0.282***
+-0.437***
+(-85.82)
+(-80.29)
+(-25.19)
+(-29.39)
+(-69.08)
+(-71.27)
+(-70.1)
+(-16.18)
+(-23.9)
+(-55.45)
+HHI
+0.086***
+0.31***
+0.108***
+0.231***
+-0.155***
+0.289***
+-0.121***
+0.242***
+(6.14)
+(12.66)
+-7.62
+-8.37
+(-9.07)
+(10.43)
+(-7.31)
+-7.21
+log(hft)*HHI
+-0.039***
+-0.08***
+(-8.93)
+(-16.68)
+log(hft)*DYr8,9,10
+-0.082***
+-0.096***
+(-7.28)
+(-7.59)
+log(hft)*DYr11,12,13
+-0.061***
+-0.082***
+(-5.87)
+(-7.13)
+log(hft)*DYr14,15,16
+-0.126***
+-0.203***
+(-11.68)
+(-16.95)
+HHI*DYr11,12,13
+0.021
+-0.129**
+-0.41
+(-2.02)
+HHI*DYr14,15,16
+-0.612***
+-1.502***
+(-9.66)
+(-17.29)
+Observations
+173184
+173184
+173184
+173184
+173184
+173184
+173184
+173184
+173184
+173184
+adj_Rsqr
+0.81
+0.81
+0.81
+0.81
+0.79
+0.77
+0.77
+0.78
+0.78
+0.65
+Panel B : Small stocks
+I
+II
+III
+IV
+VI
+VII
+VIII
+IX
+X
+XI
+log(spread)
+log(espread)
+(1)
+(2)
+(3)
+(4)
+(5)
+(1)
+(2)
+(3)
+(4)
+(5)
+log(hft)
+-0.507***
+-0.448***
+-0.508***
+-0.464***
+-0.459***
+-0.49***
+-0.475***
+-0.591***
+-0.469***
+-0.464***
+(-105.95)
+(-86.75)
+(-42.39)
+(-35.72)
+(-88.45)
+(-98.78)
+(-90.09)
+(-52.8)
+(-39.92)
+(-77.82)
+HHI
+0.378***
+0.226***
+0.321***
+-0.423***
+0.086***
+-0.172***
+0.047***
+-1.109***
+(25.33)
+(8.86)
+-21.13
+(-6.98)
+(5.76)
+(-7.04)
+-3.08
+(-14.58)
+log(hft)*HHI
+0.025***
+0.059***
+(4.68)
+(11.52)
+log(hft)*DYr8,9,10
+-0.042***
+-0.086***
+(-2.77)
+(-6.21)
+log(hft)*DYr11,12,13
+0.041***
+0.034***
+-2.88
+-2.67
+log(hft)*DYr14,15,16
+0.014
+0.029**
+-1
+1.002***
+-2.19
+1.626***
+HHI*DYr11,12,13
+-11.84
+-15.49
+1.082***
+1.498***
+HHI*DYr14,15,16
+-14.29
+-16.65
+Observations
+173184
+173184
+173184
+173184
+173184
+173184
+173184
+173184
+173184
+173184
+adj_Rsqr
+0.74
+0.73
+0.74
+0.74
+0.67
+0.71
+0.72
+0.71
+0.71
+0.57
+55
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+Table 12: The effects of HFT and market fragmentation on liquidity: a simultaneous equations
+model estimation
+This table presents the simultaneous equations model estimation of the equations (13)–(15) using both GMM (H3SLS) and 3SLS estimations for
+time weighted quoted spreads (𝑠𝑝𝑟𝑒𝑎𝑑) and volume weighted effective spreads (𝑒𝑠𝑝𝑟𝑒𝑎𝑑). Indices 𝑖and 𝑡represent stocks and day respectively,
+𝐿𝐼𝑄𝑖𝑡represents one of the two log normalized market quality (liquidity) measures (𝑠𝑝𝑟𝑒𝑎𝑑_𝑏𝑝𝑠, 𝑒𝑠𝑝𝑟𝑒𝑎𝑑), 𝐻𝐹𝑇𝑖𝑡represents the HFT proxy
+(ℎ𝑓𝑡), 𝐿𝐹𝑟𝑎𝑔𝑖𝑡represents the market fragmentation proxy (𝐻𝐻𝐼), 𝐿𝐼𝑄𝑖𝑡represents the average market liquidity level over all stocks in the same
+size group excluding stock 𝑖, 𝐿𝐹𝑟𝑎𝑔−𝑖𝑡represents the average market fragmentation level over all stocks in the same size group excluding stock
+𝑖, 𝐻𝐹𝑇−𝑖𝑡represents the average HFT intensity over all stocks in the same size group excluding stock 𝑖, 𝐿𝑜𝑔(𝑚𝑘𝑡𝑐𝑎𝑝) is the log normalized
+value of market capitalization, 𝐿𝑜𝑔(𝑣𝑜𝑙𝑡𝑖𝑛𝑡𝑟𝑎) is the log normalized value of intraday mid price range volatility, 𝑖𝑛𝑣𝑝𝑟𝑖𝑐𝑒is the inverse of daily
+average price, 𝐿𝑜𝑔(𝑠𝑖𝑧𝑒) is the log normalized average value of trade size , 𝐿𝑜𝑔(𝑣𝑎𝑙𝑢𝑒) is the log normalized value of trading volume, indices
+((𝑙𝑖𝑞)), ((ℎ𝑓𝑡)), (( 𝑓𝑟𝑔)) refer the respective coefficient of the equations 𝐿𝐼𝑄𝑖𝑡/(13), 𝐻𝐹𝑇𝑖𝑡/(14) and 𝐿𝐹𝑟𝑎𝑔𝑖𝑡/(15) respectively. The regression
+is based on a balanced panel of 132 stocks and 2240 days ( January 2008–December 2016), have both time (monthly time dummy for each of the
+108 months) and stock fixed effects. Coefficient estimates are GMM (H3SLS) and 3SLS, t-statistics shown in the parentheses below the coefficient
+. ***, **, * denote significance at 1%, 5%, and 10% levels, respectively.
+𝑠𝑝𝑟𝑒𝑎𝑑_𝑏𝑝𝑠
+𝑒𝑠𝑝𝑟𝑒𝑎𝑑
+H3SLS (GMM)
+3SLS
+H3SLS (GMM)
+3SLS
+𝐿𝑜𝑔(𝐿𝐼𝑄)𝑖𝑡
+𝐿𝑜𝑔(𝐻𝐹𝑇)𝑖𝑡
+𝐿𝐹𝑟𝑎𝑔𝑖𝑡
+𝐿𝑜𝑔(𝐿𝐼𝑄)𝑖𝑡
+𝐿𝑜𝑔(𝐻𝐹𝑇)𝑖𝑡
+𝐿𝐹𝑟𝑎𝑔𝑖𝑡
+𝐿𝑜𝑔(𝐿𝐼𝑄)𝑖𝑡
+𝐿𝑜𝑔(𝐻𝐹𝑇)𝑖𝑡
+𝐿𝐹𝑟𝑎𝑔𝑖𝑡
+𝐿𝑜𝑔(𝐿𝐼𝑄)𝑖𝑡
+𝐿𝑜𝑔(𝐻𝐹𝑇)𝑖𝑡
+𝐿𝐹𝑟𝑎𝑔𝑖𝑡
+I
+II
+III
+IV
+V
+VI
+VII
+VIII
+IX
+X
+XI
+XII
+𝐿𝑜𝑔(𝐻𝐹𝑇)𝑖𝑡
+-0.317***
+-0.376***
+-0.311***
+-0.384***
+(-87.92)
+(-249.1)
+(-80.6)
+(-242.44)
+𝐿𝐹𝑟𝑎𝑔𝑖𝑡
+0.189***
+0.231***
+0.073***
+0.063***
+-22.9
+-56.24
+-8.35
+-14.54
+𝑙𝑜𝑔(𝐿𝐼𝑄)−𝑖𝑡
+0.45***
+0.372***
+0.311***
+0.239***
+-54.94
+-100.48
+-31.2
+-51.98
+𝐿𝑜𝑔(𝑚𝑘𝑡𝑐𝑎𝑝)𝑖𝑡
+-0.187***
+-0.182***
+-0.143***
+-0.118***
+(-44.18)
+(-104.03)
+(-30.2)
+(-63.84)
+𝐿𝑜𝑔(𝑣𝑜𝑙𝑖𝑛𝑡𝑟𝑎)𝑖𝑡
+0.183***
+0.185***
+0.219***
+0.208***
+-64.82
+-170.98
+-65.67
+-182.68
+𝑖𝑛𝑣(𝑝𝑟𝑖𝑐𝑒)𝑖𝑡
+14.086***
+14.979***
+16.373***
+18.568***
+-17.36
+-67.92
+-17.13
+-80.84
+𝐿𝑜𝑔(𝐿𝐼𝑄)𝑖𝑡
+0.726***
+0.685***
+1.253***
+1.378***
+-21.87
+-47.3
+-15.69
+-39.02
+𝐿𝐹𝑟𝑎𝑔𝑖𝑡
+0.149***
+0.106***
+0.138***
+0.113***
+-8.14
+-10.61
+-6.13
+-9.45
+𝐿𝑜𝑔(𝐻𝐹𝑇)𝑖𝑡
+0.429***
+0.463***
+0.371***
+0.51***
+-48.19
+-113.05
+-26.12
+-82.05
+𝐿𝑜𝑔(𝑚𝑘𝑡𝑐𝑎𝑝)𝑖𝑡
+0.296***
+0.317***
+0.405***
+0.458***
+-26.43
+-69.65
+-20.03
+-53.06
+𝑟𝑡𝑘𝑖𝑡
+-462.761***
+-386.573***
+-712.829***
+-582.874***
+(-29.26)
+(-115.61)
+(-23.14)
+(-55.95)
+𝐿𝑜𝑔(𝑠𝑖𝑧𝑒)𝑖𝑡
+-0.762***
+-0.774***
+-0.949***
+-0.954***
+(-44.64)
+(-120.39)
+(-27.92)
+(-67.74)
+𝐿𝑜𝑔(𝑣𝑜𝑙𝑢𝑚𝑒)𝑖𝑡
+0.702***
+0.691***
+0.769***
+0.797***
+-58.18
+-136.6
+-37.48
+-90.91
+𝐿𝑜𝑔(𝑣𝑜𝑙𝑖𝑛𝑡𝑟𝑎)𝑖𝑡
+-0.049***
+-0.043***
+-0.142***
+-0.172***
+(-6.85)
+(-14.19)
+(-9.01)
+(-26.01)
+𝐿𝑜𝑔(𝐿𝐼𝑄)𝑖𝑡
+0.01
+0.248***
+0.11***
+0.241***
+-1.04
+-51.29
+-12.03
+-53.1
+𝐿𝑜𝑔(𝐻𝐹𝑇)𝑖𝑡
+0.209***
+0.26***
+0.246***
+0.284***
+-41.53
+-85.6
+-46.27
+-85.4
+𝐿𝐹𝑟𝑎𝑔−𝑖𝑡
+0.629***
+0.613***
+0.627***
+0.624***
+-71.1
+-124.25
+-70.69
+-123.35
+𝐿𝑜𝑔(𝑚𝑘𝑡𝑐𝑎𝑝)𝑖𝑡
+0.216***
+0.262***
+0.238***
+0.261***
+-50.01
+-126.24
+-55.27
+-126.12
+𝐿𝑜𝑔(𝑣𝑜𝑙𝑢𝑚𝑒)𝑖𝑡
+-0.242***
+-0.218***
+-0.249***
+-0.242***
+(-81.98)
+(-146.77)
+(-86.01)
+(-156.93)
+𝐿𝑜𝑔(𝑣𝑜𝑙𝑖𝑛𝑡𝑟𝑎)𝑖𝑡
+-0.005*
+-0.049***
+-0.024***
+-0.051***
+(-1.83)
+(-31.54)
+(-8.65)
+(-32.45)
+observations
+295680
+295680
+295680
+295680
+295680
+295680
+295680
+295680
+295680
+295680
+295680
+295680
+adjrsq
+0.87
+0.86
+0.83
+0.83
+adjrsq
+0.91
+0.91
+0.85
+0.83
+adjrsq
+0.78
+0.77
+0.78
+0.78
+56
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+Table 13: The effects of HFT and market fragmentation on liquidity (large and small stocks): a
+simultaneous equations model estimation
+This table presents the simultaneous equations model estimation of the equations (13)–(15) for large and small stocks using GMM(H3SLS)estimation
+for log normalized time weighted quoted spreads (𝑠𝑝𝑟𝑒𝑎𝑑) and volume weighted effective half-spreads (𝑒𝑠𝑝𝑟𝑒𝑎𝑑). Indices 𝑖and 𝑡represent stocks
+and day respectively, 𝐿𝐼𝑄𝑖𝑡represents one of the two market quality (liquidity) measures (𝑠𝑝𝑟𝑒𝑎𝑑, 𝑒𝑠𝑝𝑟𝑒𝑎𝑑), 𝐻𝐹𝑇𝑖𝑡represents HFT proxy
+(ℎ𝑓𝑡), 𝐿𝐹𝑟𝑎𝑔𝑖𝑡represents market fragmentation proxy (𝐻𝐻𝐼), 𝐿𝐼𝑄𝑖𝑡represents average market liquidity level over all stocks in the same size
+group excluding stock 𝑖, 𝐿𝐹𝑟𝑎𝑔𝑖𝑡represents average market fragmentation level over all stocks in the same size group excluding stock 𝑖, 𝐻𝐹𝑇−𝑖𝑡
+represents average HFT intensity over all stocks in the same size group excluding stock 𝑖, 𝐿𝑜𝑔(𝑚𝑘𝑡𝑐𝑎𝑝) is the log normalized value of market
+capitalization, 𝐿𝑜𝑔(𝑣𝑜𝑙𝑡𝑖𝑛𝑡𝑟𝑎) is the log normalized value of intraday mid price range volatility, 𝑖𝑛𝑣𝑝𝑟𝑖𝑐𝑒is the inverse of daily average price,
+𝐿𝑜𝑔(𝑠𝑖𝑧𝑒) is the log normalized average value of trade size , 𝐿𝑜𝑔(𝑣𝑎𝑙𝑢𝑒) is the log normalized value of trading volume , indices (𝑙𝑖𝑞), ((ℎ𝑓𝑡)),
+( 𝑓𝑟𝑔) refer the respective estimates of the equations 𝑀𝑄𝑖𝑡/(13), 𝐻𝐹𝑇𝑖𝑡/(14) and 𝐿𝐹𝑟𝑎𝑔𝑖𝑡/(15) respectively. The regression is based on a balanced
+panel of 6 stocks and 2240 days ( January 2008–December 2016) for each group of stock, have both time (monthly time dummy for each of 108
+months) and stock fixed effects. Coefficient estimates are GMM (H3SLS), t-statistics shown in the parentheses below the coefficient . ***, **, *
+denote significance at 1%, 5%, and 10% levels, respectively.
+𝑠𝑝𝑟𝑒𝑎𝑑_𝑏𝑝𝑠
+𝑒𝑠𝑝𝑟𝑒𝑎𝑑
+LARGE
+SMALL
+LARGE
+SMALL
+𝐿𝑜𝑔(𝐿𝐼𝑄)𝑖𝑡
+𝐿𝑜𝑔(𝐻𝐹𝑇)𝑖𝑡
+𝐿𝐹𝑟𝑎𝑔𝑖𝑡
+𝐿𝑜𝑔(𝐿𝐼𝑄)𝑖𝑡
+𝐿𝑜𝑔(𝐻𝐹𝑇)𝑖𝑡
+𝐿𝐹𝑟𝑎𝑔𝑖𝑡
+𝐿𝑜𝑔(𝐿𝐼𝑄)𝑖𝑡
+𝐿𝑜𝑔(𝐻𝐹𝑇)𝑖𝑡
+𝐿𝐹𝑟𝑎𝑔𝑖𝑡
+𝐿𝑜𝑔(𝐿𝐼𝑄)𝑖𝑡
+𝐿𝑜𝑔(𝐻𝐹𝑇)𝑖𝑡
+𝐿𝐹𝑟𝑎𝑔𝑖𝑡
+I
+II
+III
+IV
+V
+VI
+VII
+VIII
+IX
+X
+XI
+XII
+𝐿𝑜𝑔(𝐻𝐹𝑇)𝑖𝑡
+-0.277***
+-0.379***
+-0.266***
+-0.382***
+(-60.69)
+(-71.68)
+(-51.04)
+(-68.43)
+𝐿𝐹𝑟𝑎𝑔𝑖𝑡
+0.081***
+0.268***
+-0.074***
+0.101***
+-7.31
+-22.35
+(-5.92)
+-8.19
+𝐿𝑜𝑔(𝐿𝐼𝑄)−𝑖𝑡
+0.585***
+0.365***
+0.333***
+0.316***
+-41.71
+-31.72
+-16.35
+-25.97
+𝐿𝑜𝑔(𝑚𝑘𝑡𝑐𝑎𝑝)𝑖𝑡
+-0.189***
+-0.176***
+-0.141***
+-0.119***
+(-35.43)
+(-27.3)
+(-23.25)
+(-16.9)
+𝐿𝑜𝑔(𝑣𝑜𝑙𝑖𝑛𝑡𝑟𝑎)𝑖𝑡
+0.13***
+0.239***
+0.161***
+0.284***
+-35.56
+-73.69
+-35.27
+-79.64
+𝑖𝑛𝑣(𝑝𝑟𝑖𝑐𝑒)𝑖𝑡
+13.963***
+10.738***
+12.239***
+20.848***
+-13.42
+-10.32
+-10.98
+-15.82
+𝐿𝑜𝑔(𝐿𝐼𝑄)𝑖𝑡
+0.355***
+0.535***
+0.563***
+0.689***
+-12.33
+-10.64
+-8.27
+-9.17
+𝐿𝐹𝑟𝑎𝑔𝑖𝑡
+0.094***
+0.325***
+0.097***
+0.36***
+-5.29
+-9.08
+-4.78
+-10.41
+𝐿𝑜𝑔(𝐻𝐹𝑇)−𝑖𝑡
+0.532***
+0.325***
+0.523***
+0.281***
+-64.65
+-22.82
+-48.58
+-14.94
+𝐿𝑜𝑔(𝑚𝑘𝑡𝑐𝑎𝑝)𝑖𝑡
+0.335***
+0.202***
+0.406***
+0.219***
+-28.89
+-12.52
+-17.8
+-12.4
+𝑟𝑡𝑘𝑖𝑡
+-292.35***
+-484.626***
+-409.578***
+-597.873***
+(-13.84)
+(-32.05)
+(-10.88)
+(-25.72)
+𝐿𝑜𝑔(𝑠𝑖𝑧𝑒)𝑖𝑡
+-0.89***
+-0.525***
+-1.009***
+-0.541***
+(-44.52)
+(-26.5)
+(-25.1)
+(-23.59)
+𝐿𝑜𝑔(𝑣𝑜𝑙𝑢𝑚𝑒)𝑖𝑡
+0.577***
+0.661***
+0.585***
+0.666***
+-56.94
+-38.08
+-40.42
+-33.15
+𝐿𝑜𝑔(𝑣𝑜𝑙𝑖𝑛𝑡𝑟𝑎)𝑖𝑡
+-0.01
+0.018
+-0.029***
+-0.022
+(-1.54)
+-1.64
+(-2.81)
+(-1.28)
+𝐿𝑜𝑔(𝐿𝐼𝑄)𝑖𝑡
+0.113***
+0.063***
+0.141***
+0.158***
+-12.3
+-3.78
+-15.77
+-10.75
+𝐿𝑜𝑔(𝐻𝐹𝑇)𝑖𝑡
+0.186***
+0.272***
+0.214***
+0.306***
+-33.78
+-32.31
+-36.38
+-35.43
+𝐿𝐹𝑟𝑎𝑔−𝑖𝑡
+0.661***
+0.373***
+0.653***
+0.372***
+-57.33
+-29.69
+-56.71
+-29.33
+𝐿𝑜𝑔(𝑚𝑘𝑡𝑐𝑎𝑝)𝑖𝑡
+0.219***
+0.194***
+0.23***
+0.216***
+-43.02
+-30.62
+-44.74
+-33.55
+𝐿𝑜𝑔(𝑣𝑜𝑙𝑢𝑚𝑒)𝑖𝑡
+-0.228***
+-0.255***
+-0.249***
+-0.259***
+(-62.03)
+(-60.57)
+(-65.82)
+(-66.41)
+𝐿𝑜𝑔(𝑣𝑜𝑙𝑖𝑛𝑡𝑟𝑎)𝑖𝑡
+-0.016***
+-0.025***
+-0.015***
+-0.051***
+(-4.49)
+(-5.06)
+(-4.37)
+(-10.74)
+observations
+147840
+147840
+147840
+147840
+147840
+147840
+147840
+147840
+147840
+147840
+147840
+147840
+adjrsq
+0.82
+0.77
+0.78
+0.74
+adjrsq
+0.9
+0.82
+0.88
+0.8
+adjrsq
+0.81
+0.76
+0.81
+0.76
+57
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+Table 14: The time-varying effects of HFT and market fragmentation on liquidity: a simultaneous
+equations model estimation
+This table presents the simultaneous equations model estimation of the equations (13)–(15) using GMM (H3SLS) estimation for the sub periods
+(2008-2010), (2011-2013) and (2014-2016) for log normalized time weighted quoted spreads (𝑠𝑝𝑟𝑒𝑎𝑑) and volume weighted effective half-spreads
+(𝑒𝑠𝑝𝑟𝑒𝑎𝑑). Indices 𝑖and 𝑡represent stocks and days respectively, 𝐿𝐼𝑄𝑖𝑡represents one of the two market quality (liquidity) measures (𝑠𝑝𝑟𝑒𝑎𝑑,
+𝑒𝑠𝑝𝑟𝑒𝑎𝑑), 𝐻𝐹𝑇𝑖𝑡represents HFT proxy (ℎ𝑓𝑡) , 𝐿𝐹𝑟𝑎𝑔𝑖𝑡represents market fragmentation proxy (𝐻𝐻𝐼), 𝐿𝐼𝑄𝑖𝑡represents average market
+liquidity level over all stocks in the same size group excluding stock 𝑖, 𝐿𝐹𝑟𝑎𝑔𝑖𝑡represents average market fragmentation level over all stocks in the
+same size group excluding stock 𝑖, 𝐻𝐹𝑇𝑖𝑡represents average HFT intensity over all stocks in the same size group excluding stock 𝑖, 𝐿𝑜𝑔(𝑚𝑘𝑡𝑐𝑎𝑝)
+is the log normalized value of market capitalization, 𝐿𝑜𝑔(𝑣𝑜𝑙𝑡𝑖𝑛𝑡𝑟𝑎) is the log normalized value of intraday mid price range volatility, 𝑖𝑛𝑣𝑝𝑟𝑖𝑐𝑒
+is the inverse of daily average price, 𝐿𝑜𝑔(𝑠𝑖𝑧𝑒) is the log normalized average value of trade size , 𝐿𝑜𝑔(𝑣𝑎𝑙𝑢𝑒) is the log normalized value of
+trading volume , indices (𝑙𝑖𝑞), (ℎ𝑓𝑡), ( 𝑓𝑟𝑔) refer the respective estimates of the equations 𝐿𝐼𝑄𝑖𝑡/(13), 𝐻𝐹𝑇𝑖𝑡/(14) and 𝐿𝐹𝑟𝑎𝑔𝑖𝑡/(15) respectively.
+The regression is based on a balanced panel of 132 stocks and 2240 days (January 2008–December 2016), have both time (monthly time dummy
+for each of the 36 months in each sub period) and stock fixed effects. Coefficient estimates are GMM (H3SLS), t-statistics shown in the parentheses
+below the coefficient . ***, **, * denote significance at 1%, 5%, and 10% levels, respectively.
+𝑒𝑓𝑓𝑒𝑐𝑡𝑖𝑣𝑒
+𝑠𝑝𝑟𝑒𝑎𝑑
+2008-2010
+2011-2013
+2014-2016
+𝐿𝑜𝑔(𝐿𝐼𝑄)𝑖𝑡
+𝐿𝑜𝑔(𝐻𝐹𝑇)𝑖𝑡
+𝐿𝐹𝑟𝑎𝑔𝑖𝑡
+𝐿𝑜𝑔(𝐿𝐼𝑄)𝑖𝑡
+𝐿𝑜𝑔(𝐻𝐹𝑇)𝑖𝑡
+𝐿𝐹𝑟𝑎𝑔𝑖𝑡
+𝐿𝑜𝑔(𝐿𝐼𝑄)𝑖𝑡
+𝐿𝑜𝑔(𝐻𝐹𝑇)𝑖𝑡
+𝐿𝐹𝑟𝑎𝑔𝑖𝑡
+I
+II
+III
+IV
+V
+VI
+VII
+VIII
+IX
+𝐿𝑜𝑔(𝐻𝐹𝑇)𝑖𝑡
+-0.251***
+-0.253***
+-0.221***
+(-47.54)
+(-45.09)
+(-31.81)
+𝐿𝐹𝑟𝑎𝑔𝑖𝑡
+0.239***
+0.095***
+0.01
+-18.62
+-9.94
+-0.95
+𝐿𝑜𝑔(𝐿𝐼𝑄)−𝑖𝑡
+0.391***
+0.477***
+0.486***
+-30.13
+-31.7
+-28.47
+𝐿𝑜𝑔(𝑚𝑘𝑡𝑐𝑎𝑝)𝑖𝑡
+-0.222***
+-0.25***
+-0.231***
+(-25.81)
+(-28.15)
+(-22.63)
+𝐿𝑜𝑔(𝑣𝑜𝑙𝑖𝑛𝑡𝑟𝑎)𝑖𝑡
+0.204***
+0.175***
+0.151***
+-41.98
+-56.27
+-44.7
+𝑖𝑛𝑣(𝑝𝑟𝑖𝑐𝑒)𝑖𝑡
+19.067***
+6.573***
+46.527***
+-16.63
+-9
+-16.81
+𝐿𝑜𝑔(𝐿𝐼𝑄)𝑖𝑡
+0.297***
+0.297***
+0.39***
+-6.36
+-6.46
+-10.47
+𝐿𝐹𝑟𝑎𝑔𝑖𝑡
+0.206***
+0.304***
+0.249***
+-9.85
+-10.57
+-11.34
+𝐿𝑜𝑔(𝐻𝐹𝑇)−𝑖𝑡
+0.514***
+0.587***
+0.457***
+-46.12
+-55.7
+-52.42
+𝐿𝑜𝑔(𝑚𝑘𝑡𝑐𝑎𝑝)𝑖𝑡
+0.237***
+0.175***
+0.18***
+-14.22
+-10.42
+-10.48
+𝑟𝑡𝑘𝑖𝑡
+-221.216***
+-1006.162***
+-875.426***
+(-17.64)
+(-30.09)
+(-24.12)
+𝐿𝑜𝑔(𝑠𝑖𝑧𝑒)𝑖𝑡
+-0.618***
+-0.314***
+-0.517***
+(-33.04)
+(-24.33)
+(-37.47)
+𝐿𝑜𝑔(𝑣𝑜𝑙𝑢𝑚𝑒)𝑖𝑡
+0.527***
+0.452***
+0.552***
+-42.38
+-45.08
+-66.02
+𝐿𝑜𝑔(𝑣𝑜𝑙𝑖𝑛𝑡𝑟𝑎)𝑖𝑡
+0.053***
+0.041***
+0.001
+-5.87
+-5.09
+-0.15
+𝐿𝑜𝑔(𝐿𝐼𝑄)𝑖𝑡
+0.199***
+0.105***
+0.17***
+-15.88
+-6.89
+-13.73
+𝐿𝑜𝑔(𝐻𝐹𝑇)𝑖𝑡
+0.212***
+0.273***
+0.382***
+-29.38
+-35.21
+-40.26
+𝐿𝐹𝑟𝑎𝑔−𝑖𝑡
+0.685***
+0.544***
+0.557***
+-59.75
+-36.63
+-36.51
+𝐿𝑜𝑔(𝑚𝑘𝑡𝑐𝑎𝑝)𝑖𝑡
+0.2***
+0.219***
+0.357***
+-23.71
+-19.94
+-33.92
+𝐿𝑜𝑔(𝑣𝑜𝑙𝑢𝑚𝑒)𝑖𝑡
+-0.185***
+-0.3***
+-0.376***
+(-47.39)
+(-75.46)
+(-74.72)
+𝐿𝑜𝑔(𝑣𝑜𝑙𝑖𝑛𝑡𝑟𝑎)𝑖𝑡
+-0.054***
+0.01**
+-0.011***
+(-12.48)
+-2.53
+(-3.28)
+observations
+97284
+97284
+97284
+99528
+99528
+99528
+98868
+98868
+98868
+adjrsq
+0.85
+0.84
+0.83
+adjrsq
+0.92
+0.93
+0.95
+adjrsq
+0.83
+0.44
+0.46
+58
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+Figure 1: Market Trend 2005–2016
+59
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+(a) Time series of electronic message rate
+(b) Time series of market fragmentation
+(c) Time series of Depth size vs trade size
+Figure 2: Time series of HFT, Market Fragmentation, Market depth (BBO) and Trade Size
+60
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+(a) Time series of spreads
+(b) Time series of effective spreads
+(c) Time series effective spread composition
+Figure 3: Time series of Liquidity Measures
+61
+Electronic copy available at: https://ssrn.com/abstract=3993928
+
+(a) Time series LSE trading volume
+0
+0.1
+0.2
+0.3
+0.4
+0.5
+0.6
+0.7
+0.8
+0.9
+2008
+2009
+2010
+2011
+2012
+2013
+2014
+2015
+2016
+Yearly volume venue market share 
+LSE
+CHIX
+BATS
+Turquoise
+(b) Time series venue market share
+Figure 4: Time series evolution of LSE trading volume
+62
+Electronic copy available at: https://ssrn.com/abstract=3993928

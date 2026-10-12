@@ -1,0 +1,102 @@
+{
+  "doc_id": 116,
+  "titulo": "Equilibrium Fast Trading",
+  "resumen_operativo": "Modelo teórico de equilibrio general donde instituciones financieras deciden invertir en tecnologías de fast trading (HFT). Las tecnologías rápidas tienen doble rol: mejoran la búsqueda de quotes en mercados fragmentados (beneficio) pero generan adverse selection al permitir observar información antes que los slow traders (costo). En equilibrio descentralizado hay sobreinversión porque las instituciones no internalizan la externalidad negativa. El paper analiza políticas: prohibir fast trading es ineficiente; coexistencia de fast/slow markets mejora pero puede causar subinversión; la política óptima es un impuesto Pigoviano sobre la inversión en tecnología rápida igual a la externalidad negativa marginal, con redistribución de lo recaudado.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "high-frequency trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Fast institutions que invierten en tecnología para escanear instantáneamente todos los venues y obtener señales adelantadas sobre el valor del activo. Su presencia genera adverse selection para slow traders, creando una externalidad negativa.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "adverse selection"},
+        {"tipo": "USA", "objeto": "market fragmentation"}
+      ],
+      "cita_textual": "fast trading technologies also accelerate access to value relevant information for an asset, conveyed by recent transaction prices and quote changes"
+    },
+    {
+      "nombre": "adverse selection",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Selección adversa que fast traders imponen al mercado: el net order flow se correlaciona positivamente con la innovación en el cash-flow, forzando a los market makers a cobrar un bid-ask spread positivo. El spread aumenta con el nivel de fast trading α.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "bid-ask spread"},
+        {"tipo": "PARTE_DE", "objeto": "market microstructure"}
+      ],
+      "cita_textual": "an increase in α lowers gains from trade for all market participants. Thus, fast institutions exert a negative externality upon the others, by increasing adverse selection in the marketplace"
+    },
+    {
+      "nombre": "bid-ask spread",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Half-spread S* que los market makers competitivos fijan para cubrir el adverse selection cost. Crece con el nivel de fast trading α y con la volatilidad del fundamental σ. Puede tener múltiples equilibrios; el paper selecciona el mínimo no undercuttable.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "adverse selection"},
+        {"tipo": "MIDE", "objeto": "market liquidity"}
+      ],
+      "cita_textual": "the equilibrium bid-ask spread increases in the level of fast trading, α, and the volatility of the asset fundamental value, σ"
+    },
+    {
+      "nombre": "market fragmentation",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Mercado fragmentado modelado como un continuo de venues en un círculo, donde solo una fracción λ ofrece quotes atractivas en cada período. La fragmentación hace que buscar quotes tome tiempo para slow traders, creando demanda por tecnología rápida.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "high-frequency trading"},
+        {"tipo": "REQUIERE", "objeto": "market making"}
+      ],
+      "cita_textual": "In fragmented markets, investors must search for quotes across markets. This can result in delayed or partial execution, which is costly"
+    },
+    {
+      "nombre": "market making",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Market makers competitivos, risk-neutral, con valoración privada cero, que fijan bid y ask simétricos (-S, +S) y obtienen zero profit en expectativa. Enfrentan adverse selection del flujo informado de fast traders.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "bid-ask spread"},
+        {"tipo": "USA", "objeto": "adverse selection"}
+      ],
+      "cita_textual": "quotes are posted by risk neutral competitive market makers, with zero private valuation for the asset"
+    },
+    {
+      "nombre": "transaction costs",
+      "tipo": "concepto",
+      "definicion_en_contexto": "El bid-ask spread S* actúa como costo de transacción endógeno. Instituciones con valuación en [-S*, S*] se abstienen de operar, generando una pérdida de bienestar porque existen ganancias del intercambio para todo δ ≠ 0.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "bid-ask spread"},
+        {"tipo": "CAUSA", "objeto": "adverse selection"}
+      ],
+      "cita_textual": "institutions with valuations in [−S*, S*] choose not to trade because their expected gain from trade is smaller than their trading cost"
+    },
+    {
+      "nombre": "market liquidity",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Liquidez inversamente relacionada con el spread S*: a mayor fast trading α, mayor spread y menor liquidez. El volumen de trading puede ser no-monotónico en α porque el fast trading aumenta la probabilidad de encontrar quotes pero también sube el spread.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "bid-ask spread"},
+        {"tipo": "SE_OPONE_A", "objeto": "high-frequency trading"}
+      ],
+      "cita_textual": "trading volume can be non monotonic in the level of fast trading"
+    },
+    {
+      "nombre": "Pigovian tax",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Impuesto Pigoviano sobre la inversión en tecnología rápida igual a la externalidad negativa marginal generada por un fast trader adicional. Es la política que maximiza el bienestar utilitarista, dominando tanto el laissez-faire como la prohibición total.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "adverse selection"},
+        {"tipo": "MEJORA_A", "objeto": "market efficiency"}
+      ],
+      "cita_textual": "equating the tax to the negative externality generated by fast trading leads to the level of investment that maximizes utilitarian welfare"
+    },
+    {
+      "nombre": "market efficiency",
+      "tipo": "concepto",
+      "definicion_en_contexto": "No abordado como price discovery sino como optimalidad de Pareto/welfare. El equilibrio de laissez-faire es ineficiente por sobreinversión en fast trading. La política óptima (impuesto Pigoviano + redistribución) logra el nivel socialmente óptimo de inversión.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "high-frequency trading"}
+      ],
+      "cita_textual": "equilibrium investment in the fast trading technology exceeds its utilitarian–welfare maximizing counterpart"
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "Paper puramente teórico sin estimación empírica, pero el modelo de equilibrio con fast/slow traders y adverse selection endógena es directamente relevante para entender la dinámica de HFT en ES futures. Las predicciones sobre la relación entre nivel de fast trading, spread y volumen son testeables empíricamente."
+  }
+}

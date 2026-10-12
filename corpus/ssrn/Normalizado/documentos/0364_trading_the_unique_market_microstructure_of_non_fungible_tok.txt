@@ -1,0 +1,4034 @@
+The Microstructure of NFT Markets:
+Evidence from 410 Million Orderbook Events
+Tim Baumgartner∗
+March 15, 2026
+How do markets create liquidity when every asset is unique?
+Using
+over 410 million orderbook events across six major NFT collections, we
+document a two-tier orderbook in which collection-level bids – offers to
+purchase any token of a collection – rather than token-specific orders,
+supply the dominant source of buy-side liquidity. Median quoted spreads
+of 48–80% far exceed equity benchmarks, yet effective trading costs are
+only 2–5% for liquid collections, as most transactions execute against
+collection-level bids priced near the collection floor. Wide quoted spreads
+thus reflect the two-tier structure, not illiquidity, with implications for
+any market where heterogeneous assets trade under a common category.
+JEL Codes:
+G12, G14, D47.
+Keywords:
+Non-Fungible Tokens, Market Microstructure, Liquidity,
+Bid-Ask Spread, Decentralized Markets.
+∗Ulm University, Institute of Strategic Management and Finance, Helmholtzstr. 22, 89081 Ulm,
+Germany, tim.baumgartner@uni-ulm.de (corresponding author)
+I thank Andre Guettler, Gunter L¨offler, Denis Schweizer, Mingyu Liu, Alexander Wiedenmann,
+Laura Gullicksen, and seminar participants at Ulm University for helpful comments. All errors
+are, of course, my own.
+
+1
+Introduction
+How do you make a market for something that exists only once?
+In equity markets,
+continuous competition among buyers and sellers of identical shares produces bid-ask
+spreads of a few basis points. But when every asset is unique – as with non-fungible
+tokens (NFTs) – there is no identical share, no fungible counterpart, and no obvious
+mechanism for price discovery. The standard microstructure framework – from bid-ask
+spreads to market maker models – takes fungibility as given. How liquidity is created and
+priced when every asset differs remains largely an open empirical question.
+NFT markets have generated tens of billions of dollars in cumulative trading volume,
+with daily volume regularly exceeding $300 million at the 2022 peak – yet fundamental
+questions about their microstructure remain unanswered. How liquid are these markets?
+Who provides liquidity when there is no designated market maker? What determines the
+variation in market quality across collections, time periods, and market structures?
+These questions extend beyond the NFT market. Microstructure theory is built on
+fungibility – yet markets for heterogeneous assets, from real estate to art to intellectual
+property, must create liquidity without it. As traditional finance explores the tokenization of such assets, large-scale empirical evidence on how markets function in the absence
+of fungibility remains scarce; existing evidence on unique-asset markets such as art (Korteweg et al., 2016) relies on sparse auction data. NFT markets provide a unique laboratory: years of continuous trading, hundreds of millions of recorded orderbook events, and
+observable participant identities offer a granularity unavailable in any other market for
+heterogeneous assets. They reveal, at the order level, how markets endogenously create
+fungibility to generate liquidity – and the adverse selection costs this entails.
+We address these questions using transaction-level orderbook data, comprising more
+than 410 million events across six major Ethereum-based NFT collections, supplemented
+by on-chain event data for extended sample coverage and robustness. Unlike prior work
+that relies exclusively on completed transactions recorded on the blockchain, our data
+capture bids, asks, sales, and transfers with pseudonymous trader identities, timestamps,
+and marketplace attribution. We first develop a conceptual framework for the two-tier
+1
+
+orderbook (Section 4) and then organize the empirical analysis around three sections:
+How should liquidity be measured when assets are unique (Section 5)? Does professional
+liquidity provision emerge (Section 6)? What determines the variation in market quality
+(Section 7)?
+Our first set of results establishes the baseline: NFT markets are illiquid by any
+conventional standard, with median quoted spreads of 48–80% (approaching 200% for
+the least liquid collections) and bid-to-trade ratios reaching up to 50 000. These quoted
+spreads, computed from the 1–7% of snapshots with two-sided quotes1, represent upper
+bounds on true trading costs; a floor-benchmark spread that covers nearly all sales yields
+costs of only 2–5% for the most liquid collections, indicating that the wide quoted spreads
+partly reflect the structural properties of the two-tier orderbook rather than round-trip
+transaction costs alone.
+Standard measures miss a key institutional feature: A large
+share of bidding activity takes the form of collection-level floor bids, offers to purchase
+any token in a collection at a stated price. These floor bids constitute the effective best
+bid in the vast majority of orderbook snapshots and reduce measured spreads by more
+than one-third. We call this structure the two-tier orderbook: token-specific orders in the
+upper tier and collection-level floor bids in the lower.
+Our second set of results characterizes liquidity provision: A small number of algorithmic market makers (5 to 38 per collection) supply the bulk of buy-side liquidity, with
+reaction times as low as one second after completed sales. Yet these market makers bear
+substantial costs: Market-adjusted post-purchase returns are negative at all horizons,
+reaching −3% to −7% at ten days, reflecting both adverse selection (a token-level rarity
+test confirms a modest quality differential) and inventory risk from market-wide price declines. The dominant channel appears to be market timing rather than token-level quality
+selection: A bid-type decomposition shows that collection-level bidders are, if anything,
+less exposed to subsequent market movements than token-specific purchasers, consistent
+with conservative bid shading concentrating their purchases on post-decline dates. We
+1A two-sided quote means an active bid and an active ask for the same token at the same point in time.
+Most NFT orderbook snapshots are one-sided because individual tokens rarely attract simultaneous buy
+and sell interest.
+2
+
+also document liquidity commonality2 across collections – when common market makers
+reduce their activity, liquidity deteriorates simultaneously across multiple collections.
+Our third set of results examines the determinants of market quality: Collection identity accounts for the largest share of spread variation in panel regressions, absorbing over
+30 percentage points of explained variation, while token rarity contributes no additional
+explanatory power despite its central role in NFT valuation. An institutional comparison sharpens this result: CryptoPunks and WrappedCryptoPunks represent the same
+10 000 underlying assets under two market structures. Examining these data reveals that
+the native bilateral market achieves tighter quoted spreads (54% vs. 111%) despite generating far fewer bids, though transaction-based price impact is substantially lower in
+the standardized market – suggesting that the two-tier orderbook structure inflates measured quoted spreads without necessarily raising execution costs. A subperiod analysis
+documents secular improvement in bid infrastructure alongside declining trading activity,
+and wash trading detection reveals that suspicious activity is concentrated on platforms
+offering volume-based incentive programs.
+When viewed as a whole, these findings document how markets function when the
+core microstructure assumption of fungibility is absent – dynamics that are, by definition,
+unobservable in equity data. They contribute to three strands of the literature. First,
+we introduce the two-tier orderbook as a conceptual and analytical framework for NFT
+liquidity, providing the first comprehensive empirical documentation of NFT market microstructure using bid-side data. The academic NFT literature has grown rapidly since
+2021 but remains focused on returns (Kong and Lin, 2021; Dowling, 2022; Mazur, 2021),
+bubble dynamics (Barbon and Ranaldo, 2023), and trading networks (Nadini et al., 2021);
+surveys confirm this emphasis (Kr¨aussl and Tugnetti, 2024). Work on NFT microstructure is limited: Mukhopadhyay and Ghosh (2021) discuss market structure conceptually,
+and Wilkoff and Yildiz (2023) examine illiquidity using the Amihud (2002) measure but
+rely on transaction data alone. No prior study analyzes bid-side data at scale.
+The bid-ask spread, analyzed as the cost of immediacy by Demsetz (1968) and subsequently decomposed into adverse selection (Copeland and Galai, 1983; Glosten and
+2i.e., the co-movement of liquidity across assets
+3
+
+Milgrom, 1985; Kyle, 1985), inventory (Huang and Stoll, 1997), and order-processing
+components (Huang and Stoll, 1997; Stoll, 2000), is the canonical measure of trading
+costs. In NFT markets, however, token-level spreads are computable for fewer than 7%
+of orderbook snapshots because most tokens have one-sided quotes. The coexistence of
+token-specific orders and collection-level floor bids has no counterpart in traditional securities markets. We decompose token values into a common collection component and
+an idiosyncratic premium, derive an adverse selection mechanism in which collection-level
+bidders systematically acquire below-average tokens, and find patterns consistent with the
+resulting predictions in the data. Lommers et al. (2022) model the option-like character of
+NFT floor prices theoretically, but ours is the first study to formalize the adverse selection
+inherent in collection-level bidding and to document how floor bids interact with tokenspecific orders, reshape measured spreads, and contribute to price discovery. We apply the
+full microstructure toolkit – spreads, depth, price impact, market maker identification,
+adverse selection, commonality, and panel regressions – to a dataset of over 410 million
+events, in the spirit of Makarov and Schoar (2020) for cryptocurrency markets. More
+broadly, the two-tier structure is not specific to NFTs: It arises wherever buyers can bid
+on categories of heterogeneous assets rather than individual items. NFT markets, with
+hundreds of millions of observable orderbook events, provide the first empirical setting in
+which this structure can be documented and analyzed at the tick level.
+Second, we identify and characterize NFT market makers and document a form of
+adverse selection specific to heterogeneous-asset markets: a which-asset problem in which
+bidders face uncertainty not about fundamental value but about which asset they will
+receive.
+This adverse selection channel – uncertainty about which asset is delivered
+rather than about its value – cannot arise in fungible-asset markets and has therefore
+remained unobserved in the empirical literature. The algorithmic, cross-collection bidding
+we observe shares structural similarities with high-frequency market making in equities
+(Menkveld, 2013; Hagstr¨omer and Nord´en, 2013), where heterogeneous intermediaries operate across multiple venues and securities. We test for liquidity commonality following
+Chordia et al. (2000) and Hasbrouck and Seppi (2001), finding that when common market makers reduce their activity, liquidity deteriorates simultaneously across collections –
+4
+
+consistent with the funding liquidity channel of Brunnermeier and Pedersen (2009), the
+illiquidity contagion mechanism of Cespa and Foucault (2014), and the model of financially constrained intermediaries operating across multiple assets in Gromb and Vayanos
+(2002).
+Third, the CryptoPunks/WrappedCryptoPunks comparison – identical assets under
+two co-existing market structures – provides evidence on how market design shapes liquidity for unique assets. The native CryptoPunks marketplace, where buyers and sellers
+post token-specific quotes bilaterally, resembles the decentralized search markets modeled
+by Duffie et al. (2005): Traders must find counterparties, and matching frictions generate
+endogenous bid-ask spreads. The standardized ERC-721 infrastructure, by contrast, centralizes liquidity through collection-level floor bids – effectively replacing bilateral search
+with a pooled limit orderbook. Our comparison thus connects to the broader literature on
+trading frictions in markets for heterogeneous durable goods (Gavazza, 2011). How market
+structure affects trading costs is a central question in microstructure research (Madhavan, 2000; Biais et al., 2005); O’Hara (2003) argues that liquidity is a property of market
+design, Amihud and Mendelson (1986) show that trading costs affect asset prices, and
+Hendershott et al. (2011) use NYSE automation as a natural experiment to demonstrate
+that algorithmic trading narrows spreads. In decentralized finance, Lehar and Parlour
+(2025) show that liquidity providers on automated market makers (AMMs) face adverse
+selection costs structurally similar to those of traditional intermediaries, and Hasbrouck
+et al. (2024) demonstrate that fee design shapes the composition of informed and uninformed trading. Importantly, collection-level floor bids share a functional similarity with
+AMM liquidity pools: Both aggregate capital across heterogeneous trading opportunities,
+and both expose providers to adverse selection from better-informed counterparties. Our
+setting offers a descriptive comparison of the same assets under two market structures operating simultaneously on the same blockchain; the observation that the native bilateral
+mechanism achieves tighter quoted spreads than the standardized two-tier infrastructure
+– though transaction-based price impact tells the opposite story – suggests that market
+design choices – not merely tokenization – drive trading costs. And this consideration is
+directly relevant to the broader agenda of tokenizing real-world assets (see Section 7.2).
+5
+
+Furthermore, on market integrity, we build on heuristic wash trading detection (Serneels,
+2023; Oh, 2024) and show that suspicious activity is marketplace-driven, matching the
+wash trading documented by Cong et al. (2023) and the price manipulation through
+stablecoin issuance documented by Griffin and Shams (2020) in cryptocurrency markets.
+2
+Institutional Background
+NFTs are unique digital assets recorded on a blockchain – a shared, tamper-resistant ledger
+maintained by a decentralized network of computers. Unlike cryptocurrencies such as
+Bitcoin or Ether, where every unit is interchangeable, each NFT is distinct and represents
+ownership of a specific digital item, typically an image but also music, video, or virtual
+land. This section provides the institutional context needed to interpret our empirical
+analysis; readers familiar with blockchain-based markets may proceed to Section 3.
+Ethereum and NFT standards.
+Ethereum is the dominant blockchain for NFT issuance and trading. In 2018, the Ethereum community adopted ERC-721, a standard interface for creating, transferring, and trading non-fungible tokens. The standard ensures
+interoperability: Any ERC-721 token can be listed, bid on, and traded on any compatible
+marketplace (OpenSea, Blur, LooksRare, and others) without marketplace-specific integration. Because all tokens in a collection share the same smart contract, marketplaces
+can offer buyers the option to place a single bid for any token in a collection, rather than
+requiring bids on individual tokens – the foundation of the two-tier orderbook structure
+we document.
+NFT marketplaces.
+Trading occurs on specialized platforms that maintain off-chain
+orderbooks – databases of bids and asks hosted on the marketplace’s servers – while
+settling completed transactions on the Ethereum blockchain. This avoids a blockchain
+transaction for every order placed or canceled while preserving on-chain settlement for
+actual trades.
+Sample collections.
+Our sample comprises six collections – five distinct projects plus
+WrappedCryptoPunks, a standardized wrapper for CryptoPunks discussed below – that
+span the major categories of the NFT market. Four are “profile-picture” (PFP) collections – series of algorithmically generated avatar images whose owners typically use them
+6
+
+as social-media profile pictures. Bored Ape Yacht Club (BAYC, 10 000 tokens, launched
+April 2021) and Mutant Ape Yacht Club (MAYC, 20 000 tokens, August 2021) are issued by Yuga Labs and together represent the most actively traded PFP brand. Azuki
+(10 000 tokens, January 2022) is an independent anime-inspired PFP project. CryptoPunks (10 000 tokens, June 2017) is the earliest major PFP collection and predates the
+ERC-721 standard, as discussed below. Otherside (100 000 tokens, April 2022), also by
+Yuga Labs, differs: Its tokens represent virtual land parcels in a metaverse environment
+rather than profile pictures, resulting in a substantially larger supply and lower median
+price. This category variation – four PFP collections of 10 000–20 000 tokens alongside one
+virtual-land collection of 100 000 tokens – allows us to examine whether microstructure
+patterns are specific to PFP markets or generalize across NFT asset types.
+CryptoPunks: a pre-standard NFT.
+CryptoPunks is a collection of 10 000 algorithmically generated pixel-art characters that was launched in June 2017, before the
+adoption of the ERC-721 standard. Its smart contract implements a proprietary marketplace with token-specific bids and asks – a bilateral structure in which each order
+references a specific token, and buyers and sellers must find counterparties individually.
+Because this proprietary contract does not conform to ERC-721, CryptoPunks cannot be
+traded on standard NFT marketplaces. The WrappedCryptoPunks contract addresses
+this limitation: Owners deposit their CryptoPunk into a wrapper contract that issues an
+ERC-721 token in return, enabling trading on any compatible marketplace. The process
+is permissionless and reversible. The co-existence of these two market structures – native
+bilateral trading and standardized two-tier trading – for the same 10 000 underlying assets
+provides a natural experiment for examining how market design affects liquidity, which
+we exploit in Section 7.2.
+3
+Data
+3.1
+Data Source and Sample
+We obtain transaction-level orderbook data from the Reservoir API (data through May
+2024), which aggregates order and trade activity across all major Ethereum-based NFT
+marketplaces (see Section 2). The data capture four event types: bids (buy orders), asks
+7
+
+(sell listings), sales (completed transactions), and transfers (ownership changes). Each
+record includes a timestamp, a token identifier (the unique ID of the individual NFT),
+a price in both ETH (Ethereum’s native cryptocurrency) and USD, the pseudonymous
+blockchain addresses of buyer and seller, and the originating marketplace. Prices are reported as recorded by the executing marketplace and are not adjusted for marketplace
+fees (typically 0.5–2.5% of the transaction price) or creator royalties (0–10%, with enforcement varying across marketplaces and time periods). Because bids and asks on the same
+marketplace are subject to the same fee conventions, within-marketplace spread measures
+are unaffected; cross-marketplace comparisons may be subject to modest fee differentials.
+We focus on five prominent NFT collections: Bored Ape Yacht Club (BAYC), Mutant
+Ape Yacht Club (MAYC), Otherside, Azuki, and CryptoPunks (plus WrappedCryptoPunks, as described in Section 2). All five distinct collections rank among the top ten
+Ethereum-based NFT projects by cumulative trading volume, with CryptoPunks ($2.9 billion) and BAYC ($2.4 billion) at the top of the “profile-picture” (PFP) category – NFT
+series whose tokens are stylized avatar images, the dominant segment by trading volume.3
+The selection maximizes variation along three dimensions: First, median sale prices span
+two orders of magnitude, from $1187 (Otherside) to $173 536 (WrappedCryptoPunks).
+Second, the sample includes three Yuga Labs ecosystem collections (BAYC, MAYC, Otherside) alongside two independent projects (Azuki, CryptoPunks/WrappedCryptoPunks),
+providing variation in participant composition and governance. Third, collection sizes
+range from 10 000 tokens (BAYC, CryptoPunks, Azuki) to 100 000 (Otherside), allowing us to examine how supply affects market microstructure. WrappedCryptoPunks is
+included to enable a comparison of the same assets under two market structures (Section 7.2).
+Because CryptoPunks predates the ERC-721 standard and operates through a proprietary marketplace (Section 2), the Reservoir API captures only 79 bid events, compared
+to 23 350 sales over 2 506 days.4
+We therefore classify CryptoPunks as sale-only and
+3All-time volume figures as of December 2024, based on CryptoSlam (https://www.cryptoslam.io).
+WrappedCryptoPunks is excluded from this count as it represents the same underlying assets as CryptoPunks.
+4The asymmetry arises because sales are settled on-chain and thus visible to any blockchain indexer,
+whereas CryptoPunks bids are managed through a non-standard contract mechanism that most aggregators – including Reservoir – do not fully index.
+8
+
+exclude it from all bid-dependent analyses. To enable a direct microstructure comparison, we supplement the Reservoir data with on-chain event data from the CryptoPunks
+smart contract, obtained via Dune Analytics.5 The native marketplace recorded 66 662
+bids, 117 576 listings, and 28 475 sales from June 2017 through February 2026, implying
+an active two-sided market. For the market design comparison in Section 7.2, we truncate the native data to the Reservoir sample end date (May 2024) to ensure temporal
+comparability; full-sample results are reported as a robustness check in the Appendix
+(Table A9).
+The resulting dataset totals 238 GB, yielding more than 410 million orderbook events
+across all six collections – to our knowledge, the largest tick-level NFT orderbook dataset
+used in academic research. Individual collection samples span up to seven years (CryptoPunks since June 2017), with all data extending through May 2024. Over 98% of all
+events are bids, a consequence of the extreme bid-to-trade ratios.
+Because the API returns data by volume rather than calendar time, collections with
+the most active bidding markets yield particularly dense but temporally shorter orderbook samples (Figure A1); we account for these differences throughout our cross-collection
+comparisons. CryptoPunks and BAYC span multiple years and market regimes; MAYC,
+Otherside, and Azuki enter in late 2023 with especially granular orderbook coverage. The
+common overlap window (November 2023 through May 2024, approximately 170 days)
+falls within the Recovery regime; we use it for the commonality analysis (Section 6.4),
+where temporal alignment is essential, but report full per-collection samples in the other
+sections to preserve statistical power. We complement the orderbook data with on-chain
+sale records from Dune Analytics, which cover each collection’s full trading history (e.g.,
+BAYC since April 2021; 602 085 trades total) and are used to replicate sale-based metrics (Roll spread, Amihud ILLIQ, wash trading) as robustness checks in the Appendix
+(Tables A2, A10, and A12). Daily ETH/USD closing prices, obtained from the Binance
+public API, are used for market adjustment in the adverse selection analysis (Section 6.3).
+5Dune Analytics (https://dune.com) provides SQL access to decoded Ethereum smart contract events.
+We extract all PunkBidEntered, PunkBidWithdrawn,
+PunkOffered,
+PunkNoLongerForSale,
+and
+PunkBought events from the CryptoPunks contract.
+9
+
+3.2
+Sample Construction
+We clean the raw API output by removing duplicate events, identified through their
+unique combination of order identifier, event type, and timestamp. We further exclude
+tokens and collections flagged as spam by the Reservoir API and normalize all records to
+a common schema.
+We then reconstruct token-level orderbooks by processing events sequentially for each
+token within a collection. At each point in time, we track the best bid (highest active buy
+order) and best ask (lowest active sell listing), yielding a time series of orderbook snapshots. Because the Reservoir API does not report order expiration or nonce invalidation
+events, we apply a heuristic staleness filter that removes orders older than seven days from
+the active book. A sensitivity analysis varying the cutoff (7, 14, 30 days, and no filter)
+shows that the seven-day filter reduces the incidence of negative spreads – mechanically
+arising from stale bids exceeding the current ask – from 4.7% to 1.4% for BAYC, while results for other collections are largely insensitive to the choice of cutoff. Between 28% and
+51% of all bid events carry no token identifier across four collections (and nearly 100% for
+WrappedCryptoPunks), indicating collection-level offers that apply to any token rather
+than a specific one.6 Because the API does not report an order.criteria field, we cannot distinguish trait-filtered criteria orders from true collection-wide bids; our floor bid
+measure therefore represents an upper bound on unconditional collection-wide liquidity
+(see footnote 6). These collection-level bids are excluded from the token-level orderbook
+but form the lower tier of what we call the two-tier orderbook, formalized in Section 4.
+We refer to the highest such collection-level buy order as the floor bid – the best available
+collection-level buy price, representing the pooled buy-side demand that sellers can access
+without attracting a token-specific bid. (This is distinct from the conventional NFT floor
+price, which denotes the lowest active ask, i.e., the cheapest token available for purchase.)
+6Some bids without a token identifier may be criteria orders – offers restricted to tokens with specific
+traits (e.g., a particular background color) rather than any token in the collection. The Reservoir API
+activity export does not include an order.criteria field, so we cannot distinguish trait-filtered orders
+from true collection-wide bids. If a share of these bids is trait-restricted rather than unconditional, our
+floor bid measure may overstate true collection-wide liquidity. However, the core finding – that the floor
+bid constitutes the effective best bid in the vast majority of snapshots – is conservative in this respect:
+Trait-restricted bids apply to subsets of tokens, so treating them as collection-wide bids, if anything,
+overstates competition for less common tokens and understates it for common ones, without affecting
+the aggregate dominance of the lower tier.
+10
+
+The resulting data are dominated by one-sided quotes: Between 93% and 99% of
+token-level snapshots contain either a bid or an ask, but not both. Two-sided quotes
+(snapshots with both) are rare, motivating our use of multiple liquidity measures, including transaction-based estimators that do not require simultaneous quotes (Section 5).
+We apply winsorization (capping extreme observations at the 5th and 95th percentiles,
+because extreme values may be economically implausible, meaningless, or the result of
+data quality issues) to all mean spread and liquidity estimates reported in the paper.
+Specifically, winsorization is applied to quoted spreads, relative spreads, effective spreads,
+and all derived mean liquidity measures (bid depth, price impact); medians are reported
+alongside and are unaffected by construction. The stronger bounds (compared to, e.g.,
+1st/99th) address NFT-specific data quality issues: placeholder listings at prices of $10
+billion or more generate raw quoted spreads that exceed plausible values by orders of
+magnitude.7 Effective spreads – twice the distance between the transaction price and the
+prevailing midpoint – are computed by matching each sale to the most recent two-sided
+snapshot; match rates range from 0.3% (WrappedCryptoPunks) to 15.9% (MAYC). We
+discuss the implications of this selection throughout the paper.8
+3.3
+Descriptive Overview
+Five collections maintain active bid markets, of which Table 1 provides an overview.
+Market activity differs substantially across collections (Panel A): MAYC generates the
+highest daily trading frequency (137.9 sales per day), while WrappedCryptoPunks averages fewer than five sales per day over 3.6 years. The bid-to-trade ratio – the number of
+bids per completed sale – varies from 167 (WrappedCryptoPunks) to over 50 000 (Otherside), exceeding typical ratios of 20–50 in equity markets. Otherside alone accounts for
+7For example, the raw mean quoted spread for BAYC exceeds $22 trillion due to placeholder listings;
+the winsorized mean is $306 000. The choice of bounds is immaterial for relative spreads: Switching
+to 1st/99th or 2.5th/97.5th percentiles changes mean relative spreads by at most 0.8 percentage points
+across all collections (Table A1). Medians are unaffected by construction. Absolute (USD) spreads are
+more sensitive, which is why our analyses focus on relative measures and medians.
+8Because we test multiple hypotheses across collections and liquidity measures, individual significance
+levels should be interpreted with care. Formal multiplicity adjustments such as Benjamini-Hochberg
+are uncommon in empirical microstructure research and are not applied here; instead, we report exact
+t-statistics and emphasize effect magnitudes and economic patterns over individual p-values. Where we
+conduct families of related tests (e.g., Granger causality across collection-direction pairs), we note which
+results survive Bonferroni correction.
+11
+
+272 million bids but only 5 396 sales: For every completed transaction, fifty thousand bids
+went unfilled.
+Price levels span two orders of magnitude (Panel B): Median sale prices range from
+$1 187 (Otherside) to $173 536 (WrappedCryptoPunks). Distributions are right-skewed
+for most collections; for BAYC, the mean ($76 952) exceeds the median ($64 283), and
+for CryptoPunks the standard deviation exceeds the mean. Median relative spreads –
+computed from the small subset of snapshots with two-sided quotes – run from 48%
+(BAYC) and 47.6% (MAYC) to nearly 200% for WrappedCryptoPunks, far wider than
+those in equity or cryptocurrency markets. As Section 5 shows, floor-benchmark spreads
+covering nearly all sales are substantially lower; the wide quoted spreads partly reflect the
+structural properties of collection-level bidding.
+Bidder concentration is extreme (Panel C): The top five bidders account for 17% (Otherside) to 98% of all bid activity (WrappedCryptoPunks), and the Herfindahl-Hirschman
+Index (HHI) reaches levels associated with highly concentrated markets. This motivates
+the market maker analysis in Section 6.
+4
+A Framework for the Two-Tier Orderbook
+This section develops a framework for the two-tier orderbook – a market structure that
+arises when buyers can place bids applicable to any asset within a category rather than
+targeting individual items. NFT marketplaces support two types of buy orders: tokenspecific bids targeting individual tokens and collection-level bids applicable to any token
+in a collection (see Section 2). This structure creates endogenous fungibility: collectionlevel bids treat heterogeneous tokens as interchangeable at the collection floor, pooling
+buy-side liquidity but generating an adverse selection problem that has no direct analogue
+in standard microstructure settings. We formalize this environment and derive testable
+predictions that guide the empirical analysis in Sections 5 to 7.
+Setup.
+Consider a collection of N tokens indexed i = 1, . . . , N. Each token has
+fundamental value
+vi = vC + εi,
+(1)
+12
+
+where vC > 0 is the common value – the value of collection membership shared by all
+tokens – and εi ≥0 is an idiosyncratic premium reflecting individual token attributes
+such as rare visual traits or notable provenance. The non-negativity assumption reflects
+the institutional structure: In principle, any token can be sold to the collection-level bid
+at price pC, establishing vC as an approximate lower bound on traded values; tokens
+worth less than the collection floor would not participate in the market. In practice,
+the constraint is an approximation: For some tokens, attributes such as widely disliked
+visual traits may depress value below vC, yielding εi < 0 in economic terms. Relaxing
+non-negativity strengthens the adverse selection prediction, as negative-premium tokens
+are the first to be tendered into collection-level bids. The data are consistent with this
+possibility: in MAYC and Otherside, the median collection-level bid exceeds the median sale price (Table 3, Panel A), and crossed quotes – where the floor bid exceeds the
+token-specific ask – affect 55–93% of two-sided snapshots (Panel B), suggesting that a
+substantial share of tokens carry negative idiosyncratic premia. The premiums are drawn
+independently from a distribution F with mean µε and variance σ2
+ε; the latter measures
+within-collection heterogeneity.
+Two types of buy orders co-exist: Token-specific bidders observe the full value vi of
+a particular token and submit bids for that token alone. Collection-level bidders observe
+only vC and submit a single bid pC applicable to any token in the collection; pC corresponds
+to the empirically observed collection-level floor bid.
+The seller of token i faces both
+types of offers and accepts the highest available bid. Collection-level bidding is rational
+when evaluating individual tokens is costly: With N = 10,000 tokens, estimating each εi
+requires per-token due diligence on visual traits, provenance, and recent comparable sales.
+A bidder who forgoes this screening saves evaluation costs at the expense of the adverse
+selection discount derived below.
+Bidder entry.
+Let c > 0 denote the per-token evaluation cost. A bidder who pays c
+learns εi for a particular token and can bid its full value vi, earning zero expected trading profit in a competitive market. A collection-level bidder avoids this cost but earns
+expected profit
+πC = vC + E[εi | seller accepts pC] −pC,
+(2)
+13
+
+which is negative whenever pC does not fully reflect the adverse selection discount –
+that is, whenever the bidder pays more than the adversely selected token is worth. In
+equilibrium, the bidder chooses collection-level bidding when the saved evaluation cost
+exceeds the expected adverse selection loss: c > µε −E[εi | accept]. The adverse selection
+cost µε −E[εi | accept] is increasing in σ2
+ε – greater within-collection heterogeneity widens
+the gap between the average token and the adversely selected token. The entry condition
+thus predicts that collections with high heterogeneity (e.g., those with rare one-of-a-kind
+attributes) should attract proportionally more token-specific bidding, while homogeneous
+collections should be dominated by collection-level bids. Our data confirm that the most
+active market makers – those placing thousands of bids per day – bid almost exclusively
+at the collection level (see Section 6.3), consistent with this trade-off.
+Adverse selection.
+The collection-level bidder faces a selection problem similar to
+the lemons market (Akerlof, 1970): A seller accepts the collection bid pC only when it
+exceeds all competing token-specific bids for that seller’s token. Tokens with high εi are
+more likely to attract token-specific bids above pC, so the tokens actually delivered to
+collection-level bidders are drawn disproportionately from the lower tail of the εi distribution:
+E[εi | seller accepts pC] < µε.
+(3)
+Unlike the canonical settings of Glosten and Milgrom (1985) and Easley and O’Hara
+(1987), where adverse selection stems from uncertainty about a single asset’s payoff, the
+information asymmetry here concerns which asset the bidder will receive. Informed sellers,
+not informed buyers, drive the selection problem. This yields three predictions which we
+test in Sections 5.2 and 6.3:
+Prediction 1 (Adverse selection costs). Equation (3) implies that tokens sold into
+collection-level bids should be of below-average quality – less rare items that fail to attract
+token-specific bids above pC. This cross-sectional selection, together with the markettiming exposure inherent in standing uniform-price offers, should produce negative postpurchase returns on average. Rational bidders anticipate these costs and shade their bids
+below E[vi]; the discount should increase with within-collection heterogeneity σ2
+ε, since
+greater dispersion in εi amplifies the lemons problem.
+14
+
+Prediction 2 (Spread reduction). Because collection-level bids pool demand across
+all tokens, they create a common bid floor that narrows spreads relative to the fragmented
+token-specific orderbook. The effect should be largest where token-specific bidding is thin.
+Prediction 3 (Attenuation through token-specific bidding). Where token-specific
+bids are prevalent, sellers of high-εi tokens can bypass the collection bid, weakening the
+lemons mechanism. Adverse selection costs should therefore be lower in collections with
+active token-level competition.
+Limitations.
+The framework is static – while the entry condition endogenizes the
+choice between collection-level and token-specific bidding, it abstracts from strategic bidupdating, dynamic learning, and competition among bidders of the same type. Its purpose
+is to isolate the adverse selection mechanism – uncertainty about which token will be
+delivered – and to discipline the empirical analysis that follows.
+5
+Can You Measure Liquidity When Every Asset Is Unique?
+5.1
+Liquidity Measures for NFT Markets
+How do standard microstructure measures perform when applied to NFT markets? Table 2 reports the results for all six collections. We compute quoted spreads and relative
+spreads from token-level orderbook snapshots where both a bid and an ask are present.9
+These two-sided snapshots are rare: They account for only 1–7% (depending on the collection) of all orderbook observations, reflecting the predominance of one-sided quotes
+explained in Section 3.2. In addition, effective spreads match each sale to the most recent
+two-sided snapshot, measuring the spread actually paid by the transacting parties; match
+rates range from 0.3% (WrappedCryptoPunks) to 15.9% (MAYC).
+Median relative spreads are 48% (BAYC), 47.6% (MAYC), and approximately 200%
+(WrappedCryptoPunks); see Table 2 for all collections. In dollar terms, the median quoted
+spread spans $4 211 (Otherside) to $144 160 (WrappedCryptoPunks). For comparison,
+median relative spreads in U.S. equity markets are 0.05–0.25% (SEC Division of Economic
+and Risk Analysis, 2014) and Bitcoin spot market spreads are 0.02–0.10% (Makarov and
+9The quoted spread is the dollar difference between the lowest ask and the highest bid at a given point
+in time; the relative spread expresses this as a percentage of the midpoint price.
+15
+
+Schoar, 2020), placing NFT spreads roughly 200 to 4 000 times as wide.
+Figure A2
+confirms the wide cross-collection dispersion.
+Two transaction-based estimators supplement the orderbook measures and do not
+require simultaneous quotes. The Roll (1984) estimator infers the implicit spread from
+the negative autocovariance of consecutive price changes (the “bid-ask bounce”).10
+It
+yields $45 358 (BAYC), $9 707 (WrappedCryptoPunks), $688 (MAYC), and $953 (Azuki),
+but is undefined for CryptoPunks and Otherside, where positive autocovariance indicates
+information- or momentum-driven price movements rather than mechanical bouncing.11
+In addition, the Amihud (2002) illiquidity ratio measures price impact as the average
+ratio of absolute daily returns to daily trading volume; higher values indicate that a
+given volume of trading moves prices more.
+CryptoPunks show the highest Amihud
+ILLIQ (68.57 × 10−6), consistent with its thin trading and high price levels, while BAYC
+and MAYC show the lowest price impact (0.02 × 10−6).
+Moreover, Table A2 in the
+Appendix confirms that these estimates are robust to the sample window: Using on-chain
+Dune Analytics data covering each collection’s full trading history (27 160–232 169 sales
+per collection), the Roll spread for BAYC is $66 842 and Amihud ILLIQ for MAYC is
+0.10 × 10−6, broadly consistent with the orderbook data estimates despite substantially
+larger sample sizes.
+Why are NFT spreads so extreme? Three forces come together: the absence of competition among identical assets, infrequent trading that impedes continuous price discovery,
+and information asymmetry about individual token quality that discourages aggressive
+bidding. However, these headline figures require careful interpretation: Quoted and effective spreads are computed from the 1–7% of snapshots that feature two-sided quotes, a
+small and potentially non-representative subset. Table A3 in the Appendix characterizes
+this selection. Only 4–61% of unique tokens ever appear in a two-sided snapshot, and for
+four of five collections, tokens with two-sided quotes exhibit modestly higher median bid
+10Specifically, the Roll spread is computed as 2
+p
+−Cov(∆pt, ∆pt−1), where ∆pt denotes consecutive price
+changes. The estimator is undefined when the autocovariance is positive.
+11The economic mechanisms differ: CryptoPunks’ seven-year sample spans sustained secular trends (particularly the 2020–2021 bull run), producing persistent directional price changes. Otherside, with only
+185 trading days and 29 daily sales, is dominated by individual large trades whose price impact carries
+over to the next transaction. Both generate the positive serial correlation that invalidates the Roll
+estimator’s assumption of a bid-ask bounce.
+16
+
+prices (approximately 6–10% above the bid-only subset), indicating that two-sided quotes
+arise disproportionately for more actively listed tokens. Because the two-sided rate varies
+substantially across collections (0.9% for Otherside versus 6.7% for BAYC; Table A3),
+cross-collection spread comparisons partly reflect differences in which tokens and states
+generate observable quotes, not only differences in true trading costs.
+Therefore, we add an alternative approach which bypasses the two-sided-quote requirement entirely: Table A4 benchmarks each sale against the daily median collection-level
+bid in ETH, yielding a coverage rate of 48–100% of all sales – an order of magnitude
+higher than the two-sided snapshot rate. The resulting floor-benchmark spread – the median absolute percentage difference between the sale price and the daily median floor bid
+– is 2.4–4.8% for BAYC, MAYC, and Azuki, roughly one-tenth of the 48–67% quoted relative spreads. The gap between these two measures is economically informative: Quoted
+spreads capture the structural distance between token-specific ask prices and the (often
+absent) token-specific bid, while execution-based costs measure what sellers actually receive relative to the collection-level floor bid that constitutes the effective market price
+for most transactions. The wide quoted spreads are thus partly a structural artifact of
+the two-tier architecture – a measure of the premium that token-specific asks command
+over the fungible collection floor – rather than a direct measure of round-trip transaction
+costs. Hence, we treat quoted spreads as an upper bound on trading costs throughout
+and report execution-based measures as the primary indicator of actual transaction costs.
+Potential measurement concerns can be mitigated as follows: The transaction-based
+estimators (Roll, Amihud) do not require two-sided quotes. The two-tier orderbook analysis in Section 5.2 incorporates collection-level floor bids, which provide bid coverage for
+virtually all snapshots with an active ask. Furthermore, the regression in Section 7.1
+explicitly controls for the share of two-sided quotes, and results remain stable. A further
+caveat is that the Roll estimator assumes a classical bid-ask bounce that may not characterize NFT trading, and all token-level measures ignore the collection-level bids that
+dominate buy-side activity (see Table 1).
+17
+
+5.2
+The Two-Tier Orderbook
+What does the two-tier structure formalized in Section 4 look like in practice? Table 3
+characterizes the empirical properties. Panel A reports that collection-level bids account
+for 28% (Otherside) to nearly 100% (WrappedCryptoPunks) of all bid events. The median
+collection-level bid is typically below the median sale price (the bid/sale ratio is 0.54 for
+WrappedCryptoPunks, 0.71 for BAYC, and 0.90 for Azuki), in line with the bid shading
+anticipated by Prediction 1: Rational bidders discount their offers to compensate for
+the lemons problem. For MAYC (1.05) and Otherside (1.80), collection bids exceed the
+median sale price. In these large collections (19,558 and 100,000 tokens), most traded
+tokens are common items whose sale prices fall well below the collection floor, pulling the
+median sale price down; the collection bid can therefore exceed the median sale while still
+lying below E[vi]. For Otherside, criteria-orders (see footnote 6) likely contribute to the
+elevated ratio. For BAYC, Azuki, and WrappedCryptoPunks, Section 6.3 confirms that
+collection-level bidders nonetheless acquire below-average tokens.
+Panel B shows that incorporating collection-level bids into the spread calculation reduces quoted spreads by 35–56% relative to token-specific orders alone (62% for Otherside,
+though based on only 6.6% non-crossed snapshots), consistent with Prediction 2. The floor
+bid is the best available bid in 85–100% of snapshots, confirming that collection-level bids
+are the marginal source of buy-side liquidity. This spread reduction is defined only for
+non-crossed snapshots – a minority of two-sided observations, given that in 55–93% of
+snapshots across four of the five collections (W.CryptoPunks: 4.7%) the floor bid exceeds the token-specific ask, producing crossed quotes: The highest bid lies above the
+lowest ask, implying a negative spread. This is technically only possible because there
+is no automated matching engine (such as a stock exchange); the parties need to act
+explicitly.12
+12The floor bid applies to any token in the collection, while the ask is specific to a particular token. A
+bidder willing to pay $50 000 for any BAYC token may not value the specific token listed at $40 000 above
+that price; additionally, a share of collection-level bids are trait-filtered criteria orders (see footnote 6)
+that do not apply to every listed token. Table A5 in the Appendix validates that these are not data
+artifacts: median crossing episodes persist for 161 to 1 281 hours across the five collections, with 77–98%
+lasting longer than 24 hours. Crossed-quote rates are broadly similar across the major marketplaces
+within each collection (e.g., BAYC: 60% on OpenSea, 78% on Blur; Otherside: 95% on OpenSea, 89%
+on Blur), ruling out cross-venue aggregation latency as the primary explanation. Crossings resolve
+predominantly through new ask postings or floor bid decreases, rather than through sales.
+18
+
+Crossed quotes reflect a tension inherent in NFT markets: The fungible component
+of value (collection membership) supports liquid, competitive bidding, while the nonfungible component (individual token characteristics) fragments the market into thin,
+token-specific orderbooks. The two-tier orderbook is the institutional response to this
+tension – it separates the pricing of the collection floor from the pricing of individual
+tokens. The prevalence of crossed quotes – affecting the majority of two-sided snapshots
+in most collections – implies that conventional spread measures understate the buy-side
+liquidity available to sellers willing to transact at the collection floor.
+Next, we examine whether floor bids contribute to price discovery. Panel C of Table 3
+reports Granger causality tests between daily floor bid returns and sale price returns.13
+For BAYC, floor bid returns Granger-cause sale price returns (F = 5.31, p < 0.01, 4
+lags), indicating that collection-level bidders incorporate information that subsequently
+manifests in transaction prices. The relationship reverses for Otherside, where sale price
+returns strongly predict floor bid returns (F = 8.02, p < 0.01, 2 lags), consistent with
+reactive floor bid updating. The remaining collections show no significant Granger causality in either direction. And the statistical power is limited: Three of five collections have
+fewer than 200 trading days, and the Granger framework requires sufficient time-series
+variation to detect lead-lag relationships. The two significant results should therefore be
+interpreted cautiously. They are consistent with different price discovery dynamics – in
+BAYC, the most established collection, collection-level bidders may incorporate information that subsequently manifests in transaction prices, while in Otherside bidders appear
+to react to completed trades – but the heterogeneity across collections may equally reflect differences in sample length and trading frequency rather than distinct equilibrium
+regimes. Figure 1 illustrates this co-movement visually. The indexed mean floor bid and
+median sale price track each other closely for BAYC and MAYC, consistent with a liquid, informationally linked bid market. For Otherside and Azuki, the series diverge more
+markedly during periods of declining bid activity (lower panels), suggesting that thin bid
+markets amplify transient dislocations between the two price layers. The lower panels
+13Lag order is selected via AIC on a bivariate VAR(1)–VAR(5) model; the Granger F-test is then performed at the AIC-optimal lag. This avoids the specification-search bias of selecting the lag with the
+lowest p-value. The two strongly significant results – BAYC Floor Bid →Sale Price and Otherside Sale
+Price →Floor Bid – remain significant at the 1% level under a Bonferroni correction for 10 tests.
+19
+
+also reveal substantial variation in the depth of collection-level bidding over time, with
+MAYC and Otherside sustaining millions of concurrent bids while WrappedCryptoPunks
+rarely exceeds a hundred thousand.
+The two-tier orderbook has no direct analogue in traditional equity markets. The
+closest concept is the relationship between sector ETFs and their constituent stocks: Just
+as an ETF market maker provides a single price for a basket of heterogeneous stocks,
+a collection-level bidder offers a single price for any token in a heterogeneous collection.
+However, in equity markets the ETF and its constituents trade on separate exchanges
+with formal creation-redemption mechanisms that enforce price convergence, whereas in
+NFT markets the two tiers coexist within a single marketplace infrastructure and no arbitrage mechanism links the collection floor to individual token prices. In effect, the lower
+tier constitutes a standard limit-order market for a synthetic fungible asset – amenable
+to classical spread decomposition and adverse selection analysis – while the upper tier
+remains a fragmented search market where standard measures break down due to thin,
+non-continuous trading. Having established how the two-tier orderbook reshapes measured spreads, we next assess whether the various liquidity measures yield consistent
+signals.
+5.3
+Cross-Validation of Measures
+Do our liquidity measures tell the same story? For equities, Goyenko et al. (2009) document substantial variation in estimator accuracy across methods and time periods, and
+Hasbrouck (2009) proposes a Gibbs-sampler estimator that outperforms the Roll (1984)
+measure but requires a sufficiently dense series of daily price observations, excluding its
+application to most NFT tokens which trade only sporadically. To assess the consistency
+of our measures, we compute pairwise Spearman rank correlations between daily liquidity
+estimates and benchmark them against published values from equity and cryptocurrency
+markets. Table 4 reports the results.
+Spearman rank correlations appear in Panel A, calculated between daily liquidity
+measures, pooled across all collections.
+Bid count and bid depth are near-redundant
+(ρ = 0.96): the number of active bids and their aggregate dollar value capture essen20
+
+tially the same variation. Quoted and relative spreads correlate positively (ρ = 0.61), as
+expected, but both correlate negatively with volatility (ρ = −0.19 and −0.31), meaning
+wider spreads appear on quieter trading days. This pattern inverts the typical equitymarket relationship, where spreads widen during volatile periods due to heightened adverse selection (Copeland and Galai, 1983).
+In NFT markets, high-volatility periods
+coincide with increased attention and bidder entry, and the liquidity effect of additional
+participants appears to dominate the adverse selection channel.
+The relationship between quoted spread and bid count is a Simpson’s paradox – a
+statistical phenomenon in which a trend present in aggregated data reverses within subgroups: The pooled correlation is negative (ρ = −0.34), driven by cross-collection differences, but reverses to positive within individual collections (ρ = +0.25). Table A6 in
+the Appendix confirms this sign reversal for four of the five bid-active collections. However, Section 7.1 shows that the positive within-collection relationship is itself largely
+driven by common time-series shocks: Once year-month fixed effects absorb market-wide
+variation, the sign reverts to negative, consistent with the classical prediction that more
+bids narrow spreads. The three layers of this paradox – negative pooled, positive withincollection, negative within-collection-and-month – illustrate the importance of controlling
+for common shocks in NFT panel data.
+Moreover, Panel B of Table 4 benchmarks our NFT estimates against published values
+for equity and cryptocurrency markets. The median relative spread across our sample
+is 70.5%, confirming the magnitude found in Section 5.1. Moreover, Section 6.4 tests
+whether liquidity co-movement in NFT markets is comparable to the levels documented
+for equities by Chordia et al. (2000).
+In total, NFT markets are illiquid by any conventional standard.
+Yet they have
+developed their own liquidity infrastructure – the two-tier orderbook – that standard
+measures fail to capture.
+21
+
+6
+Who Provides the Liquidity?
+The buy-side liquidity seen in Section 5 must come from somewhere.
+Therefore, we
+identify market makers, characterize their behavior, measure the adverse selection they
+face, and test for cross-collection commonality.
+6.1
+Identifying Market Makers
+We define market makers (MMs) as addresses that place at least 1% of all bids in a given
+collection.14 Panel A of Table 5 shows that the number of MMs ranges from 5 (WrappedCryptoPunks) to 38 (Otherside), with a median of 20. This number is small relative to
+the hundreds or thousands of unique bidder addresses active in each collection (Table 1,
+Panel C). Figure 2 illustrates this concentration through Lorenz curves, which lie far below the 45-degree line of perfect equality for all collections. In WrappedCryptoPunks,
+where only 5 MMs are identified, three addresses account for nearly all bidding activity.
+Their defining feature is extreme quoting activity paired with minimal execution. The
+median MM in MAYC places 27 954 bids per day, roughly one every three seconds; BAYC
+and Azuki MMs average approximately 9 500 daily bids. However, median purchases are
+near zero for BAYC and WrappedCryptoPunks, 1 for Otherside and Azuki, and 9 for
+MAYC. MMs continuously post offers for any token in a collection, but sellers rarely
+accept at the offered price, preferring to list at higher asks. NFT market makers are
+predominantly liquidity providers, not active acquirers of the underlying assets.
+The bid-to-sale ratio – the ratio of each MM’s typical bid price to the same-day median
+sale price – reveals collection-specific pricing strategies: BAYC MMs bid at 98% of the
+sale price (median bid/sale = 0.981), consistent with tight but below-market pricing. In
+contrast, WrappedCryptoPunks MMs are more cautious at 61% of the sale price. And
+Otherside MMs bid at twice the median sale price (2.037). With 100 000 tokens of extreme
+14This threshold-based approach follows Kirilenko et al. (2017) and Menkveld (2013), who classify traders
+by activity share when designated market maker identities are unobservable. The 1% cutoff is conservative: in most collections, only a handful of addresses clear this bar. Results are robust to alternative
+thresholds: lowering the cutoff to 0.5% increases the count modestly (e.g., BAYC: 21 →28; MAYC:
+11 →16), while raising it to 2% reduces it (BAYC: 10; MAYC: 10). An alternative execution-based
+definition (e.g., top addresses by purchase volume) is infeasible here: median MM purchases are near
+zero for BAYC and WrappedCryptoPunks, reflecting the structural feature that NFT market makers provide quotes, not intermediation through execution. Bidder concentration measures (HHI, top-5
+share) in Table 1 are computed over all bidders and are therefore independent of the MM threshold.
+22
+
+value heterogeneity, this behavior reflects targeted bidding on premium tokens: Only 20%
+of Otherside MM bids are collection-level, and the median sale price is dominated by
+cheaper, frequently traded tokens.
+Some market makers operate across multiple collections. Cross-collection overlap is
+highest between BAYC and WrappedCryptoPunks, where four of WrappedCryptoPunks’
+five MMs also appear among BAYC’s 21 (Jaccard similarity = 0.18). BAYC and MAYC
+share four MMs (Jaccard = 0.14), Azuki and MAYC share three.
+Otherside, despite
+having the most MMs (38), shows minimal overlap with other collections (Jaccard ≤0.04).
+The pattern points to high-value collections (BAYC, WrappedCryptoPunks) attracting a
+common set of specialized participants, while the lower-priced, higher-volume Otherside
+market is served by a distinct group.
+6.2
+Market Maker Behavior
+We assess two dimensions of market maker behavior more closely: quoting speed and the
+mix of collection-level versus token-specific strategies.
+Quote reaction times.
+Panel B of Table 5 reports the time between a completed
+sale and the first subsequent bid by each MM, measured within a 60-minute window.
+MAYC and Otherside MMs exhibit a median reaction time of 1 second, with the 25th
+percentile at 0 – effectively sub-second. Azuki MMs react within 6 seconds (P25 = 1s).
+BAYC MMs are slower, with a median of 174 seconds and substantial dispersion (P25 =
+7s, P75 = 684s). WrappedCryptoPunks falls in between (median 41s), though its small
+MM population (5 addresses) limits generalizability.
+Figure A3 shows the full distribution. MAYC and Otherside display a sharp spike
+near zero; BAYC and Azuki show broader distributions extending to several minutes.
+The sub-second reaction speeds observed for MAYC and Otherside are comparable to
+those documented for high-frequency traders in equity markets and suggest that NFT
+market making in these collections is fully automated.15
+15Timestamps reflect marketplace API event records with sub-second resolution, capturing the arrival of
+new bid submissions rather than on-chain block confirmations. The near-zero intervals thus indicate automated reposting algorithms that monitor completed sales and submit new bids via the marketplace’s
+off-chain order infrastructure.
+23
+
+Collection-level versus token-specific strategies.
+The share of each MM’s bids that
+are collection-level varies substantially across collections: WrappedCryptoPunks MMs bid
+exclusively at the collection level (100%), as expected given the near-total dominance of
+floor bids there (Table 3, Panel A). BAYC MMs also favor collection-level bids (61%),
+while Otherside MMs predominantly use token-specific bids (only 20% collection-level).
+This variation mirrors the bid composition in Section 5.2 and likely tracks token heterogeneity: Where tokens are relatively homogeneous or the floor is the primary pricing
+benchmark, MMs can efficiently provide liquidity at the collection level; where individual
+tokens differ substantially, token-specific bidding dominates.
+6.3
+Adverse Selection
+These behavioral patterns characterize how market makers operate, and the natural next
+question is what costs their collection-level bids impose. Collection-level bidding creates
+a lemons problem (as formalized in Section 4, Equation (3)). Characteristically, the floor
+bid is a uniform offer for any token in a collection, yet individual tokens differ in quality
+and value.
+Since bids are binding signed orders, the MM cannot screen or reject an
+incoming sale once a seller accepts – the seller retains full discretion over which token to
+sell. A seller who accepts such a bid is therefore likely selling a below-average token, one
+whose value is at or below the floor bid price (Prediction 1).
+We proxy for the costs of adverse selection through post-purchase price impact, i.e.,
+the change in the daily median sale price index at horizons of 1, 5, and 10 calendar days
+following each MM purchase.16 If MMs bear adverse selection costs, prices should decline
+after their purchases – indicating that MMs tend to buy just before the market moves
+against them. Note that this collection-level return measure captures both true adverse
+selection (receiving below-average tokens) and inventory risk (buying into market-wide
+declines); the token-level rarity test below isolates the former channel.
+16This is a collection-level measure: It captures whether the collection’s price level declines after MM
+purchases, not whether the specific token acquired by the MM was below average. The test therefore
+cannot fully distinguish token-level adverse selection (MMs acquire lemons) from market-timing effects
+(MMs buy during collection-wide downturns). The token-level rarity test below provides an additional
+perspective.
+24
+
+Table 6 reports the results. Panel A shows raw returns, and Panel B adjusts for marketwide movements by subtracting the ETH/USD return over the same horizon.17 In Panel B,
+BAYC MMs experience market-adjusted returns of −0.45% at 1 day (p < 0.05), −1.60%
+at 5 days, and −3.20% at 10 days (the latter two significant at the 1% level). MAYC shows
+larger losses: −1.02% at 1 day, rising to −5.90% at 10 days. Otherside reaches −7.26%
+at 10 days, though the smaller sample (N = 65) warrants caution. These results support
+Prediction 1: The negative post-purchase drift indicates that collection-level bidders tend
+to acquire tokens at unfavorable times, though the collection-level measurement cannot
+definitively separate token-level selection from market-timing effects. Figure 3 shows the
+monotonically declining pattern across horizons.
+Azuki is the exception, as Prediction 3 anticipates. Market-adjusted returns are indistinguishable from zero at all horizons (−0.21% at 1 day, +0.74% at 10 days, both
+insignificant). Azuki MMs place 47% of their bids at the token-specific level (compared
+to 0% for WrappedCryptoPunks and 39% for BAYC), enabling them to screen individual
+tokens rather than accepting any token at a uniform price. The ability to bid selectively
+mitigates the adverse selection inherent in indiscriminate collection-level offers.
+Token-level quality test.
+The post-purchase return test measures the cost of adverse
+selection but cannot identify the selection channel – whether MMs actually acquire belowaverage tokens. We complement it with a direct comparison of token quality: For each
+sale, we match the transaction price to the contemporaneous collection-level floor bid and
+classify the sale as “near-floor” (price within 90–110% of the floor bid, likely a floor-bid
+acceptance) or “premium” (price exceeding 150% of the floor bid, likely a token-specific
+transaction). We then compare the rarity scores of tokens in each group.18 Prediction 1
+implies that tokens sold into floor bids should have lower rarity – less desirable items that
+fail to attract token-specific bids above the floor price. Table A7 in the Appendix reports
+the full results.
+17Market adjustment is important because ETH price movements mechanically affect NFT valuations
+denominated in USD. Without adjustment, an MM who buys during a market-wide decline would
+appear adversely selected even if the token-specific valuation is unchanged.
+18Rarity is measured using the information content (IC) score which will be formalized in Section 7.1:
+For each trait value v, IC(v) = −log2(count(v)/N); a token’s score is the sum across all traits. Higher
+scores indicate rarer tokens. This is a cross-sectional token characteristic, immune to the market-timing
+confound that affects the returns test.
+25
+
+For BAYC, the test confirms the prediction: Near-floor sales have a mean rarity score
+of 25.5, compared to 26.1 for premium sales (Mann-Whitney p < 0.001, Cohen’s d =
+−0.18, N = 1,666 vs. 3,067). WrappedCryptoPunks shows the same pattern (d = −0.11,
+p < 0.01, N = 1,098 vs. 2,485). Azuki exhibits a large effect (d = −1.58, p < 0.001),
+though the premium subsample is small (N = 35). The effects are statistically significant
+but economically modest for BAYC and WrappedCryptoPunks; rarity explains only a
+small part of the quality differential between floor and premium sales. For MAYC and
+Otherside, the test is infeasible because nearly all sales occur well below the measured
+floor bid, leaving insufficient premium sales for comparison.19
+Decomposition by bid type.
+We further decompose post-purchase returns by order
+type, classifying each MM purchase as “collection-level” (no token identifier), “tokenspecific,” or “ask execution” (Table A8; N = 478, 118, and 561 purchases, respectively).
+At 10 days, collection-level purchases yield market-adjusted returns of −3.14%, compared to −6.39% for token-specific and −6.60% for ask-execution purchases (+3.25 pp difference, t = 1.88, p = 0.062). Because these returns are measured using a collection-level
+price index, they capture differences in market-timing exposure rather than token-specific
+quality effects: Collection-level bids, set well below prevailing prices (Table 3, Panel A),
+fill only after price declines, concentrating purchases on dates from which the subsequent
+index drift is less negative.
+All in all, the tests suggest that adverse selection in NFT markets operates primarily
+through market timing rather than token-level quality selection. The rarity test confirms
+a modest selection effect (floor-bid sales involve slightly less rare tokens), but the bid-type
+decomposition shows that the dominant channel is market-wide price movements: MMs
+whose bids are filled tend to be buying into declining markets, regardless of bid type.
+Collection-level bidders’ conservative pricing – the mechanism predicted by equation (3)
+– mitigates this market-timing risk through bid shading.
+There is a caveat on inference: The return observations are computed per MM-day,
+and MM-level clustering may induce within-group correlation (e.g., a single active MM
+19In large collections (19,558 tokens for MAYC, 100,000 for Otherside), most traded tokens are common items whose market-clearing prices fall below the collection-level bid. Additionally, as noted in
+Section 3.2, a share of collection-level bids are trait-filtered criteria orders that do not apply to every
+token, which inflates the measured floor bid relative to the universally accessible bid price.
+26
+
+generating many purchase events during a downturn). With 5–38 MMs per collection,
+formal MM-level clustering yields very few clusters. While wild cluster bootstrap methods
+can improve inference with few clusters (Cameron et al., 2008), the extreme imbalance in
+our setting – where a single MM can account for over 60% of bids – limits the effectiveness of any cluster-based correction. We therefore treat the t-statistics as indicative and
+emphasize the consistency of the sign pattern across collections and horizons.
+On a broader level, the magnitudes are higher than anything seen in equity markets,
+where adverse selection costs are measured in basis points. The gap reflects the nature of
+collection-level bidding: An equity market maker quotes a single asset, whereas an NFT
+floor bidder commits to purchasing any token in a heterogeneous collection.
+Because
+several of these market makers operate across multiple collections (Section 6.1), their
+collective behavior may also generate systematic liquidity patterns.
+6.4
+Liquidity Commonality
+The overlap of market makers across collections raises a natural question: Do their shared
+activities generate correlated liquidity fluctuations? In equity markets, such liquidity commonality is well documented. Chordia et al. (2000) show that individual stock liquidity
+co-moves with market-wide and industry-wide liquidity, suggesting common supply-side
+factors; Chordia et al. (2001) link aggregate liquidity to trading activity and volatility,
+Brunnermeier and Pedersen (2009) provide a theoretical underpinning through funding
+constraints, and Karolyi et al. (2012) extend the analysis globally. Whether such commonality extends to NFT markets, where the cross-section is small and a handful of shared
+participants dominate liquidity provision, is an open question.
+We follow the Chordia et al. (2000) framework. For each collection i, we estimate:
+∆Li,t = α + βt ∆LM,t + βt−1 ∆LM,t−1 + βt+1 ∆LM,t+1 + εi,t,
+where ∆Li,t = log(Li,t + 1) −log(Li,t−1 + 1) is the log change in liquidity measure L,
+winsorized at the 5th and 95th percentiles, and ∆LM,t is the equal-weighted average across
+all other collections (leave-one-out). The inclusion of lead and lag terms captures nonsynchronous adjustment. Data are at hourly frequency over the common sample period
+27
+
+when all five collections are active (November 2023 to May 2024, N = 4 061 observations
+per collection). Standard errors are Newey-West (HAC) with up to 24 lags to account for
+serial correlation.
+The strongest commonality appears for active bidders (Panel A of Table 7): All five
+collections show positive and significant contemporaneous coefficients (βt = 0.040 for
+Otherside to 1.251 for WrappedCryptoPunks, all at the 1% level), with R2 values of 2.4–
+5.5%. WrappedCryptoPunks’ outsized coefficient (1.251) is a consequence of its small,
+highly concentrated MM population: When a few shared MMs become more or less active,
+the effect on this thin market is amplified. The sum of coefficients (Σβ) captures the total
+commonality effect including lagged and lead adjustments; for BAYC, Σβ = 0.520, so
+that a 1% change in market-wide active bidders is associated with a cumulative 0.52%
+change in BAYC bidders.
+Bid count (Panel B of Table 7) shows moderate commonality: Four of five collections
+have significant βt coefficients, but R2 values are lower (0.1–0.9%). Bid value (Panel C) is
+similar, with BAYC and Otherside strongest. Sale count (Panel D) exhibits commonality
+for three collections (BAYC, MAYC, Azuki), but R2 values remain below 1%. WrappedCryptoPunks shows zero sale count commonality, unsurprisingly given its extremely sparse
+trading (4.6 sales per day).
+The R2 values of 2–6% for active bidders represent detectable but modest commonality.
+For comparison, Chordia et al. (2000) report R2 of approximately 1–22% for NYSE stocks,
+though the comparison is imperfect: Their measures (quoted spreads and depth) differ
+from ours, their sample covers a single centralized exchange, and the leave-one-out market
+average is computed over hundreds of stocks rather than our five collections, where each
+leave-one-out market proxy averages over only four peers – making it far less diversified
+and more sensitive to idiosyncratic shocks in any single collection. The three remaining
+liquidity measures show weaker commonality (R2 below 1%), indicating that co-movement
+is concentrated in the participation channel rather than in aggregate bidding or trading
+activity. This pattern is in line with the mechanism suggested by the cross-collection MM
+overlap documented in Section 6.1: A small number of shared market makers transmit
+activity shocks across collections, but the transmission is narrow, affecting who bids rather
+28
+
+than how much or at what price.
+Three of the four liquidity measures – bid count,
+bid value, and active bidders – are bid-based and therefore largely unaffected by wash
+trading, which manifests on the sales side (Section 7.4). Sale count is the exception, but
+its commonality is the weakest of the four (R2 < 1%) and does not drive any of the main
+conclusions.
+Professional market makers thus exist in NFT markets – concentrated, fast, and algorithmic. Yet they face adverse selection because the collection-level bid, their primary tool,
+cannot discriminate between high- and low-value tokens within a collection. The tension
+between the fungible component of value (collection membership) and the non-fungible
+component (individual token characteristics) shapes both the structure of liquidity provision and the costs it entails. That market makers persist despite these costs implies that
+the bid-ask spread – widened by the bid shading documented in Section 5.2 – provides sufficient compensation on average, just as in equity markets where the spread compensates
+designated market makers for adverse selection risk (Glosten and Milgrom, 1985).
+7
+What Determines Market Quality?
+What explains the variation in market quality across collections, time, and market structures? We address this question through a panel regression of spread determinants (Section 7.1), an institutional comparison of the same assets under two market structures (Section 7.2), a subperiod analysis tracking market maturation across regimes (Section 7.3),
+and a robustness check on market integrity through wash trading detection (Section 7.4).
+7.1
+Spread Determinants
+This subsection presents a descriptive decomposition of spread variation rather than a
+causal identification strategy. With only five collections in the cross-section, the panel
+is too small for cluster-robust inference or credible instrumental-variable designs. The
+regressions therefore document conditional correlations, and we interpret them as such
+throughout.
+We estimate panel regressions of the median daily relative spread on observable market
+characteristics to characterize which factors covary with cross-sectional and time-series
+29
+
+variation in NFT liquidity. The dependent variable is the median relative spread on each
+collection-day, filtered to positive values. Regressors include log(1 + Volume) (daily USD
+trading volume), return volatility, log(1 + Bid Count) (number of active bids), the floor
+bid share (fraction of bids that are collection-level), and the collection-level bid share
+of total bid value. Because all right-hand-side variables are plausibly jointly determined
+by latent liquidity and attention states, simultaneity is a concern.20 Standard errors are
+Newey-West (HAC) to account for serial correlation.
+Five specifications consider the sources of spread variation in Table 8: Column (1)
+pools all collections without fixed effects (R2 = 0.209); coefficients have expected signs:
+Higher volume and greater volatility are associated with narrower spreads (log(1+Volume):
+−0.067, t = −9.42; volatility: −0.432, t = −4.03). Column (2) adds collection fixed effects, and R2 jumps to 0.525, an increase of over 30 percentage points.21 However, the
+within-R2 is only 0.125: Observable market characteristics explain a modest share of
+within-collection spread variation once collection identity is controlled for. A structural
+limitation is that the dependent variable – the daily median positive relative spread – is
+observable only when at least one token has a two-sided, non-crossed quote on that day.
+Because this condition depends on the same market characteristics used as regressors
+(bid count, volume, floor bid composition), the regression effectively conditions on an endogenous subsample. The coefficients therefore describe correlations within the selected
+two-sided state rather than unconditional features of market quality, and should be interpreted accordingly. Part of the residual within-R2 variation likely reflects compositional
+changes in this subsample: Shifts in which tokens enter the two-sided subset can move
+the median spread even absent changes in aggregate liquidity conditions.
+20With only five collections in the panel, cluster-robust standard errors are infeasible. Our Newey-West
+(HAC) standard errors correct for serial correlation but not for cross-sectional dependence across collections exposed to common shocks, nor for the few-cluster problem identified by Cameron et al. (2008).
+Column (5) adds month fixed effects to absorb common time-series shocks, but the fundamental identification challenge remains: With five collections, the effective cross-section is too small for credible
+causal inference.
+21Part of this R2 increase reflects the differing sample windows across collections (Section 3). Restricting
+estimation to the November 2023–May 2024 common overlap window, where all five collections have
+concurrent coverage, yields a pooled R2 of 0.503 and an FE R2 of 0.590 – a more modest increase of
+8.7 percentage points, with a comparable within-R2 of 0.116. Also, log(1+Bid Count) enters negatively
+(−0.081, t = −3.29) in this harmonized sample even without month fixed effects, confirming that the
+positive coefficient in column (2) is driven by temporal composition rather than a genuine withincollection relationship. The full-sample specification is retained as the primary analysis to maximize
+statistical power and exploit the full time-series variation available for each collection.
+30
+
+The within-collection results (column 2) reveal two patterns that deviate from standard microstructure predictions. First, the coefficient on log(1+Bid Count) is positive and
+significant (0.070, t = 5.69): Days with more active bids have wider (instead of narrower)
+spreads. As we show below, this positive coefficient is driven by common time-series variation rather than a genuine within-collection relationship: Adding month fixed effects in
+column (5) reverses the sign to −0.054 (t = −2.76), consistent with the classical prediction.22 Second, volatility becomes economically small and insignificant after controlling
+for collection fixed effects (−0.047, t = −0.78). The highly significant pooled coefficient
+(−0.432) was driven by cross-collection differences: Collections with structurally higher
+volatility also tend to have narrower spreads, but within a given collection, daily volatility
+fluctuations do not measurably affect spreads.
+Column (3) adds a selection control: the percentage of daily snapshots with both a
+bid and an ask (% Two-Sided Quotes). It enters strongly (0.499, t = 4.83), likely because two-sided quotes emerge disproportionately for tokens with actively posted (and
+potentially wide) spreads, creating a mechanical positive relationship. The core coefficients are unaffected: Bid count remains positive and significant (0.071, t = 6.22), and
+the collection-level bid share turns significantly negative (−0.149, t = −2.17), so that a
+greater value share from collection-level bids is associated with narrower within-collection
+spreads.
+Rarity and spreads.
+Token rarity is central to NFT valuation – rare traits command
+price premia in many collections. One might therefore expect rarity to predict liquidity:
+Rarer tokens may be harder to match with buyers, implying wider spreads. Column (4)
+of Table 8 tests this hypothesis by adding log(1 + Rarity) – the daily mean information
+content rarity score of traded tokens – and Rarity Dispersion (their standard deviation)
+to the fixed-effects specification.23
+Neither variable is statistically significant. The coefficient on log(1+Rarity) is positive
+but imprecise (0.109, t = 1.54), and rarity dispersion is essentially zero (0.007, t = 0.89).
+22This is again the Simpson’s paradox from Section 5.3: The pooled bid count–spread correlation is
+negative (driven by cross-collection variation), while within individual collections it appears positive.
+However, this second reversal is itself an artifact of omitted time effects.
+The three layers of the
+paradox – negative pooled, positive within-collection, negative within-collection-and-month – illustrate
+the importance of absorbing common shocks in NFT panel regressions.
+23Rarity is measured using the information content (IC) score introduced in Section 6.3.
+31
+
+The core bid count coefficient remains stable (0.071, t = 5.63), and R2 (0.523) is similar to
+the base fixed-effects model (0.525), though the comparison is imperfect since column (4)
+uses a reduced regressor set (see table note). Token rarity, despite being a central determinant of NFT prices, does not independently predict spreads once collection identity
+is controlled for. Rarity-driven liquidity variation appears to be subsumed by collectionlevel effects: Collections with greater trait heterogeneity may exhibit wider spreads on
+average, but this cross-sectional variation is captured by the fixed effect rather than by
+daily rarity fluctuations. As an additional benefit, column (4) also serves as a robustness check against criteria order contamination of the floor bid variables (footnote 6):
+Excluding Floor Bid Share and Collection Bid Share leaves the core coefficients virtually
+unchanged (bid count: 0.071 vs. 0.070; volatility: −0.049 vs. −0.047), confirming that
+the main results do not depend on the potentially contaminated regressors.
+Absorbing common time-series shocks.
+Columns (2)–(4) include collection fixed
+effects but not time fixed effects, so market-wide shocks – ETH price movements, macro
+sentiment, platform-level events – are not absorbed and may inflate the apparent withincollection relationships. Column (5) adds 22 year-month dummies (July 2022–May 2024),
+raising R2 from 0.525 to 0.621 and revealing a clear sign reversal: The coefficient on
+log(1 + Bid Count) turns from +0.070 (t = 5.69) to −0.054 (t = −2.76). The positive
+within-collection relationship in column (2) was driven by common time-series variation
+– months with market-wide attention attract both more bids and wider spreads across all
+collections. After absorbing these common shocks, the within-collection-and-month effect
+follows the classical microstructure prediction: More bids are associated with narrower
+spreads. The collection-level bid share also strengthens (−0.179, t = −2.26): Conditional
+on the same calendar month, a higher share of collection-level bids predicts tighter spreads.
+However, the within-R2 drops to 0.039, confirming that the regressors explain little spread
+variation beyond what is captured by the two-way fixed effects. This points out a key
+structural feature of NFT markets: Spread variation is predominantly driven by collection
+identity and market conditions rather than by observable daily liquidity measures.
+32
+
+7.2
+Market Design: CryptoPunks vs. WrappedCryptoPunks
+The spread determinant analysis shows that collection identity dominates, but what does
+the “collection identity” capture? The co-existence of CryptoPunks and WrappedCryptoPunks allows us to compare the same assets under two market structures.
+As mentioned in Section 2, CryptoPunks operates a proprietary marketplace with
+token-specific bids and asks, while WrappedCryptoPunks enables trading of the same
+assets on standard ERC-721 marketplaces. Supplementing the orderbook data with onchain event logs via Dune Analytics reveals 38 805 bids and 101 334 listings on the native
+marketplace over the matched sample period – the low bid count (79) reflects a data
+source limitation, not the absence of bidding activity. Since wrapping is permissionless
+and reversible, both contracts represent claims on the same 10 000 underlying assets.
+Table 9 compares three views: CryptoPunks via its native marketplace (CP Native),
+CryptoPunks as captured by external marketplaces (CP External), and WrappedCryptoPunks. To ensure temporal comparability, the native data are truncated to the orderbook
+sample end date (May 2024); the full native sample through February 2026 is reported
+as a robustness check in Table A9. Panel A depicts that the native marketplace sustained an active orderbook with a bid-to-trade ratio of 1.6 and 5 860 unique bidders over
+2 506 days. Bidder concentration is low (Panel B: HHI of 0.007, top-5 share of 14.7%).
+WrappedCryptoPunks generates far more aggregate bids (1 010 818; BTR of 167.5), but
+these are predominantly collection-level floor bids rather than token-specific quotes – a
+consequence of the two-tier orderbook. Only 706 unique tokens (7% of the collection) have
+been wrapped, of which 493 have traded in the WrappedCryptoPunks market, compared
+to 7 020 tokens traded on the CryptoPunks native marketplace.
+Panel C confirms that price levels are similar across data sources: Mean sale prices
+range from $121 652 (CP Native) to $172 648 (WrappedCryptoPunks). At higher frequency, Figure 4 shows that daily prices track each other closely from 2021 onward, as
+expected for the same underlying assets.
+Panel D presents the central finding: At first glance, the standardized marketplace
+appears superior – it generates over one million bids, vastly more than the native market.
+Yet the native CryptoPunks marketplace, which requires token-specific bids, achieves a
+33
+
+median relative spread of 53.6%, while WrappedCryptoPunks – using the two-tier orderbook where the bid side is the effective best bid (maximum of token-specific and
+collection-level floor bid, excluding crossed quotes) – exhibits 110.7%. The roughly twofold difference suggests that the form of bidding – bilateral, token-specific quotes versus
+collection-level floor bids – is a meaningful determinant of measured spreads. The two-tier
+orderbook generates vastly more aggregate bidding activity, but produces wider spreads
+because collection-level bids are structurally distant from token-specific ask prices. The
+finding is robust to the sample period: Extending the native data through February 2026
+yields a median spread of 40.0% (Table A9), though the rolling average spread reached a
+minimum of approximately 19% in late 2024 before widening again (Figure 4b).
+By contrast, transaction-based measures that circumvent the bid-definition problem
+tell a different story. The Amihud (2002) illiquidity ratio – which measures price impact
+per unit of trading volume and requires only sale prices – is 775×10−6 for CP Native versus
+1.9 × 10−6 for WrappedCryptoPunks, indicating that each dollar of volume moves prices
+approximately 400 times more in the native market.24 The Roll (1984) estimator is undefined for CryptoPunks in the matched period (positive autocovariance, consistent with
+persistent directional price trends over the seven-year sample), but WrappedCryptoPunks
+yields an implied spread of $9 707. By these execution-based measures, the standardized
+two-tier market is substantially more liquid than the native bilateral mechanism – the
+opposite of what the quoted spread comparison suggests.
+Three caveats apply. First, the spread measures are not fully comparable: CP Native
+spreads reflect token-specific bid-ask pairs, while WrappedCryptoPunks spreads use the
+two-tier orderbook (Section 5.2), so the 111% figure partly reflects the structural gap
+between collection-level bids and token-specific asks. Second, the wrapping decision is
+endogenous: Only 706 of 10 000 CryptoPunks have been wrapped. Wrapped tokens command a 68% price premium in the native market ($139 846 vs. $83 331, Mann-Whitney
+p < 0.001) and trade more frequently, yet not rarer (d = −0.08, p = 0.018), indicating
+that wrapping appeals to owners of expensive rather than scarce tokens – consistent with
+24The Amihud ratio also differs between CP Native (774.9) and CP External (68.6) despite covering the
+same underlying asset. This reflects price selection: external marketplaces capture higher-value trades
+(median $89 237 vs. $42 662), mechanically lowering the ratio through larger per-trade volume in the
+denominator.
+34
+
+the fixed gas cost favoring higher-value items. This positive price selection works against
+explaining the wide WrappedCryptoPunks spreads, making the 111% figure conservative.
+Third, wash trading rates differ substantially: 57.0% of WrappedCryptoPunks versus
+10.0% of CryptoPunks sales are flagged (Section 7.4).
+Despite these caveats, the comparison yields an interesting picture. The native marketplace achieves tighter quoted spreads (54% vs. 111%), but the transaction-based Amihud measure indicates that WrappedCryptoPunks is substantially more liquid in terms of
+price impact. The divergence between these two classes of measures is itself informative:
+The wide quoted spreads in the two-tier structure reflect the structural distance between
+collection-level bids and token-specific asks, not necessarily higher execution costs. This
+reinforces the conclusion from Section 5.2 that the wide spreads observed in standardized
+NFT markets are partly a structural artifact of the collection-level bidding mechanism
+rather than solely a reflection of asset-level illiquidity.
+7.3
+Market Maturation
+How does market quality evolve over time? To understand this, we divide the sample into
+three subperiods corresponding to widely recognized market regimes: Bull (sample start
+through May 2022), Bear (June 2022 through December 2023), and Recovery (January
+2024 onward).25
+On this basis, we can track each collection across regimes with five
+metrics depicted in Table 10, and Figure 6 visualizes the Roll spread and median relative
+spread.
+Remarkably, three collections (MAYC, Otherside, Azuki) enter the sample only during
+the Bear period due to data availability constraints. For these collections, we observe only
+Bear and Recovery, precluding a full-cycle comparison. BAYC and CryptoPunks span all
+three periods; WrappedCryptoPunks has minimal Bull-period activity (158 sales). To
+address this gap, the extended Dune Analytics sample (Table A10) provides Bull-period
+coverage for all six collections and confirms the patterns: MAYC’s Roll spread declines
+25These boundaries approximately correspond to major turning points in cryptocurrency and NFT market
+valuations. The Bear period begins with the collapse of Terra/Luna and the subsequent contagion
+through Three Arrows Capital and FTX. The Recovery period aligns with the approval of Bitcoin spot
+ETFs and a broader recovery in digital asset prices.
+35
+
+from 6.2 ETH (Bull) through 1.4 ETH (Bear) to 0.5 ETH (Recovery) across 163 352
+on-chain sales, and Azuki shows a similar improvement from 2.1 to 1.5 ETH.
+The data show improvement in market infrastructure alongside declining trading activity. BAYC’s bid count grows from fewer than 100 000 in the Bull period to 5.9 million
+in the Bear and 18.4 million in the Recovery, an increase of more than two orders of magnitude. Its median relative spread narrows from 64.0% (Bear) to 44.6% (Recovery), and
+the Roll spread moves from 3.9 ETH (Bull) to 16.4 ETH (Bear) before falling to 1.3 ETH
+(Recovery).26 (Bid-dependent spread measures are unavailable for the Bull period because
+collection-level bid infrastructure was minimal before mid-2022.) Still, BAYC’s sales decline sharply: 27 035 in the Bull, 22 556 in the Bear, and only 6 092 in the Recovery. The
+market becomes more liquid per transaction even as aggregate trading activity contracts.
+CryptoPunks’ Roll spread is undefined in the Bull period (positive autocovariance of
+consecutive within-token price changes, consistent with momentum-driven pricing during
+the 2021–2022 peak). It becomes defined in the Bear (24.3 ETH) and Recovery (6.5 ETH)
+periods, where sufficient within-token repeat sales generate the negative autocovariance
+that identifies the bid-ask bounce.27 Trading activity collapses from 19 412 Bull-period
+sales to 540 in the Recovery; CryptoPunks appears to be transitioning from an actively
+traded collection to a “trophy” asset held for long-term appreciation.
+WrappedCryptoPunks presents a third pattern. Its Roll spread is undefined in both
+the Bull (N = 158 sales) and Recovery (N = 47) periods due to insufficient within-token
+repeat sales, but yields 2.7 ETH in the Bear period (N = 5,829), when trading activity
+migrated from the native CryptoPunks marketplace to the wrapped contract during 2022–
+2023. Nevertheless, its token-level median relative spread remains near 200% in both the
+Bear (199.7%) and Recovery (199.8%) periods, reflecting the scarcity of token-specific
+bids; when collection-level floor bids are incorporated via the two-tier orderbook, the
+spread narrows substantially (Section 7.2).
+26The Bear-period spike in the Roll spread likely reflects heightened within-token price volatility during
+the market downturn rather than wider spreads. The Roll estimator captures the autocovariance of consecutive same-token price changes and does not distinguish spread-induced bouncing from fundamental
+volatility.
+27The Roll spread is undefined when consecutive price changes exhibit positive autocovariance. CryptoPunks’ full-sample estimate is likewise undefined (Table 2); the subperiod estimates emerge because
+autocovariance patterns can differ across market regimes.
+36
+
+Among the three later-entering collections, MAYC and Azuki show modest spread
+improvements from Bear to Recovery. MAYC’s relative spread narrows from 48.2% to
+47.6%, while Azuki improves from 80.8% to 63.5%. MAYC’s bid count more than doubles
+from 18.2 to 48.6 million, while Azuki’s remains largely unchanged at around 20 million.
+Otherside’s spread is essentially flat (75.9% to 73.0%), though its bid count grows from
+101.6 to 170.3 million – the largest absolute increase in our sample.
+In conclusion, NFT market infrastructure matured between 2022 and 2024: Bid counts
+surged, collection-level bid markets deepened, and relative spreads narrowed for most collections. But the improvements are modest in absolute terms; median relative spreads
+remain in the 45–80% range for most collections even in Recovery (with WrappedCryptoPunks near 200%), far above traditional-market levels. The contraction in trading volume
+further qualifies the improvement: The market became more liquid per trade, but the
+number of trades declined. This raises a final question about market integrity: How much
+of the observed trading activity is genuine?
+7.4
+Market Integrity: Wash Trading
+Wash trading – simultaneously acting as buyer and seller to inflate apparent activity – is a
+documented concern in cryptocurrency markets (Gandal et al., 2018; Cong et al., 2023).
+In NFT markets, where marketplace incentives such as token airdrops reward trading
+volume, the potential is evident. We apply heuristic-based detection methods following
+Oh (2024) – building on earlier NFT wash trading research by Wachter et al. (2023) – to
+assess the prevalence and marketplace-driven nature of wash trading in our sample. This
+analysis serves as a robustness check rather than a causal investigation: The heuristics
+flag potentially suspicious trades but cannot determine intent.
+We apply four heuristics. H1 identifies self-trades: transactions where the buyer and
+seller are the same address. H2 flags round-trip trades: cases where address A sells to
+address B and B sells back to A within seven days. H3 flags high-volume pairs: buyer-seller
+pairs with five or more transactions between them. H4 identifies same-block round-trips:
+trades completed within 60 seconds or fewer. A sale is flagged if it triggers any of the four
+heuristics.
+37
+
+Flagging rates can be seen in Panel A of Table 11 and range widely: from 3.2% (Otherside) to 57.0% (WrappedCryptoPunks), with MAYC (47.5%), Azuki (44.5%), and BAYC
+(17.3%) in between and CryptoPunks at 10.0%. H3 (high-volume pairs) is the dominant
+heuristic for most collections: Flagged activity concentrates among repeat trader pairs
+rather than same-address or same-block transactions. Self-trades (H1) are rare (39 for
+BAYC, zero for CryptoPunks and Otherside), and same-block round-trips (H4) are nearzero across all collections (32 flagged trades total), indicating that the most mechanically
+obvious form of wash trading is uncommon in practice. The USD volume share from
+flagged trades closely tracks the flagged sales share, from 3.1% (CryptoPunks) to 59.3%
+(WrappedCryptoPunks).
+Panel B disaggregates by marketplace, and Figure 8 visualizes the cross-marketplace
+contrast, plotting flagged sales and volume shares side by side for each venue. For four of
+five collections, Blur flagging rates exceed 39%, reaching 58.9% for WrappedCryptoPunks.
+OpenSea rates are consistently below 4% (MAYC: 52.0% on Blur vs. 2.1% on OpenSea;
+BAYC: 39.7% vs. 1.1%; Azuki: 46.1% vs. 2.5%). The exception is Otherside, where only
+3.5% of Blur sales are flagged, presumably because the low average token value reduces
+the profitability of airdrop-driven wash trading. CryptoPunks, which trades exclusively
+on its native marketplace, shows a 10.0% flagging rate.
+The marketplace-driven pattern points to incentive-based wash trading rather than
+individual manipulation. During our sample period, Blur distributed governance tokens
+(the BLUR airdrop) proportional to users’ trading activity, creating a direct financial
+incentive to inflate volume. This dynamic reflects the two-sided platform logic analyzed by
+Rochet and Tirole (2003): By subsidizing one side through token rewards, the marketplace
+attracts activity, but a substantial share proves artificial. The concentration of flagged
+trades on Blur across most collections, combined with near-zero flagging on OpenSea
+(which lacked a comparable volume-based incentive), identifies the airdrop program as
+the primary structural driver.
+Next, we consider Blur’s marketplace entry as a natural experiment. For BAYC and
+WrappedCryptoPunks, our sample spans both pre- and post-Blur periods, enabling a before/after comparison. Table A11 reports the results. Before Blur’s launch in October
+38
+
+2022, BAYC’s wash trading rate was 1.2%; afterward, it rose to 34.2%, driven almost
+entirely by Blur-executed sales (39.7% flagged versus 0.8% on OpenSea). WrappedCryptoPunks exhibits an even more dramatic shift: from 3.1% to 58.5%. Blur captured 83.6%
+(BAYC) and 98.6% (WrappedCryptoPunks) of post-entry sales by count (Figure A4).
+The coincidence of Blur’s entry with the jump in flagging rates – and the persistent nearzero OpenSea rate throughout – strengthens the interpretation that marketplace incentive
+design, rather than a secular change in trader behavior, drove the increase in suspicious
+activity.
+The heuristics may produce both false positives (legitimate repeat traders flagged) and
+false negatives (sophisticated wash traders using multiple addresses). Flagged trades are
+not excluded from the main analyses. The spread and liquidity measures in Sections 5–6
+are primarily bid-based and thus largely unaffected by wash trading, which manifests on
+the sales side. The adverse selection results (Table 6) are similarly robust: Only 1.5–18.7%
+of identified market maker purchases overlap with wash trade flags across collections, and
+excluding these purchases leaves median market-adjusted returns virtually unchanged
+(e.g., BAYC: −3.01% versus −3.02%; MAYC: −6.16% in both cases), consistent with
+wash trades being mechanically distinct from bid-execution-based purchases. Table A13
+in the Appendix re-estimates Roll spreads and Amihud ILLIQ excluding all flagged trades;
+both metrics increase across all collections, confirming that wash trading inflates apparent
+liquidity. The increases are modest where flagging rates are low (CryptoPunks: +0.2%
+Amihud) but substantial where they are high (MAYC: +72% Roll, +65% Amihud). The
+qualitative conclusions are unaffected – NFT markets remain vastly more illiquid than
+equity markets under either specification – but the Roll and Amihud estimates in the
+main tables should be interpreted as lower bounds for collections with high wash trading
+prevalence.
+Applying the same heuristics to the extended Dune Analytics sample in
+Table A12, which covers each collection’s full on-chain history, yields flagging rates of
+10.0% (CryptoPunks) to 58.3% (WrappedCryptoPunks) – broadly consistent with the
+orderbook data estimates. The Dune sample’s larger trade counts (e.g., 163 352 for MAYC
+versus 23 525 in our orderbook window) provide higher statistical precision for collections
+39
+
+with shorter sample coverage and confirm that the wash trading patterns are not artifacts
+of the sample window.
+In total, collection identity accounts for the largest share of spread variation; the CryptoPunks/WrappedCryptoPunks comparison implies that bid infrastructure alone does not
+resolve illiquidity; market quality has improved modestly as the ecosystem matured; and
+wash trading, concentrated on incentive-driven marketplaces, inflates measured activity
+for several collections.
+8
+Conclusion
+This paper provides the first comprehensive analysis of NFT market microstructure using bid-side orderbook data. The central finding is that NFT markets have developed
+a two-tier orderbook in which collection-level floor bids co-exist with token-specific orders and constitute the dominant source of buy-side liquidity – a structure absent from
+traditional securities markets. Because collection-level bids cannot discriminate between
+high- and low-value tokens, the market makers who supply them face adverse selection:
+Post-purchase price impact ranges from −3% to −7% at ten days, driven primarily by
+market timing rather than token-level quality differences. Collection identity accounts for
+the largest share of spread variation in panel regressions, absorbing over 30 percentage
+points of R2.
+These findings carry practical implications. Platform incentive design has first-order
+consequences for market integrity: Volume-based airdrop programs coincide with wash
+trading rates of 40–59% on Blur versus 1–4% on OpenSea.
+For investors, token-level
+quoted spreads of 48–80% (up to 200% for the least liquid collections) – though floorbenchmark spreads are substantially lower at 2–5% for the most liquid collections – represent a material friction largely invisible to retail participants accustomed to equitymarket spreads of 0.1%, and improving the visibility of realized transaction costs on NFT
+marketplaces could reduce this information gap.
+Our results also contribute to the broader agenda of tokenizing heterogeneous realworld assets. A natural experiment comparing CryptoPunks (native marketplace, tokenspecific bidding) with WrappedCryptoPunks (standardized ERC-721 infrastructure) shows
+40
+
+that the two-tier structure inflates measured quoted spreads while generating far greater
+bidding activity and substantially lower transaction-based price impact. The form of bidding may matter as much as its volume: Blockchain-based trading infrastructure alone
+does not resolve the illiquidity inherent to heterogeneous assets.
+From a wider perspective, our findings address a question that traditional securities
+data cannot answer: how markets create liquidity when every asset is unique. The mechanism we document – endogenous creation of fungibility through category-level bidding,
+generating pooled liquidity at the cost of adverse selection – is invisible in equity markets,
+where fungibility is given by construction. The finding that collection identity dominates
+all other spread determinants suggests that, for heterogeneous assets, the relevant unit of
+liquidity may be the category rather than the individual asset – a result that standard
+microstructure models, built for fungible securities, do not predict.
+There are some limitations: Our sample covers six high-value Ethereum-based profilepicture collections; generalizability to other NFT categories or blockchains remains an
+open question. The spread determinant regressions rely on contemporaneous regressors
+and should be interpreted as conditional correlations, and Newey-West standard errors
+correct for serial correlation but not for cross-sectional dependence. The data provider
+does not distinguish trait-filtered criteria orders from true collection-wide bids (Footnote 6), so our floor bid measure represents an upper bound on unconditional collectionwide liquidity.
+These limitations suggest directions for future work: A formal causal analysis exploiting the timing of marketplace incentive changes could identify the precise mechanisms
+through which platform design drives wash trading. Extending the two-tier orderbook
+framework to art, gaming, and music NFTs – or to non-Ethereum blockchains – would
+test its generality. Ultimately, the two-tier orderbook, in which market makers price categories rather than individual assets, may represent the equilibrium market structure for
+any asset class characterized by within-category heterogeneity, from tokenized real estate
+to collectible markets.
+41
+
+References
+Akerlof, G. A. 1970. “The Market for “Lemons”: Quality Uncertainty and the Market
+Mechanism.” The Quarterly Journal of Economics 84 (3): 488–500.
+Amihud, Y. 2002. “Illiquidity and Stock Returns: Cross-Section and Time-Series Effects.”
+Journal of Financial Markets 5 (1): 31–56.
+Amihud, Y., and H. Mendelson. 1986. “Asset Pricing and the Bid-Ask Spread.” Journal
+of Financial Economics 17 (2): 223–249.
+Barbon, A., and A. Ranaldo. 2023. “NFT Bubbles.” SSRN Electronic Journal.
+Biais, B., L. Glosten, and C. Spatt. 2005. “Market Microstructure: A Survey of Microfoundations, Empirical Results, and Policy Implications.” Journal of Financial Markets
+8 (2): 217–264.
+Brunnermeier, M. K., and L. H. Pedersen. 2009. “Market Liquidity and Funding Liquidity.” The Review of Financial Studies 22 (6): 2201–2238.
+Cameron, A. C., J. B. Gelbach, and D. L. Miller. 2008. “Bootstrap-Based Improvements
+for Inference with Clustered Errors.” The Review of Economics and Statistics 90 (3):
+414–427.
+Cespa, G., and T. Foucault. 2014. “Illiquidity Contagion and Liquidity Crashes.” The
+Review of Financial Studies 27 (6): 1615–1660.
+Chordia, T., R. Roll, and A. Subrahmanyam. 2000. “Commonality in Liquidity.” Journal
+of Financial Economics 56 (1): 3–28.
+. 2001. “Market Liquidity and Trading Activity.” The Journal of Finance 56 (2):
+501–530.
+Cong, L. W., X. Li, K. Tang, and Y. Yang. 2023. “Crypto Wash Trading.” Management
+Science 69 (11): 6427–6454.
+Copeland, T. E., and D. Galai. 1983. “Information Effects on the Bid-Ask Spread.” The
+Journal of Finance 38 (5): 1457–1469.
+Demsetz, H. 1968. “The Cost of Transacting.” The Quarterly Journal of Economics 82
+(1): 33–53.
+Dowling, M. 2022. “Fertile LAND: Pricing non-fungible tokens.” Finance Research Letters
+44.
+Duffie, D., N. Gˆarleanu, and L. H. Pedersen. 2005. “Over-the-Counter Markets.” Econometrica 73 (6): 1815–1847.
+Easley, D., and M. O’Hara. 1987. “Price, Trade Size, and Information in Securities Markets.” Journal of Financial Economics 19 (1): 69–90.
+42
+
+Gandal, N., J. Hamrick, T. Moore, and T. Oberman. 2018. “Price Manipulation in the
+Bitcoin Ecosystem.” Journal of Monetary Economics 95:86–96.
+Gavazza, A. 2011. “The Role of Trading Frictions in Real Asset Markets.” American
+Economic Review 101 (4): 1106–1143.
+Glosten, L. R., and P. R. Milgrom. 1985. “Bid, Ask and Transaction Prices in a Specialist
+Market with Heterogeneously Informed Traders.” Journal of Financial Economics 14
+(1): 71–100.
+Goyenko, R. Y., C. W. Holden, and C. A. Trzcinka. 2009. “Do Liquidity Measures Measure
+Liquidity?” Journal of Financial Economics 92 (2): 153–181.
+Griffin, J. M., and A. Shams. 2020. “Is Bitcoin Really Untethered?” The Journal of
+Finance 75 (4): 1913–1964.
+Gromb, D., and D. Vayanos. 2002. “Equilibrium and Welfare in Markets with Financially
+Constrained Arbitrageurs.” The Journal of Finance 57 (6): 1723–1769.
+Hagstr¨omer, B., and L. Nord´en. 2013. “The Diversity of High-Frequency Traders.” Journal
+of Financial Markets 16 (4): 741–770.
+Hasbrouck, J. 2009. “Trading Costs and Returns for U.S. Equities: Estimating Effective
+Costs from Daily Data.” The Journal of Finance 64 (3): 1445–1477.
+Hasbrouck, J., T. J. Rivera, and F. Saleh. 2024. “The Need for Fees at a DEX: How
+Increases in Fees Can Increase DEX Trading Volume.” Forthcoming at Management
+Science.
+Hasbrouck, J., and D. J. Seppi. 2001. “Common Factors in Prices, Order Flows, and
+Liquidity.” Journal of Financial Economics 59 (3): 383–411.
+Hendershott, T., C. M. Jones, and A. J. Menkveld. 2011. “Does Algorithmic Trading
+Improve Liquidity?” The Journal of Finance 66 (1): 1–33.
+Huang, R. D., and H. R. Stoll. 1997. “The Components of the Bid-Ask Spread: A General
+Approach.” The Review of Financial Studies 10 (4): 995–1034.
+Karolyi, G. A., K.-H. Lee, and M. A. van Dijk. 2012. “Understanding Commonality in
+Liquidity Around the World.” Journal of Financial Economics 105 (1): 82–112.
+Kirilenko, A., A. S. Kyle, M. Samadi, and T. Tuzun. 2017. “The Flash Crash: HighFrequency Trading in an Electronic Market.” The Journal of Finance 72 (3): 967–
+998.
+Kong, D.-R., and T.-C. Lin. 2021. “Alternative Investments in the Fintech Era: The Risk
+and Return of Non-fungible Token (NFT).” SSRN Electronic Journal.
+Korteweg, A., R. Kr¨aussl, and P. Verwijmeren. 2016. “Does It Pay to Invest in Art? A
+Selection-Corrected Returns Perspective.” The Review of Financial Studies 29 (4):
+1007–1038.
+43
+
+Kr¨aussl, R., and A. Tugnetti. 2024. “Non-Fungible Tokens (NFTs): A Review of Pricing
+Determinants, Applications and Opportunities.” Journal of Economic Surveys 38
+(2): 555–574.
+Kyle, A. S. 1985. “Continuous Auctions and Insider Trading.” Econometrica 53 (6): 1315–
+1335.
+Lehar, A., and C. A. Parlour. 2025. “Decentralized Exchange: The Uniswap Automated
+Market Maker.” The Journal of Finance 80 (1): 321–374.
+Lommers, K., J. Kim, and M. Baioumy. 2022. “Market Making in NFTs.” SSRN Electronic
+Journal.
+Madhavan, A. 2000. “Market Microstructure: A Survey.” Journal of Financial Markets 3
+(3): 205–258.
+Makarov, I., and A. Schoar. 2020. “Trading and Arbitrage in Cryptocurrency Markets.”
+Journal of Financial Economics 135 (2): 293–319.
+Mazur, M. 2021. “Non-Fungible Tokens (NFT). The Analysis of Risk and Return.” SSRN
+Electronic Journal.
+Menkveld, A. J. 2013. “High Frequency Trading and the New Market Makers.” Journal
+of Financial Markets 16 (4): 712–740.
+Mukhopadhyay, M., and K. Ghosh. 2021. “Market Microstructure of Non Fungible Tokens.” SSRN Electronic Journal.
+Nadini, M., L. Alessandretti, F. Di Giacinto, M. Martino, L. M. Aiello, and A. Baronchelli.
+2021. “Mapping the NFT Revolution: Market Trends, Trade Networks, and Visual
+Features.” Scientific Reports 11:20902.
+O’Hara, M. 2003. “Presidential Address: Liquidity and Price Discovery.” The Journal of
+Finance 58 (4): 1335–1354.
+Oh, S. 2024. “Market Manipulation in Non-Fungible Token Markets.” Working paper,
+Temple University.
+Rochet, J.-C., and J. Tirole. 2003. “Platform Competition in Two-Sided Markets.” Journal
+of the European Economic Association 1 (4): 990–1029.
+Roll, R. 1984. “A Simple Implicit Measure of the Effective Bid-Ask Spread in an Efficient
+Market.” The Journal of Finance 39 (4): 1127–1139.
+SEC Division of Economic and Risk Analysis. 2014. Equity Market Structure Literature
+Review, Part II: High Frequency Trading. Technical report. Staff report, using 2013
+data. U.S. Securities and Exchange Commission.
+Serneels, S. 2023. “Detecting wash trading for nonfungible tokens.” Finance Research
+Letters 52:103374.
+44
+
+Stoll, H. R. 2000. “Presidential Address: Friction.” The Journal of Finance 55 (4): 1479–
+1514.
+Wachter, V. von, J. R. Jensen, F. Regner, and O. Ross. 2023. “NFT Wash Trading:
+Quantifying Suspicious Behaviour in NFT Markets.” In Financial Cryptography and
+Data Security. FC 2022 International Workshops, 13412:299–311. Lecture Notes in
+Computer Science. Springer.
+Wilkoff, S., and S. Yildiz. 2023. “The Behavior and Determinants of Illiquidity in the
+Non-Fungible Tokens (NFTs) Market.” Global Finance Journal 55:100782.
+45
+
+Tables
+Table 1: Market Overview
+This table reports descriptive statistics for the five NFT collections with active bid markets.
+Panel A describes market activity, Panel B reports prices and spreads, and Panel C summarizes
+bidder concentration. Med. inter-trade time is the median time (in minutes) between consecutive
+sales within a collection. CryptoPunks is excluded due to its non-standard native marketplace
+(only 79 bids captured vs. 23 350 sales over 2 506 days) but is included in sale-based analyses
+throughout the paper. Median relative spread is computed from the 4–7% of token-level snapshots where both bid and ask are present. Floor bid = best bid and Spread reduction refer to
+the two-tier orderbook incorporating collection-level floor bids (see Section 5).
+BAYC
+MAYC Otherside
+Azuki W.CryptoPunks
+Panel A: Market Activity
+Sample period (days)
+1 104
+171
+185
+222
+1 323
+Sales
+55 683
+23 525
+5 396
+18 479
+6 034
+Bids (mil.)
+24.3
+66.9
+272.0
+40.5
+1.0
+Asks (listings)
+286 335
+339 680
+34 801
+169 851
+17 977
+Avg. daily sales
+50.4
+137.9
+29.1
+83.4
+4.6
+Bid-to-trade ratio
+435
+2 842
+50 402
+2 192
+167
+Unique tokens traded
+9 165
+3 028
+2 132
+2 258
+493
+Med. inter-trade time (min)
+5.0
+1.0
+8.2
+0.8
+1.4
+Panel B: Prices and Spreads
+Median sale price (USD)
+$64 283
+$11 212
+$1 187
+$14 757
+$173 536
+Mean sale price (USD)
+$76 952
+$10 425
+$1 546
+$15 157
+$172 648
+Std dev sale price (USD)
+$83 741
+$2 234
+$2 367
+$5 547
+$53 735
+Median sale price (ETH)
+26.72
+4.31
+0.50
+6.17
+58.28
+Avg. daily volume (USD)
+$3 881 193 $1 437 359
+$45 050 $1 264 165
+$787 932
+Median relative spread
+48.0%
+47.6%
+73.7%
+67.2%
+199.8%
+Floor bid = best bid (%)
+94.0
+93.9
+99.5
+84.6
+99.4
+Spread reduction w/ floor (%)
+55.9
+35.4
+62.4
+43.5
+67.9
+Panel C: Market Concentration
+Unique bidder addresses
+2 449
+999
+765
+709
+293
+Unique seller addresses
+12 995
+3 433
+1 811
+2 208
+584
+Top-5 bidder share (%)
+46.4
+71.1
+17.4
+55.9
+97.7
+Bidder HHI
+0.063
+0.160
+0.016
+0.095
+0.255
+Coll.-level bid share (%)
+40.2
+35.5
+28.4
+50.5
+100.0
+46
+
+Table 2: Spread and Liquidity Metrics
+This table reports median spread and liquidity measures across all six NFT collections. Quoted
+spread (QS) and relative spread (RS) are computed from token-level orderbook snapshots with
+both bid and ask present (4–7% of snapshots). Effective spread (ES) matches sales to the most
+recent two-sided snapshot. Roll spread estimates the implicit spread from the autocovariance
+of consecutive sale price changes; “–” indicates positive autocovariance (no bid-ask bounce).
+Amihud ILLIQ measures price impact as the ratio of absolute daily return to daily volume.
+Nsales is the total number of completed sales per collection. Roll spread and Amihud ILLIQ
+are computed using winsorized means (5th/95th percentiles); all other columns report medians.
+CryptoPunks spread estimates are suppressed (Nsnapshots = 7, NES = 1); its non-standard native
+marketplace yields only 79 bids in the data. Effective spread match rates range from 0.3% to
+15.9% across collections. Table A4 reports floor-benchmark spreads computed by benchmarking
+sales against the daily median collection-level bid.
+Nsales
+Med. QS ($)
+Med. RS (%)
+Med. ES ($)
+Roll ($)
+Amihud (×106)
+BAYC
+55 683
+39 231
+48.0
+49 992
+45 358
+0.02
+CryptoPunks
+23 350
+–
+–
+–
+–
+68.57
+W.CryptoPunks
+6 034
+144 160
+199.8
+124 987
+9 707
+1.86
+MAYC
+23 525
+8 336
+47.6
+8 100
+688
+0.02
+Otherside
+5 396
+4 211
+73.7
+229
+–
+0.86
+Azuki
+18 479
+18 439
+67.2
+7 581
+953
+0.03
+47
+
+Table 3: The Two-Tier Orderbook
+This table characterizes the two-tier orderbook structure across the five collections with active
+bid markets. Panel A reports bid composition and the relationship between collection-level floor
+bids and sale prices. Total Bids counts bid placements (excluding cancellations), matching the
+counts in Table 1. Coll.-level share is the fraction of all bid placements that are collection-level
+(no token identifier). Bid/Sale is the ratio of median collection-level bid to median sale price;
+values below 1.0 indicate bid shading consistent with Prediction 1. Panel B reports the impact
+of incorporating floor bids on quoted spreads. All Panel B values are computed on the noncrossed subset only (where floor bid ≤token-specific ask). Crossed is the share of all two-sided
+snapshots where the floor bid exceeds the token-specific ask. Panel C reports Granger causality
+F-tests between daily floor bid returns and sale price returns. Lag order is selected via AIC on
+a bivariate VAR(1)–VAR(5) model; the F-test is performed at the AIC-optimal lag. *, **, ***
+denote significance at the 10%, 5%, and 1% level.
+Panel A: Bid Structure
+Total Bids (mil.) Coll.-Level (%) Bid/Sale
+BAYC
+24.3
+40.2
+0.71
+W.CryptoPunks
+1.0
+100.0
+0.54
+MAYC†
+66.9
+35.5
+1.05
+Otherside†
+272.0
+28.4
+1.80
+Azuki
+40.5
+50.5
+0.90
+† Bid/sale ratio inflated by criteria orders (see footnote 6).
+Panel B: Spread Impact of Floor Bids
+Crossed (%) Token-Only ($) Two-Tier ($) Reduction (%) Floor Best (%)
+BAYC
+66.3
+191 234
+84 342
+55.9
+94.0
+W.CryptoPunks
+4.7
+144 160
+46 315
+67.9
+99.4
+MAYC
+54.8
+23 302
+15 053
+35.4
+93.9
+Otherside
+93.4
+88 774
+33 343
+62.4
+99.5
+Azuki
+71.4
+39 109
+22 083
+43.5
+84.6
+Panel C: Price Discovery (Granger Causality)
+Floor Bid →Sale Price
+Sale Price →Floor Bid
+F
+Lag
+F
+Lag
+BAYC
+5.31∗∗∗
+4
+0.46
+4
+W.CryptoPunks
+0.00
+1
+0.00
+1
+MAYC
+3.44∗
+1
+0.82
+1
+Otherside
+1.17
+2
+8.02∗∗∗
+2
+Azuki
+1.04
+1
+0.17
+1
+48
+
+Table 4: Cross-Validation of Liquidity Measures
+Panel A reports Spearman rank correlations between daily spread and liquidity measures, pooled
+across all collections. Panel B compares our median NFT estimates to published equity and
+cryptocurrency benchmarks.
+Equity benchmarks from SEC Division of Economic and Risk
+Analysis (2014); cryptocurrency benchmarks from Makarov and Schoar (2020).
+Panel A: Estimator Correlations (Pooled Spearman ρ)
+RS
+QS
+Bids Depth Volume
+Sales Volatility
+Rel. Spread
+1.00
+Quoted Spread
+0.61
+1.00
+Bid Count
+0.21 −0.34
+1.00
+Bid Depth
+0.04 −0.26
+0.96
+1.00
+Volume
+−0.18
+0.33 −0.28 −0.12
+1.00
+N Sales
+0.06 −0.17
+0.56
+0.58
+0.48
+1.00
+Volatility
+−0.19 −0.31
+0.10
+0.04
+−0.13 −0.00
+1.00
+Panel B: Literature Benchmarks
+Metric
+Our NFTs
+Equity
+Crypto
+Spreads
+Median rel. spread
+70.5%
+0.05–0.25%
+0.01–0.02%
+Roll spread (USD)
+$5 330
+–
+–
+Amihud ILLIQ (×106)
+0.45
+–
+–
+Commonality
+R2
+1.6%
+∼1–22%
+–
+49
+
+Table 5: Market Maker Profiles and Behavior
+This table characterizes the market makers (MMs) identified in each collection. MMs are defined
+as addresses placing at least 1% of all bids in a collection. Panel A reports identification and
+activity measures. Med. bids/day is the median number of bids placed per day across MMs.
+Med. bid/sale is the median ratio of each MM’s bid price to the same-day median sale price.
+Coll.-level is the mean fraction of each MM’s bids that are collection-wide (no token identifier).
+Panel B reports quote reaction behavior after sales. Med. react./MM is the median number
+of post-sale bid reactions per market maker. Med. reaction is the median time (in seconds)
+from a sale to the first subsequent bid by each MM (within 60 minutes). Med. bid/sale is the
+median ratio of the first post-sale collection-level bid to the sale price. CryptoPunks is excluded
+(sale-only).
+Panel A: Identification and Activity
+N
+MMs
+Med.
+bids/day
+Med.
+bid/sale
+Coll.-level
+(%)
+Med.
+purchases
+Med.
+active days
+BAYC
+21
+9 389
+0.981
+60.9
+0
+185
+W.CryptoPunks
+5
+803
+0.606
+100.0
+0
+182
+MAYC†
+11
+27 954
+1.041
+37.3
+9
+130
+Otherside†
+38
+22 450
+2.037
+20.4
+1
+166
+Azuki
+20
+9 561
+1.040
+53.0
+1
+126
+† Bid/sale ratio inflated by criteria orders (see footnote 6).
+Panel B: Quote Reaction After Sales
+N
+MMs
+Med.
+react./MM
+Med.
+reaction (s)
+P25
+(s)
+P75
+(s)
+Med.
+bid/sale
+BAYC
+21
+1 828
+174
+7
+684
+0.982
+W.CryptoPunks
+5
+55
+41
+7
+463
+0.563
+MAYC
+11
+11 356
+1
+0
+4
+1.028
+Otherside
+38
+4 216
+1
+0
+3
+1.343
+Azuki
+20
+6 300
+6
+1
+26
+0.997
+50
+
+Table 6: Post-Purchase Returns: Adverse Selection
+This table reports average percentage returns following market maker purchases, measured as the
+change in the daily median sale price index at horizons of 1, 5, and 10 calendar days. Panel A
+reports raw returns. Panel B reports market-adjusted returns, computed by subtracting the
+ETH/USD return over the same horizon. Standard errors are in parentheses. ∗, ∗∗, ∗∗∗denote
+significance at the 10%, 5%, and 1% level (one-sample t-test, H0: mean = 0). WrappedCryptoPunks is excluded due to insufficient observations (N < 10), and CryptoPunks is excluded as
+well (sale-only).
+Panel A: Raw Returns (%)
+N
+1 day
+5 day
+10 day
+BAYC
+556
+−0.27
+−0.55
+−1.05∗∗
+(0.19)
+(0.40)
+(0.53)
+MAYC
+381
+−0.61∗∗∗
+−1.28∗∗∗
+−1.21∗∗
+(0.19)
+(0.46)
+(0.57)
+Otherside
+65
+−1.39∗∗
+−3.82∗∗∗
+−3.23∗∗
+(0.57)
+(1.07)
+(1.33)
+Azuki
+189
+0.11
+1.38∗
+3.30∗∗∗
+(0.33)
+(0.80)
+(1.06)
+Panel B: Market-Adjusted Returns (%)
+N
+1 day
+5 day
+10 day
+BAYC
+556
+−0.45∗∗
+−1.60∗∗∗
+−3.20∗∗∗
+(0.22)
+(0.42)
+(0.54)
+MAYC
+381
+−1.02∗∗∗
+−3.44∗∗∗
+−5.90∗∗∗
+(0.24)
+(0.51)
+(0.60)
+Otherside
+65
+−2.12∗∗∗
+−6.38∗∗∗
+−7.26∗∗∗
+(0.71)
+(1.52)
+(2.00)
+Azuki
+189
+−0.21
+−0.51
+0.74
+(0.41)
+(0.89)
+(1.13)
+51
+
+Table 7: Cross-Collection Liquidity Commonality
+This table reports regressions of individual collection liquidity changes on market-wide liquidity changes, following Chordia et al. (2000). The specification is ∆Li,t = α + βt∆LM,t +
+βt−1∆LM,t−1 + βt+1∆LM,t+1 + εi,t, where ∆L = log(Lt + 1) −log(Lt−1 + 1) is the log change
+in liquidity, winsorized at the 5th/95th percentiles. Market liquidity LM is the equal-weighted
+average across all other collections (leave-one-out). Data are at hourly frequency over the common sample period (November 2023 to May 2024, N = 4 061 observations per collection).
+Σβ = βt + βt−1 + βt+1. Standard errors are Newey-West (HAC) with up to 24 lags. ∗, ∗∗, ∗∗∗
+denote significance at the 10%, 5%, and 1% level. CryptoPunks is excluded (sale-only).
+Panel A: Active Bidders
+N
+βt
+βt−1
+βt+1
+Σβ
+R2
+BAYC
+4 061
+0.415∗∗∗
+0.077∗∗
+0.027
+0.520
+0.052
+W.CryptoPunks
+4 061
+1.251∗∗∗
+−0.139
+0.058
+1.169
+0.054
+MAYC
+4 061
+0.195∗∗∗
+0.014
+0.019
+0.228
+0.051
+Otherside
+4 061
+0.040∗∗∗
+−0.001
+0.005
+0.044
+0.024
+Azuki
+4 061
+0.225∗∗∗
+0.033
+−0.001
+0.257
+0.055
+Panel B: Bid Count
+N
+βt
+βt−1
+βt+1
+Σβ
+R2
+BAYC
+4 061
+0.136∗∗∗
+−0.010
+0.009
+0.135
+0.005
+W.CryptoPunks
+4 061
+0.227∗∗
+−0.026
+−0.046
+0.155
+0.002
+MAYC
+4 061
+0.058∗∗∗
+0.005
+0.014
+0.077
+0.005
+Otherside
+4 061
+0.028∗∗∗
+0.006
+0.001
+0.034
+0.009
+Azuki
+4 061
+0.036
+0.038
+0.025
+0.100
+0.001
+Panel C: Bid Value (USD)
+N
+βt
+βt−1
+βt+1
+Σβ
+R2
+BAYC
+4 061
+0.070∗∗∗
+−0.014
+−0.016
+0.040
+0.006
+W.CryptoPunks
+4 061
+0.538∗∗
+−0.272
+−0.122
+0.144
+0.003
+MAYC
+4 061
+0.016∗
+0.005
+0.003
+0.025
+0.001
+Otherside
+4 061
+0.015∗∗∗
+0.003
+0.005
+0.023
+0.006
+Azuki
+4 061
+0.010
+0.013
+−0.000
+0.023
+0.000
+Panel D: Sale Count
+N
+βt
+βt−1
+βt+1
+Σβ
+R2
+BAYC
+4 061
+0.189∗∗∗
+0.084∗
+0.024
+0.297
+0.004
+W.CryptoPunks
+4 061
+0.000
+0.000
+0.000
+0.000
+–
+MAYC
+4 061
+0.198∗∗∗
+0.071∗
+0.027
+0.296
+0.007
+Otherside
+4 061
+0.044
+−0.021
+−0.033
+−0.010
+0.002
+Azuki
+4 061
+0.203∗∗∗
+−0.061
+0.064
+0.207
+0.007
+52
+
+Table 8: Determinants of Relative Spreads
+This table reports panel regression estimates of median daily relative spread on liquidity determinants. Column (1) pools all collections; column (2) adds collection fixed effects; column (3)
+adds % Two-Sided Quotes – the share of daily orderbook snapshots with both a bid and an
+ask – as a selection control; column (4) extends a reduced base specification with token rarity
+measures; column (5) adds year-month fixed effects to absorb market-wide shocks. Floor Bid
+Share is the fraction of bids that are collection-level. Coll. Bid Share is the collection-level
+share of total bid value. log(1 + Rarity) is the daily mean information content (IC) rarity score
+of active tokens; Rarity Dispersion is their standard deviation. HAC (Newey-West) standard
+errors; t-statistics in parentheses. ∗, ∗∗, ∗∗∗denote significance at the 10%, 5%, and 1% level.
+(1)
+(2)
+(3)
+(4)
+(5)
+Pooled OLS Collection FE + Selection + Rarity + Time FE
+log(1 + Volume)
+−0.067∗∗∗
+0.003
+0.012
+0.002
+0.004
+(−9.42)
+(0.50)
+(1.61)
+(0.29)
+(0.55)
+Volatility
+−0.432∗∗∗
+−0.047
+−0.039
+−0.049
+0.037
+(−4.03)
+(−0.78)
+(−0.70)
+(−0.82)
+(0.75)
+log(1 + Bid Count)
+−0.000
+0.070∗∗∗
+0.071∗∗∗
+0.071∗∗∗
+−0.054∗∗∗
+(−0.04)
+(5.69)
+(6.22)
+(5.63)
+(−2.76)
+Floor Bid Share
+0.238∗∗
+0.236∗∗
+0.373∗∗∗
+0.245∗∗
+(2.10)
+(1.99)
+(3.10)
+(2.19)
+Coll. Bid Share
+0.232∗∗
+−0.062
+−0.149∗∗
+−0.179∗∗
+(2.56)
+(−0.85)
+(−2.17)
+(−2.26)
+% Two-Sided Quotes
+0.499∗∗∗
+(4.83)
+log(1 + Rarity)
+0.109
+(1.54)
+Rarity Dispersion
+0.007
+(0.89)
+Collection FE
+No
+Yes
+Yes
+Yes
+Yes
+Month FE
+No
+No
+No
+No
+Yes
+N
+1 216
+1 216
+1 216
+1 216
+1 216
+R2
+0.209
+0.525
+0.547
+0.523
+0.621
+Adj. R2
+0.206
+0.521
+0.544
+0.520
+0.611
+Within-R2
+–
+0.125
+–
+–
+0.039
+Note: Column (4) uses a reduced base specification that excludes Floor Bid Share, Coll. Bid Share, and %
+Two-Sided Quotes to avoid multicollinearity with the rarity measures. Column (5) includes 22 year-month
+dummies (July 2022–May 2024) to absorb market-wide shocks; the sign reversal of log(1 + Bid Count)
+from positive (column 2) to negative (column 5) indicates that the positive within-collection coefficient
+is driven by common time-series variation rather than a genuine within-collection-month relationship.
+Dependent variable is the median daily relative spread, filtered to positive values. Pooled VIF exceeds
+5 for log Volume (11.0) and Floor Bid Share (16.3), driven by between-collection variation absorbed by
+fixed effects. Within-collection VIF (after demeaning) is ≤1.06 for all regressors. Within-R2 measures
+the incremental explanatory power of regressors beyond fixed effects.
+53
+
+Table 9: Market Design – CryptoPunks vs. WrappedCryptoPunks
+This table compares CryptoPunks under two data sources and WrappedCryptoPunks (ERC-721
+contract on standard marketplaces). CP (Native) reports on-chain events from the CryptoPunks smart contract’s built-in marketplace, obtained via Dune Analytics. CP (External) reports
+the same collection as captured by external marketplace platforms that index standard NFT
+marketplaces but not the proprietary CryptoPunks mechanism. W.CryptoPunks wraps individual CryptoPunks into the ERC-721 standard for trading on Blur and OpenSea. All three
+represent the same 10 000 underlying assets. CP (Native) and CP (External) cover June 2017
+to May 2024 (2 506 days). W.CryptoPunks covers September 2020 to May 2024 (1 323 days).
+The native Dune data extend through February 2026; we truncate to the orderbook sample end
+date for comparability. Table A9 in the Appendix reports full-sample results. Relative spread
+= (ask −bid)/midpoint; medians winsorized at 5th/95th percentiles. CP (Native) spreads use
+token-specific bids and asks.
+W.CryptoPunks spreads use the two-tier orderbook: The bid
+side is the effective best bid, i.e., the maximum of the token-specific bid and the collectionlevel floor bid (see Section 5.2); crossed quotes (floor bid > ask) are excluded. Amihud ILLIQ
+= mean(|return|/volume) per day, multiplied by 106; higher values indicate greater price impact
+per unit of trading volume. The Roll (1984) estimator is undefined for CryptoPunks (positive
+autocovariance of consecutive price changes). Wash trading flagged via union of self-trade (H1),
+round-trip ≤7d (H2), and repeat pairs ≥5 trades (H3); see Section 7.4.
+CP (Native)
+CP (External)
+W.CryptoPunks
+Panel A: Market Activity
+Sales
+24 753
+23 350
+6 034
+Bids
+38 805
+79
+1 010 818
+Asks (listings)
+101 334
+4 861
+17 977
+Sample period (days)
+2 506
+2 506
+1 323
+Avg. daily sales
+9.9
+9.3
+4.6
+Bid-to-trade ratio
+1.6
+0.0
+167.5
+Unique bidders
+5 860
+–
+–
+Panel B: Bidder Concentration (Native)
+HHI (bidders)
+0.007
+–
+–
+Top-5 bidder share
+14.7%
+–
+–
+Panel C: Prices
+Mean sale price (ETH)
+42.47
+52.28
+57.99
+Median sale price (ETH)
+20.00
+29.98
+58.28
+Mean sale price (USD)
+$121 652
+$155 600
+$172 648
+Median sale price (USD)
+$42 662
+$89 237
+$173 536
+Panel D: Market Quality
+Median relative spread
+53.6%
+200.0%
+110.7%
+Median spread (ETH)
+15.95
+–
+–
+Roll (1984) spread (USD)
+–
+–
+$9 707
+Amihud ILLIQ (×106)
+774.9
+68.6
+1.9
+Median bid depth (ETH)
+0.40
+–
+–
+Wash trading (% flagged)
+–
+10.0%
+57.0%
+54
+
+Table 10: Market Quality Across Market Regimes
+This table reports key market quality metrics across three subperiods: Bull (data start through
+May 2022), Bear (June 2022 through December 2023), and Recovery (January 2024 onward).
+N Sales is the number of completed transactions. Bids is the total number of bid events in
+millions. Volume is total trading volume in millions of USD. Roll spread is the Roll (1984)
+estimator computed from per-token consecutive sale prices in ETH: 2
+p
+−Cov(∆pt, ∆pt−1); “–”
+indicates undefined (positive autocovariance) or insufficient data. Med. RS is the median daily
+relative spread (winsorized at 5th/95th percentile). MAYC, Otherside, and Azuki enter the
+sample only during the Bear period. CryptoPunks is sale-only; bid-dependent metrics (Med.
+RS) are unavailable.
+Bull
+Bear
+Recovery
+BAYC
+N Sales
+27 035
+22 556
+6 092
+Bids (mil.)
+<0.1
+5.9
+18.4
+Volume (mil. USD)
+1 544
+2 408
+333
+Roll spread (ETH)
+3.9
+16.4
+1.3
+Med. RS (%)
+–
+64.0
+44.6
+CryptoPunks
+N Sales
+19 412
+3 398
+540
+Bids (mil.)
+0.0
+<0.1
+<0.1
+Volume (mil. USD)
+2 703
+789
+141
+Roll spread (ETH)
+–
+24.3
+6.5
+Med. RS (%)
+–
+–
+–
+W.CryptoPunks
+N Sales
+158
+5 829
+47
+Bids (mil.)
+0.0
+0.5
+0.5
+Volume (mil. USD)
+10
+1 025
+7
+Roll spread (ETH)
+–
+2.7
+–
+Med. RS (%)
+–
+199.7
+199.8
+MAYC
+N Sales
+–
+4 451
+19 074
+Bids (mil.)
+–
+18.2
+48.6
+Volume (mil. USD)
+–
+54
+192
+Roll spread (ETH)
+–
+0.2
+0.2
+Med. RS (%)
+–
+48.2
+47.6
+Otherside
+N Sales
+–
+1 990
+3 406
+Bids (mil.)
+–
+101.6
+170.3
+Volume (mil. USD)
+–
+4
+5
+Roll spread (ETH)
+–
+–
+0.02
+Med. RS (%)
+–
+75.9
+73.0
+Azuki
+N Sales
+–
+6 723
+11 756
+Bids (mil.)
+–
+19.7
+20.8
+Volume (mil. USD)
+–
+85
+195
+Roll spread (ETH)
+–
+0.2
+0.4
+Med. RS (%)
+–
+80.8
+63.5
+55
+
+Table 11: Wash Trading Detection
+This table reports wash trading prevalence using heuristic-based detection following Oh (2024).
+Panel A shows flagging rates by heuristic. H1: self-trade (buyer = seller). H2: round-trip within
+7 days (A→B then B→A, same token). H3: high-volume address pairs (≥5 trades between the
+same buyer-seller pair). H4: same-block round-trip (≤60 s). Any is the union of all heuristics;
+% Vol is the share of total USD volume from flagged trades. Panel B reports flagging rates for
+the two largest venues by sales count (Blur, OpenSea) and CryptoPunks’ native marketplace;
+remaining venues are shown in Figure 8.
+Panel A: Prevalence by Heuristic
+N Sales H1
+H2
+H3≥5 H4 Any (%) % Vol
+BAYC
+55 683
+39 2 284
+9 061
+2
+17.3
+18.5
+CryptoPunks
+23 350
+0
+54
+2 289
+0
+10.0
+3.1
+W.CryptoPunks
+6 034
+0 1 103
+3 270
+0
+57.0
+59.3
+MAYC
+23 525
+11 2 122 10 828
+30
+47.5
+48.8
+Otherside
+5 396
+0
+47
+131
+0
+3.2
+6.1
+Azuki
+18 479
+8 1 552
+7 991
+0
+44.5
+44.0
+Panel B: Prevalence by Marketplace
+Collection
+Marketplace
+N Sales N Flagged % Flagged % Vol
+BAYC
+Blur
+22 648
+8 989
+39.7
+39.3
+OpenSea
+29 017
+317
+1.1
+0.3
+CryptoPunks
+CryptoPunks
+23 182
+2 317
+10.0
+3.1
+W.CryptoPunks Blur
+5 789
+3 407
+58.9
+60.2
+OpenSea
+83
+3
+3.6
+8.7
+MAYC
+Blur
+19 798
+10 290
+52.0
+53.2
+OpenSea
+1 203
+25
+2.1
+2.0
+Otherside
+Blur
+4 049
+143
+3.5
+3.2
+OpenSea
+1 012
+17
+1.7
+13.0
+Azuki
+Blur
+17 780
+8 200
+46.1
+45.9
+OpenSea
+284
+7
+2.5
+1.9
+56
+
+Figures
+Figure 1: Collection-Level Bid and Sale Price Dynamics
+This figure shows the daily co-movement of the mean active collection-level floor bid (red) and
+the median sale price (blue) for each of the five collections with active bid markets, indexed
+to 100 at the median of the first 30 common trading days. CryptoPunks is excluded (sale-only).
+The lower panel of each subplot shows the number of active collection-level bids over time. We
+use the mean rather than the best (highest) floor bid because the data captures trait-filtered bids
+(e.g., offers restricted to specific traits) as collection-level orders; the best floor bid is therefore
+increased by high-value trait-specific offers and frequently exceeds the median sale price. Lowball
+bids below 30% of the median sale price are excluded. The series are restricted to dates where
+both floor bid and sale price data are available; for BAYC, collection-level bid data begins in
+February 2022.
+20
+40
+60
+80
+100
+120
+140
+160
+Index (100)
+BAYC
+Jan '22
+Jul '22
+Jan '23
+Jul '23
+Jan '24
+0
+200K
+400K
+N Bids
+50
+60
+70
+80
+90
+100
+110
+Index (100)
+MAYC
+Dec '23
+Feb '24
+Apr '24
+0
+2.0M
+N Bids
+40
+60
+80
+100
+120
+140
+160
+Index (100)
+Otherside
+Dec '23
+Feb '24
+Apr '24
+0
+5.0M
+N Bids
+100
+120
+140
+160
+180
+200
+220
+240
+Index (100)
+Azuki
+Nov '23
+Jan '24
+Mar '24
+May '24
+0
+1.0M
+N Bids
+60
+80
+100
+120
+140
+160
+180
+Index (100)
+W.CryptoPunks
+May '23
+Nov '23
+May '24
+0
+50K
+100K
+N Bids
+Median Sale Price (indexed)
+Mean Floor Bid (indexed)
+Active Collection-Level Bids
+57
+
+Figure 2: Bid Concentration Across Collections
+This figure shows Lorenz curves of bid concentration for each of the five collections with active
+bid markets. The x-axis represents the cumulative share of unique bidder addresses (ranked
+from smallest to largest by bid count), and the y-axis represents the cumulative share of total
+bids. The dashed line indicates perfect equality. Curves far below the diagonal indicate extreme
+concentration: in all collections, a small number of addresses accounts for the vast majority of
+bidding activity. CryptoPunks is excluded (sale-only).
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+Cumulative Share of Bidders
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+Cumulative Share of Bids
+Azuki
+BAYC
+MAYC
+Otherside
+W.CryptoPunks
+Perfect equality
+Figure 3: Market-Adjusted Post-Purchase Returns
+This figure shows mean market-adjusted returns following market maker purchases at horizons
+of 1, 5, and 10 calendar days. Returns are computed as the change in the daily median sale
+price index, adjusted by subtracting the ETH/USD return over the same horizon. Negative
+returns indicate that market makers tend to buy before prices decline, consistent with adverse
+selection costs but also reflecting inventory risk from market-wide movements. ∗, ∗∗, ∗∗∗denote
+significance at the 10%, 5%, and 1% level. WrappedCryptoPunks (N < 10) and CryptoPunks
+(sale-only) are excluded.
++1 Day
++5 Days
++10 Days
+Horizon
+8
+6
+4
+2
+0
+2
+Mean Market-Adjusted Return (%)
+**
+***
+***
+***
+***
+***
+***
+***
+***
+BAYC
+MAYC
+Otherside
+Azuki
+58
+
+Figure 4: CryptoPunks vs. WrappedCryptoPunks
+Panel (a) compares daily volume-weighted average sale prices (VWAP) in ETH for CryptoPunks
+(native marketplace) and WrappedCryptoPunks (ERC-721 on standard marketplaces). Thick
+lines show 7-day rolling medians; faint lines show raw daily VWAP prices. The y-axis is clipped
+at 200 ETH to suppress outlier spikes.
+Panel (b) shows the median relative spread on the
+CryptoPunks native marketplace over time (monthly medians with 90-day rolling average).
+(a) Price Co-Movement
+2021
+2022
+2023
+2024
+0
+25
+50
+75
+100
+125
+150
+175
+200
+Daily VWAP Sale Price (ETH)
+CryptoPunks (7d median)
+W.CryptoPunks (7d median)
+(b) Native Spread Time Series
+2017
+2018
+2019
+2020
+2021
+2022
+2023
+2024
+2025
+2026
+0
+25
+50
+75
+100
+125
+150
+175
+200
+Median Relative Spread (%)
+Monthly median
+90-day rolling avg.
+59
+
+Figure 6: Market Quality Across Regimes
+This figure shows how market quality evolves across three market regimes:
+Bull (through
+May 2022), Bear (June 2022 through December 2023), and Recovery (January 2024 onward).
+Panel (a) reports the Roll (1984) spread in ETH, computed from per-token consecutive sale price
+autocovariance. Missing bars indicate undefined estimates (positive autocovariance). Panel (b)
+reports the median daily relative spread (winsorized at 5th/95th percentile). MAYC, Otherside,
+and Azuki enter the sample only during the Bear period and are shown for Bear and Recovery
+only. CryptoPunks is excluded from Panel (b) (sale-only).
+(a) Roll (1984) Spread (ETH)
+BAYC
+CryptoPunks
+W.CryptoPunks
+MAYC
+Otherside
+Azuki
+0.01
+0.1
+1
+10
+Roll Spread (ETH, log scale)
+Bull
+Bear
+Recovery
+(b) Median Relative Spread
+BAYC
+W.CryptoPunks
+MAYC
+Otherside
+Azuki
+0
+25
+50
+75
+100
+125
+150
+175
+200
+Median Relative Spread (%)
+Bear
+Recovery
+60
+
+Figure 8: Wash Trading by Marketplace
+This figure shows the share of trades flagged as potential wash trades, broken down by marketplace for each collection. Flagging uses the union of four heuristics: self-trade (H1), round-trip
+within 7 days (H2), high-volume address pairs with ≥5 trades (H3), and same-block round-trip
+(H4), following Oh (2024). Dark bars show the percentage of sales flagged; light bars show the
+percentage of USD volume from flagged trades. Marketplaces with <1% of a collection’s sales
+are omitted; sample sizes (n) are shown above each bar.
+Blur
+Magic Eden
+X2Y2
+LooksRare
+OpenSea
+0
+20
+40
+60
+80
+100
+Flagged (%)
+n=22,648
+n=607
+n=1,613
+n=1,106
+n=29,017
+BAYC
+CryptoPunks
+n=23,182
+CryptoPunks
+Blur
+OpenSea
+0
+20
+40
+60
+80
+100
+Flagged (%)
+n=5,789
+n=83
+W.CryptoPunks
+mintify.xyz
+Blur
+Magic Eden
+OpenSea
+n=475
+n=19,798
+n=1,666
+n=1,203
+MAYC
+gem.xyz
+Magic Eden
+Blur
+OpenSea
+0
+20
+40
+60
+80
+100
+Flagged (%)
+n=74
+n=146
+n=4,049
+n=1,012
+Otherside
+Blur
+OpenSea
+n=17,780
+n=284
+Azuki
+% Sales Flagged
+% Volume Flagged
+61
+
+Appendix
+Table A1: Winsorization Sensitivity of Relative Spreads
+This table examines the sensitivity of mean relative spread estimates to alternative winsorization thresholds. Relative spread is (ask −bid)/midpoint, computed from orderbook snapshots
+with two-sided quotes. Columns 4–6 show the mean after clipping at the indicated percentiles
+(1st/99th, 2.5th/97.5th, and 5th/95th). N is the number of two-sided snapshots. The baseline
+specification uses 5/95 winsorization throughout the paper.
+Winsorized Mean
+Collection
+N
+Median
+1/99
+2.5/97.5
+5/95
+Raw Mean
+BAYC
+992 084
+48.0%
+77.8%
+78.1%
+78.4%
+77.5%
+W.CryptoPunks
+615
+199.8%
+163.8%
+163.8%
+163.8%
+163.8%
+MAYC
+2 697 168
+47.6%
+60.3%
+60.4%
+60.2%
+60.3%
+Otherside
+1 684 254
+73.7%
+75.8%
+75.9%
+76.0%
+75.6%
+Azuki
+890 141
+67.2%
+74.6%
+74.7%
+73.8%
+74.4%
+Table A2: Extended Sample – Sale-Based Spread Metrics
+This table reports sale-based spread and liquidity metrics computed from Dune Analytics
+nft.trades on-chain data, covering each collection’s full lifetime. Roll spread has been calculated as 2
+p
+−Cov(∆pt, ∆pt−1) from consecutive per-token sales. Amihud ILLIQ is the winsorized mean (5th / 95th pct) of daily |return|/volume, scaled by 106. Only single-item ETH /
+WETH / bpETH trades included; zero-price transfers excluded.
+Nsales
+Trading Days
+Sample Period
+Roll ($)
+Roll (ETH)
+Amihud (×106)
+BAYC
+63 592
+1 755
+2021-04 – 2026-02
+66 842
+21.91
+0.08
+CryptoPunks
+27 160
+2 706
+2017-06 – 2026-02
+1 022 061
+418.09
+501.31
+W.CryptoPunks
+6 142
+431
+2020-09 – 2025-11
+8 976
+3.16
+7.82
+MAYC
+163 352
+1 638
+2021-08 – 2026-02
+11 522
+3.56
+0.10
+Otherside
+232 169
+1 393
+2022-05 – 2026-02
+3 918
+1.15
+5.69
+Azuki
+109 670
+1 501
+2022-01 – 2026-02
+12 462
+2.94
+0.22
+62
+
+Table A3: Selection into Two-Sided Quotes
+This table characterizes the selection of token-level orderbook snapshots into two-sided quotes
+(both a bid and an ask present simultaneously). CryptoPunks is excluded (sale-only). The
+upper panel reports the share of all token-level orderbook snapshots in each category and the
+percentage of unique tokens that ever appear in a two-sided quote during the sample period.
+The lower panel compares median price levels between the two-sided and bid-only subsets. Med.
+Spread is the median relative spread computed as (ask −bid)/midpoint×100, excluding crossed
+quotes where bid ≥ask. Med. Depth is the median total bid depth in USD for the bid-only
+subset.
+Panel A: Quote Composition
+N (mil.)
+% Two-Sided
+% Bid-Only
+% Ask-Only
+% Neither
+% Tokens Ever 2S
+BAYC
+14.8
+6.7
+92.1
+1.2
+0.0
+61.4
+W.CryptoPunks
+<0.1
+3.0
+0.9
+95.0
+1.1
+16.5
+MAYC
+43.5
+6.2
+93.2
+0.6
+0.0
+21.3
+Otherside
+194.8
+0.9
+99.1
+0.0
+0.0
+4.4
+Azuki
+20.5
+4.3
+95.0
+0.7
+0.0
+25.5
+Panel B: Price Levels by Quote Type
+Two-Sided Subset
+Bid-Only Subset
+Med. Bid ($)
+Med. Ask ($)
+Med. Bid ($)
+Med. Depth ($)
+Med. Spread (%)
+BAYC
+56 172
+90 612
+52 832
+12 231 440
+55.36
+W.CryptoPunks
+102
+145 799
+323
+186
+199.80
+MAYC
+13 722
+21 962
+12 558
+22 788 736
+50.48
+Otherside
+3 249
+8 676
+2 963
+11 632 452
+77.23
+Azuki
+18 149
+37 606
+17 160
+12 965 616
+68.27
+63
+
+Table A4: Execution-Based Transaction Costs
+This table reports execution-based transaction cost measures that complement the quoted
+spreads in Table 3. Panel A matches each sale to the median collection-level bid price (in ETH)
+on the same calendar day, restricting to days with at least five collection-level bids. Execution
+premium is (psale −pfloor)/pfloor, where pfloor is the daily median collection-level bid. Positive
+values indicate the seller received more than the typical floor bid; negative values indicate the
+token sold below the floor bid. Floor-benchmark spread is the median absolute execution premium; unlike the classical effective spread (which requires a contemporaneous two-sided quote),
+this measure benchmarks against the daily median floor bid and thus does not represent a realtime executable cost. Panel B reports bid activity and execution probability. Cancel rate is the
+share of collection-level bids that are explicitly cancelled. CryptoPunks is excluded (sale-only
+collection).
+BAYC
+MAYC
+Otherside
+Azuki
+W.CryptoPunks
+Panel A: Execution Premium (Sale vs. Daily Median Floor Bid, ETH)
+Sales coverage (%)
+48.4
+100.0
+–
+99.8
+10.8
+Median execution premium (%)
++1.3
+−1.5
+–
++2.5
+–
+P25 / P75 (%)
+−0.5 / +4.3
+−3.0 / +0.6
+–
+−1.7 / +5.8
+–
+Floor-benchmark spread (%)
+2.6
+2.4
+–
+4.8
+–
+Sales above floor bid (%)
+68.7
+30.7
+–
+67.5
+–
+For comparison:
+Quoted rel. spread (%, Table 3)
+48.0
+47.6
+73.7
+67.2
+199.8
+Quoted spread coverage (%)
+4–7
+4–7
+4–7
+4–7
+4–7
+Panel B: Bid Activity and Execution Probability
+Collection-level bids (mil.)
+9.8
+23.7
+77.2
+20.5
+1.0
+Cancel rate, coll.-level (%)
+38.3
+2.7
+0.0
+2.4
+12.2
+Bid-to-trade ratio
+436
+2 842
+50 402
+2 192
+168
+Note: BAYC coverage is 48% because the earliest sample period (Apr 2021–Jan 2022) predates the
+emergence of active collection-level bidding. Otherside is excluded because its 100 000-token collection
+spans an extreme value range that renders the median collection-level bid uninformative as a benchmark
+for individual token transactions. WrappedCryptoPunks is omitted from Panel A because only 11% of
+sales occur on days with sufficient bid activity.
+64
+
+Table A5: Crossed-Quote Validation
+This table validates the economic significance of crossed quotes (snapshots where the collection-level floor
+bid exceeds the token-specific ask). Panel A reports the duration distribution of crossing episodes, defined
+as consecutive periods where the two-tier spread is negative for a given token. Censored episodes have no
+observed resolution before the end of the sample. Panel B reports how resolved crossings end: a new ask
+(seller updates listing), a floor bid decrease, an ask cancellation, a bid cancellation, or a sale. Panel C
+reports the crossed-quote rate by the marketplace of the active ask, restricted to venues with at least
+1 000 two-sided snapshots. CryptoPunks is excluded (sale-only).
+BAYC MAYC Otherside
+Azuki W.CryptoPunks
+Panel A: Crossing Episode Duration
+Episodes (N)
+9 660
+4 398
+3 511
+3 054
+163
+Resolved (N)
+6 419
+1 022
+56
+634
+142
+Censored (N)
+3 241
+3 376
+3 455
+2 420
+21
+Median duration (h)
+358.0
+455.3
+918.6 1 280.5
+161.4
+P25 duration (h)
+167.0
+154.3
+382.4
+523.9
+31.9
+P75 duration (h)
+1 444.3 1 367.5
+2 347.8 2 792.3
+225.7
+> 1 hour (%)
+96.0
+94.1
+100.0
+98.7
+93.7
+> 24 hours (%)
+90.6
+87.0
+98.2
+95.6
+76.8
+Panel B: Resolution Type (%)
+New ask posted
+32.8
+58.2
+30.4
+70.5
+85.9
+New bid (floor decrease)
+62.7
+41.2
+69.6
+28.7
+1.4
+Ask cancelled
+4.4
+0.6
+0.0
+0.2
+12.0
+Bid cancelled
+0.1
+0.0
+0.0
+0.6
+0.7
+Sale
+0.0
+0.0
+0.0
+0.0
+0.0
+Panel C: Crossed Rate by Marketplace (%)
+Blur
+77.9
+62.0
+88.8
+75.4
+13.0
+OpenSea
+59.7
+53.1
+95.0
+77.1
+0.6
+Magic Eden
+65.2
+73.4
+85.6
+35.4
+–
+Table A6: Simpson’s Paradox in Quoted Spread–Bid Count Correlation
+This table depicts Spearman rank correlations between daily quoted spread and daily bid count. The
+pooled sample stacks all collection-days; per-collection rows are computed within each collection separately. N is the number of collection-days with non-missing values for both measures. CryptoPunks is
+excluded (sale-only). ∗, ∗∗, ∗∗∗denote significance at the 10%, 5%, and 1% level.
+N
+ρ
+Per collection
+BAYC
+643
++0.317∗∗∗
+W.CryptoPunks
+151
++0.164∗∗
+MAYC
+129
++0.627∗∗∗
+Otherside
+124
+−0.058
+Azuki
+196
++0.203∗∗∗
+Pooled
+1 243
+−0.340∗∗∗
+65
+
+Table A7: Token-Level Quality Test
+This table tests whether tokens sold near the collection-level floor bid have lower rarity than
+tokens sold at a premium, as predicted by the adverse selection mechanism in Section 4. For
+each sale, the transaction price is matched to the contemporaneous floor bid via an as-of join
+on the two-tier orderbook. Near-floor sales have a price within 90–110% of the floor bid (likely
+floor-bid acceptances); premium sales exceed 150% of the floor bid (likely token-specific transactions). Rarity is measured by the information content (IC) score: Higher values indicate rarer
+tokens. The Mann-Whitney U test is one-sided (Ha: near-floor rarity < premium rarity). Cohen’s d measures the standardized mean difference. MAYC and Otherside are excluded because
+nearly all sales occur well below the measured floor bid, leaving insufficient premium sales for
+comparison; CryptoPunks is excluded (sale-only).
+BAYC
+Azuki
+W.CryptoPunks
+Panel A: Sale Classification
+Total matched sales
+30 996
+18 476
+4 901
+Near-floor (N)
+1 666
+353
+1 098
+Share of total (%)
+5.4
+1.9
+22.4
+Premium (N)
+3 067
+35
+2 485
+Share of total (%)
+9.9
+0.2
+50.7
+Panel B: Rarity Comparison
+Collection mean rarity
+26.34
+38.61
+4.75
+Near-floor mean rarity
+25.54
+38.02
+7.95
+Premium mean rarity
+26.10
+46.35
+9.08
+Difference
+−0.56
+−8.33
+−1.14
+Cohen’s d
+−0.18
+−1.58
+−0.11
+Mann-Whitney p
+<0.001∗∗∗
+<0.001∗∗∗
+0.001∗∗∗
+Table A8: Adverse Selection by Bid Type
+This table decomposes market maker post-purchase returns by the type of order that generated
+the purchase. Collection-level indicates that the sale matched a bid with no token identifier
+(a floor bid applicable to any token). Token-specific indicates that the sale matched a bid for
+that particular token. Ask execution indicates that the market maker purchased a seller’s listing
+directly. Panel A reports raw returns (based on daily median sale price index); Panel B reports
+market-adjusted returns (raw minus contemporaneous ETH/USD return).
+∗, ∗∗, ∗∗∗indicate
+significance from a one-sample t-test against zero at the 10%, 5%, and 1% level. The final row
+reports the pooled difference between collection-level and token-specific returns with a Welch
+t-test.
+Panel A: Raw Returns
+Panel B: Market-Adjusted
+1-day
+5-day
+10-day
+1-day
+5-day
+10-day
+Collection-level
+−0.29
+−0.51
+−0.25
+−0.71∗∗∗
+−2.33∗∗∗
+−3.14∗∗∗
+Token-specific
+−1.00∗∗∗
+−1.69∗
+−3.55∗∗∗
+−1.55∗∗∗
+−3.08∗∗∗
+−6.39∗∗∗
+Ask execution
+−0.29
+−1.38∗∗∗
+−3.26∗∗∗
+−0.46∗
+−2.73∗∗∗
+−6.60∗∗∗
+Coll. −Token
++0.71∗
++1.18
++3.29∗∗
++0.84∗
++0.75
++3.25∗
+N: collection-level = 478, token-specific = 118, ask execution = 561
+66
+
+Table A9: Market Design – Full Sample (Robustness)
+This table replicates Table 9 using the full available sample for CP (Native), which extends
+through February 2026 (3 165 days). CP (External) and W.CryptoPunks remain unchanged
+(through May 2024). The full-sample median relative spread of 40.0% is lower than the matchedperiod estimate of 53.6% (Table 9), reflecting the inclusion of tighter-spread months in late 2024
+(Figure 4b). The qualitative finding – native bilateral spreads substantially below ERC-721 twotier spreads – is robust to the sample period choice. Amihud ILLIQ = mean(|return|/volume)
+per day, multiplied by 106. The Roll (1984) estimator is undefined for CP (Native) (positive
+autocovariance of consecutive price changes).
+CP (Native)
+CP (External)
+W.CryptoPunks
+Panel A: Market Activity
+Sales
+28 475
+23 350
+6 034
+Bids
+66 662
+79
+1 010 818
+Asks (listings)
+117 576
+4 861
+17 977
+Sample period (days)
+3 165
+2 506
+1 323
+Avg. daily sales
+9.0
+9.3
+4.6
+Bid-to-trade ratio
+2.3
+0.0
+167.5
+Unique bidders
+6 562
+–
+–
+Panel B: Bidder Concentration (Native)
+HHI (bidders)
+0.040
+–
+–
+Top-5 bidder share
+35.9%
+–
+–
+Panel C: Prices
+Mean sale price (ETH)
+42.72
+52.28
+57.99
+Median sale price (ETH)
+23.99
+29.98
+58.28
+Mean sale price (USD)
+$123 204
+$155 600
+$172 648
+Median sale price (USD)
+$54 951
+$89 237
+$173 536
+Panel D: Market Quality
+Median relative spread
+40.0%
+200.0%
+110.7%
+Median spread (ETH)
+13.00
+–
+–
+Roll (1984) spread (USD)
+–
+–
+$9 707
+Amihud ILLIQ (×106)
+528.2
+68.6
+1.9
+Median bid depth (ETH)
+0.79
+–
+–
+Wash trading (% flagged)
+–
+10.0%
+57.0%
+67
+
+Table A10: Extended Sample – Subperiod Analysis
+This table reports key market quality metrics across three subperiods computed from Dune
+Analytics nft.trades on-chain data covering each collection’s full lifetime. Subperiods: Bull
+= collection start to May 2022; Bear = June 2022 to December 2023; Recovery = January
+2024 onward. Roll spread: consecutive per-token sale autocovariance in ETH. Amihud ILLIQ is
+the winsorized daily |return|/volume (×106). CryptoPunks data begins in 2017, providing the
+longest time series. Only single-item ETH/WETH/bpETH trades included.
+Bull
+Bear
+Recovery
+BAYC
+N Sales
+27 071
+21 482
+15 039
+Trading days
+397
+579
+779
+Volume (mil. USD)
+2 089
+1 702
+663
+Roll spread (ETH)
+8.6
+17.0
+9.5
+Amihud (×106)
+0.04
+0.03
+0.15
+CryptoPunks
+N Sales
+19 739
+3 369
+4 052
+Trading days
+1 412
+555
+739
+Volume (mil. USD)
+2 275
+397
+704
+Roll spread (ETH)
+–
+24.2
+1 605.2
+Amihud (×106)
+1 255.10
+0.39
+0.34
+W.CryptoPunks
+N Sales
+161
+5 717
+264
+Trading days
+81
+210
+140
+Volume (mil. USD)
+7
+610
+33
+Roll spread (ETH)
+–
+2.7
+1.7
+Amihud (×106)
+1 113.91
+0.13
+0.85
+MAYC
+N Sales
+34 805
+70 656
+57 891
+Trading days
+276
+579
+783
+Volume (mil. USD)
+1 513
+1 206
+457
+Roll spread (ETH)
+6.2
+1.4
+0.5
+Amihud (×106)
+0.02
+0.03
+0.19
+Otherside
+N Sales
+44 361
+167 000
+20 808
+Trading days
+31
+579
+783
+Volume (mil. USD)
+958
+567
+19
+Roll spread (ETH)
+–
+0.8
+0.5
+Amihud (×106)
+0.01
+0.20
+12.78
+Azuki
+N Sales
+28 672
+46 455
+34 543
+Trading days
+140
+579
+782
+Volume (mil. USD)
+794
+842
+530
+Roll spread (ETH)
+2.1
+2.0
+1.5
+Amihud (×106)
+0.04
+0.11
+0.37
+68
+
+Table A11: Blur Marketplace Entry
+This table compares market activity and wash trading rates before and after Blur’s launch on
+October 19, 2022. Pre-period runs from sample start to October 18, 2022; post-period from
+October 19, 2022 to sample end. Wash Rate is the share of sales flagged by at least one heuristic
+(Section 7.4). Post-Entry Wash reports marketplace-specific flagging rates for the post-period.
+Blur Share is Blur’s share of post-entry sales by count. Only collections with pre-Blur data are
+shown.
+Sales
+Wash Rate (%)
+Post-Entry Wash (%)
+Blur
+Collection
+Pre
+Post
+Pre
+Post
+Blur
+OpenSea
+Share (%)
+BAYC
+28 569
+27 105
+1.2
+34.2
+39.7
+0.8
+83.6
+W.CryptoPunks
+82
+5 874
+3.1
+58.5
+58.9
+33.3
+98.6
+Table A12: Extended Sample – Wash Trading Prevalence
+This table reports wash trading prevalence using heuristic-based detection following Oh (2024),
+applied to the full on-chain trading history from Dune Analytics nft.trades. H1: self-trade
+(buyer = seller). H2: round-trip within 7 days (A→B then B→A, same token). H3: high-volume
+address pairs (≥5 trades between the same buyer-seller pair). H4: same-block round-trip (≤60 s).
+Any is the union of H1–H4; % Vol is the share of total USD volume from flagged trades.
+N Sales
+H1
+H2
+H3≥5 H4 Any (%) % Vol
+BAYC
+63 592
+23
+2 855 12 367
+0
+20.3
+17.8
+CryptoPunks
+27 160
+0
+79
+2 661
+0
+10.0
+3.7
+W.CryptoPunks
+6 142
+0
+1 060
+3 426
+0
+58.3
+59.1
+MAYC
+163 352
+54 11 285 47 670
+53
+30.1
+20.0
+Otherside
+232 169 174
+8 963 54 144
+55
+24.0
+11.6
+Azuki
+109 670 100
+5 688 26 742
+14
+25.2
+21.1
+69
+
+Table A13: Wash Trading Robustness Check
+This table reports key metrics computed on all trades versus excluding wash-trade-flagged sales.
+Wash trades are identified using the union of heuristics H1 (self-trade), H2 (round-trip within
+7 days), and H3 (address pairs with ≥5 trades); see Table 11 for detection methodology and
+prevalence. Panel A reports the Roll (1984) implied spread computed from consecutive sale
+price changes in ETH: 2
+p
+−Cov(∆pt, ∆pt−1); “–” indicates positive autocovariance. Panel B
+reports the Amihud (2002) illiquidity ratio (winsorized mean, 5th/95th percentile) scaled by
+106. Panel C reports market activity. ∆% is the percentage change from All to Excl. Flagged.
+% Flag is the share of total sales flagged as potential wash trades.
+% Flag
+All Trades
+Excl. Flagged
+∆%
+Panel A: Roll Spread (ETH)
+BAYC
+17.3
+20.01
+23.70
++18.4%
+CryptoPunks
+10.0
+–
+–
+–
+W.CryptoPunks
+57.0
+3.24
+4.29
++32.6%
+MAYC
+47.5
+0.2232
+0.3837
++71.9%
+Otherside
+3.2
+0.0274
+0.0501
++83.2%
+Azuki
+44.5
+0.4020
+0.6044
++50.4%
+Panel B: Amihud ILLIQ (×106)
+BAYC
+17.3
+0.024
+0.027
++13.7%
+CryptoPunks
+10.0
+68.57
+68.72
++0.2%
+W.CryptoPunks
+57.0
+1.86
+1.94
++4.3%
+MAYC
+47.5
+0.022
+0.037
++65.1%
+Otherside
+3.2
+0.858
+0.873
++1.8%
+Azuki
+44.5
+0.034
+0.044
++27.3%
+Panel C: Median Sale Price (USD)
+BAYC
+17.3
+$64 283
+$59 814
+−7.0%
+CryptoPunks
+10.0
+$89 237
+$104 163
++16.7%
+W.CryptoPunks
+57.0
+$173 536
+$168 893
+−2.7%
+MAYC
+47.5
+$11 212
+$10 905
+−2.7%
+Otherside
+3.2
+$1 187
+$1 185
+−0.2%
+Azuki
+44.5
+$14 757
+$14 809
++0.3%
+Note:
+Excluding wash-flagged sales mechanically inflates both the Roll spread and Amihud ILLIQ,
+because wash trades compress the autocovariance of price changes and inflate measured volume. Median
+sale prices are stable (≤7% change for all collections except CryptoPunks, where the removal of lowprice round-trips shifts the median upward). Orderbook-based measures (quoted and relative spreads,
+market maker profiles) are computed from bid and ask snapshots and are unaffected by the exclusion of
+wash-traded sales.
+70
+
+Figure A1: Sample Period Coverage
+This figure shows the data coverage for each of the six NFT collections from two complementary
+sources. Solid bars indicate on-chain trade data from Dune Analytics, covering each collection’s
+full trading history. Dark bars within indicate the date range of orderbook data, which provides
+bid- and ask-level detail used for the main analyses. Dashed vertical lines mark market regime
+transitions: Bull (through May 2022), Bear (June 2022 through December 2023), and Recovery
+(January 2024 onward). Sale-based metrics (Roll spread, Amihud ILLIQ, wash trading) are
+replicated on the full Dune sample as robustness checks (Tables A2, A10, and A12).
+2017
+2018
+2019
+2020
+2021
+2022
+2023
+2024
+2025
+2026
+CryptoPunks
+W.CryptoPunks
+BAYC
+Azuki
+Otherside
+MAYC
+Bull
+Bear
+Recovery
+On-chain trade data (Dune Analytics)
+Orderbook data (Reservoir API)
+Figure A2: Cross-Collection Spread Comparison
+This figure compares median relative spreads (in percent) across all six collections. Collections
+are sorted in ascending order of median relative spread. CryptoPunks and WrappedCryptoPunks
+exhibit the widest token-level relative spreads (≈200%), though CryptoPunks is based on only
+7 two-sided orderbook snapshots and should be interpreted with caution (see Table 2). When
+collection-level floor bids are incorporated via the two-tier orderbook, WrappedCryptoPunks’
+median spread narrows to 111% (Table 9).
+0
+25
+50
+75
+100
+125
+150
+175
+200
+Median Relative Spread (%)
+MAYC
+BAYC
+Azuki
+Otherside
+W.CryptoPunks
+CryptoPunks
+47.6%
+48.0%
+67.2%
+73.7%
+199.8%
+200.0%
+71
+
+Figure A3: Market Maker Quote Reaction Time
+This figure shows the distribution of market maker reaction times after sales, measured as the
+time (in minutes) from a completed sale to the first subsequent bid by each market maker
+(within a 60-minute window). MAYC and Otherside exhibit a sharp spike near zero, indicating
+sub-second algorithmic quoting. BAYC and Azuki show a broader distribution, with reaction
+times extending to several minutes. WrappedCryptoPunks displays periodic spikes at regular
+intervals, consistent with scheduled rather than event-driven quoting. CryptoPunks is excluded
+(sale-only).
+0
+10
+20
+30
+40
+50
+60
+Reaction Time After Sale (minutes)
+Otherside
+MAYC
+Azuki
+W.CryptoPunks
+BAYC
+72
+
+Figure A4: Blur Marketplace Entry
+Panel (a) shows the monthly share of sales by execution venue (Blur, OpenSea, Other) for
+BAYC and WrappedCryptoPunks – the two collections with pre-Blur data. The dashed line
+marks Blur’s launch (October 2022); the dotted line marks the Season 1 airdrop (February
+2023). Panel (b) shows monthly wash trading rates by execution venue for the same collections.
+Blur’s entry coincides with a sharp increase in flagged trades, while OpenSea rates remain near
+zero throughout.
+2022
+2023
+2024
+0
+20
+40
+60
+80
+100
+Share of Sales (%)
+Blur
+launch
+S1
+airdrop
+BAYC
+Blur
+OpenSea
+Other
+2021
+2022
+2023
+2024
+0
+20
+40
+60
+80
+100
+Share of Sales (%)
+Blur
+launch
+S1
+airdrop
+W.CryptoPunks
+2022
+2023
+2024
+0
+20
+40
+60
+80
+100
+Wash Trading Rate (%)
+BAYC
+Blur
+OpenSea
+Other
+2021
+2022
+2023
+2024
+0
+20
+40
+60
+80
+100
+Wash Trading Rate (%)
+W.CryptoPunks
+73

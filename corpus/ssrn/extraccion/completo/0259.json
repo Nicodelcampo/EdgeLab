@@ -1,0 +1,76 @@
+{
+  "doc_id": 259,
+  "titulo": "Order Aggressiveness and Order Book Dynamics",
+  "resumen_operativo": "Estudia los determinantes de la agresividad de las órdenes en un mercado de limit order book usando datos reconstruidos del ASX (5 acciones más líquidas, julio-agosto 2002). Modela 6 procesos simultáneos de llegada de órdenes (market orders agresivas, limit orders agresivas y cancelaciones agresivas en ambos lados) con un modelo ACI (Autoregressive Conditional Intensity) multivariante. Las variables del libro de órdenes (volumen en cola, depth, inside spread, volatilidad reciente y cambios en order flow y precio) influyen significativamente en la decisión de qué orden enviar y cuándo. Evidencia empírica confirma proposiciones teóricas de Parlour (1998) y Foucault (1999) sobre crowding out y gravitational pull.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Order Aggressiveness",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Grado de urgencia/impacto de una orden: market orders que consumen múltiples niveles son las más agresivas; cancelaciones son las menos agresivas. Determinado por el estado del LOB y las expectativas de ejecución.",
+      "relaciones": [{"tipo": "USA", "objeto": "Limit Order Book State"}, {"tipo": "CAUSA", "objeto": "Order Submission Decision"}],
+      "cita_textual": "the most aggressive order is a market order which is allowed to be matched with several price levels on the opposite side"
+    },
+    {
+      "nombre": "Multivariate Autoregressive Conditional Intensity (ACI) Model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Extensión multivariante del modelo ACI de Russell (1999) que modela simultáneamente 6 procesos de llegada de órdenes como procesos puntuales con intensidades estocásticas autorregresivas, capturando interdependencias dinámicas.",
+      "relaciones": [{"tipo": "MEJORA_A", "objeto": "Ordered Probit Models"}, {"tipo": "INCORPORA", "objeto": "Order Book Dynamics"}],
+      "cita_textual": "the order arrival intensities are modelled using a six-dimensional version of the autoregressive conditional intensity (ACI) model"
+    },
+    {
+      "nombre": "Crowding Out Effect",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Predicción de Parlour (1998): tras una market buy order, aumenta la probabilidad de ejecución de limit sell orders, induciendo a traders vendedores a usar limit orders en vez de market orders, desplazando (crowding out) las market sell orders.",
+      "relaciones": [{"tipo": "CAUSA", "objeto": "Limit Order Preference"}, {"tipo": "PARTE_DE", "objeto": "Parlour (1998) Equilibrium Model"}],
+      "cita_textual": "a trader who wants to sell (buy) is more likely to submit a sell (buy) limit order instead of a sell (buy) market order"
+    },
+    {
+      "nombre": "Gravitational Pull",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Propiedad de Cohen et al. (1981): la presencia de una limit order atrae market orders hacia ese nivel de precio, ya que colocar limit orders adicionales cerca de una existente conlleva riesgo de no-ejecución.",
+      "relaciones": [{"tipo": "CAUSA", "objeto": "Market Order Attraction"}, {"tipo": "SE_OPONE_A", "objeto": "Limit Order Clustering"}],
+      "cita_textual": "after observing a limit order, a market participant has a higher incentive to post a market order than placing further limit orders in the immediate neighborhood"
+    },
+    {
+      "nombre": "Inside Spread Effect",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Un spread más amplio aumenta la probabilidad de órdenes agresivas (market orders) porque el coste de oportunidad de esperar ejecución con limit order supera el ahorro de spread, incentivando ejecución inmediata.",
+      "relaciones": [{"tipo": "CAUSA", "objeto": "Increased Market Order Aggressiveness"}],
+      "cita_textual": "the queued volume, the market depth, the inside spread, recent volatility, as well as recent changes in both the order flow and the price"
+    },
+    {
+      "nombre": "Volume-Quantile Classification (Aggressive Orders)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Clasificación de órdenes como agresivas si su volumen excede el cuantil 75%: market orders que exceden el volumen en el primer nivel opuesto son agresivas; limit orders y cancelaciones con volumen alto también se consideran agresivas.",
+      "relaciones": [{"tipo": "DEFINE", "objeto": "Aggressive Order Threshold"}],
+      "cita_textual": "These are market orders whose posted volume exceeds the standing volume on the first level of the opposite queue and whose volume is equal or higher than the 75%-quantile of all order volumes"
+    },
+    {
+      "nombre": "Dynamic Interdependencies in Order Flow",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Las llegadas de distintos tipos de órdenes no son independientes: existe evidencia clara de spill-overs y dependencias cruzadas entre market orders, limit orders y cancelaciones en ambos lados del libro.",
+      "relaciones": [{"tipo": "CAUSA", "objeto": "Bias in Univariate Models"}, {"tipo": "REQUIERE", "objeto": "Multivariate Intensity Models"}],
+      "cita_textual": "evidence for significant dynamic interdependencies between the individual processes confirms the usefulness of the multivariate setting"
+    },
+    {
+      "nombre": "Order Book Covariates vs Pure Dynamics",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Comparación empírica que muestra que un modelo sin dinámicas pero con variables del LOB supera a uno puramente dinámico sin covariables, evidenciando que el estado del libro es determinante en la agresividad de las órdenes.",
+      "relaciones": [{"tipo": "MIDE", "objeto": "LOB Variable Importance"}],
+      "cita_textual": "a model which excludes dynamics, but does include order book variables clearly outperforms a dynamic specification without covariates"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Las variables del LOB (volumen en cola, depth, inside spread, volatilidad reciente y cambios en order flow/precio) influyen significativamente en la agresividad de las órdenes, y existen interdependencias dinámicas significativas entre los 6 procesos de órdenes.",
+      "mercado": "Australian Stock Exchange (ASX)",
+      "periodo": "Julio-Agosto 2002",
+      "magnitud": "5 acciones más líquidas (BHP, NAB, NCP, TLS, WOW); modelo 6-dimensional ACI; ajuste significativo con inclusión de variables LOB",
+      "condiciones": "Reconstrucción completa del LOB; órdenes agresivas definidas por cuantil 75% de volumen; control por estacionalidad intradía",
+      "robustez": "alta",
+      "cita_textual": "a trader's decision of when and which order to submit is significantly influenced by the queued volume, the market depth, the inside spread, recent volatility, as well as recent changes in both the order flow and the price"
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "Diseñado específicamente para datos tick intradía con modelado de intensidades de llegada de órdenes; el modelo ACI multivariante es directamente aplicable a sistemas de trading de alta frecuencia y predicción de order flow."}
+}

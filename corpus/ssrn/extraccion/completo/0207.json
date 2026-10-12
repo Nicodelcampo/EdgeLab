@@ -1,0 +1,199 @@
+{
+  "doc_id": 207,
+  "titulo": "Limit Order Book Dynamics and Order Size Modelling Using Compound Hawkes Process",
+  "resumen_operativo": "Propone un Compound Hawkes Process de 12 dimensiones para simular la dinámica del libro de órdenes incluyendo distribuciones empíricas de tamaños de orden. El modelo respeta el spread positivo, la estacionalidad intradiaria y los kernels inhibitorios. Calibrado con datos NASDAQ Level 2 de Apple durante 2019, replica mejor que un Poisson los hechos estilizados (signature plot, autocorrelación de retornos, distribución de spreads). Incluye un estudio de impacto de mercado que reproduce la concavidad empírica de la función de market impact.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Compound Hawkes Process",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Proceso puntual compuesto donde el proceso de conteo sigue una dinámica Hawkes (con autoexcitación) y el tamaño de salto de cada evento se muestrea de una distribución calibrada empíricamente, aplicado aquí a los 6 niveles del LOB.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "limit order book"},
+        {"tipo": "USA", "objeto": "Hawkes process"},
+        {"tipo": "MEJORA_A", "objeto": "Poisson process"}
+      ],
+      "cita_textual": "We propose a novel methodology of using Compound Hawkes Process for the LOB where each event has an order size sampled from a calibrated distribution."
+    },
+    {
+      "nombre": "limit order book",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Sistema de colas con 6 niveles (ask+1, ask0, ask-1, bid+1, bid0, bid-1) modelado como un Compound Hawkes Process de 12 dimensiones, donde el estado se define por el vector de tamaños de cola en cada nivel de precio.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Compound Hawkes Process"},
+        {"tipo": "PARTE_DE", "objeto": "market microstructure"}
+      ],
+      "cita_textual": "We formulate the order book as a queueing system with six different queues which are {ask+1, ask0, ask-1, bid+1, bid0, bid-1}."
+    },
+    {
+      "nombre": "Hawkes process",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Proceso puntual donde la intensidad condicional de cada dimensión depende de una intensidad base exógena más la suma de funciones kernel de excitación sobre eventos pasados en todas las dimensiones. En este paper es 12-dimensional con kernels no-paramétricos.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Compound Hawkes Process"},
+        {"tipo": "MEJORA_A", "objeto": "Poisson process"}
+      ],
+      "cita_textual": "Hawkes Process has been used to model Limit Order Book (LOB) dynamics in several ways in the literature however the focus has been limited to capturing the inter-event times while the order size is usually assumed to be constant."
+    },
+    {
+      "nombre": "order size distribution",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Distribución empírica del tamaño de órdenes de mercado, límite y cancelación. Se observan spikes en números redondos (1, 10, 50, 100, 200, 500) —más del 40% de market orders y 60% de limit orders son de tamaño 100— lo cual se modela con funciones Dirac delta sobre una distribución geométrica.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "limit order book"},
+        {"tipo": "APLICA_A", "objeto": "Compound Hawkes Process"}
+      ],
+      "cita_textual": "we see more than 40% of the market orders and 60% of limit orders are of 100 size."
+    },
+    {
+      "nombre": "bid-ask spread",
+      "tipo": "concepto",
+      "definicion_en_contexto": "La diferencia entre el mejor bid y ask, que debe mantenerse no-negativa. El paper formula la intensidad de órdenes in-spread como función del spread actual: lambda_IS(t,s) = lambda_IS(t) * (s-1)^beta para s en N, garantizando que sea cero cuando el spread es 1 tick.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "limit order book"},
+        {"tipo": "REQUIERE", "objeto": "tick size"}
+      ],
+      "cita_textual": "the spread of the process always remains positive. […] To control the spread of the process (Prop 1), we formulate the intensities of LO_ask-1 and LO_bid+1 […] as a function of the current spread-in-ticks."
+    },
+    {
+      "nombre": "intraday seasonality",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Patrón en forma de U de las intensidades de órdenes a lo largo del día de trading: la actividad es máxima tras la subasta de apertura y antes de la de cierre, y mínima a mitad del día. Se modela multiplicando la intensidad Hawkes por un factor f(Q_t) constante por tramos de 30 minutos.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "limit order book"},
+        {"tipo": "APLICA_A", "objeto": "Hawkes process"}
+      ],
+      "cita_textual": "There is a 'U'-shape of order intensities with respect to the time of day i.e. right after the open auction and before the close auction, the activity in the market is much higher than the middle of the day."
+    },
+    {
+      "nombre": "power-law kernel",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Función de decaimiento phi(t) = alpha * (1 + gamma * t)^(-beta) usada como forma paramétrica para los kernels de excitación del Hawkes. El paper encuentra que la power-law es seleccionada el 100% de las veces sobre la exponencial según AIC para datos de AAPL.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Hawkes process"},
+        {"tipo": "MEJORA_A", "objeto": "exponential kernel"}
+      ],
+      "cita_textual": "We see that the power-law kernel is selected 100% of the time for this dataset."
+    },
+    {
+      "nombre": "non-parametric calibration",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Método de estimación de kernels de Hawkes sin imponer forma paramétrica previa, usando mínimos cuadrados sobre conteos binned en una grilla linear-log. Extiende Kirchner 2017 añadiendo constraints de signo unidireccional y estabilidad (máximo autovalor de la matriz de normas < 1).",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Hawkes process"},
+        {"tipo": "REQUIERE", "objeto": "Hawkes graph"}
+      ],
+      "cita_textual": "We follow the non-parametric method of calibration in Kirchner 2017 and take inspiration from Bacry et al. 2016 to create a time grid at both linear and log scales to account for the slowness of the decay kernels."
+    },
+    {
+      "nombre": "market impact",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Efecto de una meta-orden sobre el mid-price. El paper introduce un agente externo ejecutando una estrategia TWAP en el simulador CHP y encuentra que el impacto de mercado es cóncavo respecto al tamaño total de la orden, y mayor para órdenes de mercado que para límite, en línea con observaciones empíricas.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "limit order book"},
+        {"tipo": "USA", "objeto": "TWAP"}
+      ],
+      "cita_textual": "we find a concave relation between the MI observed and Q_T. This is inline with the empirically observed concavity in MI with respect to total order quantity."
+    },
+    {
+      "nombre": "inhibitory cross-excitation",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Fenómeno donde ciertos eventos reducen la intensidad de otros eventos en el proceso Hawkes, en vez de excitarlos. Por ejemplo, limit orders in-spread y cancelaciones en el top del lado opuesto tienen efectos inhibitorios mutuos. Se maneja forzando la intensidad total a cero como cota inferior.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Hawkes process"},
+        {"tipo": "SE_OPONE_A", "objeto": "self-excitation"}
+      ],
+      "cita_textual": "we observe that limit orders inside the spread and cancels at top at opposing sides of the book have inhibitory effects on each other."
+    },
+    {
+      "nombre": "stylized facts",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Conjunto de propiedades empíricas usadas para validar la calidad del simulador: distribuciones de inter-eventos, signature plot, distribución de retornos y spreads, autocorrelación de retornos absolutos y price paths. El modelo CHP replica todas ellas mejor que el benchmark Poisson.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "limit order book"}
+      ],
+      "cita_textual": "We make use of inter-event durations' distributions, price change time distributions, signature plots, distribution of spread and returns, autocorrelation of returns and sample price paths as our set of stylized facts."
+    },
+    {
+      "nombre": "TWAP",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia de ejecución donde la meta-orden se divide en órdenes hijas de tamaño constante a frecuencia fija, usada en el estudio de market impact variando Q_T (3000-24000 shares), T (15-120 segundos) y frecuencia de posting.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "market impact"},
+        {"tipo": "PARTE_DE", "objeto": "optimal execution"}
+      ],
+      "cita_textual": "we deploy a TWAP strategy (i.e. q(Q_T, T, f) = Q_T / (T * f)) with varying parameters Q_T in {3000, 6000, 12000, 24000} shares, T in {15, 30, 60, 120} seconds and f in {1, 1/3, 1/12, 1/20} sec^{-1}."
+    },
+    {
+      "nombre": "queue position",
+      "tipo": "concepto",
+      "definicion_en_contexto": "La cantidad de órdenes en cada nivel de precio del LOB. El estado del libro se define como el vector de tamaños de cola en los 6 niveles modelados. Una orden de mercado que excede el tamaño de la cola en el mejor precio causa un queue depletion event que ensancha el spread.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "limit order book"},
+        {"tipo": "CAUSA", "objeto": "bid-ask spread"}
+      ],
+      "cita_textual": "if a queue-depletion (QD) event at best bid/ask happens (for eg, a large enough market order of size kappa_MO_ask >= q(ask)_0), the spread widens."
+    },
+    {
+      "nombre": "Hawkes graph",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Método de Achab et al. 2018 que estima directamente la matriz de normas de kernels M_{ij} = integral phi(j->i)(u)du a partir de probabilidades condicionales del proceso puntual, usado aquí para determinar si un kernel es catalizador o inhibitorio antes del ajuste por mínimos cuadrados.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "non-parametric calibration"},
+        {"tipo": "APLICA_A", "objeto": "Hawkes process"}
+      ],
+      "cita_textual": "we make use of the Hawkes Graph Achab et al. 2018 which directly estimates the kernel norms matrix M_{d x d} […] we purely use this method to identify whether a kernel is catalysing or inhibiting in nature."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "El modelo Compound Hawkes Process con distribución calibrada de tamaños de orden replica los hechos estilizados del LOB (signature plot, distribución de retornos, ACF de retornos absolutos, distribución de spreads) significativamente mejor que un Compound Poisson Process equivalente.",
+      "mercado": "US equities (AAPL en NASDAQ)",
+      "periodo": "2019 (12 meses de datos Level 2)",
+      "magnitud": "Error cuadrático medio del ajuste de kernels ~10^{-3}; 97.4% de órdenes in-spread a 1 tick del best quote; spread promedio de AAPL: 1.7 ticks",
+      "condiciones": "NASDAQ Level 2 data; medium-tick stock (AAPL); calibración no-paramétrica con grilla linear-log; kernels power-law; modelo de 12 dimensiones",
+      "robustez": "media",
+      "cita_textual": "As we can see from Figure 7, the Hawkes Process is able to replicate the shape of the Signature Plot, the presence of long auto-correlations of absolute returns, the long tail of returns' distribution as well as the two peaks in inter-order arrival times quite well."
+    },
+    {
+      "afirmacion": "El modelo con distribución calibrada de tamaños de orden es muy superior al modelo con tamaño de orden constante: este último sobreestima la volatilidad por un factor de ~100 en el signature plot y produce spreads mucho más amplios.",
+      "mercado": "US equities (AAPL en NASDAQ)",
+      "periodo": "2019",
+      "magnitud": "Volatilidad sobreestimada en factor ~100 en signature plot; price changes mucho más rápidas en el modelo de tamaño constante",
+      "condiciones": "Comparación entre modelo CHP con distribución calibrada vs CHP con tamaño de orden constante igual a la mediana",
+      "robustez": "media",
+      "cita_textual": "the signature plot and the returns distribution show that the volatility is heavily overestimated (by a magnitude of ~100 as can be seen in the signature plot), the price changes happen much faster […] and finally the spreads are much wider in general."
+    },
+    {
+      "afirmacion": "El impacto de mercado de meta-órdenes es cóncavo respecto al tamaño total Q_T y respecto a la frecuencia de trading f en el simulador CHP, replicando observaciones empíricas.",
+      "mercado": "US equities (AAPL en NASDAQ, simulado)",
+      "periodo": "Simulación sobre parámetros calibrados en 2019",
+      "magnitud": "Concavidad observada para Q_T en {3000, 6000, 12000, 24000} shares y frecuencias entre 1 y 1/20 sec^{-1}; impacto de LO en top of book más débil y ruidoso que MO",
+      "condiciones": "Estrategia TWAP con order start time fijo; 100 paths por set de parámetros; agente externo en simulador CHP",
+      "robustez": "media",
+      "cita_textual": "Varying the total quantity in the meta-order we find a concave relation between the MI observed and Q_T. This is inline with the empirically observed concavity in MI with respect to total order quantity."
+    },
+    {
+      "afirmacion": "El kernel power-law es seleccionado sobre el kernel exponencial el 100% de las veces según el criterio AIC para los datos de AAPL en NASDAQ durante 2019.",
+      "mercado": "US equities (AAPL en NASDAQ)",
+      "periodo": "2019",
+      "magnitud": "Power-law seleccionado 100% de las veces vs exponencial; error cuadrático medio de ajuste ~10^{-3}",
+      "condiciones": "Comparación AIC entre power-law phi(t) = alpha*(1+gamma*t)^{-beta} y exponencial phi(t) = alpha*e^{-beta*t}",
+      "robustez": "media",
+      "cita_textual": "We see that the power-law kernel is selected 100% of the time for this dataset."
+    },
+    {
+      "afirmacion": "El tiempo de día afecta el impacto de mercado: operar durante la mañana tiene mayor impacto que durante la tarde, y el impacto vuelve a aumentar cerca del cierre, reflejando la estacionalidad intradiaria de las intensidades de órdenes.",
+      "mercado": "US equities (AAPL en NASDAQ, simulado)",
+      "periodo": "Simulación",
+      "magnitud": "Impacto mayor en morning, menor en afternoon, repunte near close",
+      "condiciones": "Estrategia TWAP con Q_T=12000, T=60s, f=1/3 sec^{-1} variando hora de inicio",
+      "robustez": "baja",
+      "cita_textual": "We find (Figure 12a) that trading during the morning has a higher impact than afternoon. This impact again increases near close. This suggests that the time-of-day conditioning of the model parameters propagates to MI as well."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "alta",
+    "nota": "El simulador CHP calibrado genera datos sintéticos de LOB de alta fidelidad que pueden usarse para backtesting intraday de estrategias de ejecución y market making en el ES, especialmente útil para estudiar impacto de mercado bajo distintos regímenes de liquidez."
+  }
+}

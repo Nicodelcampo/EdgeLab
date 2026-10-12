@@ -1,0 +1,69 @@
+{
+  "doc_id": 265,
+  "titulo": "Order Imbalance, Order Book Slope and the Volume-Volatility Relation",
+  "resumen_operativo": "Investiga el efecto del número de trades, tamaño medio de trade, order imbalance y pendiente del LOB (order book slope) sobre la volatilidad en tres futuros de tipos de interés del ASX (2004-2010). Documenta que el número de trades tiene un impacto más significativo sobre la volatilidad que el tamaño medio de trade, consistente con Jones et al. (1994). Encuentra relación negativa entre order book slope y volatilidad, pero el order imbalance no tiene impacto significativo. El order imbalance y el order book slope no son los factores principales en la relación volumen-volatilidad; el número de trades contiene información más relevante para la volatilidad.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "Volume-Volatility Relation",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Relación empírica positiva entre volumen de negociación y volatilidad de precios, explicada por tres hipótesis: Mixture of Distributions Hypothesis (llegada de información como factor latente), modelos de información asimétrica (Kyle 1985), y modelos de diferencias de opinión.",
+      "relaciones": [{"tipo": "EXPLICA", "objeto": "Information Arrival"}, {"tipo": "MIDE", "objeto": "Market Activity"}],
+      "cita_textual": "A positive relation between trading volume and volatility is often observed in prior empirical studies"
+    },
+    {
+      "nombre": "Number of Trades vs Trade Size",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Descomposición del volumen en dos componentes: número de transacciones y tamaño medio. Jones et al. (1994) mostró que el número de trades domina sobre el tamaño en explicar volatilidad, consistente con modelos de trading estratégico donde el informado divide órdenes grandes.",
+      "relaciones": [{"tipo": "CAUSA", "objeto": "Volatility"}, {"tipo": "USA", "objeto": "Strategic Order Splitting"}],
+      "cita_textual": "the number of trades has a more significant impact on volatility than the average trade size"
+    },
+    {
+      "nombre": "Order Book Slope",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Pendiente del LOB, proxy de la divergencia de opiniones entre inversores. Una mayor pendiente indica menor profundidad de mercado y está negativamente relacionada con la volatilidad, el volumen y la relación volumen-volatilidad.",
+      "relaciones": [{"tipo": "MIDE", "objeto": "Divergence of Opinions"}, {"tipo": "CAUSA", "objeto": "Volatility (Negative)"}],
+      "cita_textual": "the order book slope is negatively related to volatility, trading volume, and the volume-volatility relation"
+    },
+    {
+      "nombre": "Order Imbalance (in Volume-Volatility Context)",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Diferencia entre volumen comprador y vendedor. Aunque estudios previos sugieren que explica la relación volumen-volatilidad (Chan y Fong 2000), este paper encuentra que no añade poder explicativo significativo más allá del número de trades.",
+      "relaciones": [{"tipo": "USA", "objeto": "Lee-Ready Algorithm"}, {"tipo": "MIDE", "objeto": "Buyer/Seller Initiated Volume"}],
+      "cita_textual": "order imbalance does not add significant additional explanatory power to realized volatility beyond that of the number of trades"
+    },
+    {
+      "nombre": "Interest Rate Futures (ASX)",
+      "tipo": "dato",
+      "definicion_en_contexto": "Tres contratos de futuros sobre tipos de interés australianos: 90-day Bank Accepted Bill, 3-Year Treasury Bond y 10-Year Treasury Bond, negociados en el Australian Securities Exchange con datos intradía de 2004-2010.",
+      "relaciones": [{"tipo": "PARTE_DE", "objeto": "Australian Derivatives Market"}],
+      "cita_textual": "three interest rate futures (90-day Bank Accepted Bill, 3-Year Treasury Bond and 10-Year Treasury Bond) traded on the Australian Securities Exchange"
+    },
+    {
+      "nombre": "Two-Stage Regression (Schwert Method)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Procedimiento en dos etapas: (1) estimar volatilidad diaria como residuos absolutos de un modelo de retornos con controles por día de la semana y retardos; (2) regresar volatilidad sobre volumen, número de trades, order imbalance y order book slope.",
+      "relaciones": [{"tipo": "USA", "objeto": "Absolute Residuals"}, {"tipo": "MIDE", "objeto": "Daily Volatility"}],
+      "cita_textual": "building on Schwert (1990), the daily price volatility is estimated from the absolute residuals"
+    },
+    {
+      "nombre": "Roll-Over Methodology (Futures)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica para construir series continuas de futuros: se usa el contrato más cercano al vencimiento y se rota al siguiente contrato 5 días antes del vencimiento, evitando efectos de baja liquidez en el período de entrega.",
+      "relaciones": [{"tipo": "PRODUCE", "objeto": "Continuous Futures Series"}],
+      "cita_textual": "The closest-to-maturity contract is 'rolled over' into the second-closest-to-maturity contract five trading days before the expiration date"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "El número de trades tiene un impacto más significativo sobre la volatilidad que el tamaño medio de trade en futuros de tipos de interés australianos. El order book slope se relaciona negativamente con volatilidad, pero ni éste ni el order imbalance son los factores principales en la relación volumen-volatilidad.",
+      "mercado": "ASX - Futuros: 90-day Bank Accepted Bill, 3-Year y 10-Year Treasury Bond",
+      "periodo": "Abril 2004 - Marzo 2010",
+      "magnitud": "Relación positiva volumen-volatilidad confirmada; número de trades domina sobre tamaño; order book slope negativo sobre volatilidad; order imbalance no significativo",
+      "condiciones": "Datos intradía SIRCA con reconstrucción de 3 niveles del LOB; algoritmo Lee-Ready para dirección de trades; roll-over de contratos 5 días antes de vencimiento",
+      "robustez": "media",
+      "cita_textual": "the number of trades has a more significant impact on volatility than the average trade size. A negative relation between order book slope and volatility is also observed, while no significant impact of order imbalance on volatility is found"
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "media", "nota": "Usa datos intradía reconstruidos del LOB; los hallazgos sobre número de trades vs tamaño y order book slope son transferibles a estrategias de ejecución y modelos de volatilidad intradía, aunque la frecuencia de análisis es diaria."}
+}

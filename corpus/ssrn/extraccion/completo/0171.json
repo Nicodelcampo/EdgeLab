@@ -1,0 +1,106 @@
+{
+  "doc_id": 171,
+  "titulo": "High-Frequency Trading; Price Discovery and Efficient Market Hypothesis",
+  "resumen_operativo": "Este documento analiza empíricamente el impacto del High-Frequency Trading (HFT) en el descubrimiento de precios en Borsa Istanbul (BIST). Mediante simulaciones y regresiones Pooled OLS, concluye que la velocidad del HFT y sus algoritmos de arbitraje reducen el spread y las discrepancias de precios, validando teóricamente la eficiencia del mercado pero señalando ventajas rentables sobre los no-HFT.",
+  "calidad_paper": "baja",
+  "conceptos": [
+    {
+      "nombre": "high-frequency trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Transacciones algorítmicas de alta velocidad que analizan instantáneamente datos de mercado para ejecutar operaciones y explotar ineficiencias transitorias.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "price discovery"},
+        {"tipo": "MITIGA", "objeto": "bid-ask spread"},
+        {"tipo": "USA", "objeto": "arbitrage"}
+      ],
+      "cita_textual": "With algorithmic trading strategies, HFT analyses instant market data and executes automated trades."
+    },
+    {
+      "nombre": "price discovery",
+      "tipo": "concepto",
+      "definicion_en_contexto": "El proceso por el cual nueva información pública es incorporada rápida y eficientemente en los precios, reduciendo su desviación del valor real.",
+      "relaciones": [],
+      "cita_textual": "HFT contributes to the price discovery process by narrowing market price spreads."
+    },
+    {
+      "nombre": "efficient market hypothesis",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Teoría económica que asume que los precios reflejan toda la información disponible, respaldada aquí por las correcciones ultrarrápidas aportadas por HFT.",
+      "relaciones": [],
+      "cita_textual": "HFT's arbitrage activities ensure market balance by quickly correcting abnormal price differences in the market. This supports the efficient pricing mechanism envisaged by EMH."
+    },
+    {
+      "nombre": "bid-ask spread",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Diferencial de precios entre la oferta y la demanda; su reducción es un mecanismo clave mediante el cual el HFT facilita la provisión de liquidez.",
+      "relaciones": [],
+      "cita_textual": "The negative effects of HFT can be attributed to its ability to enhance liquidity in the market and narrow the spread between buying and selling prices"
+    },
+    {
+      "nombre": "transaction costs",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Los costos inherentes a la operativa (spreads y comisiones) que se calibran para evitar beneficios sobrestimados durante el testeo de arbitrajes.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "arbitrage"}
+      ],
+      "cita_textual": "Since ignoring transaction costs, including trading spread and fees, during the arbitrage process would make profits appear excessively high, 3.5 basis points, frequently used in the literature, are used."
+    },
+    {
+      "nombre": "limit order book",
+      "tipo": "dato",
+      "definicion_en_contexto": "Estructura de datos que incluye todos los mensajes de órdenes electrónicas con tiempo, dirección, precio y tamaño, vital para identificar a los operadores de alta frecuencia.",
+      "relaciones": [],
+      "cita_textual": "The intraday order data set used in the study includes all electronic messages sent to the system, including time, order identification number, date, delivery time (in seconds), trade direction (bid/ask), price, quantity, and order types."
+    },
+    {
+      "nombre": "arbitrage",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategias cuantitativas sin sesgo direccional que capturan beneficios corrigiendo diferencias anormales de precio mediante ejecuciones automatizadas.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "efficient market hypothesis"}
+      ],
+      "cita_textual": "HFT instantly recognizes price differences in the market and exploits arbitrage opportunities."
+    },
+    {
+      "nombre": "HFT identification",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Metodología heurística para etiquetar el flujo de órdenes HFT que asume que la emisión de múltiples órdenes idénticas en intervalos de un segundo o menos provienen de un algoritmo.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "high-frequency trading"},
+        {"tipo": "REQUIERE", "objeto": "limit order book"}
+      ],
+      "cita_textual": "Many HFTs are identified as if more than one order message with the same size and direction (buy/sell) comes from the same investor within a short interval, such as one second or less."
+    },
+    {
+      "nombre": "pooled OLS",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo econométrico de regresión que se aplica a los resultados simulados para inferir la influencia agregada de las variables sobre los precios.",
+      "relaciones": [],
+      "cita_textual": "Pooled OLS is performed to determine the contribution of HFT to price discovery, using the simulation results."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Los algoritmos de alta frecuencia generan beneficios rentables consistentemente superiores a los inversores tradicionales (no-HFT) al arbitrar sistemáticamente ineficiencias menores.",
+      "mercado": "Borsa Istanbul (BIST)",
+      "periodo": "Junio 2024",
+      "magnitud": "1.1163 de diferencia significativa a favor de HFT",
+      "condiciones": "Simulación con 100 ciclos y costos de transacción fijos de 3.5 puntos base (bps)",
+      "robustez": "baja",
+      "cita_textual": "As a result, there is a significant difference of 1.1163 between HFT and Non-HFT. HFT transactions have more profit than non-HFT transactions."
+    },
+    {
+      "afirmacion": "La penetración de flujos HFT impacta negativamente la divergencia de precios de los activos, contribuyendo a la convergencia a su valor fundamental (price discovery).",
+      "mercado": "Borsa Istanbul (BIST)",
+      "periodo": "Junio 2024",
+      "magnitud": "Coeficiente estadísticamente significativo negativo (p<0.01)",
+      "condiciones": "Estimación mediante regresión Pooled OLS que controla por beneficios y conteos de transacciones",
+      "robustez": "baja",
+      "cita_textual": "The first model (column 1) indicates that HFT has a statistically significant negative effect on price discovery. [...] This signifies that HFT serves to improve market efficiency by reducing price discrepancies."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "Metodología heurística muy sencilla sin alfa empírico en un mercado secundario emergente; no se presenta una ventaja modelable robusta aplicable directamente a los futuros E-mini S&P."
+  }
+}

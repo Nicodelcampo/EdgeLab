@@ -1,0 +1,137 @@
+{
+ "doc_id": 177,
+ "titulo": "Ideas in algorithmic trading And system modeling For pedestrians",
+ "resumen_operativo": "El documento presenta una guía detallada sobre la creación, evaluación y validación de sistemas sistemáticos de trading algorítmico. Cubre desde la generación de ideas hasta las pruebas de robustez (backtesting, out-of-sample, simulación aleatoria de ruido, y pruebas de estrés) para sistemas de seguimiento de tendencia (Trend-Following) y reversión a la media (Mean-Reverting). Explica el diseño de algoritmos utilizando futuros del DAX (FDAX), Euro Bund (FGBL) y Nikkei 225, enfatizando la mitigación del sobreajuste (over-fitting) y analizando características de distribución de trades.",
+ "calidad_paper": "media",
+ "conceptos": [
+  {
+   "nombre": "Systematic trading algorithms",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Sistemas de trading automatizado que toman decisiones de compra y venta basadas en reglas cuantitativas extraídas de datos históricos, diseñados para ser robustos frente a ruido del mercado.",
+   "relaciones": [
+    {
+     "tipo": "PREDICE",
+     "objeto": "market events"
+    }
+   ],
+   "cita_textual": "All systematic trading algorithms start by looking at the market and noting certain behaviors that could be exploited for profit."
+  },
+  {
+   "nombre": "Trend-following (TF)",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Estrategia que busca identificar una dirección (tendencia) en el mercado e intenta capitalizarla; típicamente presenta muchos trades con pequeñas pérdidas y unos pocos trades con grandes ganancias.",
+   "relaciones": [
+    {
+     "tipo": "PARTE_DE",
+     "objeto": "Systematic trading algorithms"
+    }
+   ],
+   "cita_textual": "The trend identification strategy looks for movement from point A to point B and has some expectation that the trend will continue in the same direction."
+  },
+  {
+   "nombre": "Mean-reverting (MR)",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Estrategia de trading asumiendo que tras un movimiento, el precio revertirá a un promedio histórico. Generalmente presenta muchos trades pequeños ganadores y unos pocos perdedores grandes.",
+   "relaciones": [
+    {
+     "tipo": "PARTE_DE",
+     "objeto": "Systematic trading algorithms"
+    }
+   ],
+   "cita_textual": "The mean reversion strategy looks for movement from point A to point B and has some expectation that a trend has been exhausted and will reverse direction to the average."
+  },
+  {
+   "nombre": "Over-optimization / Curve fitting",
+   "tipo": "concepto",
+   "definicion_en_contexto": "Ajustar excesivamente los parámetros de un modelo a un conjunto de datos históricos específicos ('in-sample'), lo que lleva a un bajo rendimiento cuando se expone a nuevos datos ('out-sample').",
+   "relaciones": [
+    {
+     "tipo": "MITIGADO_POR",
+     "objeto": "out-sample testing"
+    }
+   ],
+   "cita_textual": "If a system works repeatedly well with old data but fails when new and different data is applied, the system must be considered 'over optimized' to the original date or 'curve fitted'."
+  },
+  {
+   "nombre": "Out-sample testing",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Evaluación del rendimiento del algoritmo usando un subconjunto de datos (out-sample) que no se empleó durante el ajuste (in-sample) de los parámetros, para verificar la generalización.",
+   "relaciones": [
+    {
+     "tipo": "USA",
+     "objeto": "historical data"
+    }
+   ],
+   "cita_textual": "Then he or she will use the time-period of (2007-2011) as the 'out-sample', in which, the system's behavior can be closely observed, running on this data for which it has not been pre-fitted."
+  },
+  {
+   "nombre": "Data proxying",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Uso de datos proxy para imitar datos históricos necesarios para el backtesting cuando hay falta de suficiente información en un mercado determinado.",
+   "relaciones": [
+    {
+     "tipo": "USA",
+     "objeto": "proxy data"
+    }
+   ],
+   "cita_textual": "When there is not enough historical data in one market to calibrate a system, a developer may utilize data proxying, to imitate the historical data needed for 'Back Testing'."
+  },
+  {
+   "nombre": "Robustness stress tests",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Batería de pruebas, incluyendo la interrupción aleatoria de datos y adición de ruido en las series, para validar la estabilidad de un sistema algorítmico y rechazar modelos inestables.",
+   "relaciones": [
+    {
+     "tipo": "MITIGA",
+     "objeto": "over-fitting"
+    }
+   ],
+   "cita_textual": "The battery of stress tests has confirmed the stability and robustness of the system on the Euro future contract."
+  },
+  {
+   "nombre": "Sharpe ratio",
+   "tipo": "metrica",
+   "definicion_en_contexto": "Métrica de rendimiento ajustada al riesgo que se utiliza en conjunto con su dispersión para evaluar la estabilidad y calidad (ranking) de un sistema de trading.",
+   "relaciones": [
+    {
+     "tipo": "MIDE",
+     "objeto": "system stability"
+    }
+   ],
+   "cita_textual": "Sharpe ratios for the three nominal systems are thus very good, above 2.5."
+  }
+ ],
+ "hallazgos": [
+  {
+   "afirmacion": "Un enfoque iterativo y riguroso que evalúa sistemas tanto 'in-sample' como 'out-sample' previene el despliegue de sistemas sobreoptimizados ('curve-fitted').",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  },
+  {
+   "afirmacion": "Los sistemas de seguimiento de tendencias deben reconocer tendencias reales insertadas en ruido aleatorio pero deben generar resultados nulos (evitar transar) cuando operan en series de puro ruido.",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  },
+  {
+   "afirmacion": "Un sistema algorítmico maduro debe comprobarse evaluando la distribución de sus trades (ganadores vs perdedores) para validar que se ajusta verdaderamente a su naturaleza teórica (ej. un TF debería mostrar un pico en ganancias grandes y un corte en pérdidas).",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  }
+ ],
+ "aplicabilidad_es_intradia": {
+  "nivel": "media",
+  "nota": "El documento proporciona excelentes prácticas y procesos teóricos para la validación de sistemas algorítmicos. Aunque describe ejemplos (como el modelo Nikkei en timeframe de 5-minutos), se enfoca más en el marco de pruebas y el control de robustez general que en resultados directamente replicables o en el específico mercado E-mini S&P 500."
+ }
+}

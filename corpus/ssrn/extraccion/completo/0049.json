@@ -1,0 +1,240 @@
+{
+  "doc_id": 49,
+  "titulo": "An Analysis of Global HFT Regulation: Motivations, Market Failures, and Alternative Outcomes",
+  "resumen_operativo": "Working paper (policy, no cuantitativo propio) que revisa regulaciones de HFT en EU, EEUU, Canadá, Asia y mercados emergentes, clasificando motivaciones regulatorias en 'integridad de mercado' (compartidas) y 'fairness' (divergentes). Argumenta que no hay evidencia de market failure atribuible exclusivamente al HFT y que impuestos a transacciones financieras (FTT) y tiempos mínimos de holding reducen liquidez. Útil para un quant como mapa de riesgo regulatorio jurisdiccional (FTT, order-to-trade ratio, tick size, minimum hold time) que puede afectar la viabilidad de estrategias de alta frecuencia/intradía en distintos mercados.",
+  "calidad_paper": "baja",
+  "conceptos": [
+    {
+      "nombre": "high-frequency trading",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Forma de trading algorítmico en la que las firmas usan datos de mercado de alta velocidad y analítica para buscar oportunidades de trading de oferta-demanda de corto plazo, a menudo producto de características conductuales o mecánicas predecibles del mercado.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "trade volume"},
+        {"tipo": "CAUSA", "objeto": "bid-ask spread"}
+      ],
+      "cita_textual": "a form of algorithmic trading in which firms use high-speed market data and analytics to look for short-term supply-and-demand trading opportunities that often are the product of predictable behavioral or mechanical characteristics of financial markets"
+    },
+    {
+      "nombre": "financial transaction tax",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Impuesto sobre transacciones ejecutadas y/o órdenes canceladas, propuesto o implementado en EU, Francia, Italia, UK, Canadá y EEUU para desincentivar HFT; el paper documenta que reduce liquidez y volumen de negociación.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "market liquidity"},
+        {"tipo": "SE_OPONE_A", "objeto": "high-frequency trading"}
+      ],
+      "cita_textual": "firms that provide liquidity using modern trading technology—which includes, but is not limited to, HFTs—will be required to pay the tax on both successfully executed transactions and order cancelations"
+    },
+    {
+      "nombre": "order-to-trade ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Ratio regulatorio entre órdenes enviadas (incluyendo cancelaciones/modificaciones) y órdenes efectivamente ejecutadas, usado por reguladores (EU, Alemania, Francia, Canadá) para limitar actividad de HFT y su capacidad de generar 'ruido'.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "high-frequency trading"},
+        {"tipo": "PARTE_DE", "objeto": "financial transaction tax"}
+      ],
+      "cita_textual": "Member states shall impose a maximum order-to-trade ratio and minimum tick size"
+    },
+    {
+      "nombre": "minimum hold time",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Regulación (ej. MiFID II) que obliga a mantener órdenes sin cambios por un tiempo mínimo (500 milisegundos), diseñada para reducir la velocidad de trading y desincentivar el trend trading algorítmico.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "market liquidity"},
+        {"tipo": "SE_OPONE_A", "objeto": "price discovery"}
+      ],
+      "cita_textual": "Firms must hold orders, unchanged, for a minimum of 500 milliseconds"
+    },
+    {
+      "nombre": "market liquidity",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Beneficio empíricamente demostrado del HFT (liquidez mejorada); el paper muestra que cae marcadamente tras la implementación de FTTs y otras regulaciones anti-HFT en Francia, Italia y Alemania.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "transaction costs"}
+      ],
+      "cita_textual": "These benefits include improved liquidity, lower transaction costs, price synchronization, greater overall market speed, more efficient price discovery"
+    },
+    {
+      "nombre": "market impact",
+      "tipo": "concepto",
+      "definicion_en_contexto": "No desarrollado técnicamente en el paper; se menciona como métrica de reporte requerida a plataformas de trading bajo el CFTC Concept Release ('price impact for given trade sizes').",
+      "relaciones": [],
+      "cita_textual": "price impact for given trade sizes"
+    },
+    {
+      "nombre": "price discovery",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Proceso de formación eficiente de precios que el paper argumenta se ve mejorado por HFT y potencialmente dañado por regulaciones que ralentizan el trading (FTTs, minimum hold times, tick size mínimo).",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "market efficiency"},
+        {"tipo": "SE_OPONE_A", "objeto": "minimum hold time"}
+      ],
+      "cita_textual": "more efficient price discovery"
+    },
+    {
+      "nombre": "market efficiency",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Concepto central del argumento del paper: los mercados informacionalmente eficientes ajustan precios rápidamente ante nueva información, lo que implica alta volatilidad, no baja, según cita de Eugene Fama.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "price discovery"}
+      ],
+      "cita_textual": "implies high volatility. Prices adjust quickly to new information. When uncertainty is very high, you expect volatility to be very high"
+    },
+    {
+      "nombre": "market failure",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Definido por los autores como la situación en que los precios de los valores no reflejan toda la información disponible de manera eficiente, o el mercado no logra transferir la propiedad de valores eficientemente; el paper concluye que no existe evidencia de market failure atribuible exclusivamente al HFT.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "market efficiency"}
+      ],
+      "cita_textual": "We consider a market failure to exist in informationally efficient financial markets when securities prices do not fully reflect all available information in an efficient manner"
+    },
+    {
+      "nombre": "spoofing",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Práctica manipulativa de 'layering' o 'spoofing' ya ilegal en muchos países, ejemplificada por las multas a Panther Energy Trading LLC por manipulación deliberada de mercados de commodities.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "manipulative trading"}
+      ],
+      "cita_textual": "The strategies of \"layering\" or \"spoofing\" are good examples of manipulative practices that are already illegal in many countries"
+    },
+    {
+      "nombre": "quote stuffing",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Denominada 'order stuffing' por la CFTC, práctica considerada manipulativa o disruptiva que las pre-trade controls buscan mitigar mediante límites de tasa de mensajes.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "manipulative trading"}
+      ],
+      "cita_textual": "A maximum message rate could be established to mitigate strategies like \"order stuffing\" that the CFTC describes as \"manipulative\" or \"disruptive.\""
+    },
+    {
+      "nombre": "manipulative trading",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Categoría regulatoria de prácticas (layering, spoofing, wash trading, quote stuffing) prohibidas en la mayoría de países independientemente del HFT; el paper argumenta que ya existe marco legal para atacarlas sin regulación adicional específica de HFT.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "market failure"}
+      ],
+      "cita_textual": "the practice of buying shares from one broker while selling them through another—a practice already banned under US law, but difficult to detect"
+    },
+    {
+      "nombre": "flash crash",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Evento de caída abrupta de precios (EEUU 2010) que el paper argumenta no fue causado por HFT según el reporte conjunto CFTC-SEC, y que fenómenos similares de volatilidad extrema predatan al HFT (1962, 1987).",
+      "relaciones": [
+        {"tipo": "CONTRADICE_A", "objeto": "high-frequency trading"}
+      ],
+      "cita_textual": "Such commentators also perpetuate the myth that HFT caused the \"flash crash\" when the CFTC and SEC's report emphatically stated otherwise"
+    },
+    {
+      "nombre": "tick size",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Tamaño mínimo de variación de precio; un estudio citado sugiere que la 'speed competition' es consecuencia de una competencia de precios fallida debido al tick size mínimo regulado, y propone desregular el tick size para quitar ventaja de velocidad a los HFTs.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "high-frequency trading"}
+      ],
+      "cita_textual": "speed competition may be a consequence of failed price competition"
+    },
+    {
+      "nombre": "circuit breakers",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Mecanismo de mercado (junto con limit-up/limit-down controls) que exchanges y traders ya implementan voluntariamente para mantener la integridad del mercado ante movimientos extremos de precio.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "market failure"}
+      ],
+      "cita_textual": "circuit breakers"
+    },
+    {
+      "nombre": "dark pool",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Plataforma de trading que opera fuera de los mercados centrales para que otros mercados no vean grandes operaciones en bloque, evitando shocks de precio; IEX es descrita como dark pool a pesar de presentarse como solución anti-HFT.",
+      "relaciones": [],
+      "cita_textual": "IEX is a \"dark pool\"—an exchange that trades away from central exchanges so that other markets do not see large block trades, preventing price shocks"
+    },
+    {
+      "nombre": "colocation",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Práctica de ubicar servidores propios dentro del data center de un exchange para reducir latencia; el estudio de Angel y McCabe (2010) señala que es accesible a cualquier trader ('procedural fairness'), no exclusiva de HFT.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "high-frequency trading"}
+      ],
+      "cita_textual": "buy a computer and colocate it in an exchange data center"
+    },
+    {
+      "nombre": "wash trading",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Práctica de comprar acciones a través de un broker mientras se venden por otro, ya prohibida bajo ley estadounidense pero difícil de detectar; CME Group presentó un plan a la CFTC para mejorar su detección.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "manipulative trading"}
+      ],
+      "cita_textual": "wash trades\"—the practice of buying shares from one broker while selling them through another"
+    },
+    {
+      "nombre": "procedural fairness",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Noción de igualdad de oportunidad en los mercados (mismas reglas aplican a HFTs y otros traders); el estudio de Angel y McCabe (2010) concluye que el HFT es procedimentalmente justo porque cualquiera puede acceder a la misma tecnología.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "high-frequency trading"}
+      ],
+      "cita_textual": "in the case of procedural fairness (equal opportunity) in markets, the same rules applied to HFTs as to other traders"
+    },
+    {
+      "nombre": "market speed",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Aumento generalizado de la velocidad de negociación en todos los mercados (no exclusivo del HFT), tomado por el paper como reflejo de la mayor velocidad de la información en la sociedad, no como evidencia de market failure.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "market efficiency"}
+      ],
+      "cita_textual": "financial markets have adjusted by increasing their speed for everyone, not just HFTs, also indicating that a market failure does not exist"
+    },
+    {
+      "nombre": "rent seeking",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Concepto usado por los autores para describir el efecto de las regulaciones anti-HFT basadas en 'fairness': transfieren riqueza a gobiernos o competidores menos productivos en lugar de corregir un market failure real.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "market liquidity"}
+      ],
+      "cita_textual": "Instead, they move toward rent-seeking activities designed to transfer wealth to governments or to other competitors that have not increased their productivity to compete in a high-velocity-information environment"
+    },
+    {
+      "nombre": "regulatory arbitrage",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Riesgo de 'offshoring' de HFT hacia mercados emergentes (Rusia, Brasil, México, Japón, Singapur) cuando un país impone regulación agresiva, perdiendo el país regulador tanto capital como capacidad de monitoreo y aplicación de sanciones.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "financial transaction tax"}
+      ],
+      "cita_textual": "Eliminating or significantly \"curbing\" HFT in any country—rather than engaging in oversight and monitoring—may result in the offshoring of HFT to emerging HFT markets"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "La participación del HFT en el volumen de transacciones bursátiles en EEUU cayó fuertemente entre 2009 y 2014, junto con una caída drástica de la rentabilidad agregada de las firmas de HFT.",
+      "mercado": "US equities",
+      "periodo": "2009-2014",
+      "magnitud": "HFT del 61% del volumen de exchange trade en 2009 a 48.5% (esperado) en 2014; ganancias de HFT de $7.2 mil millones (2009) a $1.3 mil millones (anticipado en 2014)",
+      "condiciones": "dato de mercado agregado reportado por TABB Group, no es un test estadístico propio del paper; sin controles de otras variables",
+      "robustez": "baja",
+      "cita_textual": "resulting in a drop in profitability for high-frequency traders from $7.2 billion in 2009 to an anticipated $1.3 billion in 2014, according to TABB Group"
+    },
+    {
+      "afirmacion": "Tras la implementación de impuestos a transacciones financieras (FTT) diseñados para reducir el HFT, la participación de Francia e Italia en el turnover de acciones europeas cayó de forma marcada.",
+      "mercado": "European equities (France, Italy)",
+      "periodo": "2011-2013",
+      "magnitud": "Francia: 23% (2011) a 12.85% (2013) del turnover europeo; Italia: turnover de €101 mil millones (2012) a €50 mil millones (2013)",
+      "condiciones": "dato agregado de mercado según TABB Group, sin controles causales rigurosos ni comparación con grupo de control",
+      "robustez": "baja",
+      "cita_textual": "France's share of European equity turnover has been reduced from 23 percent in 2011 to an estimated 12.85 percent in 2013"
+    },
+    {
+      "afirmacion": "En Canadá, la introducción de comisiones basadas en mensajes de mercado (fees por órdenes, cancelaciones, modificaciones) por parte de IIROC redujo la actividad de trading/cancelación y aumentó los spreads bid-ask en todo el mercado.",
+      "mercado": "Canadian equities",
+      "periodo": "desde abril 2012",
+      "magnitud": "trades, quotes y cancelaciones cayeron 30%; spreads bid-ask aumentaron 9% marketwide; una caída de 1.6% en mensajería de HFT genera un aumento de 0.48 basis points en spreads",
+      "condiciones": "estudio citado de University of Toronto (Malinova, Park & Riordan, 2013), no es análisis propio de los autores del paper",
+      "robustez": "media",
+      "cita_textual": "trades, quotes, and order cancelations dropped by 30 percent; however, bid-ask spreads marketwide increased by 9 percent"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "Es un paper de policy/regulación sin metodología cuantitativa propia ni datos de mercado de futuros ES; su valor es indirecto, como mapa de riesgos regulatorios (FTT, tick size, order-to-trade ratio) que podrían afectar la viabilidad futura de estrategias de alta frecuencia si se replican en EEUU."
+  }
+}

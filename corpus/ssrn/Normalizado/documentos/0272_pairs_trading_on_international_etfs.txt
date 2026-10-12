@@ -1,0 +1,5009 @@
+  
+ 
+CEIS Tor Vergata 
+RESEARCH PAPER SERIES 
+Vol. 19, Issue 4, No. 512 – August 2021 
+ 
+ 
+Pairs Trading In 
+The Index Options Market 
+ 
+ 
+Marianna Brunetti and Roberta De Luca 
+ 
+ 
+ 
+ 
+ 
+ 
+This paper can be downloaded without charge from the 
+Social Science Research Network Electronic Paper Collection 
+http://papers.ssrn.com/paper.taf?abstract_id=3914713 
+ 
+ 
+ 
+ 
+ 
+ 
+Electronic copy available at: http://ssrn.com/abstract=3914713 
+ISSN 2610-931X
+Electronic copy available at: https://ssrn.com/abstract=3914713
+
+1 
+ 
+Pairs trading in the index options market* 
+Marianna Brunetti 
+University of Rome Tor Vergata, CEFIN & CEIS 
+ 
+Roberta De Luca 
+Bank of Italy 
+ 
+This version: March 2021 
+ 
+Abstract 
+We test the Index options market efficiency by means of a statistical arbitrage strategy, i.e. 
+pairs trading. Using data on five Stock Indexes of the Euro Area, we first identify any potential 
+option mispricing based on deviations from the long-run relationship linking their implied 
+volatilities. Then, we evaluate the profitability of a simple pair trading strategy on the 
+mispriced options. Despite the signals of potential mispricing are frequent, the statistical 
+arbitrage does not produce significant positive returns, thus providing evidence in support of 
+Index Option market efficiency. The time-to-maturity of the options involved in the trade as 
+well as financial market turbulence have a marginal effect on the eventual strategy returns, 
+which are instead mostly driven by the moneyness of the options traded. Our results remain 
+qualitatively unchanged if a stricter definition of reversion to the equilibrium is applied or 
+when the long-run relationship is estimated on an (artificially derived) time series of options 
+prices rather than on options’ implied volatilities.  
+ 
+ 
+ 
+ 
+ 
+Keywords: pairs trading, option market efficiency  
+JEL Codes: G10, G12, C44, C5 
+                                                      
+* This paper was drafted when Roberta De Luca was PhD Candidate in Economics and Finance at the University 
+of Rome Tor Vergata. The authors would like to thank Gianluca Cubadda, Tommaso Proietti and the participants 
+to the Tor Vergata PhD Seminars for helpful comments and suggestions. Marianna Brunetti kindly acknowledges 
+financial support from the University of Rome Tor Vergata, Grant “Beyond Borders” (NR: E84I20000900005). 
+The views expressed herein are those of the authors and do not involve the responsibility of the Bank of Italy. 
+Electronic copy available at: https://ssrn.com/abstract=3914713
+
+2 
+ 
+1. Introduction 
+Market efficiency is a core assumption in financial theories and, not surprisingly, is one of the 
+most investigated financial market characteristics. Indeed, a fundamental assumption in 
+financial modelling is that agents are rational and seek to maximize their own profits, using 
+all available information to continuously update their expectations on asset prices. Due to the 
+large number of agents competing concurrently, any mispricing is exploited immediately so 
+that the market equilibrium is restored. This process, according to which all the information 
+available to market participants is always reflected in securities prices, is known as market 
+efficiency.  
+The notion of market efficiency was formalized, first, in the 1960s, in the so-called Efficient 
+Market Hypothesis (EMH). Fama (1965) states that, in efficient markets, ‘on average, 
+competition will cause the full effects of new information on intrinsic values to be reflected 
+“instantaneously” in actual prices’. In the same period, Samuelson (1965) reaches a similar 
+conclusion, recognizing the randomness of price variations, and explains price 
+unpredictability as a consequence of market competition. An EMH milestone is the 
+publication of Fama’s 1970 article ‘Efficient capital markets: A review of theory and empirical 
+work’. The main takeaway from this work is that abnormal returns cannot be obtained from 
+a market based on full information disclosure. In practice, only a few agents will be able to 
+profit from identification of mispriced securities, thus, ensuring that arbitrage opportunities 
+disappear quickly from the market and guaranteeing that all assets will be priced at the 
+present values of their expected future cash flows, accounting for volatility, liquidity and 
+default risk.1 Therefore, the EMH is relatively easy to test and can be disproved if it is possible, 
+systematically, to identify and exploit arbitrage opportunities in order to obtain profits. 
+In this Essay, we investigate the efficiency of the index option market by exploiting a specific 
+statistical arbitrage strategy. In detail, we test market efficiency by verifying the absence of 
+arbitrage opportunities using pairs trading, which we test on front-month at-the-money call 
+options. If we find significant profitability, associated to frequent and long-lasting mispricing, 
+we can conclude that the market is inefficient in terms of the relative pricing of similar 
+risks/assets. However, if strategy employed is unable to identify and exploit arbitrage 
+opportunities, this cannot be interpreted as proof of market efficiency; rather, it indicates 
+simply that the strategy fails to produce significant profits. 
+This approach, which requires identification of pairs of assets whose prices commove and 
+setting a trading rule to profit from price divergences, is typically applied to stocks. Therefore, 
+the first step is to adapt pairs formation to options, which are assets with different 
+characteristics. This is done using two different methods: one based on the Implied Volatility 
+of at-the-money one-month maturity options; and, as robustness check, one based on an 
+(artificial) series of at-the-money front-month Option Prices (OP). Once pairs of index options 
+                                                      
+1 The literature differentiates among levels of market efficiency, based on the definition of ‘available 
+information’ (Fama, 1991). In its weak form, the information is limited to historical prices; in its semi-strong 
+form, it includes all publicly available information; in its strong form it considers all existing information, both 
+public and private (Jensen, 1978). 
+Electronic copy available at: https://ssrn.com/abstract=3914713
+
+3 
+ 
+are formed, we can establish a stationary and mean-reverting relationship between them and 
+implement a simple trading strategy whenever this relationship appears to be violated.  
+This paper is novel in being the first study to apply cointegration-based pairs trading to 
+options to test the efficiency of the index options market, and contributes to work on both 
+option market efficiency and pairs trading. Another distinguishing feature of the present 
+study is that it relies on a customized dataset, which includes all dead call options on five 
+European stock indexes during the period May 2007 to end 2017.2 
+The paper is organized as follows: Section 2 reviews the relevant market efficiency and 
+statistical arbitrage literature; Section 3 describes the methodology and the arbitrage strategy 
+employed to test market efficiency; Section 4 presents the empirical application and provides 
+some details on the dataset and the results; Section 5 outlines our main conclusions. 
+ 
+2. Literature review 
+This work lies at the intersection between two distinct literature streams on testing for index 
+option market efficiency and implementing statistical arbitrage strategies, such as pairs 
+trading. The work in this area, so far, uses stocks and other kinds of assets, but not options. 
+Two different types of arbitrage strategies are identified in the literature. A ‘Pure Arbitrage 
+Opportunity is a zero-cost trading strategy that offers the possibility of a gain with no 
+possibility of a loss’, whereas  a ‘Statistical Arbitrage Opportunity is a zero-cost trading 
+strategy for which (i) the expected payoff is positive, and (ii) the conditional expected payoff 
+in each final state of the economy is non-negative’ (Bondarenko, 2003). In both cases, the 
+average payoff in each final state must be non-negative and the main difference between 
+them is the possibility of negative payoffs in the statistical, but not in the pure arbitrage 
+opportunity. 
+Previous tests of index options market efficiency typically rely on pure arbitrage strategies.3 
+The seminal paper by Stoll (1969) paved the way to many contributions testing these 
+relationships, especially for US stock option markets. For instance, Evnine and Rudd (1985) 
+observe significant violations of put-call parity and boundary conditions for the S&P 100 
+options market, which suggest market inefficiency. Several years later and working with S&P 
+500 index options, Ackert and Tian (2001) reach the opposite conclusion. Tests of European 
+markets, such as Capelle-Blancard and Chaudhury (2001) on the French index (CAC40) option 
+market, Mittnik and Rieken (2000) on the German index (DAX) option market, Cavallo and 
+Mammola (2000) and Brunetti and Torricelli (2005) on Italian index (Mib30) option market, 
+                                                      
+2In constructing the dataset, all price anomalies were reported to the data provider Thomson Reuters 
+DataStream, so that most of the corrections are embedded in the series available on its platform and, thus, have 
+been ameliorated. 
+3 The literature differentiates between cross-market efficiency, which is based on tests of the joint efficiency of 
+the options and underlying markets (by verifying the lower-boundary conditions and put-call parity), and internal 
+option market efficiency which is aimed at assessing the existence of arbitrage opportunities in the same option 
+market (by verifying, e.g., box and butterfly spreads). 
+Electronic copy available at: https://ssrn.com/abstract=3914713
+
+4 
+ 
+highlight the pivotal role of market frictions. Violations are frequent, but disappear almost 
+completely once transaction costs are taken into account, which supports index option 
+market efficiency.4 One advantage of this type of test for market efficiency is that it avoids 
+the so called ‘joint hypothesis problem’ highlighted Fama (1998). Indeed, when model-based 
+tests are used, market efficiency and the appropriateness of the pricing model are tested 
+jointly, so that potential violations may be due to use of the (wrong) pricing model rather than 
+rejection of the EMH. 
+Statistical arbitrage has the very same advantage, since it does not rely on an equilibrium 
+pricing model. The idea behind this approach consists of identifying potential anomalies in 
+asset prices and exploiting them: if it is possible to profit systematically from these 
+mispricings, then market efficiency can be disproved. However, statistical arbitrage is applied, 
+mostly, to the stock (and a few other) markets.5 
+Among the many statistical arbitrage methodologies, the best known is pairs trading, which 
+dates back to the 1980s and, specifically, to the work of Nunzio Tartaglia at Morgan Stanley. 
+In a nutshell, pairs trading is aimed at identifying assets whose prices show similar historical 
+behaviour, and deriving profit from short-term deviations from this long-run mean-reverting 
+relationship, based on the expectation that history will repeat itself. Pairs trading can be 
+implemented using a variety of approaches (Krauss, 2017), including the distance, 
+cointegration, time series and stochastic control methods, which vary in how the pairs are 
+selected and how their relationship is modelled. The methodologies most relevant for the 
+current study are the distance and cointegration approaches. In the distance approach, pairs 
+formation relies, usually, on minimizing the Sum of Squared Deviations (SSD) between 
+normalized prices, and the equilibrium is determined as the difference between the 
+normalized prices. In the cointegration approach, selection is based on cointegration testing 
+and the long-term relationship is identified through the Error Correction Representation 
+(Engle & Granger, 1987).  
+Regardless of which of these methods is applied, the relevant literature focuses mostly on 
+stock markets and, especially, the US stock market (Gatev, Goetzmann, & Rouwenhorst, 2006; 
+Avellaneda & Lee, 2010; Do & Faff, 2010; Miao, 2014; Jacobs & Weber, 2015; Rad, Low, & 
+Faff, 2016). However, there are also some applications to other markets, such as the European 
+(Dunis & Lequeux, 2000), Japanese (Huck, 2015), Brazilian (Perlin, 2009; Caldeira & Moura, 
+2013), Chinese (Li, Chui, & Li, 2014) and Taiwanese (Andrade, Di Pietro, & Seasholes, 2005) 
+stock markets.6  
+ 
+ 
+                                                      
+4 Parallel investigations have been conducted on derivatives on the same underlying, for instance options and 
+futures, see, e.g., Lee and Nayar (1993) and Fung and Mok (2001). 
+5 See Hogan et al. (2004) for a review of statistical arbitrage applications to test market efficiency. 
+6 The only paper among those cited here that uses neither the distance nor cointegration approach, is Avellaneda 
+and Lee (2010), who propose two approaches for stock returns decomposition based on principal component 
+analysis and exchange traded funds sector returns and use a relative value model for stock performance, 
+assuming that residuals are distributed as an Ornstein–Uhlenbeck process. 
+Electronic copy available at: https://ssrn.com/abstract=3914713
+
+5 
+ 
+The few works that investigate securities other than stocks, apply pairs trading methodologies 
+to future commodity markets: Girma and Paulson (1999) and Cummins and Bucca (2012) 
+focus on the ‘crack spread’, that is, the difference between the petroleum price and the prices 
+of its refined product futures; Simon (1999) works on the ‘crush spread’, which is the 
+difference between soybean and its manufactured goods futures prices; Emery and Liu (2002) 
+use the ‘spark spread’, i.e. the difference between the prices of natural gas and electricity 
+futures. In all these applications, the authors apply unit root testing to verify that prices are 
+integrated of order one series, and check for the presence of cointegration between them 
+before directly modelling the spread on futures prices via different methods. By exploiting 
+the spread mean-reverting property, they obtain positive results for pairs trading profitability. 
+Only Cummins and Bucca (2012) propose a different methodology that belongs to the time 
+series approach; they apply it empirically to a large dataset, modelling the spread of energy 
+futures as an Ornstein–Uhlenbeck process. 
+To sum up, the efficiency of the index options market has been investigated by testing for the 
+profitability of pure arbitrage strategies, while statistical arbitrage and, pairs trading in 
+particular, has been used mostly to examine the stock market. The contribution of this paper 
+is to test index option market efficiency using pairs trading. 
+To our knowledge, there is only one other paper, which is by Ammann and Herriger (2002), 
+that adopts a statistical arbitrage methodology to investigate the efficiency of the index 
+options market. The authors use a Relative Implied Volatility arbitrage strategy, applied to 
+options on S&P 500, S&P 100 and NASDQ indexes, in the period 1995 to 2000, to test the 
+possibility of positive profits from relative mispricing of options. After selecting indexes with 
+highly correlated returns, the methodology estimates a relationship between index returns 
+and then, based on linearity, assumes that the estimated relationship is valid also for implied 
+volatilities. Consistent with most of the literature on the index option market, they find 
+evidence to support market efficiency since, although violations of the statistical arbitrage 
+strategy are frequent, only few survive after accounting for transaction costs and bid-ask 
+spread. Our work differs in that, as shown below, we estimate the mean-reverting 
+relationship on implied volatility directly, not on index returns. 
+ 
+3. Methodology 
+To test index option market efficiency using pairs trading, we employ the cointegration 
+approach, given its superiority in terms of profitability with respect to distance approach 
+(Huck & Afawubo, 2015; Rad, Low, & Faff, 2016; Blázquez, De la Orden, & Román, 2018). The 
+baseline structure of the cointegration approach, which is described in Vidyamurthy (2004), 
+distinguishes a formation and a trading period. In the former, the test for cointegration is run 
+on all possible stock price pairs, with the aim of selecting couples that share a long-term 
+equilibrium that is stationary and mean-reverting. In the trading period, a simple trading 
+strategy that exploits deviations from the equilibrium relationship is implemented.  
+Electronic copy available at: https://ssrn.com/abstract=3914713
+
+6 
+ 
+In our application, we use at-the-money (hereafter ATM) index options with the shortest 
+maturity, imposing at least 10 days before expiration.7 There are two main reasons for this 
+choice: these options are the most liquid in the market, so to ensure that recorded prices are 
+close to the price at which a trade could actually occur; and ATM options are the most 
+informative in terms of volatility since most of their value is driven by this component. 
+However, applying cointegration to index options can be difficult since, by their nature, 
+options have a finite life. This implies that we may not have enough data to train the classical 
+cointegration approach: in most applications the length of the formation period employed to 
+test for cointegration is 1 year. To overcome this issue, Ammann and Herriger (2002) rely on 
+the returns from the underlying indexes. Specifically, they select pairs of indexes with highly 
+correlated daily returns. Then, after checking for stationarity of returns, they estimate the 
+long-run relationship linking the indexes returns and apply the estimates obtained to the 
+corresponding relationship between the respective volatilities. The idea is that, if the 
+quotations related to the underlying indexes are highly correlated and the market is efficient 
+at pricing similar risks, the volatilities of the options on those indexes should also be related. 
+If violations of the equilibrium-relationship between volatilities are observed systematically 
+and allow significant profit, then market efficiency is disproved. 
+We differ from Ammann and Herriger (2002) since we identify the potential mispricing based 
+on the relationship estimated directly between the implied volatilities of the ATM options, 
+rather than estimating the relation between the returns from the underlying indexes, and 
+then applying it to the volatilities. This approach is based on the concept of long-term 
+equilibrium, which is fundamental to the cointegration methodology, but, in practice, there 
+is no need for a cointegration test due to the characteristics of the series considered. 
+The proposed methodology is structured as follows:  
+1. Check for stationarity: using data over the full sample, we run an Augmented Dickey 
+Fuller (ADF) test to check for stationarity of the implied volatilities (IV); 
+2. Using 1-year observations in the estimation period, we regress the ܫܸ௒ 
+஺்ெ on the 
+ܫܸ௑ 
+஺்ெ, for all options written on the pairs of indexes (ܻ,ܺ
+), to obtain the estimates 
+required to derive the Spread; 
+3. In the following 6-month trading period, we compute the Spread and implement a 
+simple trading strategy whenever a misprice is suspected, that is, if the Spread 
+diverges considerably from its zero mean; 
+4. Rolling regression: steps 2 to 3 are repeated, shifting the sample one month ahead. 
+This scheme, which updates the information set as time passes, generates 6 
+overlapping trading periods for each month. 
+                                                      
+7 For each day, we compute the difference between the current date and the expiration date of all call options 
+on the index considered. We then select all call options with the minimum difference, excluding those with only 
+10 or fewer days left before expiration. Finally, we identify among them the ATM option, which is the option 
+whose strike price is closest to the value of the Index.  
+Electronic copy available at: https://ssrn.com/abstract=3914713
+
+7 
+ 
+We evaluate the profitability profile per transaction by looking at the total number of trades, 
+the average number of days a position is kept open and the average returns.8 The analysis 
+concludes by focusing on the profitability drivers and a brief overview of the average monthly 
+returns per pair, computed as mean values first across overlapping portfolios and then across 
+pairs.  
+The following subsections describe steps 2 and 3 in more detail. 
+ 
+3.1 Estimation period 
+Using 1-year data, we estimate the following regression via Ordinary Least Squares (OLS): 
+ܫܸ௧,௒
+஺்ெ= ߚ଴+ ߚଵܫܸ௧,௑
+஺்ெ+ ߝ௧ 
+(1) 
+where:  
+x ܫܸ௧,௒
+஺்ெ is the implied volatility of the one-month maturity ATM option written on Index ܻ
+ observed at day ݐ  
+x ܫܸ௧,௑
+஺்ெ is the implied volatility of the one-month maturity ATM option written on Index ܺ
+ observed at day ݐ 
+x ߝ௧ is the error term at time ݐ 
+x ߚ଴ is the intercept coefficient, which, in this case, acts simply as a scale parameter 
+x ߚଵ is the proportionality factor, measuring the relationship between the two implied 
+volatilities 
+The estimate is repeated monthly and executed for all possible pairs of indexes (ܻ,ܺ
+).  
+Notice that using implied volatilities, which are stationary time series, allows correct 
+measurement of their association via OLS regression without the need for further tests. 
+Instead, stock prices, typically, are ܫ(1) time series, so the long-term relationship must be 
+determined by means of cointegration tests.  
+The estimation is done in a rolling window fashion, using observations in one calendar year 
+(estimation period) and shifting the sample one calendar month ahead at each repetition.9 
+This scheme is employed to evaluate the methodology, regardless of the start point, and to 
+update the information set as time passes, and generates six overlapping trading periods for 
+each month. 
+ 
+3.2 Trading period 
+Each estimation period is followed by a six-month trading period, in which the market 
+efficiency in pricing relative risks is tested. The idea is that a potentially profitable trading 
+opportunity emerges whenever one of the ATM options has an observed implied volatility 
+                                                      
+8 Averages are computed across all trades, aggregating the 6 overlapping portfolios. 
+9 For each month, we consider observations going from the first to the last day of that interval. 
+Electronic copy available at: https://ssrn.com/abstract=3914713
+
+8 
+that deviates sufficiently from the relationship estimated in model (1). When such divergence 
+is detected, the agent sells the relatively overpriced asset and buys the relatively underpriced 
+asset. The position is then closed when the equilibrium is restored. If this strategy is able to 
+generate non-negative expected payoffs, we conclude that the market is inefficient. 
+We use a statistical approach to provide a definition of ‘sufficient deviation’. Based on the 
+estimates obtained in the estimation period, the Spread10 is computed as: ܵ
+݌ݎ݁ܽ݀
+௧= ܫܸ௧,௒
+஺்ெെߚመ଴െߚመଵܫܸ௧,௑
+஺்ெ 
+(2) 
+and represents the out-of-sample residual of the model (1). Under stationarity of both of the 
+variables involved in the simple linear regression model, in-sample residuals are a stationary 
+process and mean-reverting towards 0. We take advantage of this characteristics 
+out-of-sample and identify a significant deviation of the ܵ݌ݎ݁ܽ݀
+௧ from its long-run value of 0 
+as a violation of the following condition: 
+2ߪො൒ܵ
+݌ݎ݁ܽ݀
+௧൒െ2ߪො 
+(3) 
+where ߪො is the standard deviation of the regression residuals from the estimation period. All 
+departures of the Spread from these boundaries is interpreted as a misalignment of the ATM 
+options implied volatilities from the relationship estimated in model (1), and signals a 
+potentially profitable mispricing, which leads the agent to trigger a trade. Figure 1 provides a 
+graphical example. 
+ 
+ 
+Figure 1 - Example of implied volatilities and Spread time series 
+ 
+First panel: implied volatility time-series for one-month maturity ATM call options written on CAC40 and ESTOX50 Indexes, 
+between 1st July and 31st December 2012. Second panel: Spread and statistical trigger boundaries. 
+              
+10 This definition is in line with the definition in Vidyamurthy (2004) and includes the estimated intercept. 
+Electronic copy available at: https://ssrn.com/abstract=3914713
+
+9 
+ 
+We set up two types of trading strategies: the first with zero net capital investment (i.e., the 
+‘self-financing strategy’) and the second where the traded quantities are determined by the 
+estimated regression slope (i.e., the ‘beta-arbitrage strategy’).  
+More specifically, if ܵ݌ݎ݁ܽ݀
+௧> 2ߪො, the option written on index ܻ
+ is suspected to be 
+overpriced with respect to the option written on index ܺ. Therefore, in the self-financing 
+strategy, we sell one unit of the option written on index ܻ and buy the amount of the option 
+written on ܺ affordable from the proceeds of the sale. In the beta-arbitrage strategy, we sell 
+one unit of the option written on ܻ and buy a quantity of the option written on ܺ equal to 
+the amount bought in the self-financing strategy, multiplied by ߚመଵ (the idea here is that the 
+amount spent in euros for the option written on X is equal to ߚመଵ times the price of option Y). 
+The position is closed when the Spread reverts to within the estimated boundaries (or at 
+maturity of the option and/or the end of the trading period). 
+Conversely, if ܵ݌ݎ݁ܽ݀
+௧< െ2ߪො, the option on ܻ is suspected to be underpriced with respect 
+to the option on ܺ, and the trading scheme is reversed. In the self-financing strategy, one unit 
+of the option written on ܺ is sold and an amount of the option on ܻ is bought using the 
+proceeds from the sale. In the beta-arbitrage strategy, one unit of the option on ܺ is sold and 
+the quantity of the option written on ܻ
+ will be the same as the amount bought in the 
+self-financing strategy divided by ߚመଵ. As above, the position is closed when the Spread reverts 
+to within the estimated boundaries (or is closed forcibly at option maturity and/or at the end 
+of the trading period).11 
+To reduce the sensitivity of our results to the decline in option prices as they approach 
+expiration, all positions are closed forcibly two trading days before maturity. Transaction 
+payoffs and returns are computed once the initial trade is unwound and depend on the 
+relative prices of the traded options. Notice that returns can be interpreted as excess returns 
+only in the self-financing strategy since no initial investment in needed in this case. In the 
+beta-arbitrage strategy, the payoff when the trade is initiated depends on ߚመଵ and affects the 
+final outcome of the transaction. 
+ 
+4. Empirical application 
+In this section, we describe the dataset employed for the empirical application and the total 
+and average results obtained using the methodology presented in Section 3. 
+ 
+ 
+ 
+                                                      
+11 As a robustness check (Section 4.5), we implement a stricter methodology where trades are closed when the 
+Spread reverts to zero. 
+Electronic copy available at: https://ssrn.com/abstract=3914713
+
+10 
+ 
+4.1 Data 
+The empirical application relies on daily data for the period 1st May 2007 to 31st December 
+2017, and refers to five Euro area stock indexes: 
+x CAC 40 (Cotation Assistée en Continu), quoted on the Paris Bourse; 
+x DAX 30 (Deutscher Aktienindex), quoted on the Frankfurt Stock Exchange; 
+x FTSE 100 (Financial Times Stock Exchange 100 index), quoted on the London Stock 
+Exchange; 
+x FTSE MIB (Financial Times Stock Exchange Milano Indice di Borsa), quoted on the 
+Milan Stock Exchange;  
+x ESTOX 50 (Euro STOXX 50): leading stock index for the Eurozone, covering 50 stocks 
+from 11 Eurozone countries (Austria, Belgium, Finland, France, Germany, Ireland, Italy, 
+Luxembourg, Netherlands, Portugal and Spain). 
+The advantage of focusing on options written on indexes is that, given that the underlying is 
+a synthetic representation of the stock portfolio, the final payoff is cash-settled rather than 
+paid by an exchange of goods. Hence, cashing-in the payoff does not incur additional 
+transaction costs to those related strictly to the trade. 
+For each index, we use the following data, retrieved from Thomson Reuters DataStream:12 
+x Stock index prices; 
+x Options prices for all call options written on the indexes, along with their maturities 
+and strike prices;13  
+x Implied volatilities of the ATM 1-month maturity call options written on the indexes. 
+For each date and each underlying index in our sample, we select the ATM call option with 
+shortest maturity, excluding those with a residual life of less than 10 days. The selection is 
+performed, first, identifying all call options with the minimum distance between the current 
+date and the expiration date, excluding options with less than 10 days before expiration. Thus, 
+the number of days before expiration ranges between 11 days (corresponding to at least 7 
+trading days) and 46 days (corresponding to at least 32 trading days). Second, for each day, 
+we select the ATM option with strike price as close as possible to the value of the index (i.e. 
+the ATM option), among the call options with the shortest maturity. If two series have the 
+same absolute distance between the strike and the index price, we exclude the one with the 
+higher strike price, to maintain the more conservative one in terms of final payoff. 
+                                                      
+12 Based on in-depth analysis of the data and with the support of the data provider, many recording errors were 
+corrected directly on DataStream. Most were related to the same identification code being attributed to more 
+than one series at different points in time. 
+13 FTSE 100 call options prices are in pounds sterling, all the others are quoted in euros. The corresponding daily 
+GB Sterling/Euro FX exchange rate is thus used to convert prices of options on the FTSE 100 into euros. The 
+identifying numbers for each series are 6239 for CAC 40, 12158 for DAX 30, 11939 for ESTOX 50, 9501 for FTSE 
+100 and 7303 for FTSE MIB. In DataStream, missing option prices values are replaced by the previous day’s 
+observation. 
+Electronic copy available at: https://ssrn.com/abstract=3914713
+
+11 
+ 
+The selection process excludes all call options with non-standard maturity,14 that is, the third 
+Friday of the month, and some calls presenting two series for the same strike price.15 For each 
+ATM option, we store the entire price series and obtain 2784 series per underlying index, that 
+is, one ATM call option for each trading day in our sample. Price series are entirely stored 
+because every position is opened on the call option that is ATM that day and, to close it, we 
+need to trade exactly the same option, which may not coincide with the ATM option at closure 
+date. 
+ 
+Figure 2 – IV time series 
+ 
+Implied volatilities series of one-month maturity ATM call options for each underlying Index. 
+Figure 2 depicts implied volatility time series of one-month maturity ATM options, written on 
+the selected indexes. The behaviour is similar across the underlying indexes, suggesting a 
+strong relationship among these variables. The implied volatilities appear to be fairly stable
+around their means, across the whole sample, and are affected by two major common shocks: 
+the global financial crisis and the sovereign debt crisis, which caused instability (i.e., higher 
+volatility) on the European financial markets. 
+14 Call options with non-standard maturity are those assets in our sample with a maturity date different from 
+the third Friday in the month. Since our ATM-options selection process is based on considering first maturity 
+and then moneyness, call options with non-standard maturity would be selected for some dates as those with 
+the shortest maturity even if they have a strike price that is far from the underlying Index value. We excluded 
+one option on the CAC 40, one option on the ESTOX 50 and four options on the FTSE 100. 
+15 We found only two call options on the FTSE 100 with this problem. In detail, we found two series of call options 
+with same maturity and strike price: one presenting just one observation while the other containing the entire 
+price series. We excluded the series with just one observation. 
+Electronic copy available at: https://ssrn.com/abstract=3914713
+
+12 
+ 
+4.2 Preliminary analyses  
+Before proceeding to the empirical test for market efficiency, we performed a complete 
+statistical analysis of the variables used in the regressions. We began with the ADF test for 
+stationarity of the implied volatilities, run by setting a maximum lag length equal to 15 and 
+with both drift-only and drift and trend specifications. In all cases, the null for the presence 
+of a unit-root is rejected at the 95% confidence level.16 
+Table 1 reports the descriptive statistics for the implied volatility of the one-month maturity 
+ATM call options. The implied volatilities present similar characteristics: for all the underlying 
+indexes, the average value is near to 21.5, and the standard deviation is around 8.75, with 
+fairly well aligned minimum (maximum) values, ranging between 4.62 and 10.36 (76.24 and 
+91.41). 
+ 
+Table 1 - IV of the one-month ATM Call Options: descriptive statistics, by underlying Index 
+ 
+CAC 40 
+DAX 30 
+ESTOX 50 
+FTSE 100 
+FTSE MIB 
+Mean 
+21.59 
+21.14 
+22.23 
+17.75 
+24.98 
+Max 
+90.74 
+89.41 
+78.49 
+91.41 
+76.24 
+Min 
+8.34 
+9.05 
+8.84 
+4.62 
+10.36 
+Median 
+19.65 
+19.11 
+20.32 
+15.40 
+23.04 
+St. Deviation 
+8.95 
+8.70 
+8.85 
+8.91 
+8.30 
+Notes: main descriptive statistics for the IV series of the one-month maturity ATM call options over the entire sample period, 
+by underlying index. 
+ 
+This result is further confirmed by the correlations in Table 2. The implied volatilities are highly 
+correlated for all index pairs: the correlation coefficients range between 0.75 and 0.98, with 
+minima for all pairs containing options on the FTSE MIB.  
+ 
+Table 2 – Correlation between IVs, by underlying index 
+ 
+CAC 40 
+DAX 30 
+ESTOX 50 
+FTSE 100 
+FTSE MIB 
+CAC 40 
+1 
+0.97 
+0.98 
+0.95 
+0.87 
+DAX 30 
+ 
+1 
+0.97 
+0.94 
+0.86 
+ESTOX 50 
+ 
+ 
+1 
+0.94 
+0.89 
+FTSE 100 
+ 
+ 
+ 
+1 
+0.75 
+FTSE MIB 
+ 
+ 
+ 
+ 
+1 
+Notes: Pearson correlation coefficients for the IV series of the one-month maturity ATM call options for each pair of 
+underlying indexes, using the entire data sample. 
+ 
+This preliminary descriptive analysis suggests that the implied volatilities of these options are 
+strongly related; we exploit this relation in our test for option market efficiency based on 
+statistical arbitrage. 
+                                                      
+16 Among all the specifications considered, the maximum pValue is equal to 0.0083 for the implied volatility 
+related to the underlying FTSE 100 (model with drift-only and lag-length set at 14). 
+Electronic copy available at: https://ssrn.com/abstract=3914713
+
+13 
+ 
+4.3 Main Results  
+This section presents the results of the trading strategy described in Section 3.2. Specifically, 
+we evaluate the number of trades and their final returns, and test their statistical significance 
+by means of the Newey-West statistics (Newey & West, 1987) for a two-tailed test. 
+The results are presented for both the self-financing and the beta-arbitrage strategies; only 
+in the self-financing case, the results can be interpreted as excess returns since the strategy 
+does not require any initial investment. In all cases, the trading period runs from 1st May 2008 
+to 31st December 2017, since the first year of data is used for the first estimation period. All 
+the results are computed by aggregating all of the trades triggered in the considered samples 
+and without considering transaction costs. Including transaction costs would further reduce 
+the profitability of the strategies and our aim is to evaluate market efficiency under the most 
+conservative conditions.17  
+In many pairs trading applications, the initial set of potential pairs is artificially narrowed (for 
+instance, Miao, 2014, and Ammann & Herriger, 2002, pre-select pairs with correlations 
+greater than 0.9 and 0.95, respectively); in our case, no pairs are excluded in order to avoid 
+the need for arbitrary thresholds, and this allows us to assess ex-post the effects of weak 
+correlation. 
+Table 3 shows that the overall number of trades realized exceeds 11,000 in 116 months, 
+meaning that, during the period analysed, the Spread violated condition (3) on several 
+occasions, signalling potential mispricings. Since we are dealing with six overlapping 
+portfolios, some trades will be similar across portfolios, with the result that the actual number 
+of mispricing is lower than the total number of trades. The vast majority (88%) of the trades, 
+which remains open for 4 days on average, closes because the Spread reverts to within the 
+boundaries; the remainder are non-convergent trades which are closed forcibly either 
+because the options expire (8%) or because the end of the trading period is reached.  
+Despite the high number of suspected mispricings, the average returns from the self-financing 
+strategy are around 0.8% and not statistically significant. By splitting the results based on the 
+pairs of underlying indexes on which the options are written, we find that the strategy is 
+significantly profitable for 6 out of the possible 20 couples. For these pairs, the excess returns 
+range from 4.3% (for the couple FTSEMIB-CAC40, corresponding to €15.60 in terms of average 
+profit) to 13.6% (for the FTSEMIB-DAX30 couple, corresponding to an average profit of 
+€56.60). In all the other cases, the strategy does not provide significant returns and in four 
+cases, all of which include the FTSE100 (CAC40-FTSE100, ESTOX50-FTSE100, FTSE100-CAC40, 
+FTSE100-ESTOX50), it resulted in statistically significant negative returns due, most likely, to 
+the additional friction imposed by exchange rate conversion to euros. 
+The beta-arbitrage strategy differs from the self-financing strategy only in terms of traded 
+quantities; the number of transactions and the reasons for closure remain the same. 
+However, since the beta-arbitrage strategy requires an initial investment, the returns cannot 
+                                                      
+17 Tables 12 and 14 in the Appendix provide more results on strategy profitability. 
+Electronic copy available at: https://ssrn.com/abstract=3914713
+
+14 
+ 
+Table 3 – Results for the IV-based pairs trading strategies 
+ 
+Self-financing strategy returns 
+Beta-arbitrage strategy returns 
+Closing 
+ 
+Mean 
+Std 
+NW stat 
+Mean 
+Std 
+NW stat 
+Boundary 
+Maturity
+CAC40-DAX30 
+0.003 
+0.32 
+0.18 
+-0.510 
+9.37 
+-0.97 
+0.82 
+0.14 
+CAC40-ESTOX50 
+-0.004 
+0.13 
+-0.64 
+-1.701 
+40.37 
+-1.31 
+0.97 
+0.02 
+CAC40-FTSE100 
+-0.042 
+0.49 
+-2.59** 
+-0.834 
+19.11 
+-1.13 
+0.86 
+0.09 
+CAC40-FTSEMIB 
+0.044 
+0.30 
+3.46*** 
+0.733 
+11.31 
+1.30 
+0.88 
+0.08 
+DAX30-CAC40 
+0.007 
+0.33 
+0.39 
+0.484 
+26.29 
+0.36 
+0.82 
+0.13 
+DAX30-ESTOX50 
+0.005 
+0.30 
+0.40 
+-0.341 
+13.67 
+-0.50 
+0.89 
+0.08 
+DAX30-FTSE100 
+-0.022 
+0.44 
+-1.32 
+-0.256 
+81.52 
+-0.09 
+0.88 
+0.09 
+DAX30-FTSEMIB 
+0.059 
+0.46 
+2.93*** 
+0.307 
+32.39 
+0.27 
+0.85 
+0.11 
+ESTOX50-CAC40 
+0.006 
+0.13 
+0.87 
+-0.973 
+14.99 
+-1.62 
+0.97 
+0.02 
+ESTOX50-DAX30 
+0.023 
+0.30 
+1.82* 
+-0.866 
+12.49 
+-0.94 
+0.84 
+0.12 
+ESTOX50-FTSE100 
+-0.094 
+0.50 
+-5.67*** 
+-0.374 
+15.34 
+-1.47 
+0.90 
+0.07 
+ESTOX50-FTSEMIB 
+0.051 
+0.24 
+5.42*** 
+0.551 
+6.32 
+2.70** 
+0.92 
+0.05 
+FTSE100-CAC40 
+-0.037 
+0.50 
+-1.85** 
+-0.501 
+24.61 
+-0.89 
+0.83 
+0.12 
+FTSE100-DAX30 
+-0.013 
+0.41 
+-0.86 
+0.013 
+10.52 
+0.03 
+0.86 
+0.10 
+FTSE100-ESTOX50 
+-0.065 
+0.53 
+-3.65*** 
+2.328 
+42.08 
+0.95 
+0.89 
+0.08 
+FTSE100-FTSEMIB 
+0.008 
+0.61 
+0.32 
+-0.702 
+9.23 
+-1.87* 
+0.84 
+0.12 
+FTSEMIB-CAC40 
+0.043 
+0.25 
+3.49*** 
+0.192 
+8.78 
+0.61 
+0.92 
+0.05 
+FTSEMIB-DAX30 
+0.136 
+0.47 
+6.16*** 
+2.410 
+48.40 
+1.31 
+0.87 
+0.10 
+FTSEMIB-ESTOX50 
+0.054 
+0.22 
+5.64*** 
+0.464 
+4.46 
+2.67** 
+0.94 
+0.03 
+FTSEMIB-FTSE100 
+-0.024 
+0.61 
+-0.96 
+0.824 
+44.91 
+0.52 
+0.90 
+0.06 
+ACROSS ALL PAIRS  
+0.008 
+0.40 
+0.02 
+0.073 
+30.82 
+0.00 
+0.88 
+0.08 
+Notes: results of the pairs trading strategies implemented over the sample from May 2008 to December 2017, with May 2007 to April 2008 data
+activated whenever the implied volatilities of the one-month maturity ATM call options deviate from the relationship in model (1), estimate
+between the indicated underlying Indexes as X and the second as Y, and closed when the Spread reverts to within the boundaries. Columns 1-3 r
+the self-financing strategy. Columns 4-6 refer to the returns from the beta-arbitrage strategy, which differ only in terms of the quantities trad
+average, the standard deviation and t-statistics computed using the Newey-West heteroskedasticity and autocorrelation robust standard errors
+can be interpreted as excess returns, since the strategy does not require any initial investment. ***, **, and * are significance at the 1%, 5%, a
+the share of closed trades due to Spread reversion to within the boundaries, option expiration and reaching the end of the trading period. Colum
+number of days a trade remains open, and the total number of trades.  
+Electronic copy available at: https://ssrn.com/abstract=3914713
+
+15 
+ 
+be interpreted as excess returns. The average return observed across all pairs is still positive, 
+but is much higher than in the case of the self-financing strategy (7.3% against 0.8%). This is 
+likely due to the estimates of beta, which, in most cases, are close to 1. This in turn leads to 
+an initial investment close to zero, which works to inflate the final returns. Nonetheless, 
+consistent with the above findings, the average return is not statistically significant. Also, 
+considering the results by pairs, the returns are significantly positive only for the pairs written 
+on FTSEMIB and the ESTOX50.  
+Overall, despite frequent signals of potential mispricing, the statistical arbitrage strategy does 
+not produce statistically significant positive returns; namely, there is no evidence suggesting 
+that the index option market is inefficient. 
+ 
+4.4 Profitability drivers 
+The results of the arbitrage strategy present a variegated scenario, with some pairs showing 
+a positive and significant profitability. In this section, we investigate the potential drivers of 
+this performance. First, we investigate the role of options characteristics. The value of an 
+option is function of: its moneyness, that is, the closeness between the option strike price and 
+the price of the underlying asset; its time to maturity, that is, time before expiration; the 
+volatility of the underlying quotations and the interest rate. Since the last two are (supposed 
+to be) common across all options traded in the market, we focus on time to maturity and 
+moneyness. Notice that, even if the options are ATM when a position is opened, they may not 
+be ATM at closure. Therefore, we regress the strategy’s per-transaction returns (either 
+self-financing or beta-arbitrage) on the time to maturity and a measure of moneyness of both 
+the options included in the trade, that is, the bought (long) option and the sold (short) option. 
+We include in the regression model dummies for whether the options are at-the-money 
+(ܣܶܯ௜), in-the-money (ܫܶܯ௜) or out-of-the-money (ܱܶ
+ܯ௜) at trade closure, considering all 
+possible combinations of long and short positions.18 In our sample, the distribution of the 
+strike-price ratio at closure ((ܭܵΤ )௜) ranges in the interval [0.8 - 1.36] for the options sold (in 
+the short leg of the trade) and [0.85 - 1.62] for the options bought (in the long leg of the 
+trade), with mean and median of approximately 1. We thus classify the options as follows19: 
+ەۖ
+۔ۖ
+ۓ ܫܶܯ௜                     ݂݅
+ ൬ܭܵ൰
+௜
+< 0.98ܱܶ
+ܯ௜                     ݂݅
+ ൬ܭܵ൰
+௜
+> 1.02
+ܣܶܯ௜                     ݋ݐ݄݁
+ݎݓ݅ݏ݁
+ 
+(4) 
+where ܭ is the option strike and ܵ is the underlying index price of the closing transaction ݅. 
+                                                      
+18 ܣܶܯ௧,௟௢௡௚െܣܶܯ௧,௦௛௢௥௧ is the reference category. 
+19 Table 20 in the Appendix reports the distribution of the trades according to option classification, and shows 
+that, in most cases, the transactions involve options belonging to the same moneyness category. We tried to 
+use alternative classifications, setting the thresholds for the ITM/OTM equal to the mean value ± 0.01, 0.03, 
+0.04 and 0.05 and the results are qualitatively unchanged. 
+Electronic copy available at: https://ssrn.com/abstract=3914713
+
+16 
+ 
+The regression model is the following: 
+ݎ௜= ߚ଴+ ߚଵ߬௜,௦௛௢௥௧+ ߚଶ߬௜,୪୭୬୥+ 
+ߚଷܫܶܯ௜,௦௛௢௥௧ܫܶܯ௜,௟௢௡௚+ ߚସܫܶܯ௜,௦௛௢௥௧ܣܶܯ௜,௟௢௡௚+ ߚହܫܶܯ௜,௦௛௢௥௧ܱܶ
+ܯ௜,௟௢௡௚+ 
+ߚ଺ܱܶ
+ܯ௜,௦௛௢௥௧ܫܶܯ௜,௟௢௡௚+ ߚ଻ܱܶ
+ܯ௜,௦௛௢௥௧ܣܶܯ௜,௟௢௡௚+ ߚ଼ܱܶ
+ܯ௜,௦௛௢௥௧ܱܶ
+ܯ௜,௟௢௡௚+ 
+ߚଽܣܶܯ௜,௦௛௢௥௧ܫܶܯ௜,௟௢௡௚+ ߚଵ଴ܣܶܯ௜,௦௛௢௥௧ܱܶ
+ܯ௜,௟௢௡௚+ ߚଵଵܥݎ݅ݏ݅ݏ௜+߳
+௜ 
+(5) 
+where ݎ௜ is the strategy return realized on the trade closed by the transaction ݅. ߬௜,௦௛௢௥௧ and ߬
+௜,௟௢௡௚ are the respective times to maturity of the options sold and bought, measured by the 
+number of trading days before expiry of the option. ܫܶܯ௜, ܱܶ
+ܯ௜ and ܣܶܯ௜ are dummies 
+capturing whether, at closure, the call option is respectively in-the-money, out-of-the-money 
+or at-the-money and are differentiated for long and short positions. Finally, ܥݎ݅ݏ݅ݏ௜ is a 
+dummy variable for whether the trade is closed in a ‘period of crisis’, that is, during the global 
+financial crisis (October 2007 to May 2009) or the stock market ‘selloff’ (June 2015 to June 
+2016). 
+Table 4 reports the results of the regressions for the self-financing and the beta-arbitrage 
+strategies. The intercept represents the expected return and, in the specifications that include 
+moneyness dummies (2, 4, 6, 8), is interpreted as the return from a trade of two options that 
+are both ATM when the position is closed. It is positive in all the self-financing strategy 
+specifications, and significant only if the moneyness dummies are excluded; it is negative, but 
+never statistically significant for the beta-arbitrage strategy. Also, periods of crisis have a 
+significantly negative effect on returns only in the self-financing application. The R-squared of 
+the beta-arbitrage strategy is fairly low compared to the self-financing strategy, which 
+reaches a maximum of 0.24 in the specifications that include dummies for options being ITM, 
+OTM or ATM. 
+The results show that the returns are related significantly to the time to maturity of the 
+options involved, with the exception of the self-financing strategy specification that includes 
+all the regressors (4). In particular, the returns are negatively (positively) associated to the 
+time to maturity of the option sold (bought), which is consistent with the price of the option 
+being related positively to the time to expiration. The estimates of time to maturity for the 
+two legs are almost identical in magnitude, because the options used in the sample have 
+standardized maturities. 
+As expected, the returns of the strategy are related positively to the options sold being OTM 
+and the options bought being ITM. Conversely, the relation is negative for short positions in 
+ITM options and long positions in OTM options. The lower is the strike-price ratio (i.e. the 
+more the underlying price is higher than the strike price), the higher is the intrinsic value of 
+the call option and, as a result, the higher are the chances of making a profit when a long 
+position is taken on a call (and the higher are the chances of a loss if the option is sold short). 
+If the price of the underlying is lower than the strike price, the reverse applies. The parameters 
+are almost always statistically significant in the self-financing strategy and in four cases in the 
+beta-arbitrage strategy. Notice that if both options are OTM (ITM) at closure, the short (long) 
+leg positive relation prevails over the long (short) leg negative relation, generating a positive 
+parameter that is significant only in the self-financing strategy. 
+Electronic copy available at: https://ssrn.com/abstract=3914713
+
+17 
+ 
+Table 4 - Drivers of trades returns: time-to-maturity, moneyness and crisis periods 
+ 
+Self-financing strategy 
+Beta-arbitrage strategy 
+ 
+(1) 
+(2) 
+(3) 
+(4) 
+(5) 
+(6) 
+(7) 
+(8) 
+Constant 
+ 0.04*** 
+(0.00) 
+ 0.002 
+(0.70) 
+ 0.02*** 
+(0.00) 
+ 0.01 
+(0.15) 
+-0.03 
+(0.96) 
+-0.27 
+(0.50) 
+-0.05 
+(0.89) 
+-0.90 
+(0.24) ߬
+௜,௦௛௢௥௧ 
+-0.01*** 
+(0.00) 
+ 
+ 
+ 0.002 
+(0.55) 
+-1.13*** 
+(0.00) 
+ 
+ 
+-0.89*** 
+(0.00) ߬
+௜,௟௢௡௚ 
+ 0.01*** 
+(0.00) 
+ 
+ 
+-0.002 
+(0.54) 
+ 1.14*** 
+(0.00) 
+ 
+ 
+ 0.92*** 
+(0.00) 
+ܫܶܯ௜,௦௛௢௥௧ܫܶܯ௜,௟௢௡௚ 
+ 
+ 0.02** 
+(0.03) 
+ 
+ 0.03*** 
+(0.00) 
+ 
+ 0.60 
+(0.46) 
+ 
+ 0.67 
+(0.42) 
+ܫܶܯ௜,௦௛௢௥௧ܣܶܯ௜,௟௢௡௚ 
+ 
+-0.38*** 
+(0.00) 
+ 
+-0.38*** 
+(0.00) 
+ 
+-5.38*** 
+(0.00) 
+ 
+-5.34*** 
+(0.00) 
+ܫܶܯ௜,௦௛௢௥௧ܱܶ
+ܯ௜,௟௢௡௚ 
+ 
+-1.05*** 
+(0.00) 
+ 
+-1.07*** 
+(0.00) 
+ 
+-25.34*** 
+(0.00) 
+ 
+-18.60*** 
+(0.00) ܱܶ
+ܯ௜,௦௛௢௥௧ܫܶܯ௜,௟௢௡௚ 
+ 
+ 0.73*** 
+(0.00) 
+ 
+ 0.74*** 
+(0.00) 
+ 
+ 5.57 
+(0.50) 
+ 
+ 6.01 
+(0.46) ܱܶ
+ܯ௜,௦௛௢௥௧ܣܶܯ௜,௟௢௡௚ 
+ 
+ 0.20*** 
+(0.00) 
+ 
+ 0.20*** 
+(0.00) 
+ 
+ 4.13*** 
+(0.00) 
+ 
+ 4.18*** 
+(0.00) ܱܶ
+ܯ௜,௦௛௢௥௧ܱܶ
+ܯ௜,௟௢௡௚ 
+ 
+ 0.02 
+(0.12) 
+ 
+ 0.03*** 
+(0.00) 
+ 
+ 0.94 
+(0.31) 
+ 
+ 1.05 
+(0.28) 
+ܣܶܯ௜,௦௛௢௥௧ܫܶܯ௜,௟௢௡௚ 
+ 
+ 0.77*** 
+(0.00) 
+ 
+ 0.78*** 
+(0.00) 
+ 
+ 13.49*** 
+(0.00) 
+ 
+ 13.68*** 
+(0.00) 
+ܣܶܯ௜,௦௛௢௥௧ܱܶ
+ܯ௜,௟௢௡௚ 
+ 
+-0.15*** 
+(0.00) 
+ 
+-0.14*** 
+(0.00) 
+ 
+-2.29 
+(0.22) 
+ 
+-2.16 
+(0.24) 
+ܥݎ݅ݏ݅ݏ௜ 
+ 
+ 
+-0.02*** 
+(0.00) 
+-0.05*** 
+(0.00) 
+ 
+ 
+ 0.43 
+(0.51) 
+-0.12 
+(0.86) 
+Ordinary R-squared 
+0.002 
+0.242 
+0.001 
+0.245 
+0.002 
+0.012 
+0.000 
+0.014 
+Num. of observations 
+11191 
+11191 
+11191 
+11191 
+11191 
+11191 
+11191 
+11191 
+Notes: regression estimates for the four alternative model specifications of equation (5). The dependent variable is the return 
+obtained implementing the pairs trading (self-financing or beta-arbitrage) strategy. ߬ is the time to maturity. ܫܶܯ is a dummy 
+for the option being in-the-money, ܣܶܯ is a dummy for the option being at-the-money and ܱܶ
+ܯ is a dummy for the option 
+being out-of-the-money; all are defined for both the option bought (long) and the option sold (short) in the transaction. 
+ܥݎ݅ݏ݅ݏ is a dummy for trade closure being in a period of crisis. ***, **, and * are significance at the 1%, 5%, and 10% levels, 
+respectively. pValue is in parentheses. 
+ 
+When only trades that produce statistically significant positive returns are considered (Table 
+5), the results are fairly similar to the previous analysis, with some differences: the returns 
+appear to be generally unrelated to the time to maturity; the intercept for the self-financing 
+strategy specification that includes all the regressors (4) becomes statistically significant; the 
+moneyness parameters in the beta-arbitrage specifications 6 and 8 present less extreme 
+values, with ܫܶܯ௜,௦௛௢௥௧ܱܶ
+ܯ௜,௟௢௡௚ which turn out to be not significant and ܱܶ
+ܯ௜,௦௛௢௥௧ܱܶ
+ܯ௜,௟௢௡௚ which turn significant. Notice that the number of observations differs 
+considerably between the two strategies. 
+Figure 3 depicts the average monthly number of trades, number of wins (i.e., transactions 
+with positive final payoff) and returns per pair from the self-financing (upper panel) and 
+beta-arbitrage (bottom panel) strategies. The results are obtained by first computing the 
+average monthly results for each trading period, then averaging them over the six overlapping 
+trading periods and, finally, taking the mean across all pairs.20 
+                                                      
+20 The full results are provided in Tables 13 and 15 in the Appendix. 
+Electronic copy available at: https://ssrn.com/abstract=3914713
+
+18 
+ 
+Table 5 - Drivers of significantly positive trades returns: time-to-maturity, moneyness and crisis periods 
+ 
+Self-financing strategy 
+Beta-arbitrage strategy 
+ 
+(1) 
+(2) 
+(3) 
+(4) 
+(5) 
+(6) 
+(7) 
+(8) 
+Constant 
+ 0.07*** 
+(0.00) 
+ 0.01 
+(0.37) 
+ 0.04*** 
+(0.00) 
+ 0.04*** 
+(0.00) 
+ 0.35 
+(0.34) 
+ 0.31 
+(0.15) 
+ 0.55*** 
+(0.00) 
+ 0.05 
+(0.90) ߬
+௜,௦௛௢௥௧ 
+-0.03* 
+(0.09) 
+ 
+ 
+ 0.002 
+(0.87) 
+ 0.01 
+(0.65) 
+ 
+ 
+ 0.02 
+(0.29) ߬
+௜,௟௢௡௚ 
+ 0.02 
+(0.12) 
+ 
+ 
+-0.003 
+(0.82) 
+  N/A 
+ 
+ 
+  N/A 
+ܫܶܯ௜,௦௛௢௥௧ܫܶܯ௜,௟௢௡௚ 
+ 
+ 0.07*** 
+(0.00) 
+ 
+ 0.07*** 
+(0.00) 
+ 
+ 0.34 
+(0.41) 
+ 
+ 0.43 
+(0.31) 
+ܫܶܯ௜,௦௛௢௥௧ܣܶܯ௜,௟௢௡௚ 
+ 
+-0.31*** 
+(0.00) 
+ 
+-0.32*** 
+(0.00) 
+ 
+-1.94*** 
+(0.00) 
+ 
+-2.00*** 
+(0.00) 
+ܫܶܯ௜,௦௛௢௥௧ܱܶ
+ܯ௜,௟௢௡௚ 
+ 
+-0.69*** 
+(0.00) 
+ 
+-0.73*** 
+(0.00) 
+ 
+ 0.00 
+(0.00) 
+ 
+ 0.00 
+(0.00) ܱܶ
+ܯ௜,௦௛௢௥௧ܫܶܯ௜,௟௢௡௚ 
+ 
+ 0.77*** 
+(0.00) 
+ 
+ 0.77*** 
+(0.00) 
+ 
+ 4.03 
+(0.29) 
+ 
+ 3.95 
+(0.30) ܱܶ
+ܯ௜,௦௛௢௥௧ܣܶܯ௜,௟௢௡௚ 
+ 
+ 0.20*** 
+(0.00) 
+ 
+ 0.20*** 
+(0.00) 
+ 
+ 1.79** 
+(0.01) 
+ 
+ 1.68** 
+(0.02) ܱܶ
+ܯ௜,௦௛௢௥௧ܱܶ
+ܯ௜,௟௢௡௚ 
+ 
+ 0.01 
+(0.40) 
+ 
+ 0.03* 
+(0.05) 
+ 
+ 0.91** 
+(0.03) 
+ 
+ 1.10** 
+(0.01) 
+ܣܶܯ௜,௦௛௢௥௧ܫܶܯ௜,௟௢௡௚ 
+ 
+ 0.71*** 
+(0.00) 
+ 
+ 0.71*** 
+(0.00) 
+ 
+ 2.53*** 
+(0.00) 
+ 
+ 2.62*** 
+(0.00) 
+ܣܶܯ௜,௦௛௢௥௧ܱܶ
+ܯ௜,௟௢௡௚ 
+ 
+-0.12*** 
+(0.00) 
+ 
+-0.11*** 
+(0.00) 
+ 
+-1.23 
+(0.22) 
+ 
+-1.21 
+(0.23) 
+ܥݎ݅ݏ݅ݏ௜ 
+ 
+ 
+-0.03*** 
+(0.01) 
+-0.06*** 
+(0.00) 
+ 
+ 
+-0.11 
+(0.73) 
+-0.38 
+(0.23) 
+Ordinary R-squared 
+0.004 
+0.212 
+0.001 
+0.217 
+0.000 
+0.030 
+0.000 
+0.032 
+Num. of observations 
+5132 
+5132 
+5132 
+5132 
+1366 
+1366 
+1366 
+1366 
+Notes: regression estimates for the four alternative model specifications of equation (5). The dependent variable is the return 
+obtained implementing the pairs trading (self-financing or beta-arbitrage) strategy, considering only trades where it is 
+significantly positive. ߬ is the time to maturity. ܫܶܯ is a dummy for the option being in-the-money, ܣܶܯ is a dummy for the 
+option being at-the-money and ܱܶ
+ܯ is a dummy for the option being out-of-the-money; all are defined for both the option 
+bought (long) and the option sold (short) in the transaction. ܥݎ݅ݏ݅ݏ is a dummy for trade closure being in a period of crisis. 
+***, **, and * are significance at the 1%, 5%, and 10% levels, respectively. pValue is in parentheses. ‘N/A’ in specifications 
+(5) and (8) is because the ߬௜,௦௛௢௥௧ and ߬௜,௟௢௡௚ series are identical and, thus, the variables are collinear. 
+ 
+The mean of the average number of transactions per month is equal to 0.8, implying that 
+trades per pair are both short and infrequent. The average number of wins is close to 0.42 
+and 0.41 in the self-financing and beta-arbitrage strategies, respectively, which is just slightly 
+higher than 50% of total trades. However, the characteristics of the returns differ 
+considerably between the strategies considered. On average, the self-financing strategy 
+provides excess returns equal to 0.67%, while the beta-arbitrage strategy provides returns of 
+5.88%. Notice that, in this second case, the returns are more volatile , which is due, in part, 
+to ߚመଵ being very close to 1, with the result that the amounts traded when the position is 
+opened are so similar between the two options considered, that the initial investment is 
+almost zero. Consequently, the final payoff divided by the initial investment is either 
+extremely high or extremely low, depending on whether it is positive or negative. 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3914713
+
+19 
+ 
+Figure 3 - Pairs trading monthly results (average values) 
+ 
+ 
+Average results across pairs in the trading strategies implemented over the sample from May 2008 to December 2017: 
+average number of transactions per month, average number of wins per month (i.e., trades with a positive final payoff) and 
+average monthly returns. Trades are activated whenever the implied volatilities of the one-month maturity ATM call options 
+deviate from the relationship in model (1), estimated based on the regression which uses the first between the indicated 
+underlying Indexes as X and the second as Y, and closed when the Spread reverts to within the boundaries. The first and the 
+second panels refer to the results of the self-financing and beta-arbitrage strategies, respectively. Notice that, in the first 
+case, returns can be interpreted as excess returns since the strategy does not require any initial investment. 
+4.5 Robustness 
+Our results are robust to several checks. First, we implemented a stricter definition of 
+convergence by closing the trades when the Spread reverts to zero, rather than when it 
+returns to within the boundaries. The results are qualitatively unchanged in terms of both 
+profitability and its drivers, as shown in Tables 6 and 7. However, trade characteristics and 
+returns differ from the baseline methodology. 
+Electronic copy available at: https://ssrn.com/abstract=3914713
+
+20 
+ 
+Table 6 – Results for the IV-based pairs trading strategies: closing when the Spread reaches 0 
+ 
+Self-financing strategy returns 
+Beta-arbitrage strategy returns 
+Closing 
+ 
+Mean 
+Std 
+NW stat 
+Mean 
+Std 
+NW stat 
+Boundary 
+Maturity
+CAC40-DAX30 
+0.036 
+0.49 
+0.93 
+0.522 
+13.69 
+0.60 
+0.24 
+0.61 
+CAC40-ESTOX50 
+-0.040 
+0.29 
+-1.81* 
+-9.136 
+70.49 
+-1.97** 
+0.40 
+0.50 
+CAC40-FTSE100 
+-0.116 
+0.74 
+-2.52** 
+-2.084 
+22.27 
+-1.94* 
+0.45 
+0.43 
+CAC40-FTSEMIB 
+-0.009 
+0.59 
+-0.25 
+-0.480 
+22.24 
+-0.37 
+0.28 
+0.62 
+DAX30-CAC40 
+0.031 
+0.47 
+0.96 
+1.316 
+21.03 
+1.15 
+0.20 
+0.64 
+DAX30-ESTOX50 
+0.057 
+0.44 
+1.94* 
+5.137 
+77.35 
+1.03 
+0.28 
+0.60 
+DAX30-FTSE100 
+-0.137 
+0.81 
+-2.60*** 
+-1.203 
+99.93 
+-0.29 
+0.17 
+0.68 
+DAX30-FTSEMIB 
+0.100 
+0.82 
+1.80* 
+-3.810 
+67.51 
+-0.78 
+0.20 
+0.66 
+ESTOX50-CAC40 
+-0.047 
+0.31 
+-1.92* 
+-4.643 
+30.38 
+-2.44** 
+0.33 
+0.56 
+ESTOX50-DAX30 
+0.079 
+0.48 
+2.76*** 
+0.227 
+15.53 
+0.28 
+0.18 
+0.68 
+ESTOX50-FTSE100 
+-0.228 
+0.84 
+-5.27*** 
+-1.935 
+31.30 
+-2.00** 
+0.33 
+0.55 
+ESTOX50-FTSEMIB 
+0.082 
+0.57 
+2.11** 
+0.519 
+13.94 
+0.74 
+0.28 
+0.60 
+FTSE100-CAC40 
+-0.037 
+0.72 
+-0.81 
+1.202 
+48.97 
+0.56 
+0.39 
+0.49 
+FTSE100-DAX30 
+-0.057 
+0.81 
+-1.27 
+-0.253 
+28.57 
+-0.17 
+0.16 
+0.69 
+FTSE100-ESTOX50 
+-0.193 
+0.84 
+-3.65*** 
+-9.652 
+133.72 
+-1.64 
+0.34 
+0.55 
+FTSE100-FTSEMIB 
+-0.030 
+1.11 
+-0.44 
+-0.348 
+39.59 
+-0.12 
+0.21 
+0.66 
+FTSEMIB-CAC40 
+-0.017 
+0.57 
+-0.52 
+-0.699 
+15.51 
+-0.99 
+0.42 
+0.48 
+FTSEMIB-DAX30 
+0.094 
+0.92 
+1.74* 
+1.269 
+37.32 
+1.21 
+0.26 
+0.62 
+FTSEMIB-ESTOX50 
+0.109 
+0.56 
+2.73*** 
+2.556 
+28.19 
+1.73* 
+0.47 
+0.44 
+FTSEMIB-FTSE100 
+-0.059 
+1.18 
+-0.82 
+0.983 
+83.24 
+0.26 
+0.31 
+0.56 
+ACROSS ALL PAIRS  
+-0.018 
+0.73 
+-0.02 
+-0.966 
+55.22 
+-0.02 
+0.29 
+0.58 
+Notes: results of the pairs trading strategies implemented over the sample from May 2008 to December 2017, with May 2007 to April 2008 data
+activated whenever the implied volatilities of the one-month maturity ATM call options deviate from the relationship in model (1), estimate
+between the indicated underlying Indexes as X and the second as Y, and closed when the Spread reaches its zero mean. Columns 1-3 refer t
+self-financing strategy. Columns 4-6 refer to the returns from the beta-arbitrage strategy, which differ only in terms of the quantities traded. For 
+the standard deviation and t-statistics computed using the Newey-West heteroskedasticity and autocorrelation robust standard errors (Newey
+interpreted as excess returns, since the strategy does not require any initial investment. ***, **, and * are significance at the 1%, 5%, and 10% le
+of closed trades due to Spread reversion to zero, option expiration and reaching the end of the trading period. Columns 10 and 11 report the a
+remains open, and the total number of trades.  
+Electronic copy available at: https://ssrn.com/abstract=3914713
+
+21 
+ 
+Compared to the previous application, the total number of trades is roughly halved and the 
+average life is more than tripled. Also, the percentage of transactions closed due to expiry of 
+the options or end of the trading period increases, at the expense of a reduction in the 
+number of closures due to Spread convergence to zero. These results suggest that, in most 
+the cases, the long-run equilibrium, in its stricter interpretation, cannot be re-established, 
+leading the profitability to be not really dependent on the theoretical basis of the 
+methodology. Consequently, in both the self-financing and beta-arbitrage strategies, average 
+returns generally assume more extreme values, leading to negative total profitability and 
+higher standard deviations. Overall, the find that the pairs trading strategy provides no 
+evidence of market inefficiency remains unchanged. 
+Also, the results for the drivers of profitability (Table 7) are mostly coherent with our baseline 
+methodology, except for time-to-maturity parameters, which, in this case are never 
+statistically significant, regardless of the specification. Finally, the monthly analysis (Figure 4) 
+shows that, although the average number of transactions per pair is smaller (around 0.47) 
+and the average monthly returns are more volatile (with means close to -0.85% and -45.36%), 
+the behaviour over time of both series is similar to the baseline application. 
+ 
+Table 7 - Drivers of trades returns with closing at 0 Spread: time-to-maturity, moneyness and crisis periods 
+ 
+Self-financing strategy 
+Beta-arbitrage strategy 
+ 
+(1) 
+(2) 
+(3) 
+(4) 
+(5) 
+(6) 
+(7) 
+(8) 
+Constant 
+ 0.00 
+(0.88) 
+ 0.03** 
+(0.04) 
+ 0.01 
+(0.31) 
+ 0.03** 
+(0.04) 
+-1.82* 
+(0.06) 
+-0.36 
+(0.80) 
+-1.24 
+(0.12) 
+-1.94 
+(0.24) ߬
+௜,௦௛௢௥௧ 
+-0.005 
+(0.72) 
+ 
+ 
+-0.01 
+(0.39) 
+-0.02 
+(0.99) 
+ 
+ 
+-0.12 
+(0.91) ߬
+௜,௟௢௡௚ 
+ 0.003 
+(0.84) 
+ 
+ 
+ 0.01 
+(0.33) 
+ 0.10 
+(0.92) 
+ 
+ 
+ 0.24 
+(0.82) 
+ܫܶܯ௜,௦௛௢௥௧ܫܶܯ௜,௟௢௡௚ 
+ 
+-0.11*** 
+(0.00) 
+ 
+-0.10*** 
+(0.00) 
+ 
+-4.42** 
+(0.02) 
+ 
+-4.13** 
+(0.03) 
+ܫܶܯ௜,௦௛௢௥௧ܣܶܯ௜,௟௢௡௚ 
+ 
+-0.87*** 
+(0.00) 
+ 
+-0.86*** 
+(0.00) 
+ 
+-11.49*** 
+(0.00) 
+ 
+-11.21*** 
+(0.00) 
+ܫܶܯ௜,௦௛௢௥௧ܱܶ
+ܯ௜,௟௢௡௚ 
+ 
+-1.23*** 
+(0.00) 
+ 
+-1.22*** 
+(0.00) 
+ 
+-7.01 
+(0.33) 
+ 
+-6.56 
+(0.36) ܱܶ
+ܯ௜,௦௛௢௥௧ܫܶܯ௜,௟௢௡௚ 
+ 
+ 0.98*** 
+(0.00) 
+ 
+ 1.01*** 
+(0.00) 
+ 
+18.67** 
+(0.02) 
+ 
+19.09** 
+(0.01) ܱܶ
+ܯ௜,௦௛௢௥௧ܣܶܯ௜,௟௢௡௚ 
+ 
+ 0.28*** 
+(0.00) 
+ 
+ 0.29*** 
+(0.00) 
+ 
+ 7.72** 
+(0.03) 
+ 
+ 7.91** 
+(0.02) ܱܶ
+ܯ௜,௦௛௢௥௧ܱܶ
+ܯ௜,௟௢௡௚ 
+ 
+-0.04** 
+(0.04) 
+ 
+-0.02 
+(0.37) 
+ 
+ 0.48 
+(0.82) 
+ 
+ 0.41 
+(0.85) 
+ܣܶܯ௜,௦௛௢௥௧ܫܶܯ௜,௟௢௡௚ 
+ 
+ 1.23*** 
+(0.00) 
+ 
+ 1.23*** 
+(0.00) 
+ 
+20.46*** 
+(0.00) 
+ 
+21.17*** 
+(0.00) 
+ܣܶܯ௜,௦௛௢௥௧ܱܶ
+ܯ௜,௟௢௡௚ 
+ 
+-0.37*** 
+(0.00) 
+ 
+-0.37*** 
+(0.00) 
+ 
+-3.04 
+(0.37) 
+ 
+-3.05 
+(0.36) 
+ܥݎ݅ݏ݅ݏ௜ 
+ 
+ 
+-0.11*** 
+(0.00) 
+-0.09*** 
+(0.00) 
+ 
+ 
+ 1.01 
+(0.51) 
+ 0.79 
+(0.62) 
+Ordinary R-squared 
+0.001 
+0.400 
+0.004 
+0.403 
+0.000 
+0.018 
+0.000 
+0.018 
+Num. of observations 
+6540 
+6540 
+6540 
+6540 
+6540 
+6540 
+6540 
+6540 
+Notes: regression estimates for the four alternative model specifications of equation (5). The dependent variable is the return 
+obtained implementing the pairs trading (self-financing or beta-arbitrage) strategy. ߬ is the time to maturity. ܫܶܯ is a dummy 
+for the option being in-the-money, ܣܶܯ is a dummy for the option being at-the-money and ܱܶ
+ܯ is a dummy for the option 
+being out-of-the-money; all are defined for both the option bought (long) and the option sold (short) in the transaction. 
+ܥݎ݅ݏ݅ݏ is a dummy for trade closure being in a period of crisis. ***, **, and * are significance at the 1%, 5%, and 10% levels, 
+respectively. pValue is in parentheses. 
+Electronic copy available at: https://ssrn.com/abstract=3914713
+
+22 
+ 
+Figure 4 - Pairs trading monthly results (average values): closing when the Spread reaches 0 
+ 
+Average results across pairs in the trading strategies implemented over the sample from May 2008 to December 2017: 
+average number of transactions per month, average number of wins per month (i.e., trades with a positive final payoff) and 
+average monthly returns. Trades are activated whenever the implied volatilities of the one-month maturity ATM call options 
+deviate from the relationship in model (1), estimated based on the regression which uses the first between the indicated 
+underlying Indexes as X and the second as Y, and closed when the Spread reaches its zero mean. The first and the second 
+panels refer to the results of the self-financing and beta-arbitrage strategies, respectively. Notice that, in the first case, 
+returns can be interpreted as excess returns since the strategy does not require any initial investment. 
+As further robustness, we repeat the analysis using an artificially constructed series of 
+front-month ATM options prices (hereafter OP), in place of the one-month ATM options 
+implied volatilities. This allows us to take account of the possibility that the relationship 
+between implied volatilities might not extend directly to options prices. More specifically, the 
+OP series is constructed by selecting, for each trading day and for each underlying index, the 
+price of the option that is front-month and at-the-money at that point in time. This provides 
+a synthetic index that tracks the evolution over time of the front-month ATM options prices 
+sequence for a given underlying asset. 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3914713
+
+23 
+ 
+Then, we use the OP series to estimate the following OLS regression: ܱܲ
+௧,௒
+஺்ெ= ߛ଴+ ߛଵܱܲ
+௧,௑
+஺்ெ+ ߝ௧ 
+(6) 
+where ܱܲ
+௧,௒
+஺்ெ and ܱܲ
+௧,௑
+஺்ெ are the respective prices at day ݐ of the front-month maturity ATM  
+option written on indexes ܻ and X. All other elements are defined as in regression (1) so that 
+the Spread eventually is computed as: ܵ
+݌ݎ݁ܽ݀
+௧= ܱܲ
+௧,௒
+஺்ெെߛො଴െߛොଵܱܲ
+௧,௑
+஺்ெ 
+(7) 
+As above, the self-financing and the beta-arbitrage trading strategies are implemented 
+whenever a mispricing is suspected, that is, whenever the Spread violates the same condition 
+in equation (3), i.e. 2ߪො൒ܵ
+݌ݎ݁ܽ݀
+௧൒െ2ߪො. 
+Figure 5 and Table 8 show that the levels of the OP series and their standard deviations are 
+considerably higher than the implied volatilities, but that, also in this case, the 95% confidence 
+level of the ADF test confirms that they are stationary, regardless of the specification 
+employed.21 Also, even if OP generally show lower correlations (Table 9) and, in particular, 
+for couples including options written on the DAX 30, they still remain relevant, ranging 
+between 0.56 to as high as 0.95. 
+ 
+Figure 5 - OP time series 
+ 
+Front-month ATM call OP series for each underlying index (series constructed considering the price of the option that is 
+front-month and at-the-money at that point in time, for each trading day). 
+              
+21 As in the IV application, we used the ADF test for stationarity, run on the OP series, setting the maximum lag 
+length equal to 15 and with both drift-only and drift and trend specifications. 
+Electronic copy available at: https://ssrn.com/abstract=3914713
+
+24 
+ 
+Table 8 - OP series of the front-month ATM Call Options: descriptive statistics, by undelying Index 
+ 
+Prices Call 
+on CAC 40 
+Prices Call 
+on DAX 30 
+Prices Call 
+on ESTOX 50 
+Prices Call 
+on FTSE 100 
+Prices Call 
+on FTSE MIB 
+Mean 
+87.86 
+173.46 
+65.65 
+124.95 
+544.53 
+Max 
+280.72 
+451.80 
+243.50 
+718.12 
+1955.00 
+Min 
+21.61 
+0.10 
+16.50 
+24.84 
+173.00 
+Median 
+81.04 
+161.25 
+60.30 
+110.81 
+505.00 
+St. Deviation 
+35.79 
+61.64 
+27.34 
+59.74 
+217.10 
+Notes: main descriptive statistics for the OP series of the front-month ATM call options over the entire sample period, by 
+underlying index (series constructed considering the price of the option that is front-month and at-the-money at that point 
+in time, for each trading day). 
+ 
+Table 9 – Correlation between the OPs, by underlying index 
+ 
+CAC 40 
+DAX 30 
+ESTOX 50 
+FTSE 100 
+FTSE MIB 
+CAC 40 
+1 
+0.72 
+0.95 
+0.88 
+0.85 
+DAX 30 
+ 
+1 
+0.68 
+0.61 
+0.56 
+ESTOX 50 
+ 
+ 
+1 
+0.90 
+0.87 
+FTSE 100 
+ 
+ 
+ 
+1 
+0.83 
+FTSE MIB 
+ 
+ 
+ 
+ 
+1 
+Notes: Pearson correlation coefficients for the OP series of the front-month ATM call options for each pair of underlying 
+indexes, using the entire data sample (series constructed considering the price of the option that is front-month and 
+at-the-money at that point in time, for each trading day). 
+ 
+Table 10 reports the results obtained for both the self-financing and the beta-arbitrage 
+strategies. With respect to the baseline approach, the total number of the transactions is 
+slightly higher (albeit it has same order of magnitude), while the average life is halved, 
+becoming approximately 2 trading days. It should be remarked that, in almost all cases, trades 
+close due to reversion to within the boundaries.  
+In terms of returns, again we observe quite high levels of variability among the pairs. For 
+instance, for the self-financing strategy, in most cases (13 out of 20), pairs trading provides 
+significant and positive returns, although within a much closer range: from 1.4% (for the pair 
+ESTOX50-CAC40) to a maximum of 7.3% (pair involving the FTSEMIB and DAX30). In the 
+remaining cases, the self-financing strategy does not provide significant returns, and in one 
+case (FTSE100-ESTOX50) it leads to statistically significant negative excess returns. In the 
+beta-arbitrage strategy, this single case of a significantly negative return is confirmed, while 
+the overall profitability is much reduced; in this instance, option pairs trading leads to 
+significant returns in only 7 out of 20 cases. Thus, the beta-arbitrage strategy seems to deliver 
+generally higher, but more volatile returns. However, despite the high number of suspected 
+mispricings, signalled by trade frequency, the average returns from both strategies, across all 
+pairs, are not statistically significant, which further supports index option market efficiency. 
+In other words, although an individual trader might earn a significantly positive return on one 
+options pair, on average, the pairs trading strategy will not provide a profit to the hedge fund 
+that trades on the entire market.22 
+                                                      
+22 Further profitability and monthly results are provided in Tables 16 to 19 in the Appendix. 
+Electronic copy available at: https://ssrn.com/abstract=3914713
+
+25 
+ 
+Table 10 - Results for the OP-based pairs trading strategies 
+ 
+Self-financing strategy returns 
+Beta-arbitrage strategy returns 
+Closing 
+ 
+Mean 
+Std 
+NW stat 
+Mean 
+Std 
+NW stat 
+Boundary 
+Maturity 
+CAC40-DAX30 
+0.020 
+0.21 
+2.13** 
+0.250 
+1.77 
+2.84*** 
+0.97 
+0.02 
+CAC40-ESTOX50 
+0.015 
+0.09 
+3.19*** 
+0.050 
+0.40 
+2.77*** 
+1.00 
+0.00 
+CAC40-FTSE100 
+0.016 
+0.20 
+2.01** 
+-0.636 
+22.49 
+-0.67 
+1.00 
+0.00 
+CAC40-FTSEMIB 
+0.064 
+0.20 
+7.45*** 
+0.071 
+0.34 
+5.63*** 
+1.00 
+0.00 
+DAX30-CAC40 
+0.004 
+0.20 
+0.46 
+-0.008 
+0.53 
+-0.30 
+0.98 
+0.02 
+DAX30-ESTOX50 
+0.007 
+0.20 
+0.64 
+0.086 
+0.57 
+2.84*** 
+0.98 
+0.01 
+DAX30-FTSE100 
+0.001 
+0.34 
+0.07 
+-0.170 
+3.87 
+-1.22 
+0.97 
+0.02 
+DAX30-FTSEMIB 
+0.073 
+0.25 
+6.14*** 
+0.106 
+0.47 
+4.60*** 
+0.99 
+0.01 
+ESTOX50-CAC40 
+0.014 
+0.07 
+5.35*** 
+0.131 
+0.74 
+4.65*** 
+1.00 
+0.00 
+ESTOX50-DAX30 
+0.033 
+0.21 
+2.66*** 
+0.070 
+5.63 
+0.34 
+0.98 
+0.01 
+ESTOX50-FTSE100 
+-0.004 
+0.24 
+-0.33 
+-0.036 
+0.81 
+-1.11 
+0.99 
+0.00 
+ESTOX50-FTSEMIB 
+0.069 
+0.20 
+7.06*** 
+0.092 
+0.33 
+6.17*** 
+1.00 
+0.00 
+FTSE100-CAC40 
+0.001 
+0.20 
+0.14 
+-0.036 
+0.58 
+-1.28 
+1.00 
+0.00 
+FTSE100-DAX30 
+0.000 
+0.34 
+0.00 
+-2.116 
+32.22 
+-1.50 
+0.98 
+0.01 
+FTSE100-ESTOX50 
+-0.034 
+0.25 
+-2.63*** 
+-0.124 
+0.54 
+-4.85*** 
+1.00 
+0.00 
+FTSE100-FTSEMIB 
+0.039 
+0.29 
+2.96*** 
+0.046 
+0.52 
+2.04** 
+1.00 
+0.00 
+FTSEMIB-CAC40 
+0.053 
+0.24 
+6.08*** 
+0.013 
+0.45 
+0.80 
+0.99 
+0.00 
+FTSEMIB-DAX30 
+0.062 
+0.25 
+7.21*** 
+-0.001 
+0.37 
+-0.04 
+0.97 
+0.02 
+FTSEMIB-ESTOX50 
+0.058 
+0.19 
+7.25*** 
+0.012 
+0.41 
+0.69 
+1.00 
+0.00 
+FTSEMIB-FTSE100 
+0.046 
+0.30 
+3.01*** 
+0.006 
+0.38 
+0.31 
+0.98 
+0.02 
+ACROSS ALL PAIRS  
+0.029 
+0.23 
+0.11 
+-0.108 
+8.93 
+-0.01 
+0.99 
+0.01 
+Notes: results of the pairs trading strategies implemented over the sample from May 2008 to December 2017, with May 2007 to April 2008 data
+activated whenever the OP of the front-month maturity ATM call options deviate from the relationship in model (6), estimated based on th
+indicated underlying Indexes as X and the second as Y, and closed when the Spread reverts to within the boundaries. Columns 1-3 refer to
+self-financing strategy. Columns 4-6 refer to the returns from the beta-arbitrage strategy, which differ only in terms of the quantities traded. For 
+the standard deviation and t-statistics computed using the Newey-West heteroskedasticity and autocorrelation robust standard errors (Newey
+interpreted as excess returns, since the strategy does not require any initial investment. ***, **, and * are significance at the 1%, 5%, and 10% le
+of closed trades due to Spread reversion to within the boundaries, option expiration and reaching the end of the trading period. Columns 10 and
+of days a trade remains open, and the total number of trades.   
+Electronic copy available at: https://ssrn.com/abstract=3914713
+
+26 
+ 
+Table 11 - Drivers of OP-based trades returns: time-to-maturity, moneyness and crisis periods 
+ 
+Self-financing strategy 
+Beta-arbitrage strategy 
+ 
+(1) 
+(2) 
+(3) 
+(4) 
+(5) 
+(6) 
+(7) 
+(8) 
+Constant 
+ 0.05*** 
+(0.00) 
+ 0.05*** 
+(0.00) 
+ 0.03*** 
+(0.00) 
+ 0.05*** 
+(0.00) 
+ 0.34*** 
+(0.00) 
+ 0.01 
+(0.67) 
+ 0.01 
+(0.72) 
+ 0.29*** 
+(0.00) ߬
+௜,௦௛௢௥௧ 
+ 0.00 
+(0.87) 
+ 
+ 
+ 0.00*** 
+(0.00) 
+-0.01 
+(0.20) 
+ 
+ 
+ 0.00 
+(0.90) ߬
+௜,௟௢௡௚ 
+ 0.00 
+(0.56) 
+ 
+ 
+ 0.00*** 
+(0.01) 
+ 0.00 
+(0.81) 
+ 
+ 
+-0.01 
+(0.25) 
+ܫܶܯ௜,௦௛௢௥௧ܫܶܯ௜,௟௢௡௚ 
+ 
+ 0.08*** 
+(0.00) 
+ 
+ 0.07*** 
+(0.00) 
+ 
+ 0.01 
+(0.88) 
+ 
+ 0.00 
+(0.98) 
+ܫܶܯ௜,௦௛௢௥௧ܣܶܯ௜,௟௢௡௚ 
+ 
+-0.18*** 
+(0.00) 
+ 
+-0.18*** 
+(0.00) 
+ 
+-0.13 
+(0.13) 
+ 
+-0.16* 
+(0.08) 
+ܫܶܯ௜,௦௛௢௥௧ܱܶ
+ܯ௜,௟௢௡௚ 
+ 
+-0.65*** 
+(0.00) 
+ 
+-0.69*** 
+(0.00) 
+ 
+-1.04** 
+(0.01) 
+ 
+-1.19*** 
+(0.01) ܱܶ
+ܯ௜,௦௛௢௥௧ܫܶܯ௜,௟௢௡௚ 
+ 
+ 0.76*** 
+(0.00) 
+ 
+ 0.76*** 
+(0.00) 
+ 
+ 0.00 
+(0.00) 
+ 
+ 0.00 
+(0.00) ܱܶ
+ܯ௜,௦௛௢௥௧ܣܶܯ௜,௟௢௡௚ 
+ 
+ 0.09*** 
+(0.00) 
+ 
+ 0.07*** 
+(0.00) 
+ 
+ 0.11 
+(0.61) 
+ 
+ 0.06 
+(0.80) ܱܶ
+ܯ௜,௦௛௢௥௧ܱܶ
+ܯ௜,௟௢௡௚ 
+ 
+-0.02** 
+(0.02) 
+ 
+-0.02** 
+(0.02) 
+ 
+ 0.02 
+(0.84) 
+ 
+ 0.00 
+(0.98) 
+ܣܶܯ௜,௦௛௢௥௧ܫܶܯ௜,௟௢௡௚ 
+ 
+ 0.40*** 
+(0.00) 
+ 
+ 0.40*** 
+(0.00) 
+ 
+ 1.49*** 
+(0.00) 
+ 
+ 1.44*** 
+(0.00) 
+ܣܶܯ௜,௦௛௢௥௧ܱܶ
+ܯ௜,௟௢௡௚ 
+ 
+-0.13*** 
+(0.00) 
+ 
+-0.13*** 
+(0.00) 
+ 
+-0.01 
+(0.91) 
+ 
+ 0.02 
+(0.83) 
+ܥݎ݅ݏ݅ݏ௜ 
+ 
+ 
+ 0.02*** 
+(0.00) 
+ 0.00 
+(0.98) 
+ 
+ 
+ 0.06 
+(0.24) 
+ 0.02 
+(0.75) 
+Ordinary R-squared 
+0.000 
+0.182 
+0.002 
+0.183 
+0.003 
+0.014 
+0.000 
+0.016 
+Num. of observations 
+7706 
+7706 
+7706 
+7706 
+5499 
+5499 
+5499 
+5499 
+Notes: regression estimates for the four alternative model specifications of equation (5). The dependent variable is the return 
+obtained implementing the pairs trading (self-financing or beta-arbitrage) strategy. ߬ is the time to maturity. ܫܶܯ is a dummy 
+for the option being in-the-money, ܣܶܯ is a dummy for the option being at-the-money and ܱܶ
+ܯ is a dummy for the option 
+being out-of-the-money; all are defined for both the option bought (long) and the option sold (short) in the transaction. 
+ܥݎ݅ݏ݅ݏ is a dummy for trade closure being in a period of crisis. ***, **, and * are significance at the 1%, 5%, and 10% levels, 
+respectively. pValue is in parentheses. 
+ 
+Finally, notice that the analysis of the profitability drivers (Table 11) produces results that 
+generally are in line with our baseline methodology, in terms of both the signs and magnitude 
+of the parameters. There are some small differences related to: the time-to-maturity 
+parameter, which is statistically significant only in specification 4; the Crisis dummy, which is 
+no longer significant in specification 4; the intercept, which is significantly positive in most 
+cases; and the parameter associated to the moneyness dummies in the beta-arbitrage 
+strategy, which is significant only for two combinations. 
+ 
+5. Conclusions 
+According to the EMH, in efficient markets, no arbitrage opportunities should arise and no 
+systematic mispricings can be exploited. In this essay, we tested options market efficiency 
+using a statistical arbitrage trading strategy, through an application on front-month ATM call 
+options, written on five European indexes. 
+Electronic copy available at: https://ssrn.com/abstract=3914713
+
+27 
+ 
+The methodology consists of identifying highly correlated options through their one-month 
+maturity implied volatilities and establishing a stationary and mean-reverting relationship 
+between them. This relationship allow us to identify possible relative mispricings, that is, to 
+determine whether one asset is not ‘correctly’ priced with respect to the other asset. We 
+employ a simple trading strategy to systematically exploit these suspected mispricings in the 
+expectation of a positive profit when the relationship is re-established. As a robustness check, 
+we used an artificially constructed series of the front-month ATM options prices (in place of 
+the IV) to perform pairs identification and establish the equilibrium relationship. 
+The results show that the European option market is not always perfectly efficient since some 
+of the pairs considered provide positive and significant profitability. However, the number of 
+trades is relatively small; overall, less than one round-trip transaction per month for each pair 
+of options. In addition, market forces are able quickly to identify and reabsorb the mispricing, 
+which is reflected in the fact that the average time a trade remains open is four days in the IV 
+application and two days in the OP-based strategy. This suggests that although arbitrage 
+windows occur, they are short-lived, which is consistent the with the mean-reverting property 
+of the equilibrium relationship. 
+Due to the high level of volatility associated to the outcomes of the trading strategies, we also 
+analyse the relation between profitability and some determinants of the options prices. The 
+results confirmed our thesis that returns are related strongly to moneyness and time to 
+maturity, which contribute depending on the trader’s long or short position on the option. 
+We found, also, that these variables cannot completely explain how the strategies perform. 
+Since both the price of the underlying index and the volatility of the options play a central 
+role in determining the transaction payoffs, we can conclude that the profitability of options 
+pairs trading is affected by many more factors than in case of its application to the stock 
+market, which might explain the variability in our results. 
+Since our analysis does not allow any definite conclusions, we call for further investigation 
+into the application of pairs trading strategies in the options market. To our knowledge, this 
+is an unexplored area of research, which might help to verify whether the options market is 
+efficient in terms of relative pricing. Empirical applications should be conducted on much 
+larger datasets and, ideally, should consider different categories of options in terms of 
+contract type, maturity and moneyness.  
+ 
+Electronic copy available at: https://ssrn.com/abstract=3914713
+
+28 
+ 
+References 
+Ackert, L. F., & Tian, Y. S. (2001). Efficiency in index options markets and trading in stock 
+baskets. Journal of banking & finance, 1607-1634. 
+Ammann, M., & Herriger, S. (2002). Relative Implied-Volatility Arbitrage with Index Options. 
+Financial Analysts Journal, 42-55. 
+Andrade, S., Di Pietro, V., & Seasholes, M. (2005). Understanding the profitability of pairs 
+trading. Unpublished working paper, UC Berkeley, Northwestern University. 
+Avellaneda, M., & Lee, J. H. (2010). Statistical arbitrage in the US equities market. Quantitative 
+Finance, 10(7), 761-782. 
+Black, F., & Scholes, M. (1973). The pricing of options and corporate liabilities. The journal of 
+political economy, 637-654. 
+Blázquez, M. C., De la Orden, D. C., & Román, C. P. (2018). Pairs trading techniques: An 
+empirical contrast. European Research on Management and Business Economics, 
+24(3), 160-167. 
+Bondarenko, O. (2003). Statistical Arbitrage and Securities Prices. The Review of Financial 
+Studies, 875-919. 
+Brunetti, M., & Torricelli, C. (2005). Put-call parity and cross-markets efficiency in the index 
+options markets: evidence from the Italian market. International Review of Financial 
+Analysis,Elsevier, 14(5), 508-532. 
+Caldeira, J. F., & Moura, G. V. (2013). Selection of a portfolio of pairs based on cointegration: 
+a statistical arbitrage strategy. Brazilian Review of Finance, 11(1), 49-80. 
+Capelle-Blancard, G., & Chaudhury, M. (2001). Efficiency tests of the French index (CAC 40) 
+options market. In EFMA 2002 London Meetings.  
+Cavallo, L., & Mammola, P. (2000). Empirical tests of efficiency of the Italian index options 
+market. Journal of Empirical Finance, 7(2), 173-193. 
+Clarke, J., Jandik, T., & Mandelker, G. (2001). The efficient markets hypothesis. Expert financial 
+planning: Advice from industry leaders, 126-141. 
+Cummins, M., & Bucca, A. (2012). Quantitative spread trading on crude oil and refined 
+products markets. Quantitative Finance, 12(12), 1857-1875. 
+De Bondt, W. F., & Thaler, R. (1985). Does the stock market overreact? The Journal of finance. 
+Do, B., & Faff, R. (2010). Does simple pairs trading still work? Financial Analysts Journal, 66(4), 
+83-95. 
+Duffie, D. (2010). Dynamic asset pricing theory. Princeton University Press. 
+Electronic copy available at: https://ssrn.com/abstract=3914713
+
+29 
+ 
+Dunis, C., & Lequeux, P. (2000). Intraday data and hedging efficiency in interest spread 
+trading. The European Journal of Finance, 6(4), 332-352. 
+Emery, G. W., & Liu, Q. W. (2002). An anlysis of the relationship between electricity and 
+natural-gas futures prices. Journal of Futures Markets, 22(2), 95-122. 
+Engle, R. F., & Granger, C. W. (1987). Co-integration and error correcton: Representation, 
+estimation, and testing. Econometrica, 55(2), 251-276. 
+Evnine, J., & Rudd, A. (1985). Index options: The early evidence. The Journal of Finance, 743756. 
+Fama, E. F. (1965). The behavior of stock-market prices. The journal of Business, 34-105. 
+Fama, E. F. (1970). Efficient capital markets: A review of theory and empirical work. The 
+journal of Finance, 383-417. 
+Fama, E. F. (1991). Efficient Capital Markets: II. The Journal of Finance, 1575-1617. 
+Fama, E. F. (1995). Random walks in stock market prices. Financial analysts journal, 75-80. 
+Fama, E. F. (1998). Market efficiency, long-term returns, and behavioral finance. Journal of 
+financial economics, 283--306. 
+Fung, J. K., & Chan, K. C. (1994). On the arbitrage-free pricing relationship between index 
+futures and index options: A note. Journal of Futures Markets, 957-962. 
+Fung, J. K., & Mok, H. M. (2001). Index options-futures arbitrage: A comparative study with 
+bid/ask and transaction data. The Financial Review, 71-94. 
+Gatev, E., Goetzmann, W. N., & Rouwenhorst, K. G. (2006). Pairs trading: perfomance of a 
+relative-value arbitrage rule. Review of Financial Studies, 19(3), 797-827. 
+Girma, P. B., & Paulson, A. S. (1999). Risk arbitrage opportunities in petroleum future spreads. 
+Journal of Futures Markets, 19(8), 931-955. 
+Hogan, S., Jarrow, R., Teo, M., & Warachka, M. (2004). Testing market efficiency using 
+statistical arbitrage with applications to momentum and value strategies. Journal of 
+Financial economics, 525-565. 
+Huck, N. (2015). Pairs trading: does volatility timing matter? Applied economics, 47(57), 62396256. 
+Huck, N., & Afawubo, K. (2015). Pairs trading and selection methods: is cointegration 
+superior? Applied Economics, 47(6), 599-613. 
+Jacobs, H., & Weber, M. (2015). On the determinants of pairs trading profitability. Jurnal of 
+Financial Markets, 23, 75-97. 
+Jensen, M. C. (1978). Some anomalous evidence regarding market efficiency. Journal of 
+financial economics, 95-101. 
+Electronic copy available at: https://ssrn.com/abstract=3914713
+
+30 
+ 
+Krauss, C. (2017). Statistical arbitrage pairs trading strategies; review and outlook. Journal of 
+Economic Surveys, 31(2), 513-545. 
+Lee, J. H., & Nayar, N. (1993). A transactions data analysis of arbitrage between index options 
+and index futures. Journal of Futures Markets, 889-902. 
+Li, M. L., Chui, C. M., & Li, C. Q. (2014). Is pairs trading profitable on China AH-share markets? 
+Applied Economics Letters, 21(16), 1116-1121. 
+Malkiel, B. G. (2003). The efficient market hypothesis and its critics. The Journal of Economic 
+Perspectives, 59-82. 
+Miao, G. J. (2014). High frequency and dynamic pairs trading based on statistical arbitrage 
+using a two stage correlation and cointegration approach. International Journal of 
+Economics and Finance, 6(3), 96-110. 
+Mittnik, S., & Rieken, S. (2000). Put-call parity and the informational efficiency of the German 
+DAX-index options market. International review of financial analysis, 9(3), 259-279. 
+Newey, W., & West, K. (1987). A Simple, Positive Semi-Definite, Heteroskedasticity and 
+Autocorrelation Consistent Covariance Matrix. Econometrica, 55(3), 703-708. 
+Perlin, M. S. (2009). Evaluation of pairs-trading strategy at the Brazilian financial market. 
+Journal of Derivatives & Hedge Funds, 15(2), 122-136. 
+Rad, H., Low, R. K., & Faff, R. W. (2016). The profitability of pairs trading strategies: distance, 
+cointegration and copula methods. Quantitative Finance, 16(10), 1541-1558. 
+Samuelson, P. A. (1965). Proof that properly anticipated prices fluctuate randoml. Industrial 
+Management Review, 41-49. 
+Shiller, R. J. (1981). The use of volatility measures in assessing market efficiency. The Journal 
+of Finance. 
+Simon, D. P. (1999). The soybean crush spead; empirical evidence and trading strategies. 
+Journal of Futures Markets, 19(3), 271-289. 
+Stoll, H. R. (1969). The Relationship between Put and Call Option Prices. Journal of Finance, 
+24(5), 801-824. 
+Thaler, R. H. (1987). Amomalies: The january effect. The Journal of Economic Perspectives, 
+197-201. 
+Vidyamurthy, G. (2004). Pairs Trading: Quantitative Methods and Analysis. Hoboken, NJ: John 
+Wiley & Sons. 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3914713
+
+31 
+ 
+Appendix 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3914713
+
+32 
+ 
+Table 12 - Profitability per transaction: IV-based self-financing strategy 
+ 
+Profit & Losses 
+ 
+ 
+Mean 
+Std 
+Min 
+Max 
+Skew. 
+Kurtosis 
+NW stat 
+pValue 
+ 
+Mean 
+Std 
+Min 
+M
+CAC40-DAX30 
+3.77 
+56.64 
+-281.16 
+327.30 
+1.81 
+16.99 
+1.21 
+0.23 
+ 
+0.003 
+0.32 
+-1.59 
+1.
+CAC40-ESTOX50 
+-1.06 
+10.51 
+-56.20 
+49.27 
+-0.01 
+10.41 
+-2.19 
+0.03 
+ 
+-0.004 
+0.13 
+-0.54 
+0.
+CAC40-FTSE100 
+-6.51 
+53.68 
+-191.57 
+328.26 
+1.63 
+14.85 
+-3.33 
+0.00 
+ 
+-0.042 
+0.49 
+-1.46 
+3.
+CAC40-FTSEMIB 
+31.02 
+167.73 
+-882.44 
+812.63 
+0.73 
+10.31 
+4.21 
+0.00 
+ 
+0.044 
+0.30 
+-1.32 
+1.
+DAX30-CAC40 
+5.18 
+54.13 
+-186.49 
+331.96 
+2.79 
+17.35 
+1.85 
+0.06 
+ 
+0.007 
+0.33 
+-1.25 
+2.
+DAX30-ESTOX50 
+1.35 
+35.27 
+-148.27 
+205.06 
+1.21 
+12.03 
+0.89 
+0.38 
+ 
+0.005 
+0.30 
+-1.10 
+1.
+DAX30-FTSE100 
+-5.91 
+74.86 
+-331.68 
+381.21 
+0.14 
+9.46 
+-2.29 
+0.02 
+ 
+-0.022 
+0.44 
+-1.57 
+2.
+DAX30-FTSEMIB 
+39.66 
+272.89 
+-857.28 
+1643.89 
+2.42 
+14.85 
+3.44 
+0.00 
+ 
+0.059 
+0.46 
+-1.36 
+2.
+ESTOX50-CAC40 
+0.34 
+10.94 
+-39.40 
+90.52 
+1.79 
+14.45 
+0.66 
+0.51 
+ 
+0.006 
+0.13 
+-0.57 
+0.
+ESTOX50-DAX30 
+3.89 
+36.62 
+-134.25 
+205.06 
+1.66 
+14.26 
+2.23 
+0.03 
+ 
+0.023 
+0.30 
+-1.07 
+1.
+ESTOX50-FTSE100 
+-12.34 
+50.24 
+-230.74 
+217.57 
+-0.46 
+10.05 
+-5.95 
+0.00 
+ 
+-0.094 
+0.50 
+-2.19 
+2.
+ESTOX50-FTSEMIB 
+30.37 
+148.74 
+-810.63 
+994.46 
+1.81 
+17.57 
+5.14 
+0.00 
+ 
+0.051 
+0.24 
+-1.19 
+1.
+FTSE100-CAC40 
+-2.32 
+53.62 
+-166.93 
+328.26 
+1.85 
+16.15 
+-1.10 
+0.27 
+ 
+-0.037 
+0.50 
+-1.50 
+3.
+FTSE100-DAX30 
+-4.05 
+72.47 
+-353.35 
+402.70 
+0.21 
+10.43 
+-1.61 
+0.11 
+ 
+-0.013 
+0.41 
+-1.57 
+1.
+FTSE100-ESTOX50 
+-4.70 
+47.62 
+-230.74 
+295.99 
+1.13 
+17.45 
+-2.86 
+0.00 
+ 
+-0.065 
+0.53 
+-2.19 
+2.
+FTSE100-FTSEMIB 
+16.64 
+297.78 
+-2497.80 
+1768.17 
+0.46 
+18.69 
+1.21 
+0.23 
+ 
+0.008 
+0.61 
+-3.81 
+3.
+FTSEMIB-CAC40 
+15.60 
+116.49 
+-504.57 
+626.51 
+0.68 
+9.32 
+2.96 
+0.00 
+ 
+0.043 
+0.25 
+-0.94 
+0.
+FTSEMIB-DAX30 
+56.60 
+246.60 
+-687.19 
+1814.14 
+3.52 
+24.41 
+5.35 
+0.00 
+ 
+0.136 
+0.47 
+-1.10 
+2.
+FTSEMIB-ESTOX50 
+19.67 
+98.65 
+-454.03 
+578.78 
+0.43 
+8.00 
+5.00 
+0.00 
+ 
+0.054 
+0.22 
+-1.19 
+0.
+FTSEMIB-FTSE100 
+-9.77 
+243.27 
+-1572.92 
+1748.80 
+0.26 
+15.27 
+-0.82 
+0.41 
+ 
+-0.024 
+0.61 
+-4.03 
+3.
+ACROSS ALL PAIRS 
+9.30 
+142.09 
+-2497.80 
+1814.14 
+2.59 
+51.53 
+0.06 
+0.95 
+ 
+0.008 
+0.40 
+-4.03 
+3.
+Notes: analysis of Profit&Loss and Returns for the self-financing strategy implemented on the implied volatilities of one-month maturity ATM 
+December 2017; underlying Indexes are used as row headings where the regressor is mentioned firstly and positions are closed when the Spread 
+are tested to be significantly positive using Newey-West heteroskedasticity and autocorrelation robust standard errors (Newey & West, 1987)
+are reported. 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3914713
+
+33 
+ 
+Table 13 - Results per month: IV-based self-financing strategy 
+ 
+Num. of 
+trades 
+Num. of 
+Wins 
+Average 
+profit 
+Average 
+positive 
+return 
+Num. of 
+Losses 
+Average 
+loss 
+Average 
+negative 
+return 
+Average 
+P&L 
+NW stat. 
+P&L 
+p
+CAC40-DAX30 
+0.67 
+0.33 
+11.81 
+0.07 
+0.34 
+-9.28 
+-0.07 
+2.53 
+0.07 
+CAC40-ESTOX50 
+0.75 
+0.31 
+2.11 
+0.03 
+0.44 
+-2.91 
+-0.03 
+-0.80 
+-0.10 
+CAC40-FTSE100 
+0.77 
+0.34 
+9.91 
+0.09 
+0.43 
+-14.94 
+-0.12 
+-5.03 
+-0.16 
+CAC40-FTSEMIB 
+0.80 
+0.47 
+50.75 
+0.10 
+0.33 
+-25.79 
+-0.06 
+24.96 
+0.18 
+DAX30-CAC40 
+0.64 
+0.31 
+11.78 
+0.07 
+0.34 
+-8.44 
+-0.06 
+3.33 
+0.09 
+DAX30-ESTOX50 
+0.69 
+0.34 
+7.75 
+0.06 
+0.35 
+-6.82 
+-0.06 
+0.93 
+0.04 
+DAX30-FTSE100 
+0.94 
+0.47 
+19.40 
+0.12 
+0.47 
+-24.94 
+-0.14 
+-5.54 
+-0.12 
+DAX30-FTSEMIB 
+0.82 
+0.46 
+73.72 
+0.14 
+0.36 
+-41.25 
+-0.10 
+32.48 
+0.16 
+ESTOX50-CAC40 
+0.80 
+0.36 
+2.93 
+0.04 
+0.44 
+-2.65 
+-0.03 
+0.27 
+0.04 
+ESTOX50-DAX30 
+0.72 
+0.40 
+8.81 
+0.07 
+0.33 
+-5.99 
+-0.05 
+2.82 
+0.10 
+ESTOX50-FTSE100 
+0.75 
+0.30 
+7.15 
+0.08 
+0.45 
+-16.44 
+-0.15 
+-9.29 
+-0.25 
+ESTOX50-FTSEMIB 
+0.98 
+0.66 
+51.54 
+0.11 
+0.33 
+-21.73 
+-0.06 
+29.81 
+0.21 
+FTSE100-CAC40 
+0.73 
+0.37 
+10.24 
+0.09 
+0.36 
+-11.93 
+-0.12 
+-1.69 
+-0.06 
+FTSE100-DAX30 
+1.07 
+0.55 
+21.77 
+0.14 
+0.53 
+-26.12 
+-0.16 
+-4.34 
+-0.08 
+FTSE100-ESTOX50 
+0.75 
+0.35 
+8.49 
+0.10 
+0.40 
+-12.00 
+-0.14 
+-3.50 
+-0.13 
+FTSE100-FTSEMIB 
+0.86 
+0.44 
+77.74 
+0.16 
+0.41 
+-63.47 
+-0.15 
+14.28 
+0.06 
+FTSEMIB-CAC40 
+0.77 
+0.45 
+31.51 
+0.09 
+0.32 
+-19.43 
+-0.05 
+12.08 
+0.16 
+FTSEMIB-DAX30 
+0.79 
+0.52 
+72.66 
+0.17 
+0.27 
+-28.18 
+-0.06 
+44.48 
+0.25 
+FTSEMIB-ESTOX50 
+0.98 
+0.62 
+39.70 
+0.11 
+0.36 
+-20.39 
+-0.05 
+19.31 
+0.23 
+FTSEMIB-FTSE100 
+0.77 
+0.41 
+49.96 
+0.13 
+0.36 
+-57.53 
+-0.14 
+-7.57 
+-0.04 
+ACROSS ALL PAIRS 
+0.80 
+0.42 
+28.49 
+0.10 
+0.38 
+-21.01 
+-0.09 
+7.48 
+0.07 
+Notes: monthly results (average values across months and overlapping portfolios) for the self-financing strategy implemented on the implied vol
+over the sample from May 2007 to December 2017; underlying Indexes are used as row headings where the regressor is mentioned firstly and 
+within the boundaries. Num. of trades is the average number of trades per month; Num. of Wins (Losses), average profit (loss) and average
+number of transactions closing with a gain (loss), and the corresponding average profit (loss) and return; Average P&L (Return) is the average 
+and Returns are tested to be significantly positive using Newey-West heteroskedasticity and autocorrelation robust standard errors (Newey &
+pValues are reported. 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3914713
+
+34 
+ 
+Table 14 - Profitability per transaction: IV-based beta-arbitrage strategy 
+ 
+Profit & Losses 
+ 
+ 
+Mean 
+Std 
+Min 
+Max 
+Skew. 
+Kurtosis 
+NW stat 
+pValue 
+ 
+Mean 
+Std 
+Min 
+M
+CAC40-DAX30 
+6.01 
+56.08 
+-292.09 
+299.96 
+1.49 
+13.69 
+1.93 
+0.05 
+ 
+-0.510 
+9.37 
+-127.73 
+50
+CAC40-ESTOX50 
+-1.00 
+11.16 
+-67.40 
+47.26 
+-0.70 
+11.24 
+-2.13 
+0.03 
+ 
+-1.701 
+40.37 
+-521.41 
+499
+CAC40-FTSE100 
+-6.25 
+58.47 
+-226.49 
+270.20 
+0.49 
+9.17 
+-3.08 
+0.00 
+ 
+-0.834 
+19.11 
+-291.44 
+227
+CAC40-FTSEMIB 
+23.12 
+193.67 
+-902.27 
+840.26 
+-0.10 
+8.13 
+2.81 
+0.00 
+ 
+0.733 
+11.31 
+-59.31 
+217
+DAX30-CAC40 
+5.90 
+55.85 
+-178.28 
+384.30 
+2.84 
+17.90 
+2.06 
+0.04 
+ 
+0.484 
+26.29 
+-135.86 
+468
+DAX30-ESTOX50 
+2.89 
+36.69 
+-153.76 
+200.79 
+1.01 
+9.81 
+1.69 
+0.09 
+ 
+-0.341 
+13.67 
+-158.28 
+122
+DAX30-FTSE100 
+-6.42 
+87.44 
+-317.76 
+528.37 
+0.88 
+12.09 
+-2.12 
+0.03 
+ 
+-0.256 
+81.52 
+-1576.35 
+788
+DAX30-FTSEMIB 
+31.75 
+272.43 
+-897.07 
+1781.39 
+2.02 
+13.65 
+2.62 
+0.01 
+ 
+0.307 
+32.39 
+-629.42 
+215
+ESTOX50-CAC40 
+0.64 
+11.19 
+-42.18 
+84.60 
+1.01 
+10.53 
+1.23 
+0.22 
+ 
+-0.973 
+14.99 
+-185.36 
+162
+ESTOX50-DAX30 
+6.34 
+38.81 
+-134.72 
+200.41 
+1.43 
+9.37 
+3.18 
+0.00 
+ 
+-0.866 
+12.49 
+-164.34 
+46
+ESTOX50-FTSE100 
+-10.98 
+56.02 
+-278.18 
+205.24 
+-0.93 
+8.82 
+-4.92 
+0.00 
+ 
+-0.374 
+15.34 
+-215.25 
+181
+ESTOX50-FTSEMIB 
+28.17 
+176.94 
+-820.81 
+992.03 
+0.41 
+11.33 
+3.97 
+0.00 
+ 
+0.551 
+6.32 
+-76.59 
+44
+FTSE100-CAC40 
+-4.22 
+52.16 
+-195.60 
+291.46 
+1.07 
+13.04 
+-2.01 
+0.04 
+ 
+-0.501 
+24.61 
+-279.97 
+386
+FTSE100-DAX30 
+-6.10 
+71.52 
+-343.19 
+377.57 
+0.01 
+8.85 
+-2.31 
+0.02 
+ 
+0.013 
+10.52 
+-153.78 
+117
+FTSE100-ESTOX50 
+-5.44 
+46.02 
+-245.96 
+254.36 
+0.23 
+14.06 
+-3.31 
+0.00 
+ 
+2.328 
+42.08 
+-149.86 
+562
+FTSE100-FTSEMIB 
+6.03 
+295.35 
+-2532.41 
+1448.64 
+-0.48 
+15.52 
+0.41 
+0.68 
+ 
+-0.702 
+9.23 
+-123.60 
+61
+FTSEMIB-CAC40 
+15.55 
+132.16 
+-461.88 
+980.36 
+1.62 
+12.19 
+2.41 
+0.02 
+ 
+0.192 
+8.78 
+-178.02 
+38
+FTSEMIB-DAX30 
+60.36 
+351.59 
+-654.63 
+2921.27 
+4.83 
+35.28 
+4.10 
+0.00 
+ 
+2.410 
+48.40 
+-371.86 
+104
+FTSEMIB-ESTOX50 
+22.86 
+119.17 
+-441.84 
+679.24 
+0.68 
+8.02 
+4.49 
+0.00 
+ 
+0.464 
+4.46 
+-51.50 
+44
+FTSEMIB-FTSE100 
+0.54 
+308.92 
+-1597.15 
+2117.08 
+1.19 
+15.82 
+0.04 
+0.97 
+ 
+0.824 
+44.91 
+-178.34 
+809
+ACROSS ALL PAIRS 
+8.78 
+162.88 
+-2532.41 
+2921.27 
+3.47 
+67.16 
+0.05 
+0.96 
+ 
+0.073 
+30.82 
+-1576.35 
+104
+Notes: analysis of Profit&Loss and Returns for the beta-arbitrage strategy implemented on the implied volatilities of one-month maturity ATM
+December 2017; underlying Indexes are used as row headings where the regressor is mentioned firstly and positions are closed when the Spread 
+are tested to be significantly positive using Newey-West heteroskedasticity and autocorrelation robust standard errors (Newey & West, 1987)
+are reported. 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3914713
+
+35 
+ 
+Table 15 - Results per month: IV-based beta-arbitrage strategy 
+ 
+Num. of 
+trades 
+Num. of 
+Wins 
+Average 
+profit 
+Average 
+positive 
+return 
+Num. of 
+Losses 
+Average 
+loss 
+Average 
+negative 
+return 
+Average 
+P&L 
+NW stat. 
+P&L 
+p
+CAC40-DAX30 
+0.67 
+0.32 
+13.03 
+1.04 
+0.35 
+-8.99 
+-1.38 
+4.04 
+0.11 
+CAC40-ESTOX50 
+0.75 
+0.32 
+2.28 
+3.33 
+0.43 
+-3.04 
+-4.62 
+-0.76 
+-0.10 
+CAC40-FTSE100 
+0.77 
+0.34 
+11.54 
+1.18 
+0.43 
+-16.38 
+-1.83 
+-4.83 
+-0.14 
+CAC40-FTSEMIB 
+0.80 
+0.45 
+56.17 
+1.51 
+0.35 
+-37.57 
+-0.92 
+18.60 
+0.14 
+DAX30-CAC40 
+0.64 
+0.31 
+12.58 
+2.33 
+0.33 
+-8.78 
+-2.02 
+3.80 
+0.09 
+DAX30-ESTOX50 
+0.69 
+0.33 
+9.03 
+1.45 
+0.36 
+-7.04 
+-1.69 
+1.99 
+0.08 
+DAX30-FTSE100 
+0.94 
+0.43 
+22.31 
+5.71 
+0.51 
+-28.33 
+-5.95 
+-6.03 
+-0.10 
+DAX30-FTSEMIB 
+0.82 
+0.46 
+76.25 
+2.89 
+0.36 
+-50.25 
+-2.64 
+26.00 
+0.14 
+ESTOX50-CAC40 
+0.80 
+0.39 
+3.22 
+1.53 
+0.42 
+-2.71 
+-2.31 
+0.52 
+0.07 
+ESTOX50-DAX30 
+0.72 
+0.38 
+11.08 
+0.87 
+0.35 
+-6.49 
+-1.50 
+4.59 
+0.14 
+ESTOX50-FTSE100 
+0.75 
+0.29 
+9.61 
+1.04 
+0.46 
+-17.87 
+-1.33 
+-8.27 
+-0.19 
+ESTOX50-FTSEMIB 
+0.98 
+0.62 
+61.86 
+1.50 
+0.36 
+-34.22 
+-0.96 
+27.65 
+0.17 
+FTSE100-CAC40 
+0.73 
+0.33 
+9.87 
+1.97 
+0.39 
+-12.95 
+-2.33 
+-3.08 
+-0.10 
+FTSE100-DAX30 
+1.07 
+0.53 
+21.31 
+2.31 
+0.55 
+-27.86 
+-2.29 
+-6.55 
+-0.11 
+FTSE100-ESTOX50 
+0.75 
+0.35 
+8.55 
+3.99 
+0.39 
+-12.61 
+-2.25 
+-4.05 
+-0.14 
+FTSE100-FTSEMIB 
+0.86 
+0.45 
+78.23 
+1.23 
+0.41 
+-73.06 
+-1.83 
+5.17 
+0.02 
+FTSEMIB-CAC40 
+0.77 
+0.43 
+34.71 
+0.95 
+0.35 
+-22.66 
+-0.80 
+12.04 
+0.14 
+FTSEMIB-DAX30 
+0.79 
+0.45 
+84.40 
+2.89 
+0.34 
+-36.97 
+-1.00 
+47.44 
+0.18 
+FTSEMIB-ESTOX50 
+0.98 
+0.60 
+47.04 
+1.17 
+0.38 
+-24.60 
+-0.71 
+22.43 
+0.21 
+FTSEMIB-FTSE100 
+0.77 
+0.40 
+65.91 
+3.19 
+0.38 
+-65.49 
+-2.55 
+0.42 
+0.00 
+ACROSS ALL PAIRS 
+0.80 
+0.41 
+31.95 
+2.10 
+0.39 
+-24.89 
+-2.05 
+7.06 
+0.06 
+Notes: monthly results (average values across months and overlapping portfolios) for the beta-arbitrage strategy implemented on the implied vol
+over the sample from May 2007 to December 2017; underlying Indexes are used as row headings where the regressor is mentioned firstly and 
+within the boundaries. Num. of trades is the average number of trades per month; Num. of Wins (Losses), average profit (loss) and average
+number of transactions closing with a gain (loss), and the corresponding average profit (loss) and return; Average P&L (Return) is the average 
+and Returns are tested to be significantly positive using Newey-West heteroskedasticity and autocorrelation robust standard errors (Newey &
+pValues are reported. 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3914713
+
+36 
+ 
+Table 16 - Profitability per transaction: OP-based self-financing strategy 
+ 
+Profit & Losses 
+ 
+ 
+Mean 
+Std 
+Min 
+Max 
+Skew. 
+Kurtosis 
+NW stat 
+pValue 
+ 
+Mean 
+Std 
+Min 
+M
+CAC40-DAX30 
+7.83 
+53.89 
+-195.11 
+309.59 
+1.74 
+12.68 
+3.09 
+0.00 
+ 
+0.020 
+0.21 
+-0.64 
+0.
+CAC40-ESTOX50 
+1.43 
+7.66 
+-24.53 
+42.23 
+1.29 
+6.82 
+3.76 
+0.00 
+ 
+0.015 
+0.09 
+-0.20 
+0.
+CAC40-FTSE100 
+1.29 
+29.23 
+-129.81 
+183.76 
+0.08 
+10.94 
+1.20 
+0.23 
+ 
+0.016 
+0.20 
+-0.65 
+0.
+CAC40-FTSEMIB 
+47.99 
+165.40 
+-264.80 
+1469.19 
+5.12 
+42.36 
+6.04 
+0.00 
+ 
+0.064 
+0.20 
+-0.45 
+0.
+DAX30-CAC40 
+2.88 
+37.45 
+-119.51 
+131.90 
+0.40 
+5.55 
+1.74 
+0.08 
+ 
+0.004 
+0.20 
+-0.64 
+0.
+DAX30-ESTOX50 
+5.47 
+44.22 
+-112.81 
+243.03 
+1.96 
+11.96 
+2.02 
+0.04 
+ 
+0.007 
+0.20 
+-0.52 
+0.
+DAX30-FTSE100 
+-1.01 
+75.02 
+-342.69 
+461.22 
+0.60 
+17.90 
+-0.33 
+0.74 
+ 
+0.001 
+0.34 
+-1.16 
+2.
+DAX30-FTSEMIB 
+50.65 
+230.40 
+-569.00 
+2368.15 
+5.80 
+52.24 
+4.29 
+0.00 
+ 
+0.073 
+0.25 
+-0.72 
+1.
+ESTOX50-CAC40 
+1.31 
+7.31 
+-23.11 
+42.23 
+1.47 
+10.69 
+4.53 
+0.00 
+ 
+0.014 
+0.07 
+-0.18 
+0.
+ESTOX50-DAX30 
+6.78 
+40.10 
+-112.81 
+243.03 
+2.47 
+15.15 
+3.46 
+0.00 
+ 
+0.033 
+0.21 
+-0.52 
+1.
+ESTOX50-FTSE100 
+-2.52 
+37.71 
+-206.50 
+256.53 
+0.60 
+18.34 
+-1.50 
+0.13 
+ 
+-0.004 
+0.24 
+-0.98 
+1.
+ESTOX50-FTSEMIB 
+51.16 
+170.11 
+-256.92 
+1299.83 
+4.20 
+28.02 
+5.74 
+0.00 
+ 
+0.069 
+0.20 
+-0.32 
+1.
+FTSE100-CAC40 
+0.05 
+24.83 
+-197.13 
+85.64 
+-0.81 
+10.98 
+0.04 
+0.97 
+ 
+0.001 
+0.20 
+-1.07 
+0.
+FTSE100-DAX30 
+-1.04 
+83.45 
+-342.69 
+402.70 
+-0.10 
+10.01 
+-0.24 
+0.81 
+ 
+0.000 
+0.34 
+-1.14 
+1.
+FTSE100-ESTOX50 
+-4.59 
+27.39 
+-133.58 
+68.81 
+-0.90 
+5.87 
+-3.43 
+0.00 
+ 
+-0.034 
+0.25 
+-1.06 
+0.
+FTSE100-FTSEMIB 
+39.90 
+227.97 
+-651.46 
+1562.98 
+2.72 
+19.65 
+3.86 
+0.00 
+ 
+0.039 
+0.29 
+-1.10 
+0.
+FTSEMIB-CAC40 
+31.22 
+157.58 
+-263.74 
+1469.19 
+6.32 
+52.65 
+4.75 
+0.00 
+ 
+0.053 
+0.24 
+-1.10 
+1.
+FTSEMIB-DAX30 
+27.22 
+138.84 
+-569.00 
+1120.90 
+3.00 
+31.25 
+4.43 
+0.00 
+ 
+0.062 
+0.25 
+-1.06 
+0.
+FTSEMIB-ESTOX50 
+30.02 
+143.22 
+-215.83 
+1299.83 
+5.75 
+47.42 
+4.47 
+0.00 
+ 
+0.058 
+0.19 
+-0.61 
+1.
+FTSEMIB-FTSE100 
+33.32 
+189.54 
+-731.52 
+1562.98 
+4.49 
+38.49 
+2.65 
+0.01 
+ 
+0.046 
+0.30 
+-1.23 
+1.
+ACROSS ALL PAIRS 
+17.85 
+125.28 
+-731.52 
+2368.15 
+6.70 
+85.00 
+0.11 
+0.91 
+ 
+0.029 
+0.23 
+-1.23 
+2.2
+Notes: analysis of Profit&Loss and Returns for the self-financing strategy implemented on the OP of front-month maturity ATM call options ove
+(series constructed considering the price of the option that is front-month and at-the-money at that point in time, for each trading day); underly
+regressor is mentioned firstly and positions are closed when the Spread reverts to within the boundaries. Excess returns are tested t
+heteroskedasticity and autocorrelation robust standard errors (Newey & West, 1987); the t-statistics and the corresponding pValues are report
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3914713
+
+37 
+ 
+Table 17 - Results per month: OP-based self-fiancing strategy 
+ 
+Num. of 
+trades 
+Num. of 
+Wins 
+Average 
+profit 
+Average 
+positive 
+return 
+Num. of 
+Losses 
+Average 
+loss 
+Average 
+negative 
+return 
+Average 
+P&L 
+NW stat. 
+P&L 
+p
+CAC40-DAX30 
+0.78 
+0.42 
+18.85 
+0.06 
+0.36 
+-9.49 
+-0.05 
+6.10 
+0.13 
+CAC40-ESTOX50 
+0.82 
+0.41 
+3.48 
+0.03 
+0.41 
+-1.63 
+-0.02 
+1.17 
+0.16 
+CAC40-FTSE100 
+0.86 
+0.50 
+10.94 
+0.07 
+0.36 
+-7.65 
+-0.05 
+1.11 
+0.06 
+CAC40-FTSEMIB 
+0.95 
+0.57 
+71.96 
+0.10 
+0.38 
+-17.05 
+-0.04 
+45.78 
+0.23 
+DAX30-CAC40 
+0.64 
+0.33 
+10.56 
+0.05 
+0.31 
+-7.48 
+-0.04 
+1.85 
+0.08 
+DAX30-ESTOX50 
+0.57 
+0.30 
+9.81 
+0.04 
+0.27 
+-5.94 
+-0.04 
+3.13 
+0.09 
+DAX30-FTSE100 
+0.74 
+0.38 
+21.65 
+0.08 
+0.36 
+-16.07 
+-0.08 
+-0.75 
+-0.01 
+DAX30-FTSEMIB 
+0.86 
+0.53 
+74.51 
+0.11 
+0.33 
+-20.20 
+-0.05 
+43.59 
+0.19 
+ESTOX50-CAC40 
+0.97 
+0.52 
+3.52 
+0.03 
+0.45 
+-1.80 
+-0.02 
+1.27 
+0.17 
+ESTOX50-DAX30 
+0.74 
+0.38 
+12.00 
+0.06 
+0.36 
+-5.99 
+-0.03 
+5.00 
+0.15 
+ESTOX50-FTSE100 
+0.82 
+0.43 
+9.34 
+0.07 
+0.39 
+-9.84 
+-0.07 
+-2.06 
+-0.08 
+ESTOX50-FTSEMIB 
+0.87 
+0.54 
+66.63 
+0.09 
+0.33 
+-14.74 
+-0.03 
+44.32 
+0.21 
+FTSE100-CAC40 
+0.82 
+0.44 
+8.05 
+0.06 
+0.38 
+-6.99 
+-0.06 
+0.04 
+0.00 
+FTSE100-DAX30 
+0.83 
+0.39 
+21.73 
+0.09 
+0.45 
+-20.73 
+-0.09 
+-0.87 
+-0.01 
+FTSE100-ESTOX50 
+0.76 
+0.35 
+7.15 
+0.06 
+0.41 
+-9.07 
+-0.08 
+-3.47 
+-0.14 
+FTSE100-FTSEMIB 
+0.89 
+0.50 
+87.67 
+0.11 
+0.39 
+-40.06 
+-0.08 
+35.60 
+0.16 
+FTSEMIB-CAC40 
+1.06 
+0.62 
+52.69 
+0.10 
+0.44 
+-14.77 
+-0.05 
+33.10 
+0.21 
+FTSEMIB-DAX30 
+1.04 
+0.63 
+59.92 
+0.13 
+0.41 
+-23.16 
+-0.07 
+28.19 
+0.19 
+FTSEMIB-ESTOX50 
+0.99 
+0.61 
+49.76 
+0.10 
+0.38 
+-14.03 
+-0.04 
+29.68 
+0.19 
+FTSEMIB-FTSE100 
+0.83 
+0.47 
+59.70 
+0.11 
+0.36 
+-22.31 
+-0.07 
+27.72 
+0.18 
+ACROSS ALL PAIRS 
+0.84 
+0.47 
+33.00 
+0.08 
+0.38 
+-13.45 
+-0.05 
+15.03 
+0.12 
+Notes: monthly results (average values across months and overlapping portfolios) for the self-financing strategy implemented on the OP of f
+sample from May 2007 to December 2017 (series constructed considering the price of the option that is front-month and at-the-money at that
+Indexes are used as row headings where the regressor is mentioned firstly and positions are closed when the Spread reverts to within the boun
+trades per month; Num. of Wins (Losses), average profit (loss) and average positive (negative) return refer to the average number of transactions
+average profit (loss) and return; Average P&L (Return) is the average result of a trade in euros (in percentages); P&L and Returns are tested
+heteroskedasticity and autocorrelation robust standard errors (Newey & West, 1987); t-statistics and the corresponding pValues are reported. 
+Electronic copy available at: https://ssrn.com/abstract=3914713
+
+38 
+ 
+Table 18 - Profitability per transaction: OP-based beta-arbitrage strategy 
+ 
+Profit & Losses 
+ 
+ 
+Mean 
+Std 
+Min 
+Max 
+Skew. 
+Kurtosis 
+NW stat 
+pValue 
+ 
+Mean 
+Std 
+Min 
+M
+CAC40-DAX30 
+13.96 
+75.61 
+-193.50 
+342.55 
+1.61 
+8.79 
+4.24 
+0.00 
+ 
+0.250 
+1.77 
+-5.50 
+21
+CAC40-ESTOX50 
+2.36 
+17.00 
+-39.11 
+100.60 
+1.74 
+7.65 
+3.03 
+0.00 
+ 
+0.050 
+0.40 
+-0.61 
+2
+CAC40-FTSE100 
+1.46 
+29.13 
+-130.56 
+174.89 
+0.11 
+9.99 
+1.33 
+0.18 
+ 
+-0.636 
+22.49 
+-266.1 
+14
+CAC40-FTSEMIB 
+161.74 
+1040.25 
+-2023.74 
+7741.66 
+4.01 
+26.51 
+3.72 
+0.00 
+ 
+0.071 
+0.34 
+-0.68 
+1
+DAX30-CAC40 
+8.63 
+127.06 
+-333.02 
+895.90 
+2.33 
+13.31 
+1.47 
+0.14 
+ 
+-0.008 
+0.53 
+-1.82 
+3
+DAX30-ESTOX50 
+42.47 
+234.14 
+-644.70 
+1185.78 
+1.67 
+9.66 
+3.60 
+0.00 
+ 
+0.086 
+0.57 
+-1.54 
+2
+DAX30-FTSE100 
+-2.14 
+117.23 
+-511.60 
+826.06 
+1.58 
+21.82 
+-0.43 
+0.67 
+ 
+-0.170 
+3.87 
+-59.62 
+33
+DAX30-FTSEMIB 
+93.74 
+618.90 
+-1297.53 
+6625.03 
+7.84 
+76.97 
+3.00 
+0.00 
+ 
+0.106 
+0.47 
+-1.60 
+1
+ESTOX50-CAC40 
+1.93 
+13.18 
+-37.14 
+91.65 
+2.36 
+16.08 
+3.52 
+0.00 
+ 
+0.131 
+0.74 
+-3.48 
+5
+ESTOX50-DAX30 
+27.67 
+132.56 
+-435.91 
+896.08 
+2.20 
+13.21 
+4.23 
+0.00 
+ 
+0.070 
+5.63 
+-39.60 
+91
+ESTOX50-FTSE100 
+-4.30 
+54.93 
+-274.99 
+352.03 
+0.66 
+15.55 
+-1.62 
+0.11 
+ 
+-0.036 
+0.81 
+-4.00 
+5
+ESTOX50-FTSEMIB 
+231.39 
+1323.25 
+-3224.35 
+10721.34 
+3.35 
+23.94 
+4.06 
+0.00 
+ 
+0.092 
+0.33 
+-0.56 
+1
+FTSE100-CAC40 
+0.29 
+45.26 
+-236.89 
+254.38 
+0.61 
+12.04 
+0.14 
+0.89 
+ 
+-0.036 
+0.58 
+-3.57 
+2
+FTSE100-DAX30 
+0.02 
+85.11 
+-416.67 
+481.92 
+-0.87 
+10.68 
+0.00 
+1.00 
+ 
+-2.116 
+32.22 
+-308.1 
+20
+FTSE100-ESTOX50 
+-11.53 
+52.47 
+-202.26 
+144.56 
+-0.54 
+4.48 
+-4.74 
+0.00 
+ 
+-0.124 
+0.54 
+-2.92 
+0
+FTSE100-FTSEMIB 
+57.49 
+395.14 
+-1075.91 
+2169.22 
+1.77 
+10.25 
+3.86 
+0.00 
+ 
+0.046 
+0.52 
+-2.55 
+1
+FTSEMIB-CAC40 
+151.65 
+1468.66 
+-7564.80 
+12397.97 
+3.32 
+28.84 
+2.78 
+0.01 
+ 
+0.013 
+0.45 
+-3.30 
+3
+FTSEMIB-DAX30 
+17.13 
+444.87 
+-1164.36 
+5029.38 
+7.56 
+82.69 
+0.88 
+0.38 
+ 
+-0.001 
+0.37 
+-1.35 
+1
+FTSEMIB-ESTOX50 
+268.16 
+1688.22 
+-3749.55 
+11170.75 
+2.63 
+13.85 
+3.46 
+0.00 
+ 
+0.012 
+0.41 
+-2.77 
+2
+FTSEMIB-FTSE100 
+60.16 
+713.37 
+-1795.76 
+4112.14 
+2.41 
+13.67 
+1.29 
+0.20 
+ 
+0.006 
+0.38 
+-1.03 
+1
+ACROSS ALL PAIRS 
+61.35 
+728.66 
+-7564.80 
+12397.97 
+6.33 
+80.86 
+0.07 
+0.94 
+ 
+-0.108 
+8.93 
+-308.1 
+20
+Notes: analysis of Profit&Loss and Returns for the beta-arbitrage strategy implemented on the OP of front-month maturity ATM call options ove
+(series constructed considering the price of the option that is front-month and at-the-money at that point in time, for each trading day); underly
+regressor is mentioned firstly and positions are closed when the Spread reverts to within the boundaries. Excess returns are tested t
+heteroskedasticity and autocorrelation robust standard errors (Newey & West, 1987); the t-statistics and the corresponding pValues are report
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3914713
+
+39 
+ 
+Table 19 - Results per month: OP-based beta-arbitrage strategy 
+ 
+Num. of 
+trades 
+Num. of 
+Wins 
+Average 
+profit 
+Average 
+positive 
+return 
+Num. of 
+Losses 
+Average 
+loss 
+Average 
+negative 
+return 
+Average 
+P&L 
+NW stat. 
+P&L 
+p
+CAC40-DAX30 
+0.78 
+0.43 
+29.20 
+0.39 
+0.35 
+-12.85 
+-0.20 
+10.87 
+0.19 
+CAC40-ESTOX50 
+0.82 
+0.38 
+6.56 
+0.14 
+0.43 
+-3.70 
+-0.10 
+1.92 
+0.12 
+CAC40-FTSE100 
+0.86 
+0.49 
+11.10 
+1.94 
+0.37 
+-7.69 
+-2.49 
+1.26 
+0.07 
+CAC40-FTSEMIB 
+0.95 
+0.56 
+318.41 
+0.16 
+0.39 
+-140.80 
+-0.09 
+154.31 
+0.13 
+DAX30-CAC40 
+0.64 
+0.30 
+29.45 
+0.12 
+0.34 
+-21.37 
+-0.12 
+5.56 
+0.07 
+DAX30-ESTOX50 
+0.57 
+0.29 
+53.12 
+0.14 
+0.28 
+-26.59 
+-0.09 
+24.28 
+0.19 
+DAX30-FTSE100 
+0.74 
+0.39 
+33.29 
+0.35 
+0.35 
+-23.89 
+-0.48 
+-1.59 
+-0.02 
+DAX30-FTSEMIB 
+0.86 
+0.49 
+150.59 
+0.19 
+0.37 
+-42.73 
+-0.10 
+80.67 
+0.13 
+ESTOX50-CAC40 
+0.97 
+0.53 
+5.55 
+0.30 
+0.44 
+-3.14 
+-0.17 
+1.87 
+0.13 
+ESTOX50-DAX30 
+0.74 
+0.39 
+41.95 
+0.51 
+0.35 
+-16.63 
+-0.46 
+20.40 
+0.20 
+ESTOX50-FTSE100 
+0.82 
+0.38 
+12.06 
+0.20 
+0.43 
+-13.96 
+-0.23 
+-3.52 
+-0.10 
+ESTOX50-FTSEMIB 
+0.87 
+0.48 
+443.70 
+0.15 
+0.38 
+-192.71 
+-0.07 
+200.48 
+0.16 
+FTSE100-CAC40 
+0.82 
+0.44 
+13.62 
+0.16 
+0.38 
+-11.89 
+-0.18 
+0.24 
+0.01 
+FTSE100-DAX30 
+0.83 
+0.43 
+23.31 
+3.34 
+0.41 
+-21.09 
+-5.10 
+0.02 
+0.00 
+FTSE100-ESTOX50 
+0.76 
+0.34 
+12.42 
+0.10 
+0.42 
+-18.31 
+-0.19 
+-8.72 
+-0.19 
+FTSE100-FTSEMIB 
+0.89 
+0.48 
+157.26 
+0.19 
+0.41 
+-80.56 
+-0.15 
+51.29 
+0.17 
+FTSEMIB-CAC40 
+1.06 
+0.55 
+430.81 
+0.15 
+0.51 
+-232.63 
+-0.14 
+160.80 
+0.12 
+FTSEMIB-DAX30 
+1.04 
+0.54 
+116.76 
+0.14 
+0.49 
+-72.83 
+-0.14 
+17.74 
+0.04 
+FTSEMIB-ESTOX50 
+0.99 
+0.48 
+612.52 
+0.14 
+0.51 
+-284.91 
+-0.13 
+265.07 
+0.15 
+FTSEMIB-FTSE100 
+0.83 
+0.42 
+222.21 
+0.12 
+0.41 
+-115.62 
+-0.12 
+50.05 
+0.08 
+ACROSS ALL PAIRS 
+0.84 
+0.44 
+136.19 
+0.45 
+0.40 
+-67.20 
+-0.54 
+51.65 
+0.07 
+Notes: monthly results (average values across months and overlapping portfolios) for the beta-arbitrage strategy implemented on the OP of f
+sample from May 2007 to December 2017 (series constructed considering the price of the option that is front-month and at-the-money at that
+Indexes are used as row headings where the regressor is mentioned firstly and positions are closed when the Spread reverts to within the boun
+trades per month; Num. of Wins (Losses), average profit (loss) and average positive (negative) return refer to the average number of transactions
+average profit (loss) and return; Average P&L (Return) is the average result of a trade in euros (in percentages); P&L and Returns are tested
+heteroskedasticity and autocorrelation robust standard errors (Newey & West, 1987); t-statistics and the corresponding pValues are reported. 
+Electronic copy available at: https://ssrn.com/abstract=3914713
+
+40 
+ 
+Table 20 - Self-financing strategy transactions, by moneyness of the options involved 
+Long leg 
+Short leg 
+IN 
+ATM 
+OUT 
+IN 
+1895 
+413 
+14 
+ATM 
+913 
+5793 
+518 
+OUT 
+28 
+289 
+1328 
+Notes: the table stratifies transactions based on the moneyness of each call option forming the pair at the close of the trade, 
+depending on whether the position is long or short . 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3914713
+
+ 
+RECENT PUBLICATIONS BY CEIS Tor Vergata 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Bribes, Lobbying and Industrial Structure 
+Roy Cerqueti, Raffaella Coppier and Gustavo Piga 
+CEIS Research Paper, 511, March 2021 
+Asset Pricing Using Block-Cholesky GARCH and Time-Varying Betas 
+Stefano Grassi and Francesco Violante 
+CEIS Research Paper, 510, March 2021 
+A News-based Policy Index for Italy: Expectations and Fiscal Policy 
+Daniela Fantozzi and Alessio Muscarnera 
+CEIS Research Paper, 509, March 2021 
+Seasonality in High Frequency Time Series 
+Tommaso Proietti and Diego J. Pedregal 
+CEIS Research Paper, 508, March 2021 
+Productivity, managers' social connections and the Great Recession 
+Iftekhar Hasan and Stefano Manfredonia 
+CEIS Research Paper, 507, March 2021 
+A Structural Model of Market Friction with Time-Varying Volatility 
+Giuseppe Buccheri, Stefano Grassi and Giorgio Vocalelli 
+CEIS Research Paper, 506, January 2021 
+Corruption Bias and Information: A Study in the Lab 
+Germana Corrado, Luisa Corrado and Francesca Marazzi 
+CEIS Research Paper, 505, January 2021 
+The Future of the Elderly Population Health Status: Filling a Knowledge Gap 
+Vincenzo Atella, Federico Belotti, Kim Daejung, Dana Goldman, Tadeja Gracner,  
+Andrea Piano Mortari and Bryan Tysinger 
+CEIS Research Paper, 504, December 2020 
+The Macroeconomic Effects of Aerospace Shocks 
+Luisa Corrado, Stefano Grassi and Edgar Silgado-Gómez 
+CEIS Research Paper, 503, November 2020 
+On Cointegration for Processes Integrated at Different Frequencies 
+Tomás del Barrio Castro, Gianluca Cubadda and Denise R. Osborn 
+CEIS Research Paper, 502, September 2020 
+Electronic copy available at: https://ssrn.com/abstract=3914713
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+DISTRIBUTION 
+Our publications are available online at www.ceistorvergata.it  
+DISCLAIMER 
+The opinions expressed in these publications are the authors’ alone and therefore do 
+not necessarily reflect the opinions of the supporters, staff, or boards of CEIS Tor 
+Vergata. 
+COPYRIGHT 
+Copyright © 2021 by authors. All rights reserved. No part of this publication may be 
+reproduced in any manner whatsoever without written permission except in the case 
+of brief passages quoted in critical articles and reviews. 
+MEDIA INQUIRIES AND INFORMATION 
+For media inquiries, please contact Barbara Piazzi at +39 06 72595652/01 or by email at piazzi@ceis.uniroma2.it. Our web site, www.ceistorvergata.it, contains more 
+information about Center’s events, publications, and staff. 
+DEVELOPMENT AND SUPPORT 
+For information about contributing to CEIS Tor Vergata, please contact at +39 06 
+72595601 or by e-mail at segr.ceis@economia.uniroma2.it  
+Electronic copy available at: https://ssrn.com/abstract=3914713

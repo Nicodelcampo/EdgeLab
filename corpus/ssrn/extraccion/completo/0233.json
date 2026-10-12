@@ -1,0 +1,87 @@
+{
+  "doc_id": 233,
+  "titulo": "Microstructural Pulse Dislocation (MPD) and Event-Driven Microstructure Collapse",
+  "resumen_operativo": "Documenta empíricamente que el primer segundo tras anuncios económicos programados (NFP, CPI, FOMC, earnings) no es ruido caótico sino una arquitectura repetible de pulsos de precio segmentados (MPD) y colapso/reformación del libro de órdenes (EMC). Usa charts de 1 segundo en FX (EUR/USD, GBP/USD, NZD/USD) y equities. Una estrategia hedged simple generó beneficios consistentes broker-verified en 2024, sugiriendo que el edge es estructural.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "Microstructural Pulse Dislocation (MPD)",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Secuencia segmentada de pulsos direccionales de precio dentro del primer segundo tras un shock informativo programado, reflejando la activación en capas de algoritmos de lectura de noticias, ejecución y gestión de riesgo.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Event-Driven Microstructure Collapse"},
+        {"tipo": "PARTE_DE", "objeto": "first-second microstructure regime"}
+      ],
+      "cita_textual": "A segmented sequence of directional price pulses within the first second after a scheduled information shock, reflecting the layered activation of news-reading, execution and risk-management algorithms."
+    },
+    {
+      "nombre": "Event-Driven Microstructure Collapse (EMC)",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Evaporación rápida y reformación asimétrica de la profundidad del libro de órdenes (top-of-book) y ampliación de spreads que acompaña y amplifica los pulsos MPD, permitiendo al precio recorrer grandes distancias con poco volumen.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "large price dislocations"},
+        {"tipo": "REQUIERE", "objeto": "Microstructural Pulse Dislocation"}
+      ],
+      "cita_textual": "A rapid, event-local collapse and reformation of top-of-book depth and spreads, through which price can travel long distances with relatively little volume."
+    },
+    {
+      "nombre": "First-Second Reaction Window",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Intervalo W = [t0, t0+1s] donde t0 es el timestamp del anuncio. Propuesto como un régimen microestructural distinto con sus propias leyes, no reducible a ruido ni promediable en ventanas más largas.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Microstructural Pulse Dislocation"},
+        {"tipo": "USA", "objeto": "Event-Driven Microstructure Collapse"}
+      ],
+      "cita_textual": "The first second after a scheduled event is not the chaotic blur it is often assumed to be. Instead, it is a structured environment governed by the design of news-reading algorithms and the microstructural physics of order-book collapse."
+    },
+    {
+      "nombre": "Hedged Event Strategy",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia simple que abre posiciones long y short simétricas antes del evento (straddle nocional) con stops y take-profits fijos, sin predecir dirección. Explota MPD y EMC para que la pierna sobreviviente genere ganancia neta consistente.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Microstructural Pulse Dislocation"},
+        {"tipo": "USA", "objeto": "Event-Driven Microstructure Collapse"}
+      ],
+      "cita_textual": "A symmetric hedged structure was deployed before each of several major NFP and CPI releases ... The net result was a sequence of gains in which the winning leg of the straddle consistently outweighed the losing leg."
+    },
+    {
+      "nombre": "Pulse Atlas",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Taxonomía de arquetipos de primer segundo que agrupa eventos según su estructura MPD/EMC: Single-Dominant Burst, Staircase Repricing, Vacuum Collapse, Clustered Earnings Pulses, Contested Interpretation.",
+      "relaciones": [
+        {"tipo": "CLASIFICA", "objeto": "Microstructural Pulse Dislocation"},
+        {"tipo": "USA", "objeto": "Split Archetype Signature"}
+      ],
+      "cita_textual": "The Pulse Atlas groups events into archetypes such as Single-Dominant Burst, Staircase Repricing, Vacuum Collapse, Clustered Earnings Pulses, and Contested Interpretation."
+    },
+    {
+      "nombre": "One-Second Bar",
+      "tipo": "dato",
+      "definicion_en_contexto": "Barra de precio de 1 segundo obtenida de feeds de brokers retail, usada como unidad mínima de observación para identificar MPD (cuerpo largo, mecha mínima, expansión abrupta de rango) y EMC (velas grandes tras el pulso inicial).",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Microstructural Pulse Dislocation"}
+      ],
+      "cita_textual": "One-second bar data were obtained from a combination of retail broker feeds and charting platforms used in live trading."
+    },
+    {
+      "nombre": "Nonfarm Payrolls (NFP)",
+      "tipo": "dato",
+      "definicion_en_contexto": "Release macroeconómico de empleo estadounidense de alto impacto, usado como evento principal de descubrimiento de MPD/EMC durante el proof-of-concept de mayo-octubre 2024 en EUR/USD.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Microstructural Pulse Dislocation"}
+      ],
+      "cita_textual": "The initial discovery period was intentionally narrow. From May through Oct 2024, the focus was on just two types of U.S. releases in EUR/USD: Nonfarm Payrolls (NFP) and Consumer Price Index (CPI)."
+    },
+    {
+      "nombre": "Pre-Release Stop-Run",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Movimiento direccional agudo minutos antes del timestamp del evento que carece de la estructura MPD (sin timestamp preciso, sin segmentación en pulsos, comportamiento de thin-book). Debe distinguirse del verdadero Pulse #1 para evitar trampas.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "Microstructural Pulse Dislocation"}
+      ],
+      "cita_textual": "Structurally, this pre-release move lacks the hallmarks of MPD: it does not align exactly with the release timestamp, it lacks clean segmentation into pulses, and the order-book behavior is more consistent with a deliberate thin-book stop-run."
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "Enfocado exclusivamente en el primer segundo post-evento; explotable en timeframes ultra-cortos (1s) con estrategias hedged pre-posicionadas."}
+}

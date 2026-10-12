@@ -1,0 +1,109 @@
+{
+ "doc_id": 173,
+ "titulo": "How Trading Barriers in Underlying Markets Impact ETF Trading and Characteristics",
+ "resumen_operativo": "Analiza empíricamente el impacto del 'Minimum Trading Unit' (MTU) de los mercados subyacentes sobre el trading y las características de los ETFs vinculados. Utiliza datos de 40 country ETFs listados en EE.UU. y evidencia histórica de cambios en los MTU (Japón, Singapur, Vietnam) para establecer un test cuasi-experimental. Demuestra que barreras más altas en los mercados subyacentes reducen la actividad institucional, reducen la actividad de arbitraje, incrementan el tracking error y disminuyen la probabilidad de trading informado en los ETFs correspondientes.",
+ "calidad_paper": "alta",
+ "conceptos": [
+  {
+   "nombre": "Minimum Trading Unit (MTU)",
+   "tipo": "concepto",
+   "definicion_en_contexto": "El número o valor mínimo de acciones necesarias para poder ejecutar una transacción en el mercado. Actúa como una barrera de trading, especialmente limitando a los inversores minoristas.",
+   "relaciones": [
+    {
+     "tipo": "MITIGA",
+     "objeto": "market accessibility"
+    },
+    {
+     "tipo": "DISMINUYE",
+     "objeto": "institutional trading activity"
+    }
+   ],
+   "cita_textual": "MTUs represent the minimum number of shares that are required for a transaction and act as trading barriers for investors."
+  },
+  {
+   "nombre": "Institutional trading activity",
+   "tipo": "metrica",
+   "definicion_en_contexto": "Actividad de inversión de instituciones, aproximada empíricamente en el estudio utilizando la proporción del volumen de operaciones a gran escala (transacciones mayores a $20K o $50K).",
+   "relaciones": [
+    {
+     "tipo": "MIDE",
+     "objeto": "institutional involvement"
+    },
+    {
+     "tipo": "DISMINUYE_CON",
+     "objeto": "Minimum Trading Unit (MTU)"
+    }
+   ],
+   "cita_textual": "we employ the proportion of large-scale transactions, with $20,000 (20K) or $50,000 (50K) cutoffs, as a proxy for institutional investment activity."
+  },
+  {
+   "nombre": "Institutional arbitrage activity",
+   "tipo": "metrica",
+   "definicion_en_contexto": "Nivel de arbitraje ejecutado por instituciones para capturar oportunidades generadas entre el precio del ETF y el mercado subyacente. Se mide mediante el desequilibrio de órdenes (order imbalance).",
+   "relaciones": [
+    {
+     "tipo": "AUMENTA_CON",
+     "objeto": "market accessibility"
+    }
+   ],
+   "cita_textual": "we measure arbitrage activity by analyzing ETF order imbalance."
+  },
+  {
+   "nombre": "Tracking ability",
+   "tipo": "metrica",
+   "definicion_en_contexto": "Capacidad de un ETF para seguir fielmente a su índice o activos subyacentes, calculada a partir de las diferencias (errores de seguimiento y spread absoluto) entre el precio del ETF y el Net Asset Value (NAV).",
+   "relaciones": [
+    {
+     "tipo": "DISMINUYE_CON",
+     "objeto": "Minimum Trading Unit (MTU)"
+    }
+   ],
+   "cita_textual": "We define three variables that represent the ETFs’ tracking ability. First, the absolute ETF premium (|Premium|)... Second, the tracking error that is based on the NAV and ETF returns... Third, the tracking error that is based on the ETF and the underlying index return."
+  },
+  {
+   "nombre": "Probability of informed trading (PIN)",
+   "tipo": "metrica",
+   "definicion_en_contexto": "Métrica de microestructura de mercado que estima la probabilidad de que una transacción sea ejecutada por un agente con información privilegiada o 'informado', con base en el flujo de órdenes.",
+   "relaciones": [
+    {
+     "tipo": "AUMENTA_CON",
+     "objeto": "market accessibility"
+    }
+   ],
+   "cita_textual": "both informed and uninformed traders coexist in the market, and the daily number of buying and selling provides insights into their transaction patterns. Therefore, the calculation of the PIN involves estimating parameters that maximize the likelihood function..."
+  }
+ ],
+ "hallazgos": [
+  {
+   "afirmacion": "Los inversores institucionales participan menos en el trading de un ETF cuando los mercados subyacentes correspondientes son menos accesibles (tienen altos MTUs).",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  },
+  {
+   "afirmacion": "Una reducción en los MTUs de los mercados subyacentes provoca un aumento gradual en la actividad de trading institucional en los ETFs relacionados.",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  },
+  {
+   "afirmacion": "Los ETFs cuyos mercados subyacentes poseen MTUs más altos sufren de un mayor tracking error (y mayor spread precio-NAV), menor actividad de arbitraje institucional y menor probabilidad de trading informado (PIN).",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  }
+ ],
+ "aplicabilidad_es_intradia": {
+  "nivel": "baja",
+  "nota": "El estudio ofrece insights robustos de microestructura y utiliza datos de tick (TAQ Millisecond), pero sus conclusiones están dirigidas a los efectos macro a nivel regulatorio o del diseño de mercados (políticas de lotes) sobre las propiedades de largo y mediano plazo de los ETFs, lo cual tiene escasa aplicabilidad directa para señales sistémicas intradía operables en futuros."
+ }
+}

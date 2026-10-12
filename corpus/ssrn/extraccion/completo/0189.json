@@ -1,0 +1,70 @@
+{
+  "doc_id": 189,
+  "titulo": "Simple trading rules: Trading on Ibex at MEFF",
+  "resumen_operativo": "Analiza reglas de trading simples (medias móviles) y anomalías de calendario (efectos de día de la semana y mes del año) sobre los futuros del índice Ibex 35 entre 1992 y 2000. Utiliza simulaciones y regresiones OLS para comparar estas reglas técnicas con una estrategia pasiva de buy-and-hold. Concluye que el análisis técnico básico no supera al mercado a largo plazo y que sus señales no explican la varianza de los retornos, apoyando la hipótesis de eficiencia del mercado. Es un estudio clásico de backtesting con datos y métodos de baja complejidad.",
+  "calidad_paper": "baja",
+  "conceptos": [
+    {
+      "nombre": "moving averages",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Estrategia de análisis técnico donde las señales de compra o venta se generan por el cruce de una media móvil de corto plazo y una de largo plazo.",
+      "relaciones": [
+        {
+          "tipo": "PREDICE",
+          "objeto": "market tendency"
+        }
+      ],
+      "cita_textual": "One of the most popular strategies is Moving Averages (MA). In MA, a buy signal is generated when short term MA is bigger than a long term MA and a sell signal is generated when short term MA is smaller than a long term MA."
+    },
+    {
+      "nombre": "day of the week effect",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Anomalía de calendario que postula que los retornos diarios varían sistemáticamente de acuerdo al día de la semana.",
+      "relaciones": [
+        {
+          "tipo": "PARTE_DE",
+          "objeto": "calendar anomalies"
+        }
+      ],
+      "cita_textual": "It has been well documented that returns on many securities vary by the day of the week. In particular, Friday returns are generally high and Monday returns (the return from Friday close to Monday close) are even negative."
+    },
+    {
+      "nombre": "buy-and-hold strategy",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Estrategia de inversión pasiva o de indexación que se usa como benchmark para evaluar el desempeño relativo de reglas de trading técnicas.",
+      "relaciones": [
+        {
+          "tipo": "MEJORA_A",
+          "objeto": "technical trading rules"
+        }
+      ],
+      "cita_textual": "In an informal test, results are contrasted with the return of a simple of buy-and-hold strategy... So, finally, indexing is the best option compared with these trading strategies."
+    },
+    {
+      "nombre": "OLS regression",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo formal de regresión lineal (mínimos cuadrados ordinarios) usado para testear si las señales de trading técnicas logran explicar la varianza de los retornos diarios.",
+      "relaciones": [
+        {
+          "tipo": "MIDE",
+          "objeto": "variance of returns"
+        }
+      ],
+      "cita_textual": "In a formal test, signals from these rules are included in an OLS model trying to explain daily returns. Results show that signals can no explain the variance of returns."
+    }
+  ],
+  "hallazgos": [
+    {
+      "descripcion": "El estudio concluye que las estrategias basadas en medias móviles no pueden superar el rendimiento de una estrategia de buy-and-hold a largo plazo, obteniendo rendimientos significativamente peores durante los mercados bajistas.",
+      "cita_textual": "Results show that if the investor follows the analyzed trading strategies, he or she will get a better return than the index in a up-market but a significant worst return in a down-market. So, finally, indexing is the best option compared with these trading strategies."
+    },
+    {
+      "descripcion": "Ni las anomalías de calendario ni las señales generadas por reglas técnicas tienen poder estadístico explicativo sobre la varianza de los retornos de los futuros del Ibex.",
+      "cita_textual": "Results show that signals can no explain the variance of returns. Finally, it is concluded that the market it is efficient because there is no proof that the contrary could be happening."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "El paper analiza datos diarios de futuros españoles en la década de los 90 empleando estrategias técnicas simples (medias móviles diarias), lo cual no es extrapolable a la liquidez y microestructura actuales en alta frecuencia para mercados intradía como el ES."
+  }
+}

@@ -1,0 +1,1995 @@
+High-Frequency Trading Meets Reinforcement Learning
+Exploiting the iterative nature of trading algorithms
+Joaquin Fernandez-Tapia∗
+July 9, 2015
+Abstract
+We propose an optimization framework for market-making in a limit-order book, based
+on the theory of stochastic approximation. The idea is to take advantage of the iterative
+nature of the process of updating bid and ask quotes in order to make the algorithm optimize its strategy on a trial-and-error basis (i.e. on-line learning) using a variation of the
+stochastic gradient-descent algorithm. An advantage of this approach is that the exploration of the system by the algorithm is performed in run-time, so explicit speciﬁcations
+of the price dynamics are not necessary, as is the case in the stochastic-control approach
+[8]. For the price/liquidity modeling, we consider a discrete-time variant of the AvellanedaStoikov model [1] similar to its developent in the article of Laruelle, Lehalle and Pag`es
+[10] in the context of optimal liquidation tactics. Our aim is to set the ground for more
+advanced reinforcement learning techniques and argue that the rationale of our method is
+generic enough to be extended to other classes of trading problems besides market-making.
+Keywords: high-frequency trading, market making, limit order book, stochastic approximation, reinforcement learning
+1
+Introduction
+One of the main problems in algorithmic and high-frequency trading, is the optimization
+of tactics whose main role is to interact with the limit-order book, during a short lapse of
+time, in order to perform a basic task: this can be the optimal posting of a child order in
+the order book, routing an order across diﬀerent liquidity pools or a high-frequency marketmaker posting bid and ask quotes during a couple of seconds. Among the main features of
+these tactics is that they are short lived, have a straightforward goal and they are repeated
+several times during the trading session. Moreover, most of the performance of algorithmic
+trading tactics depends, not necessarily in ﬁnancial aspects (as the valuation of an asset)
+but in microstructural factors (e.g. auction mechanics, tick-size, liquidity available in the
+book, etc.). Another important aspect is that the performance of these tactics is measured
+on a statistical basis, as their execution is systematic and, their use, intensive.
+In the last years, several factors have driven the trading industry towards automation
+and an increased focus on trading algorithms. Among these we can mention:
+• Market fragmentation: Regulations such as MiFID and RegNMS which have liberalized the ‘exchanges market’, allowing the existence of new electronic market-places
+where assets can be traded (which before was centralized on primary exchanges) and
+the appearance of new market participants (such as high-frequency traders).
+∗Laboratoire de Probabilit´es et Mod`eles aleatoires, UMR 7599, Universit´e Paris 6, 4, pl. Jussieu, F-75252
+Paris Cedex 5, France. E-mail: joaquin.fernandez@upmc.fr
+1
+Electronic copy available at: https://ssrn.com/abstract=2594477
+
+• Electronic access: The access to exchanges is mostly electronic (specially in equities,
+and increasingly more for other asset classes). Nowadays, trading arises at very low
+latency and a automated approach is paramount for any kind of strategy (short term
+and long term).
+• Technology: Evolutions in computing power and the massive amounts of data that
+today are possible to collect in real-time, motivate new approaches to handle the
+optimization process such as via sophisticated control techniques and the use of data
+mining and machine learning algorithms.
+From a research perspective, a large number of contributions have been published in the
+recent years in the ﬁeld of optimizing algorithmic-trading tactics (see for instants [6]). More
+concretely in the case of market-making, after the seminal paper of Avellaneda and Stoikov
+[1] several others have extended its approach (e.g. [2, 7] for optimal liquidation with limit
+orders and [4, 8] for market-making). However, most of the approaches to analyze these
+problems have been through the lenses of stochastic-control techniques, which demand to
+deﬁne explicitly the statistical laws governing the price dynamics. The latter makes the
+model less ﬂexible for applications, where we would like the algorithm learn by itself in
+order to adapt to the nature of the forces driving the price and liquidity (which at the
+intraday scale can evolve through diﬀerent market regimes diﬃcult to anticipate).
+In this article, we aim to take advantage of the iterative nature of the trading process at
+short time-scales by proposing an on-line learning framework to analyze the market-making
+problem (which can be extended to more general trading tactics) based on the theory of
+stochastic approximation [3, 5]. In terms of modeling of price and liquidity, we follow a
+similar path that [10] (in the context of optimal liquidation) by considering a modiﬁed
+version of the Avellaneda-Stoikov model [1]. One of the main aims of this study is to set
+the research ground for more advanced reinforcement-learning techniques, in the ﬁeld of
+algorithmic and high-frequency trading, consistent with market microstructure.
+1.1
+The limit-order book
+To understand the modeling rationale, we should ﬁrst look at the auction mechanism, i.e.
+the set of matching rules that deﬁnes how the interaction between buyers and sellers is
+carried out on the exchanges.
+For our purposes (mostly concerned with equity trading
+with visible liquidity), the two main auction phases existing during the trading day are (i)
+ﬁxing auctions (orders are matched after being accumulated on a book during a certain
+period) and (ii) continuous auctions (orders are matched continuously as they appear on
+the market). Most of the volume is traded during the continuous phase (indeed, besides
+exceptional situations, ﬁxing auctions only happens at the very beginning and at the end
+of the day). Here, we focus on the case of an agent (more speciﬁcally, a market-maker – see
+below) participating on continuous auctions. In the equity market, the virtual place where
+oﬀer meets demand during the continuous auction phase is called limit-order book.
+There are two main ways to send trading intentions to the order book in order to buy
+or sell assets:
+• Market orders: The agent speciﬁes a quantity (to buy or sell) to be immediately
+executed. i.e. the agent consumes liquidity at the (best) available price.
+• Limit orders: The agent speciﬁes a quantity and the price to trade, then waiting until
+a market order arrives as counterpart. The price improvement is balanced by the
+non-execution risk and accepting a worse price in the future.
+We say that market orders are aggressive trades while limit orders are passive and the
+match of these orders (in the case of equity markets) is done ﬁrst by price-priority then
+by time-priority. If a participant who sends a limit order is no longer interested in keeping
+that order in the book he can cancel his order before it gets executed.
+2
+Electronic copy available at: https://ssrn.com/abstract=2594477
+
+In the order book, prices can only exists in a discrete grid in which the minimum
+diﬀerence between two prices is called the tick-size.
+Moreover, the order book can be
+divided into two diﬀerent sides: the bid-side (passive buyers) and the ask-side (passive
+sellers). The highest proposed bid-price is called best-bid and the lowest proposed ask-price
+is called best-ask. By design, the best bid-price is always lower than the best ask-price. If
+were not the case, a trade would have already occurred (i.e. the seller would have already
+matched the buyer). In the case of market-making, orders are set passively at both bid and
+ask sides; the goal being to execute both orders and earn their price diﬀerence.
+At this ‘microscopic’ level, there is no clear deﬁnition for ‘the price’ of an asset. It
+can represents the mid-price (i.e. the average between the best-bid and the best-ask) or
+the price of the last trade. From our point of view, we just need to deﬁne some reference
+price around which we set our bid and ask orders. For convenience, a natural choice for a
+reference price is a sub-sampling of the mid-price at a rate of few seconds.
+Figure 1: Graphical representation of the Limit Order Book.
+1.2
+The market-maker’s problem
+Throughout this work we consider a market-maker trading in an electronic limit order
+book. In a nutshell, the goal of a market maker is to provide liquidity by setting quotes
+at the bid and the ask sides of the order book. Each time one side of a bid/ask pair gets
+executed, the market-maker earns the price-diﬀerence between these two orders. Thus, the
+market-maker’s algorithm would like to maximize the number of pairs of buy/sell trades
+executed, at the larger possible spreads and by holding the smallest possible inventory at
+the end of the trading session. Hence, the market-maker faces the following trade-oﬀ: it
+is expected that a large spread means a lower probability of execution while a narrower
+spread will mean a lower gain for each executed trade. On the other hand, if the trading
+algorithm only executes its orders on one side (because of price movements, for example),
+then its inventory moves away from zero, bearing the risk to eventually having to execute
+those shares at the end of the trading session at a worst price. The latter motivates the
+algorithm to center its orders around a ‘fair price’ in order to keep the inventory close to
+zero. Moreover, the more orders are executed, the larger the risk of ending the period with
+a large unbalanced inventory (variance eﬀect), inducing still another trade-oﬀ.
+From a modeling standpoint, one iteration of a market-making tactic can be seen as
+interacting with a black-box to which we apply, as input, the controls δa and δb (representing
+the positions in the order-book where to place orders with respect to some reference price)
+then, obtaining as output the variables Na and Nb (depending on the controls and exogenous
+variables) representing the liquidity captured at each side of the spread during a time
+window of length ∆T (representing the duration for one iteration of the algorithm).
+3
+Electronic copy available at: https://ssrn.com/abstract=2594477
+
+At the end of each iteration the payoﬀis represented by a random variable
+Ξ(δa, δb) = Π(Na(δa, ξ), Nb(δb, ξ), ξ)
+(1)
+where the ξ represent the exogenous variables inﬂuencing the payoﬀ(e.g. price, spread).
+In practice, ξ can both be a ﬁnite or an inﬁnite dimensional random variable, and it is
+modeled in a way that it represents an innovation i.e. the part of the exogenous variables
+such as its realizations can be considered to be i.i.d.
+(or stationary ergodic or weakly
+dependent), which are the kind of property allowing the optimization procedure presented
+below, to converge. For example, instead of considering ξ being the price, from a modeling
+perspective, it will be more convenient to consider it to be the price returns.
+Figure 2: Scheme of the strategy. The market-maker places its orders in the limit order book,
+then he waits a lapse of ∆T. Market orders and limit orders arrive to the book during this
+period (hence, potentially representing a buying or sell of assets for the market-maker). After,
+this ∆T period and considering the new state of the order book and the performance of the
+strategy so far, the market-maker update his orders and the process is repeated.
+1.3
+On-line learning methods
+Here we will want to maximize the expectation E [Ξ(δa, δb)]. The question is, how, in order
+to ﬁnd the solutions δ∗= (δ∗
+a, δ∗
+b ), to exploit the iterative features of the algorithm (e.g.
+using errors as feedback) and, at the same time, to propose an adaptive framework less
+depending on an accurate modeling of the market-dynamics.
+Our setting naturally joins the framework of stochastic approximation; where we deﬁne
+recursive procedures converging to the critical point of functions represented in the form of
+an expectation h(δ) = E[H(δ, ξ)], δ ∈Rd, in cases when h cannot be computed, but where
+H(δ, ξ) and its derivatives can be evaluated at a reasonable cost and the random variable
+ξ can be simulated or obtained from a real-time data-stream (in the real-time case we call
+the procedure on-line learning). For our problem, we deﬁne H(δa, δb, ξ) := E[Ξ(δa, δb)|ξ],
+where Ξ(δa, δb) is the realized payoﬀ, deﬁned on equation (1).
+In order to maximize h(·), a probabilistic extension of the gradient method, namely
+δn+1 = δn + γn+1∇δH(δn, ξn),
+ξn ∼ξ.
+(2)
+can be shown to converge towards the optimal value δ∗= (δ∗
+a, δ∗
+b ).
+As mentioned before, the advantage of the approach introduced and analyzed in this
+article, is its ﬂexibility not only to approach problems where the price follows a Brownian
+diﬀusion (key hypothesis in the stochastic control approach) but also to much more general situations where the algorithm continuously extracts information from its environment
+without needing to further specify its dynamics. Moreover, the recursive aspect makes the
+procedure naturally adaptive and easily implementable. Notice also, that this framework
+can be generalized to other types of trading tactics (e.g.
+dark-pool trading, execution,
+routing to lit venues. See the works of Laruelle et al. [10, 9]), which can be seen as iterative
+4
+Electronic copy available at: https://ssrn.com/abstract=2594477
+
+problems where we control δ ∈Rd, getting as output a ‘liquidity captured’ vector N ∈Rp,
+usually this N is represented by a vector of Poisson variables. Generically, the goal of a
+trading tactic is to maximize the expectation of a functional of the captured liquidity.
+1.4
+Outline
+In this study we can look at stochastic approximation from two standpoints: ﬁrst as a numerical procedure, in the sense that the innovation in the algorithm is a simulated random
+variable, and secondly, as a learning procedure in which the innovations are the observations
+of real-time data (or a historical data-set). We can also consider two diﬀerent situations,
+depending on the way the market-maker valuates the inventory (mark-to-market or by
+adding a penalization function for the inventory). We will give an special focus on computing closed formulas in the case the price is Brownian, this is useful for several reasons: (i)
+exhibits numerical results (ii) highlights the relation between the diﬀerent parameters and
+the solution and (iii) this can be used to compute ‘ﬁrst guesses’ at the optimal solution and
+set them as a starting point for an algorithm working in a general case.
+We start the next section by introducing in detail the model and the optimization
+problem. Section 2 focuses on our baseline situation (the mark-to-market situation) from
+a mathematical standpoint. Section 3 provides numerical examples and variations for the
+optimization method.
+Section 4 study extensions of the model (inventory control and
+relations with the dynamic programming approach). Finally we provide a conclusion, proof
+of the main results and a list of references.
+2
+Problem setting
+2.1
+Optimization problem
+Let place ourselves on a ﬁltered probability space (Ω, F, (Ft)t∈[0,T ], P). We split the trading
+day [0, T] into N periods of ∆T seconds each. The n-th period correspond to the timeinterval [(n−1)∆T, n∆T]. We consider a market-making algorithm updating its bid and ask
+quotes at the beginning of each period. It posts its quotes at respective distances δ(n−1)
+a
+and
+δ(n−1)
+b
+around a reference price S(n−1)∆T ﬁxed at the beginning of the ∆T-seconds period
+(this can be the mid-price at time (n −1)∆T, for instance). The orders remain unchanged
+until the end of the period.
+Let us note N (n)
+b
+and N (n)
+a
+the respective number of orders the market-maker executes
+at the bid and at the ask during this n-th period. The realized payoﬀof the market-maker
+during this period is given by the following random-variable:
+Ξn = N (n)
+a
+
+S(n−1)T + δ(n−1)
+a
+
+|
+{z
+}
+sold
+−N (n)
+b
+
+S(n−1)T −δ(n−1)
+b
+
+|
+{z
+}
+bought
++
+
+N (n)
+b
+−N (n)
+a
+
+SnT
+|
+{z
+}
+inventory valuation
+.
+We introduce for each time period, the running price return
+Y (n)
+t
+= S(n−1)∆T +t −S(n−1)∆T ,
+t ∈[0, ∆T].
+In particular Y (n)
+∆T = SnT −S(n−1)T .
+Now, let us introduce the variables
+N (n) = N (n)
+b
++ N (n)
+a
+and
+Q(n) = N (n)
+b
+−N (n)
+a
+.
+Also, we deﬁne the market-maker’ half-spread as
+ψ(n) = δ(n)
+a
++ δ(n)
+b
+2
+5
+Electronic copy available at: https://ssrn.com/abstract=2594477
+
+and an oﬀ-center factor θ(n) such as
+θ(n) = δ(n)
+a
+−δ(n)
+b
+2
+.
+The latter variables have an intuitive interpretation: N (n) represents the total number
+of trades executed by the market-maker and Q(n) is the increase of inventory over the period
+[(n −1)∆T, n∆T].
+In our new variables, the realized payoﬀof the market-maker is given by:
+Ξn = ψ(n)N (n) −
+
+θ(n) −Y (n)
+∆T
+
+Q(n).
+The goal of the market-maker is to maximize the expectation of this quantity.
+2.2
+The one-period problem
+Notice that if we suppose that the law of Y (n) (and N (n) and Qn) does not depends on
+S(n−1)∆T , we can always think in terms of a one-period problem as the function to maximize
+is always the same. i.e.
+max
+ψ≥0,θ∈R π(ψ, θ) := E [Ξ1] .
+(3)
+In this study, for the sake of putting the modeling forward, we focus on this independent
+price-increments situation leading to a one-period problem.
+However, it is important to keep in mind that these hypothesis can be weakened and
+interpreted as an approximation for more general cases, namely, when price increments are
+stationnary, weakly dependent or in an ergodic setting in which we want to optimize the
+sum of future payoﬀs (from an asymptotic point of view).
+In what follows, it will be interesting to consider the payoﬀconditioned to the trajectory
+of the price (as it represents an exogenous factor). Hence, for a function yt, t ∈[0, ∆T] ,
+let us deﬁne:
+Π(ψ, θ, (yt)t∈[0,∆T ]) = Ey [Ξn] .
+(4)
+In particular π(ψ, θ) = E [Π(ψ, θ, Y )], with Y ∼Y (1)
+∆T .
+2.3
+Stochastic-gradient method
+The goal of the market maker is to maximize the expectation of the function E [Π(ψ, θ, Y )].
+In a concave setting, this is equivalent of ﬁnding the zero of ∇π(ψ, θ) = ∇ψ,θE [Π(ψ, θ, Y )].
+After showing that the solution of this zero-searching problem is unique, we can consider
+applying the Robbins-Monro theorem, which states that the zero of ∇π, under a given set
+of hypothesis, can be found through an algorithm of the form:
+ψn+1
+=
+ψn + γn+1∂ψΠ(ψn, θn, Yn+1)
+(5)
+θn+1
+=
+θn + γn+1∂θΠ(ψn, θn, Yn+1).
+(6)
+We will see that in our setting one of the conditions of the Robbins-Monro theorem will
+not be satisﬁed. Namely
+E
+
+|∇ψ,θΠ(ψ, θ, Y )|2
+≤C(1 + ψ2 + θ2)
+however, by modifying the function by a multiplicative factor, as it is proposed in the article
+by Lemaire and Pag`es [11], we can show that a procedure of the form:
+ψn+1
+=
+ψn + γn+1ρ(ψn, θn)∂ψΠ(ψn, θn, Yn+1)
+(7)
+θn+1
+=
+θn + γn+1ρ(ψn, θn)∂θΠ(ψn, θn, Yn+1)
+(8)
+6
+Electronic copy available at: https://ssrn.com/abstract=2594477
+
+converges towards the solution (i.e. the point (ψ∗, θ∗) solution of ∇π(ψ, θ) = 0).
+Here ρ is a strictly positive function (to be deﬁned), mainly intended to control the
+behavior of the function Π for large values of θ.
+2.4
+Relating price and liquidity
+Thus far we have introduced the optimization problem regardless of the explicit relations
+between price and liquidity.
+The interest of introducing a price dynamics is to relate
+statistically the price with the captured liquidity, i.e. N and Q. The latter is related to the
+fundamental relations between price direction and order imbalance for example.
+In this chapter we will use the variation of the Avellaneda-Stoikov model as in [10].
+We consider that, during a period t ∈[0, ∆T] the probability to capture liquidity at a
+distance δ from the reference price Yt is deﬁned between t and t + dt, up to the second
+order, by the instantaneous intensity
+λ(δ)dt = Ae−δkdt.
+(9)
+and independent from the trajectory of Y .
+Thus, the liquidity captured by an order placed at S0 ± δ, during [0, ∆T], given the
+trajectory of the price is (yt)t≥0, will be Poisson random variables with intensities:
+λ−(δb; (yt)t∈[0,∆T ])
+=
+Z ∆T
+0
+Ae−k(δb+yt)dt
+(bought shares),
+(10)
+λ+(δa; (yt)t∈[0,∆T ])
+=
+Z ∆T
+0
+Ae−k(δa−yt)dt
+(sold shares).
+(11)
+So, the captured liquidity N (a) and N (b) is modeled by Poisson random variables with
+intensities given (respectively) by λ+ and λ−.
+The latter can be seen in two ways: (i) simply deﬁne the intensities of the Poisson variables N (a) in that N (b) as functionals of the realized price and simply using the preceding
+justiﬁcation as a heuristic, or (ii) formally model how prices and liquidity are related in
+continuous-time (i.e. thinking in terms of the generalized Poisson processes N (a)
+t
+and N (b)
+t
+).
+In the latter case we need to introduce a standard Poisson process (Nu)u≥0 independent of
+Y such that the orders we capture are given by ˜
+Ns which correspond to a time change of
+N deﬁned by ds = Ae−k(δ+Yu)du or via a thinning operation.
+Again, in order to work with symmetric variables, we deﬁne for every y ∈C([0, ∆T], R),
+λ(ψ, θ; y)
+=
+λ−+ λ+ = 2Ae−kψ
+Z ∆T
+0
+cosh(k(θ −yt))dt,
+(12)
+µ(ψ, θ; y)
+=
+λ−−λ+ = 2Ae−kψ
+Z ∆T
+0
+sinh(k(θ −yt))dt.
+(13)
+with λ−and λ+ deﬁned in (10) and (11). In particular we have EY [N] = λ and EY [Q] = µ.
+Furthermore, because negative spreads do not make sense in our problem, we suppose ψ ≥0
+and θ ∈R. Moreover, in practice it does not makes sense to have passive bid quotes on
+the ask side (and vice-versa), which means we look for solutions on |θ| < C + ψ, where C
+represents the half bid-ask spread (or an upper bound for it).
+In this way we have:
+Π(ψ, θ; Y ) = ψλ(ψ, θ; Y ) −(θ −Y∆T )µ(ψ, θ; Y ).
+(14)
+Throughout this stutyd it will be interested in comparing with the situation when the
+price is Brownian, where we can obtain closed formulas for the optimal quotes (see Theorem
+7
+Electronic copy available at: https://ssrn.com/abstract=2594477
+
+below).
+This have several advantages: (i) exhibit numerical results (ii) understand the
+relation between the diﬀerent parameters and the solution and (iii) compute ’ﬁrst guesses
+of the optimal solution’ and set them as the starting point for an algorithm working on a
+general case. The following theorem gives the optimal quotes for the Brownian situation:
+Theorem 1. In the Brownian case, the optimal solution is given by1:
+ψ∗
+=
+1
+k
+
+k2σ2∆T −1 + e−k2σ2∆T
+2
+1 −e−k2σ2∆T
+2
+
+,
+(15)
+θ∗
+=
+0.
+(16)
+Proof. See Appendix A.1.
+3
+Mark-to-Market inventory valuation
+3.1
+Introduction
+First, we consider that no market-impact aﬀecting the liquidation of the inventory. That
+is, the conditional expectation of the proﬁts, given the price trajectory, is deﬁned by:
+Π(ψ, θ; Y ) = ψλ(ψ, θ; Y ) −(θ −Y∆T )µ(ψ, θ; Y ).
+(17)
+while the function to maximize is deﬁned by:
+π(ψ, θ) = E [Π(ψ, θ; Y )] .
+(18)
+Let us notice that in this case we can write the target function as
+π(ψ, θ) = 2Ae−kψ(a(θ)ψ −b(θ)),
+(19)
+where:
+a(θ)
+=
+E
+Z ∆T
+0
+cosh(k(θ −Yt))dt
+
+,
+(20)
+b(θ)
+=
+E
+
+(θ −YT )
+Z ∆T
+0
+sinh(k(θ −Yt))dt
+
+.
+(21)
+3.2
+Existence and uniqueness of the solution
+The next theorem states the existence and uniqueness of the maximum and in particular,
+an unique solution for the equation ∇π(ψ, θ) = 0.
+Theorem 2. The function π(ψ, θ) = e−kψ(ψa(θ) −b(θ)) has an unique maximum.
+Proof. See Appendix A.2.
+With this result, we now need to compute the local derivatives of the function Π(ψ, θ; Y )
+then verify is the conditions of the Robbins-Monro theorem are satisﬁed.
+1This result, as ∆T →0, is consistent with the asymptotic solution in the article [8] in the case γ →0.
+8
+Electronic copy available at: https://ssrn.com/abstract=2594477
+
+3.3
+Stochastic gradient
+In order to deﬁne the stochastic algorithm we start by computing the derivatives of the
+function Π(ψ, θ; yt) with respect to ψ and θ.
+Proposition 1. The gradient ∇ψ,θΠ(ψ, θ; yt) is given by the equation:
+
+∂
+∂ψ Π(ψ, θ; yt)
+∂
+∂θ Π(ψ, θ; yt)
+
+=
+
+(1 −kψ)
+k(θ −y∆T )
+−k(θ −y∆T )
+−(1 −kψ)
+  λ(ψ, θ; yt)
+µ(ψ, θ; yt)
+
+.
+(22)
+Proof. See Appendix A.3
+In order to prove the convergence of the stochastic algorithm, we modify the procedure,
+as in [11], by multiplying the gradient by a factor ρ(ψ, θ) which help us to guarantee the
+convergence of the modiﬁed stochastic gradient algorithm:
+ψn+1
+=
+ψn −γn+1ρ(ψn, θn)∂ψΠ(ψn, θn, Yn+1)
+(23)
+θn+1
+=
+θn −γn+1ρ(ψn, θn)∂θΠ(ψn, θn, Yn+1)
+(24)
+Where ρ(ψ, θ) = e−k(|θ|−ψ).
+Indeed the function ρ(ψ, θ)∇Π(ψ, θ, Y ) satisﬁes the condition of the Robbins-Monro
+algorithm as it is proven in the following theorem.
+Theorem 3. Let us consider the function ρ(ψ, θ) = e−k(|θ|−ψ), θ ∈R, and, for a i.i.d.
+sequence of random trajectories Yn+1 (with same law as Y ), the following recursive algorithm:
+ψn+1
+=
+ψn + γn+1ρ(ψn, θn)∂ψΠ(ψn, θn, Yn+1)
+θn+1
+=
+θn + γn+1ρ(ψn, θn)∂θΠ(ψn, θn, Yn+1),
+where ψ0 and θ0 are in L1(P), P
+n γn = +∞and P
+n γ2
+n < +∞.
+Consider also the following technical conditions
+E
+
+Y 2
+T
+Z ∆T
+0
+e2k|Yt|dt
+
+<
++∞,
+E
+Z ∆T
+0
+e2k|Yt|dt
+
+<
++∞.
+Then, the recursive algorithm converges towards the point (ψ∗, θ∗) which correspond to
+the maximum of π(ψ, θ) = E[Π(ψn, θn, Y )] (which is the unique solution of the equation
+∇π = 0).
+Proof. See Appendix A.3.
+A delicate issue that it has not been addressed up to this point is that the innovation is an
+inﬁnite dimensional object (trajectory of the reference price), while in the Robbins-Monro
+theorem (see the proof of the last theorem) is set up for ﬁnite dimensional innovations.
+Fortunately, this is not a serious issue as in fact the algorithm only depends on the innovation through a ﬁnite dimensional functional of the trajectory (indeed, the innovation is
+a 3-dimensional object, after a change of variable).
+Theorem 4. The function Π(ψ, µ, Y ) only depends on the stochastic process (Y )t∈[0,T ]
+through the one-dimensional random variables YT and:
+bk
+=
+1
+2 log
+Z T
+0
+ekYtdt
+Z T
+0
+e−kYtdt
+
+,
+(25)
+ρk
+=
+1
+2 log
+ R T
+0 e−kYtdt
+R T
+0 ekYtdt
+!
+.
+(26)
+9
+Electronic copy available at: https://ssrn.com/abstract=2594477
+
+Moreover, we have the formulas
+λ(ψ, θ)
+=
+2Ae−kψ+bk cosh(kθ + ρk),
+(27)
+µ(ψ, θ)
+=
+2Ae−kψ+bk sinh(kθ + ρk).
+(28)
+Proof. See Appendix A.3.
+4
+Numerical examples
+4.1
+Numerical example: Brownian case
+We implement the stochastic optimization algorithm in the Brownian case and compare
+with the explicit solutions we just found. We consider an algorithm with projections in
+order to be always searching for the solution in the region where the payoﬀis expected to
+be positive.
+4.1.1
+Shape of the function to maximize
+We set the following values for the models parameters
+T = 30,
+σ = 1.2,
+A = 0.9,
+k = 0.3.
+The maximum is reached at:
+ψ∗= 2.52024 ± 10−6, θ∗= 0.0
+The following ﬁgure shows a heatmap of the function:
+Figure 3: Heatmap of the target function in the Brownian situation (the abscissa correspond to
+θ and the ordinate correspond to ψ).
+Three previous results has been helpful to reduce the computing cost:
+• Separating variables on the representation of the function
+• The innovations are in reality a three-dimensional variable
+• Recognizing the admissible region (outside the admissible region the function has a
+very steeped derivative, creating numerical problems)
+10
+Electronic copy available at: https://ssrn.com/abstract=2594477
+
+4.2
+Stochastic algorithm
+We apply the stochastic algorithm taking as initial point (8, 1) and step 0.3 × n−1.
+Figure 4: Example of the stochastic algorithm converging towards the solution.
+4.2.1
+Wider steps and Ruppert-Polyak
+Figure 5: Convergence of the algorithm with exponent 0.6.
+11
+Electronic copy available at: https://ssrn.com/abstract=2594477
+
+Figure 6: Convergence of the algorithm with exponent 0.6 in the Ruppert-Polyak situation.
+4.2.2
+Algorithm freeze-up
+In the examples we just saw, the constant C = 0.3 was chosen manually by looking at
+previous numerical experimentation. One problem we can experience in practice, when the
+algorithm has a O(n−1) step, is that the algorithm freezes-up, that is, it starts to take too
+much iterations to converge as the step is gets too small for a large n.
+The following ﬁgure shows how the algorithm freezes-up if we set C = 0.1.
+Figure 7: Example of a situation when the algorithm freezes up.
+12
+Electronic copy available at: https://ssrn.com/abstract=2594477
+
+One of the advantages of the Ruppert-Polyak approach is that the algorithm gets the
+best of two worlds: it explores the environment on early stages in order to get closer to
+the solution, then the averaging improves the convergence once the algorithm is near the
+solution.
+The following ﬁgure shows the algorithm with step Cn−6 (black path) and the RuppertPolyak averaged algorithm (blue path).
+Figure 8: Ruppert-Polyak avoids the freeze-up situation.
+5
+Penalizing the inventory
+In order to understand the reasons for penalizing the inventory, it is interesting to make a
+parallel with the stochastic-control approach as in [8].
+5.1
+Relation to the stochastic-control approach
+A key hypothesis in our model is that the incoming information have a stationary dynamics
+and the function to maximize is the same at each iteration. We have already mentioned the
+advantages of this approach (e.g. adaptability, model-free) however it has the weakness of
+not having a view on the whole strategy (i.e. inventory risk) which is the strong point on
+the stochastic-control approach [8] as it is based on the dynamic-programming principle.
+However, as it is mentioned in the papers [7, 8] the solutions of the Hamilton-JacobiBellman equation solving the optimal quotes in market-making and optimal liquidation are
+close to those of the asymptotic regime if we are not close to the end of the trading session.
+Otherwise said, the hypothesis of stationary innovations is not a constraining one as in the
+stochastic-control situation; we are solving the ‘asymptotic problem’.
+Moreover, if we try to apply the dynamic-programming approach on our discrete version
+of the Avellaneda-Stoikov problem it is easy to see that the utility function we consider
+in our forward approach correspond to the situation when in the dynamic programming
+problem there is no risk-aversion (i.e. the market-maker just wants to maximize the PnL).
+13
+Electronic copy available at: https://ssrn.com/abstract=2594477
+
+Otherwise said, the dynamic programming approach solves the inventory risk problem
+while the on-line learning approach focuses on adapting to changing market dynamics and
+eventually adverse selection. Adding penalization function on the remaining inventory has
+as goal add this ’inventory risk’ dimension to the problem.
+5.2
+Changes in the structures of the target-function
+So far, we have been valuating the inventory at the end of each period mark-to-market. In
+practice, when liquidating a given quantity in the market, agents incur in liquidation costs.
+Let us Φ(·) be the cost of liquidating a remaining inventory Q. We suppose Φ(·) positive,
+even and convex. Thus, we deﬁne:
+κ(λ, µ) = EY [Φ (Q)] .
+(29)
+The function to be maximized becomes
+π(ψ, θ) = E [ψλ −(θ −YT )µ −κ(λ, µ)] .
+(30)
+When we add liquidation costs the dependency in λ and µ is no longer linear. Indeed,
+in most of the interesting situations there is no closed formula for κ(λ, µ).
+There are two ways of thinking about the penalization in this context:
+• Quantifying costs as if we were liquidating the inventory at the end of each period
+(to penalize the market-maker payoﬀ), in this way, liquidation costs represent bid-ask
+spread costs and market impact costs. In that way we set:
+Φ(Q) =
+C|Q|
+| {z }
+bid−ask spread
++
+γ|Q|1+α
+|
+{z
+}
+market impact
+,
+0 ≤α < 1.
+(31)
+An important situation is Φ(Q) = C|Q| (i.e. γ = 0) as it represents the case where
+the only cost is the bid-ask spread, quantiﬁed by the real number C > 0. Another
+situation of interest is Φ(Q) = CQ2 as it provides a case where we can obtain a closed
+formula for κ(λ, µ). We will look at these two situations in further detail.
+• The other way, is to think that the penalization term in the inventory represents a
+function quantifying costs from the point of view of an (external) algorithm, controlling the inventory risk of the overall strategy. In other words, even though we are
+considering the ‘one-period’ problem, in practice the penalization function may be
+evolving over time (e.g. at a lower frequency than the refreshing of the algorithm).
+For example, we can think that early in the trading session we value the inventory in
+a mark-to-market way, but as we are near the end of the day, we increase the weight
+we give to the penalization term.
+For practical purposes we will address only the ﬁrst situation here. However we will
+study general formulas for the expectation of liquidation costs, which can be useful in
+further studies in this case.
+5.3
+Outline of the stochastic algorithm
+The idea is to apply the same recursive optimization procedure than in the precedent
+section, that is (some variation) of an algorithm of the form:
+ψn+1
+=
+ψn + γn+1∂ψΠ(ψn+1, θn+1, Y )
+(32)
+θn+1
+=
+θn + γn+1∂θΠ(ψn+1, θn+1, Y )
+(33)
+The following formula allows to easily compute the derivatives of liquidation costs when
+Φ(·) is even and Φ(0) = 0.
+14
+Electronic copy available at: https://ssrn.com/abstract=2594477
+
+Proposition 2.
+∂λE(Φ(Q))
+=
+1
+2 (E(Φ(Q + 1)) −2E(Φ(Q + 1)) + E(Φ(Q −1)))
+(34)
+∂µE(Φ(Q))
+=
+1
+2 (E(Φ(Q −1)) −E(Φ(Q + 1)))
+(35)
+Proof. See Appendix A.4.
+5.4
+Closed-formulas for the expectation
+The following theorem provides useful closed formulas for EY [Φ(Q)]:
+Theorem 5. Let λ, µ and ε be deﬁned by:
+λ(ψ, θ; Y )
+=
+2Ae−kψ
+Z T
+0
+cosh(k(θ −Yt))dt,
+(36)
+µ(ψ, θ; Y )
+=
+2Ae−kψ
+Z T
+0
+sinh(k(θ −Yt))dt,
+(37)
+ε(θ; Y )
+:=
+λ(ψ, θ; Y )
+µ(ψ, θ; Y ) =
+R T
+0 sinh(k(θ −Yt))dt
+R T
+0 cosh(k(θ −Yt))dt
+.
+(38)
+Then, the following formulas hold:
+EY [Q2]
+=
+λ + λ2ε2,
+EY [|Q|]
+=
+Z λ
+0
+e−sI0
+
+s
+p
+1 −ε2
+
+ds
++
+2|ε|
+∞
+X
+n=1
+sinh
+n
+2 log
+1 + |ε|
+1 −|ε|
+ Z λ
+0
+e−sIn
+
+s
+p
+1 −ε2
+
+ds,
+where In(·) denotes the modiﬁed Bessel function of order n (see [?]).
+More generally, for Φ(·) even, increasing on R+ and Φ(0) = 0, we have:
+EY [Φ(Q)]
+=
+Φ(1)
+Z λ
+0
+e−sI0
+
+s
+p
+1 −ε2
+
+ds
++
+2
+∞
+X
+n=1
+D2Φ(n) cosh
+n
+2 log
+1 + |ε|
+1 −|ε|
+ Z λ
+0
+e−sIn
+
+s
+p
+1 −ε2
+
+ds
++
+2|ε|
+∞
+X
+n=1
+DΦ(n) sinh
+n
+2 log
+1 + |ε|
+1 −|ε|
+ Z λ
+0
+e−sIn
+
+s
+p
+1 −ε2
+
+ds.
+Where, for n ∈Z, we deﬁned:
+D2Φ(n) = Φ(n + 1) −2Φ(n) + Φ(n −1)
+2
+,
+DΦ(n) = Φ(n + 1) −Φ(n −1)
+2
+.
+Proof. See Appendix A.4.
+15
+Electronic copy available at: https://ssrn.com/abstract=2594477
+
+5.5
+Bounds for liquidation costs
+5.5.1
+Upper bound for the liquidation-costs
+Conditionally to Y we can place ourselves in the case where λ(ψ, θ; Y ) and µ(ψ, θ; Y ) are
+considered as constant. As Q is always an integer, we get:
+E(Φ(Q)) ≤(C + γ)E(Q2) = (C + γ)(λ + µ2)
+5.5.2
+Lower bound for the liquidation-costs
+The ﬁrst lower bound follows Jensen inequality: E(Φ(Q)) ≥Φ(µ). However, this bound is
+not very useful when µ = 0. A better bound can be obtained by observing the following
+two facts:
+• Conditional to N the variable Q can be writen as Q = 2B −N where B follows a
+binomial law with parameters (N, p).
+• Secondly we use the fact that Φ(Q) ≥(C + γ)|Q|; We want to ﬁnd a lower bound for
+E[|Q|].
+Theorem 6. We have
+E(|Q|) ≥
+λ
+2
+p
+2(λ + 1)
+≥1
+4 min
+
+λ,
+√
+λ
+
+.
+Leading to:
+E(Φ(Q)) ≥
+C + γ
+4
+
+min
+
+λ,
+√
+λ
+
+.
+Proof. See Appendix A.4.
+5.6
+Existence of a minimum
+As in the mark-to-market case, we want to show ﬁrst that for a ﬁxed θ there is a unique ψ
+where E[Π(ψ, θ; Y )] has its maximum; in fact, we can show that this is true every time the
+function κ has the following form:
+κ(λ, µ) =
+J
+X
+j=1
+λjgj
+µ
+λ
+
+,
+gj
+µ
+λ
+
+≥0
+Proposition 3. If the conditional expectation of the liquidation costs is characterized by
+the function
+κ(λ, µ) =
+J
+X
+j=1
+λjgj
+µ
+λ
+
+,
+gj (x) ≥0, ∀x ∈R.
+Then, for any ﬁxed θ0 such as a(θ0) ≥b(θ0) we can ﬁnd an unique ψθ0 maximizing
+E[π(ψ, θ0; Y )].
+Proof. See Appendix A.4.
+16
+Electronic copy available at: https://ssrn.com/abstract=2594477
+
+6
+Conclusion
+In this article we provide a framework, based on the theory of stochastic approximation,
+for solving the problem of a market-maker participating on an electronic limit-order book.
+The idea is to take advantage of the iterative nature of trading tactics when proceeding
+algorithmically, on a high-frequency basis and when the performances are measured statistically. The advantage of our framework is that it is devised for the type of situations
+where we aim for a model-free approach in which the algorithm extract information from
+the environment during its execution, i.e. more adapted to the case of a liquid stock in
+which the velocity of order-book data allows the algorithm a rapid learning.
+The mathematical proofs of the convergence of our learning algorithm are based on
+the Robbins-Monro theorem, and its formal development are provided in appendix as well
+as results guaranteeing that the problem is well-posed, i.e. it exists a solution, and this
+solution is unique.
+We also studied the situation in which penalization costs are included in order to control
+inventory risk (maybe the only weakness of the framework, compared to the stochasticcontrol approach). We provided mathematical results on the analytical properties of the
+penalization cost function.
+Among the possible future directions of research for this work are:
+• Generalize the approach to a wider class of trading-tactics.
+• Study in detail the relation with the approaches based on the dynamic programming
+principle (i.e. obtain the best of two worlds in terms of on-line learning and inventory
+control).
+• Study stochastic algorithms in continuous time, not as a model approximation as in
+the stochastic-control approach, but, for example, by updating quotes in Poissonian
+time (as it is the natural way at which the algorithm aggregates information from
+markets). In this case the optimal quotes can be seen as controls of a Poisson process
+whose events update the control itself, so adding a source of self-reinforcement.
+A
+Proof of the main results
+A.1
+Closed formulas in the Brownian case
+Proof of Theorem 1:
+Let us start by deﬁning
+a(θ)
+=
+E
+Z ∆T
+0
+cosh(k(θ −Yt))dt
+
+b(θ)
+=
+E
+
+(θ −YT )
+Z ∆T
+0
+sinh(k(θ −Yt))dt
+
+.
+The function to maximize can be writen as
+π(ψ, θ) = 2Ae−kψ(ψa(θ) −b(θ)).
+By classical calculus we can show that the maximum of this function satisﬁes
+ψ = 1
+k + b(θ)
+a(θ),
+which in the Brownian case can be explicitly computed, as it is shown below.
+17
+Electronic copy available at: https://ssrn.com/abstract=2594477
+
+Proposition 4. If the reference price evolves following the stochastic diﬀerential equation
+dSt = σdWt, then we have the following closed formulas:
+a(θ)
+=
+2 cosh(kθ)
+k2σ2
+
+e
+k2σ2∆T
+2
+−1
+
+,
+b(θ)
+=
+2θ sinh(kθ)
+k2σ2
+
+e
+k2σ2∆T
+2
+−1
+
++
+2 cosh(kθ)
+k3σ2
+
+e
+k2σ2∆T
+2
+(k2σ2∆T −2) + 2
+
+.
+In particular, we have the identity
+1
+k + b(θ)
+a(θ) = θ tanh(kθ) + 1
+k
+
+k2σ2∆T −1 + e−k2σ2∆T
+2
+1 −e−k2σ2∆T
+2
+
+> 0
+Proof. Two types of integrals will appear in our computations:
+I∆T (α) =
+Z ∆T
+0
+E
+h
+eαWti
+dt
+and
+J∆T (α) =
+Z ∆T
+0
+E
+h
+WteαWti
+dt.
+Let us ﬁrst compute IT (α).
+I∆T (α)
+=
+Z ∆T
+0
+E
+h
+eαWti
+dt
+=
+Z ∆T
+0
+e
+α2t
+2 dt
+=
+2
+α2
+
+e
+α2∆T
+2
+−1
+
+.
+In order to compute J∆T (α), we realise that J∆T (α) = I′
+∆T (α), this implies:
+J∆T (α) = 2
+α3
+
+e
+α2∆T
+2
+(α2∆T −2) + 2
+
+.
+Three other identities will be used:
+• If W is a Brownian motion, W and −W have same laws, this yields:
+I∆T (−α) = I∆T (α).
+• By the same token:
+J∆T (−α) = −J∆T (α).
+• Finally, because W has independent increments:
+Z ∆T
+0
+E [W∆T f(Wt)] =
+Z ∆T
+0
+E [Wtf(Wt)] ,
+∀f ∈C([0, ∆T])
+Using the latter, we obtain:
+a(θ)
+=
+E
+Z ∆T
+0
+cosh(k(θ −σWt))dt
+
+=
+1
+2
+Z ∆T
+0
+E
+h
+ekθe−kσWt + e−kθe+kσWti
+dt
+=
+ekθI∆T (−kσ) + e−kθI∆T (kσ)
+2
+=
+cosh(kθ)I∆T (kσ).
+18
+Electronic copy available at: https://ssrn.com/abstract=2594477
+
+and
+b(θ)
+=
+E
+
+(θ −σW∆T )
+Z ∆T
+0
+sinh(k(θ −σWt))dt
+
+=
+θE
+Z ∆T
+0
+sinh(k(θ −σWt))dt
+
+−σE
+
+WT
+Z ∆T
+0
+sinh(k(θ −σWt))dt
+
+=
+θk−1a′(θ) −σE
+Z ∆T
+0
+Wt sinh(k(θ −σWt))dt
+
+=
+θ sinh(kθ)I∆T (kσ) −σ
+ekθ
+2 J∆T (−kσ) −e−kθ
+2
+J∆T (kσ)
+
+=
+θ sinh(kθ)I∆T (kσ) + σ cosh(kθ)J∆T (kσ)
+By replacing the values of I∆T and J∆T we end the proof.
+Proposition 5. (Brownian motion with trend) If Yt = µt + σWt, we have
+a(θ)
+=
+Z ∆T
+0
+e
+k2σ2t
+2
+cosh(kθ −kµt)dt
+b(θ)
+=
+(θ −µ∆T)
+Z ∆T
+0
+e
+k2σ2t
+2
+sinh(kθ −kµt)dt
+−
+σ2
+k
+Z ∆T
+0
+te
+k2σ2t
+2
+cosh(kθ −kµt)dt.
+Proof. Same reasoning as in the no-trend situation.
+A.2
+Proof of existence and uniqueness
+Before starting the proof of existence and uniqueness of the maximum for our target function
+(i.e. Theorem 2). We introduce the following concept which will be key in the proof.
+A.2.1
+Functional co-monotony
+The functional co-monotony principle (see Pag`es [?]) is the extension of the classical comonotony principle for real-valued variables, to some stochastic processes such as Brownian
+diﬀusion processes, Processes with independent increments, etc. The classic co-monotony
+principle is stated as follows:
+Proposition 6. Let X be a real-valued random variable and f, g : R →R two monotone
+functions sharing the same monotony property. Then, if f(X), g(X) and f(X)g(X) are in
+L1(P), the following inequality holds:
+E [f(X)g(X)] ≥E [f(X)] E [g(X)] .
+(39)
+In order to extend this idea to functional of stochastic processes, we should ﬁrst deﬁne
+an order relation between them. In that sense, we will consider that processes are random
+variables taking values in a path vector subspace, and deﬁne a (partial) order by saying
+that if α and β are two processes, then:
+α ≤β
+if
+∀t ∈[0, ∆T], α(t) ≤β(t).
+Hence, we say that a functional is monotone if it is non-decreasing or non-increasing
+with the order relation deﬁned above, and we will say that two functionals are co-monotone
+if they share the same monotony.
+We can state now the functional co-monotony principle that will be useful to prove
+various inequalities:
+19
+Electronic copy available at: https://ssrn.com/abstract=2594477
+
+Theorem 7. (Functional co-monotonicity principle) If X is a pathwise-continuous Markov
+process, with a monotony preserving transition probabilities2, and F and G are two comonotone functionals, continuous on C([0, T], R), then:
+E [F(X)G(X)] ≥E[F(X)]E[G(X)].
+(40)
+Proposition 7. Under suitable conditions for (Y )t∈[0,T ] we have the following identity:
+E
+
+(θ −Y∆T )
+Z ∆T
+0
+sinh(k(θ −Yt))dt
+
+≥(θ −E [Y∆T ]) E
+Z ∆T
+0
+sinh(k(θ −Yt))dt
+
+.
+Proof. This comes from the fact that the two functionals involved in the expectation:
+F(X) = X∆T , G(X) =
+R ∆T
+0
+sinh(kXt)dt, have same monotony.
+A.2.2
+Existence and uniqueness of the maximum
+We prove Theorem 2 by the following sequence of technical propositions.
+Proof of Theorem 2:
+For the following propositions we will deﬁne
+a(θ)
+=
+E
+Z ∆T
+0
+cosh(k(θ −Yt))dt
+
+(41)
+b(θ)
+=
+E
+
+(θ −YT )
+Z ∆T
+0
+sinh(k(θ −Yt))dt
+
+(42)
+c(θ)
+=
+E
+Z ∆T
+0
+sinh(k(θ −Yt))dt
+
+(43)
+d(θ)
+=
+E
+
+(θ −YT )
+Z ∆T
+0
+cosh(k(θ −Yt))dt
+
+(44)
+Proposition 8. The following assertions are true:
+1. For every θ ∈R, we have a(θ) > |c(θ)|.
+2. c(θ) is strictly increasing, with limits
+lim
+θ→+∞c(θ) = +∞
+and
+lim
+θ→−∞c(θ) = −∞.
+3. It exists a positive constant C satisfying
+b(θ) > 0,
+∀θ such as |θ| > C.
+4. It exists two real constants C−and C+ such as
+c(θ)b(θ) ≤a(θ)b(θ),
+∀θ ≥C+
+and
+c(θ)b(θ) ≥−a(θ)b(θ),
+∀θ ≤C−.
+Proof.
+1. It follows directly from Jensen inequality and that for every x ∈R we have
+cosh(x) ≥| sinh(x)|.
+2. It follows directly from the fact that c′(θ) ≥k∆T > 0, for every θ ∈R.
+2In particular, this is the case for diﬀusions.
+20
+Electronic copy available at: https://ssrn.com/abstract=2594477
+
+3. From the functional co-monotony principle we have
+b(θ) ≥(θ −E[YT ])c(θ).
+Then, from a direct application of the second result of this proposition, we have that
+it exists C′ > 0 such as, for θ > C, both factors of the left are positive. Similarly, it
+exists C′′ > 0 such as, for θ < −C′′, both factors of the left are negative. We conclude
+our result by taking C = max(C′, C′′).
+4. By a similar argument as in the last point, it exists C+ such as, for θ ≥C+ both c(θ)
+and b(θ) are positive, so we can use the ﬁrst result in this proposition which yields to
+c(θ)b(θ) ≤a(θ)b(θ).
+The second inequality follows in the same way. We know it exists C−such as, for
+θ ≤C−we have c(θ) negative and b(θ) positive, so we can use the ﬁrst result in this
+proposition which yields to c(θ)b(θ) ≥−a(θ)b(θ).
+Proposition 9. Let us deﬁne the function
+f(θ) = b(θ)c(θ) −a(θ)d(θ).
+The following assertions are true
+1. f(·) is strictly decreasing.
+2. limθ→+∞f(θ) < 0.
+3. limθ→−∞f(θ) > 0.
+In particular, this implies that f(θ) = 0 has a unique solution.
+Proof.
+1. First of all, observe that a′(θ) = kc(θ), c′(θ) = ka(θ), b′(θ) = c(θ) + kd(θ) and
+d′(θ) = a(θ) + kb(θ). This leads to
+f ′(θ) = c2(θ) −a2(θ)
+which is strictly negative, due to the ﬁrst result in the precedent proposition.
+Hence, f is strictly decreasing.
+2. From the last result in the precedent proposition we have that if θ > C+ then
+f(θ) = b(θ)c(θ) −a(θ)d(θ) ≤a(θ)(b(θ) −d(θ)).
+Otherwise said
+f(θ) ≤−a(θ)E
+
+(θ −YT )
+Z ∆T
+0
+e−k(θ−Yt)dt
+
+= −a(θ)e−kθE
+
+(θ −YT )
+Z ∆T
+0
+ekYtdt
+
+where the right side is negative for θ large enough.
+3. From the last result in the precedent proposition we have that if θ < C−then
+f(θ) = b(θ)c(θ) −a(θ)d(θ) ≥−a(θ)(b(θ) + d(θ)).
+Otherwise said
+f(θ) ≥−a(θ)E
+
+(θ −YT )
+Z ∆T
+0
+ek(θ−Yt)dt
+
+= −a(θ)ekθE
+
+(θ −YT )
+Z ∆T
+0
+e−kYtdt
+
+In this case, as −θ becomes large enough, the right side becomes positive.
+21
+Electronic copy available at: https://ssrn.com/abstract=2594477
+
+Proposition 10. The function
+g(θ) = a(θ) exp
+
+−k b(θ)
+a(θ)
+
+has a unique maximum.
+Proof. We have
+g′(θ) = k exp
+
+−k b(θ)
+a(θ)
+ 
+a′(θ)
+ 1
+k + b(θ)
+a(θ)
+
+−b′(θ)
+
+,
+which is equivalent to
+g′(θ) = k2 exp
+
+−k b(θ)
+a(θ)
+ c(θ)b(θ) −d(θ)a(θ)
+a(θ)
+
+.
+Thus, the sign of g′(θ) is the same as the sign of f(θ) from the last proposition. Hence,
+g′(θ) is strictly decreasing and has a unique point where it becomes zero. Otherwise said,
+g is strictly concave and has a unique maximum.
+Proposition 11. The function π(ψ, θ) = e−kψ(ψa(θ) −b(θ)) has an unique maximum.
+Proof. First of all, if we ﬁx θ. The maximum is achieved in
+ψ∗(θ) = 1
+k + b(θ)
+a(θ).
+The value of this maximum is given by
+π(ψ∗(θ), θ) = k−1e−1e
+−k b(θ)
+a(θ) a(θ)
+By the precedent proposition, it exists a unique θ∗maximum of this function.
+Thus, the maximum of π(ψ, θ) is achieved at the point (ψ∗(θ∗), θ∗).
+A.3
+Convergence of the stochastic algorithm
+Before proving the convergence of the stochastic algorithm, we recall the hypothesis of the
+Robbins-Monro theorem (see [12]) which is central to complete the proof.
+A.3.1
+The Robbins-Monro theorem
+Let us consider an algorithm of the form
+δn+1 = δn + γn+1H(δn, Yn+1),
+(45)
+with (Yn)n∈N an i.i.d. sequence of ν-distributed Rq-valued random vectors deﬁned on a
+probability space (Ω, F, P).
+In order to prove our main result, let us consider a random vector Y taking values in
+Rq with distribution ν and a Borel function H : Rd × Rq →Rd.
+Following what precedes, we introduce into our analysis the following function:
+h : δ 7→E [H(δ, Y )] .
+(46)
+And, for this function to be well deﬁned, we add the following condition:
+∀δ ∈Rd,
+E [|H(δ, Y )|] < +∞.
+(47)
+22
+Electronic copy available at: https://ssrn.com/abstract=2594477
+
+Theorem 8. Assume that the mean function h of the algorithm is continuous and satisﬁes
+∀y ∈Rd, δ̸ = δ∗,
+⟨δ −δ∗, h(δ)⟩< 0
+(48)
+(which implies that {h = 0} = {δ∗}). Suppose furthermore that Y0 ∈L2(P) and that H
+satisﬁes
+∀δ ∈Rd,
+E
+
+∥H(δ, Y )∥2
+≤C(1 + ∥δ∥2)
+(49)
+If the step sequence γn satisﬁes P
+n γn = +∞and P
+n γ2
+n < +∞, then:
+δn →δ∗,
+P −a.s.
+(50)
+and in every Lp(P), p ∈(0, 2].
+A.3.2
+Computing the local gradient
+Proof of Proposition 1:
+Proof. By direct calculation we have:
+∂
+∂ψ λ(ψ, θ; yt)
+=
+−kλ(ψ, θ; yt),
+∂
+∂ψ µ(ψ, θ; yt)
+=
+−kµ(ψ, θ; yt),
+∂
+∂θ λ(ψ, θ; yt)
+=
+kµ(ψ, θ; yt),
+∂
+∂θ µ(ψ, θ; yt)
+=
+kλ(ψ, θ; yt).
+which applied to
+Π(ψ, θ; Y ) = ψλ(ψ, θ; Y ) −(θ −Y∆T )µ(ψ, θ; Y ).
+lead directly to the result we want.
+A.3.3
+Convergence of the stochastic algorithm
+Proof of Theorem 3:
+Proof. The main idea here is to apply the Robbins-Monro algorithm. However, as it was
+said, we cannot apply it directly on the local gradient ∇ψ,θΠ(ψn, θn, Y ), because of its
+behavior for larger values of θ. The latter makes impossible to obtain the Robbins-Monro
+condition
+E
+
+∥∇ψ,θΠ(ψn, θn, Y )∥2
+≤C(1 + ψ2 + θ2).
+However, by multiplying by the factor ρ(ψ, θ) = e−k(|θ|−ψ), which does not impact the
+other Robbins-Monro conditions, does not changes the point to which the algorithm converges and allow us to retrieve the inequality we are looking for. Moreover, the choice of
+ρ(ψ, θ) is rather intuitive; it is based on the observation that the intensities λ and µ have
+terms with magnitudes cosh(kθ) and sinh(kθ) multiplied by a factor e−kψ, so our choice of
+ρ(ψ, θ) is quite natural.
+Because the function in the algorithm corresponds to the gradient of a well-behaved
+function reaching a unique maximum, the only Robbins-Monro condition it remains to
+prove in order to obtain the convergence of the algorithm, is to show it exists a real constant
+C such as
+E
+
+∥ρ(ψ, θ)∇ψ,θΠ(ψ, θ, Y )∥2
+≤C(1 + ψ2 + θ2).
+23
+Electronic copy available at: https://ssrn.com/abstract=2594477
+
+By straightforward computation and regrouping terms, we have
+∥∇ψ,θΠ(ψ, θ, Y )∥2
+=
+∥(θ −YT )∇µ −ψ∇λ∥2 + λ2 + µ2
++
+2ψ(λ∂ψλ −µ∂θλ) + 2(θ −YT )(µ∂θµ −λ∂ψµ)
+=
+∥(θ −YT )∇µ −ψ∇λ∥2 + (λ2 + µ2)(1 −2kψ) + 4kλµ(θ −YT )
+≤
+k2(|θ −YT |2 + ψ2)(λ2 + µ2) + (λ2 + µ2)(1 −2kψ) + 4kλµ(θ −YT )
+=
+(λ2 + µ2)(k2|θ −YT |2 + (1 −kψ)2) + 4kλµ(θ −YT )
+≤
+2λ2(k2|θ −YT |2 + (1 −kψ)2 + 4k(θ −YT ))
+≤
+2λ2(3k2|θ −YT |2 + (1 −kψ)2 + 1)
+≤
+12k2λ2(θ2 + ψ2 + k−2 + Y 2
+T )
+On the other hand, by Jensen inequality we have
+λ2 ≤4A2e−2kψ
+Z ∆T
+0
+cosh2(k(θ −Yt))dt ≤4A2e−2kψ
+Z ∆T
+0
+e2k|θ|e2k|Yt|dt.
+This leads to
+∥∇ψ,θΠ(ψ, θ, Y )∥2 ≤48k2A2e2k(|θ|−ψ)(θ2 + ψ2 + k−2 + Y 2
+T )
+Z ∆T
+0
+e2k|Yt|dt
+(51)
+which is equivalent to
+E
+
+∥ρ(ψ, θ)∇ψ,θΠ(ψ, θ, Y )∥2
+≤
+48k2A2E
+
+(θ2 + ψ2 + k−2 + Y 2
+T )
+Z ∆T
+0
+e2k|Yt|dt
+
+(52)
+≤
+C(1 + θ2 + ψ2).
+(53)
+with
+C = 48k2A2E
+
+(1 + k−2 + Y 2
+T )
+Z ∆T
+0
+e2k|Yt|dt
+
+which is bounded by hypothesis.
+Hence the Robbins-Monro theorem can apply, which concludes the proof.
+A.3.4
+Dimensionality reduction for the innovation
+Proof of Theorem 4:
+Proof. Besides the end-value YT , all the dependency in the process Y is contained in the
+functions λ and µ (given by the equations (12) and (13)). To obtain our result, let us
+rewrite the following integral:
+Z T
+0
+ek(θ−Yt)dt = ekθ
+v
+u
+u
+t
+R T
+0 e−kYtdt
+R T
+0 ekYtdt
+sZ T
+0
+e−kYtdt
+Z T
+0
+ekYtdt = ekθ+ρkebk.
+(54)
+By the same argument, we have
+Z T
+0
+e−k(θ−Yt)dt = ekθ
+v
+u
+u
+t
+R T
+0 ekYtdt
+R T
+0 e−kYtdt
+sZ T
+0
+e−kYtdt
+Z T
+0
+ekYtdt = e−kθ−ρkebk.
+(55)
+The results follows by combining these quantities to obtain sinh(·) and cosh(·) as in the
+formulas for λ and µ ((12) and (13)).
+24
+Electronic copy available at: https://ssrn.com/abstract=2594477
+
+A.4
+Penalizing the inventory
+A.4.1
+Derivatives for the penalization function
+Proof of Proposition 2:
+Proof. Conditional to λ and µ, the random variable Q is the diﬀerence of two independent
+Poisson random-variables Nb and Na representing the liquidity capture at the bid and at
+the ask respectively. The variable N, on the other hand, represent the sum of these two
+variables. Because of the independence between Nb and Na we know that conditional to
+N, the variable Q satisﬁes:
+E [Φ(Q)|N] = E [Φ(2B −N)|N] ,
+B ∼Bin
+
+N, µ + λ
+2λ
+
+.
+Using that N is a Poisson variable with intensity λ we can write
+E [Φ(Q)]
+=
+∞
+X
+n=0
+n
+X
+k=0
+e−λ(λ + µ)k(λ −µ)n−k
+2nk!(n −k)!
+Φ(2k −n)
+(56)
+=
+∞
+X
+n=0
+n+1
+X
+k=0
+e−λ(λ + µ)k(λ −µ)n+1−k
+2n+1k!(n + 1 −k)!
+Φ(2k −n −1)
+(57)
+=
+∞
+X
+n=0
+n+1
+X
+k=0
+e−λ(λ −µ)k(λ + µ)n+1−k
+2n+1k!(n + 1 −k)!
+Φ(2k −n + 1)
+(58)
+The identity (57) arises from the hypothesis Φ(0) = 0. The identity (58) arises just by
+inverting the order of summation.
+Let us note a = λ + µ and b = λ −µ, from (57) we obtain
+∂aE [Φ(Q)] = 1
+2E [Φ(Q −1)]
+and from (58)
+∂bE [Φ(Q)] = 1
+2E [Φ(Q + 1)] .
+This leads to the following formulas
+∂λE [Φ(Q)]
+=
+1
+2E [Φ(Q + 1) −Φ(Q) + Φ(Q −1)]
+(59)
+∂µE [Φ(Q)]
+=
+1
+2E [Φ(Q −1) −Φ(Q + 1)] .
+(60)
+A.4.2
+Closed-formulas for the penalization function
+Proof of Theorem 5:
+Proof. First of all, the idea is to exploit the following two facts:
+1. The dependency of EY [Φ(Q)] in the variables ψ and θ is totally contained on the
+functions λ and µ.
+2. Under the information provided by the process Y , the inventory is the diﬀerence of
+two independent Poisson variables N + and N −satisfying the following equations:
+E[N −+ N +]
+=
+λ
+(61)
+E[N −−N +]
+=
+µ
+(62)
+25
+Electronic copy available at: https://ssrn.com/abstract=2594477
+
+This implies that we just need to do the analysis considering λ and µ as constants; the
+results can be immediately transferred to the case of the conditional expectation of Φ(Q)
+under the information provided by Y .
+Now, let us consider a auxiliary Markov process Qs = N (1)
+s
+−N (2)
+s
+where N (1)
+s
+and
+N (2)
+s
+are two independent homogeneous Poisson processes with intensities λ1 =
+1+ε
+2
+and
+λ2 = 1−ε
+2
+respectively. It is immediate that Q and Qλ have the same law, thus, for any
+function Φ(·), the quantities E [Φ(Qλ)] and E [Φ(Q)] have the same value.
+To compute
+E [Φ(Qλ)] is done by using the inﬁnitesimal generator and Dynkin’s formula [?].
+For q ∈Z the inﬁnitesimal generator of Qs is
+AΦ(q) = −Φ(q) +
+1 + ε
+2
+
+Φ(q + 1) +
+1 −ε
+2
+
+Φ(q −1)
+By the Dynkin’s formula we obtain:
+E [Φ(Q)] = Φ(0) +
+Z λ
+0
+E
+
+D2Φ(Qt)
+
+dt + ε
+Z λ
+0
+E [DΦ(Qt)] dt
+Where
+D2Φ(q) = Φ(q + 1) −2Φ(q) + Φ(q −1)
+2
+DΦ(q) = Φ(q + 1) −Φ(q −1)
+2
+The next step is to evaluate expectations of random variables that are deﬁned as the
+diﬀerence between two Poisson random variables. Indeed, these kind of integer valued random variable are said to follow a Skellam distribution with parameters λ1, λ2 > 0 if they
+can be written as the diﬀerence of two independent Poisson random variables, N1 and N2,
+with respective parameters λ1 and λ2.
+Let Qs follows a Skellam distribution (see [?]) with mean εs and variance s; the support
+of Qs is the whole set Z. Elementary computations show that the distribution of the variable
+Qs is deﬁned by the following formula:
+P (Q = |q|)
+=
+2e−s cosh
+q
+2 log
+1 + ε
+1 −ε
+
+I|q|
+
+s
+p
+1 −ε2
+
+,
+∀q ∈Z \ {0} (63)
+P (Q = 0)
+=
+e−sI0
+
+s
+p
+1 −ε2
+
+(64)
+At this point we just need to replace these values in the equations obtained through the
+Dynkin’s formula and using the proprerties of function Φ (these are, even, increasing in R+
+and Φ(0) = 0 (in particular DΦ(q) = −DΦ(−q)).
+Finally, the equation for E[|Q|] is obtained by replacing Φ(·) by | · |.
+The formula for E[Q2] can be obtained by the same idea or by more elementary computations using the properties of the mean and variance of Poisson random variables.
+A.4.3
+Other properties of the penalization function
+Proof of Proposition 4:
+26
+Electronic copy available at: https://ssrn.com/abstract=2594477
+
+Proof. Because of the symmetry of the function Φ(·) we can always suppose p ≤1/2. In
+particular, we can consider a binomial random variable eB with parameters (N, 1/2) which
+stochastically dominates B. This is easy to explicitly generate:
+B =
+N
+X
+k=1
+1Uk≤p ≤
+N
+X
+k=1
+1Uk≤1
+2 = eB
+We obtain the following:
+E(|2B −N|) = 2E
+B −N
+2
+
+
+≥2E
+B −N
+2
+ 1 e
+B≤N
+2
+
+By stochastic domination and symmetry of eB we obtain:
+E(|2B −N|) ≥2E
+ eB −N
+2
+ 1 e
+B≤N
+2
+
+= E
+ eB −N
+2
+
+
+Moreover, we can use the following De Moivre’s result for the absolute deviation of the
+Binomial distribution[?]:
+E
+ eB −N
+2
+
+
+= 2−N
+ 
+N
+⌈N/2⌉
+!
+⌈N/2⌉
+At this point, we consider the following elementary inequality:
+2−N
+ 
+N
+⌈N/2⌉
+!
+⌈N/2⌉≥
+√
+N
+2
+√
+2
+Now let us take the expectation on N.
+E(
+√
+N) ≥
+∞
+X
+k=1
+√
+ke−λ λk
+k! = λE
+
+1
+√
+N + 1
+
+≥
+λ
+√
+λ + 1
+(The last inequality comes from Jensen inequality)
+Proof of Proposition 5:
+Proof. First of all, we have
+∂ψπ(ψ, θ) = E
+"
+λ −kψλ −(θ −YT )µ + k
+J
+X
+j=1
+jλj−1gj
+µ
+λ
+#
+(65)
+We are interested in the solution of ∂ψπ(ψ, θ; Y ) = 0:
+Ae−kψ(kψ −1)a(θ) + Ae−kψb(θ) −k
+J
+X
+j=1
+je−k(j−1)ψcj(θ) = 0
+(66)
+Here cj(θ) = E
+ Aj−1gj
+  µ
+λ
+
+.
+We can divide by e−kψ an re-arrange terms, this leads to
+kψa(θ) + (b(θ) −a(θ)) = c1(θ) + k
+J−1
+X
+j=1
+(j + 1)Aje−kjψcj+1(θ)
+(67)
+The left side is an increasing linear function starting from a negative point, the left side
+a decreasing exponential starting from a positive point, so they intersect at some point.
+27
+Electronic copy available at: https://ssrn.com/abstract=2594477
+
+References
+[1] Avellaneda, M., & Stoikov, S. (2008). High-frequency trading in a limit order book.
+Quantitative Finance, 8(3), 217-224.
+[2] Bayraktar, E., & Ludkovski, M. (2014). Liquidation in limit order books with controlled
+intensity. Mathematical Finance, 24(4), 627-650.
+[3] Benveniste, A., M´etivier, M., & Priouret, P. (2012). Adaptive algorithms and stochastic
+approximations. Springer Publishing Company, Incorporated.
+[4] Cartea, A., Jaimungal, S., & Ricci, J. (2014). Buy low, sell high: A high frequency
+trading perspective. SIAM Journal on Financial Mathematics, 5(1), 415-444.
+[5] Duﬂo, M. (1997). Random iterative models (Vol. 22). Berlin: Springer.
+[6] Fernandez-Tapia, J. (2015). Modeling, optimization and estimation for the on-line control of trading algorithms in limit-order markets. PhD Thesis. Laboratoire de Probabilit´es et Mod`eles Al´eatoires, Universit´e Pierre et Marie Curie.
+[7] Gu´eant, O., Lehalle, C. A., & Fernandez-Tapia, J. (2012). Optimal portfolio liquidation
+with limit orders. SIAM Journal on Financial Mathematics, 3(1), 740-764.
+[8] Gu´eant, O., Lehalle, C. A., & Fernandez-Tapia, J. (2013). Dealing with the inventory
+risk: a solution to the market making problem. Mathematics and ﬁnancial economics,
+7(4), 477-507.
+[9] Laruelle, S., Lehalle, C. A., & Pag`es, G. (2011). Optimal split of orders across liquidity
+pools: a stochastic algorithm approach. SIAM Journal on Financial Mathematics, 2(1),
+1042-1076.
+[10] Laruelle, S., Lehalle, C. A., & Pag`es, G. (2013). Optimal posting price of limit orders:
+learning by trading. Mathematics and Financial Economics, 7(3), 359-403.
+[11] Lemaire, V., & Pag`es, G. (2010). Unconstrained recursive importance sampling. The
+Annals of Applied Probability, 20(3), 1029-1067.
+[12] Pag`es, G. (2014) Introduction to Numerical Probability applied to ﬁnance. Technical
+Report.
+28
+Electronic copy available at: https://ssrn.com/abstract=2594477

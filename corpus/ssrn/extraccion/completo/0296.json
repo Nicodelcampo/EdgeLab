@@ -1,0 +1,44 @@
+{
+  "doc_id": 296,
+  "titulo": "Research Paper on Algorithmic Breakout Detection via Volume Spike in Options Trading",
+  "resumen_operativo": "Paper de calidad muy baja, aparentemente escrito para una aplicación de visa EB1. Describe un scanner de breakout en Thinkorswim que detecta picos de volumen 4x sobre el promedio móvil de 20 días combinado con superación del high previo. Reporta 10+ trades entre enero y julio 2025 con 90% win rate y ~78% ROI promedio, con ejemplos como FSLR 133P (100%), INTC 18.5P (98.18%) y TSLA 245P (97.42%). Sin validación estadística formal, sin OOS genuino, sin control de data snooping. No es un paper académico serio.",
+  "calidad_paper": "baja",
+  "conceptos": [
+    {
+      "nombre": "breakout detection",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Detección de breakouts basada en spikes de volumen: se genera señal cuando el volumen de cualquiera de los últimos 5 días es al menos 4x el promedio de 20 días y el high del día supera el high previo.",
+      "relaciones": [{"tipo": "USA", "objeto": "volume analysis"}],
+      "cita_textual": "def breakout = (volume[1] >= 4 * avgVol[1] and high > high[1]) or (volume[2] >= 4 * avgVol[2] and high > high[2]) ..."
+    },
+    {
+      "nombre": "Bollinger bands",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Mencionado en la revisión de literatura como una de las estrategias de breakout tradicionales junto con moving averages y price levels.",
+      "relaciones": [{"tipo": "PARTE_DE", "objeto": "technical analysis"}],
+      "cita_textual": "Prior studies on breakout trading strategies focus on moving averages, Bollinger bands, and price levels."
+    },
+    {
+      "nombre": "technical analysis",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Análisis técnico usado como base para el scanner de breakout basado en volumen y niveles de precio.",
+      "relaciones": [{"tipo": "USA", "objeto": "Bollinger bands"}],
+      "cita_textual": "Breakout strategies are widely used but often lack precision in timing and signal validation."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "El scanner de breakout basado en volumen 4x genera 90% win rate con ROI promedio de ~78% sobre 10+ trades en opciones y acciones entre enero y julio 2025.",
+      "mercado": "US equities options (TSLA, NKE, FSLR, INTC, TMUS)",
+      "periodo": "Enero-Julio 2025",
+      "magnitud": "Win rate 90%, ROI promedio ~78%, net profit $1,024.62; ejemplos: FSLR 133P 100%, TSLA 245P 97.42%, INTC 18.5P 98.18%",
+      "condiciones": "10+ trades en total; sin detalles de split IS/OOS; sin mención de costos o slippage; datos de Charles Schwab",
+      "robustez": "baja",
+      "cita_textual": "Win Rate: 90%, Average ROI (Short Term): ~78%"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "El scanner opera en timeframe diario (comparación de highs diarios). El concepto de spikes de volumen podría adaptarse a timeframes intradía pero el paper no ofrece evidencia rigurosa."
+  }
+}

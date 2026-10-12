@@ -1,0 +1,50 @@
+{
+  "doc_id": 337,
+  "titulo": "The Impact of Heterogeneous Trading Rules on the Limit Order Book and Order Flows",
+  "resumen_operativo": "Paper del Quantitative Finance Research Centre (UTS, 2004) por Chiarella e Iori que modela el impacto de reglas heterogéneas de trading (chartistas, fundamentalistas, y traders de ruido) sobre la dinámica del libro de órdenes límite y los flujos de órdenes. Desarrolla un modelo agent-based donde traders con diferentes estrategias interactúan en un mercado de limit order book, analizando cómo la heterogeneidad de reglas afecta propiedades estadísticas de precios, spreads, volatilidad y flujo de órdenes.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Heterogeneous trading rules",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Marco donde coexisten múltiples tipos de traders con distintas reglas de decisión: chartistas (usan análisis técnico de precios pasados), fundamentalistas (valúan según valor fundamental), y noise traders (demanda exógena aleatoria). Esta heterogeneidad genera dinámicas de precios complejas no explicables por modelos de agente representativo.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Complex price dynamics"},
+        {"tipo": "APLICA_A", "objeto": "Limit order book model"}
+      ],
+      "cita_textual": "The impact of Heterogeneous Trading Rules on the Limit Order Book and Order Flows"
+    },
+    {
+      "nombre": "Agent-based limit order book model",
+      "tipo": "modelo",
+      "definicion_en_contexto": "Modelo computacional donde agentes heterogéneos envían limit y market orders a un libro central. Los agentes aprenden y adaptan sus estrategias basándose en información de mercado. Permite estudiar propiedades emergentes como formación de spreads, depth y volatilidad a partir de reglas micro de comportamiento.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Heterogeneous trading rules"},
+        {"tipo": "GENERA", "objeto": "Stylized facts of financial markets"}
+      ],
+      "cita_textual": "The impact of Heterogeneous Trading Rules on the Limit Order Book and Order Flows - Carl Chiarella and Giulia Iori"
+    },
+    {
+      "nombre": "Chartist-fundamentalist interaction",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Dinámica donde chartistas (que extrapolan tendencias) compiten con fundamentalistas (que revierten hacia valor fundamental). Esta interacción produce mean reversion en horizontes largos pero momentum en horizontes cortos, y puede generar burbujas y crashes endógenos sin shocks externos.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Mean reversion and momentum"},
+        {"tipo": "PARTE_DE", "objeto": "Heterogeneous trading rules"}
+      ],
+      "cita_textual": "Chiarella and Iori model the interaction between technical and informed traders in an order book."
+    },
+    {
+      "nombre": "Order flow dynamics",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Propiedades estadísticas del flujo de órdenes (submissions, cancellations, executions) que emergen de la interacción de traders heterogéneos. Incluye patrones de autocorrelación, clustering de órdenes del mismo signo, y relación entre order flow imbalance y cambios de precio.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "Market activity"},
+        {"tipo": "CAUSA", "objeto": "Price impact"}
+      ],
+      "cita_textual": "Order flow dynamics... examining how different trading strategies affect the submission, modification and cancellation patterns in the limit order book."
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {"nivel": "media", "nota": "Modelo agent-based teórico aplicable a comprensión de dinámicas intradiarias del order book; proporciona fundamentos micro para modelos de market making y ejecución."}
+}

@@ -1,0 +1,3217 @@
+Auditing the Audit Trails:
+A Cryptographic Framework and a Compliance
+Survey of
+185 Published Machine-Learning Papers in
+Quantitative Finance
+Akram Khan∗
+April 2026
+Abstract
+The U.S. Federal Reserve’s SR 11-7 (April 2011) and the EU AI Act (Regulation
+2024/1689, eﬀective for high-risk systems on 2 August 2026) require ﬁrms deploying machine-learning models in regulated domains to maintain per-prediction audit
+trails: code state, data state, model state, compute environment, and the prediction itself, recorded with enough integrity protection that an external reviewer can
+verify any claim ex post. Existing open-source ML tooling (MLﬂow, Weights &
+Biases, DVC) targets experiment tracking or artifact versioning; none produces
+an SR 11-7-shaped audit trail with low-friction integration, vendor-neutral storage, and regulator-export capability out of the box. This paper makes two paired
+contributions.
+First, we introduce mr-audit, an open-source Python package that writes one
+immutable, hash-chained record per ML prediction, capturing git commit, library
+versions, input hash, model parameters, compute environment, random seed, and
+prediction value. Records form a linked hash chain via SHA-256; tampering with
+any record breaks the chain.
+The package ships with a replay engine, a driftdetection module (Kolmogorov-Smirnov plus Population Stability Index), and a
+regulator-export bundle. We compare mr-audit head-to-head against ﬁve existing tools on nine audit-trail capabilities and on three quantitative benchmarks
+(throughput, storage overhead, tamper-detection sensitivity).
+∗Independent Researcher. ORCID: 0009-0002-7521-8648. Email: 1819ak@gmail.com. Replication
+code, audit logs, and audit script: github.com/ayk5511/mr-audit.
+1
+
+Second, we apply the same compliance rubric to a corpus of 185 published
+machine-learning papers in quantitative ﬁnance posted between 1952 and 2025
+(drawn from the 119-paper survey corpus of Khan (2026b) and a 2024–2025 arXivq-ﬁn extension constrained to papers with a discoverable code-repository link).
+For each paper, an automated pipeline locates the code link, clones the repository,
+and mechanically scores the six static compliance dimensions: code accessibility,
+data release, computational environment, random-seed documentation, input-data
+lineage, and model-state persistence. The static-six analysis followed a pre-speciﬁed
+plan (hypotheses and rubric ﬁxed before the scoring step and deposited at OSF);
+we are explicit that this is a pre-speciﬁed plan, not a timestamp-enforced preregistration, and that the six manual-review dimensions deferred to a follow-up
+version will be genuinely pre-registered (timestamp-enforced) before any of their
+scoring begins. On the six automatable dimensions we ﬁnd: a mean static-rubric
+score of 1.52 of 6 (full corpus, N = 185); a mean of 3.28 of 6 conditional on the
+paper carrying a discoverable code link (N = 80); 11 of 185 papers (5.9%) score
+the full 6 of 6 on the static rubric, all of them within the 80-paper code-link subset
+(13.8% of it); the temporal slope of compliance is +0.088 score units per year (in
+the pre-speciﬁed range [0.05, 0.20], statistically nonzero); and a 10% rot rate on
+discovered code URLs (21% if non-GitHub repositories are counted). Three papers
+(FinRL, FinGPT, Grinsztajn tabular-benchmark) achieve a perfect static score of
+6 of 6; they are existence proofs that audit-grade publication is achievable but far
+from the ﬁeld’s median. The six manual-review dimensions (bit-identical replay,
+per-prediction logging, drift monitoring, signiﬁcance testing, multiple-comparison
+correction, out-of-sample protocol) require Tier-1 code execution or manual review
+and are deferred to v2.1 of this paper. The full per-paper scorecard, the scoring
+pipeline, and an audit-of-audit log are released publicly with the package.
+The package, the audit pipeline, the corpus, the per-paper scorecard, an audit
+script that re-derives every numerical claim in this paper from JSON outputs, and
+a 6,825-record demonstration log on the seven-model volatility-forecasting panel of
+Khan (2026f) are released at github.com/ayk5511/mr-audit.
+Keywords: model risk management, SR 11-7, OCC 2011-12, EU AI Act, audit
+trail, machine learning, reproducibility, compliance, regulatory technology, replication crisis
+JEL Classiﬁcation: C52, C53, C88, G17, G28
+2
+
+Contents
+1
+Introduction
+5
+1.1
+Contributions . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+6
+1.2
+Why this question matters now
+. . . . . . . . . . . . . . . . . . . . . . .
+7
+1.3
+Related work
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+7
+1.4
+What this paper claims and does not claim . . . . . . . . . . . . . . . . .
+8
+1.5
+Roadmap
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+8
+2
+Regulatory framework
+9
+2.1
+SR 11-7 / OCC 2011-12
+. . . . . . . . . . . . . . . . . . . . . . . . . . .
+9
+2.2
+The EU AI Act . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+10
+2.3
+NIST AI Risk Management Framework . . . . . . . . . . . . . . . . . . .
+11
+2.4
+ISO/IEC 42001 management system standard . . . . . . . . . . . . . . .
+12
+2.5
+Synthesis: what an audit trail must capture
+. . . . . . . . . . . . . . . .
+12
+2.5.1
+The minimum viable audit trail (MVAT-7) . . . . . . . . . . . . .
+13
+2.5.2
+Cross-regulation traceability matrix . . . . . . . . . . . . . . . . .
+14
+2.6
+Existing tooling, with honest assessment . . . . . . . . . . . . . . . . . .
+16
+3
+The mr-audit package
+17
+3.1
+Design principles
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+17
+3.2
+Schema
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+18
+3.3
+Hash chain . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+19
+3.4
+Storage backends . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+20
+3.5
+Replay engine . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+20
+3.6
+Drift detection module . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+21
+3.7
+Regulator export bundle . . . . . . . . . . . . . . . . . . . . . . . . . . .
+21
+3.8
+Command-line interface
+. . . . . . . . . . . . . . . . . . . . . . . . . . .
+22
+3.9
+Test coverage . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+22
+4
+Empirical demonstration:
+instrumenting the Khan (2026) volatility
+panel
+23
+4.1
+Instrumentation setup
+. . . . . . . . . . . . . . . . . . . . . . . . . . . .
+23
+4.1.1
+Scaling: write and verify throughput
+. . . . . . . . . . . . . . . .
+24
+4.2
+Use case 1: Reproducibility audit . . . . . . . . . . . . . . . . . . . . . .
+25
+4.3
+Use case 2: Drift detection . . . . . . . . . . . . . . . . . . . . . . . . . .
+26
+4.3.1
+Use case 2b: Output drift across models
+. . . . . . . . . . . . . .
+27
+4.4
+Use case 3: Model risk validation report
+. . . . . . . . . . . . . . . . . .
+29
+4.5
+Use case 4: Regulator export bundle
+. . . . . . . . . . . . . . . . . . . .
+30
+4.6
+Use case 5: Right-to-explanation . . . . . . . . . . . . . . . . . . . . . . .
+31
+3
+
+4.7
+Cross-domain validation: schema transfer beyond volatility forecasting . .
+32
+4.8
+Adversarial robustness: detection rates under tampering
+. . . . . . . . .
+33
+4.9
+Summary of the demonstration
+. . . . . . . . . . . . . . . . . . . . . . .
+35
+5
+Compliance Survey: Methodology
+35
+5.1
+Corpus construction
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+36
+5.2
+The twelve-dimension rubric . . . . . . . . . . . . . . . . . . . . . . . . .
+37
+5.3
+Tiered scoring procedure . . . . . . . . . . . . . . . . . . . . . . . . . . .
+38
+5.4
+Automation and human review
+. . . . . . . . . . . . . . . . . . . . . . .
+39
+5.5
+Pre-speciﬁed hypotheses, and an honest account of the timing
+. . . . . .
+39
+5.6
+What the survey is not . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+40
+6
+Compliance Survey: Findings
+41
+6.1
+Scope of this version
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+41
+6.2
+Status of the pre-speciﬁed hypotheses . . . . . . . . . . . . . . . . . . . .
+41
+6.3
+Descriptive statistics for the static six dimensions . . . . . . . . . . . . .
+43
+6.4
+Per-dimension compliance rates . . . . . . . . . . . . . . . . . . . . . . .
+43
+6.5
+Temporal trend . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+44
+6.6
+By source corpus . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+45
+6.7
+Tier-1 candidates . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+46
+6.8
+Beyond the pre-speciﬁed priors
+. . . . . . . . . . . . . . . . . . . . . . .
+47
+6.9
+Robustness checks . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+47
+6.9.1
+Inter-rater reliability . . . . . . . . . . . . . . . . . . . . . . . . .
+47
+6.9.2
+Sensitivity to compliance threshold . . . . . . . . . . . . . . . . .
+47
+6.9.3
+Selection bias in the code-link ﬁlter . . . . . . . . . . . . . . . . .
+48
+6.10 What the survey is . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+48
+7
+Discussion
+48
+7.1
+For practitioners deploying ML in regulated settings . . . . . . . . . . . .
+49
+7.2
+For the regulatory framework
+. . . . . . . . . . . . . . . . . . . . . . . .
+49
+7.3
+Pairing the package with the compliance gap . . . . . . . . . . . . . . . .
+50
+7.4
+Limitations
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+51
+7.5
+What would change our view
+. . . . . . . . . . . . . . . . . . . . . . . .
+52
+7.6
+Roadmap beyond v0.1.0
+. . . . . . . . . . . . . . . . . . . . . . . . . . .
+53
+8
+Reproducibility
+53
+4
+
+1
+Introduction
+In April 2011, the U.S. Federal Reserve and the Oﬃce of the Comptroller of the Currency
+jointly issued SR 11-7 / OCC Bulletin 2011-12, which established that any model used
+by a regulated bank to make decisions of consequence must be supported by suﬃcient developmental evidence, monitoring evidence, and replication capability for an independent
+reviewer to verify, at any point in the model’s deployed lifetime, exactly what was done.
+In June 2024, the European Union enacted Regulation 2024/1689, the AI Act, whose
+Article 12 requires high-risk AI systems to maintain “automatic recording of events” over
+their full lifecycle, and whose Article 19 requires that those records be retained for at
+least six months. The high-risk provisions of the AI Act become eﬀective on 2 August
+2026 (European Parliament and Council, 2024); the SR 11-7 expectations stood for ﬁfteen years and were carried into revised interagency model-risk guidance issued in 2026
+(Federal Reserve, 2011; Oﬃce of the Comptroller of the Currency, 2011). The combined
+regulatory posture is unambiguous: any machine-learning model whose predictions inform a decision of consequence in a regulated industry must produce an audit trail of
+those predictions, and the audit trail must be tamper-evident, replayable, and exportable
+to a supervisor.
+We take this regulatory premise as given and ask two questions about its implications
+for the published research record.
+Engineering question. What does a vendor-neutral, open-source audit trail for an
+ML inference pipeline actually look like? Existing tools fall into three categories. (1)
+Experiment-tracking platforms (MLﬂow, Weights & Biases) are designed for train-time
+exploration, with rich UIs for run comparison but no built-in immutability or hashchained integrity. (2) Data and model versioning systems (DVC, Pachyderm) version
+artifacts but do not log per-prediction inputs and outputs. (3) Cloud-managed monitoring
+services (AWS SageMaker Model Monitor, Vertex AI Model Monitoring) are vendorlocked and require trusting a cloud provider with the exact inference data the audit was
+designed to verify. None of these tools is shaped against the per-prediction provenance
+requirement of SR 11-7 ğ V or AI Act Article 12. These provenance gaps are a concrete
+instance of the hidden technical debt that accrues in production machine-learning systems
+(Sculley et al., 2015).
+Empirical question.
+Machine learning is now a core methodology in quantitative
+ﬁnance, with benchmarks such as Gu et al. (2020) establishing its empirical value for asset
+pricing. Of 185 published machine-learning papers on quantitative ﬁnance (the 119-paper
+structured corpus of Khan (2026b) plus a 66-paper 2024–2025 arXiv extension restricted
+to papers with a discoverable code link), what fraction could survive a regulatory audit
+against those same requirements? The answer matters because the published research
+record is the material from which production models are built. If the academic record is
+5
+
+not auditable, no model derived from it can be either.
+This paper provides both answers.
+1.1
+Contributions
+The contributions are two, paired by construction.
+The framework. We introduce mr-audit, an open-source Python package (MITlicensed; github.com/ayk5511/mr-audit) that produces immutable, hash-chained, replayable
+audit trails for ML inference pipelines. The package is integrated by a one-line decorator
+(@auditable) and a context manager (AuditContext); no central server, no cloud account, no schema design. Records are stored locally in SQLite or JSON Lines. The hash
+chain is SHA-256: each record’s identiﬁer is the canonical-JSON SHA-256 of its content,
+each record carries the previous record’s identiﬁer, and tampering with any record breaks
+the chain. The package ships with a replay engine (reconstruct any prediction from the
+log), a drift-detection module (Kolmogorov-Smirnov plus Population Stability Index),
+and a regulator-export bundle whose integrity can be veriﬁed using oﬀ-the-shelf hash
+tools without mr-audit installed. We compare mr-audit head-to-head against ﬁve existing tools on nine audit-trail capabilities (Table 4) and on three quantitative benchmarks
+(throughput, storage overhead, tamper-detection sensitivity) in Section 4.
+The compliance survey. We then apply mr-audit’s twelve-dimension audit-trail
+rubric—drawn directly from SR 11-7 ğğ IV–VI and AI Act Articles 12 and 19—to a
+corpus of 185 published machine-learning papers in quantitative ﬁnance from 1952–2025.
+The corpus is constructed in two parts: 119 papers from the structured database of Khan
+(2026b) (covering 1952–2023) and 66 additional 2024–2025 papers pulled from arXiv q-ﬁn
+and cs.LG with discoverable code repositories. For each paper, an automated pipeline
+(i) locates the code link in the abstract or PDF body, (ii) clones the repository, (iii)
+mechanically scores the six static compliance dimensions: code accessibility, data release, computational environment, random-seed documentation, input-data lineage, and
+model-state persistence. The full per-paper scorecard is released publicly (Khan, 2026c)
+as part of this paper’s submission. The static-six hypotheses and rubric were ﬁxed in a
+written analysis plan before the scoring step was run, deposited at OSF (Khan, 2026a);
+we describe this honestly as a pre-speciﬁed plan rather than a timestamp-enforced preregistration, and we explain the distinction and the actual timing in Section 5.5. The
+remaining six dimensions (bit-identical replay, per-prediction logging, drift monitoring,
+signiﬁcance testing, multiple-comparison correction, out-of-sample protocol) require either Tier-1 replication or manual PDF review, are deferred to v2.1, and will be the subject
+of a genuine timestamp-enforced pre-registration ﬁled on OSF before any of their scoring
+begins.
+The compliance result is reported in Section 6. The headline: the ﬁeld’s mean static6
+
+rubric score is 1.52 of 6 (full corpus), 3.28 of 6 conditional on a discoverable code link,
+with a positive but slow temporal trend of +0.088 score units per year.
+1.2
+Why this question matters now
+The deadline is not abstract. The EU AI Act’s high-risk provisions become eﬀective 2
+August 2026. Firms that deploy ML models in lending, insurance, employment, credit
+scoring, or healthcare must, by that date, have audit trails in place that satisfy Article
+19’s six-month-retention requirement. The U.S. has had its analog requirement in place
+since 2011 but practitioner adoption has been concentrated in the largest banks; smaller
+ﬁrms and the academic community publishing the methods that smaller ﬁrms adopt have
+lagged. There is no vendor-neutral, citable, open-source reference implementation of an
+SR 11-7-shaped audit trail in the Python ecosystem.
+If our compliance-survey ﬁnding is roughly what the priors of Khan (2026b) suggest—
+that under 5% of published ML-ﬁnance papers currently maintain enough provenance
+to survive a regulatory audit—then the gap between the academic literature and the
+regulatory standard is one order of magnitude.
+Closing that gap is partly a tooling
+problem (what we address with mr-audit) and partly a cultural problem (what we hope
+to address by making the gap measurable).
+1.3
+Related work
+This paper sits at the intersection of three literatures.
+Model documentation. Mitchell et al. (2019) introduce Model Cards as a structured
+documentation format for trained ML models, since operationalized into community tooling and templates (Hugging Face, 2023). Subsequent work extends the pattern to datasets
+(Gebru et al., 2021; Pushkarna et al., 2022) and to industry-supplier declarations (Arnold
+et al., 2019); such formats are in part a response to the downstream harms of undervalued
+data work documented by Sambasivan et al. (2021). These are point-in-time documentation artefacts produced once per model. They are necessary but not suﬃcient for SR 11-7
+/ EU AI Act compliance, which require per-prediction provenance maintained across the
+deployed lifetime of the system. Our contribution complements model documentation:
+where Model Cards describe what the model is, the audit trail described here records
+what each prediction was.
+Algorithmic auditing.
+Raji et al. (2020) propose an end-to-end internal-auditing
+framework spanning scoping, mapping, artifact collection, testing, and reﬂection. Brundage
+et al. (2020) argue that “veriﬁable claims” about AI system behavior require mechanisms
+beyond self-reporting, including tamper-evident audit trails. Our work operationalizes
+the audit-trail mechanism speciﬁcally in a form designed against SR 11-7 and AI Act
+record-keeping clauses, and additionally provides, with the empirical compliance survey,
+7
+
+the ﬁrst quantitative evidence on the size of the gap between current published research
+and the regulatory standard.
+Reproducibility audits. The replication crisis is a cross-disciplinary concern, from Ioannidis (2005)’s argument that most published research ﬁndings are false to Open Science
+Collaboration (2015)’s replication of 100 psychology experiments at fewer than half the
+original eﬀect sizes. In ﬁnance speciﬁcally, Harvey et al. (2016) and Hou et al. (2020) document that a large fraction of published equity-factor anomalies do not survive multipletesting correction; the latter, replicating 452 anomalies, has accumulated over 1,400 citations. Within machine learning, Gundersen and Kjensmo (2018) and the Pineau et al.
+(2021) NeurIPS reproducibility program quantify how rarely published ML work reports
+enough to be reproduced. Our compliance survey is methodologically adjacent: rather
+than replicate the empirical ﬁndings of ML-ﬁnance papers, we audit whether the papers
+themselves contain enough provenance for any future replication to be meaningful. The
+closest precedent in the quant-ﬁnance literature is Khan (2026b), whose Reproducibility
+Disclosure Score we extend with a twelve-dimension regulatory-compliance rubric.
+1.4
+What this paper claims and does not claim
+Three explicit scoping decisions deserve ﬂagging.
+First, we do not claim that using mr-audit makes any model compliant with SR 11-7
+or the EU AI Act. Compliance is a determination by the ﬁrm and its supervisor; the
+package provides the technical record-keeping infrastructure that compliance requires.
+Second, the compliance-survey rubric is operationalized against SR 11-7 ğğ IV–VI and
+AI Act Articles 12 and 19 speciﬁcally. Other jurisdictions (UK PRA SS1/23, Singapore
+MAS Veritas, Canada OSFI E-23) have closely related but not identical requirements; we
+map the diﬀerences in Section 2. The survey results are reported against the SR 11-7 /
+AI Act rubric and should not be over-interpreted as cross-jurisdiction passage rates.
+Third, the survey corpus is constructed from public arXiv and journal sources. Papers
+without any public code repository are recorded in the corpus but receive automatic 0
+scores on the seven dimensions that depend on code. We report two compliance rates:
+an unconditional rate (treating no-code as failure) and a conditional rate (restricted to
+papers with public code). Both are pre-speciﬁed in the analysis plan.
+1.5
+Roadmap
+Section 2 reviews the SR 11-7 and EU AI Act requirements relevant to audit trails, the
+cross-regulation traceability matrix to NIST AI 100-1 and ISO/IEC 42001, and the headto-head comparison against MLﬂow, DVC, Weights & Biases, SageMaker Model Monitor,
+and Vertex AI Monitoring. Section 3 describes the mr-audit package: design, hash chain,
+8
+
+storage, replay, drift, and export bundle. Section 4 is the worked example using the sevenmodel volatility-forecast panel of Khan (2026f), including throughput, storage-overhead,
+and tamper-detection benchmarks. Section 5 describes the compliance-survey corpus and
+methodology, with pre-speciﬁed hypotheses and an honest account of their provenance.
+Section 6 reports the compliance results. Section 7 discusses implications, limitations,
+and the pairing of the package with the empirical compliance gap. Section 8 states the
+reproducibility commitment, including the analysis plan, the public dataset, and the
+audit-of-audit log.
+2
+Regulatory framework
+The audit-trail requirements an ML pipeline must satisfy come from three regulatory
+sources of growing weight: SR 11-7 / OCC 2011-12 (United States, 2011), the EU AI Act
+(Regulation 2024/1689, 2024), and the NIST AI Risk Management Framework (NIST AI
+100-1, 2023). They diﬀer in legal force and in granularity but converge on a common set
+of technical record-keeping requirements that the package described in Section 3 aims to
+satisfy.
+2.1
+SR 11-7 / OCC 2011-12
+Federal Reserve (2011) and the companion Oﬃce of the Comptroller of the Currency
+(2011) are the canonical U.S. supervisory guidance on model risk management for
+federally-regulated banking institutions. The guidance applies to “models” broadly deﬁned, encompassing both traditional statistical models and modern machine-learning
+systems. The relevant requirements for audit trails fall in three sections of the guidance:
+Model documentation (SR 11-7 ğV). Banks are expected to document each model’s
+purpose, theory, methodology, assumptions, and limitations, with suﬃcient detail that
+a knowledgeable reader unfamiliar with the model can understand its operation. For
+ML models, this includes the choice of architecture, hyperparameters, training data, and
+validation results.
+Ongoing monitoring (SR 11-7 ğIV, within Model Validation). Banks are expected
+to verify that models perform as intended over time, with speciﬁc attention to changes
+in input data distributions, model drift, and the continued validity of model assumptions. SR 11-7 explicitly mentions monitoring of input variables for drift relative to the
+development sample.
+Model inventory (SR 11-7 ğV). Each model in production must be in a model inventory
+that captures (at minimum) the model identity, version, owner, validation status, and
+use cases. The inventory is the durable record an examiner consults during a supervisory
+review.
+9
+
+The guidance is principles-based; it does not specify how the documentation, monitoring, or inventory should be technically implemented. In practice, large U.S. banks
+operate model risk management organizations of 50 to several hundred staﬀwho maintain these records, often through a combination of centralized governance platforms (e.g.,
+SAS Model Manager) and bespoke spreadsheet-based tracking.
+2.2
+The EU AI Act
+European Parliament and Council (2024) (Regulation (EU) 2024/1689) entered into force
+on August 1, 2024 with phased implementation: prohibited AI practices became applicable on February 2, 2025, obligations for general-purpose AI models on August 2, 2025,
+and most remaining obligations including the high-risk regime on August 2, 2026.
+For “high-risk AI systems” (deﬁned in Article 6 with reference to Annexes I and III),
+the Act imposes speciﬁc technical record-keeping requirements that are stricter than SR
+11-7. Two articles are directly relevant.
+Article 12 – Record-keeping.
+High-risk AI systems must technically allow for the
+automatic recording of events (logs) over the lifetime of the system. The logs must enable
+monitoring of operation in line with intended purpose and, in particular, identiﬁcation
+of situations which may result in the AI system presenting a risk within the meaning of
+Article 79.
+Article 19 – Automatically generated logs. Providers of high-risk AI systems must
+keep the logs automatically generated by their AI systems for a period determined by
+Union or national law, and at minimum for six months after the system is placed on the
+market. The speciﬁc logging contents the Act enumerates appear in Article 12(3): for
+the biometric systems of Annex III(1)(a), the logs must record, at minimum, the period
+of each use, the reference database against which input data has been checked, the input
+data for which the search has led to a match, and the identiﬁcation of the natural persons
+involved in the veriﬁcation of the results. The general logging duty of Article 12(1)–(2)
+binds all high-risk systems without enumerating contents; we adopt the Article 12(3)
+items as a concrete template for a general-purpose audit trail.
+The volatility-forecasting use case demonstrated in Section 4 is not currently classiﬁed
+as “high-risk” under Annex III, which lists creditworthiness and access to essential services
+among ﬁnancial-sector use cases but not market-data forecasting. The AI Act framing is
+therefore forward-looking for the present demonstration; we record audit data that would
+satisfy Article 12 and Article 19 in the event that the use case were brought into scope,
+or in the event that the ﬁrm chooses to apply the same standard voluntarily.
+Table 1 maps each Article 12(3) logging item to the speciﬁc mr-audit ﬁelds that
+satisfy it, providing a compliance traceability matrix a CRO can hand to a regulator
+without re-engineering.
+The cross-domain examples in the package’s examples/ di10
+
+rectory (a sklearn LogisticRegression credit-scorecard scenario; a statsmodels ARIMA
+macroeconomic forecaster) demonstrate the same ﬁeld mapping holds for in-scope Annex
+III.5(b) credit-scoring use cases as well as for the demonstration’s volatility forecaster.
+Table 1: EU AI Act Article 12(3) logging items mapped to mr-audit schema ﬁelds. These
+four items are the only logging contents the Act enumerates explicitly (Article 12(3), for
+the biometric systems of Annex III(1)(a)); we adopt them as a concrete template for
+a general-purpose audit trail. “Identiﬁcation of natural persons” is the only one that
+requires ﬁrm-side application policy rather than automatic capture by the package.
+Article 12(3) logging item
+mr-audit ﬁeld(s)
+Captured automatically?
+Period of each use
+timestamp_utc
+yes (per record)
+prediction.predicted_for_date
+yes (caller-supplied)
+Reference database against
+data.input_data_source
+yes (caller-supplied)
+which input data has been checked
+data.input_data_hash
+yes (auto-computed)
+data.feature_names
+yes (from extractor)
+Input data for which the search
+data.feature_values_summary
+yes (from extractor)
+has led to a match
+data.input_data_hash
+yes (deterministic)
+Identiﬁcation of natural persons
+(ﬁrm-side application policy)
+no – requires ﬁrm input
+involved in veriﬁcation of results
+e.g. model.parameters["reviewer_id"]
+yes if ﬁrm passes it
+Beyond the Article 12(3) items, additional captures:
+Code provenance
+code.code_commit_hash
+yes (from git)
+Library provenance
+code.library_versions
+yes (from sys.modules)
+Model identity + parameters
+model.{name, version, parameters}
+yes
+Compute environment
+compute.{python_version, platform}
+yes
+Random state
+random_seed
+yes (caller-supplied)
+Tamper-evidence
+prev_record_hash chain
+yes (auto-computed)
+The two right-most columns separate concerns honestly: automatic capture (the package’s responsibility) from caller-supplied data (the ﬁrm’s responsibility, e.g. logging a reviewer’s identiﬁer when a human-in-the-loop is part of the AI system). The package does
+not attempt to enforce the latter; it provides the schema slot.
+2.3
+NIST AI Risk Management Framework
+The NIST AI RMF (National Institute of Standards and Technology, 2023) is a voluntary
+U.S. framework structured around four functions: GOVERN (organizational policies and
+accountability), MAP (context and risk identiﬁcation), MEASURE (analysis, assessment,
+and tracking), and MANAGE (prioritization and response). The MEASURE function
+explicitly references monitoring for distributional shifts in input data, behavioral drift in
+model outputs, and traceability of decisions. NIST AI 100-1 is not legally binding, but it
+is increasingly cited by ﬁrms as the de facto operational implementation framework that
+“operationalizes” SR 11-7’s principles for ML models.
+11
+
+2.4
+ISO/IEC 42001 management system standard
+The fourth framework relevant to ML audit trails is International Organization for Standardization and International Electrotechnical Commission (2023) (published December 2023), the international standard for AI management systems. ISO/IEC 42001 is
+structured as a Plan-Do-Check-Act management system covering organizational context
+(Clause 4), leadership (5), planning (6), support (7), operation (8), performance evaluation (9), and improvement (10). The audit-trail-relevant requirements concentrate in
+three clauses:
+Clause 6.1.2 (AI system risk assessment). Requires documented risk-assessment processes covering identiﬁed risks, treatment plans, and residual-risk acceptance. Audit trails
+support this by providing the veriﬁable record against which assessments are revisited.
+Clause 8.4 (AI system impact assessment). Requires documented impact assessments
+for AI systems including their eﬀects on individuals, groups, and society. Per-prediction
+trails enable retrospective impact analysis.
+Clause 9.1 (Monitoring, measurement, analysis, and evaluation). Requires that the
+organization determine what needs to be monitored and measured, the methods used,
+when these are performed, and when the results are analyzed and evaluated.
+Perprediction logging is the operational substrate.
+Unlike SR 11-7 (US bank-speciﬁc) or the EU AI Act (EU-jurisdictional), ISO/IEC
+42001 is a voluntary international standard accessible to any organization. Firms pursuing
+AI Management System certiﬁcation under ISO/IEC 42001 will increasingly look for
+tooling that satisﬁes the relevant clauses automatically. The mapping in Table 3 identiﬁes
+the speciﬁc schema ﬁelds that satisfy each clause.
+2.5
+Synthesis: what an audit trail must capture
+Across the four regulatory regimes reviewed (US bank model-risk-management via SR
+11-7 / OCC 2011-12 in ğ2.1, EU AI Act in ğ2.2, NIST AI 100-1 in ğ2.3, and ISO/IEC
+42001 above), an audit trail for an ML inference pipeline should record, at minimum, the
+per-prediction state in Table 2. The simpler three-framework view (with SR 11-7 standing
+in for OCC 2011-12, which is its companion) appears in Table 2; the full clause-by-clause
+cross-regulation matrix, which separates SR 11-7 and OCC 2011-12 into distinct columns
+for traceability, appears in Table 3.
+12
+
+Table 2: Audit-trail ﬁeld requirements derived from SR 11-7, EU AI Act Articles 12 and
+19, and NIST AI 100-1. “✓” indicates the framework explicitly references the requirement; blank indicates the requirement is implicit in the broader guidance.
+Field
+SR 11-7
+EU AI Act
+NIST AI 100-1
+Model identity (name, version)
+✓
+✓
+✓
+Model parameters
+✓
+✓
+Model artifact identiﬁer
+✓
+Code state (commit, libraries)
+✓
+Input data identiﬁer or hash
+✓
+✓
+✓
+Input feature values or summary
+✓
+✓
+Compute environment
+Random seed (for stochastic models)
+✓
+Prediction value
+✓
+✓
+✓
+Prediction date / horizon
+✓
+✓
+✓
+Timestamp of prediction
+✓
+✓
+✓
+Integrity of the log over time
+✓
+✓
+Replayability (reconstruct prediction)
+✓
+✓
+Drift detection (input + output)
+✓
+✓
+✓
+2.5.1
+The minimum viable audit trail (MVAT-7)
+Of the fourteen rows in Table 2, seven appear in at least three of the four regulatory
+regimes (counting SR 11-7 / OCC 2011-12 as one US bank-MRM regime). These seven
+form what we term the Minimum Viable Audit Trail (MVAT-7), the cross-regulatory ﬂoor
+any deployed ML inference pipeline should be expected to maintain:
+MVAT-1 Model identity (name + version) — traceability of which model produced
+this prediction
+MVAT-2 Input data hash or identiﬁer — traceability of which data went into this
+prediction
+MVAT-3 Code provenance (commit hash, library versions)
+— replayability of the
+computation
+MVAT-4 Prediction value and horizon
+— what the prediction was and what it
+predicted
+MVAT-5 Timestamp
+— when the prediction was made
+MVAT-6 Chain integrity hash
+— tamper-evidence of the record itself
+MVAT-7 Reviewer or process identiﬁer (where humans are in the loop)
+—
+accountability for downstream review
+13
+
+The MVAT-7 is the conservative cross-section: a set any one of the four regimes
+will fully accept, and the operational target for a ﬁrm that wishes to satisfy all four
+simultaneously.
+The richer schema documented in Table 5 captures additional ﬁelds
+(compute environment, random seed, prediction-date horizon, feature summary, outputdrift baseline) that satisfy speciﬁc clauses without being universal. We propose MVAT-7
+as the working terminology for “the minimum that satisﬁes SR 11-7 / OCC 2011-12,
+EU AI Act Article 12, NIST AI 100-1 MEASURE-2, and ISO/IEC 42001 Clause 9.1
+simultaneously,” so that future practitioners and standards bodies can refer to a single
+named target.
+2.5.2
+Cross-regulation traceability matrix
+For an organization operating across multiple jurisdictions or pursuing multi-standard
+certiﬁcation, the relevant question is not “do we satisfy SR 11-7?” or “do we satisfy
+the EU AI Act?” separately but rather “do we satisfy all simultaneously, and where
+is the audit-trail ﬁeld that demonstrates each?” Table 3 provides the clause-by-clause
+traceability matrix. The matrix is built from the regulatory texts directly (rather than
+from any one ﬁrm’s interpretation) and links each row to the speciﬁc mr-audit schema
+ﬁeld that satisﬁes it.
+14
+
+Table 3: Cross-regulation traceability matrix. Each row is an audit-trail requirement; columns map the requirement to the explicit clause
+in each framework that references it. “✓” = explicit reference; “impl.” = implicit in broader principles; “–” = not addressed. The last
+column identiﬁes the mr-audit schema ﬁeld or capability that satisﬁes the requirement.
+Required ﬁeld / capability
+SR 11-7
+OCC
+201112
+EU AI Act
+NIST AI 100-1
+ISO/IEC
+42001
+mr-audit ﬁeld
+Model
+identity
+(name,
+version)
+ğV
+ğIV
+Art.
+12,
+Annex IV ğ2
+MEASURE-2
+ğ6.1.2,
+ğ7.5
+model.name, .version
+Model parameters
+ğV
+ğIV
+impl.
+MEASURE-2
+ğ7.5
+model.parameters
+Model artefact hash
+impl.
+impl.
+Annex IV ğ2
+MAP-3
+ğ7.5
+model.artifact_hash
+Code
+provenance
+(commit, libs)
+impl.
+impl.
+Art. 12
+MEASURE-2
+ğ7.5
+code.commit_hash,
+.library_versions
+Input
+data
+identiﬁer
+/
+hash
+ğV
+ğIV
+Art. 12
+MEASURE-2
+ğ7.5
+data.input_data_hash
+Input feature values
+ğV
+ğIV
+Art. 12
+MEASURE-2
+ğ7.5
+data.feature_values_summary
+Compute environment
+–
+–
+impl.
+MEASURE-2
+ğ7.5
+compute.*
+Random seed
+–
+–
+–
+MEASURE-2
+impl.
+random_seed
+Prediction value
+ğV
+ğIV
+Art. 12
+MEASURE-2
+ğ7.5
+prediction.value
+Prediction horizon / date
+ğV
+ğIV
+Art. 12
+MEASURE-2
+ğ7.5
+prediction.horizon,
+.predicted_for_date
+Timestamp (UTC)
+ğV
+ğIV
+Art. 12
+MEASURE-2
+ğ9.1
+timestamp_utc
+Chain integrity
+ğV
+ğIV
+Art. 12
+GOVERN-1
+ğ7.5
+prev_record_hash
+Replayability
+ğV
+ğIV
+impl.
+MEASURE-2
+ğ7.5
+replay() engine
+Input drift detection
+ğIV
+ğIV
+impl.
+MEASURE-2
+ğ9.1
+detect_drift
+Output drift detection
+ğIV
+ğIV
+impl.
+MEASURE-2
+ğ9.1
+detect_output_drift
+Reviewer / human-in-loop
+ID
+ğV
+ğIV
+Art. 14, Art. 19
+GOVERN-2
+ğ6.1.2
+ﬁrm-supplied
+via
+model.parameters
+GDPR explanation
+–
+–
+Art.
+86;
+European
+Parliament
+and
+Council
+(2016) Art. 22
+GOVERN-3
+ğ7.5
+explain CLI subcommand
+Lifecycle retention
+ğV
+ğIV
+Art. 19 (min. 6
+mo.)
+GOVERN-4
+ğ7.5
+ﬁlesystem persistence
+15
+
+Table 3 is, to our knowledge, the ﬁrst published matrix that maps all ﬁve major
+ML-audit-trail-relevant frameworks (SR 11-7, OCC 2011-12, EU AI Act, NIST AI 1001, ISO/IEC 42001) clause-by-clause to a speciﬁc implementation reference. The matrix
+is intended as a citable artefact that compliance oﬃcers, model-validation analysts, and
+standards reviewers can reference directly without re-deriving the cross-walks themselves.
+The matrix supports two practical claims. First, mr-audit’s schema satisﬁes every
+row of the matrix by default, with the two ﬁrm-supplied rows (reviewer ID, lifecycle retention) deferred to the ﬁrm’s operational policy as is conventional. Second, an organization
+pursuing simultaneous coverage of multiple regulatory regimes does not need separate
+audit-trail systems per regulation; a single mr-audit-instrumented pipeline satisﬁes the
+cross-section.
+The package described in Section 3 captures every row of Table 2 by default, with the
+exception that input feature values are stored as a conﬁgurable summary (mean/std or
+full-vector at the ﬁrm’s choice) rather than as the raw tick-level inputs, to keep log sizes
+tractable.
+2.6
+Existing tooling, with honest assessment
+Several open-source and commercial tools partially address the requirements in Table 2.
+None, in our reading, provides a complete solution out of the box:
+• MLﬂow (Databricks, 2024) (Databricks, OSS): rich experiment tracking and model
+registry, but designed for the train-time exploration phase.
+Inference-time logging
+is supported but lacks immutability, hash-chained integrity, and a regulator-export
+bundle.
+• Weights & Biases (commercial, hosted): excellent UI; data leaves the ﬁrm’s control;
+expensive at audit-grade volume.
+• DVC (Iterative.ai, 2024) (Iterative.ai, OSS): data and code version control. No perprediction inference logging.
+• Pachyderm (Hewlett Packard Enterprise, OSS): data versioning and pipeline orchestration. Same gap as DVC for inference logging.
+• AWS SageMaker Model Monitor / Google Vertex AI Model Monitoring:
+cloud-locked; not portable; the inference data sits on the cloud provider’s infrastructure.
+• IBM AI FactSheets: documentation templates, not runtime logging.
+We do not claim our package is uniformly superior to these tools. MLﬂow has a far
+richer experiment-management UI, Weights & Biases has hosted infrastructure, DVC has
+16
+
+stronger data versioning. Our claim is narrower: mr-audit is the open-source Python
+package most narrowly designed for the speciﬁc requirements of Table 2, with low integration friction and no vendor lock-in.
+Table 4 summarizes the comparison along the audit-trail dimensions that matter for
+SR 11-7 / EU AI Act compliance. The table is intentionally narrow in scope: it does
+not score the tools on dimensions where they are clearly stronger than mr-audit (e.g.,
+MLﬂow’s experiment-comparison UI, W&B’s hosted dashboards, DVC’s data versioning).
+Within the audit-trail dimensions, mr-audit is the only entry that satisﬁes all
+requirements out of the box.
+Table 4: Audit-trail capability comparison across open-source and commercial tooling.
+✓= native support; • = partial / requires custom code; – = not provided. Cells reﬂect
+the tools’ default behavior as of v2024–2025 documentation review.
+Capability
+mr-audit MLﬂow W&B
+DVC
+SageMaker
+Monitor
+IBM AI
+FactSheets
+Per-prediction logging
+✓
+•
+•
+–
+✓
+–
+Hash-chain integrity
+✓
+–
+–
+–
+–
+–
+Replay engine (bit-identical)
+✓
+–
+–
+–
+–
+–
+Input drift detection
+✓
+–
+•
+–
+✓
+–
+Output drift detection
+✓
+–
+•
+–
+✓
+–
+Regulator-export bundle
+✓
+–
+–
+–
+–
+•
+Code-state provenance (commit, libs)
+✓
+•
+•
+✓
+–
+–
+Vendor-neutral local storage
+✓
+✓
+–
+✓
+–
+✓
+Open source (MIT/Apache)
+✓
+✓
+–
+✓
+–
+•
+3
+The mr-audit package
+This section describes the design and implementation of mr-audit. The package is opensource under MIT license at github.com/ayk5511/mr-audit; the version described here is
+0.1.0.
+3.1
+Design principles
+The package follows four design principles, in order of priority.
+1. Vendor-neutrality. All persistence is local. The two storage backends (SQLite,
+JSON Lines) are open formats with stable speciﬁcations. There is no cloud service, no
+central server, no schema-design platform, no proprietary ﬁle format. A ﬁrm can run
+mr-audit entirely on-premises, in a regulated network, with the audit log on a write-only
+ﬁle system.
+17
+
+2.
+Low
+integration
+friction.
+Adding
+mr-audit
+to
+an
+existing
+pipeline
+is
+one
+decorator
+and
+one
+context
+manager:
+the
+developer
+adds
+@auditable(model_name=..., model_version=...)
+to
+the
+prediction
+function,
+and wraps the calling code in with AuditContext(log_path=...): .... Without an
+active context the decorator is a no-op (the function runs unrecorded), so the same code
+can be run with or without auditing depending on context.
+3. Immutability and integrity. The log is append-only by API; there is no public
+“edit” or “delete” operation. Each record carries a SHA-256 identiﬁer computed from its
+canonical-JSON content (excluding the identiﬁer itself), and a pointer to the previous
+record’s identiﬁer. Tampering with any single record breaks the chain at that point.
+4. Replayability. Every prediction must be reconstructable from the log alone, given
+the unwrapped prediction function. The replay engine recomputes the input hash from
+the supplied inputs and re-runs the function; both the input hash and the prediction
+value must match the recorded values for the replay to be considered valid.
+3.2
+Schema
+Each audit record is a Python AuditRecord dataclass with the following structure (Table 5). The schema is versioned (SCHEMA_VERSION = "0.1.0"); future schema evolutions
+will increment this version while remaining backward-readable for older records.
+18
+
+Table 5: The AuditRecord schema. Substate ﬁelds are themselves dataclasses; the table
+shows the fully-ﬂattened key set.
+Field
+Type
+Captures
+schema_version
+str
+e.g. “0.1.0”
+timestamp_utc
+str (ISO 8601)
+when the prediction was logged
+code (CodeState)
+code_commit_hash
+str|None
+git SHA of the calling repository
+code_dirty
+bool
+uncommitted changes at predict time
+library_versions
+dict[str,str]
+numpy, pandas, scipy, torch, sklearn, arch, statsmodels
+data (DataState)
+input_data_hash
+str (hex)
+SHA-256 of canonical-JSON of inputs
+input_data_source
+str|None
+free-form data source identiﬁer
+feature_names
+tuple[str]
+ordered feature names
+feature_values_summary
+dict|None
+feature values or summary stats
+model (ModelState)
+name
+str
+e.g. “GJR-GARCH”
+version
+str
+e.g. “1.0.0”
+parameters
+dict[str,Any]
+hyperparameter set
+model_artifact_hash
+str|None
+SHA-256 of serialized model
+compute (ComputeState)
+python_version
+str
+e.g. “3.14.0”
+platform
+str
+OS + arch
+process_id
+int|None
+PID of the predict call
+prediction (Prediction)
+value
+ﬂoat | list[ﬂoat]
+scalar or vector
+horizon_days
+int|None
+forecast horizon
+predicted_for_date
+str|None
+ISO 8601 date
+random_seed
+int|None
+seed used for stochastic models
+prev_record_hash
+str|None
+SHA-256 of preceding record (chain link)
+record_id
+str
+SHA-256 of this record’s canonical JSON
+The record_id is computed at write time by the storage backend, not by the user,
+and is excluded from its own hash input. The prev_record_hash of the ﬁrst record in
+any log is None (the genesis record).
+3.3
+Hash chain
+The hash chain implements a linked-hash integrity guarantee. Each record’s identiﬁer is
+computed as
+record_id = SHA-256( canonical-JSON(R \ {record_id}) )
+where canonical-JSON is the deterministic serialization deﬁned by json.dumps(...,
+sort_keys=True, separators=(",", ":")).
+The exclusion of record_id from its
+own hash input is necessary; the exclusion is implemented in compute_record_id
+(src/mr_audit/core/hash.py).
+19
+
+Chain integrity is veriﬁed by verify_chain, which performs three checks for each
+record:
+1. The record’s record_id matches the canonical hash of its own contents.
+2. The record’s prev_record_hash matches the record_id of the immediately preceding
+record in insertion order.
+3. The ﬁrst record’s prev_record_hash is None.
+Tampering with any ﬁeld of any record breaks check (1) for that record and all subsequent records (because the chain link cascades). Reordering records breaks check (2).
+Inserting a forged record requires both forging a valid hash for the inserted record and
+re-computing all subsequent records’ hashes, which is computationally infeasible if the
+chain is also externally backed up at any point.
+The chosen hash function is SHA-256 (NIST FIPS 180-4). The choice is consistent
+with current best practice and aligns with the EU AI Act’s intent in Article 19 without
+specifying any particular algorithm.
+3.4
+Storage backends
+Two backends are implemented, both vendor-neutral and locally runnable.
+SQLiteStore (src/mr_audit/core/store.py).
+Records are stored in a singletable schema with columns (id INTEGER PRIMARY KEY AUTOINCREMENT, record_id
+TEXT UNIQUE, prev_record_hash TEXT, timestamp_utc TEXT, json TEXT). Indexes
+on record_id and timestamp_utc provide O(log n) lookup by either. Suited for production use up to millions of records on a single ﬁle.
+JSONLStore. Records are appended one per line to a single ﬁle. Lightweight, humanreadable, easily processed by jq, pandas, or R. Suited for lightweight pipelines and human
+inspection. Random access requires a full scan; suited for moderate sizes.
+Both backends preserve insertion order, which is what the hash chain depends on.
+Both are append-only by API. No public API exposes deletion or update.
+3.5
+Replay engine
+The replay function in src/mr_audit/replay/engine.py reconstructs any prediction
+from a sealed audit record. The contract is: given the record and the unwrapped prediction function, calling the function with the recorded inputs must produce the recorded
+prediction. The function returns a ReplayResult dataclass with three principal ﬂags:
+• input_hash_match – the canonical-JSON hash of the supplied inputs equals the
+recorded input_data_hash.
+20
+
+• prediction_match – the re-run output equals the recorded prediction.value within
+the supplied tolerance (default 10−9).
+• library_version_warnings – non-fatal diagnostic; library versions present at replay
+time are compared to the versions recorded.
+Replay is non-destructive: the input record is never mutated. The supplied inputs
+are re-hashed and compared; if the supplied inputs do not match the recorded input hash
+(Section 4.2), the result still re-runs the function but ﬂags the mismatch for the auditor’s
+attention.
+3.6
+Drift detection module
+The detect_drift function in src/mr_audit/drift/input.py compares two record sequences (a baseline and a window) for distribution drift across the recorded feature summaries. Two methods are computed for each feature:
+Kolmogorov-Smirnov two-sample test. Null hypothesis: the two samples come from
+the same distribution. Returns the test statistic and an asymptotic p-value. We use
+SciPy’s stats.ks_2samp for the implementation.
+Population Stability Index. A scalar measure of distribution shift, deﬁned as
+PSI =
+B
+∑
+i=1
+(pw,i −pb,i) · log
+(pw,i
+pb,i
+)
+,
+where pb,i and pw,i are the proportions of baseline and window samples in bucket i,
+respectively. Buckets are equal-frequency on the baseline. Empty buckets are handled
+by Laplace (add-half) smoothing – adding 0.5 to each bucket count before normalising –
+to avoid log(0) blowups while keeping the estimator unbiased on well-populated buckets.
+Standard credit-risk thresholds (PSI < 0.10 stable, 0.10–0.25 moderate, ≥0.25 high) are
+widely adopted in bank model-risk practice.
+The choice to compute drift on summaries rather than raw feature values is deliberate.
+Audit logs that store full feature vectors per prediction grow rapidly and may capture
+sensitive customer-level information. The default summary captures the per-feature value
+at prediction time but not the underlying customer record; ﬁrms can opt into full-vector
+storage by passing summarize_features=False to the @auditable decorator.
+3.7
+Regulator export bundle
+The export_bundle function in src/mr_audit/export/bundle.py produces a selfcontained zip archive that an external reviewer can verify without any mr-audit code
+installed. The bundle contains:
+21
+
+• manifest.json – bundle metadata + per-ﬁle SHA-256 hashes
+• audit_records.jsonl – all records, canonical JSON, one per line
+• chain_verification.json – chain veriﬁcation result at export time
+• README.txt – human-readable description and replay instructions
+• manifest.sha256 – SHA-256 of
+manifest.json in the standard sha256sumcompatible format
+A reviewer with only sha256sum and a JSON parser can verify the bundle’s integrity
+end-to-end: sha256sum manifest.json should match manifest.sha256; for each ﬁle in
+manifest.json’s files ﬁeld, sha256sum <name> should match the listed digest. With
+mr-audit installed, the veriﬁcation is one command: mr-audit inspect <bundle>.
+3.8
+Command-line interface
+The mr-audit CLI provides four subcommands, each one operation a model risk team
+would execute from a terminal:
+mr-audit show
+<log>
+# tabular summary of records
+mr-audit verify <log>
+# hash-chain integrity check
+mr-audit export <log> <bundle>
+# build regulator-ready bundle
+mr-audit inspect <bundle>
+# verify and summarize a bundle
+The CLI is deliberately small. Programmatic users should import the Python API;
+the CLI is for one-oﬀinspection and audit-handoﬀworkﬂows.
+3.9
+Test coverage
+The package ships with 54 unit tests across six test modules, all passing on Python 3.11+
+on macOS, Linux, and Windows. Coverage spans:
+• Hash determinism across repeated calls
+• Tampering detection (record-level and chain-link-level)
+• Genesis-record special case
+• Storage round-trip (SQLite + JSONL) with persistence across reopens
+• Decorator no-op without an active context
+• Private kwargs (_data_source, _random_seed, etc.) excluded from the data hash but
+retained in the record metadata
+22
+
+• Replay match for correct inputs; mismatch detection for wrong inputs and for changed
+function logic
+• Drift detection: synthetic same-distribution samples (no drift) and synthetic +3 SD
+shift (clear drift)
+• PSI Laplace-smoothed handling of empty buckets
+• Bundle round-trip + tamper detection
+• Empty-log bundle export
+4
+Empirical demonstration: instrumenting the Khan
+(2026) volatility panel
+This section reports the empirical demonstration of mr-audit on a real ML pipeline. We
+retrospectively instrument the seven-model volatility-forecasting panel of Khan (2026f):
+three GARCH variants (GARCH, EGARCH, GJR-GARCH), HAR-RV, LightGBM, XGBoost, and an equal-weight ensemble, predicting 5-day-ahead realized volatility on the
+S&P 500 over 980 trading days from 2022-01-03 to 2025-11-26.
+4.1
+Instrumentation setup
+The instrumentation is retrospective. The seven-model panel of Khan (2026f) ships its
+forecast outputs as forecasts_5d.parquet (980 rows × 7 model columns + 1 actual
+column) at ayk5511/volatility-forecasting. We do not re-run the panel’s training or forecasting code. Instead, we treat each (date, model) cell of the parquet as one prediction
+event and write one mr-audit record per cell, capturing what an integrated-from-the-start
+instrumentation would have recorded.
+For each prediction event, the recorded inputs are the ﬁve lagged realized-volatility
+values (rvt−1, rvt−2, rvt−3, rvt−4, rvt−5), which are the most natural input for a 5-day-ahead
+vol forecast and which provide a meaningful basis for drift analysis over the test period.
+The prediction.value is the forecast value the panel actually produced for that (date,
+model) cell. The model.name is one of the seven model names; model.version is set to
+paper2-v1 for all records to match the source release.
+The
+instrumentation
+is
+a
+one-line
+decorator
+addition
+(see
+studies/01_instrument_paper2.py):
+@auditable(model_name=model_name, model_version="paper2-v1",
+horizon_days=5, feature_extractor=feature_extractor)
+def predict_volatility(*, lagged_rvs, model_params=None):
+23
+
+return float(model_params.get("_forecast_value", 0.0))
+with AuditContext(log_path):
+for i in range(LOOKBACK_DAYS, n):
+for model_name in MODELS:
+PREDICTORS[model_name](lagged_rvs=lagged,
+model_params={"_forecast_value": forecast},
+_data_source="ayk5511/volatility-forecasting:
+forecasts_5d.parquet",
+_predicted_for_date=date.isoformat()[:10])
+The run produces a single SQLite log ﬁle at studies/audit_logs/paper2_demo.db.
+Table 6: Instrumentation throughput on the Khan (2026) panel (n = 6825 records).
+Hardware: M5 Max, 128 GB RAM. The “bytes per record” ﬁgure includes the SQLite
+indexing overhead.
+Metric
+Value
+Trading days in panel
+980
+Models per day
+7
+Records written (980 −5 lookback) ×7
+6,825
+Wall-clock time
+302 s
+Write throughput
+22.6 records/s
+Log size on disk (SQLite)
+15.1 MB
+Bytes per record (incl. indexes)
+2,266
+Hash-chain integrity (post-write verify_chain)
+valid
+The throughput ﬁgure (22.6 records/s) is bottlenecked by the SQLite single-writer
+model with synchronous writes; the package can be reconﬁgured for higher-throughput
+batch writes if needed. For a real bank-scale workload of tens of thousands of predictions
+per day, the current conﬁguration is comfortable; for million-prediction-per-day pipelines,
+the SQLite backend would need to be replaced with a write-optimized backend (Parquet,
+append-only ﬁle shards, or a write-heavy database).
+4.1.1
+Scaling: write and verify throughput
+To anchor the throughput discussion at multiple sample sizes we ran two synthetic benchmarks (Table 7) on the same hardware, instrumenting a deliberately simple decorated
+predictor at n = 1,000 and n = 10,000 records and comparing them to the original 6,825record demonstration. The script is at studies/03_scaling_benchmark.py; results land
+in studies/results/scaling_benchmark.json.
+24
+
+Table 7: mr-audit scaling: write throughput, log size, and chain-veriﬁcation throughput across three benchmark sizes. Hardware: M5 Max, 128 GB RAM. SQLite backend
+with default per-record commit. The 6,825-record row is the original Khan (2026) instrumentation (Table 6); the larger byte/record ﬁgure reﬂects its richer per-prediction
+feature_values_summary.
+n
+Write time
+Write rps
+Bytes/rec
+Verify time
+Verify rps
+1,000
+19.3 s
+51.8
+1,274
+0.009 s
+113,000
+6,825
+302 s
+22.6
+2,266
+–
+–
+10,000
+224 s
+44.7
+1,263
+0.10 s
+100,000
+Two patterns matter for production sizing.
+First, write throughput is bounded by
+per-record COMMIT in the SQLite default, not by hash computation. Each commit synchronously fsyncs to disk; on commodity SSDs that caps throughput at a few tens
+of records per second.
+The package’s optional JSONLStore backend (append-only) is
+faster for write-heavy workloads at the cost of slower lookups; deployments at millionprediction-per-day scale should benchmark both. Second, and importantly, chain veriﬁcation is fast even at 10k records (∼0.1 seconds; throughput around 105 records per
+second). Veriﬁcation is what a regulator or external auditor runs on a ﬁnished log; its
+near-constant per-record cost is the property that makes hash-chained audit trails practical at audit scale, even when write throughput is modest.
+The size on disk grows linearly with n as expected: ∼1.2 MB per thousand records for
+a minimal payload and ∼2.3 MB per thousand for the richer Khan (2026) payload that
+includes a feature-values summary per prediction. A bank logging 100,000 predictions
+per day would accumulate roughly 230 MB per day, or 80 GB per year, of audit log under
+the richer payload, well within the storage envelope of a single audit-archive volume.
+4.2
+Use case 1: Reproducibility audit
+A model risk validation analyst, given the audit log alone, must be able to reproduce any
+prediction the model made. We sampled 5 records uniformly at random from the 6,825record log and replayed each via mr_audit.replay.replay(), supplying the recorded
+inputs to the unwrapped prediction function and comparing the result to the recorded
+prediction.
+25
+
+Table 8: Reproducibility audit results: 5 randomly-sampled records from the 6,825-record
+log. Tolerance for prediction equality is 10−12.
+Record
+Model
+Predicted-for date
+Logged prediction
+Input
+hash
+match
+Prediction
+match
+[975]
+GJR-GARCH
+2022-08-01
+0.151071
+✓
+✓
+[2617]
+Ensemble
+2023-07-07
+0.117039
+✓
+✓
+[4116]
+GARCH
+2024-05-14
+0.117928
+✓
+✓
+[4192]
+Ensemble
+2024-05-29
+0.096347
+✓
+✓
+[5301]
+GJR-GARCH
+2025-01-16
+0.159171
+✓
+✓
+Pass rate
+5/5 (100%)
+All 5 sampled replays match bit-identically. This is the expected behavior for a deterministic prediction function with fully-recorded inputs: any failure here would indicate
+either a hash-chain breach or a code-state change between record time and replay time.
+To conﬁrm that the replay engine actually detects mismatches, we additionally veriﬁed
+(in tests/test_replay.py) that supplying wrong inputs (e.g. x=99.0 when the record
+was made with x=2.0) yields input_hash_match = False with an explanatory note in
+the result, and that supplying the correct inputs but a function with diﬀerent logic (e.g.
+return x * 3 when the recorded function was return x * 2) yields prediction_match
+= False.
+4.3
+Use case 2: Drift detection
+A model risk team is required by SR 11-7 ğV (Ongoing Monitoring, within Model Validation) to detect distributional shift in input data over time. We bucket the 6,825 records
+by the predicted-for month (47 calendar months from 2022-01 to 2025-11), use the ﬁrst
+three months (2022 Q1, n = 399 records) as the baseline, and apply detect_drift to
+each subsequent month against this baseline.
+We ﬂag a month as showing drift if any of the ﬁve lagged-rv features registers
+Kolmogorov-Smirnov p < 0.01 against the baseline, or if any feature’s PSI exceeds 0.25
+(the credit-risk “high” threshold). The result is a monthly drift table.
+26
+
+Table 9: Monthly drift detection results: 44 evaluated months (2022-04 through 2025-11)
+versus the 2022 Q1 baseline (n = 399). The KS test uses the maximum statistic across
+all 5 lagged-rv features per month; the minimum p-value is shown. Both 2022 (highvol regime) and 2023+ (lower-vol regime) months register drift relative to early 2022,
+consistent with the documented regime shift in Khan (2026). Excerpt of 9 of 44 months
+for compactness; full table at studies/results/use_cases_summary.json.
+Month
+n
+Max KS statistic
+Min KS p-value
+Max PSI
+Drift detected
+2022-04
+140
+0.4719
+< 10−6
+high
+yes
+2022-05
+147
+0.6667
+< 10−6
+high
+yes
+2022-06
+147
+0.6266
+< 10−6
+high
+yes
+2022-09
+147
+0.4110
+< 10−6
+high
+yes
+2023-07
+147
+–
+< 10−6
+high
+yes
+2024-01
+154
+–
+< 10−6
+high
+yes
+2024-12
+147
+–
+< 10−6
+high
+yes
+2025-09
+147
+1.0000
+< 10−6
+high
+yes
+2025-10
+161
+0.7651
+< 10−6
+high
+yes
+2025-11
+126
+0.7281
+< 10−6
+high
+yes
+Months with drift
+44 / 44
+The headline result is that drift is ﬂagged in every month evaluated. This deserves
+interpretation. Each input is a lagged realized-volatility window, and realized volatility
+itself shifts substantially across regimes (e.g. Khan 2026’s documented contrast between
+high-vol 2022 and lower-vol 2023+). A month-window of 5 lagged-RV features reﬂects
+the underlying volatility regime of that month, not a stable generative process.
+The
+KS test correctly identiﬁes these regime-driven shifts as distributional diﬀerences. The
+implication for a model risk team is not that the underlying GARCH/HAR/ML models
+are broken; it is that the input distribution has shifted, which warrants re-validation of
+the models’ continued ﬁtness for purpose. This is exactly the SR 11-7 ğV monitoring
+trigger.
+A more sophisticated drift framework would also monitor prediction drift (output
+distribution shift) and would distinguish covariate shift from concept drift. The package’s
+drift module provides both: detect_drift for the input side and detect_output_drift
+for the output side, with the same KS + PSI machinery applied to Prediction.value
+across windows. We exercise the output-drift side in the next subsection.
+4.3.1
+Use case 2b: Output drift across models
+The output-drift companion to Table 9 asks: do the seven models’ predictions themselves
+shift distributionally as the regime moves?
+Table 10 reports per-model output drift
+between the 2022 Q1 baseline (57 records per model) and the rest of the sample (918
+27
+
+windowed records per model), measured by the KS two-sample statistic on the predicted
+volatility values and by PSI with B = 10 bins.
+Table 10: Output drift per model, 2022 Q1 baseline vs. 2022-04 to 2025-11 window (44
+monthly evaluations per model). KS statistic and PSI are averaged across the 44 months.
+Larger values indicate the model’s prediction distribution shifts more across the regime.
+The baseline-mean and window-mean columns show the mean prediction value in each
+window, illustrating the underlying volatility regime shift from high-2022 to lower-2023+.
+Model
+Mean KS
+Max KS
+Mean |PSI|
+Baseline mean
+Window mean (avg)
+Ensemble
+0.79
+1.00
+15.2
+0.2044
+0.1535
+EGARCH
+0.77
+1.00
+13.7
+0.2158
+0.1644
+GARCH
+0.76
+1.00
+13.6
+0.2048
+0.1625
+HAR-RV
+0.75
+1.00
+12.2
+0.1978
+0.1512
+GJR-GARCH
+0.74
+1.00
+14.3
+0.2072
+0.1581
+LightGBM
+0.68
+1.00
+11.0
+0.2105
+0.1467
+XGBoost
+0.67
+1.00
+11.7
+0.2104
+0.1470
+Months ﬂagged with output drift (KS p < 0.01 or PSI band “high”): 44 of 44 for all 7 models.
+Three observations matter for model-risk practice.
+First, output drift is detected in every month for every model. The result mirrors input
+drift (Table 9), which is expected given that all seven models take lagged realized volatility
+as their primary input feature and the regime shift in the underlying RV propagates
+directly into their predictions. This is the joint-drift case: input and output drift ﬁre
+together.
+By itself, the result is not a model-quality signal; it is a regime-detection
+signal, exactly the SR 11-7 ğV trigger that says “re-validate the model against the new
+regime.”
+Second, GARCH-family models exhibit larger output drift than tree-based models. The
+KS-statistic ordering is EGARCH-Ensemble-GARCH-HAR-RV-GJR-GARCH all in the
+0.74-0.79 range, while LightGBM and XGBoost are at 0.67-0.68. The interpretation aligns
+with Khan (2026f)’s ﬁnding: parametric GARCH models adapt their predicted-volatility
+level more responsively to the regime shift (their conditional-variance recursion converges
+to a regime-conditional long-run mean), while tree models, calibrated against the 20192021 lower-vol validation window via early stopping, produce stickier predictions that
+under-shoot the high-vol 2022 baseline. The audit log preserves enough information to
+detect this diﬀerential responsiveness from output distributions alone, without re-ﬁtting
+the models.
+Third, the input/output drift comparison enables a covariate-vs-concept-drift distinction in cases where they diverge. In the demonstration both ﬁre together; in a deployed
+pipeline the more informative case is the asymmetric one. Table 11 summarises how
+a model-risk team should interpret the four joint outcomes.
+The package’s pair of
+28
+
+detect_drift (input) and detect_output_drift (output) lets a deployed pipeline produce both rows of the table without re-validating against the original training data.
+Table 11: Interpretation matrix for input vs. output drift, following the Raji et al. (2020)
+framing of model-monitoring obligations. Each cell describes the inference a model-risk
+team should draw and the SR 11-7 ğV action it triggers.
+Output drift: NO
+Output drift: YES
+Input
+drift:
+NO
+Stable.
+Model operating within
+the documented assumption envelope. No re-validation triggered.
+Concept drift.
+Inputs stable but
+predictions shifting; model behavior
+has changed. Strongest re-validation
+trigger.
+Input
+drift:
+YES
+Absorbed shift.
+Inputs moved
+but model has absorbed it without
+changing predictions.
+Low-priority
+review.
+Joint drift.
+Inputs and predictions both shifting; consistent with
+a regime change in the underlying
+generating process.
+Re-validation
+against the new regime.
+The
+Khan
+(2026)
+panel
+falls
+in
+the
+joint-drift
+quadrant.
+The
+covariateonly and concept-only quadrants are best demonstrated on a stable model under perturbation, which is out of scope for this paper but is the subject of the
+tests/test_output_drift.py unit-test suite (which includes synthetic constructions
+of all four cells of Table 11 to verify the framework’s discriminative power).
+4.4
+Use case 3: Model risk validation report
+A model risk validator working from the audit log alone (no external data, no live system
+access) should be able to produce a per-model summary report. We compute per-model
+statistics directly from the 6,825-record log.
+29
+
+Table 12: Per-model summary report generated from the audit log alone.
+All seven
+models in the Khan (2026) panel are correctly identiﬁed, with n = 975 predictions each
+(980 trading days minus 5 lookback days). Prediction means and standard deviations
+are summary statistics over the audit log’s recorded forecast values; they are not the
+absolute volatility levels themselves but the model’s predicted volatility values across the
+test period.
+Model
+n predictions
+Prediction mean
+Prediction std
+EGARCH
+975
+0.1675
+0.0608
+Ensemble
+975
+0.1566
+0.0657
+GARCH
+975
+0.1651
+0.0678
+GJR-GARCH
+975
+0.1611
+0.0727
+HAR-RV
+975
+0.1540
+0.0648
+LightGBM
+975
+0.1506
+0.0749
+XGBoost
+975
+0.1509
+0.0731
+The library-version provenance for each model’s latest record (numpy, pandas,
+scipy, etc.)
+is recorded but omitted from the table for compactness;
+it is in
+studies/results/use_cases_summary.json.
+4.5
+Use case 4: Regulator export bundle
+The fourth use case is the production of a self-contained, integrity-tied bundle that a
+regulator or external auditor can verify without running any mr-audit code. We produced
+the bundle from the 6,825-record log using mr-audit export.
+Table 13: Regulator-export bundle for the 6,825-record log. The bundle is a zip archive
+with ﬁve ﬁles; veriﬁcation produces all-True checks across manifest hash, per-ﬁle hashes,
+and chain integrity.
+Bundle path
+studies/audit_logs/regulator_bundle.zip
+Bundle size
+841 KB
+Records included
+6,825
+manifest_sha_match (vs. manifest.sha256)
+✓True
+audit_records.jsonl SHA-256 match
+✓True
+chain_verification.json SHA-256 match
+✓True
+README.txt SHA-256 match
+✓True
+Hash chain integrity within bundle
+✓Valid
+Overall veriﬁcation
+✓Pass
+The bundle is reviewer-portable: a regulator with only sha256sum and a JSON parser
+can verify the manifest, every contents ﬁle, and the chain integrity.
+With mr-audit
+installed, mr-audit inspect <bundle> produces the same veriﬁcation in one command.
+30
+
+We additionally veriﬁed that tampering with any record inside the bundle is detected. Modifying a single byte of audit_records.jsonl (e.g., changing one prediction
+value from 0.142385 to 0.999) breaks the per-ﬁle SHA-256 against the manifest, and
+verify_bundle returns overall_valid = False with an explanatory error pointing at
+the changed ﬁle. The hash-chain integrity check inside chain_verification.json also
+fails, providing a second line of defence.
+4.6
+Use case 5: Right-to-explanation
+Both the EU GDPR (Article 22, automated decisions) and the EU AI Act (Article 86,
+high-risk-system explanations) give individuals aﬀected by an automated decision the
+right to an explanation of the decision. For a regulated ﬁrm, this means that for any
+historical prediction, an analyst should be able to reconstruct exactly how that prediction
+was produced: what code, what data, what model, what hyperparameters.
+The audit log is the natural data source for this reconstruction. We exercise the use
+case as follows. A query of the form “why did the model produce prediction X for date
+Y?” becomes a record-id-or-date lookup in the log, followed by a read of the record’s full
+CodeState, DataState, ModelState, ComputeState, and Prediction sub-states.
+Table 14: Right-to-explanation report: a single-record reconstruction. The record (one
+row of the 6,825-record log) is queried by predicted-for date and produces a complete
+provenance bundle that an analyst can hand to an applicant, a regulator, or a modelvalidation team.
+Field
+Value
+Query
+“Explain prediction for 2024-05-14, GARCH model”
+Record id (SHA-256, ﬁrst 12)
+29a3...c7be
+Predicted-for date
+2024-05-14
+Prediction value (annualized vol)
+0.117928
+Model name and version
+GARCH, paper2-v1
+Code commit (hash, ﬁrst 12)
+c0c50ff... (Paper 3 release)
+Library versions (selected)
+numpy 1.26.4, scipy 1.13.0, statsmodels 0.14.1
+Compute environment
+Python 3.14.0, darwin / arm64
+Random seed
+2026
+Input feature hash (SHA-256, ﬁrst
+12)
+8b41...d709
+Lagged-RV inputs (rvt−1, . . . , rvt−5)
+0.1144, 0.1252, 0.1131, 0.1015, 0.0982
+Chain integrity (record + chain to
+genesis)
+veriﬁed
+The bundle in Table 14 is what an SR 11-7 model-validation analyst, an EU AI Act
+Article 86 aﬀected-individual response, or a GDPR Article 22 explanation request all
+31
+
+need. Because the log is hash-chained back to the genesis record, the explanation itself
+is veriﬁable: the analyst can independently check that the record has not been tampered
+with since being written. This is what distinguishes an audit-grade explanation from an
+after-the-fact reconstruction.
+The package ships an explain CLI subcommand that produces the bundle from any
+record id or date query, with the same provenance traversal we use here.
+4.7
+Cross-domain validation: schema transfer beyond volatility
+forecasting
+The ﬁve use cases in Section 4.2 through Section 4.6 are demonstrated on a vol-forecasting
+pipeline because that is the empirical artefact of Khan (2026f) that we already control
+end-to-end. The schema and the package, however, are designed to transfer to other
+ML domains. We exercise this transfer on two additional pipelines whose audit logs are
+committed to the repository at examples/audit_logs/:
+• Credit scoring (EU AI Act Annex III high-risk). A scikit-learn LogisticRegression
+classiﬁer trained on synthetic credit-application data (800 prediction records). This
+use case is explicitly enumerated in EU AI Act Annex III ğ5(b) as high-risk, so the
+audit-trail requirements of Article 12 and Article 19 apply directly rather than being
+forward-looking.
+• Macroeconomic
+forecasting.
+A
+statsmodels
+ARIMA
+model
+forecasting
+unemployment-rate
+trajectories
+(24
+prediction
+records,
+one-quarter
+horizon).
+This use case is not currently high-risk under Annex III but is representative
+of central-bank and macroeconomic-research pipelines where SR 11-7 / Bank of
+International Settlements model-risk obligations apply.
+For each, we ran the instrumentation, applied the same ﬁve-use-case battery as the volforecasting demonstration, and veriﬁed that the chain-integrity, replay, drift, validation,
+export, and RTE capabilities all execute without code change. Table 15 summarises the
+cross-domain results.
+32
+
+Table 15: Cross-domain instrumentation: same package, same schema, same use-case
+battery, three distinct ML pipelines. The credit-classiﬁer example exercises an EU AI
+Act Annex III high-risk use case directly; the macro-forecaster exercises an SR 11-7relevant time-series use case.
+Pipeline
+Records Models Library
+Use case 1-5 status Annex III ref.
+Vol forecasting (Khan
+2026)
+6,825
+7
+arch, lightgbm, xgboost
+5/5 pass
+not in scope
+Credit scoring
+800
+1
+scikit-learn
+5/5 pass
+ğ5(b) high-risk
+Macro
+(unemployment)
+24
+1
+statsmodels
+5/5 pass
+not in scope
+Two observations support the schema’s generality. First, the integration cost is essentially identical across the three pipelines: the @auditable decorator wraps the prediction
+function in each case, with feature-name and data-source metadata supplied through
+the same caller-supplied arguments. No domain-speciﬁc schema extension was required.
+Second, the same chain-integrity, replay, and export properties hold across pipelines.
+The credit-classiﬁer and macro logs both verify cleanly via verify_chain, replay bitidentically for the inference function, and produce regulator-export bundles whose integrity checks pass identically to the vol-forecasting case.
+The cross-domain validation is intentionally modest in scope: the credit-classiﬁer uses
+synthetic data with make_classification, and the macro forecaster uses a synthetic
+AR(1)-with-seasonality DGP. We do not claim to have validated the package against a
+production bank credit-scoring system. We claim only that the schema and the package
+transfer without modiﬁcation across ML libraries and ML problem types within the limits
+of the demonstrated examples. The examples/ directory carries both pipelines under
+open license for independent reproduction.
+4.8
+Adversarial robustness: detection rates under tampering
+The integrity claims in Section 4.2 and Section 4.5 require empirical support beyond
+“the chain veriﬁes on the unmodiﬁed log.” This subsection reports controlled tampering
+experiments.
+For each of four attack scenarios, we copy the 6,825-record log, apply
+the tampering, and run verify_chain from the package’s public API. Table 16 reports
+detection.
+33
+
+Table 16: Detection rates under controlled tampering. The baseline is the unmodiﬁed
+6,825-record demonstration log. “Detected” means verify_chain returns valid=False
+with at least one explanatory error after the tampering is applied. The full per-scenario
+detail (including the tampered records’ identiﬁers and the veriﬁcation error messages) is
+in studies/results/adversarial_summary.json.
+Scenario
+Tamper applied
+Detected
+Error count
+Baseline (no tampering)
+—
+valid
+0
+A. Single-record value corruption
+Change
+prediction.value
+of
+one
+record from 0.1406 to 99.99 inside the
+JSON column
+✓yes
+1
+B. Chain-link tampering
+Replace embedded prev_record_hash
+of one record with 64-zero hash
+✓yes
+1
+C. Tail truncation
+Delete the last 100 records (chain still
+self-consistent on remaining 6,725)
+no
+0
+D. Middle-record deletion
+Delete one record from the middle of
+the chain (id=3500)
+✓yes
+1
+Three observations matter for the integrity-protection claim.
+First, scenarios A, B, and D are all detected.
+The hash chain catches any tampering that changes the content of a single record (A), breaks the link between two
+consecutive records (B), or removes a record from the interior of the chain (D).
+The detection mechanism in each case is the chain’s structural invariant: record_id
+= SHA-256(canonical-JSON content) for every record AND prev_record_hash =
+record_id of immediately preceding record. Any mutation of either ﬁeld is mechanically caught by verify_chain.
+Second, scenario C is the honest negative result. A tail-truncation attack removes a
+contiguous block of trailing records but leaves the remaining sub-chain self-consistent.
+verify_chain sees valid records 1 through 6,725 forming an unbroken hash chain ending
+at the truncated boundary, with no internal evidence that records 6,726–6,825 ever existed. Detecting this attack requires external anchoring: periodic publication of the latest
+record_id to a trusted third-party store (an internal audit ledger, a public blockchain,
+a regulator-controlled timestamp service, or signed publication of latest-record manifest
+by an HSM) so that an auditor can verify the present log’s latest record matches the
+externally-anchored expected value. We do not provide external attestation in v0.1.0;
+we provide the substrate on which a ﬁrm can layer its preferred attestation strategy.
+Section 7.6 lists external-attestation hooks as the v0.2.0 priority.
+Third, the detection guarantee is conditional on the veriﬁer reading the chain itself,
+not a derived summary. If a regulator accepts a chain-veriﬁcation summary (“the ﬁrm
+reports verify_chain returned valid”) without running the veriﬁcation themselves, the
+34
+
+ﬁrm could in principle present a tampered chain with a fabricated “valid” attestation. The
+regulator-export bundle (Section 4.5) addresses this by making the veriﬁcation trivially
+executable from the bundle alone: a regulator with only sha256sum and a JSON parser
+can independently re-derive the chain’s validity without trusting any attestation from the
+ﬁrm.
+4.9
+Summary of the demonstration
+The ﬁve use cases together demonstrate that a 6,825-record audit trail produced by
+mr-audit on a real seven-model volatility-forecasting pipeline can be:
+• Replayed exactly (use case 1, 5/5 sampled records match bit-identically),
+• Monitored for distributional drift across calendar windows (use case 2, 44/44 months
+ﬂagged consistently with the documented regime shift) on both inputs and outputs
+(detect_drift, detect_output_drift),
+• Used as the sole basis for a per-model validation report (use case 3, 7 models, 975
+predictions each),
+• Exported as a regulator-portable, integrity-tied bundle (use case 4, 841 KB, all checks
+pass),
+• Used as the data source for an audit-grade right-to-explanation reconstruction of any
+historical prediction (use case 5).
+The demonstration’s purpose is not to argue that the seven-model panel itself satisﬁes
+SR 11-7 (that determination is the bank’s, not the package’s); it is to show that the technical record-keeping that an SR 11-7-compliant deployment would require is producible
+and veriﬁable using vendor-neutral, open-source tooling at a realistic data scale.
+5
+Compliance Survey: Methodology
+We now apply the audit-trail rubric of mr-audit to a corpus of 185 published machinelearning papers in quantitative ﬁnance from 1952–2025, asking the empirical question:
+what fraction of the published research record satisﬁes the per-prediction provenance
+standard that SR 11-7 ğ V and AI Act Article 19 jointly impose? This section describes
+the corpus, the rubric, and the scoring procedure. Section 6 reports the results.
+The static-six analysis followed a written plan—the hypotheses of Section 5.5 and the
+rubric of Section 5.2—ﬁxed before the scoring step was run and deposited at (Khan,
+2026a).
+We are deliberately precise about what this is and is not (Section 5.5): it
+is a pre-speciﬁed analysis plan, not a timestamp-enforced pre-registration of the kind
+35
+
+whose evidentiary value rests on a third-party record predating the data. The per-paper
+scorecard, the cloned repositories’ state hashes, and the audit-of-audit log are deposited
+at (Khan, 2026c).
+5.1
+Corpus construction
+The corpus combines two sources.
+The ﬁrst is the 119-paper structured database of
+Khan (2026b), which covers ML-in-quantitative-ﬁnance research from 1952 (Markowitz
+portfolio theory baseline) through 2023. The corpus is dense in the 2018–2023 range (87 of
+119 papers) and includes per-paper metadata on application domain, ML method, asset
+class, data source, code availability, and a previously-scored Reproducibility Disclosure
+Score (RDS).
+The second source is an arXiv API pull for 2024–2025 papers in the q-ﬁn (Computational Finance, Statistical Finance, Portfolio Management, Risk Management, Trading
+and Market Microstructure) and cs.LG (Machine Learning) categories, ﬁltered for MLin-ﬁnance keywords (Table 17). The arXiv pull is then ﬁltered to papers with a coderepository link, detected by two means: (i) a regex over the abstract text for GitHub,
+GitLab, Bitbucket, Hugging Face, Zenodo, and Code Ocean URLs; (ii) for papers without
+abstract-detected code, a PDF-body scan over the ﬁrst two and last two pages of each
+candidate PDF.
+Table 17: arXiv API queries used to extend the corpus to 2024–2025.
+Query
+Search expression
+q-ﬁn + ML
+cat:q-fin.* AND abs:(machine learning
+OR deep learning OR neural network OR
+LSTM OR transformer OR RL OR XGBoost OR
+LLM)
+cs.LG + ﬁnance
+cat:cs.LG AND abs:(asset pricing OR
+portfolio OR volatility OR return
+prediction OR trading strategy OR
+backtest)
+q-ﬁn.ST catchall
+cat:q-fin.ST AND submittedDate:[2024-01
+TO 2025-12]
+After dedup (on arXiv ID), ﬁltering (to papers with at least one ML keyword and
+one ﬁnance keyword in the title or abstract), and the abstract + PDF-body code-link
+scan, we obtain 66 papers from the 2024–2025 extension. Combined with the 119-paper
+base, the working corpus is 185 papers. We additionally hand-curate 14 Tier-1 benchmark
+candidates whose static scores are overlaid on their Paper-1 corpus rows where applicable.
+The corpus construction, including raw and ﬁltered intermediate datasets, is released
+alongside the paper.
+36
+
+We acknowledge two corpus-construction limitations explicitly. First, the corpus is
+biased toward arXiv-posted preprints because arXiv has the only programmatic search
+interface that approaches comprehensiveness; SSRN’s search interface is not amenable
+to bulk pulls.
+We supplement with hand-curation of Journal of Financial Data Science, Quantitative Finance, and Journal of Forecasting 2024–2025 tables of contents,
+but cannot claim full coverage of journal-only papers. Second, papers without any coderepository link cannot be entered into stages 4–5 (sandboxed run; headline reproduction).
+They are recorded in the corpus with their code-availability status as a per-paper covariate, but their scoring is restricted to dimensions inferable from the published text.
+5.2
+The twelve-dimension rubric
+The compliance rubric maps directly onto SR 11-7 and AI Act provisions. Table 18 lists
+the twelve dimensions, their regulatory authority, and the binary scoring criterion.
+Table 18: Twelve-dimension audit-trail compliance rubric.
+#
+Dimension
+Authority
+Score 1 iﬀ
+1
+Code released and accessible
+SR 11-7 ğ V
+Repository
+URL
+resolves
+and
+clones
+2
+Data released or fully speciﬁed
+SR 11-7 ğ IV
+Public dataset linked or repo
+contains data
+3
+Computational
+environment
+speciﬁed
+EU AI Act Art. 12
+requirements.txt
+/
+pyproject.toml
+/
+Dockerﬁle
+/
+lockﬁle
+present
+with
+pinned versions
+4
+Random seeds documented
+Best practice
+Seed statements visible in code
+or paper
+5
+Bit-identical
+replay
+achievable
+SR 11-7 ğ V
+Two independent runs of the
+released code produce identical
+outputs
+6
+Input data lineage traceable
+SR 11-7 ğ IV
+Data hashing, versioning, or DOI
+references documented
+7
+Model parameter state persisted
+SR 11-7 ğ V
+Trained model artifacts saved
+with version metadata
+8
+Per-prediction logging
+EU AI Act Art. 12
+Code or paper preserves individual prediction records, not just
+summary metrics
+9
+Drift detection or monitoring
+EU AI Act Art. 9
+Paper or code includes drift testing on inputs and/or outputs
+10
+Signiﬁcance testing applied
+SR 11-7 ğ VI
+Formal predictive-accuracy test
+(DM, GW, MCS, SPA) used
+11
+Multiple-comparison
+correction
+Statistical hygiene
+Bonferroni, Holm, BH, or equivalent applied
+12
+True out-of-sample protocol
+SR 11-7 ğ V
+A held-out test set (not just
+cross-validation on full sample)
+Per-paper total score is the sum of the twelve binary scores, on {0, 1, . . . , 12}. We
+pre-register a compliance threshold of 9 of 12 as the operational deﬁnition of “would pass
+an audit.” This threshold mirrors the SR 11-7 supervisory practice of treating a model as
+37
+
+model-risk-managed only when all material dimensions are addressed; partial provenance
+is not partial credit in an actual audit.
+5.3
+Tiered scoring procedure
+The 185-paper corpus is scored in three tiers of increasing depth. The tiering reﬂects the
+practical constraint that running other authors’ code end-to-end is the most expensive
+step and is not feasible for every paper.
+Tier 1: full replication. For the small subset of papers that release both code
+and a publicly accessible dataset, we attempt full end-to-end replication. The repository
+is cloned, dependencies are installed in an isolated Docker container, the code is run
+with a thirty-minute timeout, and the produced headline number is compared to the
+published value with tolerance ±1%. From the 119-paper base corpus, 14 papers meet the
+both-code-and-data criterion (per the original RDS scoring). The 2024–2025 extension
+contributes additional Tier 1 candidates; the count after the full corpus run is reported
+in Section 6.
+Tier 2: code-runnable audit. For papers that release code but rely on proprietary
+or paywalled data (e.g., CRSP, Bloomberg, OptionMetrics), we score the dimensions
+that depend on the repository state but not on data access: dimensions 1, 3, 4, 5 (where
+“replay” is interpreted as inter-run determinism on synthetic inputs), 6, 7. Approximately
+40 papers fall into this tier.
+Tier 3: surface compliance. For papers without a code link, or where the link does
+not resolve, we score the dimensions inferable from the published text alone: dimensions
+1 (failed), 9, 10, 11, 12. Approximately 130 papers fall into this tier.
+Table 19 summarizes expected tier composition.
+Table 19: Expected corpus composition by scoring tier.
+Tier
+Expected N
+Dimensions scored
+1 (full replication)
+∼15
+all 12
+2 (code-runnable audit)
+∼40
+1, 3–7 (6 dims)
+3 (surface compliance)
+∼130
+1, 9, 10, 11, 12 (5 dims)
+Total
+∼185
+—
+Papers in Tier 3 cannot, by construction, satisfy dimensions 2–7. Their maximum
+total score is 5 of 12 (a ‘1’ on dimensions 9–12 plus a possible ‘1’ on dimension 1 if
+code exists but the data restriction places them in Tier 2 or 3).
+The unconditional
+compliance rate (fraction of all 185 papers with total ≥9) is therefore an upper bound;
+the conditional rate (restricted to Tier 1 papers, for whom the rubric is fully applicable)
+is a complementary, narrower measurement.
+38
+
+5.4
+Automation and human review
+Six dimensions are predominantly automatable: 1 (HTTP HEAD), 2 (inspection for a
+linked or bundled dataset), 3 (ﬁlesystem inspection for dependency ﬁles), 4 (regex grep
+for seed patterns), 6 (regex grep for hash and DOI patterns), 7 (ﬁlesystem inspection
+for saved model artifacts plus regex grep for save patterns in code). The remaining six
+dimensions (5, 8, 9, 10, 11, 12) require either substantive judgment on data accessibility
+or close reading of the paper text. For these, we use a structured large-language-model
+(Anthropic Claude) prompt as a ﬁrst-pass classiﬁer, with the score then human-veriﬁed
+on every paper.
+To establish inter-rater reliability, twenty papers are independently dual-scored by the
+primary author and a second scorer (a ﬁnance + ML researcher external to this project).
+We pre-register acceptable inter-rater agreement at Cohen’s κ ≥0.7 on the manual-review
+dimensions; if the observed κ falls below this threshold, the manual codebook is revised
+and the aﬀected dimensions are re-scored on the full corpus.
+The full prompts, the LLM responses, the dual-scoring decisions, and the codebook
+revisions are released alongside the paper. None of the scoring is post-hoc relative to
+the plan; all decisions follow the pre-speciﬁed protocol (Khan, 2026a), subject to the
+provenance caveat of Section 5.5.
+5.5
+Pre-speciﬁed hypotheses, and an honest account of the timing
+We pre-specify ﬁve hypotheses. Because this paper is about audit-trail integrity, we are
+scrupulous about the provenance of the pre-speciﬁcation itself rather than asserting more
+than the record supports.
+• H1. The fraction of papers passing the twelve-dimension rubric at threshold ≥9 is
+between 0% and 3%.
+• H2. The fraction whose Tier-1 replication reproduces the headline within ±1% is
+between 2% and 8%.
+• H3. Mean total score across the full corpus is between 2 and 4 out of 12.
+• H4. A regression of total score on publication year yields a positive coeﬃcient of
+between 0.05 and 0.20 score units per year, p < 0.05.
+• H5. Papers published in peer-reviewed journals (vs. arXiv-only) have mean total
+scores at least 1.0 point higher.
+The hypotheses are framed as ranges rather than point estimates to permit interpretation in either direction. Results falling outside the ranges trigger an explicit discussion
+39
+
+of whether the discrepancy reﬂects (a) a real surprise in the data, (b) a methodology
+problem, or (c) a corpus-construction artifact.
+What the pre-speciﬁcation is, and is not.
+The analysis plan containing H1–H5
+and the rubric was written and ﬁxed before the scoring step of the static-six pipeline
+was executed. It is deposited at (Khan, 2026a). We do not claim it is a timestampenforced pre-registration whose third-party record predates data collection: the corpus
+was assembled before the plan was written, and the public OSF record postdates the
+static-six scoring. The honest description of the static-six results is therefore plan-prespeciﬁed but conﬁrmatory-weakened: H4, the only hypothesis directly testable on the
+static-six scale, is reported as a conﬁrmatory result with this caveat attached, and H1,
+H3 are treated as bounded-but-provisional (Section 6.2).
+We adopt this conservative
+posture precisely because the alternative—asserting a pre-registration the timestamps
+do not support—would be the exact failure mode the paper exists to measure. The six
+manual-review dimensions deferred to v2.1 are, by contrast, governed by a pre-registration
+that we commit to ﬁling on OSF, timestamp-enforced, before any of their scoring is run
+(Khan, 2026d); v2.1 will report those six as fully conﬁrmatory only if that ﬁling in fact
+precedes the scoring.
+5.6
+What the survey is not
+We close the methodology section with three honest caveats.
+First, the compliance survey does not establish that any speciﬁc published paper is
+wrong, fraudulent, or even imprudent. It establishes that the published record does not
+currently carry the per-prediction provenance that SR 11-7 and the AI Act expect of
+deployed models. Academic papers are not deployed models; the gap between them is
+meaningful but is also a transition path, not a verdict.
+Second, the compliance threshold of 9 of 12 is a sharp cut. The unweighted sum-oftwelve-binaries scoring is a deliberate simpliﬁcation; an actual supervisory examination
+would weight some dimensions more heavily than others (e.g., per-prediction logging
+is more material than seed documentation). We use the unweighted sum because it is
+transparent, replicable, and pre-speciﬁed; we report the per-dimension rates separately
+so that readers can apply their own weighting.
+Third, the corpus is not representative of all ML-in-ﬁnance work. It is representative of published, arXiv-indexed, ML-in-quantitative-ﬁnance work. Production model risk
+teams at banks may have higher compliance standards than the published research record
+reﬂects; conversely, the smaller and less-resourced practitioner community may be lower.
+The survey is calibrated against the academic literature because that is the population
+whose papers are read, cited, and used as templates for downstream work.
+40
+
+6
+Compliance Survey: Findings
+This section reports the results of applying the twelve-dimension audit-trail rubric to the
+185-paper corpus described in Section 5. All numbers in this section are produced by the
+audit pipeline released at (Khan, 2026c) and are mechanically re-derived from the perpaper scorecard by the paper/audit.py script bundled with the package; the script must
+print ALL CHECKS PASSED for this paper to be considered ship-ready. The audit-of-audit
+log (an mr-audit-instrumented record of every scoring decision) is released alongside the
+scorecard.
+6.1
+Scope of this version
+This paper version (v2.0) reports the six static rubric dimensions, which an automated
+pipeline can score by inspecting a cloned source repository: code accessibility (dim 1),
+data release (dim 2), computational environment speciﬁcation (dim 3), random-seed documentation (dim 4), input-data lineage (dim 6), and model-state persistence (dim 7).
+These are scored mechanically from the repository contents.
+The other six dimensions are not yet reported. Bit-identical replay (dim 5) requires a
+full Tier-1 replication attempt per paper, which we estimate at ∼2–8 hours of compute and
+engineering per paper times approximately 15 candidates; it is recorded in the open issue
+tracker for v2.1. Per-prediction logging (dim 8), drift monitoring (dim 9), signiﬁcance
+testing (dim 10), multiple-comparison correction (dim 11), and out-of-sample protocol
+(dim 12) require manual reading of each PDF and are deferred to v2.1. Honest disclosure:
+the partial-rubric ﬁndings below describe a lower bound on the full-rubric ﬁnding (passing
+the static six is necessary, not suﬃcient, for passing the full rubric).
+6.2
+Status of the pre-speciﬁed hypotheses
+We must be scrupulous about the distinction between the pre-speciﬁed analysis plan
+(Khan, 2026a) and the descriptive statistics this version is able to report—and, per Section 5.5, about the fact that the plan is pre-speciﬁed rather than timestamp-enforced.
+The plan ﬁxed ﬁve hypotheses (H1–H5, Section 5.5) on the full twelve-dimension scale.
+This version (v2.0) scores only the six static dimensions (Section 6.1). Consequently,
+exactly one of the ﬁve hypotheses (H4, the temporal trend) is directly testable now; the
+other four require either the full twelve-dimension rubric (H1, H3, H5) or a Tier-1 codeexecution pass (H2) and are carried forward to v2.1 under a pre-registration we commit
+to ﬁling, timestamp-enforced, before that scoring begins. Table 20 states each hypothesis
+verbatim and reports its v2.0 status honestly.
+The one hypothesis directly testable now, H4, holds: the slope of static-total against
+year is +0.088 score units per year, inside the pre-speciﬁed [0.05, 0.20] band. We report
+41
+
+Table 20: Status of the ﬁve pre-speciﬁed hypotheses in v2.0. Only H4 is directly testable
+on the static-six scale; the rest are deferred with the reason stated. We report what the
+static-six data bounds for the deferred hypotheses, without claiming conﬁrmation.
+#
+Pre-registered hypothesis (12-dim scale)
+v2.0 status
+H1
+Fraction passing rubric at ≥9 of 12 is between 0–3%
+Deferred (needs 12 dims).
+Static-six bounds it:
+at
+most 5.9% (11/185) clear
+the
+necessary
+6/6-onstatic-six
+precondition,
+so the true ≥9 rate is
+≤5.9%; consistent with
+H1’s low range.
+H2
+Fraction whose Tier-1 replication reproduces headline
+within ±1% is 2–8%
+Deferred (needs code execution, ∼2–8 GPU-hours
+× 15 papers).
+H3
+Mean total score, full corpus, is 2–4 of 12
+Partly testable.
+Staticsix mean is 1.52/6; charitable doubling (unscored
+six improve at the same
+rate) gives ≈3.04/12, inside [2,4].
+Provisionally
+consistent.
+H4
+Year coeﬃcient is +0.05 to +0.20 score units/yr, p <
+0.05
+Conﬁrmed.
+Observed
++0.088/yr on the staticsix scale (Section 6.5).
+H5
+Peer-reviewed-journal mean exceeds arXiv-only mean
+by ≥1.0 point
+Deferred.
+On the static
+six the comparison is confounded by the code-link
+selection
+artifact
+(Section 6.6): journal papers
+from the Paper-1 corpus
+lack recorded URLs and
+score
+artiﬁcially
+low,
+which
+would
+spuriously
+reverse the sign.
+Honest
+computation
+requires
+URL
+recovery
+for
+the
+journal papers (v2.1).
+it as conﬁrmatory subject to the caveat of Section 5.5 (the plan is pre-speciﬁed, not
+timestamp-enforced); a reader who discounts the plan’s provenance entirely may instead
+read H4 as a strong descriptive regularity. Extrapolating linearly to the full rubric (assuming the unscored six dimensions improve at the same rate, which is optimistic), the
+corpus mean would reach the compliance threshold of ≥9 of 12 around the year 2054,
+and the full 12 of 12 around 2070. The trend conﬁrms the ﬁeld is improving but does not
+yet meet the standard.
+42
+
+6.3
+Descriptive statistics for the static six dimensions
+Table 21 reports the v2.0 descriptive statistics on the static-six scale.
+These are not
+pre-registered priors; the ranges in the “Reference” column are our pre-data expectations
+stated here for context only, and any reader should treat the “Observed” column as the
+result and the “Reference” column as commentary. We separate these from Table 20
+precisely so that no descriptive number is mistaken for a conﬁrmatory test.
+Table 21: Descriptive statistics, static six dimensions (not pre-registered conﬁrmatory
+tests; reference ranges are context only).
+Quantity
+Reference
+Observed
+vs. reference
+Mean total score, full corpus, of 6 (N =
+185)
+1.0–2.0
+1.52
+within
+Mean total score, code-link-having subset, of 6 (N = 80)
+2.5–4.0
+3.28
+within
+Fraction scoring 6/6 on static dimensions, full N = 185
+0–5%
+5.9% (11/185)
+just above
+Fraction scoring 6/6 on static dimensions, code-link subset N = 80
+5–20%
+13.8% (11/80)
+within
+Tier-1
+candidates’
+mean
+static
+total
+(N = 14 hand-curated)
+3.5–5.5
+3.00
+below
+The Tier-1 hand-curated set (FinRL, FinBERT, FinGPT, Informer, Temporal Fusion
+Transformer, DeepLOB, TabSurvey, tabular-benchmark, PGPortfolio, plus four papers
+whose advertised repositories are now unreachable) has a mean static total of 3.00 of 6,
+below the 3.5–5.5 we expected of a curated benchmark set; the four unreachable repositories (each scoring 0) pull the mean down and are themselves the ﬁnding (Section 6.8).
+Three papers achieve a perfect 6/6: FinRL (Liu et al., 2021), FinGPT (Yang et al.,
+2023), and the Grinsztajn tabular-benchmark (Grinsztajn et al., 2022). These three are
+existence proofs that an ML-ﬁnance paper can satisfy all six static dimensions; they are
+far from the average.
+6.4
+Per-dimension compliance rates
+Table 22 reports the dimension-by-dimension compliance rate across the full corpus. The
+unweighted sum obscures which speciﬁc aspects of the regulatory standard the published
+literature satisﬁes and which it does not.
+The pattern is consistent with the pre-speciﬁed expectation: dimension 1 (code released) has the highest full-corpus compliance rate at 49.2%, well above all other dimensions. Dimension 6 (data lineage, deﬁned as a DOI or hash reference in the released code)
+has the lowest rate at 12.4%; lineage requires intentional infrastructure (hashing, DOI
+lookup) that is not yet a community norm.
+Conditional on the paper carrying any code link at all, the picture changes meaningfully. Dimensions 2 (data release), 3 (environment), 4 (seeds), and 7 (model state)
+43
+
+Table 22: Per-dimension compliance rate, full corpus (N = 185) and code-link-conditional
+subset (N = 80). Dimensions 5, 8–12 are deferred to v2.1.
+#
+Dimension
+Full rate
+Conditional rate
+1
+Code released and accessible
+49.2% (91/185)
+90.0% (72/80)
+2
+Data released or fully speciﬁed
+23.8% (44/185)
+55.0% (44/80)
+3
+Computational environment speciﬁed
+21.6% (40/185)
+50.0% (40/80)
+4
+Random seeds documented
+22.7% (42/185)
+52.5% (42/80)
+6
+Input data lineage traceable
+12.4% (23/185)
+28.8% (23/80)
+7
+Model parameter state persisted
+22.2% (41/185)
+51.2% (41/80)
+5
+Bit-identical replay achievable
+—
+deferred (v2.1)
+8
+Per-prediction logging
+—
+deferred (v2.1)
+9
+Drift detection or monitoring
+—
+deferred (v2.1)
+10
+Signiﬁcance testing applied
+—
+deferred (v2.1)
+11
+Multiple-comparison correction
+—
+deferred (v2.1)
+12
+True out-of-sample protocol
+—
+deferred (v2.1)
+cluster tightly between 50% and 55%: among code-publishing authors, satisfying these
+dimensions is roughly a coin ﬂip. Dimension 6 (data lineage) remains the lowest at 28.8%;
+even authors disciplined enough to publish code rarely commit to a DOI or content-hash
+reference on the input data. The 50/50 cluster on dimensions 2–4, 7 says compliance is
+bimodal: the authors who publish a runnable repository tend to satisfy several technical
+dimensions at once, and the authors who do not satisfy any.
+6.5
+Temporal trend
+Table 23 reports the mean static total by publication year. The OLS regression of perpaper static_total on publication year (year as a continuous covariate, unweighted,
+all N = 185 papers) yields slope +0.088 score units per year (95% CI [+0.052, +0.125],
+p < 0.001), intercept −176.9. The slope is statistically distinguishable from zero, but
+the eﬀect is concentrated in the ﬁnal two years: excluding the 2024–2025 papers the
+slope falls to +0.016 (p = 0.24, not signiﬁcant). The positive trend is therefore driven
+largely by the recent surge in code-released papers rather than by steady multi-decade
+improvement, a point we revisit with the conditional analysis below.
+The 2024–2025 jump (from ∼0.2 to ∼3.4) requires careful interpretation. It is partially
+a real improvement (more papers ship a working repository with environment speciﬁcation) and partially a corpus-construction artifact: the 2024–2025 papers were sampled
+from an arXiv search that selects on the presence of a discoverable code link, while
+the pre-2024 papers come from the Paper 1 corpus which does not select on code-link
+presence. The temporal trend signal is therefore confounded with corpus-construction
+selection bias.
+To bound this bias, we additionally report the conditional trend: restricted to papers
+with a discovered code link (N = 80; for the trend, the 2017–2025 window where n =
+44
+
+Table 23: Mean static_total by year, full corpus.
+Year
+N
+Mean (of 6)
+[Min, Max]
+2016
+5
+0.40
+[0, 1]
+2017
+9
+0.78
+[0, 3]
+2018
+7
+0.43
+[0, 1]
+2019
+12
+0.58
+[0, 5]
+2020
+16
+0.25
+[0, 1]
+2021
+21
+0.95
+[0, 6]
+2022
+19
+0.58
+[0, 6]
+2023
+12
+0.50
+[0, 6]
+2024
+17
+2.47
+[0, 6]
+2025
+52
+3.42
+[0, 6]
+79), the mean static total is 3.28 and the year-over-year slope is +0.103 score units
+per year. This conditional slope is not statistically distinguishable from zero (95% CI
+[−0.14, +0.35], p = 0.42): once the selection artifact is removed, the small code-link
+subset yields only a positive point estimate, not a signiﬁcant trend. We therefore do
+not claim a conﬁrmed temporal improvement within the code-publishing population; the
+conﬁrmatory temporal result (H4) rests on the full-corpus regression above, read with
+the 2024–2025 concentration caveat noted there.
+6.6
+By source corpus
+Table 24 reports mean static total broken out by corpus origin: papers carried over from
+Paper 1 (Khan, 2026b) versus the 2024–2025 arXiv extension.
+Table 24: Mean static_total by corpus source.
+Source corpus
+N
+Mean static_total
+Paper 1 corpus (1952–2023), Tier-1 overrides applied
+119
+0.51
+arXiv extension (2024–2025, code-linked only)
+66
+3.33
+Combined
+185
+1.52
+The Paper 1 corpus mean of 0.51 is an honest lower bound: the original Paper-1 CSV
+records only code_available_yn (not URLs), so for most of the 119 papers the static
+scorer can only test dimension 1 by the binary ﬂag. Where we hand-curated a URL for
+a Paper-1-corpus paper as part of the Tier-1 set (all 14 Tier-1 candidates have a Paper-1
+citation key), we override the Paper-1 row with the full Tier-1 score. Of the 33 Paper-1
+papers with code_available_yn = Y, 14 are in the Tier-1 set; the remaining 19 that we
+did not hand-curate stay scored at dim_1 = 1, dims 2–7 = 0 (best case: “code exists but
+we didn’t inspect it”). Recovering URLs for those remaining 19 Paper-1 papers is the
+largest single piece of work in v2.1.
+45
+
+6.7
+Tier-1 candidates
+Fourteen papers were hand-curated as Tier-1 candidates: well-known benchmarks (FI2010 LOB, ETT, OpenML tabular benchmarks), seminal architecture papers (Informer,
+TFT, DeepLOB, FinBERT, FinGPT), and inﬂuential reinforcement-learning/portfolio
+papers (FinRL, PGPortfolio).
+Table 25 reports their individual static totals and the
+repository URL inspected.
+Table 25: Tier-1 candidate scores (static dimensions only). Three achieve a perfect 6/6.
+Paper
+Year
+Status
+Static total
+FinRL (Liu et al., 2021)
+2021
+cloned and scored
+6/6
+Grinsztajn
+tabularbenchmark
+(Grinsztajn
+et al., 2022)
+2022
+cloned and scored
+6/6
+FinGPT
+(Yang
+et
+al.,
+2023)
+2023
+cloned and scored
+6/6
+FinBERT (Araci, 2019)
+2019
+cloned and scored
+5/6
+TabSurvey
+(Shwartz-Ziv
+and Armon, 2022)
+2022
+cloned and scored
+5/6
+Temporal Fusion Transformer (Lim et al., 2021)
+2021
+cloned and scored
+5/6
+Informer
+(Zhou
+et
+al.,
+2021)
+2021
+cloned and scored
+4/6
+PGPortfolio (Jiang et al.,
+2017)
+2017
+cloned and scored
+3/6
+DeepLOB (Zhang et al.,
+2019)
+2019
+cloned and scored
+1/6
+Ntakaris LOB benchmark
+(Ntakaris et al., 2018)
+2018
+non-GitHub URL
+1/6
+Welch-Goyal
+predictors
+(Welch and Goyal, 2008)
+2008
+URL unreachable
+0/6
+Fischer
+LSTM
+(Fischer
+and Krauss, 2018)
+2018
+URL unreachable
+0/6
+Kolm
+portfolio
+transformer (Kolm et al., 2023)
+2023
+URL unreachable
+0/6
+LopezLira
+ChatGPT
+(Lopez-Lira
+and
+Tang,
+2023)
+2023
+URL unreachable
+0/6
+Tier-1 mean
+3.00/6
+Three observations from the Tier-1 set. First, four of fourteen (28.6%) of the advertised code URLs return HTTP 404 or otherwise fail to clone, even when the paper itself
+remains highly cited (LopezLira has 100+ citations as of this writing). Code-link rot is
+a real and measurable threat to reproducibility independent of any further compliance
+gap. Second, the three perfect-scoring papers (FinRL, FinGPT, Grinsztajn) are all from
+organizations with reproducibility-as-a-product norms (AI4Finance for the ﬁrst two, Inria for the third). The mode of compliance is institutional, not individual. Third, the
+43% (6 of 14) of Tier-1 candidates scoring 0–1 includes the original Welch-Goyal dataset
+cited above; the underlying data is public, but the URL in our manual citation list was
+46
+
+a direct Excel-ﬁle path that no longer resolves. Compliance is fragile to URL-discovery
+noise.
+6.8
+Beyond the pre-speciﬁed priors
+Two ﬁndings warrant discussion beyond the H1–H5 hypotheses.
+Code-link rot. The mr-audit pipeline observed 8/80 = 10.0% of discovered code
+URLs as fully unreachable (HTTP 404 or DNS failure) when followed in May 2026, and a
+further 9/80 = 11.2% pointing to non-GitHub locations (typically a Zenodo, FAIR-data,
+or institutional repository) that the static-scoring pipeline does not currently inspect.
+Total non-cloneable: 17/80 = 21.2%. Across the Tier-1 hand-curated set the rot rate is
+higher (4/14 = 28.6%), partly because Tier-1 includes older papers. Code-link rot is not
+addressed by SR 11-7 or the AI Act explicitly, but it is a precondition for any audit-trail
+standard: an audit trail that points to a 404 page is no audit trail. This is a ﬁnding
+the survey was not designed to extract; we report it here so it appears in subsequent
+meta-surveys.
+Bimodal compliance. On the static six, the empirical distribution of total scores
+is bimodal: among the 80 code-link-having papers, the modes are at static_total = 5
+(20 papers) and at static_total = 1 (15 papers); the trough is at static_total = 2 (6
+papers). The signal is that compliance is not a continuum of partial achievement: most
+papers either ship a barely-runnable repository (mean static total ≤1) or a thoughtfullyengineered one (mean static total ≥4); few papers sit in the middle. This bimodality
+suggests that the marginal cost of going from the basic mode (just commit the code) to
+the engineered mode (commit code, document environment, seed, and persist artifacts)
+is small, but is incurred all at once or not at all.
+6.9
+Robustness checks
+6.9.1
+Inter-rater reliability
+The pre-speciﬁed protocol called for 20 papers to be independently dual-scored on the
+six manual-review dimensions (5, 8, 9, 10, 11, 12) to verify rubric consistency.
+This
+step is deferred to v2.1 alongside the manual-dimension scoring, and will be governed by
+the v2.1 pre-registration, which we commit to ﬁling on OSF (timestamp-enforced) before
+that scoring begins (Khan, 2026d). The static six dimensions are mechanically scored
+and have κ = 1 by construction.
+6.9.2
+Sensitivity to compliance threshold
+The headline compliance rate (≥9 of 12) is a sharp cut. For the static six (max possible
+6/6), the analogous question is the cumulative distribution over thresholds. Table 26
+47
+
+reports the fraction of the full corpus achieving static total at or above each threshold.
+Table 26: Sensitivity to threshold on the static six dimensions, full corpus N = 185.
+Threshold
+n at or above
+Pct
+≥1
+91/185
+49.2%
+≥2
+57/185
+30.8%
+≥3
+51/185
+27.6%
+≥4
+40/185
+21.6%
+≥5
+31/185
+16.8%
+≥6
+11/185
+5.9%
+6.9.3
+Selection bias in the code-link ﬁlter
+The corpus-construction process is itself a selection on code-link presence: the 2024–2025
+extension subset was constructed by querying arXiv for papers whose abstract or PDF
+body contained a GitHub URL or equivalent, and Paper 1’s 119-paper corpus did not
+record URLs even where code_available_yn=Y. We report two compliance rates for
+transparency: one over the full 185-paper corpus (1.52 of 6), and one restricted to papers
+with at least one discovered code link (3.28 of 6, N = 80). The roughly ×2.2 diﬀerence
+quantiﬁes the selection-bias size; the audit-trail standard remains far from being met
+under either reading.
+6.10
+What the survey is
+This survey is not a verdict on any speciﬁc paper. It is a sample-level measurement
+of the gap between the per-prediction audit-trail standard imposed by SR 11-7 and the
+AI Act, and the per-prediction provenance actually carried by the published machinelearning literature in quantitative ﬁnance. The result of that measurement, restricted
+to the six dimensions that can be scored without a Tier-1 replication or a manual PDF
+review, is that the average paper in our corpus satisﬁes 1.52 of 6 static dimensions,
+equivalent to roughly 25% of the half-rubric standard, with a temporal-improvement rate
+that would not reach the full standard before the year 2070. The remaining six dimensions
+are reported in v2.1, with the rubric and pipeline released so any reader can run them
+today.
+7
+Discussion
+This section interprets the demonstration, identiﬁes ﬁve honest limitations, and outlines
+the gap between what mr-audit v0.1.0 currently does and what a production-grade audittrail system in a regulated ﬁrm would need.
+48
+
+7.1
+For practitioners deploying ML in regulated settings
+The narrow practical claim is that an SR 11-7-shaped audit trail for an ML inference
+pipeline does not require a commercial platform, a cloud subscription, or a centralized governance system. A one-line decorator and a context manager produce records that satisfy
+the ﬁeld-level requirements of Table 2. The records are immutable (chain-tied), replayable
+(veriﬁed to bit-identical match in our demonstration), portable (vendor-neutral storage),
+and reviewer-friendly (regulator-export bundle veriﬁable with oﬀ-the-shelf tools). The
+marginal engineering cost of doing this on top of an existing pipeline is roughly two days
+of integration plus a per-prediction logging cost on the order of 10−2 seconds (matching
+the throughput in Table 6).
+A second practical takeaway is the value of recording the full state of a prediction
+event, not just the prediction itself. Many ﬁrms today record only the prediction value
+and a timestamp. The audit-trail value comes from the breadth of the record: when
+an external reviewer asks “what code, what data, what hyperparameters, what library
+versions, what random seed produced this number?”, the answer must be in the log
+without re-running the pipeline. The mr-audit schema captures all of these by default;
+the engineering investment is in the integration, not in the retention.
+7.2
+For the regulatory framework
+The EU AI Act’s Article 12 / Article 19 are operational rules, not principles.
+They
+specify what must be in the log; they do not specify how the log should be implemented.
+Our demonstration is intended as a partial answer to the latter question: in Python,
+with ∼2,000 lines of code, MIT-licensed, on a single laptop. The implementation does
+not require a cloud provider, a speciﬁc database vendor, or a speciﬁc ML framework.
+The implication for ﬁrms that have not yet provisioned for AI Act compliance is that the
+technical infrastructure is achievable with modest engineering eﬀort, and the cost driver
+will be process and governance rather than tooling.
+For SR 11-7, the parallel observation is that the model risk management lifecycle (development, validation, deployment, ongoing monitoring) is well-served by an audit trail
+that captures every prediction’s full state. The current banking-industry norm of recording only inputs and outputs in a separate database, with model parameters versioned in
+a separate model registry, requires correlation across multiple systems to reconstruct any
+historical prediction—a recurring diﬃculty in the machine-learning model-management
+literature (Schelter et al., 2018). A uniﬁed audit trail collapses this correlation eﬀort.
+49
+
+7.3
+Pairing the package with the compliance gap
+The two halves of this paper are not parallel contributions; they motivate one another.
+The mr-audit package is a candidate answer to a question. The compliance survey is a
+measurement of the size of the question.
+The measurement says the gap is roughly an order of magnitude. On the six automatable rubric dimensions (Table 22), the average paper in our 185-paper corpus satisﬁes
+1.52 of 6 dimensions; the average code-link-having paper satisﬁes 3.28 of 6. The full
+audit-trail standard requires 12 of 12. Under the most charitable extrapolation (the six
+unscored dimensions improve at the same rate as the six scored ones), the average paper
+in the ﬁeld today satisﬁes roughly 2 × 1.52 = 3.04 of 12 dimensions. The SR 11-7 / AI
+Act target is 12 of 12. The gap is 12 −3.04 = 8.96 dimensions, or 75% of the standard.
+The same measurement establishes that compliance is achievable: three Tier-1 candidates (FinRL, FinGPT, the Grinsztajn tabular-benchmark) score the full 6 of 6 on static
+dimensions. These three are not pristine bank-deployment pipelines; they are open-source
+ML-ﬁnance research projects that satisfy the static half of the rubric because their authors chose to (a) publish runnable code, (b) document the environment, (c) commit data
+references, and (d) persist model artifacts. The marginal cost of being in the top quintile
+of compliance is, empirically, the cost of writing a requirements.txt, a Dockerfile,
+and a README that points at the data. Nothing in the rubric is intellectually diﬃcult; the
+gap is cultural and infrastructural.
+mr-audit addresses the infrastructural half. The dimensions of the rubric most underserved by current culture (data lineage at 12.4%; per-prediction logging, drift, multiplecomparison correction at unknown but anecdotally near-zero rates) all have technical
+analogs in the package: record_id hashes are content-addressed; Prediction.value is
+logged per prediction by construction; the drift module addresses dim 9; the regulatorexport bundle addresses the integrity-of-attestation problem implicit in dim 5. The package is not the cultural ﬁx. It is the substrate that makes the cultural ﬁx cheap.
+The Cleanlab pattern is the closest precedent: a paper that introduced a tool and, in
+the same paper, measured the size of the problem the tool addressed. Northcutt et al.
+(2021) did this for label noise; we attempt the same for audit-trail compliance. The lesson
+from Cleanlab is that the tool gets cited when readers can quote the headline statistic
+without re-running the analysis.
+Our headline statistic: across 185 ML-quantitativeﬁnance papers from 1952–2025, the mean satisﬁes 25% of the static half of the SR 11-7
+/ AI Act audit-trail standard (1.52 of 6 dimensions), with a temporal-improvement rate
+that would not reach the full standard before 2070.
+The package is one engineering
+response. The measurement, we hope, is the more cited contribution.
+50
+
+7.4
+Limitations
+Five limitations of the present work deserve careful noting.
+1. The demonstration is retrospective. The 6,825 records were written today against
+a previously-ﬁt forecast panel.
+We did not re-run the seven-model pipeline live and
+write records in real time. The retrospective form is appropriate for showing that the
+ﬁve use cases work end-to-end at realistic scale, but it does not establish that mr-audit
+would handle a live high-throughput inference workload (e.g., the millions of predictions
+per day that some bank ML pipelines generate) without re-engineering. The current
+SQLite single-writer backend’s 22.6 records/s throughput is comfortable for a thousandprediction-per-day workﬂow but inadequate for a million-per-day workﬂow.
+Higherthroughput storage backends (Parquet append shards, write-optimized databases) are
+a planned 0.2.0 addition.
+2. “Drift in 44 of 44 months” is partly a feature, partly a noise issue. The KS test
+on a ﬁve-feature window over a multi-year volatility series will register drift in nearly
+every month relative to a ﬁxed early baseline, because realized-volatility distributions
+shift across regimes.
+This is the intended behavior for SR 11-7 ğV monitoring (you
+want the model risk team to be told when input distributions move) but it is also a noisy
+signal: a team that is told “drift detected” every month will calibrate a high tolerance and
+miss the drift instances that matter. A production deployment would likely use a rolling
+baseline (e.g., the prior 90 days) rather than a ﬁxed early baseline, and would deﬁne
+drift relative to the magnitude observed during model development. Our demonstration
+uses the simplest baseline construction for clarity; the package does not preclude more
+sophisticated baselines.
+3. Integrity protection is hash-chain, not signed. Tampering with the chain is detectable by verify_chain, but the chain itself is not cryptographically signed by an
+external authority. A suﬃciently-sophisticated adversary with write access to the log ﬁle
+could rewrite the entire chain forward from the point of tampering, producing a selfconsistent but altered chain. Defences against this attack require external attestation:
+periodic publication of the latest record_id to a trusted external store (an internal audit ledger, a public blockchain, or a regulator-controlled repository), or signing of the
+chain by a hardware security module. mr-audit does not provide either; it provides the
+substrate on which a ﬁrm can layer its preferred attestation strategy.
+4.
+Feature
+values
+are
+stored
+as
+summaries
+by
+default.
+The
+default
+feature_values_summary captures per-feature numeric values at prediction time. Capturing raw input vectors (e.g., 1-million-dimensional NLP embeddings) would inﬂate
+log sizes intolerably and may capture sensitive customer data.
+The current default
+is conservative (small log size, no PII risk) but loses information that a more granular drift analysis would need.
+Firms that need raw-vector logging can conﬁgure
+51
+
+summarize_features=False; the privacy and storage trade-oﬀs are theirs to manage.
+5. The package targets Python ML pipelines. A bank using R, Java, MATLAB, or
+a vendor-supplied scoring engine cannot use mr-audit directly. The schema (Table 5)
+is language-neutral (canonical JSON), so a port to other languages is straightforward in
+principle, but no port currently exists.
+7.5
+What would change our view
+The paper makes empirical and methodological claims. We state explicitly what would
+force us to revise each.
+Claim: mr-audit’s schema satisﬁes SR 11-7, EU AI Act Articles 12 and 19, NIST
+AI 100-1, and ISO/IEC 42001 Clauses 6.1.2 / 7.5 / 9.1 simultaneously. We would revise
+if (a) a supervisory enforcement action against a deployed mr-audit-instrumented system
+ﬁnds the trail insuﬃcient for one of the four frameworks, identifying the speciﬁc clause
+not satisﬁed; or (b) a peer-reviewed compliance analysis identiﬁes a regulatory clause we
+have mis-mapped in Table 3. Either revision is incremental, the gap can be added to the
+schema in a backward-compatible way.
+Claim: hash-chain integrity detects single-record corruption, chain-link tampering,
+and middle-record deletion (Table 16 scenarios A, B, D). We would revise if an independent reproduction of the adversarial experiment on a diﬀerent log (diﬀerent size, diﬀerent
+model, diﬀerent storage backend) yields a non-detection in any of those three scenarios.
+This is unlikely given the mathematical structure of SHA-256, but the empirical claim is
+sample-conditional and should be tested against deployment-realistic logs.
+Claim: tail truncation is undetectable by chain veriﬁcation alone (Table 16 scenario
+C). We would revise if a method is identiﬁed that detects tail truncation from the log alone
+without external anchoring. We do not believe such a method exists for a self-consistent
+chain, but we would adopt it if it is.
+Claim: input-vs-output drift comparison enables a covariate-vs-concept-drift distinction (Table 11). We would revise if a published deployment ﬁnds that the four-quadrant
+framework misclassiﬁes a real drift episode, identifying the case and the misclassiﬁcation
+mechanism. The framework is well-established in model-risk practice (e.g., Massey, 1951;
+Karakoulas, 2004); the contribution here is the pairing of the two detectors in one package
+and the audit-log substrate for retrospective evaluation.
+Claim: low-friction integration cost.
+We would revise if a deployed pipeline ﬁnds
+the integration cost materially higher than “one decorator plus one context manager”
+(the demonstrated cost on the Khan 2026 panel).
+Speciﬁcally: if a non-trivial bank
+ML pipeline (say, a credit-scoring engine running 100k predictions per day with multimodel ensembling and human-in-the-loop review) requires more than one engineer-week
+to integrate, we would document the additional integration patterns required and revise
+52
+
+the “low-friction” claim accordingly.
+The falsiﬁcation criteria are not asks for permission; they are commitments to update
+when evidence arrives. We invite that evidence.
+7.6
+Roadmap beyond v0.1.0
+The v0.1.0 release ships an output-drift module (drift/output.py), symmetric to the
+input-drift module: KS two-sample plus PSI applied to Prediction.value across windows. Three further additions are planned for v0.2.0 and will not change the audit-record
+schema, so logs written under the current version remain readable:
+1. Higher-throughput backend. Parquet-append shard backend with optional compaction, targeting 1,000+ records/s on commodity hardware.
+2. External attestation hooks. Plugin interface for periodically publishing the latest
+record_id to an external trusted store (Sigstore, an internal HSM, or a blockchain
+anchor) so that the chain’s integrity can be re-veriﬁed by an independent party at
+later dates.
+3. Model artifact hashing.
+Optional automatic SHA-256 of the underlying model
+object (a pickled scikit-learn estimator or a PyTorch state-dict) to populate
+model.model_artifact_hash.
+8
+Reproducibility
+This paper aims to score 2 on the Reproducibility Disclosure Score rubric of Khan (2026b):
+(i) code public, (ii) data openly accessible.
+Code.
+The
+mr-audit
+package
+is
+at
+github.com/ayk5511/mr-audit,
+MITlicensed.
+The empirical demonstration in Section 4 is produced by ﬁve scripts
+in the same repository:
+studies/01_instrument_paper2.py (writes the 6,825record audit log from the Khan 2026 forecast panel), studies/02_use_cases.py
+(executes use cases 1–5 and writes studies/results/use_cases_summary.json),
+studies/03_scaling_benchmark.py (the 1,000- and 10,000-record scaling benchmark in Table 7), studies/04_output_drift_analysis.py (the per-model outputdrift
+analysis
+in
+Table
+10),
+and
+studies/05_adversarial_robustness.py
+(the
+controlled-tampering
+experiments
+in
+Table
+16).
+The
+cross-domain
+examples
+in
+Table
+15
+are
+produced
+by
+examples/sklearn_credit_classifier.py
+and
+examples/statsmodels_sarimax_macro.py.
+Data.
+The upstream data is the Khan (2026) volatility forecast panel at
+ayk5511/volatility-forecasting/blob/main/results/forecasts_5d.parquet,
+CC0-licensed.
+53
+
+The panel is itself reproducible from Yahoo Finance public data via the upstream
+paper’s data-collection scripts in under ﬁve minutes from a clean Python environment, which makes our demonstration recursively reproducible.
+The instrumented
+audit log (paper2_demo.db, 15.1 MB) is committed to the mr-audit repository
+at studies/audit_logs/paper2_demo.db, along with the regulator-export bundle
+(studies/audit_logs/regulator_bundle.zip, 841 KB).
+Compliance
+survey
+artefacts.
+The
+185-paper
+merged
+corpus
+is
+at
+corpus/papers_merged.csv;
+the
+2024–2025
+arXiv
+extension
+is
+at
+corpus/arxiv_2024_2025_extended.csv;
+the
+14-paper
+Tier-1
+hand-curated
+set is at corpus/tier1_manual_urls.csv.
+The per-paper static scores are at
+corpus/static_scores_2024_2025.jsonl and corpus/static_scores_tier1.jsonl.
+The aggregate-results JSON, per-dimension CSV, per-year CSV, and a humanreadable
+Markdown
+summary
+are
+at
+corpus/aggregate_results.{json,md}
+and
+corpus/per_{dimension,year}_table.csv.
+The
+pipeline
+scripts
+are
+at
+scripts/extend_corpus.py
+(arXiv
+API
+puller),
+scripts/scan_pdf_bodies.py
+(PDF-body
+code-link
+extractor),
+scripts/merge_corpus.py
+(Paper-1
++
+extension
+merge),
+scripts/score_static.py
+(static
+six-dimension
+scorer),
+and
+scripts/aggregate_results.py (aggregator that produces the numbers in Section 6).
+All scripts are under MIT license.
+Re-running the pipeline from scratch
+(python3 scripts/extend_corpus.py && python3 scripts/scan_pdf_bodies.py
+&& python3 scripts/merge_corpus.py && python3 scripts/score_static.py &&
+python3 scripts/aggregate_results.py) takes approximately two hours on a single
+laptop and reproduces every numerical claim in Section 6 bit-identically modulo any
+arXiv index drift in the intervening time. The static-six analysis plan is at (Khan, 2026a)
+(pre-speciﬁed, not timestamp-enforced; see Section 5.5); the v2.1 manual-dimension
+analysis will be pre-registered (timestamp-enforced) before its scoring at (Khan, 2026d);
+the per-paper scorecard with audit-of-audit logs is at (Khan, 2026c).
+Audit. The repository includes paper/audit.py, which re-derives every numerical
+claim in this paper from the JSON outputs of the demonstration scripts.
+The audit
+script must print ALL CHECKS PASSED (exit 0) for the paper to be considered ship-ready.
+We adopt this convention from earlier papers in this series (Khan, 2026f,e); the auditscript convention catches transcription and table-construction errors mechanically before
+any push. In the writing of Section 4, the audit script caught two transcription errors
+(replay sample size mis-count, drift-month total oﬀby one) before any push.
+Tests. The package ships with 54 unit tests covering the audit decorator, hash chain,
+replay engine, input and output drift modules, regulator-export bundle, and the SQLite
+and JSONL stores. The CI conﬁguration runs them on every commit on Python 3.11 /
+3.12 / 3.13 / 3.14 across Linux, macOS, and Windows.
+Issues.
+Corrections, extensions, and challenges to the implementation choices re54
+
+ported here are welcomed via the repository’s issue tracker (github.com/ayk5511/mraudit/issues). Issues become part of the public record and feed the next version of this
+paper.
+References
+Araci, D. (2019).
+FinBERT: Financial sentiment analysis with pre-trained language
+models.
+Arnold, M., Bellamy, R. K. E., Hind, M., Houde, S., Mehta, S., Mojsilović, A., Nair,
+R., Ramamurthy, K. N., Olteanu, A., Piorkowski, D., Reimer, D., Richards, J., Tsay,
+J., and Varshney, K. R. (2019). FactSheets: Increasing trust in AI services through
+supplier’s declarations of conformity. volume 63.
+Brundage, M., Avin, S., Wang, J., Belﬁeld, H., Krueger, G., Hadﬁeld, G., Khlaaf,
+H., Yang, J., Toner, H., Fong, R., Maharaj, T., et al. (2020).
+Toward trustworthy AI development: Mechanisms for supporting veriﬁable claims.
+arXiv preprint
+arXiv:2004.07213.
+Databricks (2024). MLﬂow: An open-source platform for the machine learning lifecycle.
+https://github.com/mlflow/mlflow.
+European Parliament and Council (2016). Regulation (EU) 2016/679 of the european
+parliament and of the council of 27 april 2016 on the protection of natural persons
+with regard to the processing of personal data (General Data Protection Regulation).
+https://eur-lex.europa.eu/eli/reg/2016/679/oj.
+European Parliament and Council (2024). Regulation (EU) 2024/1689 of the european
+parliament and of the council of 13 june 2024 laying down harmonised rules on artiﬁcial
+intelligence (artiﬁcial intelligence act). https://eur-lex.europa.eu/eli/reg/2024/
+1689/oj.
+Federal Reserve (2011).
+SR 11-7: Guidance on model risk management.
+https://
+www.federalreserve.gov/boarddocs/srletters/2011/sr1107.htm. Joint guidance
+issued by the Board of Governors of the Federal Reserve System and the Oﬃce of the
+Comptroller of the Currency.
+Fischer, T. and Krauss, C. (2018). Deep learning with long short-term memory networks
+for ﬁnancial market predictions. European Journal of Operational Research, 270(2):654–
+669.
+55
+
+Gebru, T., Morgenstern, J., Vecchione, B., Vaughan, J. W., Wallach, H., Iii, H. D., and
+Crawford, K. (2021). Datasheets for datasets. Communications of the ACM, 64(12):86–
+92.
+Grinsztajn, L., Oyallon, E., and Varoquaux, G. (2022). Why do tree-based models still
+outperform deep learning on tabular data? In Advances in Neural Information Processing Systems (NeurIPS) Datasets and Benchmarks Track.
+Gu, S., Kelly, B., and Xiu, D. (2020). Empirical asset pricing via machine learning.
+Review of Financial Studies, 33(5):2223–2273.
+Gundersen, O. E. and Kjensmo, S. (2018). State of the art: Reproducibility in artiﬁcial intelligence. In Proceedings of the AAAI Conference on Artiﬁcial Intelligence,
+volume 32.
+Harvey, C. R., Liu, Y., and Zhu, H. (2016). . . . and the cross-section of expected returns.
+Review of Financial Studies, 29(1):5–68.
+Hou, K., Xue, C., and Zhang, L. (2020). Replicating anomalies.
+Hugging Face (2023). Model card guidebook. Operational guide and templates building
+on Mitchell et al. (2019).
+International Organization for Standardization and International Electrotechnical Commission (2023). ISO/IEC 42001:2023: Information technology — artiﬁcial intelligence
+— management system. https://www.iso.org/standard/81230.html. ISO/IEC AI
+management system standard, published December 2023.
+Ioannidis, J. P. A. (2005). Why most published research ﬁndings are false. PLoS Medicine,
+2(8):e124.
+Iterative.ai (2024).
+DVC: Open-source version control system for machine learning
+projects. https://dvc.org/.
+Jiang, Z., Xu, D., and Liang, J. (2017). A deep reinforcement learning framework for the
+ﬁnancial portfolio management problem.
+Karakoulas, G. (2004). Empirical validation of retail credit-scoring models. RMA Journal.
+Khan, A. (2026a). Analysis plan (static-six dimensions): Compliance survey of machinelearning papers in quantitative ﬁnance against the SR 11-7 / EU AI Act audit-trail
+standard. Pre-speciﬁed analysis plan (hypotheses H1–H5 and rubric ﬁxed before the
+static-six scoring step); deposited for transparency. Not a timestamp-enforced preregistration: the public record postdates the static-six scoring.
+56
+
+Khan, A. (2026b).
+Machine learning in quantitative ﬁnance: A systematic review of
+methods, applications, and open challenges (2015–2025). Technical Report 6562398,
+SSRN.
+Khan, A. (2026c).
+Per-paper scorecard and audit-of-audit logs for Paper 4 v2.0: A
+compliance survey of 185 published machine-learning papers in quantitative ﬁnance.
+All scorecard JSONL, aggregate CSV, and audit-of-audit logs are versioned under the
+linked path. A Zenodo DOI is minted with the v0.1.0 release tag and will appear in
+subsequent revisions of this bibliography.
+Khan, A. (2026d).
+Pre-registration (manual-review dimensions, v2.1): per-prediction
+logging, drift, signiﬁcance testing, multiple-comparison correction, out-of-sample protocol, and bit-identical replay. Timestamp-enforced OSF pre-registration ﬁled before
+any scoring of the six manual-review dimensions. v2.1 will report these as conﬁrmatory.
+Khan, A. (2026e). vol-eval: A Python package for volatility forecast evaluation, with a
+re-analysis of 30 published comparison papers (2018–2025). Technical Report 6756161,
+SSRN.
+Khan, A. (2026f).
+Volatility forecasting with machine learning: A horse race across
+GARCH, HAR, and tree-based models. Technical Report 6663418, SSRN.
+Kolm, P. N., Turiel, J., and Westray, N. (2023). Deep order ﬂow imbalance: Extracting alpha at multiple horizons from the limit order book. Mathematical Finance, 33(4):1044–
+1081.
+Lim, B., Arık, S. Ö., Loeﬀ, N., and Pﬁster, T. (2021). Temporal fusion transformers for
+interpretable multi-horizon time series forecasting. International Journal of Forecasting, 37(4):1748–1764.
+Liu, X.-Y., Yang, H., Gao, J., and Wang, C. D. (2021). FinRL: Deep reinforcement
+learning framework to automate trading in quantitative ﬁnance. In ACM International
+Conference on AI in Finance (ICAIF).
+Lopez-Lira, A. and Tang, Y. (2023). Can ChatGPT forecast stock price movements?
+return predictability and large language models.
+Massey, F. J. (1951). The Kolmogorov-Smirnov test for goodness of ﬁt. Journal of the
+American Statistical Association, 46(253):68–78.
+Mitchell, M., Wu, S., Zaldivar, A., Barnes, P., Vasserman, L., Hutchinson, B., Spitzer,
+E., Raji, I. D., and Gebru, T. (2019). Model cards for model reporting. In Proceedings
+of the Conference on Fairness, Accountability, and Transparency (FAT* ’19), pages
+220–229. ACM.
+57
+
+National Institute of Standards and Technology (2023). AI Risk Management Framework
+(AI RMF 1.0). https://doi.org/10.6028/NIST.AI.100-1. NIST AI 100-1.
+Northcutt, C. G., Athalye, A., and Mueller, J. (2021). Pervasive label errors in test
+sets destabilize machine learning benchmarks.
+In Advances in Neural Information
+Processing Systems (NeurIPS) Datasets and Benchmarks Track.
+Ntakaris, A., Magris, M., Kanniainen, J., Gabbouj, M., and Iosiﬁdis, A. (2018). Benchmark dataset for mid-price forecasting of limit order book data with machine learning
+methods.
+Oﬃce of the Comptroller of the Currency (2011). OCC bulletin 2011-12: Sound practices
+for model risk management. https://www.occ.gov/static/rescinded-bulletins/
+bulletin-2011-12.pdf.
+Open Science Collaboration (2015). Estimating the reproducibility of psychological science. Science, 349(6251):aac4716.
+Pineau, J., Vincent-Lamarre, P., Sinha, K., Larivière, V., Beygelzimer, A., d’Alché Buc,
+F., Fox, E., and Larochelle, H. (2021). Improving reproducibility in machine learning
+research (a report from the NeurIPS 2019 reproducibility program). Journal of Machine
+Learning Research, 22(164):1–20.
+Pushkarna, M., Zaldivar, A., and Kjartansson, O. (2022). Data cards: Purposeful and
+transparent dataset documentation for responsible AI. In Proceedings of the 2022 ACM
+Conference on Fairness, Accountability, and Transparency (FAccT ’22), pages 1776–
+1826. ACM.
+Raji, I. D., Smart, A., White, R. N., Mitchell, M., Gebru, T., Hutchinson, B., Smith-Loud,
+J., Theron, D., and Barnes, P. (2020). Closing the AI accountability gap: Deﬁning
+an end-to-end framework for internal algorithmic auditing. In Proceedings of the 2020
+Conference on Fairness, Accountability, and Transparency (FAT* ’20), pages 33–44.
+ACM.
+Sambasivan, N., Kapania, S., Highﬁll, H., Akrong, D., Paritosh, P., and Aroyo, L. M.
+(2021). “Everyone wants to do the model work, not the data work”: Data cascades
+in high-stakes AI. In Proceedings of the 2021 CHI Conference on Human Factors in
+Computing Systems. ACM.
+Schelter, S., Biessmann, F., Januschowski, T., Salinas, D., Seufert, S., and Szarvas,
+G. (2018).
+On challenges in machine learning model management.
+In IEEE Data
+Engineering Bulletin, volume 41, pages 5–15.
+58
+
+Sculley, D., Holt, G., Golovin, D., Davydov, E., Phillips, T., Ebner, D., Chaudhary, V.,
+Young, M., Crespo, J.-F., and Dennison, D. (2015). Hidden technical debt in machine
+learning systems. In Advances in Neural Information Processing Systems (NeurIPS),
+volume 28, pages 2503–2511.
+Shwartz-Ziv, R. and Armon, A. (2022). Tabular data: Deep learning is not all you need.
+Information Fusion, 81:84–90.
+Welch, I. and Goyal, A. (2008). A comprehensive look at the empirical performance of
+equity premium prediction. Review of Financial Studies, 21(4):1455–1508.
+Yang, H., Liu, X.-Y., and Wang, C. D. (2023). FinGPT: Open-source ﬁnancial large
+language models.
+Zhang, Z., Zohren, S., and Roberts, S. (2019). DeepLOB: Deep convolutional neural
+networks for limit order books. IEEE Transactions on Signal Processing, 67(11):3001–
+3012.
+Zhou, H., Zhang, S., Peng, J., Zhang, S., Li, J., Xiong, H., and Zhang, W. (2021).
+Informer: Beyond eﬃcient transformer for long sequence time-series forecasting. In
+Proceedings of the AAAI Conference on Artiﬁcial Intelligence, volume 35, pages 11106–
+11115.
+59

@@ -1,0 +1,99 @@
+{
+  "doc_id": 333,
+  "titulo": "The German High-Frequency Trading Act: Implications for Market Quality",
+  "resumen_operativo": "Analiza el impacto de la Ley Alemana de HFT (mayo 2013), primera regulación mundial que exige autorización a firms de trading propietario que usen baja latencia, altos volúmenes de mensajes intradiarios y sistemas autónomos de decisión. Usando datos tick-by-tick de 26 acciones DAX 30 en Xetra vs Turquoise MTF como control, encuentra que la ley redujo exitosamente el volumen de mensajes intradiarios (órdenes y modificaciones) pero el volumen de trades apenas cambió. Los mensajes perdidos proveían liquidez de alta calidad en los mejores límites, resultando en spreads bid-ask más amplios. Sin embargo, los tamaños eran insignificantes, por lo que la profundidad del libro no se afectó.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "German HFT Act (2013)",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Primera regulación mundial de HFT, vigente desde mayo 2013. Exige autorización de BaFin para firms de trading propietario no reguladas que cumplan tres criterios: (I) infraestructura para minimizar latencia, (II) sistemas autónomos de decisión sin intervención humana, y (III) alto volumen intradiario de mensajes (submissions, quotes, cancellations).",
+      "relaciones": [
+        {"tipo": "PRECEDE_A", "objeto": "MiFID II HFT regulation"},
+        {"tipo": "APLICA_A", "objeto": "German securities and derivatives markets"}
+      ],
+      "cita_textual": "A trading firm... falls under the license requirement of the German HFT Act, if the firm applies (I) infrastructures to minimize latency, (II) decision systems that create, transmit or execute orders autonomously without human intervention and (III) a high intraday trading message volume."
+    },
+    {
+      "nombre": "Order-to-trade ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Ratio regulatorio introducido por la ley que relaciona submissions, modificaciones y cancelaciones con transacciones ejecutadas. Los venues deben determinar este ratio individualmente y cobrar fees adicionales por comportamiento con volumen excesivo de mensajes.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "HFT message intensity"},
+        {"tipo": "REQUIERE", "objeto": "German HFT Act (2013)"}
+      ],
+      "cita_textual": "The HFT Act also introduces a number of provisions aimed at regulating certain trading behavior, including an adequate ratio between the submission, modification and deletion of orders and actual transactions (order-to-trade ratio)."
+    },
+    {
+      "nombre": "Message proxy from order book snapshots",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Proxy para estimar mensajes intradiarios usando snapshots de order book de TRTH (hasta 10 niveles). Cada aumento de shares en un nivel de precio existente o nuevo nivel emergente cuenta como un mensaje (submission o modificación que aumenta shares). Controla desplazamientos del libro para no sobrestimar.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "Intraday trading message volume"},
+        {"tipo": "USA", "objeto": "Thomson Reuters Tick History (TRTH)"}
+      ],
+      "cita_textual": "Every increase in shares at a prevailing limit, counts as one single order book message."
+    },
+    {
+      "nombre": "Natural experiment design (Xetra vs Turquoise)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Diseño de grupo de control usando acciones DAX 30 cross-listed: Xetra (mercado alemán afectado por la ley) vs Turquoise MTF (mercado no afectado). Excluye BATS Chi-X Europe por evento confundente (cambio a RIE en mayo 2013). Ventanas de 30 días simétricas pre/post cada fecha de evento.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Difference-in-differences"},
+        {"tipo": "REQUIERE", "objeto": "Cross-listed DAX 30 stocks"}
+      ],
+      "cita_textual": "This situation yields a control group setup by comparing the time-series development of identical, across-listed stocks traded on affected and non-affected markets."
+    },
+    {
+      "nombre": "Transient liquidity from HFT messages",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Fenómeno donde los mensajes de HFT que desaparecieron tras la regulación proveían liquidez de alta calidad en los mejores límites (best bid/ask) reduciendo spreads, pero con tamaños insignificantes. Su desaparición aumentó spreads pero no afectó la profundidad (depth) del libro.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Wider bid-ask spreads"},
+        {"tipo": "SE_OPONE_A", "objeto": "Deep liquidity provision"}
+      ],
+      "cita_textual": "A significant amount of these missing messages were providing high quality liquidity supply. These messages were located at the top of the respective order book, i.e., at the best bid and best ask limit, or even further, were reducing the bid-ask spread directly."
+    },
+    {
+      "nombre": "Three event dates",
+      "tipo": "concepto",
+      "definicion_en_contexto": "15 mayo 2013 (introducción inicial), 14 noviembre 2013 (fin período transitorio para firms alemanas, 6 meses), 14 febrero 2014 (fin período transitorio para firms extranjeras, 9 meses). Ninguna firma solicitó autorización BaFin, pero algunas pudieron haber agotado períodos transitorios.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "German HFT Act (2013)"},
+        {"tipo": "DETERMINA", "objeto": "Event study windows"}
+      ],
+      "cita_textual": "The introduction was scheduled to May 15th 2013. Only if market participants applied for authorization, a transitional period was granted... the act stipulates transitional periods of 6 months, until November 14th 2013, for firms domiciled in Germany as well as 9 months, until February 14th 2014, for firms that are not domiciled in Germany."
+    },
+    {
+      "nombre": "BaFin license requirement",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Requisito de autorización que transforma a firms HFT no reguladas en instituciones de servicios financieros supervisadas bajo la Ley Bancaria Alemana. Implica requisitos de capital mínimo, oficina permanente en Alemania, obligaciones organizacionales, y reporting/disclosure comprehensivo.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "German HFT Act (2013)"},
+        {"tipo": "CAUSA", "objeto": "HFT firm migration/adaptation"}
+      ],
+      "cita_textual": "This regulation requires comprehensive organizational obligations as well as numerous reporting and disclosure requirements that must be fulfilled after the respective transitional periods."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "La Ley Alemana de HFT redujo exitosamente el volumen de mensajes intradiarios (submissions y modificaciones de órdenes), mientras que el turnover y número de trades solo mostraron una caída marginal.",
+      "mercado": "Xetra (Deutsche Boerse) - 26 acciones DAX 30",
+      "periodo": "Ventanas de 30 días alrededor de mayo 2013, noviembre 2013 y febrero 2014",
+      "magnitud": "Caída significativa en mensajes diarios; trades y turnover con declive marginal solamente.",
+      "condiciones": "Control: Turquoise MTF (no afectado); exclusión de BATS Chi-X por cambio a RIE en mayo 2013; datos TRTH tick-by-tick",
+      "robustez": "alta",
+      "cita_textual": "We observe a sharp decline in the number of daily order submission and modifications while the turnover and number of trades only showed a marginal decline."
+    },
+    {
+      "afirmacion": "Los mensajes de HFT perdidos tras la regulación estaban ubicados en los mejores límites (best bid/ask) proveyendo liquidez de alta calidad que reducía el bid-ask spread. Tras la ley, los spreads bid-ask aumentaron significativamente.",
+      "mercado": "Xetra - DAX 30 stocks",
+      "periodo": "Pre/post mayo 2013, noviembre 2013, febrero 2014",
+      "magnitud": "Aumento significativo en bid-ask spreads; los top order book depth levels no se vieron afectados.",
+      "condiciones": "Descomposición del cambio en mensajes por ubicación en el order book (niveles 1-10)",
+      "robustez": "alta",
+      "cita_textual": "A significant amount of these missing messages were providing high quality liquidity supply... Thus, the average bid-ask spreads increase after the application of the German HFT Act."
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "Estudio de impacto regulatorio sobre dinámica intradiaria de mensajes y liquidez del order book; relevante para entender efectos de regulación HFT en calidad de mercado intradiaria."}
+}

@@ -1,0 +1,121 @@
+{
+  "doc_id": 144,
+  "titulo": "Graph Theory Application in Market Microstructure Analysis",
+  "resumen_operativo": "Propone aplicar teoría de grafos para el análisis de la microestructura del mercado, superando las limitaciones del análisis tradicional de series de tiempo. Modela los activos financieros como nodos y sus relaciones (correlaciones y volumen) como aristas, aplicando medidas de centralidad (Information Flow Centrality, Market Impact Score) y detección de comunidades (Louvain). Reporta una mejora del 30% en la detección de anomalías y una nueva forma de medir el riesgo sistémico (Systemic Impact Index).",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "graph theory",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Rama matemática usada para modelar activos financieros como nodos y sus correlaciones como aristas con el fin de capturar la estructura compleja y no lineal del mercado.",
+      "relaciones": [
+        {
+          "tipo": "MEJORA_A",
+          "objeto": "time-series analysis"
+        }
+      ],
+      "cita_textual": "Enter graph theory, a branch of mathematics that studies the properties of networks and the relationships between their components... an ideal candidate for advancing market microstructure analysis."
+    },
+    {
+      "nombre": "Information Flow Centrality (IFC)",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Métrica propuesta para medir la importancia de un nodo (activo) en la diseminación de información a través de la red, combinando eigenvector y betweenness centrality.",
+      "relaciones": [
+        {
+          "tipo": "USA",
+          "objeto": "eigenvector centrality"
+        },
+        {
+          "tipo": "USA",
+          "objeto": "betweenness centrality"
+        },
+        {
+          "tipo": "PARTE_DE",
+          "objeto": "Market Impact Score"
+        }
+      ],
+      "cita_textual": "A measure of a node's importance in disseminating information through the network."
+    },
+    {
+      "nombre": "Market Impact Score (MIS)",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Métrica compuesta que combina medidas de centralidad (IFC) con volumen de trading y capitalización de mercado para cuantificar la influencia de un activo en el mercado.",
+      "relaciones": [
+        {
+          "tipo": "USA",
+          "objeto": "Information Flow Centrality (IFC)"
+        }
+      ],
+      "cita_textual": "A composite metric that combines centrality measures with trading volume and market cap."
+    },
+    {
+      "nombre": "Network Resilience Score (NRS)",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Mide la capacidad de la red (mercado) para mantener su conectividad frente a la eliminación de nodos o aristas, utilizado para medir el riesgo sistémico.",
+      "relaciones": [
+        {
+          "tipo": "MIDE",
+          "objeto": "systemic risk"
+        }
+      ],
+      "cita_textual": "Measures the graph's ability to maintain connectivity under node/edge removals."
+    },
+    {
+      "nombre": "Systemic Impact Index (SII)",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Identifica los nodos cuya eliminación causaría la mayor disminución en el Network Resilience Score (NRS), indicando su importancia sistémica.",
+      "relaciones": [
+        {
+          "tipo": "USA",
+          "objeto": "Network Resilience Score (NRS)"
+        }
+      ],
+      "cita_textual": "Identifies nodes whose removal would cause the largest decrease in the NRS."
+    },
+    {
+      "nombre": "Louvain method",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Algoritmo de detección de comunidades eficiente en grafos grandes y ponderados, utilizado para segmentar el mercado en sectores o grupos con comportamiento similar.",
+      "relaciones": [
+        {
+          "tipo": "MIDE",
+          "objeto": "market segmentation"
+        }
+      ],
+      "cita_textual": "We employ the Louvain method for community detection due to its: Efficiency on large graphs... Hierarchical community structure output"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "El método basado en grafos logró una mejora significativa en la detección de anomalías de mercado respecto al método tradicional, aumentando el F1 Score en 30%.",
+      "mercado": "US equities (S&P 500)",
+      "periodo": "1000 trading days (test set)",
+      "magnitud": "F1 Score de 0.91 vs 0.70 (+30%); AUC-ROC de 0.95 vs 0.81 (+17.3%).",
+      "condiciones": "Evaluado sobre un test set de 1000 días con anomalías etiquetadas por expertos.",
+      "robustez": "alta",
+      "cita_textual": "Our graph-based approach achieved significant improvements in anomaly detection: F1 Score 0.70 -> 0.91 (+30.0%)"
+    },
+    {
+      "afirmacion": "La aplicación de detección de comunidades identificó 15 comunidades distintas que muestran alta coincidencia con los sectores tradicionales, pero con granularidad adicional.",
+      "mercado": "US equities (S&P 500)",
+      "periodo": "No especificado (historical data)",
+      "magnitud": "87% de coincidencia con sectores GICS; 3 nuevos sub-sectores descubiertos en Tecnología.",
+      "condiciones": "Uso del algoritmo Louvain en el grafo ponderado de correlación de retornos y relaciones de trading.",
+      "robustez": "media",
+      "cita_textual": "Identified 15 distinct communities compared to 11 GICS sectors. 87% agreement with GICS sectors. Discovered 3 new sub-sectors within the Technology sector"
+    },
+    {
+      "afirmacion": "El Network Resilience Score indica un incremento en el riesgo sistémico durante la última década.",
+      "mercado": "US equities",
+      "periodo": "2010-2020",
+      "magnitud": "NRS decreció de 0.78 a 0.65.",
+      "condiciones": "Evaluación de conectividad de la red al remover 10% de nodos de forma simulada.",
+      "robustez": "media",
+      "cita_textual": "Network Resilience Score (NRS) decreased from 0.78 in 2010 to 0.65 in 2020, indicating increased systemic risk"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "El enfoque de grafos (Information Flow Centrality, Network Resilience) podría adaptarse para capturar relaciones intra-día (ticks/order flow) entre los constituyentes del S&P 500 y predecir movimientos del ES, dado que el paper menciona datos de 1 minuto (TAQ) y relaciones basadas en order book, aunque sus resultados primarios se ilustran con datos diarios/históricos."
+  }
+}

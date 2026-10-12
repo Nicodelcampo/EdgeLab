@@ -1,0 +1,99 @@
+{
+  "doc_id": 193,
+  "titulo": "Intermittency in Quantitative Finance",
+  "resumen_operativo": "El paper aplica la técnica de factorial moments de la física nuclear al análisis de series de precios financieros. Define momentos factoriales F_q sobre secuencias de retornos positivos/negativos en ventanas temporales, mostrando que F_2 se desvía de 1 (valor Gaussiano) cuando la resolución temporal baja de 4 horas, indicando intermittency: correlaciones entre retornos generan fluctuaciones no-Gaussianas. El análisis se realiza sobre el contrato de futuro del Euro (2001-2011, ~688k cotizaciones en intervalos de 5 minutos) y se extiende con una predicción exponencial para la probabilidad de gaps (rachas de retornos del mismo signo).",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "Factorial Moments",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Herramienta de física nuclear para caracterizar distribuciones de multiplicidad. Momentos factoriales normalizados F_q que son iguales a 1 para estadística Gaussiana sin correlaciones y crecen por encima de 1 cuando hay correlaciones y fluctuaciones dinámicas.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "intermittency"},
+        {"tipo": "APLICA_A", "objeto": "financial time series"}
+      ],
+      "cita_textual": "Factorial moments are convenient tools in nuclear physics to characterize the multiplicity distributions when phase-space resolution becomes small."
+    },
+    {
+      "nombre": "Intermittency",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Fenómeno donde los factorial moments aumentan con la resolución (disminución del tamaño del bin), señalando desviaciones de la distribución puramente Gaussiana. En finanzas, aparece en resoluciones temporales por debajo de 4 horas.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "factorial moments"},
+        {"tipo": "CAUSA", "objeto": "non-Gaussian fluctuations"}
+      ],
+      "cita_textual": "The linear growth of log F_i with n_bins was defined as intermittency."
+    },
+    {
+      "nombre": "Multiplicity Distribution",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Distribución del número de retornos positivos (o negativos) en una ventana temporal. Contiene información sobre correlaciones entre partículas (retornos) de forma integrada, proporcionando un medio sensible para sondear la dinámica.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "factorial moments"},
+        {"tipo": "USA", "objeto": "bin segmentation"}
+      ],
+      "cita_textual": "The multiplicity distribution contains information about multiparticle correlations in an integrated form, providing a general and sensitive means to probe the dynamics of the interaction."
+    },
+    {
+      "nombre": "Gap Probability",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Probabilidad de tener cero retornos positivos (o negativos) en una ventana temporal dada. Se deriva que p_0 ≈ exp(-K_1) = exp(-ρΔ), es decir, decaimiento exponencial con el tamaño de la ventana cuando no hay correlaciones de orden superior.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "return clustering"},
+        {"tipo": "USA", "objeto": "cumulants"}
+      ],
+      "cita_textual": "The gap probability is exponentially suppressed either in rapidity or in time."
+    },
+    {
+      "nombre": "Non-Gaussian Fluctuations",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Fluctuaciones en los retornos que se desvían de la distribución Gaussiana. Los factorial moments F_2 > 1 cuando la resolución temporal es inferior a 4 horas, indicando que las correlaciones generan fluctuaciones super-difusivas.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "intermittency"},
+        {"tipo": "PARTE_DE", "objeto": "financial returns"}
+      ],
+      "cita_textual": "F_2 is increasing above 1 when the number of bins gets larger than 4. This confirms that non-Gaussian fluctuations in the sequence of returns start to play a role when the resolution is below 4 hours."
+    },
+    {
+      "nombre": "Cumulants",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Cumulantes de rango q que representan correlaciones genuinas de q partículas no reducibles al producto de correlaciones de orden inferior. Relacionados con los factorial moments a través de la función generatriz G(z).",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "factorial moments"},
+        {"tipo": "APLICA_A", "objeto": "gap probability"}
+      ],
+      "cita_textual": "Cumulants of rank q represent genuine q-particle correlations not reducible to the product of lower order correlations."
+    },
+    {
+      "nombre": "Econophysics",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Campo interdisciplinario que aplica métodos de la física estadística a las finanzas. Este paper es un ejemplo paradigmático al trasladar factorial moments de física nuclear al análisis de retornos financieros.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "financial time series"},
+        {"tipo": "USA", "objeto": "statistical physics methods"}
+      ],
+      "cita_textual": "In this letter, we show that a similar analysis can be developed on financial price series, with an adequate definition of factorial moments."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Los factorial moments de orden 2 (F_2) del contrato de futuro del Euro son iguales a 1 para resoluciones temporales de 16.5 y 8.25 horas (1-2 bins), pero aumentan por encima de 1 cuando la resolución baja de ~4 horas, indicando comportamiento intermitente y fluctuaciones no-Gaussianas.",
+      "mercado": "Euro future contract (EUREX o similar)",
+      "periodo": "Mayo 2001 - Agosto 2011 (~688k cotizaciones, 5-min sampling)",
+      "magnitud": "F_2^{++}: ~1.00 (1-2 bins), ~1.02 (4 bins), ~1.04 (10 bins), ~1.06 (20 bins) aproximadamente; precisión estadística 0.1%; 3,400+ eventos",
+      "condiciones": "Ventana global de 16.5 horas dividida en 1, 2, 4, 10 o 20 bins; Euro futuro muestreado cada 5 minutos",
+      "robustez": "media",
+      "cita_textual": "We observe that for 1 and 2 bins segmentation, F_2^{++} is found to be equal to 1 and F_2^{++} is increasing above 1 when the number of bins gets larger than 4."
+    },
+    {
+      "afirmacion": "La probabilidad de gap (rachas de retornos consecutivos del mismo signo) decae exponencialmente con el tamaño del gap, confirmando la predicción teórica p_0 ≈ exp(-ρΔ) derivada de los factorial moments.",
+      "mercado": "Euro future contract",
+      "periodo": "10 años (~2001-2011)",
+      "magnitud": "Decaimiento exponencial confirmado tanto en muestreo de 5 minutos como de 30 minutos",
+      "condiciones": "Gap definido como número de retornos consecutivos positivos después de uno negativo (y viceversa)",
+      "robustez": "media",
+      "cita_textual": "We observe effectively an exponential fall of the probability distribution as a function of the gap size. This confirms the relation p_0 ≃ exp(-K_1) = exp(-<n_{+,-}>) = exp(-ρΔ)."
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "El análisis de intermittency con factorial moments opera en resoluciones de ~1-16 horas; la técnica es directamente aplicable a clasificación intradía de activos por fuerza de correlaciones no-Gaussianas."}
+}

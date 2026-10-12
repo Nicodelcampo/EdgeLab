@@ -1,0 +1,1009 @@
+ 
+ 
+ 
+ 
+ 
+ 
+TRADING DOWN: THE EFFECTS OF ACTIVE TRADING  
+ON ONE-MONTH ETF RETURNS 
+Ian Gray 
+Loyola Marymount University 
+December 15, 2021 
+Faculty Advisor: Dr. Joshua Spizman 
+ 
+ 
+Abstract 
+ 
+Ark Investment Management (ARK), led by CIO Cathie Wood, has risen to prominence over the 
+past few years because of its remarkable performance. Because of requirements for active ETFs to 
+publish daily holdings, market participants have gained unprecedented access to following the path 
+to market-beating performance. ARK is celebrated for both its stock picking and active trading 
+abilities. In this paper, I study how active trading affects alpha from ARK’s funds, and I create 
+static synthetic portfolios to strip out the effects of active trading. I find that active trading on 
+average reduces ARK’s one-month returns by 1.36 percentage points.  
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3985640
+
+ 
+1 
+I. Introduction 
+ 
+Between February 12th and March 23rd of 2020, the Dow Jones Industrial Average fell 
+37% in response to the global emergence of COVID-19.1 Despite triggering circuit breakers at 
+the New York Stock Exchange, the sell-off did not appear to cause a sustained panic. By July of 
+2020, the market had already recovered to its pre-crash levels.2 The rapid rebound could be 
+explained by a variety of factors that are beyond the scope of this project, but suffice it to say, 
+the rebound and the subsequent bull market captured the imagination of individual investors. 
+Platforms like Reddit and Twitter grew communities of engaged investors, traders, and 
+speculators. The public could not get enough stock market content. Even controversial sports 
+media mogul Dave Portnoy began live streaming his daily stock market moves and musings. 
+During this period, he was reportedly getting nearly one million views per day.3 
+ 
+As this stock market mania ensued, people naturally started trying to find the “smart 
+money.” Unlike in previous periods of widespread excitement, this generation had access to a 
+new form of information, actively managed exchange traded fund (ETF) holdings disclosures. 
+Under SEC rule, actively managed ETFs must report daily holdings. Instead of relying on 
+ 
+1 Liz Frazier, “The Coronavirus Crash of 2020, and the Investing Lesson It Taught Us,” Forbes (Forbes Magazine, 
+June 28, 2021), https://www.forbes.com/sites/lizfrazierpeck/2021/02/11/the-coronavirus-crash-of-2020-and-theinvesting-lesson-it-taught-us/?sh=33bc39f946cf. 
+2 Paul Kaplan, “In Long History of Market Crashes, Coronavirus Crash Was the Shortest,” Morningstar, Inc. 
+(Morningstar, Inc., March 9, 2021), https://www.morningstar.com/articles/1028407/in-long-history-of-marketcrashes-coronavirus-crash-was-the-shortest. 
+3 James Hale, “Barstool Sports Touts 950k Views per Day for Founder Dave Portnoy's Day Trading Show, 
+Launches Branded Content Division,” Tubefilter (Tubefilter, Inc., April 30, 2021), 
+https://www.tubefilter.com/2020/06/23/newfronts-barstool-sports-davey-day-trader-barstool-creative/. 
+Electronic copy available at: https://ssrn.com/abstract=3985640
+
+ 
+2 
+popular market prognosticators, out-of-date 13-F filings, or stock picking services, investors had 
+access to the moves high-profile money managers were making on a daily basis. Although 
+passive ETFs which track indices have existed for nearly three decades, actively managed ETFs 
+first emerged in 2008, and they did not immediately gain widespread popularity.4 The first 
+actively managed ETF survived for less than a year.5 Since then, particularly after the pandemic 
+induced crash of March 2020, actively managed ETFs have risen to prominence.  
+ 
+Cathie Wood, CIO of ARK Investment Management (ARK), sits atop of this rising tide 
+of actively managed ETFs.6 Her flagship fund, ARK Innovation (ticker: ARKK) has gone from 
+$2.0 billion in assets under management in January 2020 to $18.3 billion in November 2021.7 
+The inflow of funds has coincided with spectacular performance. ARKK has appreciated over 
+400% in the past five years. 
+ 
+Although Ark Investment Management and other active ETF managers have risen in 
+popularity, very few academic papers have studied where the performance of the funds comes 
+from. There are many possible answers to this question. In this paper, I seek to determine 
+whether actively managed ETF performance is attributable to picking and holding stocks, 
+actively trading positions, or both. This analysis is possible because of the requirement that 
+ 
+4 Ben Slavin, “Active Etfs: The Next Act,” BNY Mellon (BNY Mellon, July 2021), 
+https://www.bnymellon.com/us/en/insights/aerial-view-magazine/active-etfs-the-next-act.html. 
+5 Ibid. 
+6 Claire Ballentine and Katherine Greifeld, “Cathie Wood Takes Crown from JPMorgan for Largest Active ETF,” 
+Bloomberg.com (Bloomberg, December 11, 2020), https://www.bloomberg.com/news/articles/2020-12-11/cathiewood-takes-crown-from-jpmorgan-for-largest-active-etf. 
+7 Y Charts, “ARKK Total Assets Under Management,” ARKK Total Assets Under Management (YCharts.com, 
+November 27, 2021), https://ycharts.com/companies/ARKK/total_assets_under_management. 
+Electronic copy available at: https://ssrn.com/abstract=3985640
+
+ 
+3 
+actively managed ETFs must report their holdings. I create synthetic portfolios that do not trade 
+based on the daily holdings information by holding the portfolio constant for one month based on 
+the holdings of the portfolio on the first day of trading for each month. This allows me to 
+compare returns between the actual ETFs, with actively managed trading, and these synthetic 
+portfolios, which isolated the portion of alpha attributable to trading.   
+ 
+II. Literature Review 
+ 
+The body of academic work on actively managed ETFs is limited, but there are some 
+resources that frame the relevance of this question. The central question related to actively 
+managed ETFs is whether active strategies outperform passive strategies. This is a question that 
+has been studied and debated in a variety of settings. In a 2014 article, Ellis analyzes historical 
+returns and fees and determines that although active management might have once made sense, 
+the improved efficiency of current markets makes active management undesirable for clients due 
+to the limited outperformance and associated fees (Ellis, 2014).8 This line of thinking appears to 
+have caught on with many investors. In 2019, for the first time in U.S. capital markets history, 
+passive funds held more assets than active funds.9  
+ 
+This trend toward passively managed funds is not welcomed by all in the investment 
+community. There are some who are worried that the increased levels of passive money in the 
+ 
+8 Charles D. Ellis, “The Rise and Fall of Performance Investing,” Financial Analysts Journal 70, no. 4 (2014): pp. 
+14-23, https://doi.org/10.2469/faj.v70.n4.4. 
+9 John Gittlesohn, “End of Era: Passive US Equity Funds Eclipse Active in Epic Industry Shift,” Bloomberg.com 
+(Bloomberg, September 11, 2019), https://www.bloomberg.com/news/articles/2019-09-11/passive-u-s-equity-fundseclipse-active-in-epic-industry-shift. 
+Electronic copy available at: https://ssrn.com/abstract=3985640
+
+ 
+4 
+market reduce scrutiny and lead to less price efficient markets. One paper recommends favorable 
+tax treatment for actively managed funds to negate the downward drag on returns caused by fees 
+(Libson and Parchomovsky, 2021).10 Another alternative that could increase the performance of 
+actively managed funds would be determining the key factors driving active performance so that 
+active managers can most effectively hone their strategies to generate risk-adjusted alpha. 
+Despite the trend toward passive funds, there have been significant inflows into ARK’s 
+ETFs. These inflows are likely attributable to ARK’s recent outperformance of public indices. 
+This outperformance marks a meaningful change in the nature of active ETFs. A 2014 paper 
+found that active ETFs were not as active as people expected and that the tracking error between 
+active and passive ETFs was relatively small (Schizas, 2014).11 The paper also found that active 
+ETFs tended to be more volatile and less profitable than passive ETFs. ARK has seemingly 
+flipped that narrative over the last few years. It has become known for its daily moves in and out 
+of highly volatile growth stocks. In the conclusion of the 2014 paper, the author suggests, 
+“Evidently, the results are subject to the low activity and interest of investors, since an increase 
+in the popularity could improve the performance of the active ETFs significantly.” The increased 
+inflows into ARK ETFs suggest that active ETFs benefit from increased popularity which could 
+be fueling returns as more money flows into the companies selected by the active manager.  
+ 
+10 Adi Libson and Gideon Parchomovsky, “Reversing the Fortunes of Active Funds,” SSRN Electronic Journal, 
+2020, https://doi.org/10.2139/ssrn.3517849. 
+11 Panagiotis Schizas, “Active Etfs and Their Performance Vis-à-Vis Passive Etfs, Mutual Funds, and Hedge 
+Funds,” The Journal of Wealth Management 17, no. 3 (2014): pp. 84-98, 
+https://doi.org/10.3905/jwm.2014.17.3.084. 
+Electronic copy available at: https://ssrn.com/abstract=3985640
+
+ 
+5 
+In this paper, I seek to determine what has caused this outperformance in ARK’s ETFs: 
+picking stocks, actively trading positions, or both. One paper analyzes the stock market as a 
+whole and suggests that longer holding periods of the market portfolio improve returns (Shen, 
+2005).12 Although this is related to the question in this paper, it does not answer it because, while 
+ARK is trading in and out of specific securities, it is maintaining equity market exposure 
+throughout the periods. Thus, it should benefit from the general long-term upward momentum of 
+the equity markets and the increased average return of longer holding periods. Nevertheless, it 
+provides some inspiration for this project. The 2005 paper indicates that longer holding periods 
+contribute to better returns in the market portfolio. In this paper, I study whether that same 
+principle holds true for individual equities within an actively managed ETF.  
+In 2018, a pair of authors published a paper suggesting that “no risk-averse investor 
+should choose a random active fund over a random index fund” (Crane & Crotty, 2018).13 They 
+found that the best active funds only outperform the best passive funds by six basis points per 
+month and underperform passive funds when taking the increased risk into account. This does 
+not definitively prove that active trading is inferior to buying and holding a concentrated 
+portfolio, but it does provide some evidence to that effect. 
+In addition to work on the inflows and performance of active ETFs, some scholars have 
+examined the liquidity and bid-ask spreads of active ETFs. One group of authors found that 
+ 
+12 Pu Shen, “How Long Is a Long-Term Investment,” SSRN Electronic Journal, 2005, 
+https://doi.org/10.2139/ssrn.2178716. 
+13 Alan D. Crane and Kevin Crotty, “Passive versus Active Fund Performance: Do Index Funds Have Skill?” 
+Journal of Financial and Quantitative Analysis 53, no. 1 (2018): pp. 33-64, 
+https://doi.org/10.1017/s0022109017000904. 
+Electronic copy available at: https://ssrn.com/abstract=3985640
+
+ 
+6 
+active ETFs are less liquid than their underlying portfolios due to the creation/redemption 
+mechanism (Pham, Marshall, Nguyen, and Visaltanachoti, 2021).14 A 2010 paper found that 
+active ETFs have narrower bid-ask spreads than passive ETFs indicating that active ETFs are 
+more liquid than passive ETFs (Rompotis, 2010).15 The more recent study would indicate that all 
+else being equal, investors would be better off investing in the individual securities rather than 
+active ETFs, which is of some relevance to this paper.  
+ 
+III. Data & Methodology 
+3.1 Data 
+ 
+For this project, I chose to analyze ARK funds due to their prominence in the public 
+sphere, their significant assets under management, and their performance. I only studied four of 
+ARK’s funds for this project: ARK Innovation ETF (ARKK), ARK Autonomous Technology & 
+Robotics ETF (ARKQ), ARK Next Generation Internet ETF (ARKW), and ARK Genomic 
+Revolution ETF (ARKG). I excluded the ARK Fintech Innovation ETF (ARKF) and the ARK 
+Space Exploration & Innovation ETF (ARKX) due to limited histories.  
+ 
+To analyze the funds, I obtained five years of monthly holdings data for each of the four 
+ARK ETFs from S&P Global Capital Intelligence.16 I downloaded and cleaned the data in Excel. 
+ 
+14 Son D. Pham et al., “The Liquidity of Active Etfs,” Global Finance Journal 49 (2021): p. 100572, 
+https://doi.org/10.1016/j.gfj.2020.100572.  
+15 Gerasimos Rompotis, “Active Versus Passive ETFs: An Investigation of Bid-Ask Spread,” IUP Journal of 
+Applied Finance 16, no. 3 (2010). 
+16 Capital IQ, “S&P Capital IQ Holdings Data,” S&P Capital IQ (S&P Global, October 2021), 
+https://www.capitaliq.com. 
+Electronic copy available at: https://ssrn.com/abstract=3985640
+
+ 
+7 
+Unfortunately, there were a few missing months of data, but even with the missing data, I was 
+able to collect holdings data for fifty-four of the sixty months. Additionally, within some of the 
+date instances, the proportion of holdings summed to less than 1.00, but this had an immaterial 
+effect on the results. I combined all this data into a table with the following columns: ETF, 
+Holding, Date. 
+ 
+For this project, the returns calculated are the changes in the price of the securities. These 
+are not total returns, and thus, do not include dividends. 
+3.2 Methodology 
+ 
+To best measure ARK’s active trading ability, I analyze how much alpha active trading 
+generated over one-month periods. I calculated the returns of synthetic portfolios that mirrored 
+the initial holdings of each ETF for each date instance. In order to obtain these portfolio returns, 
+I multiplied the one-month return (r) of each equity held by the ETF weighted by its initial 
+allocation within the ETF (w) divided by the proportion of holdings accounted for (p): 
+ 
+ 
+By dividing by the proportion of holdings accounted for, the synthetic return more 
+accurately reflects the performance of the holdings. For example, if for a given instance only 
+90% of holdings were accounted and the holdings returned an average of 10%, the synthetic 
+return without the proportion of holdings adjustment would be 9%. For this research, I assume 
+that any missing holdings performed as the average of the accounted for holdings by dividing the 
+weighted average by the proportion of holdings accounted for. The average number of holdings 
+accounted for in this data set is 97.22%. 
+Electronic copy available at: https://ssrn.com/abstract=3985640
+
+ 
+8 
+ 
+Once I calculate the one-month returns for each of the synthetic portfolios, I compare 
+them to the actual ETF returns from the same date instance, calculating the relative performance 
+of the ETF by subtracting the synthetic portfolio returns (rs) from the actual ETF returns (ra): 
+ 
+ 
+ 
+Once obtaining this relative performance number for each instance, I run statistical 
+analysis on the data set to determine the significance of various factors and make observations on 
+the initial hypothesis.  
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3985640
+
+ 
+9 
+IV. Results 
+Table 1 
+ARK Funds Relative Performance t-Test  
+  
+ETF Relative Performance 
+Mean 
+-0.01357 
+Variance 
+0.00052 
+Observations 
+216 
+df 
+215 
+t Stat 
+8.71004 
+P(T<=t) one-tail 
+0.00000 
+t Critical one-tail 
+1.65197 
+P(T<=t) two-tail 
+0.00000 
+t Critical two-tail 
+1.97106 
+ 
+ 
+ 
+Legend to Table 1. ARK Funds Relative Performance t-Test. 
+This table is the output of a t-Test comparing the mean relative performance of 
+ARK funds with zero to determine if the mean is significant. The observations are 
+one-month periods of relative performance from the ARK ETFs. ETF relative 
+performance is the performance of the ETF over the one-month period minus the 
+performance of an untraded synthetic portfolio created using the allocation of the 
+ETF on day one of the period. The t Stat is a measure of statistical difference. 
+Traditionally, values greater than 1.96 or less than -1.96 are considered statistically 
+significant. 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3985640
+
+ 
+10 
+4.1 ARK Fund Relative Performance 
+Table 1 reports a t-Test on all 216 relative performance instances across all four funds to 
+determine if the mean relative performance was significantly different than zero. That t-Test 
+(table 1) generated a t Stat of 8.71 and showed that the mean relative performance was 
+significantly different from zero. The mean value of -0.0136 implies that the actual ARK ETFs 
+underperformed the synthetic portfolios that had no trading activity by an average of 1.36 
+percentage points per month.  
+ 
+Electronic copy available at: https://ssrn.com/abstract=3985640
+
+ 
+11 
+Table 2 
+ARKK Relative Performance t-Test  
+  
+ARKQ Relative Performance t-Test  
+  
+ETF Relative Performance 
+  
+  
+ETF Relative Performance 
+Mean 
+-0.01275 
+ Mean 
+-0.01111 
+Variance 
+0.00064 
+ Variance 
+0.00013 
+Observations 
+54 
+ Observations 
+54 
+df 
+53 
+ df 
+53 
+t Stat 
+3.69903 
+ t Stat 
+7.29102 
+P(T<=t) one-tail 
+0.00026 
+ P(T<=t) one-tail 
+0.00000 
+t Critical one-tail 
+1.67412 
+ t Critical one-tail 
+1.67412 
+P(T<=t) two-tail 
+0.00052 
+ P(T<=t) two-tail 
+0.00000 
+t Critical two-tail 
+2.00575   t Critical two-tail 
+2.00575 
+ARKW Relative Performance t-Test  
+  
+ARKG Relative Performance t-Test  
+  
+ETF Relative Performance 
+  
+  
+ETF Relative Performance 
+Mean 
+-0.01466 
+ Mean 
+-0.01574 
+Variance 
+0.00050 
+ Variance 
+0.00084 
+Observations 
+54 
+ Observations 
+54 
+df 
+53 
+ df 
+53 
+t Stat 
+4.80023 
+ t Stat 
+3.98624 
+P(T<=t) one-tail 
+0.00001 
+ P(T<=t) one-tail 
+0.00010 
+t Critical one-tail 
+1.67412 
+ t Critical one-tail 
+1.67412 
+P(T<=t) two-tail 
+0.00001 
+ P(T<=t) two-tail 
+0.00021 
+t Critical two-tail 
+2.00575   t Critical two-tail 
+2.00575 
+ 
+ 
+ 
+Legend to Table 2. Particular ARK Funds t-Tests. 
+This table is the output of four t-Tests comparing the mean relative performance of 
+particular ARK funds with zero to determine if the means are significant. ARKK is 
+the ARK Innovation ETF. ARKQ is the ARK Autonomous Tech. & Robotics ETF. 
+ARKW is the ARK Next Generation Internet ETF. ARKG is the ARK Genomic 
+Revolution ETF. The observations are one-month periods of relative performance 
+from the ARK ETFs. ETF relative performance is the performance of the ETF over 
+the one-month period minus the performance of an untraded synthetic portfolio 
+Electronic copy available at: https://ssrn.com/abstract=3985640
+
+ 
+12 
+created using the allocation of the ETF on day one of the period. The t Stat is a 
+measure of statistical difference. Traditionally, values greater than 1.96 or less than 
+-1.96 are considered statistically significant. 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3985640
+
+ 
+13 
+4.2 Particular ARK Funds Relative Performance 
+As would be expected with the high level of significance on the overall data set, I also 
+find that the ETF relative performance is negative and significant for each of the four ARK funds 
+I analyze (table 2). The t Stat for the relative performance of each of the funds is at least 3.699, 
+indicating again to a high level of significance that holding the synthetic portfolios for the period 
+instead of trading would have been optimal for one-month returns. The means of each fund 
+imply that ARKK underperforms the synthetic portfolios by an average of 1.27 percentage points 
+per month, ARKQ underperforms by an average of 1.11 percentage points per month, ARKW 
+underperforms by an average of 1.47 percentage points per month, and ARKG underperforms by 
+an average of 1.57 percentage points per month.  
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3985640
+
+ 
+14 
+Table 3 
+Relative Performance Regressed on Particular ETFs 
+Regression Statistics 
+ 
+ 
+ 
+ 
+ 
+Multiple R 
+0.07781 
+  
+ 
+ 
+ 
+R Square 
+0.00606 
+  
+ 
+ 
+ 
+Adjusted R Square 
+-0.00801 
+  
+ 
+ 
+ 
+Standard Error 
+0.02298 
+  
+ 
+ 
+ 
+Observations 
+216 
+  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ANOVA 
+ 
+ 
+ 
+ 
+ 
+ 
+  
+df 
+SS 
+MS 
+F 
+Significance F 
+ 
+Regression 
+3 
+0.00068 
+0.00023 0.43050 
+0.73136 
+ 
+Residual 
+212 
+0.11197 
+0.00053 
+  
+ 
+Total 
+215 
+0.11265   
+  
+  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+  
+Coefficients 
+Standard Error 
+t Stat 
+P-value 
+Lower 95% 
+Upper 95% 
+Intercept 
+-0.01275 
+0.00313 -4.07612 0.00006 
+-0.01891 
+-0.00658 
+ARKG 
+-0.00299 
+0.00442 -0.67657 0.49941 
+-0.01171 
+0.00573 
+ARKQ 
+0.00164 
+0.00442 
+0.37015 0.71164 
+-0.00708 
+0.01036 
+ARKW 
+-0.00192 
+0.00442 -0.43338 0.66518 
+-0.01064 
+0.00680 
+ 
+ 
+ 
+Legend to Table 3. Relative Performance Regress on Particular ETFs. 
+This table is the output of regressing the relative performance of ARK ETFs on 
+dummy variables representing each of the four ARK funds in this research. ARKK 
+is the ARK Innovation ETF. ARKQ is the ARK Autonomous Tech. & Robotics 
+ETF. ARKW is the ARK Next Generation Internet ETF. ARKG is the ARK 
+Genomic Revolution ETF. The coefficients represent the difference in expected 
+relative performance between the four funds.  The t Stat is a measure of statistical 
+difference. Traditionally, values greater than 1.96 or less than -1.96 are considered 
+statistically significant. 
+Electronic copy available at: https://ssrn.com/abstract=3985640
+
+ 
+15 
+Despite each of the funds relative one-month mean returns being independently negative 
+and significant, I find that the funds do not significantly alter the ETFs relative performance. The 
+intercept in this regression (table 3) indicates that the mean relative performance is negative and 
+significant when controlling for each particular ETF. Using dummy variables to control for the 
+funds, none of the coefficients are shown to be significant. This is not surprising given Cathie 
+Wood is the portfolio manager of all four funds.17  
+ 
+ 
+ 
+ 
+17 “About the Ark Etfs,” ARK Funds (Ark Investment Management, October 4, 2021), https://ark-funds.com/about/. 
+Electronic copy available at: https://ssrn.com/abstract=3985640
+
+ 
+16 
+Table 4 
+Relative Performance Regressed on Fund Turnover, Number of Holdings, Particular Funds 
+Regression Statistics 
+ 
+ 
+ 
+ 
+ 
+Multiple R 
+0.28475 
+  
+ 
+ 
+ 
+R Square 
+0.08108 
+  
+ 
+ 
+ 
+Adjusted R Square 
+0.05920 
+  
+ 
+ 
+ 
+Standard Error 
+0.02220 
+  
+ 
+ 
+ 
+Observations 
+216 
+  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ANOVA 
+ 
+ 
+ 
+ 
+ 
+ 
+  
+df 
+SS 
+MS 
+F 
+Significance F 
+ 
+Regression 
+5 
+0.00913 
+0.00183 3.70594 
+0.00310 
+ 
+Residual 
+210 
+0.10352 
+0.00049 
+  
+ 
+Total 
+215 
+0.11265   
+  
+  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+  
+Coefficients 
+Standard Error 
+t Stat 
+P-value 
+Lower 95% 
+Upper 95% 
+Intercept 
+-0.00189 
+0.01149 
+-0.16451 0.86949 
+-0.02454 
+0.02076 
+Fund Turnover 
+-0.09554 
+0.02343 
+-4.07774 0.00006 
+-0.14173 
+-0.04935 
+Number of Unique Holdings 
+0.00002 
+0.00026 
+0.06102 0.95141 
+-0.00049 
+0.00052 
+ARKG 
+-0.00335 
+0.00454 
+-0.73675 0.46210 
+-0.01231 
+0.00561 
+ARKQ 
+0.00006 
+0.00459 
+0.01370 0.98908 
+-0.00898 
+0.00911 
+ARKW 
+-0.00212 
+0.00432 
+-0.49064 0.62419 
+-0.01064 
+0.00640 
+ 
+Legend to Table 4. Relative Performance Regressed on  
+Fund Turnover, Number of Holdings, Particular Funds. 
+This table is the output of regressing the relative performance of ARK ETFs on 
+fund turnover, number of holdings, and dummy variables representing each of the 
+four ARK funds in this research. ARKK is the ARK Innovation ETF. ARKQ is the 
+ARK Autonomous Tech. & Robotics ETF. ARKW is the ARK Next Generation 
+Internet ETF. ARKG is the ARK Genomic Revolution ETF. Fund turnover is 
+measured as the percentage of a particular ETF’s holdings that were sold and 
+reallocated in the measured month. Number of unique holdings is the amount of 
+Electronic copy available at: https://ssrn.com/abstract=3985640
+
+ 
+17 
+equities owned in the ETF in the measured month. The coefficients on the dummy 
+variables represent the difference in expected relative performance between the 
+four funds.  The t Stat is a measure of statistical difference. Traditionally, values 
+greater than 1.96 or less than -1.96 are considered statistically significant. 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3985640
+
+ 
+18 
+4.3 ARK Funds Portfolio Turnover and Relative Performance 
+The first two tables imply that there is a significant difference between the one-month 
+returns of the ETFs and the one-month returns of the static synthetic portfolios. They do not, 
+however, prove anything about whether the amount of trading influences the amount of 
+underperformance, only that trading does lead to underperformance. To analyze the impact of the 
+amount of trading, I calculated an additional variable, fund turnover. For the fund turnover 
+variable, a value of one would indicate that every initial position in the portfolio was liquidated, 
+and the proceeds were used to purchase new positions by month end. A value of zero would 
+suggest that no trading occurred. If an ETF both increased and decreased its position within a 
+given month, this measure would only account for the difference from the initial allocation. The 
+mean value for one-month fund turnover for the data set is 11.46%.  
+In this regression, I controlled for the number of holdings within the ETF and the specific 
+funds. The t Stat of -4.0777 for the fund turnover variable indicates that fund turnover is a highly 
+significant explanatory variable (table 4). The coefficient suggests that if an ARK fund were to 
+turnover its entire portfolio, it would underperform the synthetic portfolio by 9.55 percentage 
+points. For the average fund turnover of 11.46%, the ETF would underperform the synthetic 
+portfolio by 1.09 percentage points over a one-month period. 
+I also find that the number of unique holdings is not significant to the relative 
+performance. Unsurprisingly given the earlier results (table 3), the specific funds are also 
+insignificant in this regression. 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3985640
+
+ 
+19 
+Table 5 
+Relative Performance Regressed on Fund Turnover, Number of Holdings, Particular Funds,  
+S&P 500 Performance 
+Regression Statistics 
+ 
+ 
+ 
+ 
+ 
+Multiple R 
+0.29175 
+  
+ 
+ 
+ 
+R Square 
+0.08512 
+  
+ 
+ 
+ 
+Adjusted R Square 
+0.05886 
+  
+ 
+ 
+ 
+Standard Error 
+0.02221 
+  
+ 
+ 
+ 
+Observations 
+216 
+  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ANOVA 
+ 
+ 
+ 
+ 
+ 
+ 
+  
+df 
+SS 
+MS 
+F 
+Significance F 
+ 
+Regression 
+6 
+0.00959 
+0.00160 3.24091 
+0.00457 
+ 
+Residual 
+209 
+0.10306 
+0.00049 
+  
+ 
+Total 
+215 
+0.11265   
+  
+  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+  
+Coefficients 
+Standard Error 
+t Stat 
+P-value 
+Lower 95% 
+Upper 95% 
+Intercept 
+-0.00273 
+0.01152 -0.23669 0.81313 
+-0.02545 
+0.01999 
+Fund Turnover 
+-0.09400 
+0.02349 -4.00196 0.00009 
+-0.14031 
+-0.04770 
+S&P 500 Performance 
+-0.03423 
+0.03564 -0.96052 0.33791 
+-0.10448 
+0.03602 
+Number of Unique Holdings 
+0.00004 
+0.00026 
+0.16061 0.87255 
+-0.00047 
+0.00055 
+ARKG 
+-0.00318 
+0.00455 -0.69994 0.48474 
+-0.01215 
+0.00578 
+ARKQ 
+0.00026 
+0.00459 
+0.05679 0.95477 
+-0.00880 
+0.00932 
+ARKW 
+-0.00205 
+0.00432 -0.47428 0.63579 
+-0.01057 
+0.00647 
+ 
+Legend to Table 5. Relative Performance Regressed on  
+Fund Turnover, Number of Holdings, Particular Funds, 
+S&P 500 Performance. 
+This table is the output of regressing the relative performance of ARK ETFs on 
+fund turnover, number of holdings, and dummy variables representing each of the 
+four ARK funds in this research, and the S&P 500 Index performance in each 
+measured month. ARKK is the ARK Innovation ETF. ARKQ is the ARK 
+Autonomous Tech. & Robotics ETF. ARKW is the ARK Next Generation Internet 
+Electronic copy available at: https://ssrn.com/abstract=3985640
+
+ 
+20 
+ETF. ARKG is the ARK Genomic Revolution ETF. Fund turnover is measured as 
+the percentage of a particular ETF’s holdings that were sold and reallocated in the 
+measured month. Number of unique holdings is the amount of equities owned in 
+the ETF in the measured month. The S&P 500 performance variable is measured 
+as the one-month percentage change in price for each one-month period measured. 
+The coefficients on the dummy variables represent the difference in expected 
+relative performance between the four funds.  The t Stat is a measure of statistical 
+difference. Traditionally, values greater than 1.96 or less than -1.96 are considered 
+statistically significant. 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3985640
+
+ 
+21 
+4.4 ARK Funds Relative Performance Controlling for Market Conditions 
+In this regression, I am testing whether market conditions had a significant impact on 
+relative performance (table 5). It seemed plausible that when the market as a whole performed 
+better or worse in a given one-month period, ARK might have better or worse relative 
+performance against the synthetic portfolios. For instance, ARK might have great results trading 
+in a bull market, but poor results trading in a bear market.  
+I find, however, that market conditions do not have a significant impact on ETF relative 
+performance to the synthetic portfolios. I measure market conditions by using the S&P 500 index 
+price return over each one-month period. The t Stat for the S&P 500 performance is closer to 
+significant than any of the other control variables, but it still falls well outside the range for 
+significance. These results suggest that ARK funds do not trade better or worse due to the 
+overarching market conditions. Active trading costs ARK’s investors money regardless of 
+whether they are in a bull market or a bear market.  
+ 
+V. Conclusion 
+ 
+In this research, I provide data and statistical analysis implying that ARK funds are losing 
+potential alpha by actively trading. The findings are not an indictment of ARK as a whole, but 
+rather they suggest that a piece of ARK’s strategy might be best altered to achieve optimal 
+returns. Not only are investors losing alpha due to the mechanics of ETFs (Pham, Marshall, 
+Nguyen, and Visaltanachoti, 2021) and potentially due to less liquidity than the underlying 
+securities (Rompotis, 2010), but also because of ineffective trading strategies.  
+ 
+ARK has had remarkable returns over the past few years, but that does not mean that 
+every piece of its strategy has contributed to its success. As this research shows, active trading 
+Electronic copy available at: https://ssrn.com/abstract=3985640
+
+ 
+22 
+has actually led to lower returns. In the last five years, individual investors following ARK’s 
+daily holdings reports would have been better off buying portfolios of ARK’s holdings and 
+holding them rather than following ARK into each of its daily trades or buying ARK’s ETFs.  
+ 
+These results provide further evidence to the common perception that “you cannot time 
+the market.” It is clear in the data that trading did not benefit perhaps the most well-known active 
+investor in the market today. In my view, there is a troubling trend to associate picking stocks 
+with active trading. Although both elements are present in actively managed ETF returns, they 
+are two distinct, and in many ways unrelated, fields. In this study, I have shown that the elements 
+can be separated. Although this study does not definitively prove that ARK is good at picking 
+stocks and not just lucky, it does prove that there is a significant element of its returns that are 
+associated with trading. While the case remains open on whether ARK can sustainably generate 
+market beating returns, it is apparent that its current trading strategy is not contributing toward 
+those market beating returns.  
+There are a few avenues for future research. First, one could analyze additional ETFs. I 
+would expect that the coefficients on fund specific dummy variables would be significant in this 
+new research due to the firms having different managers and significantly different trading 
+strategies leading to significantly different mean relative performance. Another avenue for future 
+research would be analyzing the relative performance between static synthetic portfolios and 
+actively managed ETFs over longer holdings periods. I have done some preliminary work down 
+this avenue that suggests the underperformance holds over longer time periods. 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3985640
+
+ 
+23 
+Works Cited 
+“About the Ark Etfs.” ARK Funds. Ark Investment Management, October 4, 2021. https://arkfunds.com/about/.  
+Ballentine, Claire, and Katherine Greifeld. “Cathie Wood Takes Crown from JPMorgan for 
+Largest Active ETF.” Bloomberg.com. Bloomberg, December 11, 2020. 
+https://www.bloomberg.com/news/articles/2020-12-11/cathie-wood-takes-crown-fromjpmorgan-for-largest-active-etf.  
+Capital IQ. “S&P Capital IQ Holdings Data.” S&P Capital IQ. S&P Global, October 2021. 
+https://www.capitaliq.com.  
+Crane, Alan D., and Kevin Crotty. “Passive versus Active Fund Performance: Do Index Funds 
+Have Skill?” Journal of Financial and Quantitative Analysis 53, no. 1 (2018): 33–64. 
+https://doi.org/10.1017/s0022109017000904.  
+Ellis, Charles D. “The Rise and Fall of Performance Investing.” Financial Analysts Journal 70, 
+no. 4 (2014): 14–23. https://doi.org/10.2469/faj.v70.n4.4.  
+Frazier, Liz. “The Coronavirus Crash of 2020, and the Investing Lesson It Taught Us.” Forbes. 
+Forbes Magazine, June 28, 2021. 
+https://www.forbes.com/sites/lizfrazierpeck/2021/02/11/the-coronavirus-crash-of-2020and-the-investing-lesson-it-taught-us/?sh=33bc39f946cf.  
+Gittlesohn, John. “End of Era: Passive US Equity Funds Eclipse Active in Epic Industry Shift.” 
+Bloomberg.com. Bloomberg, September 11, 2019. 
+Electronic copy available at: https://ssrn.com/abstract=3985640
+
+ 
+24 
+https://www.bloomberg.com/news/articles/2019-09-11/passive-u-s-equity-funds-eclipseactive-in-epic-industry-shift.  
+Hale, James. “Barstool Sports Touts 950k Views per Day for Founder Dave Portnoy's Day 
+Trading Show, Launches Branded Content Division.” Tubefilter. Tubefilter, Inc., April 30, 
+2021. https://www.tubefilter.com/2020/06/23/newfronts-barstool-sports-davey-day-traderbarstool-creative/.  
+Kaplan, Paul. “In Long History of Market Crashes, Coronavirus Crash Was the Shortest.” 
+Morningstar, Inc. Morningstar, Inc., March 9, 2021. 
+https://www.morningstar.com/articles/1028407/in-long-history-of-market-crashescoronavirus-crash-was-the-shortest.  
+Libson, Adi, and Gideon Parchomovsky. “Reversing the Fortunes of Active Funds.” SSRN 
+Electronic Journal, 2020. https://doi.org/10.2139/ssrn.3517849.  
+Pham, Son D., Ben R. Marshall, Nhut H. Nguyen, and Nuttawat Visaltanachoti. “The Liquidity 
+of Active Etfs.” Global Finance Journal 49 (2021): 100572. 
+https://doi.org/10.1016/j.gfj.2020.100572.  
+Rompotis, Gerasimos. “Active Versus Passive ETFs: An Investigation of Bid-Ask Spread.” IUP 
+Journal of Applied Finance 16, no. 3 (2010).  
+Schizas, Panagiotis. “Active Etfs and Their Performance Vis-à-Vis Passive Etfs, Mutual Funds, 
+and Hedge Funds.” The Journal of Wealth Management 17, no. 3 (2014): 84–98. 
+https://doi.org/10.3905/jwm.2014.17.3.084.  
+Electronic copy available at: https://ssrn.com/abstract=3985640
+
+ 
+25 
+Shen, Pu. “How Long Is a Long-Term Investment.” SSRN Electronic Journal, 2005. 
+https://doi.org/10.2139/ssrn.2178716.  
+Slavin, Ben. “Active Etfs: The Next Act.” BNY Mellon. BNY Mellon, July 2021. 
+https://www.bnymellon.com/us/en/insights/aerial-view-magazine/active-etfs-the-nextact.html.  
+Y Charts. ARKK Total Assets Under Management. YCharts.com, November 27, 2021. 
+https://ycharts.com/companies/ARKK/total_assets_under_management.  
+ 
+Electronic copy available at: https://ssrn.com/abstract=3985640

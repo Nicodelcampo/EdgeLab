@@ -1,0 +1,59 @@
+{
+  "doc_id": 253,
+  "titulo": "Optimal Pairs Trading with Transaction Costs in Finite Horizon",
+  "resumen_operativo": "Estudia el problema de pairs trading óptimo con costes de transacción en horizonte finito bajo un spread que sigue un proceso Ornstein-Uhlenbeck. Adopta estrategia delta-neutral con posiciones largas y cortas de igual número de acciones. Demuestra que la función de valor con fricciones es solución de viscosidad de una desigualdad variacional HJB, con fronteras libres de compra/venta dependientes del tiempo y del spread. Usa expansión asintótica y técnicas de homogeneización para derivar expresiones explícitas aproximadas para las fronteras, construyendo una estrategia casi-óptima. Simulaciones numéricas confirman que ignorar costes de transacción destruye rentabilidad.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "HJB Variational Inequality",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Ecuación de Hamilton-Jacobi-Bellman modificada para control singular con costes de transacción, donde el estado se divide en tres regiones: compra, venta y no-trading. Las fronteras libres separan estas regiones.",
+      "relaciones": [{"tipo": "PARTE_DE", "objeto": "Stochastic Optimal Control"}, {"tipo": "DEFINE", "objeto": "Free Boundaries"}],
+      "cita_textual": "the frictional value function is a continuous viscosity solution to a Hamilton-Jacobi-Bellman (HJB) variational inequality"
+    },
+    {
+      "nombre": "Delta-Neutral Strategy",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia que requiere posiciones largas y cortas con igual número de acciones en ambas patas del par, manteniendo neutralidad de mercado durante el horizonte de trading.",
+      "relaciones": [{"tipo": "EQUIVALE_A", "objeto": "Market Neutrality"}, {"tipo": "REQUIERE", "objeto": "Equal Share Positions"}],
+      "cita_textual": "A delta-neutral strategy is adopted, involving a long position in one stock and a short position in the other, with an equal number of shares in each"
+    },
+    {
+      "nombre": "Asymptotic Expansion Method",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica que trata los costes de transacción como perturbaciones pequeñas de un benchmark sin fricciones, expandiendo la función de valor en potencias del parámetro de coste escalado para obtener expresiones explícitas de las fronteras óptimas.",
+      "relaciones": [{"tipo": "USA", "objeto": "Homogenization"}, {"tipo": "MEJORA_A", "objeto": "Numerical HJB Solution"}],
+      "cita_textual": "we adopt an asymptotic approach to expand the value function and derive explicit asymptotic expressions for the free boundaries"
+    },
+    {
+      "nombre": "Free Boundaries (Buying/Selling)",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Fronteras dependientes de tiempo y spread que definen la región de no-trading. El agente compra (vende) cuando la posición alcanza la frontera de compra (venta) para mantener la posición dentro de la región óptima.",
+      "relaciones": [{"tipo": "DEFINE", "objeto": "No-Trade Region"}, {"tipo": "PARTE_DE", "objeto": "Nearly Optimal Strategy"}],
+      "cita_textual": "the associated free boundaries can be expressed as functions of time and the spread"
+    },
+    {
+      "nombre": "Skorokhod Problem",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Formulación matemática del control singular donde la posición se mantiene dentro de la región de no-trading mediante reflexión en las fronteras, transformando el problema de control en un problema de reflexión estocástica.",
+      "relaciones": [{"tipo": "USA", "objeto": "Singular Control"}, {"tipo": "EQUIVALE_A", "objeto": "Reflected Diffusion"}],
+      "cita_textual": "we reformulate the singular control problem as a Skorokhod problem, the solution of which yields a nearly optimal trading strategy"
+    },
+    {
+      "nombre": "Viscosity Solution",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Concepto de solución débil para EDPs no lineales (como la HJB) que no requieren diferenciabilidad clásica. Esencial para manejar la no-suavidad de la función de valor inducida por los costes de transacción.",
+      "relaciones": [{"tipo": "REQUIERE", "objeto": "HJB Variational Inequality"}, {"tipo": "PARTE_DE", "objeto": "Mathematical Rigor"}],
+      "cita_textual": "we show that the frictional value function is a continuous viscosity solution"
+    },
+    {
+      "nombre": "Comparison: Continuous Rebalancing vs Optimal Switching",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Taxonomía de enfoques de pairs trading óptimo: (i) modelos de rebalanceo continuo que ignoran costes de transacción, (ii) modelos de switching óptimo con costes pero con tamaño fijo de trade. Este paper unifica ambas limitaciones.",
+      "relaciones": [{"tipo": "MEJORA_A", "objeto": "Continuous Rebalancing Models"}, {"tipo": "MEJORA_A", "objeto": "Optimal Switching Models"}],
+      "cita_textual": "we overcome the drawbacks of continuous rebalancing models which neglect transaction costs... and optimal switching models which impose fixed transaction shares"
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {"nivel": "media", "nota": "Modelo teórico en tiempo continuo; las expresiones explícitas para fronteras de trading son computacionalmente ligeras y podrían implementarse para ejecución intradía; requiere estimación de parámetros OU intradía."}
+}

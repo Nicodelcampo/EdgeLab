@@ -1,0 +1,1588 @@
+Electronic copy available at: http://ssrn.com/abstract=1803858
+Mean Variance Optimal
+VWAP Trading∗
+James McCulloch†
+Vladimir Kazakov‡
+April, 2012
+Abstract
+VWAP is the Volume Weighted Average Price of traded stock over
+a deﬁned period. It is a metric of trade execution quality used by institutional traders to minimize the execution cost of large trades. A
+riskless VWAP trading strategy is not possible without knowledge of
+ﬁnal market volume. We formulate a mean-variance optimal VWAP
+strategy by assuming knowledge of ﬁnal volume and then project this
+onto the space of strategies accessible to the VWAP trader. The mean
+variance optimal VWAP trading strategy is the sum of two distinct
+trading strategies, a minimum variance VWAP hedging strategy and
+a ‘directional’ price strategy independent of the hedging strategy and
+market VWAP. It is optimal for large volume VWAP traders to increase the size of the price ‘directional’ trade for additional return.
+∗c⃝Copyright James McCulloch, Vladimir Kazakov, 2012. This paper is a draft: please
+do not quote without permission.
+†Macquarie University, contact email: James.Duncan.McCulloch@gmail.com
+‡Quantitative Finance Research Centre (QFRC), University of Technology Sydney
+1
+Electronic copy available at: https://ssrn.com/abstract=1803858
+
+Electronic copy available at: http://ssrn.com/abstract=1803858
+1
+Introduction
+The Volume Weighted Average Price (VWAP) trading strategy is used to
+minimize the execution costs of large trades in ﬁnancial markets. This paper formulates continuously updated mean-variance optimal VWAP trading
+strategies.
+The optimal VWAP trading strategy is the sum of two conceptually and mathematically diﬀerent trades, a minimum variance VWAP
+hedging strategy and an independent price ‘directional’ strategy. In addition,
+we show that the optimal VWAP trading strategies (eqn 16 and eqn 27) are
+closely associated to the prediction of relative volume and minimize trading
+price impact by allocating trade volume (liquidity demand) during periods
+of maximum turnover (liquidity supply).
+VWAP is the total value of all admissible trades divided by the total
+volume of all admissible trades. If Xi and ∆Vi are the price and volume
+respectively of the ith trade in the VWAP period [0, T] with NT total trades,
+then the VWAP price VT calculated at time T is computed as:
+VT =
+total traded value
+total traded volume =
+∑NT
+i=1 Xi ∆Vi
+∑NT
+i=1 ∆Vi
+Traded VWAP price compared to the VWAP price of all admissible
+trades1 over the same period was ﬁrst proposed by Berkowitz, Logue and
+Noser [2] as a benchmark of execution quality. They argue (page 99) that ‘a
+market impact measurement system requires a benchmark price that is an unbiased estimate of prices that could be achieved in any relevant trading period
+by any randomly selected trader’. They then deﬁne VWAP as an appropriate
+benchmark that satisﬁes this criterion. A key feature of VWAP trading is
+the fragmentation of large trades into smaller trades in order to minimize
+market impact. The comparative studies of Domowitz and Yegerman [8] and
+Werner [35] show that the execution costs of VWAP are comparable to, or
+lower than, other block (large) trading strategies.
+For any institutional (large) trader the cost of trading is as important
+as the decision to trade. The cost of trading has three components: fees
+1Not all trades are accepted as admissible in a VWAP calculation. Admissible trades
+are determined by market convention and are generally on-market trades.
+Oﬀ-market
+trades and crossings are generally excluded from the VWAP calculation because these
+trades are often priced away from the current market and represent volume in which a
+‘randomly selected trader’ [2] cannot participate.
+2
+Electronic copy available at: https://ssrn.com/abstract=1803858
+
+and commissions (generally ﬁxed); the cost of execution; and opportunity
+cost. Execution cost (also known as ‘implementation shortfall’, Per´old [25])
+is the diﬀerence in stock price between the time the decision to trade is taken
+and the eventual traded price. The major component of the execution cost is
+market impact cost, which is the adverse price movement due to the execution
+of a large trade on the market. Market impact cost results from the liquidity
+demand of large trades and information signalled to other market participants
+by the presence of a large trade in the market.
+Market impact cost can
+be reduced by fragmenting a large trade into smaller trades and spreading
+instantaneous liquidity demand over a longer trading period. Bertsimas and
+Lo [3] have formulated an optimal trade fragmentation schedule using a linear
+liquidity supply curve to model market impact.
+Opportunity cost is foregone proﬁt on volume that was not executed
+because of adverse price movement subsequent to the decision to trade. Opportunity cost increases with time and since market impact cost decreases
+with time then total (execution + opportunity) transaction costs are convex
+in time. An optimal trading schedule based on a convex total transaction
+cost curve was formulated by Almgren and Chriss [1] using a market impact
+model that diﬀerentiates temporary and permanent adverse price movement
+due to liquidity demand.
+A non-adaptive optimal VWAP trading strategy ﬁxed at the beginning
+of the VWAP period t = 0 (F0 adapted) has been formulated by Konishi
+[19] for price modeled as a (martingale) Wiener process. We extend Konishi’s formulation to a continuously updated dynamic mean-variance optimal
+VWAP strategy using the information available at time t (Ft adapted) with
+price modeled as a continuous semimartingale. In addition, we show that
+the optimal VWAP trading strategies (eqn 16 and eqn 27) are closely associated to the prediction of relative volume and minimize trading price impact
+by allocating trade volume (liquidity demand) during periods of maximum
+turnover (liquidity supply).
+VWAP is naturally deﬁned using relative volume Y rather than cumulative volume V . The relative volume process Y is deﬁned as market cumulative
+volume Vt divided by market total ﬁnal volume Yt = Vt/VT and is adapted
+to a ﬁltration G which is the VWAP trader accessible (observed) ﬁltration
+F enlarged by knowledge of ﬁnal volume Gt = Ft ∨σ(VT). The VWAP
+price VT (eqn 1) at time T can be formulated as an Itˆo integral under G
+with a continuous price X integrator and with a G-predictable relative volume process integrand ξV,G
+t
+= 1 −Yt−. No zero risk F adapted (trader
+3
+Electronic copy available at: https://ssrn.com/abstract=1803858
+
+accessible) VWAP trading strategy exists (lemma 3.8). The continuous time
+formulation of VWAP price VT is:
+VT = X0 +
+∫T
+0
+ξV,G dX
+(1)
+The F adapted mean square optimal VWAP trading strategy is derived:
+ξV,F = min
+ξF E
+[ ( ∫T
+0
+(
+ξF −ξV,G )
+dX
+)2 ]
+(2)
+This is then extended by deriving the F adapted Markowtiz meanvariance optimal trading strategy:
+ξV,λ,F = max
+ξF
+[
+E
+[ ∫T
+0
+(
+ξF −ξV,G )
+dX
+]
+−λ
+2 Var
+[ ∫T
+0
+(
+ξF −ξV,G )
+dX
+] ]
+(3)
+The optimal mean variance VWAP trading strategy ξV,λ,F is the sum of
+two distinct trading strategies, a minimum variance VWAP hedging strategy
+λ →∞; ξV,∞,F and a ‘directional’ price strategy ξ1
+0 independent of the
+hedging strategy and market VWAP. The ‘directional’ price strategy uses
+the properties of the Variance Optimal Martingale Measure (deﬁnition 3.2)
+to determine additional variance and expected return (section 3.3.2).
+ξV,λ,F = ξV,∞,F + ξ1,F
+0
+λ
+(4)
+This is a general result, see McCulloch [22] for details. Any mean-variance
+hedging strategy (including VWAP) can be formulated as the sum of two conceptually and mathematically diﬀerent trades, a minimum variance hedging
+strategy and an independent price ‘directional’ strategy. The price ‘directional’ strategy is only dependent on the stochastic characteristics of the
+price process X. Furthermore, the additional variance of the optimal meanvariance solution is a direct sum of the minimum variance hedging strategy
+variance and the variance of the price ‘direction’ strategy. Similarly, the additional expectation of the optimal mean-variance solution is a direct sum of
+4
+Electronic copy available at: https://ssrn.com/abstract=1803858
+
+the minimum variance hedging strategy expectation and the expectation of
+the price ‘direction’ strategy (eqns 24 and 25).
+Deﬁne β as the proportion of total market volume VT that a VWAP trader
+intends to trade. A VWAP trader with a βVT trade size has a risk aversion
+parameter of (1 −β)λ (section 3.3.3). Where λ is the trader risk aversion
+parameter for a small VWAP (β << 1) trade size. Thus it is optimal for
+large 0 < β < 1 mean-variance VWAP traders to increase the size of the
+price ‘directional’ trade for additional return.
+This is an intuitive result,
+traders who control a signiﬁcant proportion of total volume can inﬂuence
+ﬁnal VWAP price. In the limit, a VWAP trader who controls all volume
+completely determines the VWAP price.
+ξV,λ,F = ξV,∞,F +
+ξ1,F
+0
+(1 −β)λ
+(5)
+Section 3.4 introduces simplifying assumptions for ‘practical’ VWAP optimal trading.
+Speciﬁcally, we obtain a solution if the Variance Optimal
+Martingale Measure (VOMM) and Minimal Martingale Measure (MMM) coincide.
+We also obtain a solution if ﬁnal volume and price are assumed
+independent. Finally, we have an optimal VWAP example that assumes the
+price process is a Geometric Brownian Motion.
+The mean-variance optimal VWAP trading strategies developed in this
+paper are continuous, assume frictionless markets (no transaction costs) and
+have no constraint on trading direction. These important practical considerations are held over for future research.
+5
+Electronic copy available at: https://ssrn.com/abstract=1803858
+
+2
+Modelling VWAP
+2.1
+Price and Volume
+Assumption 2.1.
+(i) The stochastic environment of the VWAP asset is endowed with a stochastic basis (Ω, FT, F, P) with a standard (right continuous and complete)
+ﬁltration F = {Ft}0≤t≤,T. The ﬁltration F contains all VWAP trader
+accessible (observable) information about the VWAP asset. In addition, the price process X is assumed to be a F continuous square integrable semimartingale X ∈S2(P, F) and the cumulative volume process
+V ∈S2(P, F) is also a F square integrable semimartingale.
+(ii) VWAP trading is normally conducted on single ﬁnancial market assets.
+Therefore the exposition will assume univariate price X and cumulative
+volume V processes.
+2.1.1
+Final Volume, Relative Volume and the Initially Enlarged
+Filtration
+Final volume is a square integrable positive integer valued random variable,
+VT ∈L2(Ω, FT, P) (abbreviated VT ∈L2(P)). A ﬁnite set of possible ﬁnal
+volumes exists VT ∈SV , where the minimum element is the VWAP ﬁnal
+volume vT = min[v ∈SV ] (no other market participants trade in the VWAP
+period) and the maximum element is bounded, max[v ∈SV ] < ∞.
+The ﬁltration G is the VWAP trader accessible ﬁltration F initially enlarged by the sigma algebra generated by ﬁnal volume σ(VT). Since VT is FT
+adapted then FT = GT and it is a standard ﬁltration under P. The enlarged
+ﬁltration G is formally deﬁned as:
+Gt =
+∩
+ϵ> 0
+(
+Ft+ϵ ∨σ(VT)
+)
+6
+Electronic copy available at: https://ssrn.com/abstract=1803858
+
+Remark 2.2. Since the sigma algebra σ(VT) of ﬁnal cumulative volume is
+ﬁnitely large, the F semimartingale price process X is also a G semimartingale (Jacod [16]).
+Assumption 2.3. The price process X is a strictly positive continuous
+square integrable semimartingale with respect to the enlarged ﬁltration G ,
+X ∈S2(P, G ).
+The relative volume process is progressive cumulative volume divided by
+the ﬁnal cumulative volume.
+Yt = Vt
+VT
+t ∈[0, T]
+(6)
+Relative volume is zero at time zero Y0 = 0, non-decreasing and has a
+value of 1 at time T, YT = 1. It is measurable with respect to the enlarged
+ﬁltration G and is a square integrable semimartingale Y ∈S2(P, G ).
+2.2
+A Continuous Time Model of VWAP
+One the reasons for the popularity of VWAP as a measure of order execution
+quality is the simplicity of its deﬁnition - the total value of all admissible
+trades divided by the total volume of all admissible trades. If Xi and ∆Vi
+are the price and volume respectively of the ith trade in the VWAP period
+[0, T] with NT total trades, then the VWAP price VT calculated at time T is
+readily computed as:
+VT =
+total traded value
+total traded volume =
+∑NT
+i=1 Xi ∆Vi
+∑NT
+i=1 ∆Vi
+Alternatively, the deﬁnition of VWAP can be written in continuous time
+notation. The price process X is a G semimartingale (remark 2.2), therefore
+VWAP can be formulated as a G adapted Itˆo integral.
+VT =
+total traded value
+total traded volume =
+1
+VT
+∫T
+0
+X−dV
+(7)
+7
+Electronic copy available at: https://ssrn.com/abstract=1803858
+
+0
+0.2
+0.4
+0.6
+0.8
+1
+10:00
+11:00
+12:00
+13:00
+14:00
+15:00
+16:00
+Relative Volume Executed
+Example Stock Intraday Relative Volume Trajectories
+Mean
+SUS
+TXT
+TXN
+0
+0.2
+0.4
+0.6
+0.8
+1
+10:00
+11:00
+12:00
+13:00
+14:00
+15:00
+16:00
+Relative Volume Executed
+Example Stock Intraday Relative Volume Trajectories
+Figure 1: This graph shows an example of relative volume trajectories Yt for
+3 stocks representing low, medium and high turnover stocks. The red line is
+the expected relative volume E[Yt] for all stocks trading more than 50 trades
+a day on the NYSE. This expectation is the integral of the ‘U’ shaped trading
+intensity (dE[Yt]/dt) found on all major stock markets. SUS is Storage USA,
+TXT is Textron Incorporated and TXN is Texas Instruments; on 2 July 2001
+these stocks recorded 101, 946 and 2183 trades correspondingly.
+Examining the integral above, it is readily seen that it relates to the
+relative volume process Yt = Vt/VT. This is a key insight; VWAP is naturally
+deﬁned using relative volume Yt rather than actual volume Vt.
+VT =
+1
+VT
+∫T
+0
+X−dV =
+∫T
+0
+X−dY
+Integration by parts gives:
+VT = XTYT −X0Y0 −
+∫T
+0
+Y−dX −
+[
+X, Y
+]
+T
+Since the relative volume process Y is montonically non-decreasing and
+therefore of ﬁnite variation and X is G continuous by assumption 2.3, the
+8
+Electronic copy available at: https://ssrn.com/abstract=1803858
+
+quadratic covariation term is zero [X, Y ] = 0. Also Y0 = 0 and YT = 1 by
+deﬁnition, so the integration by parts equation simpliﬁes to:
+VT = XT −
+∫T
+0
+Y−dX = X0 +
+∫T
+0
+(
+1 −Y−
+)
+dX
+Deﬁning the G predictable integrand:
+ξV,G
+t
+= 1 −Yt−= 1 −Vt−
+VT
+(8)
+Using this deﬁnition, VWAP has the following Itˆo integral representation:
+VT = X0 +
+∫T
+0
+ξV,G dX
+Remark 2.4. Note that unlike a conventional trading strategy where the
+constant term represents initial trading capital, the X0 term above (eqn 1) is
+initial stock price and cannot be speciﬁed by a VWAP trader. Consequently,
+this constant term plays no role in optimizing VWAP trading strategies.
+Since the price process is square integrable by assumption and the relative
+volume process is bounded by 1 (0 ≤Yt ≤1), the VWAP random variable
+VT is square integrable VT ∈L2(P).
+9
+Electronic copy available at: https://ssrn.com/abstract=1803858
+
+3
+Optimal VWAP Trading Strategies
+It is shown (lemma 3.8) that VWAP is not attainable (Schweizer [32]) in
+the VWAP trader accessible ﬁltration F and any feasible F adapted trading strategy is risky. Therefore the objective is to specify a feasible minimum risk F adapted VWAP strategy and extend this to a Markowtiz meanvariance optimal strategy. This is an application of the theory of the optimal
+quadratic projection of random variables H ∈L2(P) onto a subspace of Itˆo integrals (ξ ·X)T ∈L2(P). The extensive quadratic hedging literature includes
+Chunli and Karatzas [15], Schweizer [32] [33], Delbaen and Schachermayer
+[7], Rheinl¨ander and Schweizer [29], Pham and Rheinl¨ander and Schweizer
+[26], Gouri´eroux and Laurent and Pham [13] and Rheinl¨ander [28].
+Optimal VWAP trading belongs to the class of hedging problems where
+the accessible ﬁltration F is smaller than the ﬁltration G required for hedge
+replication to be attainable.
+This has been studied by Schweizer [30] for
+martingale X and has also been studied by F¨ollmer and Schweizer [10], who
+gave a solution that was local error minimizing for semimartingale X. Møller
+[23] [24] and Schweizer [34] extended this to a Markowitz mean-variance
+optimal solution for semimartingale X.
+This section formulates a minimum mean-square (L2) VWAP strategy
+for martingale X, extends this to a mean-square (L2) optimal strategy for
+semimartingale X (eqn 2) and ﬁnally develops a Markowitz mean-variance
+optimal VWAP strategy (λ ≥0) for semimartingale X (eqn 3).
+3.1
+Existence and Closure Conditions
+Finding the optimal F adapted VWAP strategy ξF is essentially a Hilbert
+space projection from the space of stochastic integrals with G adapted integrands to the space of stochastic integrals with F adapted integrands.
+Therefore the closure of the subspace of stochastic integrals with F adapted
+integrands is a necessary property and is detailed below. Similarly, the conditions for the existence of Equivalent Martingale Measures, and in particular
+the Variance Optimal Martingale Measure, on the Hilbert spaces of stochastic integrals is detailed below. These are standard results from the quadratic
+hedging literature.
+10
+Electronic copy available at: https://ssrn.com/abstract=1803858
+
+3.1.1
+Existence of Equivalent Local Martingale Measures
+The Itˆo integral with integrand ξ is notated:
+GT(ξ) =
+∫T
+0
+ξ dX
+Let L(X, G ) denote the space of all X-integrable G predictable processes.
+The set of admissible G predictable integrands where the resulting integration
+is a square integrable semimartingale is:
+Θ(G ) =
+{
+ξG ∈L(X, G )
+ (ξG · X)t ∈S2(P, G )
+}
+Note that ξV,G ∈Θ(G ) by deﬁnition. The set of signed local martingale
+measures such that any g ∈GT(Θ(G )) is a local martingale (these deﬁnitions
+from Delbaen and Schachermayer [7]) are deﬁned:
+Ds(G ) =
+{
+ZG ∈L2(Ω, FT, P)
+ ∀g ∈GT(Θ(G )), E[ZG g] = 0, E[ZG ] = 1
+}
+Ms(G ) =
+{
+QG  dQG /dP = ZG , ZG ∈Ds(G )
+}
+From lemma 2.1 in Delbaen and Schachermayer [7] the set of signed local martingale measures Ds(G )̸ = ∅is non-empty if the constant 1 is not
+contained in GT(Θ(G )).
+Assumption 3.1. 1 /∈GT(Θ(G )) and therefore Ds(G )̸ = ∅.
+The set of equivalent local martingale measures is the subset of signed
+local martingale measures that are strictly positive and therefore probability
+measures.
+De(G ) =
+{
+ZG ∈Ds(G )
+ ZG > 0
+}
+11
+Electronic copy available at: https://ssrn.com/abstract=1803858
+
+Me(G ) =
+{
+QG  dQG /dP = ZG , ZG ∈De(G )
+}
+The sets of signed local martingale measures and equivalent local martingale measures are equal (De(G ) = Ds(G ), Me(G ) = Ms(G )) if price process
+X is G continuous (Delbaen and Schachermayer [7]). Therefore by assumption 2.3 Me(G )̸ = ∅.
+The proper subset (lemma 3.8) Θ(F) ⊂Θ(G ) is deﬁned where all the
+elements are F adapted. Let L(X, F) denote the space of all X-integrable
+F predictable processes:
+Θ(F) =
+{
+ξF ∈L(X, F)
+ (ξF · X)t ∈S2(P, F)
+}
+Finding the optimal mean square adapted strategy ξF is a Hilbert space
+projection from L2(P) onto GT(Θ(F)). Therefore the closure of GT(Θ(F))
+in L2(P) is a necessary property.
+The set of equivalent local martingale
+measures such that any f ∈GT(Θ(F)) is a local martingale is deﬁned:
+Ds(F) =
+{
+ZF ∈L2(Ω, FT, P)
+ ∀f ∈GT(Θ(F)), E[ZFf] = 0, E[ZF] = 1
+}
+From the F continuity of X (assumption 2.1) the sets of signed local
+martingale measures and equivalent local martingale measures are equal:
+De(F) = Ds(F)
+(9)
+Me(F) =
+{
+QF  dQF/dP = ZF, ZF ∈De(F)
+}
+Since GT(Θ(F)) ⊂GT(Θ(G )) it is intuitive and true that De(G ) ⊆
+De(F) and Me(G ) ⊆Me(F) and therefore from assumption 3.1 Me(F)̸ =
+∅.
+12
+Electronic copy available at: https://ssrn.com/abstract=1803858
+
+3.1.2
+Closure of the Itˆo Integral Subspaces
+Deﬁnition 3.2. The F Variance Optimal Martingale Measure (VOMM) is
+deﬁned as the equivalent local martingale measure ˜QF ∈Me(F) such that
+the associated density ˜ZF ∈De(F) has the minimum L2(P) norm:
+d˜QF
+dP
+= ˜ZF =
+min
+ZF∈De(F)
+ ZF
+L2(P) =
+min
+ZF∈De(F) Var[ ZF]
+Deﬁnition 3.3. A uniformly integrable strictly positive (P, F) martingale
+Z > 0 satisﬁes the F reverse H¨older condition, denoted Z ∈Rp(P, F), if
+there is a constant C < ∞such that for every stopping time 0 ≤τ ≤T the
+following relationship exists:
+E
+[ ( Z
+Zτ
+)p  Fτ
+]
+≤C
+p ∈(1, ∞)
+Assumption 3.4. The VOMM density ˜ZF satisﬁes the F reverse H¨older
+inequality, ˜ZF ∈R2(P, F).
+If the F VOMM density satisﬁes the F reverse H¨older inequality ˜ZF ∈
+Me(F) ∩R2(P, F), the closure of GT(Θ(F)) in L2(P) was proved by Delbaen, Monat, Schachermayer, Schweizer and Stricker [6] (theorem 4.1).
+3.2
+L2 Optimal Strategies
+3.2.1
+An L2 Optimal Strategy for Martingale X
+Let PG denote the predictable sigma ﬁeld of G and B[0, T] the Borel algebra on the interval [0, T]. The sigma ﬁnite Dol´eans measure νQ and associated product space can be deﬁned using continuous square integrable G
+13
+Electronic copy available at: https://ssrn.com/abstract=1803858
+
+adapted local martingale X under any equivalent local martingale measure
+Q ∈Me(G ):
+( Ω× [0, T], PG ⊗B[0, T], νQ )
+∀A ∈PG ⊗B[0, T];
+νQ(A) = EQ
+[ ∫T
+0
+1A d⟨X⟩
+]
+=
+∫
+Ω
+∫T
+0
+1A(t, ω) d⟨X⟩t(ω) dQ(ω).
+Any predictable process ξG adapted to PG is an element of the associated
+Hilbert space ξG ∈L2( Ω× [0, T], PG ⊗B[0, T], νQ ) (abbreviated L2(X, Q))
+with norm:
+ ξG 2
+L2(X,Q) = EQ[ ∫T
+0
+(ξG )2 d⟨X⟩
+]
+It is a standard result (Kunita and Watanabe [20]) that L2(X, Q) is isometric to the corresponding norm on L2(Ω, GT, Q) and the isometry mapping
+is the Itˆo integral IX : ξ 7→(ξ · X)T.
+ ξG 2
+L2(X,Q) = EQ[ ∫T
+0
+(ξG )2 d⟨X⟩
+]
+=
+ IX(ξG )
+2
+L2(Q)
+Deﬁne the standard predictable σ-subﬁeld H
+⊆
+PG , we assert that
+L2( Ω× [0, T], H ⊗B[0, T], νQ ) is a Hilbert subspace2. The projection operator onto this subspace is denoted:
+ξH = P H (ξG )
+The lemma below speciﬁes the explicit time indexed process ξH
+t
+that
+results from projection onto the subspace.
+2See the closure conditions for the isometric L2 spaces in section 3.1.
+14
+Electronic copy available at: https://ssrn.com/abstract=1803858
+
+Lemma 3.5. Deﬁne H ⊆PG as a standard predictable σ-subﬁeld. For any
+PG adapted process ξG ∈( Ω× [0, T], PG ⊗B[0, T], νQ ) the projection of ξG
+onto the subspace L2( Ω×[0, T], H ⊗B[0, T], νQ ) is formulated explicitly as:
+ξH
+t
+= P H (ξG
+t ) = EQ[
+ξG
+t d⟨X⟩t
+ Ht
+]
+EQ[
+d⟨X⟩t
+ Ht
+]
+∀t ∈[0, T]
+(10)
+Proof. It is straightforward to show that P H is bounded and idempotent.
+Using Fubini’s theorem and the deﬁnition of the Hilbert space norm we show
+that P H is self-adjoint. For any η ∈( Ω× [0, T], PG ⊗B[0, T], νQ ) the inner
+product (denoted
+⟨
+·, ·
+⟩
+L2(X,Q)) is:
+⟨
+P H (ξG ), η
+⟩
+L2(X,Q) =
+∫
+Ω
+∫T
+0
+P H (ξG
+t ) ηt d⟨X⟩t dQG
+=
+∫T
+0
+EQ
+[ EQ[
+ξG
+t d⟨X⟩t
+Ht
+]
+EQ[
+d⟨X⟩t
+Ht
+]
+ηt d⟨X⟩t
+]
+=
+∫T
+0
+EQ
+[
+EQ
+[ EQ[
+ξG
+t d⟨X⟩t
+Ht
+]
+EQ[
+d⟨X⟩t
+Ht
+]
+ηt d⟨X⟩t
+ Ht
+] ]
+=
+∫T
+0
+EQ
+[ EQ[
+ξG
+t d⟨X⟩t
+Ht
+]
+EQ[
+d⟨X⟩t
+Ht
+]
+EQ[
+ηt d⟨X⟩t
+ Ht
+] ]
+Using the same manipulations we obtain:
+⟨
+ξG , P H (η)
+⟩
+L2(X,Q) =
+∫T
+0
+EQ
+[ EQ[
+ηt d⟨X⟩t
+Ht
+]
+EQ[
+d⟨X⟩t
+Ht
+] EQ[
+ξG
+t d⟨X⟩t
+ Ht
+] ]
+Thus P H is bounded, idempotent and self-adjoint and is an orthogonal
+projection.
+15
+Electronic copy available at: https://ssrn.com/abstract=1803858
+
+Since P H is an orthogonal projection, the predictable H adapted process
+that minimizes the norm ∥ξG −ξH ∥L2(X,Q) is ξH = P H (ξG ). It is immediate
+from the isometry [20] that ξH also minimizes ∥(ξG ·X)T −(ξH ·X)T ∥L2(Q).
+Remark 3.6. The mean square optimal H
+adapted trading strategy for
+(Q, G ) martingale X is ξH = P H (ξG ).
+3.2.2
+VWAP is Not Attainable in the Observed Filtration
+Deﬁnition 3.7. A random variable UT ∈L2(P) is F attainable (Schweizer
+[32]) if a unique F adapted predictable process γU,F exists such that UT is
+replicated by the following Itˆo integral.
+UT = U0 +
+∫T
+0
+γU,F dX
+Lemma 3.8. VWAP is not F attainable.
+Proof. By contradiction. Assume VWAP is F attainable and an attainable
+F predictable strategy ξV,F exists, then from eqn 1 and eqn 8 above:
+VT =
+∫T
+0
+ξV,G dX =
+∫T
+0
+ξV,F dX
+Hence for all QG ∈Me(G ) the product space isometry implies that:
+
+∫T
+0
+ξV,F dX −
+∫T
+0
+ξV,G dX
+
+L2(Q)
+=
+ ξV,F −ξV,G 
+L2(X,Q) = 0
+The equation above implies that ξV,G = P F(ξV,G ).
+However, ξV,G =
+1 −Y−is not Ft measurable for 0 ≤t < T because, by deﬁnition, ﬁnal
+cumulative volume VT (eqn 8) is not Ft measurable 0 ≤t < T. Therefore
+ξV,G̸ = P F(ξV,G ) and no F attainable strategy ξV,F exists.
+16
+Electronic copy available at: https://ssrn.com/abstract=1803858
+
+3.2.3
+An L2 Optimal VWAP Strategy for (Q, G ) Martingale Price
+The explicit product space conditional expectation (eqn 10 in lemma 3.5) can
+be applied to give the F mean square optimal trading strategy for VWAP
+under any Q ∈Me(G ) in the associated Hilbert space L2(Ω, FT, Q). Noting
+that the price process X is assumed (assumption 2.1) to be continuous and
+F adapted:
+ξV,F,Q
+t
+= P F(ξV,G
+t
+) = EQ[ ξV,G
+t
+d⟨X⟩t | Ft−]
+EQ[ d⟨X⟩t | Ft−]
+= EQ[ ξV,G
+t
+| Ft−]
+(11)
+In particular, if P ∈Me(G ) and price X is a (P, G ) martingale, the F
+L2 optimal strategy is also the minimum variance strategy3:
+ξV,F
+t
+= 1 −
+Vt−
+E[ VT | Ft−]
+(12)
+Remark 3.9. If price X is a (P, G ) martingale, then the minimum variance
+VWAP strategy is the prediction at time t < T of ﬁnal volume VT.
+3.2.4
+An L2 Optimal Strategy for Semimartingale X
+This section is based on the theory of optimal L2 hedging for continuous
+semimartingale processes. The main results of the extensive literature (summarized in Schweizer [33]) are sketched below.
+Using the F VOMM (deﬁnition 3.2) density ˜ZF, the process ˆZF
+t
+can be
+deﬁned as follows:
+ˆZF
+t
+= E
+˜Q
+[ d ˜QF
+dP
+ Ft
+]
+= E[ ( ˜ZF)2 | Ft ]
+E[ ˜ZF | Ft ]
+(13)
+There exists an integrand ζF ∈Θ(F) (lemma 2.2 Delbaen and Schachermayer [7]) such that the process ˆZF can be expressed as the integral:
+3Note that the strategy is expressed in terms of ‘VWAP volume yet to be traded’.
+17
+Electronic copy available at: https://ssrn.com/abstract=1803858
+
+ˆZF
+t
+= ˆZF
+0
++
+∫t
+0
+ζF dX
+(14)
+For any random variable H ∈L2(P) the ˜QF martingale W H,F,˜Q is deﬁned
+as the ˜QF conditional expectation of H:
+W H,F,˜Q
+t
+= E
+˜Q[
+H
+Ft
+]
+The Galtchouk [12], Kunita and Watanabe [20] (GKW) decomposition of
+martingale W H,F,˜Q with respect to martingale X under VOMM ˜QF can be
+formulated:
+W H,F,˜Q
+t
+= E
+˜Q[H] +
+∫t
+0
+ξH,F,˜Q dX + LH,F,˜Q
+t
+where LH,F,˜Q is a ˜QF square integrable martingale strongly orthogonal
+to X under ˜QF. Finally, the mean square optimal integrand ξH,F for H
+under P is given by the following feedback equation:
+ξH,F
+t
+= ξH,F,˜Q
+t
+−ζF
+t
+ˆZF
+t
+(
+W H,F,˜Q
+t
+−E
+˜Q[H] −
+∫t
+0
+ξH,F dX
+)
+= ξH,F,˜Q
+t
+−ζF
+t
+( W H,F,˜Q
+0
+−E
+˜Q[H]
+ˆZF
+0
+−
+∫t
+0
+1
+ˆZF dLH,F,˜Q
+)
+(15)
+3.2.5
+An L2 Optimal VWAP Strategy for Semimartingale X
+The VWAP constant term X0 (initial stock price) cannot be modiﬁed by
+the VWAP trader (remark 2.4). Therefore it is VT −X0 (the Itˆo integral
+term in eqn 1) that is optimized below. The ˜QF martingale W H,F,˜Q is the
+conditional expectation of VT −X0:
+18
+Electronic copy available at: https://ssrn.com/abstract=1803858
+
+W V,F,˜Q
+t
+= E
+˜Q
+[ ∫t
+0
+ξV,G
+s
+dXs
+ Ft
+]
+=
+∫t
+0
+E
+˜Q[
+ξV,G
+s
+ Ft
+]
+dXs
+The integrand ξV,F,˜Q of the GKW decomposition of W V,F,˜Q
+t
+with respect
+to martingale X under VOMM ˜QF is:
+ξV,F,˜Q
+t
+= d
+⟨∫·
+0 E
+˜Q[ ξV,G
+s
+| F· ] dXs, X
+⟩
+t
+d⟨X⟩t
+= E
+˜Q[
+ξV,G
+t
+ Ft
+]
+The orthogonal martingale LV,F,˜Q is the F measurable diﬀerence:
+LV,F,˜Q
+t
+=
+∫t
+0
+(
+E
+˜Q[
+ξV,G
+s
+ Ft
+]
+−E
+˜Q[
+ξV,G
+s
+ Fs
+])
+dXs
+Substituting this into equation 15 gives the mean square optimal feedback
+solution (trading strategy) for VWAP trading with semimartingale X (ζF
+t
+is
+deﬁned in eqn 14 and ˆZF
+t
+in eqn 13 ):
+ξV,F
+t
+= E
+˜Q[
+ξV,G
+t
+ Ft
+]
+−ζF
+t
+ˆZF
+t
+∫t
+0
+(
+E
+˜Q[
+ξV,G
+s
+ Ft
+]
+−ξV,F
+s
+)
+dXs
+(16)
+The mean square optimal VWAP trading strategy equation has an intuitive interpretation. The ﬁrst term of the equation, the GKW decomposition
+of the martingale E
+˜Q[VT −X0 | Ft ], is the approximation to the P optimal
+strategy under the ‘closest’ F adapted equivalent local martingale measure
+˜QF. The second term is a feedback error correction term based on updating
+the accumulated strategy error in the time interval [0, t] using the available
+information at time t.
+It is also clear that the prediction E
+˜Q[ ξV,G
+t
+|Ft] is
+central to the ‘practical’ implementation of the optimal strategy, and since
+cumulative volume Vt is F adapted, this is equivalent (eqn 8) to the prediction of ﬁnal volume E
+˜Q[ VT|Ft]. Under the restrictive assumption that
+price X and ﬁnal volume VT are independent (see section 3.4.2) the optimal solution simpliﬁes to the P prediction E[ VT|Ft]. A dynamic prediction
+model of stock volume has been developed by Bia lkowski, Darolles and Le
+Fol [4] and an empirical model of the intraday seasonality of relative volume
+by McCulloch [21].
+19
+Electronic copy available at: https://ssrn.com/abstract=1803858
+
+3.3
+Mean Variance Optimal VWAP Strategies
+3.3.1
+The Minimum Variance VWAP Strategy
+The VOMM density ˜ZF is closely related to the complement of the projection of the constant 1 onto GT(Θ(F)).
+Deﬁne closed subspace K =
+span{1, GT(Θ(F))} ⊂L2(P). Then the VOMM density ˜ZF ∈K and is
+the normalized projection of the constant 1 onto GT(Θ(F))⊥.
+If the operator π is deﬁned as the projection operator from L2(P) onto
+the orthogonal complement GT(Θ(F))⊥and ξ1,F ∈Θ(F) is the integrand
+of the projection of 1 onto GT(Θ(F)), then:
+˜ZF =
+π(1)
+E
+[
+π(1)
+] =
+1
+E
+[
+π(1)
+] −
+∫T
+0
+ξ1,F
+E[π(1)] dX
+(17)
+From E[π(1)] = E[π(1)2] and the deﬁnition above:
+Var[ ˜ZF] =
+1
+E
+[
+π(1)
+] −1
+(18)
+The minimum variance (λ →∞in eqn 3) VWAP strategy ξV,∞,F (see
+McCulloch [22], eqn 6) is the sum of the L2 optimal strategy ξV,F and the
+constant weighted integrand of the projection of 1 onto GT(Θ(F)):
+ξV,∞,F = ξV,F −
+(
+Var[ ˜ZF] + 1
+)
+E
+[ ∫T
+0
+(
+ξV,G −ξV,F)
+dX
+]
+ξ1,F
+(19)
+Using the deﬁnition of the VOMM ˜QF above and the formulation of the
+minimum variance strategy (eqns 18 and 19) the expectation and variance of
+the minimum variance VWAP strategy are:
+E
+[ ∫T
+0
+(
+ξV,∞,F −ξV,G )
+dX
+]
+=
+(
+Var[ ˜ZF] + 1
+)
+E
+[ ∫T
+0
+(
+ξV,F −ξV,G )
+dX
+]
+(20)
+20
+Electronic copy available at: https://ssrn.com/abstract=1803858
+
+Var
+[ ∫T
+0
+(
+ξV,∞,F −ξV,G )
+dX
+]
+= E
+[( ∫T
+0
+(
+ξV,F −ξV,G )
+dX
+)2 ]
+−
+(
+Var[ ˜ZF] + 1
+)
+E
+[ ∫T
+0
+(
+ξV,F −ξV,G )
+dX
+]2
+(21)
+3.3.2
+The Mean Variance Optimal VWAP Strategy
+For a more general and detailed treatment of mean-variance optimal trading strategies as the sum of a minimum variance hedging strategy and an
+independent ‘directional’ price strategy refer to McCulloch [22].
+If the price process is semimartingale under the observed ﬁltration F,
+then the trader may wish to exploit expected price movement to ‘beat’
+VWAP. A trader can exploit expected price movement for the beneﬁt of
+his client by adopting a VWAP trading strategy that is riskier than the
+minimum variance strategy in return for a positive expected return. The optimal mean-variance VWAP trading strategy is derived using the Markowitz
+quadratic mean-variance utility function (eqn 3) with a risk aversion coeﬃcient 0 ≤λ < ∞. The mean-variance optimal strategy ξV,λ,F can be formulated [22] as the sum of two distinct trading strategies, a minimum variance
+VWAP hedging strategy λ →∞; ξV,∞,F and a standard ‘directional’ price
+strategy ξ1
+0 independent of the hedging strategy and market VWAP:
+ξV,λ,F = ξV,∞,F + ξ1,F
+0
+λ
+(22)
+Where the independent standard (λ = 1) mean-variance optimal price
+‘directional’ trade is formulated:
+ξ1,F
+0
+=
+(
+Var[ ˜ZF] + 1
+)
+ξ1,F
+(23)
+21
+Electronic copy available at: https://ssrn.com/abstract=1803858
+
+The increases in expected return and variance for an optimal mean variance VWAP trading strategy are proportional to the variance of the density
+of the F VOMM:
+E
+[ ∫T
+0
+(
+ξV,λ,F −ξV,G )
+dX
+]
+= E
+[ ∫T
+0
+(
+ξV,∞,F −ξV,G )
+dX
+]
++ 1
+λ Var
+[ ˜ZF]
+(24)
+Var
+[ ∫T
+0
+(
+ξV,λ,F −ξV,G )
+dX
+]
+= Var
+[ ∫T
+0
+(
+ξV,∞,F −ξV,G )
+dX
+]
++ 1
+λ2 Var
+[ ˜ZF]
+(25)
+3.3.3
+Mean Variance Risk Aversion λ and VWAP Trade Size
+The greater the proportion of total trading that the VWAP trader controls,
+the easier it is to trade at the market VWAP price. In the limiting case,
+the trader controls all traded volume and exactly determines the market
+VWAP irrespective of trading strategy. Thus VWAP risk is proportional to
+the traded volume that the VWAP trader does not control.
+The market relative volume process Y can be written as a weighted sum of
+the relative volume of other market participants ¯Yt = ¯Vt/¯VT and the relative
+volume strategy of the VWAP trader yt = vt/vT. The proportion β of the
+total market volume traded by the VWAP trader is then calculated:
+β =
+vT
+¯VT + vT
+= vT
+VT
+0 < β ≤1
+The total relative volume can now be decomposed into the relative volume
+process of other market participants ¯Yt and the relative volume strategy of
+the VWAP trader yt.
+Yt = (1 −β)¯Yt + βyt
+Market VWAP VT can be rewritten as:
+22
+Electronic copy available at: https://ssrn.com/abstract=1803858
+
+VT = X0 + (1 −β)
+∫T
+0
+(1 −¯Yu−) dXu + β
+∫T
+0
+yu dXu
+Therefore if the VWAP trader ﬁnal volume vT is ﬁxed and the ﬁnal volume
+of other market participants ¯VT cannot be inﬂuenced by the VWAP trader,
+then the proportion of total volume VWAP traded β cannot be optimized
+(by increasing β). The mean square error of the VWAP trading strategy is
+speciﬁed:
+E
+[(
+(1−β)
+∫T
+0
+(yu −¯Yu−) dXu
+)2 ]
+= (1−β)2 E
+[ ( ∫T
+0
+(
+ξF −ξV,G )
+dX
+)2 ]
+It is also readily shown that variance of the VWAP trading strategy is
+also scaled by (1 −β)2 and expected return by (1 −β). Hence, including
+the VWAP traded volume proportion into the mean variance optimization
+in equation 3 is equivalent to reducing the risk aversion parameter λ by a
+factor of (1 −β):
+max
+ξF
+[
+E
+[ ∫T
+0
+(
+ξF −ξV,G )
+dX
+]
+−λ(1 −β)
+2
+Var
+[ ∫T
+0
+(
+ξF −ξV,G )
+dX
+] ]
+Thus a VWAP trader with a βVT trade size and risk aversion λ has then
+same mean variance optimal strategy as a VWAP trader with small (β << 1)
+trade size with risk aversion parameter (1−β)λ. It is interesting to note that
+β is a random variable in ﬁltration F and the speciﬁcation of risk aversion
+is uncertain in the VWAP trader information set.
+Remark 3.10.
+(i) The optimal mean square (eqn 16) and minimum variance (eqn 19)
+VWAP strategies (λ →∞) are unchanged by VWAP trade size.
+(ii) A VWAP trader with a βVT trade size has a risk aversion parameter
+of (1 −β)λ. Where λ is the trader risk aversion parameter for a small
+VWAP (β << 1) trade size. Thus it is optimal for large 0 < β < 1
+mean-variance VWAP traders to increase the size of the price ‘directional’ trade for additional return.
+23
+Electronic copy available at: https://ssrn.com/abstract=1803858
+
+ξV,λ,F = ξV,∞,F +
+ξ1,F
+0
+(1 −β)λ
+3.4
+Simplifying Assumptions For VWAP Strategies
+The optimal mean variance VWAP strategies (eqns 16, 19, 22 and 5) allow
+generality in specifying the VWAP asset price process X and the nature of
+the dependence between price X and ﬁnal volume VT (the relationship between ﬁltrations F and G ) but at the cost of the strategies being formulated
+at an abstract level. Since VWAP is a ‘practical’ trade, it is worthwhile discussing restrictive assumptions on the price process and the (in)dependence
+between price and ﬁnal volume in order to simplify the speciﬁcation of the
+optimal VWAP strategies. Finally, as an example, we specify an optimal
+mean variance VWAP strategy using price modeled as a geometric Brownian
+motion (GBM) with ﬁnal volume and price assumed to be independent.
+3.4.1
+The VOMM and Minimal Martingale Measure Coincide
+It is clear from the form of the optimal VWAP strategies that an explicit
+formulation of the density ˜ZF of the F VOMM is required. In practice, the
+F VOMM is usually not known and is diﬃcult to formulate (Heath, Platen
+and Schweizer [14]). However, if the price process satisﬁes the structure condition and the resultant mean-variance tradeoﬀprocess is deterministic at
+time T then F VOMM coincides with the readily formulated Minimal Martingale measure (Schweizer [31], Schweizer [33] and F¨ollmer and Schweizer
+[11]). Brieﬂy, the (continuous) price process satisﬁes the structure condition
+if the drift term A of the canonical decomposition under P is absolutely continuous with respect to the predictable quadratic variation of the martingale
+M:
+Xt = X0 + Mt +
+∫t
+0
+α d⟨M⟩
+The mean-variance tradeoﬀprocess is deﬁned:
+24
+Electronic copy available at: https://ssrn.com/abstract=1803858
+
+Kt =
+⟨∫·
+0
+α dM
+⟩
+t =
+∫t
+0
+α2 d⟨M⟩=
+∫t
+0
+α dA
+If KT is deterministic then the Minimal Martingale measure (MMM)
+density, ˇZF ∈Me(F), is equivalent to the VOMM density (E(·) is the
+stochastic exponential):
+˜ZF
+t
+= ˇZF
+t
+= E
+(
+−
+∫t
+0
+α dM
+)
+Using the VOMM and MMM equivalence, the generalized Bayes formula
+and lemma 4.7 in Schweizer [33], the abstract form of the L2 optimal VWAP
+trading strategy (eqn 16) is simpliﬁed to:
+ξV,F
+t
+= E
+[ ˇZF
+T ξV,G
+t
+ Ft
+]
+ˇZF
+t
++ αt
+∫t
+0
+( E
+[ ˇZF
+T ξV,G
+s
+ Ft
+]
+ˇZF
+s
+−ξV,F
+s
+)
+dXs (26)
+We remark that if the VOMM is equivalent to the MMM then explicit
+mean-variance optimal price ‘directional’ strategies are readily formulated,
+see McCulloch [22] for details.
+ξ1,F
+0
+= αt E
+(
+−
+∫t
+0
+α dM
+)
+3.4.2
+The Independence of VT and X
+The assumption of the independence of ﬁnal volume VT and price X simpliﬁes
+the form of the optimal VWAP strategy. Under the independence assumption, the canonical decomposition of X = M +A is unchanged under G (thm
+2 page 364, Protter [27]). Therefore, invoking Girsanov’s theorem, for any
+QF ∈Me(F) price X is a (QF, G ) martingale and hence QF ∈Me(G ).
+However, price and cumulative volume Vt are considered to be interrelated
+in the ﬁnancial market microstructure literature (Epps [9], Jain and Joh [17]
+and Karpoﬀ[18]).
+For example, signed volume is an F adapted (trader
+25
+Electronic copy available at: https://ssrn.com/abstract=1803858
+
+accessible) process that is the diﬀerence between cumulative buyer initiated
+volume (volume traded at the ask price) and cumulative seller initiated volume (volume traded at the bid price) and is inﬂuential on price direction
+(Chan, Chung and Fong [5]). The dependence of ﬁnal volume VT and price
+X will be weaker than signed volume since ﬁnal volume does not contain
+any obvious price directional information. Nonetheless, the assumption that
+ﬁnal volume VT is independent of price X is restrictive.
+Under the assumption of independence, ˜ZF ∈De(G ) is a (P, G ) martingale and is Ft adapted:
+E
+˜Q[ ξV,G
+t
+| Ft ] = E[ ξV,G
+t
+E[ ˜ZF | Gt ] | Ft ]
+E[ ˜ZF | Ft ]
+= E[ ξV,G
+t
+| Ft ]
+Therefore the L2 optimal VWAP trading strategy (eqn 16) is simpliﬁed:
+ξV,F
+t
+= E
+[
+ξV,G
+t
+ Ft
+]
+−ζF
+t
+ˆZF
+t
+∫t
+0
+(
+E
+[
+ξV,G
+s
+ Ft
+]
+−ξV,F
+s
+)
+dXs
+(27)
+In addition, if X is a (˜QF, G ) martingale then the mean-square and minimum variance solutions coincide ξV,F = ξV,∞,F and the expectation of the
+minimum variance VWAP strategy (eqn 20) is zero:
+E
+˜Q
+[ ∫T
+0
+ξV,G dX
+]
+= 0
+The prediction ([4], [21]) of relative volume E[ ξV,G
+t
+| Ft ] (equivalently ﬁnal
+volume, see eqn 8) is central to the successful practical implementation of
+the VWAP strategy in eqn 27 . This also implies that VWAP is a ‘virtuous
+trade’ that minimizes trading price impact by allocating volume (liquidity
+demand) during periods of maximum turnover (liquidity supply).
+26
+Electronic copy available at: https://ssrn.com/abstract=1803858
+
+3.4.3
+Mean Variance VWAP with GBM
+Finally, we conclude this section with an example of mean variance optimal
+VWAP where the price process is assumed to be a Geometric Brownian
+Motion (GBM), a continuous semimartingale commonly used to describe the
+price process on ﬁnancial markets. The GBM satisﬁes the structure condition
+and is usually speciﬁed as a stochastic diﬀerential equation:
+dXt = µ Xt dt + σ Xt dWt
+where Wt is a standard Brownian motion and µ and σ are constants.
+Hence, the mean-variance tradeoﬀprocess is deterministic and the VOMM
+and MMM coincide:
+αt =
+µ
+σ2 Xt
+,
+Kt = µ2
+σ2 t
+˜ZF
+t
+= ˇZF
+t
+= exp
+(
+−µ
+σ Wt −1
+2
+µ2
+σ2 t
+)
+If we further assume that ﬁnal volume VT and price X are independent,
+then the minimum variance optimal VWAP trade is formulated:
+ξV,∞,F
+t
+= E[ ξV,G
+t
+| Ft ] +
+µ
+σ2 Xt
+∫t
+0
+(
+E[ ξV,G
+s
+| Ft ] −ξV,F
+s
+)
+dXs
+(28)
+We emphasize that the key to the practical and eﬃcient implementation
+of this simpliﬁed VWAP algorithm is the prediction of ﬁnal volume VT given
+the available information Ft at time t:
+E[ ξV,G
+t
+| Ft ] = 1 −
+Vt
+E[ VT | Ft ]
+To complete the mean-variance optimal GBM example, we assume that
+the VWAP trader is trading βVT of total market volume in the VWAP trade
+then the price ‘directional’ trade is formulated:
+27
+Electronic copy available at: https://ssrn.com/abstract=1803858
+
+ξV,λ,F = ξV,∞,F +
+ξ1,F
+0
+(1 −β)λ
+ξ1
+0 =
+µ
+σ2Xt
+(Xt
+X0
+)−µ/σ2
+exp
+( ( µ
+σ2 −1
+)µt
+2
+)
+4
+Conclusion
+We consider a continuous time model of optimal VWAP trading and derive
+optimal Markowitz mean-variance VWAP trading strategies. These results
+generalize Konishi’s [19] ﬁxed F0 adapted solution for a martingale Wiener
+process price to a continuously dynamic Ft adapted solution for continuous
+semimartingale price. In addition, we show that the optimal VWAP trading strategies (eqn 16 and eqn 27) are closely associated to the prediction
+of relative intraday volume (E[Yt|Ft]) and minimize trading price impact
+by allocating trade volume (liquidity demand) during periods of maximum
+turnover (liquidity supply). Finally, we show that mean-variance optimal
+VWAP traders with large VWAP trades will trade larger price ‘directional’
+trades for additional expected return.
+28
+Electronic copy available at: https://ssrn.com/abstract=1803858
+
+References
+[1] Robert Almgren and Neil Chriss, Optimal execution of portfolio transactions, Journal of Risk 3 (2000), 539.
+[2] Stephen Berkowitz, Dennis Logue, and Eugene Noser, The Total Cost
+of Transactions on the NYSE, Journal of Finance 43 (1988), 97–112.
+[3] Dimitris Bertsimas and Andrew Lo, Optimal Control of Execution Costs,
+Journal of Financial Markets 1 (1998), 1–50.
+[4] J ,edrzej Bia lkowski, Serge Darolles, and Ga¨elle Le Fol, Improving VWAP
+strategies: A dynamic volume approach, Journal of Banking & Finance
+32 (2008), 1709–1722.
+[5] Kalok Chan, Y. Peter Chung, and Wai-Ming Fong, The Informational
+Role of Stock and Option Volume, Review of Financial Studies 15 (2002),
+1049–1075.
+[6] Freddy Delbaen,
+Pascale Monat,
+Walter Schachermayer,
+Martin
+Schweizer, and Christophe Stricker, Weighted Norm Inequalities and
+Hedging in Incomplete Markets, Finance and Stochastics 1 (1997), no. 3,
+181–227.
+[7] Freddy Delbaen and Walter Schachermayer, The Variance-Optimal Martingale Measure for Continuous Processes, BERNOULLI 2 (1996), 81–
+105.
+[8] Ian Domowitz and Henry Yegerman, The Cost of Algorithmic Trading:
+A First Look at Comparative Performance, Algorithmic Trading: Precision, Control, Execution. (Brian R. Bruce ed.) (2005), 30–40.
+[9] Thomas W. Epps, Security Price Changes and Transaction Volumes:
+Theory and Evidence, The American Economic Review 65 (1975), no. 4,
+586–597.
+[10] Hans F¨ollmer and Martin Schweizer, Hedging of Contingent Claims under Incomplete Information, Applied Stochastic Analysis (M.H.A. Davis
+and R.J. Elliot eds) (1991), 389–414.
+[11]
+, Minimal Martingale Measure, Encyclopedia of Quantitative Finance (Rama Cont ed.) (2001), 1200–1204.
+29
+Electronic copy available at: https://ssrn.com/abstract=1803858
+
+[12] Leonid Galtchouk, Repr´esentation des martingales engendr´ees par un
+processus `a accroissements ind´ependants (cas des martingales de carr´e
+int´egrable), Annales de l’Institut Henri Poincar´e (B) 12 (1976), 199–211.
+[13] Christian Gouri´eroux, Jean-Paul Laurent, and Huyˆen Pham, Meanvariance hedging and num´eraire, Mathematical Finance 8 (1998), 179–
+200.
+[14] David Heath, Eckhard Platen, and Martin Schweizer, A Comparison of
+Two Quadratic Approaches to Hedging in Incomplete Markets, Mathematical Finance 11 (2001), 385–413.
+[15] Chunli Hou and Ioannis Karatzas, Least-Squares Approximation of Random Variables by Stochastic Integrals, Advanced Studies in Pure Mathematics; Stochastic Analysis and Related Topics in Kyoto - In Honour
+of Kiyosi Ito; Edited by Hiroshi Kunita, Shinzo Watanabe, Yoichiro
+Takahashi 41 (2004), 141–166.
+[16] Jean Jacod, Grossissement Initial, Hypoth`ese (H’) et Th´eor`eme de Girsanov, S´eminaire de Calcul Stochastique 1982/83, Lecture Notes in
+Mathematics 1118, Springer (1985), 15–35.
+[17] Prem C. Jain and Gun-Ho Joh, The Dependence between Hourly Prices
+and Trading Volume, Journal of Financial and Quantitative Analysis 23
+(1988), 269–283.
+[18] Jonathan M. Karpoﬀ, A Theory of Trading Volume, The Journal of
+Finance 41 (1986), no. 5, 1069–1087.
+[19] Hizuru Konishi, Optimal slice of a VWAP trade, Journal of Financial
+Markets 5 (2002), 197–221.
+[20] Hiroshi Kunita and Shinzo Watanabe, On square integrable martingales,
+Nagoya Mathematical Journal 30 (1967), 209–245.
+[21] James McCulloch, Relative Volume as a Doubly Stochastic Binomial
+Point Process, Quantitative Finance 7 (2007), 55–62.
+[22]
+, Optimal Price Trading and Mean Variance Hedging, Working
+Paper , SSRN website, May 2011.
+[23] Thomas Møller, Indiﬀerence Pricing of Insurance Contracts: Theory,
+Working Paper no. 170, Laboratory of Actuarial Mathematics, University of Copenhagen, February 2001.
+30
+Electronic copy available at: https://ssrn.com/abstract=1803858
+
+[24]
+, Indiﬀerence pricing of insurance contracts in a product space
+model, Finance and Stochastics 7 (2003), 197–217.
+[25] Andre F. Per´old, The Implementation Shortfall: Paper versus Reality,
+The Journal of Portfolio Management 14 (1988), 4–9.
+[26] Huyˆen Pham, Thorsten Rheinl¨ander, and Martin Schweizer, Meanvariance hedging for continuous processes: New proofs and examples,
+Finance and Stochastics 2 (1998), 173–198.
+[27] Phillip Protter,
+Stochastic Integration and Diﬀerential Equations,
+Springer, 2005.
+[28] Thorsten Rheinl¨ander, Optimal martingale measures and their applications in mathematical ﬁnance, Ph.D. thesis, Technische Universit¨at
+Berlin, 1999.
+[29] Thorsten Rheinl¨ander and Martin Schweizer, On L2-projections on a
+space of stochastic integrals, Annals of Probability 25 (1997), 1810–1831.
+[30] Martin Schweizer, Risk-minimizing hedging strategies under restricted
+information, Mathematical Finance 4 (1994), 327–342.
+[31]
+, On the Minimal Martingale Measure and the F¨ollmer-Schweizer
+Decomposition, Stochastic Analysis and Applications 13 (1995), 573–
+599.
+[32]
+, Approximation Pricing and the Variance-Optimal Martingale
+Measure, Annals of Applied Probability 24 (1996), 206–236.
+[33]
+, A guided tour through quadratic hedging approaches, Option
+Pricing, Interest Rates and Risk Management (E. Jouini, J. Cvitanic,
+and M. Musiela, eds., Cambridge University Press, 2001.
+[34]
+, From Actuarial to Financial Valuation Principles, Insurance:
+Mathematics and Economics 28 (2001), 31–47.
+[35] Ingrid Werner, NYSE order ﬂow, spreads, and information, Journal of
+Financial Markets 6 (2003), 309–335.
+31
+Electronic copy available at: https://ssrn.com/abstract=1803858

@@ -1,0 +1,145 @@
+{
+  "titulo": "Recipe For Quantitative Trading With Machine Learning",
+  "resumen_operativo": "Propone una metodologia para forecasting de retornos y direcciones usando ML respetando las propiedades estadisticas de series financieras (multifractalidad, long-range dependence). Introduce Reservoir Computing (ESN) y Associative Reservoir Computing para modelar procesos persistentes. El marco clave es un meta-modelo que combina multiple ML models calibrados a procesos teoricos con propiedades no solapadas, recombinados dinamicamente segun el exponente de Hurst. Incluye algoritmos para prediccion de direcciones, generacion de patrones autonomos y estrategias de trading adaptativas al regimen de Hurst.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Multifractal Formalism (MF)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Framework para testear capacidad de modelos ML de reproducir propiedades estadisticas no solapadas de series temporales financieras.",
+      "relaciones": [
+        {
+          "tipo": "USA",
+          "objeto": "Hurst Exponent"
+        },
+        {
+          "tipo": "APLICA_A",
+          "objeto": "Financial Time Series"
+        }
+      ],
+      "cita_textual": "we use the multifractal formalism (MF) as a framework for testing the capacity of an ML model to reproduce some non-overlapping statistical properties"
+    },
+    {
+      "nombre": "Reservoir Computing (Echo State Networks)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "RNN con reservorio fijo aleatorio y solo readout entrenable; evita vanishing gradients y permite entrenamiento eficiente.",
+      "relaciones": [
+        {
+          "tipo": "MEJORA_A",
+          "objeto": "RNN (Recurrent Neural Networks)"
+        }
+      ],
+      "cita_textual": "RC is based on the computational separation between a dynamic reservoir and a recurrence-free readout"
+    },
+    {
+      "nombre": "Associative Reservoir Computing (ARC)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Extension de RC con feedback de output que permite modelar relaciones inversas ambiguas (one-to-many) tipicas de retornos financieros.",
+      "relaciones": [
+        {
+          "tipo": "MEJORA_A",
+          "objeto": "Reservoir Computing"
+        }
+      ],
+      "cita_textual": "Associative Reservoir Computing Theory (ARC) to shape multistable attractor dynamics that reflect the multiplicity of solutions"
+    },
+    {
+      "nombre": "Hurst Exponent (H)",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida de persistencia/antipersistencia de series temporales; H>0.5 persistente (trend), H<0.5 antipersistente (mean-reverting), H=0.5 random walk.",
+      "relaciones": [
+        {
+          "tipo": "MIDE",
+          "objeto": "Long Range Dependence"
+        },
+        {
+          "tipo": "REQUIERE",
+          "objeto": "Meta-Model Recombination"
+        }
+      ],
+      "cita_textual": "the meta-model is dynamically recombined based on the changing properties of the financial series over time"
+    },
+    {
+      "nombre": "Meta-Model with Dynamic Recombination",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Ensemble de modelos ML calibrados individualmente a procesos teoricos Tm, recombinados con pesos funcion del exponente de Hurst local.",
+      "relaciones": [
+        {
+          "tipo": "USA",
+          "objeto": "Hurst Exponent"
+        }
+      ],
+      "cita_textual": "the weights of the latter are statistically computed as a function of the Hurst exponent"
+    },
+    {
+      "nombre": "Long Range Dependence (LRD)",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Propiedad de series financieras donde autocorrelaciones decaen lentamente (ley de potencia); ausente en retornos pero presente en volatilidad.",
+      "relaciones": [
+        {
+          "tipo": "PARTE_DE",
+          "objeto": "Multifractal Formalism"
+        }
+      ],
+      "cita_textual": "long memory has been identified in the first differences of many economic series"
+    },
+    {
+      "nombre": "Output Feedback in RC",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Realimentacion del output al reservorio para modelar procesos persistentes que fading memory systems no pueden capturar.",
+      "relaciones": [
+        {
+          "tipo": "MEJORA_A",
+          "objeto": "Reservoir Computing"
+        }
+      ],
+      "cita_textual": "anti-persistent systems using feedback can obtain universal computational capabilities similar to those of persistent systems"
+    },
+    {
+      "nombre": "Temporal Difference (TD) Learning",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Metodo de aprendizaje por refuerzo para problemas de prediccion multi-paso; superior a supervised learning para generacion de patrones financieros.",
+      "relaciones": [
+        {
+          "tipo": "MEJORA_A",
+          "objeto": "Supervised Learning"
+        },
+        {
+          "tipo": "APLICA_A",
+          "objeto": "Pattern Prediction"
+        }
+      ],
+      "cita_textual": "temporal difference (TD) are far preferable for multi-step prediction-learning problems"
+    },
+    {
+      "nombre": "Effective Local Holder Exponent (ELHE)",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida de regularidad local de una serie temporal; usado para detectar cambios de regimen y oportunidades de mean-reversion vs trend-following.",
+      "relaciones": [
+        {
+          "tipo": "MIDE",
+          "objeto": "Local Multifractality"
+        }
+      ],
+      "cita_textual": "highly random local Holder exponents, emphasising the strong multifractal nature of financial data"
+    },
+    {
+      "nombre": "Non-Injective Mapping Problem",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Varias causas pueden producir el mismo efecto en mercados financieros; modelos feed-forward no pueden representar soluciones multiples.",
+      "relaciones": [
+        {
+          "tipo": "MITIGA",
+          "objeto": "Associative Reservoir Computing (ARC)"
+        }
+      ],
+      "cita_textual": "if there is a non-injective relation between inputs and outputs, there is no unique solution to the inverse problem"
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {
+    "nivel": "alta",
+    "nota": "Disenado para trabajar con datos de alta frecuencia; el analisis multifractal y el meta-modelo son directamente aplicables a trading intradia."
+  },
+  "doc_id": 289
+}

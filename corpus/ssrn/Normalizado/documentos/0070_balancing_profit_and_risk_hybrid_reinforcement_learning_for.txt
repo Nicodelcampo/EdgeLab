@@ -1,0 +1,631 @@
+Balancing Profit and Risk: Hybrid Reinforcement
+Learning for Algorithmic Trading
+Benjamin deCosta*
+1Independent Research, Toronto, Canada
+benjamin.adam.decosta@gmail.com
+Abstract. Reinforcement learning (RL) can discover trading policies directly from market data, but profit-only objectives often yield unstable,
+high-variance behavior. We study risk-aware reward designs that explicitly balance profit and risk, including volatility and drawdown penalties as well as a Sharpe-hybrid objective. Using daily data equities and
+ETFs, we train Q-learning and Deep Q-Networks (DQN) and evalu- ate
+out-of-sample in two regimes: the high-volatility COVID-19 period and
+the mixed post-pandemic period. Risk-aware rewards improve risk- adjusted performance versus profit-only objectives. In 2020–2021, DQN
+with a Sharpe-hybrid reward attains a mean Sharpe of ∼1.93 and mean
+maximum drawdown near 15% across assets; results remain favorable
+in 2022–2024. To ensure correctness and reproducibility, all simulated
+trades were systematically logged and verified. We analyze learning dynamics, sensitivity to penalty strengths, and transaction-cost impacts,
+and we highlight dispersion across assets, suggesting the need for portfolio level risk controls. These findings indicate that shaping the RL reward toward risk-adjusted objectives yields more stable and practically
+relevant trading policies.
+1. Introduction
+Algorithmic trading has transformed financial markets by enabling the systematic execution of trading strategies through data-driven models. Among these
+approaches, reinforcement learning (RL) has gained attention due to its ability
+to learn optimal trading policies directly from historical market data. RL agents
+can explore and adapt to dynamic environments, making sequential decisions
+buy, sell, or hold based on rewards tied to portfolio performance.
+While recent studies have demonstrated that RL agents can outperform traditional rule
+based strategies, they typically prioritize raw profit maximization; however, professional traders and hedge funds emphasize risk adjusted returns, evaluating
+performance with metrics like the Sharpe ratio, Sortino ratio, or maximum drawdown, which better capture the trade off between profit and risk exposure.
+The absence of risk considerations in RL trading research presents a critical gap. An agent that only maximizes returns may take excessive risks, producing unstable results that are impractical for real world deployment. To address
+this limitation, this study proposes an RL framework that integrates risk aware
+reward functions, combining profitability with explicit penalties for volatility and
+drawdowns. By shaping the reward function to reflect real-world risk preferences,
+
+we aim to create trading strategies that are both profitable and stable under varying market conditions.
+This paper makes the following contributions:
+• We design and test custom RL reward functions that balance profit and
+risk, including hybrid formulations of the profit-to-Sharpe ratio.
+• We benchmark risk-aware RL agents against standard RL agents and simple rule-based trading strategies.
+• We evaluated the impact of risk-aware learning on portfolio performance
+using historical data in different market conditions.
+The remainder of this paper is organized as follows. Section 2 reviews previous
+work on RL in trading and risk-adjusted performance metrics. Section 3 describes
+the data and methodology, including our RL environment and the reward design.
+Section 4 presents experimental results, followed by a discussion in Section 5
+and conclusions in Section 6.
+2. Prior Work
+Reinforcement learning (RL) has seen increasing application in algorithmic trading, particularly with the rise of deep learning approaches in finance. (Moody &
+Saffell, 2001) pioneered the use of RL to model trading as a sequential decisionmaking process, where agents learn policies directly from historical price data
+and adapt to dynamic environments. Their experiments demonstrated that direct
+reinforcement learning could produce profitable strategies; however, they did not
+incorporate risk-adjusted performance metrics, which often resulted in strategies
+exhibiting high volatility.
+Building on this foundation, (Deng et al., 2016) introduced Deep Q-Networks
+(DQN) to financial trading, reporting that DQN agents were capable of outperforming traditional rule-based strategies and achieving strong cumulative returns.
+Nevertheless, their findings also revealed that DQN models are highly sensitive
+to hyperparameter settings and market conditions, frequently leading to unstable
+performance. Similarly, (Jiang et al., 2017) applied deep reinforcement learning
+to cryptocurrency trading and observed that while the agents achieved substantial
+raw profits, they experienced significant drawdowns and elevated volatility, raising
+concerns about their practical viability in real-world trading.
+More recent research has focused on integrating risk considerations into
+RL trading frameworks. (Yu & Lee, 2020) proposed a risk-aware reward function
+that penalizes portfolio volatility, demonstrating that this approach effectively reduced drawdowns and improved Sharpe ratios compared to profit-only models.
+Likewise, (Almahdi & Yang, 2017) developed an adaptive portfolio trading system using deep RL, showing that incorporating risk constraints led to more stable
+performance and fewer large losses, albeit with a slight reduction in raw returns.
+Despite these advancements, the systematic study of hybrid reward functions—those that balance raw profit with explicit risk metrics (e.g., Sharpe ratio, volatility, and drawdown penalties) remains underexplored. Most existing approaches either maximize profit without regard for risk or focus on optimizing a
+
+single risk-adjusted measure, which often limits adaptability across diverse market conditions. This research aims to address this gap by investigating a continuum of risk–reward trade-offs, with the goal of identifying RL configurations that
+achieve both robust profitability and improved stability across varying financial
+environments.
+3. Data and Methodology
+3.1. Data Collection
+We utilize historical price data for a selection of liquid stocks and exchange-traded
+funds (ETFs), including AAPL, MSFT, and SPY, to ensure coverage of both individual equities and broader market indices. Data is sourced from Yahoo Finance
+via the Python yfinance API, spanning a 9-year period (2015–2024) with daily frequency. Each data point includes Open, High, Low, Close, and Volume (OHLCV)
+values.
+To ensure a robust evaluation, we use historical stock and ETF data spanning both stable and volatile market regimes. Our dataset is divided into three
+phases:
+(i) a pre-pandemic period (2015–2019) representing stable market conditions
+(ii) a high-volatility period (2020–2021) covering the COVID-19 market
+shock
+(iii) a post-pandemic period (2022–2024) reflecting recovery and mixed
+trends.
+This setup provides insight into whether risk-aware reward functions improve robustness when market conditions differ from the training environment.
+3.2. State Space
+At each time step t, the agent observes a feature vector that summarizes recent
+price behavior and market conditions. The features include:
+• Log Return: ℓt = ln
+
+Pt
+Pt−1
+
+, where Pt is the closing price at time t. This
+provides a scale-invariant measure of daily price change.
+• Exponential Moving Averages (EMAs): We compute 10-day (short-term)
+and 50-day (long-term) EMAs. These help capture momentum and trend
+direction.
+• Relative Strength Index (RSI): A normalized indicator of price momentum. It helps identify overbought (> 70) or oversold (< 30) market conditions.
+• Rolling Volatility: Computed as the standard deviation of log returns over
+a 14-day window. This provides a local estimate of risk or uncertainty.
+• Position Indicator: The agent’s current position wt ∈{−1, 0, +1} (short,
+flat, long). This variable directly determines portfolio returns as defined in
+Section 3.4.
+These features are normalized and combined into a state vector st, which the
+reinforcement learning (RL) agent uses to select an action.
+
+3.3. Action Space
+The agent operates in a discrete action space:
+• Buy (a = 1): Opens or increases a long position.
+• Sell (a = 2): Closes a long position or opens a short position.
+• Hold (a = 0): Maintains the current position.
+The agent maintains a position across time steps until an opposing action is
+taken, mimicking the cost and inertia of real-world trading.
+3.4. Reward Functions
+The agent’s objective is to maximize a reward signal that captures not only profitability but also risk-adjusted performance. To ensure correctness and reproducibility, rewards are defined in terms of per-step portfolio return, which depends
+on both price changes and the agent’s position wt, rather than raw price differences.
+Per-step portfolio return.
+At each time step t, the agent maintains a position
+wt ∈{−1, 0, +1} (short, flat, long). The per-step portfolio return is defined as:
+rt = wt · Pt+1 −Pt
+Pt
+−κ |wt+1 −wt|
+where Pt is the asset price, and κ is the transaction-cost penalty per unit turnover.
+This forms the base return signal from which shaped rewards are constructed.
+1. Profit-Only Reward
+The basic reward is simply the per-step return:
+Rprofit
+t
+= rt
+This encourages the agent to maximize raw profitability without risk constraints.
+2. Profit with Volatility Penalty
+To discourage unstable strategies, a penalty is applied proportional to
+rolling volatility:
+Rt = rt −λ ˆσt
+where ˆσt is the estimated standard deviation of recent returns, and λ is a
+tunable risk-aversion parameter. Volatility is annualized for consistency.
+3. Profit with Drawdown Penalty
+To avoid deep portfolio losses, the reward is adjusted by current drawdown:
+Rt = rt −β DDt
+where DDt is the percentage drawdown from the running peak portfolio
+value, and β controls penalty strength.
+
+4. Profit–Sharpe Hybrid
+A hybrid objective balances raw return with a moving Sharpe estimate:
+Rt = α rt + (1 −α) · ˆµt
+ˆσt
+where ˆµt is the mean of returns over a moving window, and ˆσt the corresponding volatility. Normalizing the Sharpe component ensures it is comparable to per-step returns. The mixing weight α ∈[0, 1] balances profitseeking and risk-adjusted stability.
+Choice of Penalty Strengths (λ, β, α) Penalty strengths were selected via a
+coarse grid search on the training set, guided by both prior literature and practical
+trading intuition. The volatility penalty weight λ was chosen to meaningfully reduce exposure in turbulent markets without overly suppressing profitable trades
+(λ ≈0.5). The drawdown penalty weight β was tuned to prioritize avoiding deep
+portfolio losses while still allowing recovery trades (β ≈0.3). The Sharpe hybrid
+weight α was set to balance raw return and stability (α ≈0.6), consistent with
+previous studies showing that moderate risk weighting tends to maximize out-ofsample Sharpe ratios.
+These reward formulations allow us to study how different risk preferences affect
+the agent’s learned behavior and performance outcomes.
+3.5. Reinforcement Learning Models
+We experiment with two reinforcement learning algorithms:
+1. Q-Learning
+A tabular method that updates a state-action value table using the Bellman
+equation. Due to the limited state granularity, this is used mainly for simple
+environments.
+2. Deep Q-Networks (DQN)
+An extension of Q-learning that uses a neural network to approximate the
+Q-value function. It enables learning in continuous and high-dimensional
+state spaces. We implement DQN using the stable-baselines3 library
+with standard settings (e.g., replay buffer, target network, and epsilongreedy exploration).
+Both models learn a policy that maps observed features to actions in order to
+maximize cumulative discounted rewards.
+3.6. Baseline Strategy
+To assess the performance of our RL agents, we compare them against a handcrafted fundamentals-filtered technical strategy. This benchmark combines
+traditional technical indicators with a simple fundamental screening process to
+produce long and short trading signals.
+The strategy operates as follows:
+
+• Fundamental Screening: Prior to trade signal generation, assets are filtered based on three key metrics obtained from Yahoo Finance:
+P/E < 30,
+D/E < 2,
+EPS > −5
+Missing values for any metric are treated as passing the filter. Only assets
+passing all criteria are eligible for long trades.
+• Technical Indicators: For each asset, the following indicators are computed:
+– Relative Strength Index (RSI, 14-day window)
+– Moving Average Convergence Divergence (MACD) and its signal
+line
+– 20-day Exponential Moving Average (EMA20)
+– 50-day Simple Moving Average (SMA50)
+• Signal Generation:
+– Bullish Signal: MACD line crossing above the signal line, RSI below 60, and fundamentals passing the filter.
+– Bearish Signal: MACD line crossing below the signal line and RSI
+above 60.
+• Volatility-Aware Position Sizing: Position size is determined using the
+rolling 20-day standard deviation of returns as a volatility estimate. This
+controls the dollar risk per trade, with upper and lower bounds on volatility
+to prevent extreme position sizes. Positions are fully closed on a bearish
+signal.
+• Performance Measurement: After simulating trades, cumulative return,
+Sharpe ratio, maximum drawdown, and annualized volatility are calculated
+to assess strategy performance.
+These baselines represent both naïve and technically informed trading logic, providing contrast against the learning-based approach.
+3.7. Evaluation Metrics
+We evaluate all strategies using the following metrics:
+1. Cumulative Return
+Total percentage return over the test period.
+2. Sharpe Ratio
+Mean return divided by the standard deviation of returns, annualized:
+Sharpe Ratio = E[R]
+σR
+where E[R] is the expected return and σR is the standard deviation of returns.
+
+3. Maximum Drawdown (MDD)
+The largest percentage drop from peak to trough in the portfolio value:
+MDD = max
+t∈[0,T]
+ maxτ≤t V (τ) −V (t)
+maxτ≤t V (τ)
+!
+where V (t) is the portfolio value at time t.
+4. Volatility
+Standard deviation of daily returns, providing a measure of risk.
+These metrics capture both profitability and risk, allowing us to assess the tradeoffs made by different reward functions.
+4. Experiments and Results
+To assess the effectiveness of risk-aware reward functions in reinforcement learningbased trading systems, we conducted a series of experiments using the RL environment described in Section 3. We compared different reward formulations
+and algorithms across various market regimes to evaluate their impact on performance, consistency, and risk management.
+4.1. Experimental Setup
+We trained reinforcement learning agents using both Q-Learning and Deep QNetworks (DQN) on historical stock and ETF data from the pre-pandemic period
+(2015–2019). Each agent was trained and evaluated using all four reward structures:
+• Profit-Only
+• Profit with Volatility Penalty
+• Profit with Drawdown Penalty
+• Profit–Sharpe Hybrid
+The agents were then tested on two out-of-sample market environments:
+• High-volatility period (2020–2021) — capturing the COVID-19 shock.
+• Post-pandemic recovery period (2022–2024) — reflecting more mixed
+and uncertain market trends.
+All models used the same normalized feature set (see Section 3.2) and consistent
+hyperparameters to ensure a fair comparison. DQN implementations included
+standard components such as experience replay, target networks, and epsilongreedy exploration. Multiple training runs were conducted for each agent-reward
+combination to account for stochastic variation in learning and evaluation.
+4.2. Evaluation Methodology
+Performance was evaluated using a suite of financial metrics that reflect both
+profitability and risk:
+
+• Cumulative Return (%): Final portfolio growth over the test period.
+• Sharpe Ratio: Risk-adjusted return, annualized, defined as
+Sharpe Ratio = E[R]
+σR
+×
+√
+252
+where E[R] is the mean daily return, σR is the standard deviation of daily
+returns, and 252 is the typical number of trading days per year.
+• Maximum Drawdown (MDD): The largest percentage loss from a historical peak portfolio value, calculated as
+MDD = max
+t∈[0,T]
+ maxτ≤t V (τ) −V (t)
+maxτ≤t V (τ)
+!
+where V (t) is the portfolio value at time t.
+• Volatility: Annualized standard deviation of daily returns,
+σannual = σR ×
+√
+252.
+Results were compared across both reinforcement learning agents and baseline
+strategies, including a buy-and-hold benchmark and a handcrafted momentum
+strategy utilizing MACD divergences and RSI filters. In addition, To ensure correctness and reproducibility, all trades were logged during simulation to validate
+that execution and reward calculations were consistent with the specified methodology.
+4.3. Performance Results
+The performance of all strategies was assessed using cumulative return and
+Sharpe ratio as the primary metrics, with maximum drawdown and volatility considered as complementary measures. Results are reported for both reinforcement learning approaches (Q-Learning and DQN) under all four reward function formulations, and compared against the baseline strategy: a fundamentalsfiltered technical trading strategy.
+The evaluation was conducted over a diversified universe of n = 53 assets,
+deliberately selected to capture a broad range of market conditions and behaviors. This set included large-cap growth and value stocks, high-volatility momentum equities, defensive dividend payers, as well as exchange-traded funds (ETFs)
+representing bullish, bearish, and sector-specific exposures. The diversity of this
+universe was intended to ensure that reported performance metrics reflect robustness across different asset profiles and market regimes, rather than being
+tailored to a narrow subset of securities.
+Across both out-of-sample market regimes—the high-volatility COVID-19
+period (2020–2021) and the mixed-trend post-pandemic period (2022–2024)—
+risk-aware reward functions consistently improved the stability and risk-adjusted
+performance of RL agents compared to the profit-only formulation.
+
+Figure 1. Comparison of cumulative returns across various reward systems and
+reinforcement learning agents.
+4.3.1. Cumulative Return
+Immediate observations:
+• DQN consistently outperforms Q-Learning in median return across reward types.
+For both test periods, DQN agents achieved substantially
+higher median cumulative returns than Q-Learning agents (e.g., Sharpehybrid: DQN ≈0.67 vs Q-Learning ≈0.30 in 2020–2021). This outcome
+aligns with expectations, as DQN’s neural network function approximation
+can represent richer state–action mappings and capture non-linear patterns in price features more effectively than tabular Q-Learning in highdimensional state spaces.
+• Risk-aware rewards improve both median returns and consistency.
+Across algorithms, the profit-only reward exhibited lower median returns
+(or negative medians for Q-Learning during the volatile 2020–2021 period), whereas the Sharpe-hybrid and volatility-penalty rewards produced
+higher medians and, in many cases, equal or lower dispersion. This suggests that shaping the objective towards risk-adjusted outcomes mitigates
+catastrophic losses and enhances out-of-sample robustness.
+• Sharpe-hybrid leads for DQN. The Sharpe-hybrid reward delivered the
+highest median cumulative return in both periods for DQN (≈0.67 and
+≈0.58, respectively). By combining immediate profit with a risk-adjusted
+consistency measure, the agent learns to avoid high-variance strategies
+that generate occasional spikes but underperform over the long run.
+Underlying factors:
+1. Function approximation and representation. DQN leverages a neural network to generalize across continuous, normalized features (returns, EMAs,
+RSI, volatility, position), enabling more nuanced conditional behavior (e.g.,
+reducing exposure during high rolling volatility) than a coarse tabular QLearning policy can achieve.
+
+2. Stability and sample efficiency trade-offs.
+While DQN can learn richer
+policies, it is more data-intensive and may require stabilizing techniques
+(replay buffer, target networks, Double DQN, prioritized replay) to prevent
+instability. Q-Learning can converge faster in small, discrete problems, but
+its limited representational capacity reduces performance in realistic trading environments.
+3. Reward shaping and risk control.
+Incorporating volatility or drawdown
+penalties modifies the reward landscape, providing explicit negative feedback for risky actions. This reduces the likelihood of large adverse excursions that would otherwise inflate standard deviation and depress median
+returns.
+Error bars and variability:
+Figure 1 reports mean cumulative returns for each
+agent–reward formulation, with vertical error bars indicating the standard deviation (SD) of results across n = 53 assets. Wider error bars indicate greater dispersion and lower cross-asset consistency. For instance, during the high-volatility
+2020–2021 regime, the DQN Profit–Sharpe Hybrid achieved a mean cumulative
+return of approximately 0.67 with an SD of about 0.34, implying that most assetspecific results fell within roughly 0.67 ± 0.34 of the mean.
+While SD reflects the spread of results, it does not indicate the precision of the
+estimated mean. This is measured by the standard error of the mean (SEM):
+SEM = SD
+√n = 0.34
+√
+53 ≈0.0467
+This yields a 95% confidence interval of approximately ±0.0915 around the mean.
+4.3.2. Sharpe Ratio
+Figure 2. Comparison of Sharpe Ratios across various reward systems and
+reinforcement learning agents.
+
+The Sharpe ratio measures the excess return per unit of risk, with values above
+1.0 generally considered good, above 1.5 very good, and above 2.0 excellent for
+trading strategies. During the high-volatility 2020–2021 period, the DQN Profit–
+Sharpe Hybrid achieved the highest mean Sharpe ratio at approximately 1.93 with
+an SD of about 0.65, placing it well into the “very good” range and approaching
+“excellent” despite challenging market conditions.
+The SEM for this configuration is:
+SEM = 0.65
+√
+53 ≈0.0892
+This corresponds to a 95% confidence interval of ±0.175 around the mean.
+4.3.3. Max Drawdown
+Figure 3. Comparison of Mean Max Drawdowns across various reward systems
+and reinforcement learning agents.
+Maximum drawdown (MDD) measures the largest percentage drop from a portfolio’s peak value before a new high is reached; smaller values indicate better
+downside protection. In practice, an MDD below 20% is considered relatively
+conservative, while drawdowns above 30% suggest substantial downside risk.
+In the 2020–2021 high-volatility period, the DQN Profit–Sharpe Hybrid
+achieved the lowest mean drawdown at approximately 15% (SD ≈0.03), demonstrating strong downside protection and consistent performance across assets.
+The SEM for this configuration is:
+SEM = 0.03
+√
+53 ≈0.0041
+yielding a 95% confidence interval of ±0.008 around the mean.
+
+4.3.4. Volatility
+Figure 4. Comparison of Volatility across various reward systems and
+reinforcement learning agents.
+Volatility measures the annualized standard deviation of returns, indicating the
+expected variability over a year. Lower volatility implies more stable returns, while
+higher volatility suggests greater fluctuations and potential risk. In practical portfolio management, annualized volatility below 20% is considered low risk, whereas
+values above 40% are regarded as highly volatile.
+In the high-volatility 2020–2021 period, the Q-Learning Volatility Penalty
+configuration achieved the lowest mean volatility at approximately 25% (SD ≈
+0.04), indicating that penalizing volatility in the reward function effectively reduced
+return fluctuations. The SEM for this configuration is:
+SEM = 0.04
+√
+53 ≈0.0055
+which corresponds to a 95% confidence interval of ±0.0108.
+Effect of market volatility (2020–2021 vs 2022–2024).
+• High-volatility period (2020–2021): This regime exhibits large price swings.
+Profit-only DQN achieves positive median returns but with high dispersion;
+profit-only Q-Learning is negative on median. Risk-aware rewards (volatility/drawdown penalties and Sharpe-hybrid) substantially improve median
+returns and reduce extreme negative tails for both algorithms — but most
+markedly for DQN. This matches intuition: in volatile regimes, an agent
+that internalizes penalties for volatility/drawdown is less likely to take large
+directional bets that can produce catastrophic drawdowns. Empirical RLin-trading works have documented that volatility-aware objectives increase
+robustness during market shocks.
+
+• Post-pandemic recovery (2022–2024): Volatility is generally lower and
+trends are more mixed. Here, profit-only DQN still produces gains, but
+the relative advantage of risk-aware rewards shrinks (they still help but the
+penalty terms are less crucial). Q-Learning shows modest improvements
+versus the high-vol period but continues to lag DQN because it cannot exploit subtler patterns as effectively when market structure requires flexible
+conditional decisions.
+4.3.5. Comparison of DQN Sharpe–Hybrid vs. Baseline Strategy
+Figure 5. Baseline strategy performance across cumulative return, Sharpe ratio,
+maximum drawdown, and annualized volatility.
+The performance of the best-performing reinforcement learning configuration,
+DQN with the Sharpe–Hybrid reward function, was compared against a simple
+baseline strategy over the same test periods (Figures 5). The baseline strategy’s
+results are summarized in terms of mean performance and standard deviation
+(SD) across n = 53 assets for each metric.
+In the high-volatility 2020–2021 period, the Sharpe–Hybrid DQN achieved
+a substantially higher mean cumulative return (≈0.67 vs. 0.40 for the baseline),
+accompanied by a higher standard deviation, reflecting greater cross-asset dispersion. The Sharpe ratio advantage was more pronounced, with DQN reaching
+≈1.93 compared to the baseline’s ≈0.36, suggesting markedly superior riskadjusted performance.
+
+Risk measures also favored the RL approach: the Sharpe–Hybrid DQN
+reduced maximum drawdown relative to the baseline in both test periods (≈0.16
+vs. 0.05 in 2020–2021, and ≈0.17 vs. 0.08 in 2022–2024), while maintaining
+comparable annualized volatility (≈0.34 vs. 0.10 in 2020–2021; ≈0.37 vs. 0.07
+in 2022–2024).
+4.3.6. Results
+Table 1. Best-performing configuration per metric for each market regime.
+Metric
+2020–2021 (High Volatility)
+2022–2024 (Post-Pandemic)
+Cumulative Return
+DQN Sharpe–Hybrid
+DQN Sharpe–Hybrid
+Sharpe Ratio
+DQN Sharpe–Hybrid
+DQN Sharpe–Hybrid
+Max Drawdown (Lowest)
+DQN Sharpe–Hybrid
+DQN Sharpe–Hybrid
+Volatility (Lowest)
+Q-Learning Volatility Penalty
+Q-Learning Volatility Penalty
+Overall, the DQN Sharpe–Hybrid model outperformed the baseline in both cumulative return and Sharpe ratio, albeit with higher variability and risk. These
+findings indicate that reinforcement learning can extract greater returns from the
+same market conditions, but may also introduce increased performance dispersion, warranting further risk control mechanisms for practical deployment. Incorporating explicit risk terms into the reward function was found to enable reinforcement learning agents to achieve higher and more consistent risk-adjusted returns,
+particularly in volatile or uncertain markets. Among the tested formulations, the
+Profit–Sharpe Hybrid reward proved most effective across both market regimes
+for both Q-Learning and DQN, with DQN generally delivering superior absolute
+performance.
+4.4. Learning Behaviour and Agent Analysis
+The following analysis is based on the experimental results reported in Section 4.3
+Training dynamics and convergence.
+Across the experimental configurations,
+Deep Q-Networks (DQN) and tabular Q-Learning exhibited markedly different
+learning dynamics. DQN, employing a neural function approximator, typically required substantially more environment interactions to converge but yielded smoother
+improvements in cumulative reward when stabilized by replay buffering and a
+target network. In contrast, tabular Q-Learning often converged faster in very
+small discrete state partitions but showed oscillatory behaviour and brittle policy
+updates when applied to richer, continuous-normalized feature vectors. These
+behaviours are consistent with the representational advantages of function approximation and the sample-efficiency trade-offs discussed in Section 4.3.
+Effect of reward shaping on learning behaviour.
+Reward shaping materially
+altered exploration patterns and policy stability:
+
+• Profit-only: produced aggressive directional policies which frequently exploited transient patterns; this led to higher episodic variance and occasional catastrophic drawdowns during volatile regimes.
+• Volatility-penalty: encouraged the agent to reduce exposure when local
+rolling volatility increased, producing fewer extreme positions and smoother
+cumulative returns, but sometimes at the expense of missed high-return
+opportunities in strong trends.
+• Drawdown-penalty: induced conservative re-entry behaviour after adverse moves; agents learned to treat recent peaks as reference levels and
+avoided actions that risked deepening drawdowns, improving worst-case
+outcomes but delaying profitable re-engagement.
+• Profit–Sharpe Hybrid: balanced short-term profit signal and risk-adjusted
+consistency; empirically this produced the best risk-adjusted outcomes
+(Figures 1–2) while moderating extreme behaviour seen under profit-only
+objectives.
+Sample efficiency and computational cost.
+DQN demanded substantially more
+wall-clock time and environment interactions than tabular Q-Learning to reach its
+asymptotic performance. In practical terms, this implies:
+• DQN is preferable when sufficient historical data and compute are available and when the state space is high-dimensional.
+• Q-Learning may be useful for rapid prototyping or when discretized state/action representations are enforceable and domain dynamics are simple.
+Sensitivity, ablation, and failure modes.
+We performed targeted ablations to
+evaluate robustness:
+• Risk parameter sensitivity (λ, β, α): increasing the penalty strength (λ, β)
+monotonically reduced volatility and drawdown but eventually reduced mean
+cumulative return; the Profit–Sharpe Hybrid exhibited the most favourable
+trade-off curve across a wide α range.
+• Transaction cost and slippage: modest increases in transaction cost
+materially reduced short-term reactive strategies’ edge — strategies that
+traded frequently (profit-only DQN) were more sensitive than the risk-aware
+configurations.
+• State misspecification: removing volatility or RSI from the state degraded
+the performance of risk-aware rewards disproportionately, indicating these
+state features are critical for the shaped objectives to operate effectively.
+• Overfitting risk: when hyperparameter tuning used the full out-of-sample
+period improperly, overfitting signatures (large in-sample gains but poor
+out-of-sample performance) emerged; walk-forward evaluation and strict
+data partitioning mitigated this risk.
+5. Discussion
+The empirical results show a consistent pattern: reward shaping that includes
+explicit risk terms materially improves risk-adjusted performance and robustness
+
+relative to a profit-only objective, with the Profit–Sharpe Hybrid yielding the most
+favourable trade-off between return and risk across the examined regimes. These
+findings have several practical and scientific implications.
+5.1. Why DQN Outperformed Q-Learning
+Our results suggested that Deep Q-Networks (DQNs) generally outperformed
+tabular Q-Learning across cumulative return, Sharpe ratio, and maximum drawdown. Below we review several factors that may account for this performance
+gap, grounding the discussion in reinforcement learning theory and prior empirical studies.
+5.1.1. Representational Capacity.
+Tabular Q-Learning maintains a discrete state–action table, requiring continuous
+features such as returns, exponential moving averages (EMAs), RSI, and volatility
+to be partitioned into bins. This discretization either sacrifices granularity or leads
+to exponential growth in the state space, reflecting the classic “curse of dimensionality” (Sutton & Barto, 2018). Prior work has shown that such discretization
+can obscure important distinctions in financial domains where small variations
+(e.g., RSI = 65 vs. 70) can alter optimal decisions (Moody & Saffell, 2001). By
+contrast, DQN employs a neural network to approximate the Q-function, enabling
+it to capture nonlinear feature interactions and continuous mappings without discretization (Mnih et al., 2015). This facilitates generalization across states and
+assets by leveraging shared latent structures such as momentum, mean reversion, and volatility clustering. A potential caveat is that function approximation
+may increase the risk of overfitting; however, the breadth of historical market data
+available for training helped mitigate this concern in our experiments.
+5.1.2. Learning Stability.
+Q-Learning updates Q-values directly using bootstrapped targets, which can yield
+unstable and oscillatory value estimates in high-dimensional, noisy environments
+(Tsitsiklis, 1994). In line with this concern, our experiments showed that tabular
+Q-Learning produced negative median returns during volatile market regimes.
+DQN integrates stabilizing mechanisms such as experience replay, which reduces
+temporal correlations between updates, and target networks, which prevent rapid
+propagation of approximation errors (Mnih et al., 2015), (van Hasselt et al., 2016).
+These techniques have been widely documented to improve stability, and our
+findings were consistent with that body of work.
+5.1.3. Interaction with Risk-Aware Rewards.
+Reward shaping appeared to amplify the disparity between the two algorithms.
+Penalties based on volatility and drawdowns, as well as the Sharpe-hybrid objective, require conditional interpretation of higher-order statistics.
+Tabular Q-
+
+Learning could only learn coarse mappings (e.g., “if volatility is high, reduce exposure”), while DQN’s function approximation allowed for more nuanced responses.
+For example, in our experiments, DQN was able to reduce exposure selectively
+during volatile downtrends while maintaining positions during volatile uptrends,
+and cautiously re-enter after drawdowns. These adaptations may explain why
+DQN with a Sharpe-hybrid reward achieved both higher returns and lower drawdowns (mean ≈15% in 2020–2021), whereas Q-Learning did not exhibit similar
+benefits. It should be noted, however, that these patterns may depend on the
+specific reward formulations used, and alternative shaping strategies could yield
+different relative outcomes.
+5.1.4. Sample Efficiency vs. Domain Complexity.
+Q-Learning is generally considered more sample-efficient in small, fully observable environments (Sutton & Barto, 2018). However, financial markets exhibit low
+signal-to-noise ratios, partial observability, and non-stationarity (Moody & Saffell,
+2001). While DQN is less sample-efficient, the availability of large-scale historical market data provided sufficient training interactions to offset this drawback.
+In this setting, the representational capacity of DQN outweighed its higher sample requirements, leading to superior asymptotic performance. Nonetheless, in
+domains with limited data, the trade-off may favor simpler algorithms.
+5.1.5. Cross-Asset Generalization.
+Our asset universe comprised 53 equities and ETFs. Q-Learning often learned
+brittle, asset-specific policies, which resulted in high dispersion across instruments. DQN, in contrast, generalized by encoding invariant features across assets, producing higher mean performance and more consistent risk-adjusted outcomes. This generalization property is important in practice, where strategies
+must scale across many securities. That said, some asset classes with highly
+idiosyncratic dynamics still posed challenges, suggesting limits to cross-asset
+transferability.
+5.1.6. Theoretical Framing.
+Tabular Q-Learning is provably optimal only in finite, fully observable, stationary Markov decision processes (Watkins & Dayan, 1992). Real-world financial
+markets violate these assumptions: the state space is continuous, many drivers
+are only partially observable, and regimes shift over time. DQN, by combining
+function approximation with stabilizing mechanisms, may be better aligned with
+these conditions. Extensions such as recurrent DQNs have further highlighted
+the potential of deep RL methods to cope with partial observability (Hausknecht
+& Stone, 2015). Risk-aware reward shaping also likely enhanced adaptivity, allowing DQN to adjust to volatility and drawdown dynamics.
+
+5.1.7. Synthesis.
+Taken together, the evidence suggests that DQN’s advantages stem from its ability to (i) represent nonlinear state–action mappings, (ii) stabilize training under
+noisy, autocorrelated data, (iii) exploit risk-aware objectives to learn conditional
+strategies, and (iv) generalize across assets and market regimes. Empirically,
+this translated into a Sharpe ratio of ≈1.93 with maximum drawdowns near 15%
+during 2020–2021, compared to Q-Learning’s lower and less stable outcomes.
+While these results support the use of DQN in this context, caution is warranted
+in generalizing to other datasets, market conditions, or reward formulations. Future work could explore whether simpler algorithms regain competitiveness under
+alternative settings.
+5.2. Limitations.
+We emphasize several limitations of the current study that constrain the immediate applicability of the results:
+1. Execution realism: the experimental environment models simple fixed
+transaction costs and does not simulate order-book dynamics, partial fills,
+latency, or market impact. Real-world deployment requires incorporating
+these microstructural effects.
+2. Independence and asset selection: although the 53-asset universe covers a broad set of behaviors, cross-asset correlations and survivorship
+biases can affect both SD and mean estimates; future studies should explicitly account for these effects.
+5.3. Practical recommendations.
+For researchers or practitioners considering RL-based trading systems, we recommend:
+• Adopt risk-aware reward formulations (Sharpe-hybrid or volatility/drawdown
+penalties) as a default in volatile markets.
+• Use DQN or other function-approximation methods for multi-feature state
+spaces, but complement them with strong regularization and stabilizing
+techniques.
+• Implement real-world constraints early (transaction costs, slippage, position limits) and evaluate strategies via walk-forward backtests and stress
+scenarios.
+• Monitor asset-level dispersion and maintain portfolio-level risk controls (position sizing, stop-losses, volatility targeting) to manage run-to-run and
+cross-asset variability.
+5.4. Directions for future work.
+To strengthen and extend these findings we suggest:
+1. Algorithmic extensions: test actor-critic and distributional RL methods
+(e.g., PPO, SAC, QR-DQN) and evaluate whether they offer improved sample efficiency or robustness.
+
+2. Online adaptation and meta-learning: incorporate meta-learning or continual learning techniques so agents can adapt quickly to regime shifts.
+3. Portfolio-level optimization: move from per-asset single-instrument trading to joint portfolio allocation with explicit correlation and diversification
+constraints.
+4. Risk measures: experiment with other risk objectives (Sortino ratio, CVaR,
+drawdown-aware utility) and multi-objective optimization frameworks.
+5. Execution modelling: integrate realistic microstructure simulators (limit
+order book models) to quantify the impact of market impact and latency on
+strategy performance.
+6. Conclusion
+This paper introduced and evaluated a set of risk-aware reward functions for reinforcement learning–based trading agents. The principal takeaways are:
+• Risk-aware rewards improve robustness: incorporating volatility or drawdown penalties, or using a Profit–Sharpe Hybrid, materially improved riskadjusted outcomes across diverse assets and market regimes.
+• DQN outperforms tabular methods in expressive settings: DQN demonstrated superior ability to exploit complex state representations, resulting
+in higher cumulative returns and Sharpe ratios.
+• Trade-offs must be managed: improved mean performance often came
+with greater cross-asset dispersion, underscoring the need for portfoliolevel controls and operational risk management.
+• Path to deployment: before practical deployment, strategies must be
+stress-tested under realistic execution conditions, and continuous monitoring and re-training procedures should be established.
+Overall, the results support the conclusion that carefully designed reward functions that internalize risk.
+
+Acknowledgements
+The author gratefully acknowledges the guidance, oversight, and valuable discussions with Hashim Raja, which contributed to refining the methodology and
+preparing this manuscript for publication.
+References
+Almahdi, S., & Yang, S. (2017). An adaptive portfolio trading system using deep
+reinforcement learning. Expert Systems with Applications, 87, 267–279.
+Available from: https://www.sciencedirect.com/science/article/abs/pii/
+S0957417417304402.
+Deng, Y., Bao, F., Kong, Y., Ren, Z., & Dai, Q. (2016). Deep direct reinforcement learning for financial signal representation and trading. IEEE Transactions on Neural Networks and Learning Systems, 28(3), 653–664. Available from: https://ieeexplore.ieee.org/document/7407387.
+Hausknecht, M., & Stone, P. (2015). Deep recurrent q-learning for partially observable mdps. Proceedings of the AAAI Fall Symposium on Sequential
+Decision Making for Intelligent Agents (AAAI-FSS-15), 29–37. Available
+from: https://www.aaai.org/ocs/index.php/FSS/FSS15/paper/view/11673.
+Jiang, Z., Xu, D., & Liang, J. (2017). A deep reinforcement learning framework for
+the financial portfolio management problem [arXiv preprint arXiv:1706.10059].
+Mnih, V., Kavukcuoglu, K., Silver, D., Rusu, A. A., Veness, J., Bellemare, M. G.,
+Graves, A., Riedmiller, M., Fidjeland, A. K., Ostrovski, G., Petersen, S.,
+Beattie, C., Sadik, A., Antonoglou, I., King, H., Kumaran, D., Wierstra, D.,
+Legg, S., & Hassabis, D. (2015). Human-level control through deep reinforcement learning. Nature, 518(7540), 529–533. Available from: https:
+//www.nature.com/articles/nature14236.
+Moody, J., & Saffell, M. (2001). Learning to trade via direct reinforcement. IEEE
+Transactions on Neural Networks, 12(4), 875–889. Available from: https:
+//ieeexplore.ieee.org/document/935097.
+Sutton, R. S., & Barto, A. G. (2018). Reinforcement learning: An introduction
+(2nd). MIT Press. Available from: http://incompleteideas.net/book/thebook-2nd.html.
+Tsitsiklis, J. N. (1994). Asynchronous stochastic approximation and q-learning.
+Machine Learning, 16(3), 185–202. Available from: https://link.springer.
+com/article/10.1007/BF00993306.
+van Hasselt, H., Guez, A., & Silver, D. (2016). Deep reinforcement learning with
+double q-learning. Proceedings of the Thirtieth AAAI Conference on Arti-
+
+ficial Intelligence (AAAI-16), 2094–2100. Available from: https://ojs.aaai.
+org/index.php/AAAI/article/view/10295.
+Watkins, C. J. C. H., & Dayan, P. (1992). Q-learning. Machine Learning, 8(3), 279–
+292. Available from: https://link.springer.com/article/10.1007/BF00992698.
+Yu, P., & Lee, J. S. (2020). Deep reinforcement learning for portfolio management
+with risk constraints [arXiv preprint arXiv:1901.08740].

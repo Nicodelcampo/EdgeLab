@@ -1,0 +1,1386 @@
+Algorithmic Trading in Financial and Sports (Exchanges)
+Algorithmic Sports trading offers a major uncorrelated asset class, all it needs is liquidity.
+John Goodacre, Ben Schlagman
+University College London
+Gower Street, London WC1E 6BT
+July 29, 2024
+Abstract
+Algorithmic trading exchanges revolutionised the financial markets. Now algorithmic sports exchanges are transforming the betting industry. The parallels are intriguing. This paper presents a technical comparison of algorithmic
+financial and sports exchanges. It is specifically written for Quants and Traders. Financial exchanges have transformed from open outcry to ultra-high-frequency computerised trading, spurring the growth of high-frequency traders
+and quant hedge funds. Similarly, sports trading has evolved from traditional bookmakers to exchanges like Betfair,
+which provide direct algorithmic access and order matching at millisecond speeds. This evolution prompts critical
+questions regarding the efficiency, regulation, and efficacy of algorithmic trading on sports exchanges.
+While sports markets have traditionally been overlooked by major financial traders and hedge funds due to their
+smaller scale, lower liquidity, and slower velocity compared to financial markets, they also have the potential to become a major asset class. Given enough liquidity and participants then in the future they also offer an uncorrelated
+asset class, recession proof and unaffected by anything financial markets related. Our review examines the parallels
+between financial and sports exchanges, emphasising both the similarities and the substantial differences that have
+implications for traders. Sports markets exhibit distinct risk characteristics, price behaviours, data sets, participants
+and trading opportunities.
+The contribution of this paper lies in its exploration of the commonalities and differences between financial and
+sports algorithmic trading. We highlight key implications for traders and propose future research directions within
+the burgeoning field of sports trading, aiming to provide valuable insights for researchers and quant traders interested
+in expanding their expertise into this dynamic and evolving market.
+1
+
+1
+Algorithmic Trading in Sports Exchanges
+Algorithmic trading has revolutionised financial markets by increasing efficiency, speed, and accessibility. Sports have
+also experienced a similar transformation, moving from traditional bookmakers to electronic platforms. The following
+table provides a comprehensive ”helicopter view” of the fundamental aspects of financial and sports exchanges,
+highlighting the potential for sports trading to further emerge as a significant asset class.
+Table 1: Helicopter View
+Aspect
+Financial Exchanges
+Sports Exchanges
+Potential Transformation
+into an Asset Class
+History
+From open outcry to electronic,
+high-frequency trading
+From traditional bookmakers
+to algorithmic exchanges
+Potential for similar evolution,
+improving speed and efficiency
+Underlying Assets
+Intrinsic value (e.g., equities,
+bonds), continuous
+Implied probabilities (event
+outcomes), time-bound
+Uncorrelated risk profiles,
+potentially recession-proof
+Participants
+Investors, speculators,
+institutions, market-makers
+Retail traders, bots,
+professionals, bookmakers
+Increased institutional
+participation with enhanced
+market structure
+Liquidity
+High, with deep order books
+and numerous participants
+Lower, varies by event and
+popularity
+Growth through market
+acceptance and legalisation
+Tick Sizes
+Small (e.g., $0.01 for US
+equities)
+Fixed set of 351 prices with
+varying sizes
+Standardisation and
+optimisation of tick sizes
+Spreads
+Tight bid/ask spreads
+Wider back/lay spreads
+Potential tightening with
+increased liquidity and
+participant diversity
+Commissions
+Varies by asset and status (e.g.,
+12-15 bps for large institutional
+trades)
+Percentage of winnings,
+typically 1-5%, higher for top
+traders
+Reduction in commissions with
+market maturation
+Trade Execution
+Best execution mandated by
+regulation
+Best available odds with
+price-time priority
+Enhanced execution policies
+ensuring fairness and efficiency
+Market Suspensions
+Reg interventions, technical
+issues, extraordinary events
+Event transitions, significant
+game events, event conclusions
+Improved suspension policies to
+enhance trading fluidity
+In-Play Delays
+Circuit breakers for high
+volatility
+Delays to ensure fair access to
+information
+Optimised in-play delay
+mechanisms
+Overround
+None
+Bookmaker’s edge on sports
+books, typically lower on
+Sports Exchanges
+Potential elimination or
+reduction with better market
+structures
+Data Utilisation
+Extensive and diverse data
+sources
+Pre-game, in-play, and
+exchange data
+Advanced analytics and big
+data integration
+Machine Learning
+Applications
+Widely used in trading,
+execution, portfolio
+management
+Emerging field with significant
+potential
+Rapid growth in model
+sophistication and application
+Pricing Structures
+Based on intrinsic value,
+reflecting asset worth and
+market factors
+Reflecting implied
+probabilities, sport-specific
+models (e.g., Poisson for
+football, Markov for tennis)
+Development of sophisticated
+pricing models tailored to
+sports
+Speed and
+Co-location
+High-frequency trading with
+co-location available
+Timely data crucial,
+co-location not available
+Increased speed and efficiency
+with potential future
+co-location
+Regulatory
+Environment
+Comprehensive and
+multi-agency oversight
+Primarily consumer protection
+and market integrity focused
+Development of robust global
+regulatory frameworks
+2
+
+Over the last 20 years, sports trading has experienced dramatic changes, transitioning from traditional bookmakers
+to modern exchanges like Betfair. Betfair revolutionised sports betting by moving the traditional betting environment to one akin to financial exchanges, thus enabling direct peer-to-peer trading, algorithmic access and allowing
+for order matching at millisecond speeds. There are a variety of exchanges, such as Betfair, Betdaq and Smarkets.
+At present Betfair are the most liquid, however it is the authors belief that overall liquidity will increase considerably. A significant driver of this could be in the US. Until May 2018, most states in the US were not allowed to
+authorise sports betting. This changed with the supreme court decision in ’Murphy v. National Collegiate Athletic
+Association’ opening the door for both sports books and exchanges.
+However, although progress is happening and we believe will continue to happen, this does also require legalisation
+on a state by state basis, as well as market acceptance. Exchanges are of course ’chicken and egg’ businesses, they
+rely upon a large user base to offer the liquidity and this liquidity in turn encourages a larger user base, thus enabling better prices. Early mover examples of exchanges in the US are Sporttrade and Prophet Exchange. In the
+Far East, although the market is highly significant, there are still currently few examples of operating exchanges
+at this moment, with Matchbook and Smarkets being notable exceptions. Here legislation varies on a country by
+country basis and is again dependent upon market acceptance driving liquidity. For the purposes of this paper we
+will concentrate on Betfair as an archetypal sports exchange.
+While financial markets are characterised by assets with intrinsic value, stringent regulatory frameworks, and high
+liquidity, sports markets present a different landscape. They are driven by speculative betting on event outcomes,
+with prices reflecting implied probabilities rather than intrinsic values. This distinction results in unique trading
+dynamics, risk profiles, and regulatory challenges.
+Unlike traditional Sportsbooks, which may have adversarial relationships with skilled traders, exchanges focus on
+liquidity, providing a degree of independence. Prices in sports markets exhibit behaviours such as drifts, jumps, and
+volatility changes dependent upon the time and state of the game. These behaviours however vary drastically by
+sport and real-time developments during sporting events.
+This paper provides a comparative analysis of algorithmic trading in financial and sports exchanges. We explore the
+operational frameworks, market dynamics, trading strategies, data utilisation, and regulatory environments in sports
+exchanges and contrast with a typical financial market. By examining these aspects, we aim to uncover insights that
+enhance understanding and innovation for professionals wishing to trade on sports exchanges. Additionally, we delve
+into the evolution of machine learning models in sports trading, contrasting early models with advanced techniques
+such as deep neural networks and reinforcement learning, highlighting how modern algorithms can leverage timely
+data to predict market trends and optimise trading strategies.
+The structure of this paper is as follows:
+• Fundamental Market Differences:
+Financial vs.
+Sports Trading: We compare underlying assets,
+participant roles, liquidity measures, pricing structures, and trade execution.
+• Trade Types and Strategies in Sports Exchanges: We review various trading strategies and mechanisms
+in sports markets, drawing parallels to financial markets.
+• Data and Machine Learning Models in Sports Trading: This section covers data sources, price dynamics,
+early statistical models, and advanced machine learning models used in sports trading.
+• Regulation of Financial and Sports Exchanges: We compare the regulatory frameworks governing financial and sports exchanges, focusing on market integrity and participant protection.
+• Conclusions and Future Directions in Sports Trading: The paper concludes with a summary of findings,
+implications for traders and researchers, and recommendations for future research directions.
+By exploring these topics, we aim to provide comprehensive insights for researchers, Quants and Traders interested
+in the evolving and dynamic world of sports trading.
+3
+
+2
+Fundamental Market Differences: Financial vs. Sports Trading
+The following table summarises the fundamental market differences between financial exchanges and sports exchanges,
+focusing on underlying assets, participants, liquidity, tick sizes, spreads, and commissions.
+Table 2: Comparison of Fundamental Market Differences
+Characteristic
+Financial Exchanges
+Sports Exchanges
+Underlying Assets
+Intrinsic value (e.g., equities,
+bonds), continuous
+Implied probabilities (event
+outcomes), timebound
+Participants
+Investors, speculators,
+institutions, market-makers
+Retail traders, bots,
+professionals, bookmakers
+Liquidity
+High, with deep order books
+and numerous participants
+Far Lower, varies by event and
+runner popularity
+Tick Sizes
+Small (e.g., $0.01 for US
+equities)
+Fixed set of 351 prices with
+varying sizes
+Spreads
+Bid/ask spread, typically tight,
+5 bps would be common
+Back/lay spread, often an order
+of magnitude wider
+Commissions
+Varies by asset and status (e.g.,
+12-15 bps for large institutional
+trades)
+Percentage of winnings,
+typically 1-5%, far higher for
+the best traders
+Trade Execution
+Best execution mandated by
+regulation, multiple factors
+considered
+Best available odds with
+price-time priority
+Market Suspensions
+Due to regulatory interventions,
+technical issues, extraordinary
+events
+Event transitions, significant
+game events, event conclusions
+In-Play Delays
+Not common, circuit breakers
+for high volatility
+Implemented to ensure fair
+access to information
+Overround
+None
+Bookmaker’s edge on sports
+books, typically lower on Sports
+Exchanges, varies by sport and
+liquidity
+For completeness, this section unpacks the key characteristics across sports betting and their counterparts in financial
+exchanges. We will examine the nature of underlying assets, the roles and motivations of participants, liquidity
+considerations, and various trading mechanics such as ticks, spreads, and commission structures. Additionally, we
+will explore the specifics of trade execution and market suspensions, which highlight the operational intricacies in
+each domain.
+2.1
+Intrinsic vs. Implied: Understanding Market Foundations
+For most financial markets, such as equities, assets themselves typically hold intrinsic values and may generate
+dividends. Ownership of these equities also offers investors certain legal protections. The assets themselves exist
+in a competitive marketplace, where values may be influenced by macroeconomic trends or other external factors.
+Conversely, sports markets lack an underlying asset with intrinsic value. Here, the prices are purely reflective of the
+implied probabilities of outcomes, leaning more towards speculation than investment, and are governed by a different
+set of regulations.
+On financial exchanges, the underlying asset may also exist continuously (such as equities) or may be time-bound
+(such as bonds and derivatives). In contrast, sports markets are all time-bound. Events have a fixed duration, leading
+to unique sport dependent price behaviour. This lends itself to a complete contrast in models, for longer term investors in financial markets a large focus is to ascertain price divergences from the underlying asset value, for shorter
+4
+
+term investors such changes become increasingly sparse and the focus of modelling shifts away from the value of the
+asset itself and more towards intraday features reflecting market activity. Within sports, model and price behaviour is
+sport dependent, for example, time-bound sports such as football were in the early days modelled by Dixon and Coles
+[15] via a Poisson arrival process exhibiting clear and predictable drifts in prices as time ticks by without a goal (note
+this is far less the case with later models also reflecting events in-play). Tennis on the other hand was modelled by
+Newton and Aslam [41] using Markov chains fed by the probability of each server winning their point on serve. The
+differences in models not only impact price behaviour but volatilities, depending upon the time and state of the game.
+Without going into the microstructure of the exchanges, this already begs the question as to the efficiency of these
+markets. There has been a large body of research on market efficiency within financial markets going back to seminal
+work by Samuelson [50] and Fama [16], however less so within sports, notable exceptions being Hausche and Ziemba
+[25] and Ziemba [63] and the book by Williams [58] examining information efficiency in both financial and betting
+markets.
+Nevertheless market efficiency in sports is an excellent research test bed, given multiple independent games and a
+clear outcome. Indeed Moskowitz [40] argues that sports betting markets and financial markets share many features:
+lots of activity, lots of information, the presence of professional analysts, and so on, but because the outcome of the
+game provides empirical evidence as to whether prices are correct or not, that it also offers a ’very clean laboratory’.
+2.2
+Who Trades and Why: Market Participants Explored
+A typical sports exchange, such as Betfair, has a relatively simple set of participants: retail traders, bots, professionals (including bookmakers), and the exchange itself. Unlike equity exchanges, there are no preferential treatments for
+market-makers, although some participants may have time and information advantages, everyone is a member of the
+exchange and trades directly. In sports exchanges, traders are often described as speculators or gamblers, with few
+having a vested financial interest in the game, which may sometimes fall into a grey area of the sport. However, there
+is some small potential for this to change, for example Tony Woodhams who founded Centaur (a hedge fund trading
+sport), had been quoted as saying that ’Centaur has received interest from sports clubs and sponsors asking it to
+provide insurance premiums as a way to hedge against financial risks associated with teams’ successes or failures’,
+but in the authors opinion, in general the traders on sports exchanges (barring sports books hedging positions) have
+no real economic interest in the game. This is in contrast to speculators within financial markets who may aid in
+price discovery (thus aiding companies raising capital at the correct prices), within sports one could argue that due
+to the lack of underlying intrinsic value for the asset being traded, then such price discovery does not add extrinsic
+economic value and is more akin to entertainment.
+Trades on sports exchanges are settled shortly after the outcome is known, with no need for separate clearing and
+settlement entities, dark pools, or derivative markets. There is no explicit use of leverage, and trades beyond the
+account balance are refused. The exchange acts mainly as a facilitator, earning income from commissions on winning
+trades, but can also act as a counterparty in certain cases to stimulate liquidity or manage large exposures.
+This setup differs significantly from financial exchanges, where participants include investors, speculators, and institutions. Financial markets also have complex systems for clearing, settlement, and leveraging, with distinct roles for
+buyside and sellside entities, prime brokers, and high-frequency traders. In contrast, sports exchanges offer a simpler
+trading environment, albeit with different spreads, commissions, and liquidity dynamics.
+2.3
+Liquidity Dynamics in Financial and Sports Markets
+Algorithmic traders must be keenly aware of liquidity within their markets to effectively scale their products and
+mitigate market impact. While financial markets like the S&P 500 can see daily volumes of 2 to 6 billion shares, worth
+hundreds of billions to over a trillion dollars, sports exchanges operate on a much smaller scale. The most popular
+sports on Betfair, such as football, horse racing, and tennis, may see trading volumes reaching tens of millions of
+pounds for large events. However traders should be aware that given these differences the scalability of a successful
+algorithmic trading product currently has clear limits compared to the financial markets.
+In terms of liquidity measures like immediacy, depth, resilience, breadth, and tightness, sports exchanges are significantly smaller and thus less attractive to institutional players. Financial markets benefit from market-makers,
+larger participant bases, and greater order flow, allowing for higher volumes and tighter spreads. Conversely, sports
+5
+
+exchanges often feature larger commissions, an overround (though typically tighter than Sportsbooks), larger tick
+sizes, and wider spreads, particularly for less popular events.
+A unique liquidity factor in sports exchanges is the concept of virtual liquidity. For instance, in a two-runner tennis
+match, a back bet on one runner is effectively a lay bet on the other. Betfair can provide virtual liquidity by matching
+bets across different runners, thus offering tighter prices and potentially higher volumes than is visible on individual
+runners. Liquidity can vary considerably not just across events, but within an event, exhibiting large differences for
+pre-game versus in-play, which runners are selected, as well as derivative markets within an event (this is a sports
+derivative market such as over/under compared to match odds, not to be mistaken with financial derivatives) and
+finally of course when the bet is placed e.g. the last few seconds of a horse race.
+Within financial markets liquidity also varies considerably, for example the study by Yegerman [59] examines liquidity
+in the S&P 500 defining it as the price one would have to pay in order to turn an asset into cash. Figure 1 illustrates
+the cost in basis points away from the mid-quote compared to quoted value. Clearly these numbers are on a vastly
+different scale to games on Betfair. Figure 2 shows a low liquidity pre-game horse race as a basic example, of course
+in-play liquidities within high profile football and tennis matches are vastly higher.
+Figure 1: S&P 500 liquidity
+2.4
+Pricing Structures and Trading Costs
+There are only 351 prices available on Betfair and it should be noted that the tick sizes vary by price. This is quite
+different to financial markets where for example in US equities the tick size is $0.01, and indeed may reduce in some
+cases to fractions of a cent, whereas in foreign exchange markets prices are often quoted in pips, the 4th decimal
+place of the price quote. On Betfair there are also very heavy liquidity biases within different tick ranges and indeed
+across runners and derivative markets for events, which may also sometimes currently constrain the ability to trade.
+6
+
+Table 3: Betfair Prices and Tick Sizes
+Prices
+Tick Size
+1.01 to 2.00
+0.01
+2.02 to 3.00
+0.02
+3.05 to 4.00
+0.05
+4.1 to 6.0
+0.1
+6.2 to 10.0
+0.2
+10.5 to 20.0
+0.5
+21.0 to 30.0
+1.0
+32.0 to 50.0
+2.0
+55.0 to 100.0
+5.0
+110.0 to 1000.0
+10.0
+The spread between the highest available back price and the lowest available lay price forms what is known as the
+back/lay spread, akin to the bid/ask spread in financial markets, representing the cost of executing a trade and the
+potential profit or loss. The mathematical formula for the spread is:
+Spread = BestLayOdds −BestBackOdds
+(1)
+Commission is a fee charged by the betting exchange on winning bets. It is expressed as a percentage of the winnings.
+The mathematical formula to calculate the winnings after commission is:
+Winnings after Commission = Winnings ×
+
+1 −CommissionRate
+100
+
+(2)
+The percentage spread is calculated as follows:
+Percentage Spread =
+ 
+AskPrice −BidPrice
+  AskPrice+BidPrice
+2
+
+!
+× 100
+(3)
+In figure 2 we see a typical Betfair Exchange ladder, this is a long time pre-race so a fairly low amount traded thus
+far. The favourite is priced at a best back of 5.6 and best lay of 5.7. Giving a spread of 0.1 (in this case equal to
+the minimum tick size) and a percentage spread of 1.77%. However, even at this minimum tick size the percentage
+spread is much larger than for financial markets.
+In figure 3 we see the changes in spreads and adjusted daily volumes for large US equities over time. The key
+takeaway is that from the 1990s, computerised trading and automation took hold, leading to dramatic decreases
+in spreads, decreases in commissions and increases in traded volumes. However the absolute value of the spread is
+around 5bps, a sharp contrast to the 1.77% for the horse race above.
+Figure 2: Betfair Ladder and Spread
+7
+
+Figure 3: Russell 3000 Spread and Volume
+As regards commissions, typical commissions on Betfair range from 1-5% (albeit with ’premium’ customers often
+charged more). In contrast, within financial markets, commissions will vary according to what is being traded and
+indeed one’s status, for example institutional investors have business relationships with their brokers and can often
+negotiate lower commission costs than retail, a typical example for a large institutional investor trading US equities
+would be of the order of 12-15bps, whereas retail is more likely to pay closer to 1%. (Note that these commissions are
+somewhat different in character to Betfair, here we are describing a typical buyside best execution trading commission
+with a sell-side broker, in contrast to an exchange fee on winning bets).
+2.5
+Execution and Market Integrity: Best Practices
+2.5.1
+Best Execution
+In sports betting exchanges like Betfair, best execution is achieved by matching bets based on the best available
+odds, ensuring that users receive the highest possible return on their stakes. If multiple bets are available at the
+same odds, priority is given to the earliest placed bet. All available odds and volumes are visible to all participants,
+and Betfair provides detailed market depth information, displaying the range of available odds and corresponding
+volumes. This transparency helps traders understand the liquidity and potential execution quality of their trades.
+In contrast, best execution in financial markets while also maintaining price-time priority can also involve a broader
+range of considerations, often mandated by regulatory requirements to ensure that trades are executed on the most
+favourable terms for the investor. Financial markets consider multiple factors, including price, costs, speed, likelihood
+of execution and settlement, and order size. Betfair’s approach focuses primarily on achieving the best available odds
+with a straightforward price-time priority.
+2.5.2
+Market Suspensions
+Market suspensions are mechanisms used in both sports and financial exchanges to attempt to ensure fair trading.
+On Betfair, market suspensions primarily occur due to event transitions (e.g., pre-game to in-play), significant game
+events (e.g., VAR reviews), and event conclusions. During these suspensions, unmatched non-keep bets are cancelled,
+while keep bets remain active.
+In financial markets, suspensions can occur due to regulatory interventions, technical issues, or extraordinary market
+events. Open orders that are not executed before a suspension remain in the order book but cannot be matched
+until trading resumes. New orders cannot be placed during the suspension period. In some cases, regulatory bodies
+8
+
+may cancel open orders during a prolonged suspension to protect investors. In both cases, these suspensions aim to
+maintain market integrity, protect investors, and ensure orderly trading. However, the key contrast is that market
+suspensions on sports exchanges will occur in every sporting event, often many times.
+2.5.3
+In-Play Bet Delays
+In-play bet delays are implemented to prevent traders from gaining an unfair advantage by exploiting real-time
+information faster than others. During live events, the odds can change rapidly due to the dynamic nature of the
+game. Betfair introduces a delay between when a bet is placed and when it is matched to ensure all participants have
+equal access to the latest information. There has however been some debate about this mechanism, clearly some
+traders have access to low latency state of game data, indeed Brown [5] researches whether the Betfair speed bump
+really does slow down fast traders, also Brown et al [6] examines its impact on asset quality and adverse selection.
+Similarly, financial markets employ mechanisms such as circuit breakers and auction periods to balance rapid execution with fair access to information, particularly during periods of high volatility or significant news releases.
+These measures help to ensure that all market participants have a fair opportunity to react to new information,
+thereby maintaining market integrity. Within sports, suspensions and in-play delays however occur every single
+game, whereas suspensions are quite rare in financial markets, and auctions typically occur at the start or close of
+the trading period. Within finance, Stoll [53] has provided research on financial transaction costs, taxes and hidden
+fees, Madhavan [37] on market microstructure and Harris [22] a book on microstructure for trading and exchanges.
+2.6
+The Cost of Betting: Understanding ’Overround’
+Overround is a unique cost in sports betting compared to financial exchanges. A key attraction of Betfair Exchange
+compared to traditional Sportsbooks is the typically lower overround (although this phenomenon can reverse when
+there is low liquidity). Overround measures a bookmaker’s edge and is calculated by summing the inverse of the
+prices for all possible outcomes. For backs if the overround exceeds 1, the bookmaker has an edge and vice-versa for
+lays, if these are not the case then there is an arbitrage available to the trader. The formula for overround is:
+Overround =
+n
+X
+i=1
+1
+Pricei
+(4)
+where n is the number of possible outcomes, and Pricei represents the decimal price for each outcome. On Betfair
+Exchange, the sum of all outcomes for back odds is typically greater than 1, and for lay bets, slightly less than 1,
+however this can vary considerably depending upon the liquidity of the event.
+When considering decimal odds as inverse probabilities, it’s necessary to remove the overround to determine true
+probabilities. This adjustment appears straightforward, however there has been some academic research and various
+methods have been examined, we will briefly illustrate some of them.
+2.6.1
+Linear Transformation Method
+The simplest approach is normalising implied probabilities by their sum, known as the linear transformation method.
+The adjustment is given by:
+Pi =
+1
+Pricei
+Pn
+j=1
+1
+Pricej
+(5)
+This does however assume that the market odds are set proportionately across outcomes with a uniformly distributed
+overround.
+2.6.2
+Power Method
+Ziemba uses a power function to adjust odds into probabilities. This method, adjusting the exponent α to ensure
+probabilities sum to one, addresses biases in small probability outcomes. The formula is:
+Pi =
+
+1
+Pricei
+α ,
+n
+X
+j=1
+
+1
+Pricej
+α
+(6)
+where α is chosen such that Pn
+i=1 Pi = 1.
+9
+
+2.6.3
+Shin Method
+Shin’s method corrects for the favourite-longshot bias by iterating on a parameter z that represents the fraction of
+knowledgeable bettors in the market. The adjusted probabilities Pi are computed as:
+Pi =
+p
+pi + (1 −z)p2
+i −z
+2(1 −z)
+where
+z =
+Pn
+i=1
+p2
+i
+pi+(1−z)p2
+i
+n −2
+These equations are solved iteratively to ensure the total probability sums to one.
+2.6.4
+Lochner’s Method
+Lochner examines interdependencies and covariances across different betting markets rather than a single market’s
+overround. This method assumes market efficiencies and cross-dependencies but acknowledges that liquidity variations must be accounted for. The adjustment can be complex and specific to the covariance structure of the markets.
+2.6.5
+Regression Techniques
+Franck, Verbeek, and N¨uesch [18] in their study on betting market effectiveness use regression techniques, positing
+that odds variations can be explained by observable market variables. The regression model is typically:
+Pricei = β0 +
+k
+X
+j=1
+βjXij + ϵi
+(7)
+where Xij are the observable market variables, and βj are the regression coefficients.
+2.6.6
+Arbitrage and Synthetic Odds
+Angelini and De Angelis [3] examine market efficiencies but in the process discuss creating synthetic odds by using
+multiple bookmakers’ prices to minimise overround or identify arbitrage opportunities. The synthetic odds can be
+derived by:
+Synthetic Pricei = min
+k (Pricei,k)
+(8)
+where Pricei,k are the odds for outcome i from bookmaker k. The underlying assumption here is that there are such
+odds available from multiple bookmakers, which is usually the case.
+For more information as well as a comparison between the various methods, see Clarke, Kovalchik, and Ingram [10].
+2.7
+Market Efficiency and Betting Biases: The Favourite-Longshot Effect
+The favourite-longshot bias is a pervasive anomaly in betting markets where bettors disproportionately favour longshots over favourites. This bias results in lower expected returns for bets on longshots compared to those on favourites,
+leading to market inefficiencies.
+2.7.1
+Historical Context and Examples
+The favourite-longshot bias has been recognised for decades. Griffith [20] was among the first to document that
+bettors tend to overvalue longshots and undervalue favourites.
+This bias has been consistently observed across
+various betting markets, including horse racing, football, and greyhound racing [2, 55]. For example, blind betting
+on longshots in horse racing has shown significantly lower returns compared to betting on favourites, indicating an
+overvaluation of longshot probabilities by bettors.
+10
+
+2.7.2
+Theoretical Explanations
+There are two primary frameworks to explain the favourite-longshot bias: risk preferences and misperceptions of
+probabilities.
+Risk Preferences
+The neoclassical explanation posits that bettors are risk-loving and derive utility from the
+potential high returns of longshots, despite their lower probabilities of winning. This theory suggests that bettors
+are willing to accept lower expected returns for the thrill of a potentially large payoff [55].
+Misperceptions of Probabilities
+Behavioural explanations, grounded in Prospect Theory [31], argue that bettors misperceive the probabilities of outcomes. Bettors may systematically overestimate the chances of rare events
+(longshots) and underestimate the probabilities of more likely events (favourites). Snowberg et al. [51] provide
+empirical evidence supporting this view, showing that bettors’ decisions align more with probability misperceptions
+than with a preference for risk.
+2.7.3
+Empirical Evidence
+Empirical studies offer robust support for both explanations. For example, Snowberg [51] found that misperceptions of
+probability drive the favourite-longshot bias, as bettors overestimate the likelihood of longshots winning. Similarly,
+research by Ottaviani and Sorensen [43] suggests that the bias can be attributed to both risk preferences and
+probability misperception, with the latter often playing a more significant role.
+2.7.4
+Betfair Exchange and the Bias
+Interestingly, the favourite-longshot bias appears less pronounced on betting exchanges like Betfair compared to
+traditional bookmakers. Betfair operates on a peer-to-peer model where odds are set by market participants rather
+than the house, potentially leading to more accurate reflections of true probabilities and thus less favourite-longshot
+bias. However, it is important to note that while betting on favourites on Betfair might yield better returns compared
+to bookmakers, this in no way guarantees profitability. Betfair charges a commission on winnings and prices still
+exhibit an overround, which can more than erode potential profits even taking the lessened bias into account.
+11
+
+3
+Trade Types and Strategies in Sports Exchanges
+In sports exchanges such as Betfair, understanding the different types of trades, the impact of trade size, the concept
+of fills, and the options for managing bets is crucial for effective trading. These elements have clear analogies in
+financial markets, though there are unique aspects to each domain.
+Table 4: Comparison of Trade Types and Strategies: Financial vs. Sports Exchanges
+Aspect
+Financial Exchanges
+Sports Exchanges
+Trade Types
+Back and Lay
+Buying (long) and selling
+(short) financial instruments
+Back (betting for) and lay
+(betting against) outcomes
+Immediate Execution (FoK)
+Execute entire order
+immediately or cancel
+Execute entire bet immediately
+or cancel, may require splitting
+Starting Price (SP)
+Not in Finance
+Aggregate SP Backs and Lays
+with no overround
+Strategies
+Greening
+Hedging positions to secure
+guaranteed profits
+Hedging bets to secure
+guaranteed profits regardless of
+outcome
+Dutching
+Portfolio diversification to
+mitigate risk
+Betting on multiple outcomes to
+ensure a more stable return
+Arbitrage
+Exploiting price differences in
+different markets for risk-free
+profit
+Exploiting differing odds from
+various bookmakers for risk-free
+profit
+Value Investing/Betting
+Investing in undervalued stocks
+priced below intrinsic value
+Betting where odds are higher
+than the true probability of
+outcome
+Momentum/ Reversion
+Trading/Betting
+Buying stocks on a trend
+expecting the trend to continue/
+reverse
+Betting on teams or players in
+good form expecting their
+performance to continue/
+reverse or trades expecting price
+movements to continue/reverse
+HFT
+Low Latency co-location on a
+Financial Exchange
+No collocation, ability to buy
+live low latency state of game
+data, aiding the trader due to
+broadcast delays
+3.1
+Back and Lay: Betting Mechanics Explained
+Along with the profit structure, the greatest difference compared to bookmakers is the back and lay mechanism. A
+back bet refers to betting in favour of the runner, while a lay bet is a bet against the runner, effectively acting as
+the bookmaker, this is obviously very similar to buying and selling an instrument on a financial exchange. An obvious difference of course is that in backing a runner, one makes money by the price reducing and vice versa for laying.
+A back trade is the traditional form of betting, where a bettor bets on a specific outcome to happen.
+If the
+outcome occurs, the bettor wins the bet and receives a payout based on the odds at which the bet was placed. The
+mathematical formula for the payout of a back bet is:
+Payout = Stake × Odds
+where Stake is the amount of money wagered, and Odds are the fractional odds at which the bet was placed.
+12
+
+If the stake is S, and back odds B, then one can represent the profit as a tuple (profit if runner wins, profit if runner
+loses):
+BackProfit = (S × (B −1), −S)
+Lay betting is the opposite of back betting, where a bettor bets against a specific outcome. If the outcome does not
+occur, the bettor wins the bet and receives a payout from the person who placed the back bet.
+LayProfit = (−S × (B −1), S)
+Akin to the bid/ask spread in financial markets, there is a spread between the back and lay price (otherwise there
+would be an immediate arbitrage). In financial markets one has market orders (which pay the spread) and limit
+orders which attempt a better price but risk being unfilled. The analogy on a sports exchange is backing at best
+back or laying at best lay if one is a liquidity taker, or similarly attempting to achieve a better price further along
+the ladder but again risking remaining unfilled.
+3.2
+Greening Strategies: Securing Guaranteed Profits
+Due to the ability to trade in-play, one can combine backs and lays at differing prices in order to attempt to lockin a guaranteed profit. This leads to the concept of greening. Greening is a popular trading strategy on sports
+exchanges that involves hedging a position to secure the same guaranteed profit regardless of the event’s outcome.
+This technique can be likened to hedging strategies used in financial markets, where traders aim to lock in profits or
+limit losses by balancing positions in different assets. For instance, in options trading, traders employ strategies like
+straddles and strangles to hedge against volatility and secure profits regardless of market direction.
+If v2 is the volume of a back order and p2 the price, with v1 the volume of a lay order and p1 the price, then the
+combined exposure of the orders is:
+SpreadProfit = (v2 × (p2 −1) −v1 × (p1 −1), v1 −v2)
+Thus if a trader knew the back price and volume he was willing to enter and wished to achieve an x% gain regardless
+of outcome. Then the lay volume he would need to place would be:
+v1 −v2 = x × v2 ⇒v1 = v2 × (x + 1)
+similarly the lay price he would need to place this at would be:
+v2 × (p2 −1) −v1 × (p1 −1) = x × v2
+Solving for p1:
+v2 × (p2 −1) −v1 × (p1 −1) = x × v2 ⇒v1 × (p1 −1) = v2 × (p2 −1 −x)
+using
+v1 = v2 × (1 + x)
+⇒(1 + x)(p1 −1) = p2 −(1 + x)
+⇒p1 =
+p2
+1 + x
+A similar calculation should the trader wish to lay first at price p1 and volume v1 leads to a back price and volume
+for greening of:
+p2 = p1 × (1 + x)
+and
+v2 =
+v1
+(1 + x)
+Due to the varying tick sizes, and of course liquidity available an algorithmic trader may not be able to achieve exact
+equality (also Betfair for example maintain a minimum bet-size of £1, however there is a nuance to this where it is
+13
+
+possible to circumvent this at higher prices), however the nearest tick to these values will achieve greening with a close
+approximation. It should also be noted that the convention on exposures volume-wise is based upon the backers stake.
+Greening is not the only option, for example one could achieve an expected profit through backing at a higher price
+than one lays but the same volume. However in this case one would achieve a profit if the runner wins and lose
+nothing if the runner loses e.g.:
+SameVolumeProfit = (v1 × (p2 −p1), 0)
+However it is clear that greening is the only option that doesn’t introduce variance into ones profit depending upon
+the outcome of the game.
+Of course a trader may wish to back and lay on multiple runners, for example in the case of a horse race, here there
+are two methods of greening available. The first where this is done runner by runner for each runner where the
+trader has exposure, the second would be to balance across all runners simultaneously. It is often the case however
+that the less favoured runners may have not only high prices, but wider spreads and lower liquidity, thus the authors
+have found that simply balancing across only runners where one maintains exposure is perfectly adequate.
+3.3
+Order Types
+We won’t go into the wide variety of order types in finance, for an excellent introduction we refer to the book on
+microstructure of exchanges by Harris [22]. Suffice to say the variety of order types available on sports exchanges
+is more limited, effectively most orders are place orders (for example one cannot arrange to trade at vwap with a
+broker), however there are some additional trades available on sports exchanges in particular using the starting price.
+Effectively most orders available to the algorithmic trader on sports exchanges are place orders, with options to
+replace (without altering the volume), or cancel, additionally fill or kill orders are offered. Fill or kill orders must
+be executed immediately in their entirety or canceled if not fully matched. This type of order is used when a trader
+wants to ensure that the entire position is taken at once or not at all. This option is available in Betfair with a
+minimum fill size option.
+One nuance is ’keep’ orders where the trader decides upon order behaviour during market suspensions. Suspensions
+occur for a variety of reasons in sports, for example when a goal is scored in football or at the beginning of a horse
+race. If the keep option is not accepted then the unfilled order on the exchange will be cancelled during a suspension,
+otherwise it will stay on the exchange ladder. This may be welcome behaviour when a goal is scored avoiding an
+unfavourable fill due to sharp price movements, or unwelcome, for example where one wishes to keep a pre-race bet
+running during a horse race.
+A final option available to the trader is starting price (SP) orders, traditionally this would be set by on-course
+bookmakers who would determine an aggregate price whilst also locking in a profit. Betfair also offer starting price
+options, however here the SP is determined simply by matching backers and layers without a profit margin, so should
+in general offer a better price than the Sportsbooks.
+3.4
+Dutching: Betting on Multiple Outcomes
+In sports trading, dutching involves calculating the stakes for multiple bets in such a way that the total payout is
+the same regardless of which outcome wins. This strategy is particularly useful in markets with multiple possible
+outcomes, such as horse racing or multi-way sports events. This technique can be likened to portfolio diversification
+in financial markets, where investors spread their investments across various assets to mitigate risk and achieve stable
+returns.
+3.5
+Arbitrage: Risk-free Betting Opportunities
+Arbitrage betting involves taking advantage of differing odds offered by different bookmakers to guarantee a profit
+regardless of the event’s outcome. This strategy is akin to arbitrage trading in financial markets, where traders
+exploit price differences of the same asset in different markets to secure a risk-free profit.
+14
+
+Examples of pure arbitrage strategies might be utilising differing exchanges and Sportsbooks in order to lock in
+profits through their price differentials (although legal, this known practice can however lead to Sportsbooks quickly
+restricting the client account), otherwise there are a variety of potential arbitrages possible but unlikely in practice
+such as the inverse sum of the backs being less than 1 (or greater than 1 for lays). This is particularly unlikely on
+Betfair as they also create virtual liquidity through matching on alternative runners if prices are out of step.
+More complex statistical arbitrages may involve some risk, and utilise derivative markets on the same event (such
+as Match Odds and Over/Unders, or Win and Each Way). Some events have a wide variety of derivative markets
+based upon the same event. For example in football, a well known basic model is the Dixon-Coles model [15] which
+utilises a Poisson arrival process based upon expected goals. Given that multiple Over/Under markets are offered
+on the same football match then one could potentially utilise this model to identify Over/Under markets that are
+inconsistent.
+3.6
+Value Betting: Identifying Profitable Bets
+Value betting involves identifying bets where the odds offered by the bookmaker are higher than the true probability
+of the outcome. This is analogous to value investing in financial markets, where investors seek undervalued stocks
+that are priced below their intrinsic value.
+Because one is betting on an implied probability then one could theoretically argue that every bet even scalping
+bets collecting spreads are implicitly value bets, the argument being that if one for example backed at a high price
+and laid lower, that if one had access to an oracle reflecting the true probabilities, then one could lay at the price
+reflecting this exact probability and if one does not then one bears an opportunity cost. However in practice, we do
+not have access to such an oracle so it is perfectly possible to scalp and achieve a profit without knowing one was
+trading at sub-optimal odds.
+3.7
+Riding the Wave: Momentum Betting Strategies
+Momentum betting involves betting on teams or players that are currently performing well, with the expectation that
+their good form will continue. Alternatively one may examine in-play prices and analyse them looking for price and
+volume trends. This is similar to momentum trading in financial markets, where traders buy stocks that have been
+rising in price, expecting the upward trend to continue. Vizard [57] provides a comprehensive study of momentum
+betting on sports exchanges.
+3.8
+The Speed Race: High-Frequency Trading
+High-frequency trading (HFT) has revolutionised financial markets by executing trades at lightning speeds, with
+exchanges offering co-location. Similarly, speed is crucial in sports betting, particularly with in-play betting, where
+bettors wager on events as they happen. In sports, delays such as broadcast lags and in-play delays affect the betting
+landscape, giving rise to practices like ”courtsiding” in tennis, where bettors at the venue attempt exploit the time lag.
+This has progressed in sport, where companies like Total Performance Data (TPD) equip racehorses with GPS devices to provide real-time data. In tennis and football, firms like StatsPerform offer live data services, offering an
+advantage to traders willing to pay and utilise this data.
+In contrast to financial exchanges, Betfair does not offer co-location services. Co-location, allows traders to place
+their servers close to the exchange’s servers, reducing latency and gaining a speed advantage. This absence of colocation at Betfair levels the playing field, ensuring no bettor can gain an undue advantage purely through proximity.
+However, it is clear that there is still an advantage for traders who have access to the most timely low latency state
+of game data and can execute trades quickly.
+15
+
+4
+Data and Machine Learning Models in Sports Trading
+At the top of any algorithmic trading pipeline is the data subsystem. The availability of huge and increasingly
+comprehensive data sets is a key driver influencing the success of a trading platform. In sports betting, there are
+three main sources of data: pre-game, in-play, and exchange. Additionally, understanding price dynamics, including
+drift, jumps, and volatility, is crucial for effective market monitoring and risk management across the different sports.
+4.1
+Data Foundations: Pre-game, In-play, and Exchange
+4.1.1
+Pre-game Data
+Pre-game data contains historical events where each event has a set of basic event data and post-processed statistics.
+It is referred to as pre-game because the post-processed data becomes available for querying before the next match
+that is being modelled takes place. FootyStats is one of the most comprehensive data providers for football. They
+cover over 1,500 leagues worldwide, providing individual player and aggregate team, league, and match statistics
+with more than 219 fields for historical football matches since 2010. The racing API is an example provider for horse
+racing, providing racecards and results from their 35-year global horse racing database comprising over 450,000 horse
+racing results in total. Pre-game data is used to estimate current form through past results then uses that data to
+model the relative skill level of players and teams relative to others.
+In contrast, financial market data is more extensive and diverse, drawing from traditional financial data, economic
+indicators, social media, and alternative sources like financial transactions, retail data, sensors, mobile devices,
+satellite imagery, public records, and internet activity. This array of data sources supports complex financial analyses,
+revealing market trends and investment opportunities crucial for financial modelling and decision-making.
+4.1.2
+In-play Data
+In-play data refers to real-time game information captured during an event. This data, often faster than broadcast
+feeds, is vital for evaluating individual players and matches as the games progress. It helps Sportsbooks adjust odds
+based on live match dynamics and enables the media to update live scores and statistics. In-play data, which can
+be both live and historic, typically has the same structure but differs in its usage. Historic is used to train models,
+which can then be implemented into trading strategies and backtested. Live data is usually transmitted via a stream
+feed from the data provider and enables a ’point-in-time’ feed directly into a live strategy. For football, Statsperform
+and StatsBomb are two known providers, in the former case, employing a large number of professional watchers at
+the match itself supplying data and in the latter utilising advanced computer vision algorithms for detailed data like
+player positions, the ball’s 3D trajectory, and specific metrics such as pass footedness or shot velocity. In tennis,
+StatsPerform delivers WTA in-play data, offering insights into player performance and match statistics with realtime scoring updates that can be quicker than the time the umpire takes to officially update the score. In horse
+racing, Total Performance Data (TPD) place GPS’s on the horses to enable the live monitoring of horse positions
+and sectional times.
+There is a race for such data, for example drones have been employed at both football matches and horse races in
+this race for the lowest latency state of game data. In general a research platform will integrate in-play state of
+game data with millisecond-level exchange data. The resulting dataset provides a comprehensive understanding of
+the market microstructure as well as match specific events, such as momentum swings, drift and sudden changes in
+odds, enabling the algorithmic trader to take advantage in a manner that no retail bettor would be capable.
+4.1.3
+Exchange Data
+Exchange data includes Betfair’s microsecond order book updates which detail the best prices for backing and laying,
+available liquidity at each tick, and the most recently traded price, essential for building the live price ladder. Like
+in-play data, exchange data can be both live or historic data can be purchased from the exchange. Live data from
+Betfair is accessible via their REST API or a JSON-RPC connection that initiates a client-side subroutine upon
+receiving updates. Historic data is available through the Betfair Exchange Historical Data service. In order to have
+access however to the lowest latency streamed data one currently needs to achieve a PRO subscription, which involves
+writing to the exchange so they can understand one’s intent and also the payment of a moderate fee.
+16
+
+In financial markets, although there isn’t an exact equivalent to sports in-play data, exchange data is essential as well
+as a wide variety of alternative data sources. This includes real-time and historical updates on order books, trade
+prices, volumes, and liquidity metrics. Typically, this data is accessed through APIs from financial exchanges like
+the NYSE or NASDAQ. Comprehensive data services are also provided by Bloomberg, Reuters, and others, which
+encompass market data feeds and historical databases for in-depth market analysis and trading strategy development.
+Table 5: Comparison of Data Types and Providers for Sports and Financial Exchanges
+Data Type
+Financial Exchange
+Sports Exchange
+Football
+Tennis
+Horse Racing
+Pre-game
+Market News,
+Financial
+Analytics, Social Media,
+Alternative Data
+FootyStats
+Opta
+RacingPost
+In-play
+Not applicable
+StatsBomb
+StatsPerform
+Total Performance Data
+Exchange
+Financial Exchange Data
+Betfair
+Betfair
+Betfair
+4.2
+Understanding Price Movements in Sports
+The movement of prices in sports markets is influenced by the nature of the sport, the structure of the event, and the
+real-time developments during the match. This section gives some examples of how prices drift, experience jumps,
+and exhibit volatility for sports like football, tennis, and horse racing and offers a contrast with fixed duration
+financial instruments such as derivatives, and continuous instruments such as equities.
+4.2.1
+Football: Fixed Duration and Natural Drift
+In football, matches have a fixed duration of 90 minutes, with prices naturally drifting as time progresses. As time
+progresses without a goal, the probability of certain outcomes (e.g., a win for either team) naturally decreases. This
+can be modeled using a time-decay function.
+P(t) = P0e−λt
+(9)
+where P0 is the initial probability and λ is the decay rate.
+Goals cause immediate jumps in prices, reflecting the significant change in the likelihood of different outcomes.
+Volatility increases in the final minutes as the match outcome becomes more certain. Key events like goals, penalties,
+or red cards significantly impact volatility.
+4.2.2
+Tennis: Crucial Points and Markov Chains
+Tennis matches differ as each point can significantly alter the probability of winning, modelled effectively using
+Markov Chains. The state of the game changes with each point, impacting the odds. The probability of winning can
+be modeled using states representing the current score.
+P(W) =
+n
+X
+i=1
+P(Si) × P(W|Si)
+(10)
+where P(W) is the probability of winning, P(Si) is the probability of being in state Si, and P(W|Si) is the probability of winning from state Si.
+The score in tennis matches leads to both gradual changes in between points, where drift is not really a big effect
+and sudden changes (jumps) in odds. Volatility is higher during crucial points like break points or match points,
+where the outcome of a single point can significantly change the match’s outcome. Advanced statistics, such as ELO
+ratings, are used in tennis models to predict outcomes as they provide a dynamic measure of player performance.
+Although some results can be ascertained analytically, it is more common to use monte carlo simulation on the
+markov chain to ascertain probabilities as there is also a wide variety of derivative markets on tennis, beyond match
+odds. For further information, the book ’Analysing Wimbledon’ by Klaassen [32] is an excellent resource.
+17
+
+4.2.3
+Horse Racing: Rapid Changes and Event-Driven Movements
+In horse racing, prices are highly volatile and can change rapidly due to the dynamic nature of the race and the
+relatively short duration. Prices may drift based on the perceived form and performance of horses leading up to the
+race, with larger amounts of liquidity being shown in the last few minutes pre the race start.
+P(t) = P0 + βt
+(11)
+where P0 is the initial probability and β is the rate of drift influenced by market sentiment.
+Jumps occur due to race-specific events like a horse leading early or faltering. These events cause sudden shifts in
+the market odds. Volatility is inherently high due to the short race duration and rapid changes in the perceived
+chances of each horse, which can become extreme towards the end of a race, Bayesian methods have been used by
+more sophisticated traders within horse racing.
+The price dynamics in sports markets have analogies with certain financial instruments, particularly derivatives with
+fixed durations and expiries, impacting drift and volatility. Price movements in equities are influenced by continuous
+trading, news events, and overall market sentiment. Unlike sports, equities do not have a fixed duration and therefore
+exhibit quite different price behaviour characteristics, but given the different models used for sport it is clear that
+runner price behaviour varies considerably both across sports and within a sport depending upon the time and status
+of the game.
+4.3
+Pioneering Statistical Models in Sports Betting
+Statistical models in sports betting primarily take two forms: pre-game and in-play. Pre-game models focus on value
+betting, identifying bets where the odds offered by the exchange exceed the true probability of the outcome. These
+models rely on pre-game data such as aggregate player and team statistics, line-ups, and other metrics available
+before the match begins. In contrast, in-play models utilise live data streams, including real-time game updates and
+order book data from betting exchanges.
+Early statistical models in sports betting focused on modelling price behaviour. Dixon and Coles [15] began with
+using a Poisson arrival process, which demonstrated predictable price drifts as time passed without a goal. This
+approach exploited potential inefficiencies in the betting market, yielding positive returns. Karlis and Ntzoufras [31]
+advanced this research with a dynamic double Poisson model, proposing a bivariate Poisson distribution to capture
+the correlation between the attack and defence parameters of the competing teams. Recent research in football betting explores feature engineering and supervised learning. Constantinou et al. [11] introduced the pi-football model,
+which uses a Bayesian network to build and update team ratings. In tennis, Newton and Aslam [41] used Markov
+chains based on the probability of each server winning their point on serve. For predicting ordering probabilities in
+multi-entry competitions like horse races, Harville [23] developed a method based on winning probabilities, assuming
+running times followed an independent exponential distribution. Henery [27] and Stern [52] later proposed using
+normal and gamma distributions, respectively.
+Moving towards in-play betting, Divos [13] was one of the first to provide a comprehensive view of the in-play football
+betting market. Divos demonstrated the applicability of financial mathematics concepts to betting. Notably, he
+introduced the Constant Intensity Model, a risk-neutral framework for pricing and hedging in-play bets, similar to
+the Black-Scholes model. Additionally, by recognising the presence of an implied intensity smile in football betting,
+Divos introduced the Local Intensity model, inspired by the local volatility model from finance. He then compared
+the effectiveness of K-Nearest Neighbour, Linear, and Neural Network models in predicting full-time scores from halftime in-play statistics. While all three models performed comparably in terms of log-likelihood, the Neural Network
+was deemed the least preferable due to its large number of parameters.
+For tennis, Øvreg˚ard [44] investigated
+the application of Neural Networks within the in-play tennis market. He employed a Multilayer Perceptron (MLP)
+architecture, aiming to identify profitable trading opportunities rather than making direct price predictions. Treating
+in-play betting as a regression problem rather than a classification problem allowed the MLP to effectively capture
+both the magnitude of price swings and the level of confidence in these predictions.
+18
+
+4.4
+Cutting-edge Machine Learning in Sports
+This section introduces some of the more advanced machine learning models across sports including HMMs, LSTMs
+and Reinforcement Learning. It covers their typical applications and potential uses across the sports betting markets.
+4.4.1
+Hidden Markov Model (HMM)
+HMMs are statistical models that represent systems with hidden states through observable events. They are particularly effective for time series data and sequential analysis, making them suitable for modelling the probabilistic
+relationships between various states over time.
+Applications in capital markets: Hassan and Nath [24] proposed the use of HMM, a new approach, to predict
+latent values in a time series for the stock market, determining stock trend status: “upper trend”, “low trend”, or
+“medium”. Nguyen [42] applied HMMs to make monthly predictions for the four macroeconomic variables: inflation
+(consumer price index (CPI)), industrial production index (INDPRO), stock market index (S&P 500) and market
+volatility (VIX). Kritzman et al. [36] used HMMs to detect market regimes, enhancing asset allocation strategies. In
+credit risk modeling, Frydman and Schuermann [19] used markov mixture models to predict credit rating transitions
+and defaults.
+Applications in sports betting: Early models in tennis used Markov chains to estimate the probability of
+each server winning their point.
+Klaasen and Magnus [33] introduced a hierarchical Markov model that inputs
+the probability of a player winning a single point on serve to predict match outcomes. Kolonias [35] addresses the
+problem of automatic interpretation and evolution tracking using hand-annotated data from standard broadcast video
+sequences, employing a hierarchical structure with HMMs. The model predicts whether the point will be awarded
+to one player or another. Newton and Aslam [41] developed a model using four inputs: probability of winning a
+serve, winning a return, and consistency on serve and return. Using Monte Carlo simulations they determine the
+probability density functions for each of the players to win a match. Knottenbelt et al. [34] presented another
+hierarchical Markov model for tennis, achieving a 3.8% long-term profit. Carrari et al. [7] accounted for different
+game situations in their Markovian model for tennis: the first six points and the possible additional points after
+the first deuce, each with different winning probabilities. Beyond tennis, Rue et al. [49] implemented a MCMC
+method for analysing soccer matches and Pankin [46] created a Markov model for baseball, leveraging its inherently
+state-based nature, suitable for stochastic modelling.
+4.4.2
+Long Short-Term Memory (LSTM)
+LSTM networks [29] are a type of recurrent neural network (RNN) capable of learning order dependence in sequence
+prediction problems by retaining information about past inputs for a variable amount of time and capable of extracting non-linear relationships between features. This retention period is not fixed but depends on their weights, the
+number of stacked layers, and the input data. LSTMs were a solution introduced to expand recurrent neural networks where learning to store pertinent information over extended time intervals through recurrent backpropagation
+can be problematic, primarily due to problems with error gradients over long sequences. LSTMs offer an efficient
+gradient-based method which learns when to forget previous hidden states and when to update hidden states given
+new information. Incorporating memory units enables LSTM architectures to learn complex long term temporal
+dynamics that a standard RNN is not capable of.
+Applications in capital markets: Chong, Han, and Park [9] examined the role of time series analysis in algorithmic trading. They proposed a deep feature learning-based stock market prediction model, and constructed
+three-layer deep neural networks (DNN) to predict future stock returns. Heaton et al. [26] explore deep learning
+hierarchical models for financial prediction and classification, such as asset return movements. Later used for trading,
+Zhang et al [61] built strategies for continuous futures contracts, particularly coupling it with Reinforcement Learning
+methods. Fischer and Krauss [17] applied LSTMs to predict out-of-sample directional movement for the constituent
+stocks of the S&P 500, benchmarking it against deep nets, random forests, and logistic regression. Dixon et al. [14]
+deployed stacked LSTM networks to predict mid-price movements in limit order books, showing greater accuracy
+and performance over other models. LSTMs have also been used for NLP; Hiew et al. [28] combined BERT with
+LSTMs to build a Financial Sentiment Index; RNNs have also been used to read financial news articles.
+Applications in sports betting: Neural networks have shown good performance in predicting problems. Rahman
+[48] proposed a football game prediction framework based on LSTM architecture, achieving a 63.3% accuracy.
+19
+
+Johnson et al. [30] used tactical feature engineering to compress space-time and promote the fine-tuning of three
+pre-trained CNNs. Zhang et al. [60] introduced the AS LSTM model, integrating an attention mechanism with
+LSTM to capture the team’s short-term state and better explore the team’s potential characteristics, enhancing the
+prediction of result outcomes. Beyond football, Yu et al. [62] proposed a method combining deep Bi-LSTM with
+Mixture Density Network (MDN) to real-world basketball trajectory data to help players decide when and where to
+shoot. Oytun [45] used a backpropagation neural network and LSTM to predict the performance of female handball
+players.
+4.4.3
+Reinforcement Learning (RL)
+RL is a type of learning that is used for sequential decision-making problems [54]. In RL, an agent interacts with an
+environment that consists of various states. The agent must take actions within these states to receive feedback in
+the form of rewards. This feedback helps the agent to learn and adjust its actions to maximise the expected future
+cumulative rewards. The promise of RL in both finance and sports trading is the ability for an agent to directly
+learn actions such as optimally placing orders directly from inputs. The reward function can be tailored not just
+to maximise expected profit, but also incorporate, risk and transaction costs and goes beyond step by step greedy
+optimisation. This in turn has the potential to circumvent multi-stage portfolio construction processes where one
+first predicts for example on a stock by stock basis and then subsequently applies a risk model and other cost models.
+There are a very wide variety of RL methods, such as value based, policy based and actor-critic (incorporating both)
+and in turn some of the more powerful RL models incorporate neural networks for modelling state (enabling the
+facility to handle very large state spaces), known as DeepRL.
+Applications in capital markets: RL methods are widely used in trading, optimal execution, and portfolio management [21]. Abernethy [1] was the first to leverage online learning to solve the market-making problem. Chan
+and Shelton then focused on the impact of noise from uninformed traders on the agent’s quoting behaviour [8].
+They investigated the application of three RL algorithms: a Monte Carlo method, SARSA, and an actor-critic
+method, using state variables such as inventory, order imbalance, and market quality measures. Moody and Saffell
+[39] introduced recurrent reinforcement learning (RRL) for discovering investment policies, showing how it optimises
+risk-adjusted returns while accounting for transaction costs. Bertsimas and Lo [4], used Monte Carlo experiments
+and found that their RL algorithm significantly reduced execution costs by 25-40%. Deng et al. [12] applied deep
+RL to portfolio management, enhancing trading decisions in uncertain environments. Zhang et al. [61] combined RL
+with deep learning to predict stock price movements. Pendharkar [47] demonstrated RL’s adaptability in modelling
+high-frequency trading strategies in dynamic market conditions.
+Applications in sports betting: Reinforcement Learning presents a promising but underexplored avenue for
+sports betting strategies. Unlike its application in financial markets for tasks such as trading, optimal execution, and
+portfolio management, its potential in sports remains largely untapped, suggesting new ground for future research.
+Given the nature of sports, RL could be adapted to develop models that dynamically adjust betting strategies based
+on changes in the market and game state. The concept of market making can be applied to sports betting where the
+agent profits from both sides of a wager. RL lends itself well to potential environmental states that could include live
+ladder prices, the order book, and inventory levels, providing a comprehensive snapshot of current market conditions.
+The rewards could be defined by the profit and loss (PnL) generated from bets placed, but also directly incorporate
+risk and costs, serving as a direct measure of the strategy’s effectiveness. Actions in this framework could be modelled
+around the ability to trade through the back and lay mechanism, with an action space comprising where in the ladder
+it is optimal to place a trade.
+20
+
+4.5
+Risk Management in Sports Trading
+In financial trading, risk management is crucial for protecting investments and ensuring long-term profitability. Similarly, in sports trading, the principles of risk management are essential but are adapted to the unique dynamics of
+betting exchanges. A key difference however is that many sports, markets are independent of one another, whereas
+there are correlations within financials, thus resulting in differing approaches to portfolio management. Within sports
+one approach has been to attempt to ascertain one’s edge and utilise variants of the Kelly criterion for bankroll management. Variants because although Kelly is optimal for long-term profit growth, it is also highly volatile and more
+importantly assumes that the trader actually knows their edge.
+In sports exchanges, a common strategy to manage risk is to limit losses by setting automatic cash-out points. This
+strategy is akin to stop-loss orders in financial trading.
+Cash-Out Point = Initial Stake × (1 −Loss Threshold)
+(12)
+Here, the Loss Threshold represents the percentage of the initial stake that the trader is willing to lose before exiting
+the position. By setting a cash-out point, traders can effectively manage their exposure to potential losses.
+Another common risk management technique is hedging. Traders often place opposing bets when the odds become
+favourable to lock in profits or minimise losses, regardless of the event’s outcome.
+Hedged Profit = Profit from Original Bet −Cost of Opposing Bet
+(13)
+In financial markets, although hedging is of course widely used, diversification is also used and involves spreading
+investments across different asset classes to reduce risk exposure. There is a wide body and long history of research
+beginning with Markowitz [38] who utilises covariances between assets to minimise the risks within a portfolio.
+In sports betting, traders need to be aware of their edge and in order to correctly size their bets have often utilise
+variants of the Kelly criterion, Thorpe offers a comprehensive analysis in [56], of course many events in sports are
+uncorrelated with one another, being somewhat different to for example equity markets and subsequent risk models
+utilising such correlations.
+The Kelly Criterion is used to determine the optimal size of a series of bets to maximise the long-term growth of
+capital. The formula for the Kelly Criterion is given by:
+f ∗= p · (b + 1) −1
+b
+(14)
+where:
+• f ∗is the fraction of the capital to be wagered.
+• p is the probability of winning.
+• b is the net odds received on the bet (i.e., the profit from a winning bet divided by the amount wagered).
+21
+
+4.6
+Mixed Successes in Early Attempts by Professional Traders in Sports Markets
+The world of sports betting has attracted the interest of professional traders who have attempted to apply quantitative
+methods and data analysis to predict outcomes and generate returns. The success of these ventures has been mixed,
+with some notable successes and failures. Here we discuss some examples of firms and individuals who ventured into
+sports betting markets, this is really a snippet and there are clearly many examples of which the authors may be
+unaware of.
+4.6.1
+Stratagem
+Stratagem, founded by Andreas Koukorinis, began as a UK-based sports betting company that focused on identifying
+patterns in soccer games using artificial intelligence. Koukorinis argued that soccer games, with their short duration,
+repeatability, and fixed rules, present an opportunity to find and exploit patterns. Stratagem collected data from
+thousands of games and used this to sell data to professional gamblers and bookmakers or used it to place on their
+own bets. To support its betting activities, Stratagem raised money for a £25 million sports betting fund, positioning
+it as an investment alternative to traditional hedge funds, utilising AI. Strategem was subsequently acquired, so its
+success in deploying these strategies is unclear.
+4.6.2
+Centaur Galileo
+Centaur Galileo, inspired by Mark Cuban, was an early attempt at creating a sports betting hedge fund. The firm
+claimed to have a proprietary quantitative model capable of generating significant returns, with targets of 15-25%.
+However, Galileo ultimately failed, folding in 2012 after losing $2.5 million of investor money. The firm attributed its
+dissolution to ”sheer bad luck” and overconfidence in its system. Despite its advanced model, Galileo’s experience
+highlights some of the challenges inherent in sports betting markets.
+4.6.3
+Priomha Capital
+Priomha Capital, with its Cloney Multi-Sport Investment Fund, stands out as one of the more successful sports
+betting hedge funds. Established in 2009, Priomha invests across various professional leagues without revealing its
+specific methods. By the end of 2011, the fund generated an impressive 118% return, outperforming traditional
+markets like the S&P 500/ASX 200, which lost 17.4% during the same period. According to Bloomberg, Priomha
+provided its clients with an impressive 17% ROI from 2010-2015.
+4.6.4
+SIG Sports Analytics
+The well known Susquehanna International Group (SIG) has recently leveraged its expertise in mathematics, gaming, and technology to enter the sports betting market through SIG Sports Analytics. Using advanced statistical
+forecasting models and quantitative research, SIG attempts to provide liquidity for sports markets in jurisdictions
+where sports betting is legal. The firm applies the same quantitative approach that has driven its success in financial
+markets, and is looking to grow as sports betting markets expand globally.
+4.6.5
+Bill Benter
+Bill Benter, a mathematician and professional gambler, made a fortune in horse racing in Hong Kong. Benter used
+his mathematical expertise to develop a sophisticated algorithm that could predict the outcomes of horse races with
+high accuracy.
+His model incorporated various factors, including track conditions, horse performance data, and
+jockey statistics. Benter’s success in Hong Kong’s horse racing market was pre the advent of exchange trading but
+illustrates the potential of quantitative analysis in sports betting. Over the years, he reportedly earned hundreds of
+millions of dollars, making him one of the most successful gamblers in history.
+22
+
+5
+Regulation of Financial and Sports Exchanges
+Regulation is a critical aspect of ensuring the integrity, fairness, and stability of both sports exchanges and financial
+markets. This section explores how Betfair is regulated, the motivations behind its regulation, and contrasts this
+with the regulation in financial markets, detailing the roles and motivations of various regulatory bodies.
+5.1
+Regulatory Structures, Motivations and Requirements
+Betfair, as a leading sports exchange, is subject to stringent regulation to ensure fair play, transparency, and the
+protection of participants. The primary regulatory body overseeing Betfair’s operations is the UK Gambling Commission (UKGC). The UKGC regulates commercial gambling in Great Britain, including online and offline betting,
+lotteries, and gaming. Betfair must obtain and maintain a license from the UKGC, meeting stringent standards for
+operational integrity and financial stability, subject to regular audits and compliance checks to ensure adherence to
+regulatory standards and practices. Betfair must also agree to mandatory reporting of suspicious activities, financial
+transactions, and adherence to anti-money laundering regulations. Betfair also holds licenses from international
+bodies like the Malta Gaming Authority (MGA), maintaining compliance with regulations in multiple jurisdictions.
+In contrast, financial markets are regulated by multiple agencies, each with specific mandates to ensure market
+stability, protect investors, and maintain fair and transparent operations. The Securities and Exchange Commission
+(SEC) regulates securities markets in the United States, including stock exchanges, brokers, and investment advisors.
+With the aim of protecting investors from fraudulent practices and ensuring they have access to material information.
+Promoting efficient and fair markets to facilitate capital formation and ensuring that companies provide accurate and
+complete information to the public. Similarly, the Financial Conduct Authority (FCA) regulates financial markets
+and firms in the UK, ensuring market integrity and consumer protection.
+Table 6: Comparison of Regulation: Financial vs. Sports Exchanges
+Aspect
+Financial Exchanges
+Sports Exchanges
+Regulatory Body
+Regulated by multiple agencies,
+including the SEC, FCA,
+ESMA, and CFTC, each with
+specific mandates and
+jurisdictional authority
+Primarily regulated by the UK
+Gambling Commission, with
+additional oversight from
+international bodies like the
+MGA
+Motivations
+Focused on investor protection,
+market efficiency, fair disclosure,
+financial stability, and risk
+management.
+Focused on consumer
+protection, market integrity, fair
+play, and crime prevention in
+the context of gambling.
+Requirements
+Comprehensive regulatory
+frameworks covering disclosure
+requirements, trading practices,
+risk management, and investor
+protection measures.
+Licensing, compliance checks,
+mandatory reporting, and
+adherence to anti-money
+laundering regulations
+5.2
+Grey Areas on Betfair
+On Betfair, certain behaviours are considered unethical and can lead to account suspension or bans, but they do
+not carry the legal consequences they would in financial markets. One such behaviour is spoofing, where individuals
+place large bets with no intention of allowing them to be matched, creating a false impression of market activity to
+influence other bettors. While this might lead to an account ban on Betfair, it is a criminal offence in financial markets,
+punishable by fines and legal action. Another grey area is pre-arranged betting, where individuals collaborate to
+manipulate odds and betting outcomes; in financial markets, such actions are akin to insider trading or collusion.
+Market manipulation, where individuals attempt to artificially influence the odds by placing strategic bets, is also
+frowned upon in sports betting but does not carry the same severe legal repercussions as in financial markets.
+Similarly, betting syndicates, where groups combine efforts to shift odds, might lead to account bans but would be
+subject to antitrust laws in financial markets, carrying significant legal consequences. Lastly, gnoming, the practice
+23
+
+of using multiple accounts to bypass limits and manipulate the market is not allowed on Betfair, whereas in financial
+markets, such deceptive practices are illegal. These behaviours are not illegal in sports betting because Betfair is
+responsible for policing and managing its own platform subject to the regulator and it is thus in their own interest
+to create a fair market, but the usual consequences for grey area actions are account bans and less draconian than
+similar behaviour within financial markets.
+6
+Conclusions and Future Directions in Sports Exchange Trading
+This paper offers a detailed comparative analysis of algorithmic trading in financial and sports exchanges. Both domains have experienced significant transformations due to advancements in high-frequency and algorithmic trading
+technologies. Financial markets, characterised by their high liquidity and regulations, contrast with sports exchanges
+like Betfair, which present unique trading dynamics centred around event-based outcomes and its speculative nature.
+Despite their smaller scale and lower liquidity, sports markets offer significant potential as an uncorrelated asset class
+with distinct risk characteristics and trading opportunities.
+The integration of new technologies will significantly impact trading on sports exchanges. Enhanced data collection
+methods, such as real-time tracking and advanced analytics, will provide deeper insights into market behaviour and
+participant actions. Machine learning algorithms will improve the ability to model and predict market movements,
+leading to more effective trading strategies and potentially higher returns. Future studies point towards leveraging
+big data and advanced machine learning. A notable area of potential research is the application of reinforcement
+learning, a method widely adopted in financial markets but yet to be fully explored in sports trading. RL could
+be used to develop adaptive trading strategies that dynamically adjust to changing market conditions and real-time
+data, providing a significant edge in the highly variable sports markets.
+As technologies continue to evolve, sports exchanges are expected to become more sophisticated and efficient. The
+adoption of advanced trading algorithms and real-time data analysis will likely lead to tighter spreads, increased
+liquidity, and improved market integrity. Additionally, regulatory frameworks will need to adapt to these changes,
+ensuring fair and transparent trading practices. A larger number of worldwide exchanges could emerge, offering significantly greater liquidity, thus potentially establishing sports trading as a new asset class for financial professionals,
+uncorrelated to existing financial markets. If this occurs then the future of sports trading will likely see greater
+participation from institutional investors who are still not yet major players.
+Acknowledgements
+First, we would like to thank Professor Philip Treleaven for his enthusiasm, engagement, and advice on improvements.
+Second, we would like to thank Kevin McLean for his help with proofreading the final draft.
+24
+
+References
+[1] J. Abernethy, Y. Chen, and J. Wortman Vaughan. An optimization-based framework for automated marketmaking. In Proceedings of the 12th ACM conference on Electronic commerce, pages 297–306, 2011.
+[2] M. M. Ali. Probability and utility estimates for racetrack bettors. Journal of political Economy, 85(4):803–815,
+1977.
+[3] G. Angelini and L. De Angelis. Efficiency of online football betting markets. International Journal of Forecasting,
+35(2):712–721, 2019.
+[4] D. Bertsimas and A. W. Lo. Optimal control of execution costs. Journal of financial markets, 1(1):1–50, 1998.
+[5] A. Brown and F. Yang. Slowing down fast traders: Evidence from the betfair speed bump. Available at SSRN
+2668617, 2016.
+[6] A. Brown, F. Yang, et al. Adverse selection, speed bumps and asset market quality. Technical report, School of
+Economics, University of East Anglia, Norwich, UK., 2015.
+[7] A. Carrari, M. Ferrante, and G. Fonseca. A new markovian model for tennis matches. Electronic Journal of
+Applied Statistical Analysis, 10(3):693–711, 2017.
+[8] N. T. Chan and C. Shelton. An electronic market-maker. 2001.
+[9] E. Chong, C. Han, and F. C. Park. Deep learning networks for stock market analysis and prediction: Methodology, data representations, and case studies. Expert Systems with Applications, 83:187–205, 2017.
+[10] S. Clarke, S. Kovalchik, and M. Ingram. Adjusting bookmaker’s odds to allow for overround. American Journal
+of Sports Science, 5(6):45–49, 2017.
+[11] A. C. Constantinou, N. E. Fenton, and M. Neil. pi-football: A bayesian network model for forecasting association
+football match outcomes. Knowledge-Based Systems, 36:322–339, 2012.
+[12] Y. Deng, F. Bao, Y. Kong, Z. Ren, and Q. Dai. Deep direct reinforcement learning for financial signal representation and trading. IEEE transactions on neural networks and learning systems, 28(3):653–664, 2016.
+[13] P. Divos. Modelling of the In-Play Football Betting Market. PhD thesis, UCL (University College London),
+2020.
+[14] M. Dixon, D. Klabjan, and J. H. Bang. Classification-based financial markets prediction using deep neural
+networks. Algorithmic Finance, 6(3-4):67–77, 2017.
+[15] M. J. Dixon and S. G. Coles. Modelling association football scores and inefficiencies in the football betting
+market. Journal of the Royal Statistical Society: Series C (Applied Statistics), 46(2):265–280, 1997.
+[16] E. F. Fama. Efficient capital markets. Journal of finance, 25(2):383–417, 1970.
+[17] T. Fischer and C. Krauss. Deep learning with long short-term memory networks for financial market predictions.
+European journal of operational research, 270(2):654–669, 2018.
+[18] E. Franck, E. Verbeek, and S. N¨uesch. Inter-market arbitrage in betting. Economica, 80(318):300–325, 2013.
+[19] H. Frydman and T. Schuermann. Credit rating dynamics and markov mixture models. Journal of Banking &
+Finance, 32(6):1062–1075, 2008.
+[20] R. M. Griffith.
+Odds adjustments by american horse-race bettors.
+The American Journal of Psychology,
+62(2):290–294, 1949.
+[21] H. Guo, J. Lin, and F. Huang. Market making with deep reinforcement learning from limit order books. In
+2023 International Joint Conference on Neural Networks (IJCNN), pages 1–8. IEEE, 2023.
+[22] L. Harris. Trading and exchanges: Market microstructure for practitioners. Oxford University Press, USA, 2003.
+[23] D. A. Harville. Assigning probabilities to the outcomes of multi-entry competitions. Journal of the American
+Statistical Association, 68(342):312–316, 1973.
+25
+
+[24] M. R. Hassan and B. Nath. Stock market forecasting using hidden markov model: a new approach. In 5th
+international conference on intelligent systems design and applications (ISDA’05), pages 192–196. IEEE, 2005.
+[25] D. B. Hausch and W. T. Ziemba. Efficiency of sports and lottery betting markets. handbooks in Operations
+research and Management Science, 9:545–580, 1995.
+[26] J. Heaton, N. G. Polson, and J. H. Witte. Deep learning in finance. arXiv preprint arXiv:1602.06561, 2016.
+[27] R. Henery. Permutation probabilities as models for horse races. Journal of the Royal Statistical Society Series
+B: Statistical Methodology, 43(1):86–91, 1981.
+[28] J. Z. G. Hiew, X. Huang, H. Mou, D. Li, Q. Wu, and Y. Xu. Bert-based financial sentiment index and lstm-based
+stock return predictability. arXiv preprint arXiv:1906.09024, 2019.
+[29] S. Hochreiter and J. Schmidhuber. Long short-term memory. Neural computation, 9(8):1735–1780, 1997.
+[30] W. R. Johnson, J. Alderson, D. Lloyd, and A. Mian. Predicting athlete ground reaction forces and moments
+from spatio-temporal driven cnn models. IEEE Transactions on Biomedical Engineering, 66(3):689–694, 2018.
+[31] D. Karlis and I. Ntzoufras. Analysis of sports data by using bivariate poisson models. Journal of the Royal
+Statistical Society: Series D (The Statistician), 52(3):381–393, 2003.
+[32] F. Klaassen and J. R. Magnus. Analyzing Wimbledon: The power of statistics. Oxford University Press, 2014.
+[33] F. J. Klaassen and J. R. Magnus. Forecasting the winner of a tennis match. European Journal of Operational
+Research, 148(2):257–267, 2003.
+[34] W. J. Knottenbelt, D. Spanias, and A. M. Madurska. A common-opponent stochastic model for predicting the
+outcome of professional tennis matches. Computers & Mathematics with Applications, 64(12):3820–3827, 2012.
+[35] I. Kolonias, W. Christmas, and J. Kittler. Tracking the evolution of a tennis match using hidden markov models.
+In Structural, Syntactic, and Statistical Pattern Recognition: Joint IAPR International Workshops, SSPR 2004
+and SPR 2004, Lisbon, Portugal, August 18-20, 2004. Proceedings, pages 1078–1086. Springer, 2004.
+[36] M. Kritzman, S. Page, and D. Turkington.
+Regime shifts: Implications for dynamic strategies (corrected).
+Financial Analysts Journal, 68(3):22–39, 2012.
+[37] A. Madhavan. Market microstructure: A survey. Journal of financial markets, 3(3):205–258, 2000.
+[38] H. Manxowrrz. Portfolio selection, 1959.
+[39] J. Moody and M. Saffell. Learning to trade via direct reinforcement. IEEE transactions on neural Networks,
+12(4):875–889, 2001.
+[40] T. J. Moskowitz. What sports betting teaches us about financial markets, 2022.
+[41] P. K. Newton and K. Aslam. Monte carlo tennis: a stochastic markov chain model. Journal of Quantitative
+Analysis in Sports, 5(3), 2009.
+[42] N. Nguyen. Hidden markov model for stock trading. International Journal of Financial Studies, 6(2):36, 2018.
+[43] M. Ottaviani and P. N. Sørensen. Noise, information, and the favorite-longshot bias in parimutuel predictions.
+American Economic Journal: Microeconomics, 2(1):58–85, 2010.
+[44] Ø. N. Øvreg˚ard. Trading” in-play” betting exchange markets with artificial neural networks. Master’s thesis,
+Institutt for datateknikk og informasjonsvitenskap, 2008.
+[45] M. Oytun, C. Tinazci, B. Sekeroglu, C. Acikada, and H. U. Yavuz. Performance prediction and evaluation in
+female handball players using machine learning models. IEEE Access, 8:116321–116335, 2020.
+[46] M. D. Pankin. Finding better batting orders. SABR XXI, New York, 1991, 1991.
+[47] P. C. Pendharkar and P. Cusatis. Trading financial indices with reinforcement learning agents. Expert Systems
+with Applications, 103:1–13, 2018.
+[48] M. A. Rahman. A deep learning framework for football match prediction. SN Applied Sciences, 2(2):165, 2020.
+26
+
+[49] H. Rue and O. Salvesen. Prediction and retrospective analysis of soccer matches in a league, the statistician, 49
+(3), 399-418.
+:
+: , , Data Mining, 2000.
+[50] P. A. Samuelson. Proof that properly anticipated prices fluctuate randomly. In The world scientific handbook
+of futures markets, pages 25–38. World Scientific, 2016.
+[51] E. Snowberg and J. Wolfers. Explaining the favorite–long shot bias: Is it risk-love or misperceptions? Journal
+of Political Economy, 118(4):723–746, 2010.
+[52] H. Stern. Models for distributions on permutations. Journal of the American Statistical Association, 85(410):558–
+564, 1990.
+[53] H. R. Stoll. Presidential address: friction. The Journal of Finance, 55(4):1479–1514, 2000.
+[54] R. S. Sutton and A. G. Barto. Reinforcement learning: An introduction. MIT press, 2018.
+[55] R. H. Thaler and W. T. Ziemba. Anomalies: Parimutuel betting markets: Racetracks and lotteries. Journal of
+Economic perspectives, 2(2):161–174, 1988.
+[56] E. O. Thorp. Understanding the kelly criterion. In The Kelly capital growth investment criterion: theory and
+practice, pages 509–523. World Scientific, 2011.
+[57] N. Vizard. Betting against momentum. Available at SSRN 4542265, 2023.
+[58] L. V. Williams. Information efficiency in financial and betting markets. Cambridge University Press, 2005.
+[59] H. Yegerman. Liquidity behavior in the sp 500, 2021.
+[60] Q. Zhang, X. Zhang, H. Hu, C. Li, Y. Lin, and R. Ma. Sports match prediction model for training and exercise
+using attention-based lstm network. Digital Communications and Networks, 8(4):508–515, 2022.
+[61] S. Zhang, L. Yao, A. Sun, and Y. Tay. Deep learning based recommender system: A survey and new perspectives.
+ACM computing surveys (CSUR), 52(1):1–38, 2019.
+[62] Y. Zhao, R. Yang, G. Chevalier, R. C. Shah, and R. Romijnders. Applying deep bidirectional lstm and mixture
+density network for basketball trajectory prediction. Optik, 158:266–272, 2018.
+[63] W. T. Ziemba. Efficiency of racing, sports, and lottery betting markets. In Handbook of sports and lottery
+markets, pages 183–222. Elsevier, 2008.
+27

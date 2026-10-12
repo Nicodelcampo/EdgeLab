@@ -1,0 +1,721 @@
+Optimal Trading Stops and Algorithmic Trading
+Giuseppe Di Graziano
+Dept. of Mathematics
+King’s College London
+and Deutsche Bank AG, London
+giuseppe.di-graziano@db.com
+January 19, 2014
+Abstract
+Trading stops are often used by traders to risk manage their positions. In
+this note, we show how to derive optimal trading stops for generic algorithmic
+trading strategies when the P&L of the position is modelled by a Markov modulated diﬀusion. Optimal stop levels are derived by maximising the expected
+discounted utility of the P&L. The approach is independent of the signal used
+to enter the position. We analyse in details the case of trading signals with
+a limited (random) life. We show how to calibrate the model to market data
+and present a series of numerical examples to illustrate the main features of
+the approach.
+Keywords: Optimal trading stops, Algorithmic trading, Stop loss, Target proﬁt,
+Utility functions, Markov chains
+
+2
+1
+Introduction
+Traders often remark that the risk management of existing position is as important,
+if not more important than having accurate entry signals for their trading strategies.
+Stop loss and target proﬁt thresholds are commonly used by market practitioners to
+help manage the risk of their portfolios. Building upon the seminal work of Imkeller
+and Rogers [11], we try to give a plausible answer to the following questions: once
+a trade has been entered, when is the right time to exit it? What level of losses
+is reasonable to tolerate? When should a trader exit a proﬁtable position? Are
+trading stops related to the strength of the signal of the underlying strategy? Do
+they depend on the risk aversion of individual traders? How can they be eﬃciently
+employed in an algorithmic trading context?
+Assume that a position on an asset or portfolio of assets has been entered based
+on a given trading signal and that trading stops are placed with reference to the
+running P&L of the position. It is natural to expect that strategies or traders with
+a strong track record will be allowed run the position for a longer time, i.e. stops
+will be relatively far from zero. Likewise, traders with low risk aversion will tend to
+tolerate higher losses or let proﬁt cumulate for longer before closing their position.
+Rogers and Imkeller [11] propose to choose the stopping strategy which maximise
+the expected discounted utility of the P&L of a give position. They model the P&L
+as a arithmetic Brownian motion with constant (either known or unknown) drift
+and analyse a variety of stopping strategies, notably ﬁxed stops and trailing stops.
+The authors above prove that, for reasonable model parameters, it is never optimal
+to place trading stops when the drift of the P&L is known. In order to overcome this
+diﬃculty, they suggest to model the P&L with a constant but unknown drift. In
+other words, when entering the position, the trader does not know for sure whether
+the strategy is a good or a bad one (positive or negative drift respectively) but
+estimates the drift in a Bayesian fashion.
+In this paper, we adopt the utility approach of [11] but allow the P&L to have
+a stochastic drift and volatility. As as example, imagine to enter a position based
+on a given signal with a positive initial drift. However as time (e.g. seconds) goes
+by, other market participants spot the same trading opportunity, enter the same
+position and move the market. It is conceivable after enough time has elapsed the
+P&L of the position will dominated by noise rather than the initial signal. It makes
+sense in these circumstances to exit the trade before the pure noisy state takes over.
+The example above, as well as more complex ones can be modelled by letting the
+P&L be a Markov modulated diﬀusion of the type
+
+3
+dXt = µ(yt)dt + σ(yt)dWt
+(1.1)
+where yt is a continuous time Markov chain. In the previous example, yt would have
+two possible values 1 and 2 with µ(1) > 0 and µ(2) = 0 and 2 would be an absorbing
+state (no way out).
+One the advantages of this approach when used together with relatively high
+frequency strategies is that it allows the strength as well as the average life of the
+signal to be calibrate to market data.
+Of course, more general behaviours can
+be captured by the P&L dynamics in (1.1), e.g.
+a decreasing drift which may
+go negative, random initial drift, etc, by increasing the number of chain states.
+However, calibration becomes more complex due to the higher number of parameters
+in those cases.
+The paper is organised as follows: in section 2 we brieﬂy review the the approach
+of Imkeller and Rogers [11]. In section 3 we solve the optimal stops problem when the
+P&L is modelled by a Markov Modulated diﬀusion. Section 4 shows how to calibrate
+the model parameters in closed form in a simpliﬁed yet relevant speciﬁcation of
+the model. Section 5 deals with the calibration of the more general n-state chain
+model. Finally section ?? illustrates the main features of the approach via a series
+of numerical examples.
+2
+Optimal Stops with Constant P&L Drift
+We being by brieﬂy summarising the basic idea of the approach introduced by [11].
+The authors above start by modelling the P&L of a position as a Brownian motion
+with constant drift
+Xt = σWt + µt
+(2.1)
+and assume that the cost of exiting the position at the random (stopping) time T
+is equal to c. They consider several stopping strategies, including the simple rule
+T ≡inf{t : Xt = −a
+or
+Xt = b}
+(2.2)
+One way to formalise the trading stop problem is to consider an agent wishing to
+maximise the expected utility of a position’s P&L, i.e.
+φ(a, b) = E[e−ρTU(XT −c)]
+(2.3)
+for some increasing and concave utility function U(x).
+
+4
+Consider the expected utility of the P&L as a function of the initial value of X0
+f(x) ≡E[e−ρTU(XT −c) | X0 = x].
+(2.4)
+A simple application of Ito’s formula shows that f(x) must satisfy the following
+ODE
+1
+2σ2f
+′′(x) + µf
+′(x) −ρf(x) = 0
+(2.5)
+It is thus suﬃcient to solve equation (2.5) with boundary conditions
+f(b)
+=
+U(b −c)
+(2.6)
+f(a)
+=
+U(−a −c)
+(2.7)
+to obtain a solution for the expected utility of the P&L by setting φ(a, b) = f(0; a, b).
+The optimal stop loss and target proﬁt thresholds can then be easily obtained by
+maximising φ(a, b) as a function of the parameters a and b.
+For some speciﬁc choice of utility function, e.g. CARA utility,
+U(x) = 1 −exp(−γx),
+(2.8)
+ODE (2.5) can be solved in closed form and one can obtain explicit solution for the
+objective function φ(a, b)
+φ(a, b)
+=
+E[e−ρT] −e−γcE[e−ρT−γXT ]
+(2.9)
+=
+L(ρ, 0) −eγcL(ρ, γ)
+(2.10)
+where
+L(ρ, γ) = E[e−ρT−γXT ]
+(2.11)
+Solving the ODE, we obtain
+L(ρ, γ) = eγa(eβb −eαb) + e−γb(eαa −e−βa)
+eαa+βb −e−αb−βa
+(2.12)
+where α and β are equal to
+α = −µ
+σ2 + 1
+σ
+r
+µ2
+σ2 −2ρ
+(2.13)
+
+5
+and
+β = −µ
+σ2 −1
+σ
+r
+µ2
+σ2 −2ρ.
+(2.14)
+Note however that in the simple model we are considering, it is never optimal to
+place stops for a reasonable choice of paramters. Assume that the drift is deterministic and positive; if the P&L at time t is negative a trader will wait for the positive
+drift to prevail over the gaussian noise bringing X back into positive territory. If the
+P&L is positive, the trader will expect to achieve an ever greater gain by keeping
+the position. On the other hand, if the drift is deterministic and negative, the trader
+will not enter the position in the ﬁrst place.
+In order to overcome this contradiction (in real markets, trader make common
+use of trading stops), Imkeller and Rogers [11] suggest to let µ be a random variable
+with known distribution. In order to ﬁnd the optimal a and b, one has to solve
+a number of ODEs of the form of (2.5) for diﬀerent levels of µ (both positive and
+negative). The expected utility of the P&L will be then a weighted average of the
+solutions
+φ(a, b) =
+Z
+E(µ)[e−ρTU(XT −c)]ψ(µ)dµ.
+(2.15)
+By introducing uncertainty about the drift, non trivial solution to the optimisation
+exist and placing ﬁnite stops can improve a trader’s expected utility.
+3
+Optimal Stops with Stochastic Drift
+In this section we propose a generalisation of the approach of [11] by considering a
+P&L process with stochastic drift and volatility. It is in fact reasonable to expect
+that the drift of a strategy as well as its volatility may change over time. For example,
+the drift may be high and positive when the trade is entered and weaken over time
+(or even become negative) as other market participants spot the same opportunity or
+new information and other exogenous factors start aﬀecting the price of the asset(s).
+In order to capture such a behaviour one can model the P&L as a Markovmodulated diﬀusion
+dXt = µ(yt)dt + σ(yt)dWt,
+(3.1)
+where yt is a continuous time Markov chain, independent from Wt, with inﬁnitesimal
+generator Q.
+
+6
+The example above, could be modelled by choosing yt ∈{1, 2}, µ(1) = ¯µ > 0
+and µ(2) = 0. In this set up, the P&L has an initial positive drift which dies out at
+the random time when the chain changes state. If yt = 2 is an absorbing state, then
+the trader is left with pure noise after a certain (random) time elapses. It is then
+conceivable that the trader may want to exit his position after the positive eﬀect of
+his good signal has elapsed.
+The optimisation problem is similar to the one summarised in the previous section
+φ(a, b) = E[e−ρTU(XT −c) | X0 = 0],
+(3.2)
+where Xt is now the Markov modulated diﬀusion with dynamics (3.1).
+In order to ﬁnd a solution to expectation (3.2), consider a function f(x, y) ∈
+C2,0. A simple application of Ito’s formula and Dynkin’s formula to the function
+˜f ≡e−ρtf(Xt, yt) shows that
+d(e−ρtf(Xt, yt))
+=
+e−ρt(µ(yt)fx(Xt, yt) + 1
+2σ2(yt)fxx(Xt, yt)
++
+(Qf)(Xt, yt) −ρf(Xt, yt))dt + dM f
+t ,
+where M f
+t is a local Martingale. Since yt can only take a ﬁnite number of values,
+with a slight abuse of notation we can think of f(Xt) as a vector valued function
+with element i equal to fi(Xt) ≡f(Xt, i). For ˜f to be a local Martingale we require
+that
+1
+2Σf
+′′(x) + Mf
+′(x) + (Q −R)f(x) = 0.
+(3.3)
+Here Σ, M and R are diagonal matrices with ith diagonal entries equal to σ(i), µ(i)
+and ρ(i) respectively. Since f(x) is bounded in the interval [−a, b], it follows from
+the optional stopping theorem that
+fi(x) = Ex,i[e−ρTU(XT −c)],
+where y0 = i is the initial state of the chain. The boundary conditions are independent from the state of the chain and are equal to
+(
+fi(−a) = U(−a −c)
+i ∈{1, . . . , n}
+fi(b) = U(b −c)
+i ∈{1, . . . , n}
+(3.4)
+The system of ODEs above admits solutions of the form
+f(x) = ve−λx,
+(3.5)
+
+7
+where v is a vector of dimension n equal to the number of states of the chain and λ
+is a scalar. Substituting (3.5) into the system (3.3) and re-arranging we obtain
+λ2v −2λΣ−1Mv + 2Σ−1(Q −R)v = 0.
+(3.6)
+The system above is a quadratic eigenvalue problem which can be reduced to a
+canonical eigenvalue problem by way of some standard transformation,
+
+
+2Σ−1M
+−2Σ−1(Q −R)
+I
+0
+
+
+ h
+v
+
+= λ
+ h
+v
+
+where
+h = λv.
+This is a standard eigenvalue problem which admits n solutions in the positive half
+plane and n in the negative half plane. The solution to our ODE system will thus
+take the form
+f(x) =
+2n
+X
+i=1
+wivie−λix.
+The 2n coeﬃcients wi can be derived by solving the system
+(P2n
+i=1 wivie−λib = ¯U(b −c)
+P2n
+i=1 wivieλia = ¯U(−a −c)
+Here ¯U(z) is an n dimensional vector with ith entry equal to U(z).
+It is thus possible to derive the function f(x) for a utility function of choice
+and a n-states chain via a series of simple linear algebra operations. As before the
+expected utility function (3.2) is obtained by setting the initial level of the P&L to
+zero in the function f(x).
+Remark 3.1. In practice it is not realistic to expect that the whole position will be
+unwound at once. It is more common to observe a gradual unwind of the assets. It
+is possible to explain such a behaviour in the framework of the paper by imagining
+that the position is entered by a series of agents, each characterised by a diﬀerent
+level of risk aversion. Each agent will be allocated an arbitrary portion of the total
+capital. In general each agent have diﬀerent optimal stops. The more risk averse
+agents will be the ﬁrst to unwind their position in case of loss or gain, while the more
+risk neutral agent will keep their position, everything else being equal, for longer.
+
+8
+4
+Calibration
+Markov modulated models allow a large degree of ﬂexibility in modelling the dynamics of the P&L. Model users have the ability to set the number of chain states
+(which in principle can be very large), the vector of drifts µ and volatilities σ corresponding to each state and the inﬁnitesimal generator Q. In particular, Q governs
+the distribution of the Markov chain and the probabilities of jumping from any state
+i to another state j in any given time frame. The model ﬂexibility of the Markov
+chain approach however has to be used with caution as may lead to over-ﬁtting and
+instability problems at the calibration stage.
+We consider ﬁrst a very simple special case of the Markov modulated model introduced in the previous section. In particular we assume that there exist a strategy
+(long, short, long/short) which has a positive drift when an entry signal is detected.
+However the life of the signal is limited and after a while the drift goes to zero and
+the P&L of the position is governed by pure noise. In other words, we assume that
+n = 2 (two states chain) and whenever a trade is entered, the Markov chain is in
+state y0 = 1 with µ(1) > 0. The chain jumps to state yt = 2 at some future time
+t with intensity q. State 2 is absorbing, i.e. the probability of jumping from state
+2 back to state 1 is zero. Volatility is assumed to be constant. More precisely, we
+need to set
+µ =
+ µ1
+0
+
+,
+σ =
+ ¯σ
+¯σ
+
+,
+and
+Q =
+ −q
+q
+0
+0
+
+.
+The calibration routine analysed below is better suited for strategies where intra
+day (e.g. tick, second, minute) data are available, entry signals are detected relatively often and a large history of data is available. Note that in this paper we are
+
+9
+not concerned with ﬁnding the best entry strategy, which we assume given, but how
+to best deal with trading stops for generic entry strategies.
+The data used for the calibration are collected following the steps below:
+1. Run entry strategy on single underlying asset or basket.
+2. Once an entry signal is detected, start recording the P&L and keep recording
+it for a ﬁxed (but suﬃciently) long period of time
+3. Go back to step 1.
+In the simpliﬁed model under consideration, there are only three parameters to
+calibrate: µ1, ¯σ and q. Volatility σ can be estimated using standard techniques (e.g.
+standard deviation of returns). Parameters µ1 and q can be calibrated in closed
+form, i.e. without resorting to any minimisation routine, by calculation the integral
+transform
+A1
+≡
+Z ∞
+0
+E[Xt]λe−λtdt,
+(4.1)
+A2
+≡
+Z ∞
+0
+tE[Xt]e−λtdt,
+(4.2)
+both empirically as well as analytically. Here λ is an arbitrary decay parameter
+which depends on the length of the available P& L time series. In order to calculate
+A1 and A2 analytically, we need an explicit expression for E[Xt]. Note that the
+expected P&L can be easily calculated using the fact that the jump times of the
+chain are exponentially distributed. In particular,
+E[Xt]
+=
+Z t
+0
+E[µ(ys)]ds =
+Z t
+0
+µ1P(T > s)ds
+=
+Z t
+0
+µ1e−qsds = µ1
+q (1 −e−qt).
+Substituting the result above into (4.1) and (4.2), we obtain A1 and A2 as a function
+of µ1 and q
+A1
+=
+µ1
+q + λ,
+(4.3)
+A2
+=
+µ1
+λ2
+q + 2λ
+q + λ .
+(4.4)
+
+10
+The next step is to estimate A1 and A2 empirically, which can be done from the
+backtested sample path
+A1
+≈
+Z ¯t
+0
+1
+n
+n
+X
+j=1
+˜Xj
+t λe−λt
+A2
+≈
+Z ¯t
+0
+1
+n
+n
+X
+j=1
+˜Xj
+t te−λt
+where ¯t is the cut oﬀtime for each individual backtesting. Using equations (4.3)
+and (4.4) in conjunction with the estimates above and solving for mu1 and q, we
+obtain
+q
+=
+λ(2A1 −A2λ2)
+A2λ2 −A1
+(4.5)
+µ1
+=
+λA2
+1
+A2λ2 −A1
+(4.6)
+We tested the accuracy of the calibration algorithm on simulated data and its
+dependence on the level of the calibrated parameter. In particular, we consider high
+and low levels of volatility, jump intensity and drift. The reference time horizon for
+the variable under consideration is one day, e.g. σ = 0.025 corresponds to a daily
+volatility of 2.5%. A jump intensity parameter q corresponds to an expected time
+in state 1/q. For example q = 2 corresponds to an average life in state 1 equal to
+half a day.
+The ﬁrst three columns represent the true parameters of the simulation, whereas
+the last three column are the calibrated parameters. Note that the results are fairly
+accurate even for high levels of q, i.e. for very short lived signals. Also a relatively
+high level of noise does not materially worsen the calibration output.
+Table 1: Calibration Test Results
+q
+µ1
+σ
+˜q
+˜µ1
+˜σ
+2
+0.05
+0.015
+2.0841
+0.0502
+0.0152
+2
+0.05
+0.05
+1.9526
+0.0505
+0.0505
+10
+0.025
+0.015
+9.625
+0.0261
+0.0150
+10
+0.025
+0.05
+11.87
+0.0260
+0.0493
+
+11
+5
+Calibration: n-States Model
+The calibration problem can be generalised to accommodate more complex modelling requirements. As mentioned in the previous section, it is advisable to introduce some structure in the input parameters and in particular in the inﬁnitesimal
+generator of the chain to avoid over-ﬁtting problems. Consider a n-states Markov
+chain with generator Q and initial state distribution π. One possible approach is to
+minimise the integral of the square distance between the theoretical and empirical
+expected P&L,
+F
+≡
+Z ¯t
+0
+
+E[Xt] −ˆXt
+2
+dt
+≈
+m(¯t)
+X
+j=1
+
+E[Xtj] −ˆXtj
+2
+∆j,
+where
+ˆXt ≡1
+N
+n
+X
+j=1
+˜Xj
+t
+and N is the number of backtesting. The expected P&L conditional of the initial
+state of the chain, can be calculated analytically
+E[Xt | y0 = i]
+=
+Ei
+Z t
+0
+µ(ys)ds
+
+=
+Z t
+0
+(eQsµ)ids
+=
+ Q−1  eQt −I
+
+µ
+
+i .
+The unconditional expected P&L can be derived easily calculating the weighted sum
+of the conditional P&L with respect to the initial distribution of the chain π,
+E[Xt] =
+n
+X
+i=1
+ Q−1  eQt −I
+
+µ
+
+i πi.
+If no information on the initial state on the chain is available, then one can simply
+set π = 1/n.
+
+12
+Note that if the number of state of the chain is equal to two, the inﬁnitesimal
+generator Q is not invertible. The expected P&L can be derived by substituting
+the Taylor expansion of the matrix Q exponential in (5.1) and integrating term by
+term, i.e.
+Z t
+0
+(eQsµ)ids =
+∞
+X
+j=0
+Z t
+0
+((Qs)jµ)i
+j!
+.
+6
+Numerical Examples
+In this section we shall analyse the dependency of the optimal stops on the choice
+of parameters.
+The graphs below shows the expected utility of P&L φ(a, b) for
+diﬀerent levels of a (stop loss) and b (target proﬁt). The values of a and b for which
+φ reaches its maximum are the optimal stopping levels. Both a and b are expressed
+in percentage terms. The axes go from 0 to 1 (i.e. 100%).
+In ﬁgure 1, we consider a strategy characterised by a constant and positive drift.
+The cost of exiting the position is equal to 1%. As one would expect, φ(a, b) is
+increasing in both arguments. This implies that stopping is never optimal whenever
+µ is known and positive; the positive drift will eventually prevail on the random
+noise and the trader can increasing its utility by keeping the position.
+In ﬁgure 2, the strategy starts oﬀwith a positive drift µ1 = 0.15 per unit of
+time, however the drift dies oﬀwith intensity q = 0.5, i.e. on average it take two
+units of time (e.g. two days, two hours, etc) for the chain to jump from state 1 to
+state 2. Once the chain is in state two, the strategy has completely lost its drift
+component and the P&L is driven by pure random noise. From the shape of the
+expected utility function it is clear that now a maximum exists. In ﬁgure 2, the
+signal of the strategy is quite resilient and as consequence a and b are relatively
+high. In ﬁgure 3 we consider a strategy with a higher jump intensity q = 2. The
+expected life of state one is now one-half time units. As a consequence, the optimal
+a and b are smaller in this case as the signal dies oﬀfaster and the strategy is overall
+less proﬁtable .
+Optimal stops are also dependent on the exit cost c. For highly illiquid securities
+for example, it may not be proﬁtable to enter the trade in the ﬁrst place. In ﬁgure 4
+we consider the optimal expected utility surface when the exit cost c = 15%. While
+such a high exit cost is not very common in functioning markets, it helps us highlight
+the features of the optimal solution. The maximum expected utility is reached for
+a = b = 0, i.e. it is optimal not to enter the trade.
+
+13
+In picture 5 we consider the dependency of the optimal strategy on the level of
+risk aversion of the agent. For a very low levels of γ (i.e. low risk aversion), the
+optimal a and b will be very high. For γ approaching zero, i.e. for risk neutral
+agents, it is not optimal to place stop losses or target proﬁts.
+Finally in table 6 we summarise the dependence of a and b with respect to µ1
+and q. Note ﬁrst that the optimal target proﬁt level b is greater than a in all cases
+considered. As σ increases, everything else being equal, b increases signiﬁcantly,
+while a decreases moderately. A greater b is consequence of the fact that a stronger
+initial drift enhances the expected proﬁts and thus the expected utility of the agent.
+A lower a is due to the fact that a signiﬁcantly negative P&L when the drift initial
+drift is relatively strong is likely to be due to a chain jump to state two (the pure
+noise state) and hence losses should be cut. Note also how an increase in q will move
+a and b closer to zero. Again, this is to be expected as the chain is more likely to
+jump early on from state one (positive drift) to state two (pure noise).
+Table 2: Optimal stops for diﬀerent parameters
+q
+µ1
+σ
+a
+b
+2
+0.025
+0.05
+0.07
+0.09
+2
+0.05
+0.05
+0.06
+0.14
+2
+0.1
+0.05
+0.05
+0.21
+10
+0.025
+0.05
+0.0325
+0.04
+10
+0.2
+0.05
+0.0275
+0.1
+
+14
+Constant
+drift
+-
+µ
+=
+0.15,
+σ
+=
+0.25,
+c
+=
+0.01.
+Figure 1: Optimal stop surface with constant and known µ. It is not optimal to
+stop when the drift is constant and positive. and positive.
+
+15
+Signal with slow decay - µ1
+= 0.15, µ(2) = 0, q = 0.5, c = 0.01.
+Figure 2: The P&L starts oﬀwith a drift of µ1 = 0.15 and takes on average two
+units of time to jump to the state with zero drift. Non trivial optimal stops exist in
+this case
+
+16
+Signal with fast decay - µ(1) = 0.15, µ(2) = 0, σ = 0.25, q = 2, c = 0.01
+Figure 3: The P&L starts oﬀwith a drift of µ1 = 0.15 and takes on average one
+half unit of time to jump to the state with zero drift. The chain spends less time
+on average in the state with positive drift and thus the optimal stops are closer to
+zero.
+
+17
+Illiquid Security - µ(1) = 0.15, µ(2) = 0, σ = 0.25, q = 0.5, c = 0.15
+Figure 4: When transaction costs are relatively high, it may be optimal not to enter
+the position in the ﬁrst place.
+
+18
+Low risk aversion - µ(1) = 0.15, µ(2) = 0, σ = 0.25, q = 0.5, c = 0.15, γ = 0.05
+Figure 5: The existence of optimal stops is closely linked to the risk aversion of the
+agents. It is optimal for the risk neutral agent not to place any trading stop.
+7
+Conclusions and further research
+We have shown how to derive optimal ﬁxed stops when the P&L of a position is
+modelled by a continuous Markov modulated diﬀusion. Practitioners make wide
+use of other types of stops and notably trailing stops, i.e.
+a position is exited
+when the drop from the running maximum P& L reaches a pre-speciﬁed levels.
+Optimal trailing stops were derived by Imkeller and Rogers [?]for P&L processes with
+constant drift. Trailing stops for Markov modulated diﬀusions would be a natural
+extension of the work presented in this paper and will be the subject of a future
+research paper. For speciﬁc applications, for example spread trading, mean reverting
+
+19
+dynamics for the P& L may be appropriate and may be worthwhile investigating.
+References
+[1] Alfonsi, A. and A. Schied (2010). Optimal Trade Execution and Absence of
+Price Manipulations in Limit Order Book Models. SIAM Journal on Financial
+Mathematics, Vol. 1, No. 1, pp. 490-522
+[2] Alfonsi, A., Schied, A., and A. Slynko (2012). Order Book Resilience, Price
+Manipulation, and the Positive Portfolio Problem. SIAM Journal on Financial
+Mathematics, Vol. 3, No. 1, pp. 511-533
+[3] Almgren, R., Chriss, N. (1999). Value under liquidation. Risk, Dec. 1999.
+[4] Almgren, R., Chriss, N. (2000). Optimal execution of portfolio transactions. J.
+Risk 3, 5-39 (2000).
+[5] Almgren, R. (2012). Optimal Trading with Stochastic Liquidity and Volatility.
+SIAM Journal on Financial Mathematics, Vol. 3, No. 1, pp. 163-181
+[6] Di Graziano and Rogers (2005) Barrier option pricing for assets with Markovmodulated dividends Journal of Computational Finance, 9, 75-87
+[7] Brigo, D., and Di Graziano, G. (2013). Optimal execution comparison across
+risks and dynamics, with solutions for displaced diﬀusions. Available at
+http://arxiv.org/abs/1304.2942 and http://ssrn.com/abstract=2247951
+[8] Gatheral, J., and Schied, A. (2011). Optimal Trade Execution under Geometric
+Brownian Motion in the Almgren and Chriss Framework. International Journal
+of Theoretical and Applied Finance, Vol. 14, No. 3, pp. 353–368
+[9] Forsyth,
+P.
+(2009).
+A
+Hamilton
+Jacobi
+Bellman
+approach
+to
+optimal
+trade
+execution.
+Preprint,
+available
+at
+http://www.cs.uwaterloo.ca/∼paforsyt/optimal trade.pdf
+[10] Forsyth, P., Kennedy J., Tse T.S., WindcliﬀH. (2009). Optimal Trade Execution: A Mean-Quadratic-Variation Approach. Preprint (2009) available at
+http://www.cs.uwaterloo.ca/ paforsyt/quad trade.pdf
+[11] Imkeller and Rogers (2011) Trading to Stop Working Paper, University of Cambridge
+
+20
+[12] Schied, A. (2012). Robust Strategies for Optimal Order Execution in the
+Almgren–Chriss Framework. Working Paper.

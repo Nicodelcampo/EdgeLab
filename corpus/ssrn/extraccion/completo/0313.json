@@ -1,0 +1,38 @@
+{
+  "doc_id": 313,
+  "titulo": "Statistical Arbitrage and Information Flow in an Electricity Balancing Market",
+  "resumen_operativo": "Analiza los efectos operacionales de participantes respondiendo a incentivos de precios para posiciones de spillage y shortage en un mercado de balance eléctrico con precio único (single price settlement). Modela decisiones óptimas en tiempo real de generadores y especuladores basadas en pronósticos de la distribución condicional del desbalance del sistema. Aplicado al mercado de balance austriaco dentro del mercado integrado Alemania/Austria. Concluye que permitir flexibilidad intradiaria adicional de agentes físicos o no-físicos beneficia a los agentes, al operador del sistema y a la eficiencia de mercado.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "Opportunistic Imbalancing (Statistical Arbitrage in Power Markets)",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia donde participantes anticipan la dirección del desbalance del sistema y toman posiciones contrarias: si el sistema está corto (precio real-time > forward), un generador spillea potencia extra para vender al precio de desbalance más alto. Reduce necesidades de balance del operador.",
+      "relaciones": [{"tipo": "REQUIERE", "objeto": "Single Price Settlement"}, {"tipo": "MITIGA", "objeto": "System Imbalance"}],
+      "cita_textual": "Market participants that correctly anticipate the direction of imbalance for the whole system can profit by being out of balance in the opposite direction."
+    },
+    {
+      "nombre": "Single vs Dual Price Settlement",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Single price: un solo precio de liquidación para desbalances. Dual price: precios distintos para compra y venta del operador. Dual price desincentiva el imbalancing oportunista porque siempre es mejor transar en forward; single price es precondición para el arbitraje estadístico en balancing.",
+      "relaciones": [{"tipo": "APLICA_A", "objeto": "Opportunistic Imbalancing"}, {"tipo": "SE_OPONE_A", "objeto": "Dual Price Settlement"}],
+      "cita_textual": "The first pre-condition to attract this statistical arbitrage is evidently a single price settlement process."
+    },
+    {
+      "nombre": "Gate Closure",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Punto temporal antes de la entrega física donde el trading bilateral voluntario cesa y el operador del sistema se vuelve contraparte de cualquier transacción en tiempo real subsecuente. Marca la frontera entre forward markets y el balancing market.",
+      "relaciones": [{"tipo": "REQUIERE", "objeto": "Balancing Market"}, {"tipo": "SE_OPONE_A", "objeto": "Continuous Trading"}],
+      "cita_textual": "The point ('gate closure') at which voluntary bilateral forward trading between producers and consumers stops and the system operator becomes counter-party to any further real-time trades."
+    },
+    {
+      "nombre": "Conditional Distribution Forecasting for Imbalance",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Pronóstico de la distribución condicional del desbalance del sistema usado por agentes para decidir posiciones óptimas de arbitraje. La incertidumbre proviene de errores de pronóstico eólico y solar que aumentan los desbalances, creando más oportunidades de arbitraje.",
+      "relaciones": [{"tipo": "REQUIERE", "objeto": "Wind and Solar Forecast Errors"}, {"tipo": "APLICA_A", "objeto": "Real-Time Trading Decisions"}],
+      "cita_textual": "We consider optimal real-time decisions by generators and speculators based upon forecasts of the conditional distribution of the system imbalance."
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "Análisis de mercados de balance en tiempo real con decisiones óptimas intradiarias; el framework de pronóstico condicional y respuesta a señales de precio es directamente intradiario."}
+}

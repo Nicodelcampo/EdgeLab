@@ -1,0 +1,79 @@
+{
+  "doc_id": 76,
+  "titulo": "Capability Satisficing in High Frequency Trading",
+  "resumen_operativo": "El paper propone que las firmas de High Frequency Trading (HFT) no optimizan su utilidad (como asume la teoría financiera tradicional) ni simplemente maximizan beneficios, sino que son \"capability satisficers\" bajo la teoría de racionalidad limitada (bounded rationality) y la hipótesis de mercados adaptativos (AMH). Utilizan el Capability Ratio ajustado para HFT para evaluar la fiabilidad de las ganancias netas frente al riesgo de pérdidas sobre un marco temporal definido por sus costos fijos y tolerancia al riesgo. A través de entrevistas cualitativas con profesionales del HFT, el autor halla evidencia de que operan buscando estrategias que superen un nivel de aspiración mediante iteraciones de prueba en vivo (probing and learning), debido a la imposibilidad de optimización teórica ex-ante frente a la dinámica del mercado.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "capability satisficing",
+      "tipo": "teoria",
+      "definicion_en_contexto": "Comportamiento donde las firmas asignan capital a estrategias de trading que alcanzan un objetivo o nivel de aspiración satisfactorio, en lugar de buscar el óptimo teórico, a causa de la racionalidad limitada y la complejidad del entorno.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "adaptive markets hypothesis"},
+        {"tipo": "SE_OPONE_A", "objeto": "utility maximization"}
+      ],
+      "cita_textual": "these firms are capability satisficers. They allocate to strategies that achieve some target, goal, or aspiration level, or simply that are “good enough.”"
+    },
+    {
+      "nombre": "Capability ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Métrica utilizada para evaluar la capacidad de una estrategia HFT para generar ganancias netas de manera confiable, calculada como el exceso de ganancia esperada sobre un costo fijo respecto a la volatilidad y riesgo tolerado.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "success probability"},
+        {"tipo": "MEJORA_A", "objeto": "Sharpe ratio"}
+      ],
+      "cita_textual": "Capability theory models Proposition 1 by conveying the ability of a strategy to generate net profits πnet over the firms’ acceptable w with sufficient reliability."
+    },
+    {
+      "nombre": "Cooper ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Ratio que combina las preferencias idiosincrásicas de tiempo y de riesgo de la firma, el cual multiplicado por el Sharpe ratio (SRHFT) define el Capability ratio.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Capability ratio"}
+      ],
+      "cita_textual": "The CR combines the firm’s idiosyncratic time and risk preferences into a single measure."
+    },
+    {
+      "nombre": "probing and learning",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Proceso heurístico de experimentación usado en entornos ambiguos, en el que se lanza una estrategia, se aprende de los resultados (validated learning) y se modifica iterativamente.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "probationary trading"}
+      ],
+      "cita_textual": "probing and learning is a process used in ambiguous environments where firms “launch [a strategy] in the market, learn from failures, and modify for future attempts"
+    },
+    {
+      "nombre": "probationary trading",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Operativa en vivo con escala y riesgo muy limitados, ejecutada con el fin de obtener la verdadera distribución empírica de resultados de una estrategia en reemplazo de un backtest poco confiable.",
+      "relaciones": [
+        {"tipo": "SUSTITUYE_A", "objeto": "backtesting"}
+      ],
+      "cita_textual": "they appear to move on to (what I call) the concept of “probationary trading” (i.e. trading with limited scale or risk) in order to form the reference distribution ex post."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "El Capability Ratio (Cpl) es matemáticamente una transformación afín del Sharpe Ratio (multiplicado por el Cooper Ratio), por lo que la maximización de la capacidad es analíticamente consistente con la maximización de utilidad esperada y sirve para conciliar la teoría neoclásica con las finanzas conductuales.",
+      "mercado": "Teórico / Simulación numérica",
+      "periodo": "N/A",
+      "magnitud": "N/A",
+      "condiciones": "Demostración matemática que asume normalidad a través del teorema central del límite sobre la suma muestral del beneficio de los trades.",
+      "robustez": "alta",
+      "cita_textual": "the Cpl is an affine transformation of the SRHFT and is therefore “precisely consistent” with expected utility [see Pulley 1981]."
+    },
+    {
+      "afirmacion": "En la práctica, las firmas de HFT evalúan y deciden la asignación de capital a estrategias buscando satisfacer un umbral de rentabilidad mínima, recurriendo a validaciones empíricas en vivo (probing and learning) debido a la futilidad del backtesting en un entorno dinámico.",
+      "mercado": "HFT firms (US, Chicago)",
+      "periodo": "2016",
+      "magnitud": "Consenso cualitativo en base a entrevistas con 7 profesionales de 7 firmas distintas y citas de literatura especializada.",
+      "condiciones": "Metodología cualitativa de Gioia para construir dimensiones teóricas a partir de respuestas de entrevistas semiestructuradas.",
+      "robustez": "media",
+      "cita_textual": "While the sample is small, common concepts and themes across firms appear to support the aggregate dimension that (rather than optimizing) these firms are capability satisficers."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "El paper carece de alfa cuantitativo aplicable, pero valida teórica y prácticamente el abandono de la sobre-optimización del backtest en favor del 'probationary trading' o experimentación a muy bajo tamaño. Para el ecosistema ES, aporta el marco de 'Capability Ratio' evaluando si la suma de retornos supera los umbrales estadísticos de costos operativos en el marco temporal esperado de las operaciones intradía, proveyendo un mejor estimador que el Sharpe Ratio puro."
+  }
+}

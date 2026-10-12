@@ -1,0 +1,52 @@
+{
+  "doc_id": 74,
+  "titulo": "Business Analytics in Quantitative Trading: Enhancing Strategic Decision-Making with KPIs",
+  "resumen_operativo": "El paper propone un marco conceptual (Business Analytics Layer) para evaluar estrategias de trading cuantitativo más allá de las métricas tradicionales de alpha (como el ratio de Sharpe). Introduce indicadores clave de rendimiento (KPIs) operativos y de negocio, como el ROI, el turnover ratio, el drawdown y un puntaje de KPI compuesto (Composite KPI Score), permitiendo a los analistas evaluar la eficiencia de capital y alinear los objetivos del trading con los corporativos. Presenta un ejemplo de aplicación sintético comparando estrategias y visualizando resultados mediante dashboards.",
+  "calidad_paper": "baja",
+  "conceptos": [
+    {
+      "nombre": "Business Analytics Layer",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Capa adicional en la evaluación de estrategias cuantitativas enfocada en el seguimiento de métricas operativas y de negocio (KPIs) para alinear las metas de la mesa de trading con los objetivos corporativos de la empresa.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Composite KPI Score"},
+        {"tipo": "USA", "objeto": "ROI"},
+        {"tipo": "USA", "objeto": "Turnover Ratio"}
+      ],
+      "cita_textual": "The Business Analytics Layer introduces: - ROI: Return on capital deployed - Turnover Ratio: Trading frequency - Drawdown: Risk evaluation - Profit Factor - Custom KPI Score"
+    },
+    {
+      "nombre": "Composite KPI Score",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Índice compuesto y ponderado que integra distintas métricas de negocio como el ROI, el Profit Factor (PF) y el Drawdown, utilizado para clasificar y comparar el rendimiento global de las estrategias de trading.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Business Analytics Layer"}
+      ],
+      "cita_textual": "Composite KPI Score = α1*ROI + α2*PF - α3*Drawdown (α's are custom weights)"
+    },
+    {
+      "nombre": "Turnover Ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Métrica que evalúa la frecuencia de operación de la estrategia cuantificando la relación entre la cantidad o volumen total de operaciones y el valor promedio del portafolio.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "operational efficiency"}
+      ],
+      "cita_textual": "Turnover Ratio = |Total Trades| / Avg Portfolio Value"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "La evaluación multidimensional con un marco de negocio permite distinguir entre una estrategia con el mayor retorno ajustado al riesgo y otra con mejor eficiencia de capital, demostrando que optimizar solo el Sharpe Ratio no necesariamente maximiza los objetivos de negocio corporativos.",
+      "mercado": "Datos sintéticos",
+      "periodo": "No aplicable",
+      "magnitud": "Cualitativa",
+      "condiciones": "Backtesting en Python de 3 estrategias (Mean Reversion, Momentum, ML-based ensemble) usando datos simulados.",
+      "robustez": "baja",
+      "cita_textual": "Strategy C (ML model) had the highest risk-adjusted return, but Strategy A had better capital efficiency."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "El artículo carece de rigor empírico, señales predictivas o modelos de microestructura reales, ya que es una lectura conceptual de nivel básico introductorio. Su único aporte aplicable para trading intradía es la recomendación metodológica de diseñar un 'Composite KPI Score' que penalice el alto turnover y el drawdown para la selección final de estrategias en producción."
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "doc_id": 380,
+  "titulo": "A Cheat Sheet for Algorithmic Trading of Investment Portfolios",
+  "resumen_operativo": "Notas de trabajo que desarrollan el marco algebraico para el trading diario de portafolios de inversión según una asignación estratégica predefinida. Cubre cuentas long-only y long/short, uso de apalancamiento e impacto de costos de trading. Deriva sistemas de ecuaciones lineales para calcular la situación en tiempo real de un portafolio apalancado con restricciones de margen, margin calls y límites de riesgo. Basado en álgebra lineal elemental, sin requerir experiencia previa en finanzas.",
+  "calidad_paper": "baja",
+  "conceptos": [
+    {"nombre": "Margin Account", "tipo": "concepto", "definicion_en_contexto": "Cuenta de corretaje que permite usar margen para apalancar posiciones; regulada por Regulation T en EE.UU. con margen típico de 50% para cuentas individuales.", "relaciones": [{"tipo": "REQUIERE", "objeto": "Leverage"}], "cita_textual": "A margin account is brokerage account that is allowed to use margin in order to leverage its investment positions."},
+    {"nombre": "Strategic Asset Allocation", "tipo": "concepto", "definicion_en_contexto": "Asignación estratégica predefinida que especifica qué valores comerciar, peso objetivo post-trading y exposición (long/short) de cada valor en el portafolio.", "relaciones": [{"tipo": "REQUIERE", "objeto": "Algorithmic Trading"}], "cita_textual": "The output of the strategic allocation consists of a list of securities to trade, the target weight of each security in the portfolio post trading, as well as the exposure of each security."},
+    {"nombre": "Regulation T (Reg T)", "tipo": "concepto", "definicion_en_contexto": "Regulación estadounidense que controla el uso de margen para cuentas individuales con límite típico de 50%, permitiendo controlar un nocional del doble del valor neto.", "relaciones": [{"tipo": "APLICA_A", "objeto": "Margin Account"}], "cita_textual": "In the United States, brokerages will usually authorize margin on a non-retirement account invested in equities of up to Reg. T margin of 50%."},
+    {"nombre": "Notional Value", "tipo": "metrica", "definicion_en_contexto": "Valor nocional E = A + L (net asset value + leverage), que representa el capital total controlado por la cuenta.", "relaciones": [{"tipo": "MIDE", "objeto": "Leverage"}], "cita_textual": "By definition, the notional investment equals the sum of the net asset value and the borrowed amount."},
+    {"nombre": "Buying Power", "tipo": "metrica", "definicion_en_contexto": "Poder de compra = $2,000 para una cuenta de $1,000 con margen 50%, representando el nocional máximo desplegable.", "relaciones": [{"tipo": "MIDE", "objeto": "Leverage"}], "cita_textual": "An account with 50% margin can deploy a notional amount equal to twice its net asset value."}
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {"nivel": "baja", "nota": "Marco algebraico para implementación de portafolios; notas introductorias sin aplicación específica a trading intradía."}
+}

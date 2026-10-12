@@ -1,0 +1,5199 @@
+Continuous-time optimal execution and utility-based statistical arbitrage
+in a Markovian environment
+Masaaki FUKASAWA§†, Masamitsu OHNISHI$ †, and Makoto SHIMOSHIMIZU¶
+§Graduate School of Engineering Science, The University of Osaka, Osaka, 560–8531, Japan
+$ Faculty of Informatics, Yamato University, Osaka, 564–0082, Japan
+†Center for Mathematical Modeling and Data Science, The University of Osaka, Osaka,
+560–8531, Japan
+¶Department of Industrial and Systems Engineering, Tokyo University of Science, Chiba,
+278–0022, Japan
+March 7, 2026
+Abstract
+This paper examines a continuous-time execution problem for a risk-averse large trader in
+the presence of temporary, permanent, and transient market impacts as well as an exogenous,
+stochastic factor that aﬀects the ﬁnancial asset price. The stochastic factor, which we refer to
+as the Markovian environment, is described by a generalized Ornstein–Uhlenbeck (OU) process.
+The problem is formulated as a continuous-time stochastic control problem over a ﬁnite horizon.
+By analyzing the associated Hamilton–Jacobi–Bellman (HJB) equation, we derive an optimal
+execution strategy characterized by an aﬃne function of the state variables with time-dependent
+coeﬃcients. The time-dependent coeﬃcients are determined by a solution to a system of numerically tractable ordinary diﬀerential equations (ODEs) with terminal conditions, consisting
+of (i) a matrix Riccati diﬀerential equation (MRDE), (ii) a vector-valued linear ODE, and (iii) a
+one-dimensional ODE. Under mild conditions, we show that the MRDE admits a unique solution
+and establish a veriﬁcation theorem. Simulation-based numerical experiments illustrate that the
+Markovian environment signiﬁcantly inﬂuences the optimal execution strategy. Speciﬁcally, we
+numerically observe the possibility of a utility-based statistical arbitrage via a round-trip trading.
+Keywords: Optimal execution; Markovian environment; Transient market impact; HJB equation; Matrix Riccati diﬀerential equation; Utility-based statistical arbitrage
+JEL Classiﬁcation: C73; C02; C61; G11
+AMS subject classiﬁcation: 49J15; 93E20; 91G80
+1
+Introduction
+Optimal execution problems, ﬁrst investigated in the seminal works of Bertsimas and Lo [7] and
+Almgren and Chriss [3], have attracted widespread interest over the past two decades. In ﬁnancial
+markets, an institutional trader or a large trader (e.g., pension funds, life insurance companies)
+executes large orders, moving the ﬁnancial asset price in an unfavorable direction.
+The eﬀect
+caused by the large trader on the price is called market impact (or price impact). The large trader
+is then required to manage two types of risk: the liquidity risk arising from the large trader’s order
+submission and the risk of future price ﬂuctuation. The problems faced by large traders are referred
+to as execution problems.
+Readers may refer to, e.g., Cartea et al. [13], Gu´eant [38], Laruelle
+1
+
+and Lehalle [44], and Shimoshimizu [63] for a wide range of diﬀerent conﬁgurations of execution
+problems.
+As for the market impacts, the temporary, permanent, and transient market impacts are among
+the most discussed types. A temporary market impact refers to the part of the market impact
+that fades away immediately after the execution, while a permanent market impact is another part
+of the market impact that remains in the rest of the trading window. In contrast, the transient
+market impact, recognized as a striking aspect of market impacts, is a type of market impact that
+decays over the trading window and is empirically conﬁrmed (Bacry et al. [5]; Bouchaud et al. [9];
+Gatheral [33]). The transiency of the market impact indicates that a shortage of liquidity caused by
+a large trader’s execution results in an imbalance between buy and sell orders in a ﬁnancial market.
+There is considerable literature on execution problems in the presence of transient market impact
+(e.g., Gatheral et al. [35]; Kuno and Ohnishi [42]; Kuno et al. [43]; Schied and Zhang [61]; Tsoukalas
+et al. [67]; Luo and Schied [46]; Ohnishi and Shimoshimizu [53, 54, 55, 56]; Fukasawa et al. [30, 31];
+Neuman and Voß [50, 51]; Cordoni and Lillo [20, 21]; Ackermann et al. [1], to mention only a few).
+In addition to market impacts, other exogenous, stochastic factors often have a detrimental
+eﬀect on the market price of a ﬁnancial asset. These factors capture environmental uncertainty. For
+example, existing empirical and theoretical studies demonstrate that the order ﬂow of small traders
+incurs a price impact (Potters and Bouchaud [58]; Cartea and Jaimungal [11, 12]) and inﬂuences
+an (optimal) execution strategy (Cartea and Jaimungal [11, 12]; Fukasawa et al. [30, 31]; Ohnishi
+and Shimoshimizu [54, 55, 56]).1 Another example of such an exogenous factor is the order book
+imbalance (OBI), which refers to the diﬀerence between the volume at the best bid and that at
+the best ask, divided by its sum, and has a mean-reversion property (Lehalle and Neuman [45]).
+Existing studies show that OBI causes price ﬂuctuation (e.g., Cont et al. [18]; Stoikov [65]) and thus
+inﬂuences an (optimal) execution strategy (Lehalle and Neuman [45]). These examples indicate that
+an exogenous, stochastic factor can aﬀect the ﬁnancial asset price and consequently inﬂuence the
+trade performance of a large trader.
+Based on the background described so far, we examine an optimal execution problem for a riskaverse large trader in the presence of market impacts and an exogenous, stochastic factor, both of
+which aﬀect the ﬁnancial asset price. The large trader is assumed to have a constant absolute riskaversion (CARA) von Neumann–Morgenstern (vN-M) utility function. We consider a generalized
+market impact model by assuming that temporary, permanent, and transient market impacts exist
+and an exogenous, stochastic factor modeled by a generalized Ornstein–Uhlenbeck (OU) process.
+The main objective of this paper is to analyze how a risk-averse large trader, taking into account the
+exogenous, stochastic factor, optimally executes her orders. In this paper, we refer to the exogenous,
+stochastic factor as the Markovian environment.
+By formulating the execution problem as a stochastic control problem and examining the corresponding Hamilton–Jacobi–Bellman (HJB) equation, we explicitly obtain an optimal execution
+strategy as an aﬃne function of the state variables, including the Markovian environment. The
+veriﬁcation theorem is also provided by restricting the class of admissible strategies. Our numerical experiments also reveal that the Markovian environment signiﬁcantly inﬂuences the optimal
+execution strategy. For example, if environmental uncertainty is high, the large trader accelerates
+her execution to avoid the risk of future price ﬂuctuation. A similar behavior is conﬁrmed in the
+case of high terminal execution cost per unit because the large trader avoids paying a high terminal
+cost. We also ﬁnd that if a risk-averse large trader has an initial inventory at some level, there is
+a possibility of a utility-based statistical arbitrage via a round-trip trading, under which the large
+trader can increase her expected utility.
+This paper contributes to the existing literature from ﬁnancial viewpoints as follows. First, we
+explicitly derive an optimal execution strategy that incorporates the Markovian environment. The
+explicit execution strategy implies that a large trader should incorporate a short-term predictive
+feature (e.g., OBI) into her execution strategy. Furthermore, our numerical examples quantify how
+1Some studies examine execution problems with endogenous order ﬂow inﬂuenced by a large trader’s order submission (e.g., Chen et al. [16]).
+2
+
+environmental uncertainty, captured by the diﬀusion coeﬃcient of the Markovian environment, inﬂuences the optimal execution strategy. We observe that the optimal execution strategy becomes
+adaptive to the diﬀerent realized values of the Markovian environment or environmental uncertainty. Besides, we deﬁne a new concept of statistical arbitrage, utility-based statistical arbitrage.
+Intuitively, a ﬁnancial market admits a utility-based statistical arbitrage for a large trader with
+CARA-type utility if there exists a trading strategy under which the sign of the initial inventory
+and that of a trading speed at some time diﬀer, and by which the large trader can increase her
+expected utility. Deﬁning a notion of statistical arbitrage from an expected utility maximization is
+important from the following viewpoints: (i) the notion is often considered in the framework of an
+expected cost minimization in the literature; (ii) an expected utility maximization and an expected
+cost minimization are essentially diﬀerent. Much of the existing literature has focused on an optimal execution problem from the viewpoint of expected cost minimization with running inventory
+costs and analyzed the existence of transaction-triggered price manipulation or (statistical) arbitrage. Unlike transaction-triggered price manipulation deﬁned in a cost-minimization framework,
+our notion is rooted in expected utility maximization. It is therefore valuable to provide a rigorous
+deﬁnition of utility-based statistical arbitrage.
+Several papers are closely related to our paper, and we need to clarify the diﬀerences. Cartea
+and Jaimungal [12] study an optimal execution problem with the eﬀect of the order-ﬂow from other
+(small) traders under a temporary and permanent market impact model. Lehalle and Neuman [45]
+then analyze a similar problem with transient market impacts. Neuman and Voß [50, 51] also extend these studies and examine an optimal execution problem with both transient and temporary
+market impacts. Our model diﬀers from these studies in several aspects. First, we consider an
+expected exponential-utility maximization problem. However, the joint eﬀect of temporary, permanent, and transient market impacts and an exogenous, stochastic factor under a CARA utility
+criterion has not been fully understood. Second, we include a permanent impact and a transient
+impact simultaneously, although most literature considers one of the market impacts. Moreover,
+we tackle a relevant issue of proving the existence and uniqueness of the solution to a diﬀerential
+equation arising from our optimal execution problem. Some studies (e.g., Ma et al. [47], Bergault
+et al. [8]) analyze this point, which arises from an execution problem. Due to the permanent and
+transient market impacts in our problem, proving the existence of a unique solution to the ordinary
+diﬀerential equation (ODE) involving the HJB equation becomes diﬃcult.
+From a mathematical viewpoint, we contribute to the literature by overcoming this diﬃculty.
+Our theorem (Theorem 3.1) shows a suﬃcient condition under which a unique solution to a matrix
+Riccati diﬀerential equation (MRDE) arising from our stochastic control problem exists. Speciﬁcally,
+we consider the following type of MRDE:
+˙Ωt = −Ω⊤
+t B −B⊤Ωt −C + Ω⊤
+t AΩt,
+(1)
+where Ωt is a matrix-valued function of time t ∈[0, T] with some terminal condition ΩT and
+A is neither positive nor negative semideﬁnite.
+Due to this indeﬁniteness, classical results for
+MRDEs are not directly applicable to the above equation. Our approach to proving the existence
+and uniqueness of a solution to the MRDE is based on a combination of the comparison theorem
+originally developed by Freiling and Jank [28] and an analysis of a lower bound of the optimal value
+function. This approach would furnish a basis for proving the existence and uniqueness of other
+MRDEs that arise from execution problems or other stochastic control problems.
+This paper proceeds as follows. In Section 2, we construct a market model in which the generalized market impact is characterized. We solve an expected utility maximization problem for
+a risk-averse large trader and show an optimal execution strategy, an existence and uniqueness
+theorem regarding an MRDE, and a veriﬁcation theorem in Section 3. Section 4 is devoted to
+conducting numerical experiments to see how the Markovian environment inﬂuences the optimal
+execution strategy. Finally, Section 5 concludes. All proofs are shown in the appendices.
+3
+
+Notation
+R+ (R++, respectively) denotes the set of non-negative (strictly positive) real numbers. We represent
+the set of complex numbers as C. Let K be either R or C. For any positive integers n, m ∈{1, 2, . . .},
+we use the notation Kn to denote the set of all n-dimensional K-valued column vectors. For any
+v = (v1, . . . , vn) ∈Kn, ∥v∥:=
+pPn
+i=1|vi|2 denotes the norm of the vector v. As for the class
+of matrices, we use Mn,m(K) to express the set of all n × m K-valued matrices. In particular,
+Mn(K) := Mn,n(K) is the set of all n-order K-valued square matrices. The set of n-order K-valued
+symmetric matrices is denoted by Sn(K). We use the notation Sn
+++(K) (Sn
++(K), respectively) to
+denote the set of n-order K-valued positive deﬁnite (positive semideﬁnite) matrices. In ∈Sn
+++(K)
+denotes the n-order identity matrix. For an n×m K-valued matrix or vector A, we let A⊤stand for
+the transpose of the matrix or vector. In addition, for any n-order square matrix A ∈Mn(R), tr(A)
+is the trace of A. Finally, for any A1, A2 ∈Sn(R), we write A1 ≥A2 if and only if A1 −A2 ∈Sn
++.
+This inequality deﬁnes the natural order on symmetric matrices.
+2
+Market Model
+We assume that in a ﬁnancial market, a risk-averse large trader is obligated to purchase Q ∈R
+volumes of a ﬁnancial asset over the trading horizon [0, T]. Let Qt ∈R be the cumulative purchase
+up to time t ∈[0, T] of the large trader. Then, the number of shares remaining to be purchased at
+time t ∈[0, T] is described as
+Qt = Q −Qt,
+(2)
+with the initial condition: Q0 = Q. We consider a continuous trading strategy:
+dQt = ˙Qtdt.
+(3)
+It is assumed that Qt is continuously diﬀerentiable in time t ∈[0, T].
+The positive (negative,
+respectively) values of ˙Qt correspond to the acquisition (liquidation, respectively) of the risky asset.
+This leads to a similar setup for a selling problem.
+The execution price of an asset, denoted as bPt, is assumed to follow a linear market impact model
+(e.g., Bertsimas and Lo [7]; Almgren and Chriss [3]; Gatheral et al. [35]; Obizhaeva and Wang [52];
+Kuno and Ohnishi [42]; Cartea and Jaimungal [12, 11]; Kuno et al. [43]; Lehalle and Neuman [45];
+Neuman and Voß [50, 51]; Ohnishi and Shimoshimizu [54, 55, 56]; Fukasawa et al. [30, 31]; Cont et
+al. [19]; Chen et al. [17]):
+bPt = Pt + λt ˙Qt,
+(4)
+where Pt ∈R represents the market price of the asset at time t ∈[0, T] and λt ∈R++ is a market
+impact coeﬃcient at time t ∈[0, T]. In the remainder of this paper, we assume that the buy- and
+sell-trades of the large trader induce the same (instantaneous) market impact, although it would be
+diﬀerent in the real market. We can, however, justify this assumption from the statistical analysis
+of market data shown by, for instance, Cartea and Jaimungal [12, 11]. The large trader’s wealth
+process at time t ∈[0, T], denoted by Wt, evolves as
+dWt = −bPtdQt = −bPt ˙Qtdt = −
+
+Pt + λt ˙Qt
+
+˙Qtdt.
+(5)
+Besides the above (instantaneous) market impact, we consider the permanent and transient
+parts of the market impact. The residual eﬀect of past market impacts is deﬁned as
+Rt = e−ρtR0 +
+Z t
+0
+e−ρ(t−s)αsλs ˙Qsds,
+(6)
+4
+
+or
+dRt = −ρRtdt + αtλt ˙Qtdt,
+(7)
+where αt ∈R+ is the deterministic coeﬃcient of the linear temporary market impact. We deﬁne
+this transient market impact by employing the exponential decay kernel G: [0, T] →R+:
+G(t) := e−ρt,
+(8)
+where ρ ∈R++ stands for the deterministic resilience speed.2 This residual eﬀect captures the
+gradual decay of past temporary market impacts over the trading window [0, T]. R0 is assumed to
+be zero in the following analysis. This assumption is natural since the trader has no impact before
+trading. Note that αtλt ˙Qt represents the temporary market impact caused by the large trader.
+In our model, the market price is decomposed as
+Pt = P f
+t + Rt,
+(9)
+where P f
+t for t ∈[0, T] stands for what we call the fundamental price of the ﬁnancial asset. This
+decomposition is motivated by the deﬁnition of the transient market impact. The transient market
+impact is the discounted sum of the past temporary market impact. Thus, the transient market
+impact can be deemed not to inﬂuence the fundamental part of the market price.
+We deﬁne the dynamics of the fundamental price as follows:
+dP f
+t =
+
+βtλt ˙Qt + It
+
+dt + dZt.
+(10)
+Here βtλt ˙Qt represents the permanent market impact caused by the large trader. Contrary to the
+transient market impact, the permanent market impact inﬂuences the market price over the course
+of the trading horizon by deﬁnition, which in turn suggests that the permanent market impact
+directly aﬀects the fundamental part of the market price. Zt represents the eﬀect of some public
+news/information about the economic situation on the market price (or quoted price).
+Adding
+to these two factors, we assume that what we deﬁne as Markovian environment It aﬀects the
+fundamental price of the ﬁnancial asset.
+Remark 2.1 (Separability of public news/information and Markovian environment). Readers may
+consider that it would be possible to stack the two components, It and Zt, as a single factor. We,
+however, formulate a ﬁnancial asset price with the two factors to clarify the relationship between
+existing studies and our study. Existing studies (e.g., Cartea and Jaimungal [12, 11]; Lehalle and
+Neuman [45]; Donnelly and Lorig [23]; Fouque et al. [26]; Neuman and Voß [50, 51]; Ohnishi and
+Shimoshimizu [56]; Cont et al. [19]) theoretically assume that the eﬀects of public news/information
+and Markovian environment are separable. Our model also builds upon this assumption, by which
+we can compare our model with existing literature and highlight the importance of considering the
+presence of an exogenous, stochastic factor when analyzing execution problems.
+Remark 2.2 (Interpretation of Markovian environment). The interpretation of the Markovian
+environment can vary and needs to be considered carefully. {It}0≤t≤T represents some ‘state’ of
+the ﬁnancial market or trading system of the exchange at time t. In our model, the Markovian
+environment aﬀects, in a linear functional form, the drift term of the price process of the ﬁnancial
+asset. We assume that it follows an Ornstein-Uhlenbeck type, Gaussian, and Markovian process.
+To illustrate the possible interpretation of the Markovian environment, we show some examples in
+the following.
+2We assume the constant resilience speed for notational simplicity. However, the following proposition (Proposition 3.1) holds with time-dependent and deterministic resilience speed, i.e., ρt for all t ∈[0, T].
+5
+
+• A classic and important example would be the continuous-time dynamic model version of
+the single-factor model of asset price returns, motivated by the Capital Asset Pricing Model
+(CAPM), a static equilibrium model of a ﬁnancial asset market. Originating from the discretetime CAPM (by, e.g., Sharpe [62]), the continuous-time CAPM relation is investigated by, for
+instance, Merton [48, 49], and implicitly by Cox et al. [22]. In our model, the rate of return
+on the market portfolio or its proxy, the asset market index, represents the state of the asset
+market.
+• We can interpret the Markovian environment as the drift of the ﬁnancial asset. From this
+viewpoint, Markovian environment can represent the ﬁnancial asset return with a meanreverting property. Various studies investigate the eﬀect of the mean-reversion property in
+the stock return on ﬁnancial activity (e.g., Wachter [68]; Hillebrand [39]; Gao et al. [32]).
+Theoretical studies also have analyzed a trade execution strategy that exploits predictable
+factors (e.g., Gˆarleanu and Pedersen [36, 37]; Chan and Sircar [14]; Cartea et al. [10]; Ma et
+al. [47]; Forde et al. [25]; Fouque et al. [26]; Drissi [24]; Neuman and Voß [50, 51]; Ohnishi and
+Shimoshimizu [56]; Cont et al. [19]; Chan et al. [15]).
+• Many existing studies consider the eﬀect of aggregate orders submitted by small traders on
+the ﬁnancial asset price. It is empirically shown that the market impacts caused by small
+traders are relatively larger than those caused by large traders (Potters and Bouchaud [58]).
+Cartea and Jaimungal [12, 11] examine an expected cost minimization problem under the
+existence of small traders. Also, Fukasawa et al. [30] and Ohnishi and Shimoshimizu [54, 55]
+investigate an expected utility maximization problem incorporating the eﬀect caused by small
+traders. These studies show that the aggregate past orders posed by small traders do inﬂuence
+the optimal execution strategy of a large trader. In line with these studies, we can consider
+(βtλt ˙Qt + It) as the permanent market impact caused by market traders.
+• Some studies also study other features that inﬂuence the stock price. Lehalle and Neuman [45],
+for instance, ﬁnds that the order book imbalance (OBI), denoted as Imb, with the volumes V b
+of the best bid and V a of the best ask:
+Imbt := V b
+t −V a
+t
+V b
+t + V a
+t
+,
+(11)
+has a predictability of future price movements. According to the empirical analysis, one can
+interpret the Markovian environment as the eﬀect of OBI on the fundamental price.
+We
+should note that OBI does not directly aﬀect the fundamental price in the form (10). The
+OBI is assumed to, for example, inﬂuence the fundamental price in a linear form. That is, It
+is assumed to be a linear function of OBI as
+It = κtImbt,
+(12)
+for some deterministic coeﬃcient κt. This relationship is empirically conﬁrmed by Lehalle and
+Neuman [45]. Other studies, for example, Stoikov and Waeber [66], also show the predictability
+of the imbalance between the top of book bid and ask sizes, the so-called order ﬂow imbalance
+(OFI ). Bechler and Ludkovski [6] examine an optimal execution problem taking into account
+the OFI.
+Remark 2.3. Existing studies show some shortcomings of mid-price or weighted mid-price (e.g.,
+Gatheral and Oomen [34]; Robert and Rosenbaum [59]). Stoikov [65] then deﬁnes the notion of the
+micro-price. The micro-price P micro incorporates the eﬀect of mid-price M, order book imbalance
+I, and bid-ask spread S into the components of the underlying price: In mathematical form, we can
+write the dependence as follows:
+P micro := M + g(I, S).
+(13)
+(g can be empirically estimated.) Our formulation of fundamental price is motivated by this notion.
+6
+
+Remark 2.4 (Related literature and the diﬀerences). There are some papers closely related to our
+analysis. Cartea and Jaimungal [12] or Cont et al. [19] investigate an optimal execution problem in
+the presence of temporary and permanent market impacts. Lehalle and Neuman [45] and Neuman
+and Voß [50, 51] consider the eﬀect of market microstructure signal on the risky asset price in the
+presence of transient market impacts. Our market model is similar to those papers, but some diﬀerences exist between their models and our model. First, as explicitly stated in the next section, our
+model considers an expected CARA utility maximization problem, although the aforementioned
+papers study an expected cost minimization problem. Examining the execution problem from an
+expected utility maximization enables us to explicitly model the large trader’s risk aversion, in
+contrast to formulations based on quadratic running inventory costs. Second, our problem includes
+temporary, permanent, and transient market impacts. Lehalle and Neuman [45], and Neuman and
+Voß [50, 51] do not consider the permanent market impact term as (10). Also, Cartea and Jaimungal [12] and Cont et al. [19] do not include the transient part of the market impact, although the
+transient market impact plays a key role in our analysis. Our analysis sheds light on an optimal
+execution problem in a uniﬁed framework incorporating temporary, permanent, and transient market impacts together with the large trader’s risk aversion. As a related problem, Bergault et al. [8]
+examine an optimal execution problem when the price dynamics of multiple risky assets are described by a multidimensional OU process. Drissi [24] studies an optimal market-making problem
+in a similar setting.3 Our model diﬀers from these two studies because we assume that the drift of
+the price dynamics, not the price dynamics itself, is characterized by an OU process.
+The formal mathematical setting is as follows. Let (Ω, F, {Ft}0≤t≤T , P) be a ﬁltered probability
+space. The processes of the Markovian environment It and the eﬀect Zt caused by public news or
+information on the (quoted) price are deﬁned on the space as follows:
+dIt =
+ aI
+t −bI
+t It
+
+dt + σI
+t dBI
+t ;
+(14)
+dZt = µZ
+t dt + σZ
+t dBZ
+t ,
+(15)
+where BI := {BI
+t }0≤t≤T and BZ := {BZ
+t }0≤t≤T stand for standard Brownian motions with BI
+0 =
+BZ
+0 = 0 a.s. Eq. (14) is a generalized Ornstein–Uhlenbeck (OU) type process. Its explicit solution
+is given by
+It = I0BI(0, t) +
+Z t
+0
+aI
+s BI(s, t)ds +
+Z t
+0
+σI
+s BI(s, t)dBI
+s ,
+(16)
+where for x, y ∈R,
+BI(x, y) := exp
+
+−
+Z y
+x
+bI
+udu
+
+.
+(17)
+We also assume that the ﬁltration {Ft}0≤t≤T is the natural ﬁltration generated by (BI, BZ):
+Ft := σ
+
+(BI
+s , BZ
+s ), 0 ≤s ≤t
+	
+,
+(18)
+and satisﬁes the usual conditions. The quadratic co-variation of BI and BZ is given by
+d⟨BI, BZ⟩t = ρI,Zdt.
+(19)
+Eq. (19) implies that these two processes are allowed to be correlated with each other. Note that
+aI
+t , bI
+t , σI
+t , µZ
+t , σZ
+t in the dynamics of It and Zt are all deterministic functions of time t.
+Remark 2.5. When aI
+t = 0 for all t ∈[0, T], Eq. (14) is called a generalized Langevin equation. In
+the context of the aﬃne term structure modeling, a general dynamics of short rate model described
+by Eq. (14) is ﬂexible for real data by just allowing the time-dependency for aI
+t :
+dIt =
+ aI
+t −bIIt
+
+dt + σIdBI
+t
+
+= bI
+aI
+t
+bI −It
+
+dt + σIdBI
+t
+
+.
+(20)
+3The author also analyzes an optimal execution problem with Bayesian learning of the drift in the asset price.
+7
+
+For the details, see, e.g., Hull and White [40] and Hull [41]. From this viewpoint, we can assume
+that dynamics (14) or (20) describe any factors that aﬀect a ﬁnancial asset price and have a meanreverting property.
+According to the dynamics of the market model, it follows that the wealth process, price dynamics, remaining execution volume, and residual eﬀect of past temporary market impacts depend
+on the process of the cumulative purchase (or liquidation) denoted by Q = {Qs}0≤s≤t:
+dW Q
+t = −bP Q
+t dQt = −bP Q
+t
+˙Qtdt = −
+
+P Q
+t + λt ˙Qt
+
+˙Qtdt;
+(21)
+dP Q
+t = βtλt ˙Qtdt + Itdt + dZt + dRQ
+t ;
+(22)
+dQ
+Q
+t = −dQt = −˙Qtdt;
+(23)
+dRQ
+t = −ρRQ
+t dt + αtλt ˙Qtdt.
+(24)
+However, to simplify the notations, we suppress the superscript Q in the above expressions representing the dependence of each state variable on Q, and simply use the ones (Wt, Pt, Qt, Rt) deﬁned
+in the previous description, except in cases when we should emphasize the dependence explicitly.
+If we assume that the information ﬂow accessible for the large trader is carried only by the ﬁltration {Ft}0≤t≤T , the executed volume Qt of the large trader by time t ∈[0, T] is an Ft-measurable
+(real-valued) random variable. According to this insight, for C ≥0 the set of admissible execution
+strategies is deﬁned as follows:
+A(C) :=
+n
+eQ = {Qt}0≤t≤T
+{Ft}0≤t≤T –adapted process with a continuously diﬀerentiable path,
+E
+"
+exp
+(
+C
+"
+1 + sup
+t≤u≤T
+W
+e
+Q
+u
+ +
+s
+e
+Q
+−W,u
+
+2#) Ft
+#
+< +∞, ∀t ∈[0, T], Q0 = 0
+o
+,
+(25)
+where s
+e
+Q
+−W,t := (P
+e
+Q
+t , Q
+e
+Q
+t , R
+e
+Q
+t , It) for some strategy eQ ∈A(C). Unless speciﬁed otherwise, we use
+the notation A for the above class of admissible strategies to simplify the notation.
+3
+Performance Criteria and Execution Strategy
+3.1
+Performance Criteria of Large Trader
+The state of the process at time t ∈[0, T], denoted by st, is deﬁned as a 5-tuple:
+st = (Wt, Pt, Qt, Rt, It)⊤∈R5 (= R × R × R × R × R) =: S.
+(26)
+Note that each component of the state depends on the process of the cumulative purchase/liquidation
+Q = {Qs}0≤s≤t.
+The large trader has a constant absolute risk-aversion (CARA) von Neumann–Morgenstern
+(vN-M) utility function. The utility payoﬀ(or reward) arises only from the terminal wealth:
+gT (sT ) := −exp
+n
+−γ
+
+WT −(PT + χT QT )QT
+o
+,
+(27)
+where γ ∈R++ denotes the risk-aversion parameter. In the formulation of this criterion, we assume
+that a large trader can execute her remaining execution volume at the terminal at the closing price
+PT and that the execution at the terminal imposes the large trader to pay an additive cost χT per
+unit of the remaining volume.
+We deﬁne the conditional expected utility of the large trader at time t ∈[0, T] on an execution
+strategy eQ := {Qt}0≤t≤T ∈A as
+V
+e
+Q
+t
+:= E
+h
+−exp
+n
+−γ
+
+WT −(PT + χT QT )QT
+oFt
+i
+.
+(28)
+8
+
+Let the optimal (expected utility) value at time t ∈[0, T] be
+Vt := ess sup
+e
+Q∈A
+V
+e
+Q
+t ,
+t ∈[0, T].
+(29)
+From the Markov property of the state dynamics, Vt depends on the history or information Ft
+only through the (controlled) state st ∈S so that this functional dependence is represented by the
+optimal value function as follows:
+V [t, Wt, Pt, Qt, Rt, It] := Vt,
+t ∈[0, T].
+(30)
+3.2
+HJB Equation and Candidate Function
+From the dynamic programming principle, the optimal value function, denoted by
+V [t, st] := V [t, Wt, Pt, Qt, Rt, It],
+(31)
+satisﬁes the following Hamilton–Jacobi–Bellman (HJB) equation (or dynamic programming equation) for the optimal execution speed (or optimal control) ˙Qt:
+sup
+˙Qt∈R
+h
+−
+
+Pt + λt ˙Qt
+
+˙Qt∂W V + (αt + βt)λt ˙Qt∂P V −˙Qt∂QV + αtλt ˙Qt∂RV
+i
++ ∂tV +
+ −ρRt + It + µZ
+t
+
+∂P V + (−ρRt)∂RV + (aI
+t −bI
+t It)∂IV
++ 1
+2
+
+(σZ
+t )2∂PP V + 2σI
+t σZ
+t ρZ,I∂PIV + (σI
+t )2∂IIV
+	
+= 0,
+0 ≤t < T,
+(32)
+if we assume that the function V : [0, T] × S →R is in C1,2.4 Note that the terminal condition of
+the optimal value function is given by
+V [T, sT ] = −exp
+n
+−γ
+h
+WT −(PT + χT QT )QT
+io
+.
+(33)
+By guessing the candidate function of the optimal value function appropriately, we obtain the
+following proposition:
+Proposition 3.1. If a unique solution to the system of ordinary diﬀerential equations (ODEs) given
+by Eqs. (35) to (44) exists, the HJB equation (32) admits a solution U[t, st] := U[t, Wt, Pt, Qt, Rt, It],
+represented as the following functional form:
+U[t, Wt, Pt, Qt, Rt, It] = −exp
+n
+−γ
+h
+Wt −PtQt + Gt(Qt)2 + HtQt + ItQtRt + Jt(Rt)2 + LtRt
++ MtQtIt + NtRtIt + Xt(It)2 + YtIt + Kt
+io
+,
+(34)
+4That is, V is continuously diﬀerentiable with respect to time and continuously twice diﬀerentiable with respect
+to each state variable.
+9
+
+where
+˙Gt = 1
+2γ(σZ
+t )2 −γρZ,IσZ
+t σI
+t Mt + 1
+2γ(σI
+t )2M2
+t −{(αt + βt)λt + 2Gt −αtλtIt}2
+4λt
+;
+(35)
+˙Ht = µZ
+t −aI
+t Mt −γρZ,IσZ
+t σI
+t Yt + γ(σI
+t )2MtYt
+−{(αt + βt)λt + 2Gt −αtλtIt}(Ht −αtλtLt)
+2λt
+;
+(36)
+˙It = −ρ + ρIt −γρZ,IσZ
+t σI
+t Nt + γ(σI
+t )2MtNt
+−{(αt + βt)λt + 2Gt −αtλtIt}(It −2αtλtJt)
+2λt
+;
+(37)
+˙Jt = 2ρJt + 1
+2γ(σI
+t )2N2
+t −(It −2αtλtJt)2
+4λt
+;
+(38)
+˙Lt = ρLt −aI
+t Nt + γ(σI
+t )2NtYt −(It −2αtλtJt)(Ht −αtλtLt)
+2λt
+;
+(39)
+˙Mt = 1 + bI
+t Mt −2γρZ,IσZ
+t σI
+t Xt + 2γ(σI
+t )2MtXt
+−{(αt + βt)λt + 2Gt −αtλtIt}(Mt −αtλtNt)
+2λt
+;
+(40)
+˙Nt = ρNt + bI
+t Nt + 2γ(σI
+t )2NtXt −(It −2αtλtJt)(Mt −αtλtNt)
+2λt
+;
+(41)
+˙Xt = 2bI
+t Xt + 2γ(σI
+t )2X2
+t −(Mt −αtλtNt)2
+4λt
+;
+(42)
+˙Yt = −2aI
+t Xt + bI
+t Yt + 2γ(σI
+t )2XtYt −(Mt −αtλtNt)(Ht −αtλtLt)
+2λt
+;
+(43)
+˙Kt = −aI
+t Yt −(σI
+t )2Xt + 1
+2γ(σI
+t )2Y 2
+t −(Ht −αtλtLt)2
+4λt
+,
+(44)
+with the terminal conditions:
+GT = −χT ;
+HT = IT = JT = LT = MT = NT = XT = YT = KT = 0.
+(45)
+Proof. See Appendix A.
+Remark 3.1. For readability, we summarize the points regarding veriﬁcation. Under the assumption that the optimal value function is in C1,2, it satisﬁes the HJB equation (32). If the system of
+ODEs described by Eqs. (35) to (44) admits a unique solution, there exists a unique solution to the
+HJB equation within the class of functionals of the form (34). However, the optimal value function
+may not be of the form (34) while satisfying the HJB equation. The following insight plays a key
+role in excluding this possibility: The logarithm of the absolute value of the candidate function (34)
+is a linear function of the wealth and a quadratic function of the other state variables. Thus, there
+is a constant B > 0 such that
+1
+γ log
+ −U[t, Wt, Pt, Qt, Rt, It]
+
+≥−B
+h
+1 +
+n
+|Wt| + ∥s−W,t∥2oi
+> −∞, ∀t ∈[0, T].
+(46)
+As shown in the following veriﬁcation theorem (Theorem 3.2), the candidate functional of the
+form (34) is the optimal value function by restricting the class of admissible strategies as A(γB).
+10
+
+3.3
+Existence and Uniqueness of the Solution to MRDE
+As for the system of ODEs from Eqs. (35) to (44), the system can be rewritten in the following
+concise form:
+˙Ωt = −Ω⊤
+t Bt −B⊤
+t Ωt −Ct + Ω⊤
+t AtΩt;
+(47)
+˙Γt = DtΓt + Ft;
+(48)
+˙Kt = −1
+4λt
+(ΦtΓt)2 −Ψ⊤
+t Γt + 1
+2Γ⊤
+t ΣtΣ⊤
+t Γt + tr
+
+Σ⊤
+t ΩtΣt
+
+,
+(49)
+with the terminal conditions:
+ΩT :=
+
+
+
+
+
+
+0
+0
+0
+0
+0
+0
+0
+−1/2
+0
+0
+0
+−1/2
+−χT
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+
+
+
+
+
+
+∈S5(R);
+ΓT :=
+
+
+
+
+
+
+1
+0
+0
+0
+0
+
+
+
+
+
+
+∈R5;
+KT = 0,
+(50)
+where
+Ωt :=
+
+
+
+
+
+
+0
+0
+0
+0
+0
+0
+0
+−1/2
+0
+0
+0
+−1/2
+Gt
+1/2It
+1/2Mt
+0
+0
+1/2It
+Jt
+1/2Nt
+0
+0
+1/2Mt
+1/2Nt
+Xt
+
+
+
+
+
+
+∈S5(R);
+Γt :=
+
+
+
+
+
+
+1
+0
+Ht
+Lt
+Yt
+
+
+
+
+
+
+∈R5,
+(51)
+and At, Bt, Ct, Dt, and Ft are given by Eqs. (130), (131), (132), (134), and (135), respectively. The
+derivation of the system of ODEs is given in Appendix B. Eqs. (47), (48) and (49) are Eqs. (125),
+(126) and (127), respectively. The system of ODEs can be stacked and examined separately as (i)
+a matrix Riccati diﬀerential equation (MRDE) represented by Ωt, (ii) a linear diﬀerential equation
+represented by Γt, and (iii) a one-dimensional diﬀerential equation represented by Kt. As shown in
+the derivation, Ωt and Γt originally consist of coupled matrix Riccati-type diﬀerential equations. After
+some calculation, however, we obtain the above concise representation and can separately examine
+the existence and uniqueness of Ωt and Γt. (For the details, readers can refer to Appendix B.4.)
+Remark 3.2 (Applicability of existing results to our MRDE). At ∈S5(R) is neither positive nor
+negative semideﬁnite. Therefore, existing results about the existence of the solution to an MRDE
+(e.g., Theorem 2.2, Freiling et al. [29]) are not applicable to Eq. (47); nor the argument established
+by Drissi [24] due to the terminal condition. We also mention the diﬃculty of applying the argument
+of Bergault et al. [8] to our MRDE. They analyze an optimal execution problem for a set of assets
+represented by a multidimensional OU-process and examine an associated MRDE arising from the
+HJB equation. The diﬀerence between their model and our model lies in the existence of permanent
+and transient market impacts. With these impacts, we cannot consider an upper bound for MRDE
+by examining a Merton problem as conducted by Bergault et al. [8]. For the same reason, we cannot
+adopt their argument on the veriﬁcation theorem to our control problem.
+To overcome this diﬃculty, we investigate the existence and uniqueness of the solution to the
+above system of MRDE (47) under some parameter sets. To this end, we introduce the following
+functions:
+h1(α, β) := (α + β)2
+
+α(α + β) + 1
+2β2
+
+(> 0);
+(52)
+h2(α, β) := α(α + β)3 + 2γ
+ σZ2 (α + β)2 + γ
+ σZ2 α2 (> 0);
+(53)
+h3(α, β) := α(α + β) + γ
+ σZ2 (> 0).
+(54)
+In addition, we make the following assumption (see also Remark 3.3).
+11
+
+Assumption 3.1. We assume that the parameters (αt, βt, λt, γ, σZ
+t ) satisfy the following conditions:
+Condition 1: The problem parameters are time-homogeneous.
+Condition 2: 2γ(σZ)2 −λ(α + β)2 > 0.
+(55)
+Condition 3: h1(α, β)λ2 −h2(α, β)λ + 2γ
+ σZ2 h3(α, β) > 0.
+(56)
+We are now ready to state the following theorem regarding the solution to MRDE (47).
+Theorem 3.1. Assume that ρZ,I = 0 and bI > 0. If, in addition, Assumption 3.1 holds, there
+exists a time-independent upper bound matrix Ωand a time-independent lower bound matrix Ωfor
+the matrix Ωt that satisﬁes the MRDE (47): For all t ∈[0, T], it holds that
+Ω≤Ωt ≤Ω.
+(57)
+In addition, the unique solution to MRDE (47) exists.
+Proof. See Appendix C.
+Theorem 3.1 ensures that there exists a set of parameters under which the unique solution to
+MRDE (47) exists. When ρZ,I̸ = 0 or bI = 0, we might need more complicated assumptions. The
+additional assumptions, however, do not provide additional meaningful insights. Therefore, we opt
+to state only the case that ρZ,I = 0 and bI > 0. Some remarks follow.
+Remark 3.3 (Interpretation of Condition 2 and Condition 3). The second condition (55) is
+rewritten as
+2γ(σZ)2 > λ(α + β)2.
+(58)
+The third condition (56) is quite a technical one. The condition, however, holds when λ = 0 or when
+λ is suﬃciently small or large. These conditions imply that when the market impact parameter λ is
+suﬃciently small relative to the risk aversion parameter γ and price volatility σZ, the MRDE (47)
+admits a unique solution.
+Remark 3.4 (A suﬃcient condition for Condition 3). If
+0 <
+α
+α + β λ < 2,
+(59)
+holds, the above condition (56) necessarily holds. The implication of Eq. (59) is fundamentally
+similar to the one in Remark 3.3.
+3.4
+Veriﬁcation
+Theorem 3.2 (Veriﬁcation). Suppose that the assumptions of Theorem 3.1 are enforced and that
+the execution strategy under which the execution speed is given by
+˙Q∗
+t = ft(st) = at + btQt + ctRt + dtIt,
+0 ≤t ≤T,
+(60)
+where
+at := −Ht −αtλtLt
+2λt
+;
+bt := −(αt + βt)λt + 2Gt −αtλtIt
+2λt
+;
+ct := −It −2αtλtJt
+2λt
+;
+dt := −Mt −αtλtNt
+2λt
+,
+(61)
+lies in the class of admissible strategies A(γB) for B > 0 deﬁned in Eq. (46). Then, the functional (34) is indeed the solution to the HJB equation, that is, V = U (under the class of admissible
+strategies A(γB)). In addition, the optimal execution speed is given by Eq. (60).
+12
+
+Proof. See Appendix D.
+Theorem 3.2 shows that the optimal execution speed at time t ∈[0, T], denoted as ˙Q∗
+t , becomes
+an aﬃne function of the remaining execution volume Qt, the cumulative residual eﬀect of past
+market impacts Rt, and the Markovian environment It.
+The optimal execution speed satisﬁes the following functional equation:
+˙Q∗
+t = at + btQt + ctRt + dtIt =: gt +
+Z t
+0
+K(t, u) ˙Q∗
+udu,
+(62)
+where
+gt := at + cte−ρtR0 + dtIt;
+(63)
+K(t, u) := bt + αuλue−ρ(t−u)ct.
+(64)
+Eq. (62) is a Volterra integral equation of the second kind. The function g and the integral kernel
+K are continuous. Therefore, by a classical result on Volterra integral equations of the second kind
+with continuous kernels (e.g., Yosida [69]), the equation admits a unique continuous solution.
+From Theorem 3.2, the optimal execution speed ˙Q∗
+t depends on the state st = (Wt, Pt, Qt, Rt, It)
+of the controlled process only through the remaining execution volume Qt, the cumulative residual
+eﬀect Rt, and the Markovian environment It, not through the wealth Wt or market price Pt.
+In addition, by deﬁnition of the Markovian environment, the optimal execution speed includes a
+nondeterministic term, the optimal execution strategy being stochastic. Therefore, the following
+corollary immediately holds.
+Corollary 3.1. If the Markovian environment It for all t ∈[0, T] is deterministic (i.e., σI
+t ≡0
+for all t ∈[0, T]), the optimal execution speed ˙Q∗
+t at time t ∈[0, T] also becomes a deterministic
+function of time under the class of the dynamic and non-randomized execution strategies.
+Remark 3.5. The optimal execution speed expressed by Eq. (60) implies that the optimal trading
+strategy is adaptive to diﬀerent realizations of the Markovian environment. Lehalle and Neuman [45]
+show that when considering the transient market impact, the optimal trading strategy only depends
+on the initial value of the microstructural signal (or Markovian environment in our terminology) and
+becomes deterministic and non-randomized. Contrary to that, the model considered in this paper
+allows us to derive the optimal execution strategy for a transient market impact model with the
+eﬀect of the Markovian environment on price dynamics. In the context of signal-adaptive optimal
+execution strategy, Cartea and Jaimungal [12] and Neuman and Voß [50, 51] derive an optimal
+execution strategy adaptive to the microstructural signal. Our analysis diﬀers from theirs in terms of
+the problem setting: They examine an expected cost minimization problem with quadratic inventory
+costs, while we analyze an expected utility maximization problem.
+4
+Numerical Examples
+Theorem 3.2 characterizes how the Markovian environment aﬀects the large trader’s optimal execution strategy. We can identify the eﬀect of uncertainty in the Markovian environment on the optimal
+execution strategy as environmental uncertainty. In this section, we examine how a large trader
+facing environmental uncertainty executes her orders in a ﬁnancial market through comparative
+statics and simulation-based numerical experiments.
+In this section, we assume the time homogeneity of the time-dependent parameters. The benchmark values for parameters are shown in Table 1. These parameter values are basically the same
+ones used in Ohnishi and Shimoshimizu [56].
+Remark 4.1 (Implications of parameters). We set αt = βt = 0.5 as the benchmark values. These
+parameter values imply that the instantaneous market impact caused by the large trader at time
+13
+
+Table 1: Benchmark values for parameters.
+Parameters
+µZ
+t
+σZ
+t
+σI
+t
+ρI,Z
+αt
+βt
+λt
+aI
+t
+bI
+t
+ρ
+γ
+χT
+T
+Benchmark values
+0
+0.1
+0.1
+0
+0.5
+0.5
+0.001
+0.5
+0.5
+0.1
+0.001
+0.01
+1
+t ∈[0, T] is equally decomposed into temporary and permanent market impacts. In addition, under
+the benchmark parameter setting, the Markovian environment tends to push up the market price.
+Also, the parameter σI
+t denotes how high the environmental uncertainty is.
+Remark 4.2 (Benchmark parameters and MRDE). The benchmark parameters in Table 1 do not
+satisfy the conditions in Theorem 3.1 since the condition
+2γ(σZ)2 −λ(α + β)2 > 0,
+(65)
+is violated in this benchmark setting. In this case, however, we can conﬁrm that MRDE (47) admits
+a unique solution. (Note that the conditions in Theorem 3.1 are suﬃcient but not necessary for
+the existence and uniqueness of a solution to the MRDE.) For the details, readers can refer to
+Appendix E.
+In the following, we mainly focus on how the mean-reversion speed and level of the Markovian environment aﬀect the optimal execution strategy. To this end, we rewrite the dynamics of
+Markovian environment as
+dIt = −bI(cI −It)dt + σIdBI
+t ,
+(66)
+where cI := aI/bI, and conduct comparative statics or numerical experiments on bI and cI.
+4.1
+Comparative Statics for Coeﬃcients
+We ﬁrst conduct comparative statics for the coeﬃcients of state variables in the optimal execution
+speed (i.e., at, bt, ct, and dt). In particular, we focus on how these coeﬃcients are inﬂuenced by the
+parameters deﬁning the Markovian environment (bI, cI, and σI) and execution cost at the terminal
+(χT ). This analysis allows us to see how a large trader incorporates state variables into the optimal
+execution strategy with the eﬀect of the Markovian environment.
+Figures 1 to 4 illustrate the
+comparative statics for the coeﬃcients with diﬀerent values of the parameters.
+From Figures 1 to 4, we ﬁnd that the coeﬃcient of residual eﬀect of past market impacts (ct)
+is negative under our parameter settings. The residual eﬀect is the discounted sum of the past
+market impacts caused by the large trader. Thus, the negativity of ct implies that a large trader
+delays the execution in accordance with the degree to which she has incurred the market impacts.
+This result reﬂects the aspect that, at least in part, the more the large trader has caused market
+impacts, the more unfavorable directions the future price moves. Thus, the large trader slows down
+the execution if she poses large (split) orders before some trading time. Also, all of the coeﬃcients
+are inﬂuenced by the uncertainty driven by the Markovian environment (σI) and the cost at the
+end of the trading horizon (χT ). We observe other characteristics of the coeﬃcients (at, bt, ct, and
+dt) as follows:
+• The state-independent term (at) tends to decrease as environmental uncertainty (σI) increases.
+This result implies that the large trader tends to avoid the loss from price ﬂuctuation driven
+by environmental uncertainty. In addition, as the mean-reversion level (cI) increases, the
+coeﬃcient increases more sharply, and the feature is remarkable at the early trading window.
+When the mean-reversion level is positive, the Markovian environment tends to push up the
+market price, which is undesirable for the large trader with a positive initial inventory. Therefore, our result implies that the large trader with positive initial inventory should liquidate her
+orders as fast as possible when the mean-reversion level is positively high, which is consistent
+with our intuition.
+14
+
+(a) Eﬀect of σI
+(b) Eﬀect of aI
+(c) Eﬀect of bI
+(d) Eﬀect of χT
+Figure 1: Comparative statics for at
+(a) Eﬀect of σI
+(b) Eﬀect of aI
+(c) Eﬀect of bI
+(d) Eﬀect of χT
+Figure 2: Comparative statics for bt
+15
+
+(a) Eﬀect of σI
+(b) Eﬀect of aI
+(c) Eﬀect of bI
+(d) Eﬀect of χT
+Figure 3: Comparative statics for ct
+(a) Eﬀect of σI
+(b) Eﬀect of aI
+(c) Eﬀect of bI
+(d) Eﬀect of χT
+Figure 4: Comparative statics for dt
+16
+
+• The coeﬃcient of the remaining execution volume (bt) increases in the ﬁrst half of the trading
+window as environmental uncertainty (σI) increases. The large trader is risk-averse and avoids
+future ﬂuctuation caused by environmental uncertainty. Thus, the large trader executes fast
+when environmental uncertainty increases. On the contrary, the coeﬃcient increases at the
+end of the trading window as the terminal cost per unit (χT ) does. The large trader accelerates
+her execution as the terminal cost increases to reduce the terminal payment of additional costs.
+• The coeﬃcient of the residual eﬀect of past market impacts (ct) increases in the ﬁrst half of
+the trading window as environmental uncertainty (σI) increases. Combining this result with
+the fact that the coeﬃcient is negative, the large trader reduces the degree of incorporating
+the residual eﬀect of past market impacts into the optimal execution strategy and facilitates
+her execution to avoid environmental uncertainty. In addition, high terminal cost (χT ) leads
+to an increase of the coeﬃcient. With high terminal costs, the large trader is keen to execute
+orders fast not to remain some volumes that she must unwind at maturity.
+• The coeﬃcient of Markovian environment (dt) decreases in the ﬁrst half of the trading window
+as environmental uncertainty (σI) increases. In addition, as the terminal cost (χT ) becomes
+higher, the coeﬃcient decreases more.
+These results imply that a risk-averse large trader
+avoids incorporating the Markovian environment into the optimal execution strategy under
+a market with high environmental uncertainty or high terminal cost. Also, the faster the
+mean-reversion speed (or the higher bI), the less the coeﬃcient becomes.
+Remark 4.3. The mean-reversion level of Markovian environment (cI) does not inﬂuence the
+coeﬃcients bt, ct, dt. We can mathematically conﬁrm this result from the system of ODEs (Eqs. (91)
+to (100)).
+4.2
+Simulation of Optimal Execution
+We next examine how the optimal execution strategy diﬀers depending on the market situation as
+well as the large trader’s initial inventory. As stated in Subsection 3.4, the optimal execution speed
+lies in a class of stochastic strategies. Therefore, we run the simulation for N = 100 sample paths to
+obtain 100 realized optimal execution strategy captured by Qt(k) for t ∈[0, T] and k ∈{1, . . . , N}.5
+For each k ∈{1, . . . , N}, Qt(k) represents the kth sample path of the large trader’s remaining
+execution volume for t ∈[0, T].
+4.2.1
+Sample Paths of Qt
+Our ﬁrst objective is to identify how variations in parameters (bI, cI, σI, and χT ) aﬀect the optimal
+execution strategy. We show 100 sample paths of the optimal execution strategy for the initial
+inventory Q = 1, 000 with diﬀerent values of parameters.
+Figure 5 illustrates the 100 sample paths of the optimal execution strategy with Q = 1, 000.
+Panel (a) shows that high environmental uncertainty (σI) induces the large trader to change the
+strategy depending on the realization of the Markovian environment.
+This result demonstrates
+that a risk-averse large trader chooses an optimal execution strategy adapted to the Markovian
+environment to take environmental uncertainty into account. The eﬀect of mean-reversion level
+(cI) is shown in Panel (b), revealing that as the value of cI increases, the large trader’s execution
+speed increases.
+An increase in the mean-reversion level indicates a high future ﬁnancial asset
+price (in the expectation sense). Thus, a risk-averse large trader executes faster when the meanreversion level is large. Moreover, we observe from Panel (d) that the higher the terminal cost per
+execution (χT ), the faster the large trader executes her orders over the trading horizon. This result
+conﬁrms that a risk-averse large trader tends to avoid the terminal liquidation if the terminal cost
+per execution is high.
+5The reason that we only show 100 sample paths is that displaying more sample paths would reduce the readability
+of the ﬁgures.
+17
+
+(a) Sample paths with diﬀerent values of σI
+(b) Sample paths with diﬀerent values of cI
+(c) Sample paths with diﬀerent values of bI
+(d) Sample paths with diﬀerent values of χT
+Figure 5: Comparative statics for 100 sample paths of Qt with Q = 1000
+4.2.2
+Utility-Based Statistical Arbitrage
+Alfonsi et al. [2] and Palmari et al. [57] consider the following concept of transaction-triggered price
+manipulation in a cost minimization framework.
+Deﬁnition 4.1 (Transaction-triggered price manipulation (Alfonsi et al. [2] and Palmari et al. [57])).
+A continuous trade execution model admits a transaction-triggered price manipulation if there exists
+an initial inventory Q ∈R and a corresponding admissible strategy ˆQ = { ˆQt}0≤t≤T ∈A such that
+C( ˆQ) > sup
+Q∈A
+n
+C(Q)
+sign( ˙Qt) = sign(Q), ∀t ∈[0, T]
+o
+,
+(67)
+where A is the set of admissible strategies that satisfy E[
+R T
+0 | ˙Qt|2dt] < ∞, and C(Q) is an execution
+cost driven by the strategy Q ∈A deﬁned as
+C(Q) := E
+h
+W Q
+T −QP0
+ F0
+i
+.
+(68)
+Motivated by this notion of transaction-triggered price manipulation, we deﬁne a concept of
+utility-based statistical arbitrage.
+Deﬁnition 4.2 (Utility-based statistical arbitrage). A ﬁnancial market with Markovian environment {It}0≤t≤T admits a utility-based statistical arbitrage for a large trader with CARA-type utility
+if there exists an initial inventory Q ∈R and a trade execution strategy ˆQ := { ˆQt}0≤t≤T ∈A such
+that
+E
+
+−exp
+
+−γ
+
+W
+ˆQ
+T −(P
+ˆQ
+T + χT Q
+ˆQ
+T )Q
+ˆQ
+T
+ F0
+
+> sup
+Q∈˜
+A
+(
+E
+h
+−exp
+n
+−γ
+h
+W Q
+T −(P Q
+T + χT Q
+Q
+T )Q
+Q
+T
+io F0
+i)
+,
+(69)
+18
+
+(a) Sample paths with diﬀerent values of σI
+(b) Sample paths with diﬀerent values of cI
+(c) Sample paths with diﬀerent values of bI
+(d) Sample paths with diﬀerent values of χT
+Figure 6: Comparative statics for 100 sample paths of Qt with Q = 100
+where ˜
+A(C) (⊂A(C)) for C ≥0 is the (sub)set of admissible strategies deﬁned as
+˜
+A(C) :=
+n
+{Qt}0≤t≤T
+{Ft}0≤t≤T –adapted process with a continuously diﬀerentiable path,
+E
+"
+exp
+(
+C
+"
+1 + sup
+t≤u≤T
+W
+e
+Q
+u
+ +
+s
+e
+Q
+−W,u
+
+2#) Ft
+#
+< +∞, ∀t ∈[0, T],
+Q0 = 0, sign( ˙Qt) = sign(Q), ∀t ∈[0, T]
+o
+.
+(70)
+In this subsection, we examine whether there exists a utility-based statistical arbitrage in a
+ﬁnancial market by simulation-based numerical experiments.
+Figure 6 illustrates 100 sample paths of simulated remaining execution volume under the optimal
+execution strategy with Q = 100. Panels (a) and (b) in Figure 6 show that a ﬁnancial market
+can admit a utility-based statistical arbitrage for high environmental uncertainty and high meanreversion level of Markovian environment. On the contrary, from Figures (c) and (d) in Figure 6
+we do not ﬁnd numerical evidence of statistical arbitrages for Q = 100 even if the mean-reversion
+speed and terminal cost per unit are high.
+4.3
+Optimal Execution with Zero Initial Inventory
+We ﬁnally examine the optimal execution strategies with diﬀerent values of parameters for Q = 0.
+4.3.1
+Existence of Round Trip Trading
+We start this section by examining the case for Q = 0 with diﬀerent values of parameters. It should
+be noted that if no round-trip trading can increase a large trader’s expected utility, the optimal
+execution strategy with zero initial inventory is given by a zero-trade strategy in which ˙Qt = 0 for
+all t ∈[0, T].
+19
+
+(a) Sample paths with diﬀerent values of σI
+(b) Sample paths with diﬀerent values of cI
+(c) Sample paths with diﬀerent values of bI
+(d) Sample paths with diﬀerent values of χT
+Figure 7: Comparative statics for 100 sample paths of Qt with Q = 0
+Figure 7 illustrates that there exists a round-trip trading that increases the expected utility.
+Indeed, we can mathematically conﬁrm this result by the following arguments: If V 0[s0] < V Q∗[s0]
+holds for some round trip trading strategy Q∗:= { ˙Q∗
+t }0≤t≤T such that Q = 0 and
+Z T
+0
+˙Q∗
+sds + Q
+Q∗
+T
+= 0,
+(71)
+we have
+−exp{−γW0} = V 0[s0] < V Q∗[s0] = E
+h
+−exp
+n
+−γ
+h
+WT −(P Q∗
+T
++ χT Q
+Q∗
+T )Q
+Q∗
+T
+io F0
+i
+≤−exp
+n
+−γE
+h
+WT −(P Q∗
+T
++ χT Q
+Q∗
+T )Q
+Q∗
+T
+ F0
+io
+,
+(72)
+by conditional Jensen’s inequality, which implies that W0 < E
+h
+WT −(P Q∗
+T
++ χT Q
+Q∗
+T )Q
+Q∗
+T
+ F0
+i
+.6
+4.3.2
+In the Case of Zero Mean-Reversion
+An interesting case is when cI is zero but σI and bI are diﬀerent from zero (i.e., when the Markovian
+environment is expressed by a (generalized) Langevin equation). In particular, we are interested in
+whether there is a utility-based statistical arbitrage for a large trader with zero initial inventory in
+the following cases: (i) when environmental uncertainty is high (i.e., when the value of σI is large);
+(ii) when the mean-reversion speed of Markovian environment is fast (i.e., when the value of bI is
+large).
+Figure 8(a) illustrates 100 sample paths for diﬀerent values of σI with Q = 0, cI = 0 and
+bI = 0.5 ﬁxed. When σI = 0, the large trader uses the zero-trade strategy, whereas when σI̸ = 0,
+6Here, we let 0 denote the zero-trade schedule. Under this strategy, we have
+∫T
+0
+˙Qsds = 0, and thus Q
+0
+T = 0.
+20
+
+(a) Diﬀerent values of σI
+(b) Diﬀerent values of bI
+Figure 8: 100 sample paths of Qt with Q = 0 and aI = 0
+we observe a possibility of a utility-based statistical arbitrage through a round-trip trading. This
+observation highlights that the existence of the Markovian environment possibly leads to a utilitybased statistical arbitrage via a round-trip trading.
+In addition, the increase in environmental
+uncertainty raises the possibility that a round-trip trade starting from the zero initial inventory
+increases the large trader’s expected utility (and thus the expected wealth). These insights highlight
+that environmental uncertainty is a critical factor that drives a utility-based statistical arbitrage.
+Figure 8(b) shows 100 sample paths for diﬀerent values of bI with Q = 0, cI = 0 and σI = 0.5
+ﬁxed. We ﬁnd that as the mean-reversion speed increases, the extent to which the large trader
+executes orders decreases. This result is plausible from the following consideration: In the setting
+that cI = 0, we observe that the mean-reversion level is zero. Therefore, the fast mean-reversion
+indicates that the Markovian environment tends to take values near zero and thus possibly has little
+eﬀect on the ﬁnancial asset price over the trading window. Thus, there is little opportunity for the
+large trader to make use of the Markovian environment to increase her expected utility from zero
+initial inventory when the mean-reversion speed is fast.
+5
+Conclusion
+We have examined an optimal execution problem for a single large trader in a ﬁnite continuoustime framework. The large trader maximizes the expected CARA utility arising from her terminal
+wealth in a ﬁnancial market.
+We formulated a generalized market impact model wherein both
+market impacts and a Markovian environment, capturing an exogenous, stochastic factor, aﬀect the
+ﬁnancial asset price. Based on the dynamic programming principle, we derived an optimal execution
+strategy in closed form, characterized by an aﬃne function of the state variables. Our theoretical
+results show that the Markovian environment aﬀects the optimal execution strategy. Our numerical
+results also provide the following insight: Uncertainty in the Markovian environment signiﬁcantly
+aﬀects the optimal execution strategy and can lead to a utility-based statistical arbitrage through
+a round-trip trading.
+We also show the existence and uniqueness of the solution to an MRDE
+under some mild conditions. Our framework will be explored from a more in-depth and extensive
+perspective.
+There would be room for extending our analysis as a stochastic diﬀerential game of an execution
+problem played by multiple large traders. The extension would allow for strategic interactions among
+multiple large traders who jointly inﬂuence execution prices. Other directions include multi-asset
+execution problems or models with jump risk in either the asset price dynamics or the Markovian
+environment.
+21
+
+Acknowledgements
+The authors would like to thank Dr. Len Patrick Garces, Dr. Chiaki Hara, Dr. Nino Kordzakhia,
+Dr. Eyal Neuman, Dr. Michi Nishihara, Dr. Yong Hyun Shin, Dr. Masataka Suzuki, Dr. Kazutoshi Yamazaki, Dr. Toshinao Yoshiba, and the participants at FMA 2024, TMU Workshop on
+Finance 2024, Financial Study Group at Hitotsubashi University, Winter Workshop on Operations
+Research, Finance and Mathematics, 2025, 2025 ORSJ Spring Conference, 33th NFA Conference,
+and Mathematics of Risk – 2025 for the comments and discussions, which improved the quality of
+this paper. We also thank the mathematical research institute MATRIX in Australia, where a part
+of this research was performed.
+Disclosure Statement
+No potential conﬂict of interest was reported by the authors.
+Funding
+This work was supported by Japan Society for the Promotion of Science under KAKENHI [Grant
+Numbers 21K13325, 21K03369, 21H04399, 22K01573, 22K01573, 24K16400, 25K05203, 25K00650].
+References
+[1] Ackermann, J., Kruse, T., & Urusov, M. (2024). Reducing Obizhaeva–Wang-type trade execution problems to LQ stochastic control problems. Finance and Stochastics, 28(3), 813–863.
+[2] Alfonsi, A., Schied, A., & Slynko, A. (2012). Order book resilience, price manipulation, and
+the positive portfolio problem. SIAM Journal on Financial Mathematics, 3(1), 511–533.
+[3] Almgren, R. & Chriss, N. (2000). Optimal execution of portfolio transactions. Journal of Risk,
+3, 5–40.
+[4] Avellaneda, M., & Lee, J. H. (2010). Statistical arbitrage in the US equities market. Quantitative Finance, 10(7), 761–782.
+[5] Bacry, E., Iuga, A., Lasnier, M., & Lehalle, C. A. (2015). Market impacts and the life cycle of
+investors orders. Market Microstructure and Liquidity, 1(02), 1550009.
+[6] Bechler, K., & Ludkovski, M. (2015). Optimal execution with dynamic order ﬂow imbalance.
+SIAM Journal on Financial Mathematics, 6(1), 1123–1151.
+[7] Bertsimas, D. & Lo, A. W. (1998). Optimal control of execution costs. Journal of Financial
+Markets, 1(1), 1–50.
+[8] Bergault, P., Drissi, F., & Gu´eant, O. (2022). Multi-asset optimal execution and statistical
+arbitrage strategies under Ornstein–Uhlenbeck dynamics. SIAM Journal on Financial Mathematics, 13(1), 353–390.
+[9] Bouchaud, J. P., Gefen, Y., Potters, M., & Wyart, M. (2004). Fluctuations and response in
+ﬁnancial markets: The subtle nature of ‘random’ price changes. Quantitative Finance, 4(2),
+176–190.
+[10] Cartea, ´A., Donnelly, R., & Jaimungal, S. (2018). Enhancing trading strategies with order book
+signals. Applied Mathematical Finance, 25(1), 1–35.
+22
+
+[11] Cartea, ´A., & Jaimungal, S. (2016a). A closed-form execution strategy to target volume
+weighted average price. SIAM Journal on Financial Mathematics, 7(1), 760–785.
+[12] Cartea, ´A., & Jaimungal, S. (2016b). Incorporating order-ﬂow into optimal execution. Mathematics and Financial Economics, 10(3), 339–364.
+[13] Cartea, ´A, Jaimungal, S., & Penalva, J. (2015). Algorithmic and High-Frequency Trading.
+Cambridge University Press.
+[14] Chan, P., & Sircar, R. (2015). Optimal trading with predictable return and stochastic volatility.
+Available at SSRN: Abstract id=2623747.
+[15] Chan, P., Sircar, R., & Zimbidis, I. (2026). Optimal trading under instantaneous and persistent
+price impact, predictable returns and multiscale stochastic volatility. Applied Mathematical
+Finance, 1–34.
+[16] Chen, Y., Tran, H. H., & Horst, U. (2023). Optimal trade execution under endogenous order
+ﬂow (No. 368). Discussion Paper.
+[17] Chen, Y., Horst, U., & Tran, H. H. (2025). Optimal trade execution strategy and implementation with deterministic market impact parameters. Applied Mathematical Finance, 32(1),
+1–29.
+[18] Cont, R., Kukanov, A., & Stoikov, S. (2014). The price impact of order book events. Journal
+of Financial Econometrics, 12(1), 47–88.
+[19] Cont, R., Micheli, A., & Neuman, E. (2025). Fast and slow optimal trading with exogenous
+information. Finance and Stochastics, 29(2), 553–607.
+[20] Cordoni, F., & Lillo, F. (2024a). Instabilities in multi-asset and multi-agent market impact
+games. Annals of Operations Research, 336, 505–539.
+[21] Cordoni, F., & Lillo, F. (2024b). Transient impact from the Nash equilibrium of a permanent
+market impact game. Dynamic Games and Applications, 14, 333–361.
+[22] Cox, J. C., Ingersoll, J. E., & Ross, S. A. (1985). A theory of the term structure of interest
+rates. Econometrica, 53(2), 385–407.
+[23] Donnelly, R., & Lorig, M. (2020). Optimal trading with diﬀering trade signals. Applied Mathematical Finance, 27(4), 317–344.
+[24] Drissi, F. (2022). Solvability of diﬀerential Riccati equations and applications to algorithmic
+trading with signals. Applied Mathematical Finance, 29(6), 457–493.
+[25] Forde, M., S´anchez-Betancourt, L., & Smith, B. (2022). Optimal trade execution for Gaussian
+signals with power-law resilience. Quantitative Finance, 22(3), 585–596.
+[26] Fouque, J. P., Jaimungal, S., & Saporito, Y. F. (2022). Optimal trading with signals and
+stochastic price impact. SIAM Journal on Financial Mathematics, 13(3), 944–968.
+[27] Freiling, G. (2002). A survey of nonsymmetric Riccati equations. Linear Algebra and its Applications, 351, 243–270.
+[28] Freiling, G., & Jank, G. (1996). Existence and comparison theorems for algebraic Riccati
+equations and Riccati diﬀerential and diﬀerence equations. Journal of Dynamical and Control
+Systems, 2, 529–547.
+[29] Freiling, G., Jank, G., & Sarychev, A. (2000). Non-blow-up conditions for Riccati-type matrix
+diﬀerential and diﬀerence equations. Results in Mathematics, 37(1), 84–103.
+23
+
+[30] Fukasawa, M., Ohnishi, M., & Shimoshimizu, M. (2021). Discrete–time optimal execution under
+a generalized price impact model with Markovian exogenous orders. International Journal of
+Theoretical and Applied Finance, 24(05), 2150025.
+[31] Fukasawa, M., Ohnishi, M., & Shimoshimizu, M. (2021). Optimal execution under a generalized
+price impact model with Markovian exogenous orders in a continuous–time setting. RIMS
+Kokyuroku, 2207, 1–22.
+[32] Gao, J., Li, D., Xie, J., Yang, Y., & Yao, J. (2024). When prospect theory meets meanreverting asset returns: A behavioral dynamic trading model. Journal of Banking & Finance,
+162, 107159.
+[33] Gatheral, J. (2010). No-dynamic-arbitrage and market impact. Quantitative Finance, 10(7),
+749–759.
+[34] Gatheral, J., & Oomen, R. C. (2010). Zero-intelligence realized variance estimation. Finance
+and Stochastics, 14(2), 249–283.
+[35] Gatheral, J., Schied, A., & Slynko, A. (2012). Transient linear price impact and Fredholm
+integral equations. Mathematical Finance, 22(3), 445–474.
+[36] Gˆarleanu, N. & Pedersen, L. H. (2013). Dynamic trading with predictable returns and transaction costs. The Journal of Finance, 68 (6), 2309–2340.
+[37] Gˆarleanu, N. & Pedersen, L. H. (2016). Dynamic portfolio choice with frictions. Journal of
+Economic Theory, 165, 487–516.
+[38] Gu´eant, O. (2016). The Financial Mathematics of Market Liquidity: From Optimal Execution
+to Market Making. Boca Raton, Florida: CRC Press.
+[39] Hillebrand, E. (2003). A mean-reversion theory of stock-market crashes. The Journal of Finance, 41, 591–601.
+[40] Hull, J., & White, A. (1990). Pricing interest-rate-derivative securities. The Review of Financial
+Studies, 3(4), 573–592.
+[41] Hull, J. (2022) Options, Futures, and Other Derivatives. 11th Edition, Pearson, New York.
+[42] Kuno, S. & Ohnishi, M. (2015). Optimal execution in illiquid market with the absence of price
+manipulation. Journal of Mathematical Finance, 5(01), 1–14.
+[43] Kuno, S., Ohnishi, M., & Shimizu, P. (2017). Optimal oﬀ-exchange execution with closing
+price. Journal of Mathematical Finance, 7(1), 54–64.
+[44] Laruelle, S., & Lehalle, C. A. (2018). Market Microstructure in Practice, Second Edition. World
+Scientiﬁc.
+[45] Lehalle, C. A., & Neuman, E. (2019). Incorporating signals into optimal trading. Finance and
+Stochastics, 23(2), 275–311.
+[46] Luo, X., & Schied, A. (2020). Nash equilibrium for risk-averse investors in a market impact
+game with transient price impact. Market Microstructure and Liquidity, 5(1) 2050001.
+[47] Ma, G., Siu, C. C. & Zhu, S.-P. (2019). Dynamic portfolio choice with return predictability
+and transaction costs. European Journal of Operational Research, 278(3), 976–988.
+[48] Merton, R. C. (1971). Optimum consumption and portfolio rules in a continuous-time model.
+Journal of Economic Theory, 3(4), 373–413.
+24
+
+[49] Merton, R. C. (1973). An intertemporal capital asset pricing model. Econometrica, 31, 867–887.
+[50] Neuman, E., & Voß, M. (2022). Optimal signal-adaptive trading with temporary and transient
+price impact. SIAM Journal on Financial Mathematics, 13(2), 551–575.
+[51] Neuman, E., & Voß, M. (2023). Trading with the crowd. Mathematical Finance, 33(3), 548–617.
+[52] Obizhaeva, A. A., & Wang, J. (2013). Optimal trading strategy and supply/demand dynamics.
+Journal of Financial Markets, 16(1), 1–32.
+[53] Ohnishi, M., & Shimoshimizu, M. (2019). Equilibrium execution strategies with generalized
+price impacts. RIMS Kokyuroku, 2111, 84–106.
+[54] Ohnishi, M., & Shimoshimizu, M. (2020). Optimal and equilibrium execution strategies with
+generalized price impact. Quantitative Finance, 20(10), 1625–1644.
+[55] Ohnishi, M., & Shimoshimizu, M. (2022). Optimal pair–trade execution with generalized cross–
+impact. Asia-Paciﬁc Financial Markets, 29, 253–289.
+[56] Ohnishi, M., & Shimoshimizu, M. (2024). Trade execution games in a Markovian environment.
+Applied Mathematical Finance, 31(4), 239–277.
+[57] Palmari, G., Lillo, F., & Eisler, Z. (2024). Optimal execution with deterministically time
+varying liquidity: Well posedness and price manipulation. arXiv preprint arXiv:2410.04867.
+[58] Potters, M., & Bouchaud, J. P. (2003). More statistical properties of order books and price
+impact. Physica A, 324(1-2), 133–140.
+[59] Robert, C. Y., & Rosenbaum, M. (2012). Volatility and covariation estimation when microstructure noise and trading times are endogenous. Mathematical Finance, 22(1), 133–164.
+[60] Schied, A. and Sch¨oneborn, T., & Tehranchi, M. (2010). Optimal basket liquidation for CARA
+investors is deterministic. Applied Mathematical Finance, 17(6), 471–489.
+[61] Schied, A. & Zhang, T. (2019). A market impact game under transient price impact. Mathematics of Operations Research, 44(1), 102–121.
+[62] Sharpe, W. F. (1964). Capital asset prices: A theory of market equilibrium under conditions
+of risk. The Journal of Finance, 19(3), 425–442.
+[63] Shimoshimizu, M. (2024). Introduction to optimal execution. In Machine Learning Approaches
+in Financial Analytics, pp.3–50. Springer, Cham. (Patnaik, S., Tripathy, N., and Maglaras, L.
+A. (eds)).
+[64] Shimoshimizu, M., Ito, K., and Takashima, R. (2026). Optimal fuel procurement under uncertainty in electricity supply from renewable energy. Available at SSRN.
+[65] Stoikov, S. (2018). The micro-price: A high-frequency estimator of future prices. Quantitative
+Finance, 18(12), 1959–1966.
+[66] Stoikov, S., & Waeber, R. (2016). Reducing transaction costs with low-latency trading algorithms. Quantitative Finance, 16(9), 1445–1451.
+[67] Tsoukalas, G., Wang, J., & Giesecke, K. (2019). Dynamic portfolio execution. Management
+Science, 65(5), 2015–2040.
+[68] Wachter, J. A. (2002). Portfolio and consumption decisions under mean-reverting returns: An
+exact solution for complete markets. Journal of Financial and Quantitative Analysis, 37(1),
+63–91.
+[69] Yosida, K. (1991). Lectures on Diﬀerential and Integral Equations. Dover Publications.
+25
+
+Appendix
+A
+Proof of Proposition 3.1
+From the discrete time analogue of Fukasawa et al. [30], we guess the ansatz of the optimal value
+function as follows:
+U
+
+t, Wt, Pt, Qt, Rt, It
+
+= −exp
+n
+−γ
+
+Wt −PtQt + Gt(Qt)2 + HtQt + ItQtRt + Jt(Rt)2 + LtRt
++ MtQtIt + NtRtIt + Xt(It)2 + YtIt + Kt
+o
+,
+(73)
+with the terminal condition:
+U
+
+T, WT , PT , QT , RT , IT
+
+= −exp
+n
+−γ
+
+WT −(PT + χT QT )QT
+o
+.
+(74)
+The partial diﬀerentials of U
+
+t, Wt, Pt, Qt, Rt, It
+
+with respect to time and each state variable are
+calculated as follows:
+∂tU = −γ
+n
+˙Gt(Qt)2 + ˙HtQt + ˙ItQtRt + ˙JtR2
+t + ˙LtRt + ˙MtQtIt + ˙NtRtIt + ˙XtI2
+t + ˙YtIt + ˙Kt
+o
+U;
+(75)
+∂W U = −γU;
+(76)
+∂P U = γQtU;
+(77)
+∂QU = −γ
+ −Pt + 2GtQt + Ht + ItRt + MtIt
+
+U;
+(78)
+∂RU = −γ
+ ItQt + 2JtRt + Lt + NtIt
+
+U;
+(79)
+∂IU = −γ(MtQt + NtRt + 2XtIt + Yt)U;
+(80)
+∂PP U = γ2Q
+2
+t U;
+(81)
+∂PIU = −γ2Qt
+ MtQt + NtRt + 2XtIt + Yt
+
+U;
+(82)
+∂IIU = −2γXtU + γ2(MtQt + NtRt + 2XtIt + Yt)2U.
+(83)
+Therefore, by substituting Eqs. (75) to (83) into Eq. (32), we have
+sup
+˙Qt∈R
+γ
+h
+λt ˙Q2
+t +
+
+(αt + βt)λt + 2Gt −αtλtIt
+	
+Qt + (It −2αtλtJt) Rt + (Mt −αtλtNt) It
++ (Ht −αtλtLt)
+ ˙Qt
+i
+U + γ
+n
+−˙Gt + 1
+2γ(σZ
+t )2 −γρZ,IσZ
+t σI
+t Mt + 1
+2γ(σI
+t )2M2
+t
+o
+Q
+2
+t U
++ γ
+n
+−˙Ht + µZ
+t −aI
+t Mt −γρZ,IσZ
+t σI
+t Yt + γ(σI
+t )2MtYt
+o
+QtU + γ
+n
+−˙It −ρ + ρIt
+−γρZ,IσZ
+t σI
+t Nt + γ(σI
+t )2MtNt
+o
+QtRtU + γ
+n
+−˙Jt + 2ρJt + 1
+2γ(σI
+t )2N2
+t
+o
+R2
+t U
++ γ
+n
+−˙Lt + ρLt −aI
+t Nt + γ(σI
+t )2NtYt
+o
+RtU + γ
+n
+−˙Mt + 1 + bI
+t Mt −2γρZ,IσZ
+t σI
+t Xt
++ 2γ(σI
+t )2MtXt
+o
+QtItU + γ
+n
+−˙Nt + ρNt + bI
+t Nt + 2γ(σI
+t )2NtXt
+o
+RtItU
++ γ
+n
+−˙Xt + 2bI
+t Xt + 2γ(σI
+t )2X2
+t
+o
+I2
+t U + γ
+n
+−˙Yt −2aI
+t Xt + bI
+t Yt + 2γ(σI
+t )2XtYt
+o
+ItU
++ γ
+n
+−˙Kt −aI
+t Yt −(σI
+t )2Xt + 1
+2γ(σI
+t )2Y 2
+t
+o
+U = 0.
+(84)
+Since we consider the negative exponential utility function above,
+sup
+˙Qt∈R
+γ
+h
+λt ˙Q2
+t +
+
+(αt + βt)λt + 2Gt −αtλtIt
+	
+Qt + (It −2αtλtJt) Rt
++ (Mt −αtλtNt) It + (Ht −αtλtLt)
+ ˙Qt
+i
+U
+= U inf
+˙Qt
+γ
+h
+λt ˙Q2
+t +
+h
+˜btQt + ˜ctRt + ˜dtIt + ˜et
+i
+˙Qt
+i
+,
+(85)
+26
+
+where
+˜bt := (αt + βt)λt + 2Gt −αtλtIt;
+˜ct := It −2αtλtJt;
+˜dt := Mt −αtλtNt;
+˜et := Ht −αtλtLt.
+(86)
+Therefore, Eq. (85) attains the inﬁmum at the execution speed:
+˙Q∗
+t = −
+˜btQt + ˜ctRt + ˜dtIt + ˜et
+2λt
+=: at + btQt + ctRt + dtIt,
+(87)
+where
+at := −˜et
+2λt
+;
+bt := −
+˜bt
+2λt
+;
+ct := −˜ct
+2λt
+;
+dt := −
+˜dt
+2λt
+,
+(88)
+and the value of Eq. (85) at the inﬁmum becomes
+U inf
+˙Qt
+γ
+h
+λt ˙Q2
+t +
+h
+˜btQt + ˜ctRt + ˜dtIt + ˜et
+i
+˙Qt
+i
+= −(˜btQt + ˜ctRt + ˜dtIt + ˜et)2
+4λt
+Uγ.
+(89)
+Substituting this into Eq. (84) yields
+γ
+(
+−˙Gt + 1
+2γ(σZ
+t )2 −γρZ,IσZ
+t σI
+t Mt + 1
+2γ(σI
+t )2M2
+t −
+˜b2
+t
+4λt
+)
+Q
+2
+t U
++ γ
+(
+−˙Ht + µZ
+t −aI
+t Mt −γρZ,IσZ
+t σI
+t Yt + γ(σI
+t )2MtYt −
+˜bt˜et
+2λt
+)
+QtU
++ γ
+(
+−˙It −ρ + ρIt −γρZ,IσZ
+t σI
+t Nt + γ(σI
+t )2MtNt −
+˜bt˜ct
+2λt
+)
+QtRtU
++ γ
+
+−˙Jt + 2ρJt + 1
+2γ(σI
+t )2N2
+t −˜c2
+t
+4λt
+
+R2
+t U + γ
+
+−˙Lt + ρLt −aI
+t Nt + γ(σI
+t )2NtYt −˜ct˜et
+2λt
+
+RtU
++ γ
+(
+−˙Mt + 1 + bI
+t Mt −2γρZ,IσZ
+t σI
+t Xt + 2γ(σI
+t )2MtXt −
+˜bt ˜dt
+2λt
+)
+QtItU
++ γ
+(
+−˙Nt + ρNt + bI
+t Nt + 2γ(σI
+t )2NtXt −˜ct ˜dt
+2λt
+)
+RtItU
++ γ
+(
+−˙Xt + 2bI
+t Xt + 2γ(σI
+t )2X2
+t −
+˜d2
+t
+4λt
+)
+I2
+t U + γ
+(
+−˙Yt −2aI
+t Xt + bI
+t Yt + 2γ(σI
+t )2XtYt −
+˜dt˜et
+2λt
+)
+ItU
++ γ
+
+−˙Kt −aI
+t Yt −(σI
+t )2Xt + 1
+2γ(σI
+t )2Y 2
+t −˜e2
+t
+4λt
+
+U = 0.
+(90)
+27
+
+Since this equation holds for all states, the following conditions must hold:
+−˙Gt + 1
+2γ(σZ
+t )2 −γρZ,IσZ
+t σI
+t Mt + 1
+2γ(σI
+t )2M2
+t −
+˜b2
+t
+4λt
+= 0;
+(91)
+−˙Ht + µZ
+t −aI
+t Mt −γρZ,IσZ
+t σI
+t Yt + γ(σI
+t )2MtYt −
+˜bt˜et
+2λt
+= 0;
+(92)
+−˙It −ρ + ρIt −γρZ,IσZ
+t σI
+t Nt + γ(σI
+t )2MtNt −
+˜bt˜ct
+2λt
+= 0;
+(93)
+−˙Jt + 2ρJt + 1
+2γ(σI
+t )2N2
+t −˜c2
+t
+4λt
+= 0;
+(94)
+−˙Lt + ρLt −aI
+t Nt + γ(σI
+t )2NtYt −˜ct˜et
+2λt
+= 0;
+(95)
+−˙Mt + 1 + bI
+t Mt −2γρZ,IσZ
+t σI
+t Xt + 2γ(σI
+t )2MtXt −
+˜bt ˜dt
+2λt
+= 0;
+(96)
+−˙Nt + ρNt + bI
+t Nt + 2γ(σI
+t )2NtXt −˜ct ˜dt
+2λt
+= 0;
+(97)
+−˙Xt + 2bI
+t Xt + 2γ(σI
+t )2X2
+t −
+˜d2
+t
+4λt
+= 0;
+(98)
+−˙Yt −2aI
+t Xt + bI
+t Yt + 2γ(σI
+t )2XtYt −
+˜dt˜et
+2λt
+= 0;
+(99)
+−˙Kt −aI
+t Yt −(σI
+t )2Xt + 1
+2γ(σI
+t )2Y 2
+t −˜e2
+t
+4λt
+= 0,
+(100)
+with the terminal conditions:
+GT = −χT ;
+HT = IT = JT = LT = MT = NT = XT = YT = KT = 0.
+(101)
+By substituting ˜bt, ˜ct, ˜dt, ˜et into the condition derived above and rearranging, we obtain a system of
+coupled ODEs for Gt, Ht, It, Jt, Lt, Mt, Nt, Xt, Yt, Kt.
+B
+Matrix Representation of Optimal Execution Problem
+We show that the candidate function considered above can be rewritten through a matrix representation.
+The matrix representation allows us to clearly understand the relationships between
+state variables and also clariﬁes the interaction of the system of ODEs (expressed by the Eqs. (91)
+to (100)). Then, we can examine a set of suﬃcient conditions satisﬁed by the system of ODEs
+with more ease than directly carrying out the analysis of these equations. In the following, as in
+Section 3, we assume that the optimal value function is of the form (34) and in C1,2.
+B.1
+State Process: Revisited
+Let us ﬁrst rewrite the state process. Based on the argument in Section 2, the dynamics of the state
+process are rewritten in the following stacked form:
+dst =
+
+
+
+
+
+
+dWt
+dPt
+dQt
+dRt
+dIt
+
+
+
+
+
+
+=
+
+
+
+
+
+
+−(Pt + λt ˙Qt) ˙Qt
+−ρRt + (αt + βt)λt ˙Qt + It + µZ
+t
+−˙Qt
+αtλt ˙Qt −ρRt
+aI
+t −bI
+t It
+
+
+
+
+
+
+dt +
+
+
+
+
+
+
+0
+0
+σZ
+t
+0
+0
+0
+0
+0
+0
+σI
+t
+
+
+
+
+
+
+dBZ
+t
+dBI
+t
+
+=: µt(st, ˙Qt)dt + eΣeΣeΣtd e
+Bt,
+(102)
+28
+
+where
+µt(st, ˙Qt) :=
+
+
+
+
+
+
+−(Pt + λt ˙Qt) ˙Qt
+(αt + βt)λt ˙Qt −ρRt + It + µZ
+t
+−˙Qt
+−ρRt + αtλt ˙Qt
+aI
+t −bI
+t It
+
+
+
+
+
+
+;
+eΣeΣeΣt :=
+
+
+
+
+
+
+0
+0
+σZ
+t
+0
+0
+0
+0
+0
+0
+σI
+t
+
+
+
+
+
+
+;
+d e
+Bt :=
+dBZ
+t
+dBI
+t
+
+.
+We can rewrite d e
+Bt with a Brownian motion orthogonal to BZ
+t , denoted by BZ⊥
+t
+, as
+d e
+Bt =
+dBZ
+t
+dBI
+t
+
+=
+ 1
+0
+ρZ,I
+p
+1 −(ρZ,I)2
+  dBZ
+t
+dBZ⊥
+t
+
+=: ρdBt.
+(103)
+Plugging Eq. (103) into Eq. (102), we have
+dst = µt(st, ˙Qt)dt + eΣeΣeΣtρdBt = µt(st, ˙Qt)dt + ΣtdBt,
+(104)
+where Σt := eΣeΣeΣtρ ∈M5,2(R).
+B.2
+HJB Equation: Revisited
+We next reformulate the ansatz of the optimal value function. From the dynamic programming
+principle, the optimal value function, V
+
+t, st
+ := V
+
+t, Wt, Pt, Qt, Rt, It
+
+, with the terminal condition:
+V
+
+T, sT
+
+= V
+
+T, WT , PT , QT , RT , IT
+
+= −exp
+n
+−γ
+h
+WT −(PT + χT QT )QT
+io
+,
+(105)
+satisﬁes the following HJB equation (or dynamic programming equation) for the optimal execution
+speed ˙Qt:
+sup
+˙Qt∈R
+
+∂tV + µt(st, ˙Qt)⊤∂sV + 1
+2tr
+
+Σ⊤
+t ∂ss⊤V Σt
+
+= 0,
+(106)
+Here µt(st, ˙Qt) also has another description associated with ˙Qt:
+µt(st, ˙Qt) :=
+
+−Λt ˙Q2
+t + (Θtst + Φt) ˙Qt + (Πtst + Ψt)
+
+,
+(107)
+where
+Λt :=
+
+
+
+
+
+
+λt
+0
+0
+0
+0
+
+
+
+
+
+
+∈R5;
+Θt :=
+
+
+
+
+
+
+0
+−1
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+
+
+
+
+
+
+∈M5(R);
+Φt :=
+
+
+
+
+
+
+0
+(αt + βt)λt
+−1
+αtλt
+0
+
+
+
+
+
+
+∈R5;
+Πt :=
+
+
+
+
+
+
+0
+0
+0
+0
+0
+0
+0
+0
+−ρ
+1
+0
+0
+0
+0
+0
+0
+0
+0
+−ρ
+0
+0
+0
+0
+0
+−bI
+t
+
+
+
+
+
+
+∈M5(R);
+Ψt :=
+
+
+
+
+
+
+0
+µZ
+t
+0
+0
+aI
+t
+
+
+
+
+
+
+∈R5.
+(108)
+Putting Eq. (103) and (107) together with Eq. (106) yields
+sup
+˙Q∈R
+
+−Λt ˙Q2
+t + (Θtst + Φt) ˙Qt
+⊤
+∂sV
+
++ ∂tV + (Πtst + Ψt)⊤∂sV + 1
+2tr
+
+Σ⊤
+t ∂ss⊤V Σt
+
+= 0.
+(109)
+We can derive the matrix representation of the candidate function explicitly as follows.
+29
+
+B.3
+Matrix Representation of Candidate Function
+Proposition B.1. If the system of ODEs given by Eqs. (111) to (113) admits a unique solution,
+the candidate function U
+
+t, st
+
+at time t ∈[0, T] is represented as follows:
+U [t, st] = −exp
+n
+−γ
+
+s⊤
+t Ωtst + Γ⊤
+t st + Kt
+o
+,
+(110)
+where
+Ωt :=
+
+
+
+
+
+
+0
+0
+0
+0
+0
+0
+0
+−1/2
+0
+0
+0
+−1/2
+Gt
+1/2It
+1/2Mt
+0
+0
+1/2It
+Jt
+1/2Nt
+0
+0
+1/2Mt
+1/2Nt
+Xt
+
+
+
+
+
+
+;
+Γt :=
+
+
+
+
+
+
+1
+0
+Ht
+Lt
+Yt
+
+
+
+
+
+
+,
+with the terminal conditions:
+ΩT :=
+
+
+
+
+
+
+0
+0
+0
+0
+0
+0
+0
+−1/2
+0
+0
+0
+−1/2
+−χT
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+
+
+
+
+
+
+∈M5(R);
+ΓT :=
+
+
+
+
+
+
+1
+0
+0
+0
+0
+
+
+
+
+
+
+∈R5;
+KT = 0,
+and Gt, Ht, It, Jt, Lt, Mt, Nt, Xt, Yt, Kt for t ∈[0, T] are the ones deﬁned in Section 3. The three
+time-dependent functions, Ωt, Γt, Kt, are determined by the following simultaneous diﬀerential
+equations:
+˙Ωt = Ω⊤
+t
+
+2γΣtΣ⊤
+t −1
+λt
+ΦtΦ⊤
+t
+
+Ωt −Ω⊤
+t
+
+Πt + 1
+2λt
+ΦtΓ⊤
+t Θt
+
+−
+
+Πt + 1
+2λt
+ΦtΓ⊤
+t Θt
+⊤
+Ωt
+−1
+4λt
+Θ⊤
+t ΓtΓ⊤
+t Θt;
+(111)
+˙Γt = −Γ⊤
+t
+ 1
+2λt
+ΦtΘ⊤
+t
+
+Γt −
+
+Π⊤
+t −2γΩtΣtΣ⊤
+t + 1
+λt
+ΩtΦtΦ⊤
+t
+
+Γt −2ΩtΨt;
+(112)
+˙Kt = −1
+4λt
+(ΦtΓt)2 −Ψ⊤
+t Γt + 1
+2γΓ⊤
+t ΣtΣ⊤
+t Γt −tr
+
+Σ⊤
+t ΩtΣt
+
+.
+(113)
+Proof. Writing the ansatz (73) in matrix form yields Eq. (110). Here we have
+∂tU
+
+t, st
+
+= U [t, st] {−γ[s⊤
+t ˙Ωtst + ˙Γ
+⊤
+t st + ˙Kt};
+(114)
+∂sU [t, st] = U [t, st] {−γ[2Ωtst + Γt]};
+(115)
+∂ss⊤U [t, st] = U [t, st] {−γ[2Ωtst + Γt]}{−γ[2Ωtst + Γt]}⊤+ U [t, st] {−γ[2Ωt]}.
+(116)
+Thus, by substituting the above equations into the HJB equation (109) and rearranging, we obtain
+sup
+˙Qt∈R
+U[t, st](−γ)
+h
+−
+
+2Λ⊤
+t Ωtst + Λ⊤
+t Γt
+
+˙Q2
+t + (Θtst + Φt)⊤[2Ωtst + Γt] ˙Qt
+i
++ U[t, st](−γ)
+h
+s⊤
+t ˙Ωtst + ˙Γ
+⊤
+t st + ˙Kt + (Πtst + Ψt)⊤[2Ωtst + Γt]
++ 1
+2(−γ)tr
+
+Σ⊤
+t
+h
+−γ[2Ωtst + Γt][2Ωtst + Γt]⊤i
+Σt + Σ⊤
+t [2Ωt]Σt
+
+= 0.
+(117)
+The ﬁrst-order condition becomes
+−2
+
+2Λ⊤
+t Ωtst + Λ⊤
+t Γt
+
+˙Qt + (Θtst + Φt)⊤[2Ωtst + Γt] = 0.
+(118)
+Therefore, the execution speed attaining the supremum is
+˙Q∗
+t =
+1
+2λt
+
+s⊤
+t Θ⊤
+t + Φ⊤
+t
+
+[2Ωtst + Γt] =
+1
+2λt
+
+2Φ⊤
+t Ωt + Γ⊤
+t Θt
+
+st + Φ⊤
+t Γt
+
+.
+(119)
+In the derivation, we have used the following facts:
+30
+
+1. Λ⊤
+t Ωt = 0 ∈M1,5(R):
+Λ⊤
+t Ωt =
+ λt
+0
+0
+0
+0
+
+
+
+
+
+
+
+0
+0
+0
+0
+0
+0
+0
+−1/2
+0
+0
+0
+−1/2
+Gt
+1/2It
+1/2Mt
+0
+0
+1/2It
+Jt
+1/2Nt
+0
+0
+1/2Mt
+1/2Nt
+Xt
+
+
+
+
+
+
+=
+ 0
+0
+0
+0
+0
+
+;
+2. Θ⊤
+t Ωt = O ∈S5
++(R):
+Θ⊤
+t Ωt =
+
+
+
+
+
+
+0
+0
+0
+0
+0
+−1
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+
+
+
+
+
+
+
+
+
+
+
+
+0
+0
+0
+0
+0
+0
+0
+−1/2
+0
+0
+0
+−1/2
+Gt
+1/2It
+1/2Mt
+0
+0
+1/2It
+Jt
+1/2Nt
+0
+0
+1/2Mt
+1/2Nt
+Xt
+
+
+
+
+
+
+=
+
+
+
+
+
+
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+
+
+
+
+
+
+.
+These relationships make the optimal execution speed an aﬃne function of the state process. Then,
+Eq. (117) becomes
+U [t, st] (−γ) 1
+4λt
+n
+2Φ⊤
+t Ωt + Γ⊤
+t Θt
+
+st + Φ⊤
+t Γt
+o2
++ U [t, st] (−γ)
+h
+s⊤
+t ˙Ωtst + ˙Γ
+⊤
+t st + ˙Kt + (Πtst + Ψt)⊤[2Ωtst + Γt]
+i
++ 1
+2U [t, st] (−γ)
+h
+tr
+
+Σ⊤
+t
+h
+−γ[2Ωtst + Γt][2Ωtst + Γt]⊤i
+Σt + Σ⊤
+t [2Ωt]Σt
+i
+= 0.
+(120)
+Here we have
+tr
+
+Σ⊤
+t
+h
+−γ[2Ωtst + Γt][2Ωtst + Γt]⊤i
+Σt + 2Σ⊤
+t ΩtΣt
+
+= −γtr
+
+[2Ωtst + Γt]⊤ΣtΣ⊤
+t [2Ωtst + Γt]
+
+|
+{z
+}
+∈R
++2tr
+
+Σ⊤
+t ΩtΣt
+
+= −4γs⊤
+t ΩtΣtΣ⊤
+t Ωtst −2γΓ⊤
+t ΣtΣ⊤
+t Ωtst −2γs⊤
+t ΩtΣtΣ⊤
+t Γt −γΓ⊤
+t ΣtΣ⊤
+t Γt + 2tr
+
+Σ⊤
+t ΩtΣt
+
+. (121)
+Substituting this equation into Eq. (120) and rearranging yields
+s⊤
+t
+"
+˙Ωt + Ω⊤
+t
+ 1
+λt
+ΦtΦ⊤
+t −2γΣtΣ⊤
+t
+
+Ωt + Ω⊤
+t
+
+Πt + 1
+2λt
+ΦtΓ⊤
+t Θt
+
++
+
+Πt + 1
+2λt
+ΦtΓ⊤
+t Θt
+⊤
+Ωt + 1
+4λt
+Θ⊤
+t ΓtΓ⊤
+t Θt
+#
+st
+(122)
++
+
+˙Γt + Γ⊤
+t
+ 1
+2λt
+ΦtΘ⊤
+t
+
+Γt +
+
+Π⊤
+t −2γΩtΣtΣ⊤
+t + 1
+λt
+ΩtΦtΦ⊤
+t
+
+Γt + 2ΩtΨt
+⊤
+st
+(123)
++
+
+˙Kt + 1
+4λt
+(ΦtΓt)2 + Ψ⊤
+t Γt −1
+2γΓ⊤
+t ΣtΣ⊤
+t Γt + tr
+
+Σ⊤
+t ΩtΣt
+
+= 0.
+(124)
+Therefore, for the above equation to be satisﬁed for all st ∈S, the following three equations must
+hold:
+1. an MRDE with respect to Ωt ∈S5(R):
+˙Ωt = Ω⊤
+t
+
+2γΣtΣ⊤
+t −1
+λt
+ΦtΦ⊤
+t
+
+Ωt −Ω⊤
+t
+
+Πt + 1
+2λt
+ΦtΓ⊤
+t Θt
+
+−
+
+Πt + 1
+2λt
+ΦtΓ⊤
+t Θt
+⊤
+Ωt
+−1
+4λt
+Θ⊤
+t ΓtΓ⊤
+t Θt;
+(125)
+31
+
+2. a linear ODE with respect to Γt ∈R5:
+˙Γt = −Γ⊤
+t
+ 1
+2λt
+ΦtΘ⊤
+t
+
+Γt −
+
+Π⊤
+t −2γΩtΣtΣ⊤
+t + 1
+λt
+ΩtΦtΦ⊤
+t
+
+Γt −2ΩtΨt;
+(126)
+3. a one-dimentional ODE with respect to Kt ∈R:
+˙Kt = −1
+4λt
+(ΦtΓt)2 −Ψ⊤
+t Γt + 1
+2γΓ⊤
+t ΣtΣ⊤
+t Γt −tr
+
+Σ⊤
+t ΩtΣt
+
+.
+(127)
+As these equations show, the relationships that Ωt,Γt, and Kt satisfy are represented by a system
+of matrix Riccati equations. If the solution of Ωt and Γt is unique, then Kt are also determined
+uniquely by integrating ˙Kt as Kt =
+R t
+T ˙Ksds, combined with the terminal condition KT = 0.
+B.4
+Representation of MRDE and Linear ODE
+Calculating Θ⊤
+t Γt yields
+ηt := Θ⊤
+t Γt =
+
+
+
+
+
+
+0
+−1
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+
+
+
+
+
+
+⊤
+
+
+
+
+
+1
+0
+Ht
+Lt
+Yt
+
+
+
+
+
+
+=
+
+
+
+
+
+
+0
+−1
+0
+0
+0
+
+
+
+
+
+
+∈R5.
+(128)
+Therefore, the vector ηt = Θ⊤
+t Γt becomes a one whose elements are all constant and so does the
+matrix ηtη⊤
+t = Θ⊤
+t ΓtΓ⊤
+t Θt. Therefore, Eq. (125) boils down to
+˙Ωt = −Ct −Ω⊤
+t Bt −B⊤
+t Ωt + Ω⊤
+t AtΩt,
+(129)
+where
+At := 2γΣtΣ⊤
+t −1
+λt
+ΦtΦ⊤
+t
+=
+
+
+
+
+
+
+
+
+0
+0
+0
+0
+0
+0
+2γ(σZ
+t )2 −(αt + βt)2λt
+(αt + βt)
+−αt(αt + βt)λt
+2γρZ,IσZ
+t σI
+t
+0
+(αt + βt)
+−1
+λt
+αt
+0
+0
+−αt(αt + βt)λt
+αt
+−α2
+t λt
+0
+0
+2γρZ,IσZ
+t σI
+t
+0
+0
+2γ
+ σI
+t
+2
+
+
+
+
+
+
+
+
+∈S5(R);
+(130)
+Bt := Πt + 1
+2λt
+ΦtΓ⊤
+t Θt =
+
+
+
+
+
+
+
+
+
+
+0
+0
+0
+0
+0
+0
+−1
+2(αt + βt)
+0
+−ρ
+1
+0
+1
+2λt
+0
+0
+0
+0
+−1
+2αt
+0
+−ρ
+0
+0
+0
+0
+0
+−bI
+t
+
+
+
+
+
+
+
+
+
+
+∈M5(R);
+(131)
+Ct :=
+1
+4λt
+Θ⊤
+t ΓtΓ⊤
+t Θt =
+
+
+
+
+
+
+
+
+0
+0
+0
+0
+0
+0
+1
+4λt
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+
+
+
+
+
+
+
+
+∈S5
++(R),
+(132)
+and At, Bt and Ct are all constant matrices (in time t). Also, given that the unique solution to
+Eq. (129) exists, Eq. (126) is rewritten as a linear ODE as follows:
+˙Γt = DtΓt + Ft,
+(133)
+32
+
+where
+Dt := −1
+2λt
+ηtΦ⊤
+t −Πt −2γΩtΣtΣ⊤
+t + 1
+λt
+ΩtΨtΨ⊤
+t ∈M5(R);
+(134)
+Ft := −2ΩtΨt ∈R5.
+(135)
+C
+Proof of Theorem 3.1
+By the Cauchy–Lipschitz theorem, there exists a unique local solution to the MRDE (47) with
+terminal conditions (51) deﬁned on an open interval (t, t), where T is included in the interval. To
+show the existence of the solution to MRDE (47) for [0, T], we will rely on the following theorem:
+Theorem C.1 (Theorem 3.6, Freiling [27]). Consider the following Hermitian (or symmetric)
+Riccati diﬀerential equation (HRDE):
+˙Pt = −A∗
+t Pt −PtAt −Qt + PtStPt,
+(136)
+with the terminal condition Ptf = Pf for some tf ∈R. Let Ai, Qi = Q∗
+i , Si = S∗
+i ∈Mn(C),
+i = {1, 2}, be such that
+Q1
+A1
+A∗
+1
+−S1
+
+≤
+Qt
+At
+A∗
+t
+−St
+
+≤
+Q2
+A2
+A∗
+2
+−S∗
+2
+
+,
+(137)
+for t ≤tf. If there exist hermitian matrices P1, P2 with
+P1 ≤Pf ≤P2,
+(138)
+and
+−A∗
+i Pi −PiAi −Qi + PiSiPi
+(
+≤0
+for i = 1,
+≥0
+for i = 2,
+(139)
+then the solution Pt exists for t ≤tf. Moreover,
+P1 ≤Pt ≤P2,
+(140)
+for t ≤tf. Note that in this theorem, “∗” indicates the conjugate transpose of a matrix.
+In the following, we consider the case that (i) ρZ,I = 0, (ii) bI > 0, and (iii) the parameters are
+time-independent: A ≡At, B ≡Bt, C ≡Ct. We will search for an upper and a lower bound (and
+time-independent) matrix of the MRDE (47).
+Upper bound for MRDE (47)
+Let us ﬁrst seek an upper bound matrix Ωof the MRDE (47). Let
+¯A :=
+
+
+
+
+
+
+
+0
+0
+0
+0
+0
+0
+2γ(σZ)2 −(α + β)2λ
+(α + β)
+−α(α + β)λ
+0
+0
+(α + β)
+−1
+λ
+α
+0
+0
+−α(α + β)λ
+α
+−α2λ
+0
+0
+0
+0
+0
+0
+
+
+
+
+
+
+
+∈S5(R),
+(141)
+and ¯B = B and ¯C = C are all constant matrices (in time t). Then we have
+ ¯C
+¯B
+¯B⊤
+−¯A
+
+−
+ C
+B
+B⊤
+−A
+
+=
+
+
+
+
+
+
+
+0
+0
+|{z}
+∈M9(R)
+...
+0
+0
+· · ·
+0
+2γ
+ σI2
+
+
+
+
+
+
+
+∈S10
++ (R),
+(142)
+33
+
+so that
+ C
+B
+B⊤
+−A
+
+≤
+ C
+B
+B⊤
+−¯A
+
+,
+(143)
+holds.
+We guess that an upper bound matrix Ωtakes the following form:
+Ω:=
+
+
+
+
+
+
+0
+0
+0
+0
+0
+0
+ω22
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+ω44
+0
+0
+0
+0
+0
+ω55
+
+
+
+
+
+
+∈S5(R).
+(144)
+We start our analysis by investigating when the set of parameters (ω22, ω44, ω55) ∈R3 satisﬁes the
+right inequality in the condition (138). Since
+Ω−ΩT =
+
+
+
+
+
+
+0
+0
+0
+0
+0
+0
+ω22
+1/2
+0
+0
+0
+1/2
+χT
+0
+0
+0
+0
+0
+ω44
+0
+0
+0
+0
+0
+ω55
+
+
+
+
+
+
+∈S5(R),
+(145)
+the following three conditions:
+
+
+
+
+
+
+
+χT ω22 −1
+4 ≥0 ⇐⇒ω22 ≥
+1
+4χT
+;
+(146a)
+ω44 ≥0;
+(146b)
+ω55 ≥0,
+(146c)
+must hold.
+We proceed to examine an additional condition for the set of parameters (ω22, ω44, ω55) ∈R3,
+imposed by Eq. (139). By a direct calculation, we obtain
+−B⊤Ω−ΩB −C + Ω¯AΩ
+=
+
+
+
+
+
+
+0
+0
+0
+0
+0
+0
+f(ω22)
+0
+g(ω22, ω44)
+−ω22
+0
+0
+0
+0
+0
+0
+g(ω22, ω44)
+0
+−α2
+t λtω2
+44 + 2ω44ρ
+0
+0
+−ω22
+0
+0
+2bIω55
+
+
+
+
+
+
+∈S5(R),
+(147)
+where
+f(ω22) := ω2
+22
+
+2γ
+ σZ2 −λ(α + β)2
++ ω22(α + β) −1
+4λ;
+(148)
+g(ω22, ω44) := −ω22ω44α(α + β) + ω44α
+2
++ ω22ρ.
+(149)
+In the proof of the existence of an upper bound for the matrix (47), we assume that:
+Assumption C.1. The problem parameters (α, β, λ, γ, σZ) satisfy
+2γ(σZ)2 −(α + β)2λ > 0.
+(150)
+34
+
+Under this assumption, we seek the condition for the matrix (147) to be positive semi-deﬁnite
+as a suﬃcient condition. The matrix (147) becomes positive semi-deﬁnite if the following matrix:
+
+
+
+
+ω2
+22
+
+2γ
+ σZ2 −λ (α + β)2
++ ω22(α + β) −1
+4λ
+−αω22ω44 (α + β) + αω44
+2
++ ω22ρ
+−ω22
+−αω22ω44 (α + β) + αω44
+2
++ ω22ρ
+−α2λω2
+44 + 2ω44ρ
+0
+−ω22
+0
+2bIω55
+
+
+
+∈S3(R),
+(151)
+is positive deﬁnite. We here impose positive deﬁniteness as a suﬃcient condition to simplify the
+analysis of the matrix inequality. To ensure that the matrix (151) is positive deﬁnite, the following
+three inequalities:
+
+
+
+
+
+
+
+ω2
+22
+
+2γ
+ σZ2 −λ (α + β)2
++ ω22(α + β) −1
+4λ > 0;
+(152a)
+−α2λω2
+44 + 2ω44ρ > 0;
+(152b)
+2bIω55 > 0,
+(152c)
+necessarily hold. From the condition (152b), we obtain the range of ω44 as follows:
+0 < ω44 < 2ρ
+α2λ.
+(153)
+Therefore, we can express ω44 using a parameter eε ∈(0, 2) as
+ω44 = eερ
+α2λ.
+(154)
+By setting ω44 = eερ/(α2λ), we can rewrite the matrix (151) as follows:
+U :=
+
+
+
+
+
+
+ω2
+22
+
+2γ
+ σZ2 −λ(α + β)2
++ ω22(α + β) −1
+4λ
+ω22ρ
+
+1 −eε(α + β)
+αλ
+
++ eερ
+2αλ
+−ω22
+ω22ρ
+
+1 −eε(α + β)
+αλ
+
++ eερ
+2αλ
+ρ2
+α2λ(2eε −eε2)
+0
+−ω22
+0
+2bIω55
+
+
+
+
+
+
+.
+(155)
+Therefore, if
+ρ2
+α2λ(2eε −eε2)
+
+2γ
+ σZ2 −λ(α + β)2
+|
+{z
+}
+>0 (by assumption)
+> ρ2
+
+1 −eε(α + β)
+αλ
+2
+,
+(156)
+holds for some eε ∈(0, 2) with the ﬁxed problem parameters, the determinant for the 2nd naturally
+ordered principal minor of the matrix (155), denoted by U22, becomes positive-deﬁnite by choosing
+ω22 suﬃciently large such that
+|U22| = ρ2
+α2λ(2eε −eε2)
+
+ω2
+22
+
+2γ
+ σZ2 −λ(α + β)2
++ ω22(α + β) −1
+4λ
+
+−
+
+ω22ρ
+
+1 −eε(α + β)
+αλ
+
++ eερ
+2αλ
+2
+> 0,
+(157)
+holds. Eq. (156) is rewritten as
+eε2
+(
+1 −1
+λ2
+ 
+1 + β
+α
+2
+−2γ
+ σZ2
+α2λ
+)
+−2eε
+(
+1 + β
+α
+2
+−1
+λ
+
+1 + β
+α
+
+−4γ
+ σZ2
+α2λ
+)
+−1 > 0.
+(158)
+35
+
+0
+2
+ω22
+f(ω22)
+−
+(
+1 −2(α+β)
+αλ
+)2
+−1
+Figure 9: Graphical image of f(ω22). In this ﬁgure, we show the case that
+(
+1 −2(α+β)
+αλ
+)2
+< 1.
+Let J (eε) be the left hand side of Eq. (158). Then, we have
+J (0) = −1 < 0;
+(159)
+J (2) = −
+
+1 −2(α + β)
+αλ
+2
+≤0.
+(160)
+A suﬃcient condition for the existence of eε ∈(0, 2) satisfying Eq. (158) is the following two conditions: (i) the negative coeﬃcient of the quadratic term; (ii) the (strict) positivity of the discriminant
+for J (eε). (The graphical image is illustrated in Figure 9.) Thus, we have the following two equivalent conditions:
+
+
+
+
+
+
+λ −1
+λ
+
+(α + β)2 < 2γ
+ σZ2 ;
+(161a)
+h1(α, β)λ2 −h2(α, β)λ + 2γ
+ σZ2 h3(α, β) > 0,
+(161b)
+where
+h1(α, β) := (α + β)2
+
+α(α + β) + 1
+2β2
+
+(> 0);
+(162)
+h2(α, β) := α(α + β)3 + 2γ
+ σZ2 (α + β)2 + γ
+ σZ2 α2 (> 0);
+(163)
+h3(α, β) := α(α + β) + γ
+ σZ2 (> 0).
+(164)
+We should note that condition (161a) is obtained by the discriminant times α4λ2/8 (> 0). Eq. (161a)
+is satisﬁed under the assumption that 2γ(σZ)2 −(α + β)2λ > 0.
+Also, if this condition is satisﬁed by parameters, we obtain our desired result since the determinant of the matrix (151) is calculated as
+|U| = 2bIω55|U22| −(ω22)2 ρ2
+α2λ(2eε −eε2),
+(165)
+and we can choose ω55 suﬃciently large so that the R.H.S. of the above equation becomes positive.
+From the above argument, if we choose ω22, ω44, and ω55 as ω22, ω44, and ω55 such that these
+satisfy conditions (156), (157), and (165) hold, the matrix
+Ω=
+
+
+
+
+
+
+0
+0
+0
+0
+0
+0
+ω22
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+ω44
+0
+0
+0
+0
+0
+ω55
+
+
+
+
+
+
+∈S5(R),
+(166)
+becomes an upper bound matrix and satisﬁes the conditions in Theorem C.1: Ωt ≤Ωfor all
+t ∈[0, T].
+36
+
+Lower bound for MRDE (47)
+We next examine a lower bound matrix for {Ωt}0≤t≤T . To this end, we ﬁrst investigate a lower
+bound for the optimal value function (with time-dependent parameters for generality), which is a
+key ingredient in determining the lower bound matrix.
+Let us ﬁrst deﬁne, for C ≥0, a set of substrategies {Qs}t≤s≤T by
+At(C) :=
+n
+{Qs}t≤s≤T
+{Fs}t≤s≤T –adapted process with a continuously diﬀerentiable path,
+E
+"
+exp
+(
+C
+"
+1 + sup
+s≤u≤T
+W
+e
+Q
+u
+ +
+s
+e
+Q
+−W,u
+
+2#) Fs
+#
+< +∞, ∀s ∈[t, T],
+Q0 = 0, Qt =
+Z t
+0
+˙Qsds
+o
+,
+(167)
+and use the notation At for notational ease. For any suboptimal strategy {Q†
+s}t≤s≤T ∈At, we have
+sup
+{Qs}t≤s≤T ∈At
+E
+
+−exp
+
+−γ
+
+WT −(PT −χT QT )QT
+	 Ft
+
+≥E
+
+−exp
+
+−γ
+
+Wt −
+Z T
+t
+(Ps + λs ˙Q†
+s) ˙Q†
+sds −
+
+Pt +
+Z T
+t
+n
+(βsλs ˙Q†
+s + Is)ds + dRs + dZs
+o
++χT
+
+Qt −
+Z T
+t
+˙Q†
+sds
+ 
+Qt −
+Z T
+t
+˙Q†
+sds
+ Ft
+
+,
+(168)
+where { ˙Q†
+s}t≤s≤T satisﬁes
+Q†
+s = Q†
+t +
+Z s
+t
+˙Q†
+udu
+or
+dQ†
+t = ˙Q†
+tdt.
+(169)
+Under the (suboptimal) zero-trade strategy 0 = {0}t≤s≤T ∈At, the R.H.S. of Eq. (168) is
+rewritten as
+E
+
+−exp
+
+−γ
+
+Wt −
+Z T
+t
+(Ps + λs ˙Q†
+s) ˙Q†
+sds −
+
+Pt +
+Z T
+t
+n
+(βsλs ˙Q†
+s + Is)ds + dRs + dZs
+o
++χT
+
+Qt −
+Z T
+t
+˙Q†
+sds
+ 
+Qt −
+Z T
+t
+˙Q†
+sds
+ Ft
+
+= E
+
+−exp
+
+−γ
+
+Wt −
+
+Pt +
+Z T
+t
+
+Isds + dRs + dZs
+
++ χT Qt
+
+Qt
+ Ft
+
+= −exp
+n
+−γ
+h
+Wt −PtQt −χT (Qt)2 −(1 −e−ρ(T−t))QtRt
+io
+× E
+
+exp
+
+−γ
+
+−
+Z T
+t
+Isds + (ZT −Zt)
+
+Qt
+ Ft
+
+,
+(170)
+where we have used the fact that R0 = 0 and
+Z T
+t
+dRs = RT −Rt =
+Z T
+0
+e−ρ(T−s)αsλs ˙Q†
+sds −Rt
+= e−ρ(T−t)
+Z t
+0
+e−ρ(T−s)αsλs ˙Q†
+sds +
+Z T
+t
+e−ρ(T−s)αsλs ˙Q†
+sds −Rt
+= −
+
+1 −e−ρ(T−t)
+Rt.
+(171)
+By the stochastic Fubini theorem,
+Z T
+t
+Isds =
+Z T
+t
+Z s
+t
+aI
+uBI(u, s)duds +
+Z T
+t
+BI(t, s)ds
+
+It +
+Z T
+t
+σI
+u
+Z T
+u
+BI(u, s)dsdBI
+u,
+(172)
+37
+
+holds. Therefore, we can rewrite the last term of Eq. (170) as
+−exp
+n
+−γ
+h
+Wt −PtQt −χT (Qt)2 −a(t, T)Qt −(1 −e−ρ(T−t))QtRt −b(t, T)QtIt
+io
+× E
+
+exp
+
+−γ
+
+−
+Z T
+t
+S(u, T)dBI
+u + (ZT −Zt)
+
+Qt
+ Ft
+
+,
+(173)
+where
+a(t, T) :=
+Z T
+t
+Z s
+t
+aI
+uBI(u, s)duds;
+(174)
+b(t, T) :=
+Z T
+t
+BI(t, s)ds;
+(175)
+S(u, T) := σI
+u
+Z T
+u
+BI(u, s)ds.
+(176)
+From the independence and normality of increments of Brownian motion, we have
+E
+
+exp
+
+−γ
+
+−
+Z T
+t
+S(u, T)dBI
+u + (ZT −Zt)
+
+Qt
+ Ft
+
+= exp
+
+−γ
+
+−Qt
+Z T
+t
+µZ
+u du −γ
+2(Qt)2V(t, T)
+
+.
+(177)
+where
+V(t, T) := V
+Z T
+t
+S(u, T)dBI
+u + (ZT −Zt)
+
+=
+Z T
+t
+S(u, T)2du +
+Z T
+t
+(σZ
+u )2du.
+(178)
+(Here we use the assumption that ρI,Z = 0 and Ito isometry.) Note that
+E
+
+γ
+Z T
+t
+S(u, T)dBI
+u + (ZT −Zt)
+
+Qt
+ Ft
+
+= γQt
+Z T
+t
+µZ
+u du.
+(179)
+Therefore, Eq. (168) is rewritten as
+sup
+{Qs}t≤s≤T ∈At
+E
+
+−exp
+
+−γ
+
+WT −(PT −χT QT )QT
+	 Ft
+
+= V [t, st] = −exp
+n
+−γ
+
+s⊤
+t Ωtst + Γ⊤
+t st + Kt
+o
+≥−exp
+n
+−γ
+h
+Wt −PtQt −
+γ
+2V(t, T) + χT
+
+(Qt)2 −c(t, T)Qt −(1 −e−ρ(T−t))QtRt −b(t, T)QtIt
+io
+=: −exp
+n
+−γ
+h
+s⊤
+t Ωtst + Γ⊤
+t st
+io
+,
+(180)
+where c(t, T) := a(t, T) +
+R T
+t µZ
+u du and
+Ωt :=
+
+
+
+
+
+
+
+
+
+
+
+
+0
+0
+0
+0
+0
+0
+0
+−1
+2
+0
+0
+0
+−1
+2
+−
+γ
+2V(t, T) + χT
+
+−(1 −e−ρ(T−t))
+2
+−b(t, T)
+2
+0
+0
+−(1 −e−ρ(T−t))
+2
+0
+0
+0
+0
+−b(t, T)
+2
+0
+0
+
+
+
+
+
+
+
+
+
+
+
+
+∈S5(R);
+(181)
+Γ⊤
+t :=
+
+
+
+
+
+
+1
+0
+−c(t, T)
+0
+0
+
+
+
+
+
+
+∈R5.
+(182)
+38
+
+The inequality in Eq. (180) must hold for all st ∈S. Thus, we must have
+Ωt ≥Ωt,
+(183)
+since the inequality implies that s⊤
+t Ωtst ≥s⊤
+t Ωtst ⇐⇒s⊤
+t (Ωt −Ωt)st ≥0.
+Motivated by this preliminary investigation, we guess that a lower bound matrix, denoted by
+Ω, is given by
+Ω=
+
+
+
+
+
+
+0
+0
+0
+0
+0
+0
+0
+−1/2
+0
+0
+0
+−1/2
+ω33
+ω34
+ω35
+0
+0
+ω34
+ω44
+0
+0
+0
+ω35
+0
+ω55
+
+
+
+
+
+
+∈S5(R).
+(184)
+Let us set A = A, B = B, and C = C. Then, we have
+ C
+B
+B⊤
+−A
+
+−
+ C
+B
+B⊤
+−A
+
+= O ∈S10
++ (R+),
+(185)
+and
+−B⊤Ω−ΩB −C + ΩAΩ
+=
+
+
+
+
+
+
+
+
+
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+l1
+l2
+l3
+0
+0
+l2
+2ω44ρ −λ
+
+αω44 −ω34
+λ
+2
+ω35
+
+αω44 −ω34
+λ
+
+0
+0
+l3
+ω35
+
+αω44 −ω34
+λ
+
+2bIω55 + 2γ
+ σI2 (ω55)2 −(ω35)2
+λ
+
+
+
+
+
+
+
+
+
+∈S5(R),
+(186)
+where
+l1 := 1
+2αω34 (α + β) + 2γω2
+35
+ σI2 + 1
+2γ
+ σZ2 −1
+4λ (α + β)2 −1
+2ω33 (α + β) ;
++ ω33
+
+αω34 −1
+2α −1
+2β −ω33
+λ
+
++ ω34
+
+−α2λω34 + αω33 + 1
+2α (α + β)
+
+(187)
+l2 := 1
+2αω44 (α + β) + ω33
+
+αω44 −ω34
+λ
+
++ ω34ρ −1
+2ω34 (α + β)
++ ω34
+ −α2λω44 + αω34
+
+−1
+2ρ;
+(188)
+l3 := αω34ω35 + bIω35 + 2γω35ω55
+ σI2 −1
+2ω35 (α + β) + 1
+2 −ω33ω35
+λ
+.
+(189)
+Let L be the 3 × 3 principal minor formed by the last three rows and columns of Eq. (186).
+Substituting ω44 = ω34/(αλ) into L, we have
+L =
+
+
+
+
+
+el1
+el2
+el3
+el2
+2ρ
+αλω34
+0
+el3
+0
+2bIω55 + 2γ
+ σI2 (ω55)2 −(ω35)2
+λ
+
+
+
+
+∈S3(R),
+(190)
+where
+el1 := ω34α(α + β) + 2γω2
+35
+ σI2 + 1
+2γ
+ σZ2 −1
+4λ (α + β)2 −ω33 (α + β) + ω33
+
+αω34 −ω33
+λ
+
++ ω34
+ −α2λω34 + αω33
+
+;
+(191)
+el2 := ω34ρ −1
+2ω34 (α + β) −1
+2ρ + ω34 (α + β)
+2λ
+;
+(192)
+el3 := αω34ω35 + bIω35 + 2γ
+ σI2 ω35ω55 −1
+2(α + β)ω35 + 1
+2 −ω33ω35
+λ
+.
+(193)
+39
+
+From the lower bound for the optimal value function, we guess that
+ω34 ≤−1
+2
+ 1 −e−ρT 
+.
+(194)
+From this insight, by substituting ω34 = −1/2 (and thus ω44 = −1/2(αλ)), we have
+L =
+
+
+
+
+
+
+
+ellb
+1
+1
+4(α + β)
+
+1 −1
+λ
+
+−ρ
+ellb
+3
+1
+4(α + β)
+
+1 −1
+λ
+
+−ρ
+−ρ
+αλ
+0
+ellb
+3
+0
+2bIω55 + 2γ
+ σI2 (ω55)2 −(ω35)2
+λ
+
+
+
+
+
+
+
+∈S3(R),
+(195)
+where
+ellb
+1 := −1
+4α2λ −1
+2αω33 −1
+2α (α + β) + 2γω2
+35
+ σI2 + 1
+2γ
+ σZ2 −1
+4λ(α + β)2 −1
+2ω33(α + β)
++ ω33
+
+−α −1
+2β −ω33
+λ
+
+= −1
+λ(ω33)2 −(2α + β)ω33 + 2γ
+ σI2 (ω35)2 + 1
+2γ
+ σZ2 −1
+4α2λ −1
+2α(α + β)
+−1
+4λ(α + β)2;
+(196)
+ellb
+3 := −1
+2αω35 + bIω35 + 2γ
+ σI2 ω35ω55 −1
+2ω35(α + β) + 1
+2 −ω33ω35
+λ
+= ω35
+
+−1
+2α + bI + 2γ
+ σI2 ω55 −1
+2(α + β) −ω33
+λ
+
++ 1
+2.
+(197)
+For the matrix L to be negative deﬁnite, we require that the matrix bL := −L be positive deﬁnite.
+We here set ω35 as zero. Then, Eqs. (196) and (197) are rewritten as
+ellb
+1 = −1
+λ(ω33)2 −(2α + β)ω33 + 1
+2γ
+ σZ2 −1
+4α2λ −1
+2α(α + β) −1
+4λ(α + β)2;
+(198)
+ellb
+3 = 1
+2,
+(199)
+respectively. If the following two inequalities:
+
+
+
+
+
+−ellb
+1 > 0;
+(−ellb
+1 )
+ ρ
+αλ
+
+>
+1
+4(α + β)
+
+1 −1
+λ
+
+−ρ
+2
+,
+(200)
+hold, the 2nd naturally ordered principal minor of the matrix bL, denoted by bL22, become positive
+deﬁnite. The conditions (200) are summarized as
+|bL22| = (−ellb
+1 ) −αλ
+ρ
+1
+4(α + β)
+
+1 −1
+λ
+
+−ρ
+2
+> 0.
+(201)
+Therefore, by choosing
+ω33 < −(2α + β)λ +
+p
+(2α + β)2λ2 + 4λφ
+2
+,
+(202)
+where
+φ := 1
+2γ
+ σZ2 −1
+4α2λ −1
+2α(α + β) −1
+4λ(α + β)2 + αλ
+ρ
+1
+4(α + β)
+
+1 −1
+λ
+
+−ρ
+2
+,
+(203)
+40
+
+the matrix bL becomes positive-deﬁnite when (2α + β)2λ2 + 4λφ ≥0. Note that in the case that
+(2α + β)2λ2 + 4λφ < 0, Eq. (201) holds for all ω33.
+Using the determinant of bL22, the determinant of bL is calculated as
+|bL| =
+
+−2bIω55 −2γ
+ σI2 (ω55)2
+|bL22| −
+ρ
+4αλ > 0,
+(204)
+If we choose ω55 from the following interval
+−
+bI
+2γ (σI)2 < ω55 < 0,
+(205)
+and ω33 as a suﬃciently small value, |bL| becomes positive, since |bL22| is a quadratic function
+regarding ω33 with the coeﬃcient of quadratic term being positive.
+Adding to the above condition, we also must conﬁrm the condition that
+ΩT −Ω=
+
+
+
+
+
+
+
+
+
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+−χT −ω33
+1
+2
+0
+0
+0
+1
+2
+1
+2αλ
+0
+0
+0
+0
+0
+−ω55
+
+
+
+
+
+
+
+
+
+∈S5(R),
+(206)
+be positive semi-deﬁnite. By a similar argument as explained so far, it is suﬃcient if the following
+conditions are satisﬁed by ω33 and ω55:
+
+
+
+
+
+
+
+−χT −ω33 ≥0;
+(207a)
+1
+2αλ(−χT −ω33) ≥1
+4;
+(207b)
+−ω55 ≥0,
+(207c)
+for this matrix to be positive semideﬁnite.
+Summarizing these insights, we conclude that by setting ω33 as ω33 and ω55 as ω55 such that
+the following conditions:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ω33 < min
+(
+−χT −αλ
+2 , −(2α + β)λ +
+p
+(2α + β)2λ2 −4λφ
+2
+)
+;
+(208)
+−
+bI
+2γ (σI)2 < ω55 < 0;
+(209)
+
+−2bIω55 −2γ
+ σI2 (ω55)2
+|bL22| −
+ρ
+4αλ,
+(210)
+hold, the matrix
+Ω=
+
+
+
+
+
+
+
+
+
+
+0
+0
+0
+0
+0
+0
+0
+−1
+2
+0
+0
+0
+−1
+2
+ω33
+−1
+2
+0
+0
+0
+−1
+2
+−1
+2αλ
+0
+0
+0
+0
+0
+ω55
+
+
+
+
+
+
+
+
+
+
+∈S5(R),
+(211)
+becomes a lower bound and satisﬁes the conditions in Theorem C.1: Ω≤Ωt for all t ∈[0, T].
+Existence and uniqueness of the solution to MRDE (47)
+Combining the above examination about an upper bound and a lower bound (matrix) of Ωt for
+t ∈[0, T] and Theorem C.1, there exists a unique solution for the MRDE (47).
+41
+
+D
+Proof of Theorem 3.2
+Since the candidate function U[t, s] lies in C1,2, we have for all (t, st) ∈[0, T)×S, eQ = {Qu}t≤u≤T ∈
+A(γB), s ∈[t, T), and any stopping time τ valued in [t, T],
+U[s ∧τ, ss∧τ] = U[t, st] +
+Z s∧τ
+t
+(∂tU[u, su] + LU[u, su]) du
++
+Z s∧τ
+t
+∂sU(u, su)⊤ΣudBu,
+(212)
+by Ito’s formula. Note that L is the inﬁnitesimal generator of the state process. We choose
+τn := inf
+
+s ≥t:
+Z s
+t
+∂sU(u, su)⊤ΣuΣ⊤
+u ∂sU(u, su)du ≥n
+
+,
+(213)
+and we notice that τn →∞as n →∞. The stopped process
+ R s∧τn
+t
+∂sU(u, su)⊤ΣudBu
+	
+t≤s≤T is
+then a martingale. By taking the expectation, we have
+E [U[s ∧τn, ss∧τn]| Ft] = U[t, st] + E
+Z s∧τn
+t
+(∂tU[u, su] + LU[u, su]) du
+ Ft
+
+.
+(214)
+Since U satisﬁes the HJB equation (32), we have
+∂tU + LU ≤0,
+∀eQ ∈A(γB),
+(215)
+and so
+E [U[s ∧τn, ss∧τn]| Ft] ≤U[t, st],
+∀eQ ∈A(γB).
+(216)
+Also, from Eq. (46) we have
+0 ≥U[s ∧τn, ss∧τn] ≥−exp
+(
+γB
+"
+1 + sup
+t≤u≤T
+W
+e
+Q
+u
+ +
+s
+e
+Q
+−W,u
+
+2#)
+(> −∞),
+∀eQ ∈A(γB).
+(217)
+The R.H.S. in Eq. (217) is independent of n, and its expectation exists for the class of admissible
+strategies A(γB). Therefore, we can apply the dominated convergence theorem, and by sending n
+to inﬁnity in Eq. (216), we have
+E [U[s, ss]| Ft] ≤U[t, st],
+∀eQ ∈A(γB).
+(218)
+Since U is continuous on [0, T] × S, by letting s →T, we obtain
+E [gT (sT )|Ft] ≤U[t, st],
+∀eQ ∈A(γB),
+(219)
+by the dominated convergence theorem together with the terminal condition U[T, sT ] = gT (sT ).
+Since eQ ∈A(γB) is arbitrary, we can conclude that U[t, st] ≥V [t, st] for all (t, st) ∈[0, T] × S.
+The execution strategy (60) attains the supremum of the HJB equation (as shown in Appendix A) for each state st ∈S for all t ∈[0, T]. This implies that U(t, st) is the value of the
+expected utility under the strategy Q∗:= {ν∗
+t }0≤t≤T for the state st at time t ∈[0, T]. Therefore,
+we can also conﬁrm that U[t, st] ≤V [t, st] holds.
+Therefore, we can conclude that U[t, st] = V [t, st]. This means that the candidate function U is
+indeed the optimal value function under the candidate execution strategy.
+The remaining task is to show that there exists a unique solution to the SDE of the state
+dynamics under the strategy given by Eq. (60). Since the SDE under the execution strategy (60)
+lies in a class of linear SDEs, the existence and uniqueness of the solution are shown by a similar
+method conducted in Shimoshimizu et al. [64].
+42
+
+E
+Further investigation of MRDE (47): Benchmark values case
+In this section, we examine whether an upper bound matrix for the MRDE exists for the benchmark
+parameter values in the numerical experiments. Under the benchmark parameter values, we observe
+that
+eε =
+α
+α + β λ = 0.0005 < 2.
+(220)
+Therefore, we can choose eε as αλ/(α + β). Substituting eε = αλ/(α + β) and
+ω44 :=
+ρ
+α2λeε = 0.2,
+(221)
+under the benchmark parameter values, we have
+−B⊤Ω−ΩB −C + Ω¯AΩ
+=
+
+
+
+
+
+
+0
+0
+0
+0
+0
+0
+−0.00098ω2
+22 + ω22 −250
+0
+0.05
+−ω22
+0
+0
+0
+0
+0
+0
+0.05
+0
+0.03999
+0
+0
+−ω22
+0
+0
+ω55
+
+
+
+
+
+
+∈S5(R).
+(222)
+We observe that
+f(ω22) = −0.00098ω2
+22 + ω22 −250 > 0
+⇐⇒438.05032845035... < ω22 < 582.35783481495...,
+(223)
+with its maximum value of f(1/0.00196) = 5.10204082. If we take ω22 = 1/0.00196, we also ﬁnd
+that the determinant for the 2nd naturally ordered principal minor of the matrix (222) eliminating
+the zero rows and columns,
+|U22| = 0.2015361230... > 0,
+(224)
+becomes strictly positive. In addition, we can choose ω55 such that the determinant of the matrix (222):
+|U| := ω55|U22| −(ω22)2 ρ2
+α2λ(2eε −eε2) = ω55|U22| −0.3999(ω22)2,
+(225)
+becomes strictly positive. Therefore, we conclude that there exists an upper bound matrix for the
+MRDE (47) under the benchmark setting in the numerical experiments (Section 4).
+43

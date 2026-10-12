@@ -1,0 +1,90 @@
+{
+  "doc_id": 335,
+  "titulo": "The Impact of Fractional Trading on Order Book Dynamics",
+  "resumen_operativo": "Estudia el impacto del fintech y fractional trading (FT), introducido en diciembre 2019 por Robinhood y otras plataformas, sobre los niveles de precios y la dinámica del libro de órdenes en acciones US. Usando datos Nasdaq ITCH a frecuencia minuto para AAPL, AMZN, GOOG y TSLA, encuentra que tras el FT aumenta significativamente la pendiente de la estructura precio-volumen y el tick size promedio. En algunos casos aumenta el número de pasos necesarios para colocar una limit order. Los resultados sugieren que la mayor demanda de inversionistas no profesionales vía FT modifica el proceso de formación de precios del order book.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "Fractional Trading (FT)",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Innovación fintech que permite comprar una fracción de una acción o ETF, introducida en diciembre 2019 por Robinhood y luego adoptada por Charles Schwab, Fidelity, Interactive Brokers, TD Ameritrade, E-Trade y otros. Reduce barreras de entrada para inversionistas no profesionales con bajo capital.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Increased retail market participation"},
+        {"tipo": "PARTE_DE", "objeto": "Fintech trading apps"}
+      ],
+      "cita_textual": "Fractional trading has recently emerged as a significant innovation, allowing investors to buy a fraction of a share of stock or exchange-traded fund (ETF), which has increased accessibility and market participation."
+    },
+    {
+      "nombre": "Order book price-volume slope steepening",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Fenómeno post-FT donde la estructura del libro de órdenes se vuelve más empinada: para comprar/vender el mismo volumen se requieren cambios de precio mayores, o alternativamente, al mismo precio hay menos volumen disponible. Esto refleja mayor demanda enfrentando oferta constante o reducida.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Increased price impact"},
+        {"tipo": "MIDE", "objeto": "Order book dynamics change"}
+      ],
+      "cita_textual": "It has the potential to modify the behavior of prices and volumes in limit order books, making them steeper by either keeping the same volume as before and increasing the prices or by keeping the same prices and reducing the offered volume."
+    },
+    {
+      "nombre": "Non-professional investor behavior",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Inversionistas no profesionales son miopes y aversos al riesgo, evalúan frecuentemente sus inversiones y prefieren stocks de bajo precio. Con FT y apps sin comisiones, su apetito de riesgo puede aumentar al reducirse la inversión mínima requerida y la exposición monetaria al riesgo.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Increased stock demand"},
+        {"tipo": "EXPLICA", "objeto": "Order book price-volume slope steepening"}
+      ],
+      "cita_textual": "Non-professional investors... are, in general, frequent evaluators of their financial investments and are reluctant to make losses, which affects their risk perception and makes them behave myopically."
+    },
+    {
+      "nombre": "Nasdaq Total View-ITCH data",
+      "tipo": "dato",
+      "definicion_en_contexto": "Datos históricos tick-by-tick de Nasdaq que permiten rastrear órdenes individuales desde su colocación hasta ejecución o cancelación, con timestamps al nanosegundo. Usados a frecuencia minuto para 9 meses entre febrero 2019 y noviembre 2021.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Order book reconstruction"},
+        {"tipo": "APLICA_A", "objeto": "AAPL, AMZN, GOOG, TSLA"}
+      ],
+      "cita_textual": "We use Historical Total View-ITCH data from Nasdaq, providing historical tick-by-tick Nasdaq order data. It allows subscribers to track individual orders for equity instruments from placement to execution or cancellation."
+    },
+    {
+      "nombre": "Payment for Order Flow (PFOF)",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Modelo de negocio de apps fintech como Robinhood: los market makers pagan fees por recibir órdenes de retail que ejecutan a mejores precios que los exchanges públicos. Los exchanges pagan rebates a los brokers. Esto permite a las plataformas ofrecer trading sin comisiones.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Fintech trading apps"},
+        {"tipo": "CAUSA", "objeto": "Commission-less trading"}
+      ],
+      "cita_textual": "When an individual buys or sells stocks, ETFs, or options with a fintech-trading app, they send the orders to market makers that typically would offer better prices than the public exchanges. These market-makers in turn pay a small fee to these fintech-based applications."
+    },
+    {
+      "nombre": "Tick size increase post-FT",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Aumento en el tamaño promedio del tick (incremento mínimo de precio) observado tras la introducción de FT. Junto con el aumento en la pendiente precio-volumen, indica un deterioro en las condiciones de liquidez del order book para acciones populares entre retail.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "Order book granularity"},
+        {"tipo": "CAUSA", "objeto": "Higher trading costs for limit orders"}
+      ],
+      "cita_textual": "Using Nasdaq data feed at a minute frequency, we show that there has been a significant increase in the slope of the price-volume structure and average tick size."
+    },
+    {
+      "nombre": "Limit order book resiliency",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Capacidad del libro de órdenes de revertir rápidamente a su forma normal después de trades grandes. La reducción del tick size disminuye la resiliencia del mercado y en algunos casos aumenta el spread promedio. Inversores pacientes y baja tasa de llegada de órdenes aumentan la resiliencia.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "Market quality"},
+        {"tipo": "SE_OPONE_A", "objeto": "Order book fragility"}
+      ],
+      "cita_textual": "The limit order book is resilient if it promptly reverts to its normal shape after large trades."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Tras la introducción de fractional trading, se observa un aumento significativo en la pendiente de la estructura precio-volumen del order book y en el tick size promedio para acciones como AAPL, AMZN, GOOG y TSLA.",
+      "mercado": "Nasdaq - US equities",
+      "periodo": "Febrero 2019 a Noviembre 2021 (9 cortes transversales: feb, jul, nov de 2019, 2020, 2021)",
+      "magnitud": "Aumento significativo en slope de price-volume structure y average tick size; en algunos casos aumento en número de pasos para colocar limit orders.",
+      "condiciones": "Datos Nasdaq ITCH a frecuencia minuto durante horario de trading (09:30-16:00); controlando por hora del día, día del mes, mes del año",
+      "robustez": "media",
+      "cita_textual": "Using Nasdaq data feed at a minute frequency, we show that there has been a significant increase in the slope of the price-volume structure and average tick size. In some cases, there has been an increase in the number of steps required to place a limit order post-FT."
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "Estudio con datos intradiarios a frecuencia minuto sobre cambios estructurales en el order book post-FT; directamente relevante para entender liquidity y price impact en el contexto actual de mercados US."}
+}

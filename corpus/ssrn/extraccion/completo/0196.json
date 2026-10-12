@@ -1,0 +1,114 @@
+{
+ "doc_id": 196,
+ "titulo": "Pairs Trading with Costly Short-Selling",
+ "resumen_operativo": "El paper estudia un modelo óptimo de pairs trading que incorpora explícitamente los costos de venta en corto (short-selling). Cuando el inversor tiene una función de utilidad logarítmica, derivan una solución en forma cerrada que muestra que las funciones óptimas de asignación son lineales por tramos en relación al precio relativo del par. Además, las comisiones de préstamo de acciones reducen asimétricamente el tamaño óptimo de las posiciones largas/cortas y, por propósitos de cobertura de riesgo, puede ser óptimo vender en corto incluso cuando las comisiones superan el rendimiento esperado de dicha venta. Proponen también reglas casi óptimas para inversores con función de utilidad de potencia y analizan el impacto de los requerimientos de margen. Empíricamente aplican el modelo al mercado de valores de China, donde los costos de short-selling son altos, demostrando que una estrategia consciente de estos costos supera sustancialmente en ratio de Sharpe a una estrategia ingenua (cost-naive).",
+ "calidad_paper": "alta",
+ "conceptos": [
+  {
+   "nombre": "costly short-selling",
+   "tipo": "concepto",
+   "definicion_en_contexto": "Incorporación explícita de las tarifas por préstamo de acciones (stock borrowing fees) y los requerimientos de margen en la toma de decisiones y dimensionamiento de posiciones de estrategias de pairs trading.",
+   "relaciones": [
+    {
+     "tipo": "LIMITA",
+     "objeto": "pairs trading"
+    },
+    {
+     "tipo": "AFECTA",
+     "objeto": "optimal allocation functions"
+    }
+   ],
+   "cita_textual": "existing models often neglect the costs incurred by short selling in pairs trading. This assumption may not be consequential in stock markets where the costs of short selling are relatively low... it is, however, inappropriate for markets where short selling is highly costly (e.g., the China’s stock market)."
+  },
+  {
+   "nombre": "logarithm utility function",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Función de utilidad empleada en el problema de optimización del inversor, que permite derivar soluciones en forma cerrada donde las asignaciones resultan ser funciones lineales a trozos del precio relativo.",
+   "relaciones": [
+    {
+     "tipo": "USA",
+     "objeto": "optimal pairs trading model"
+    }
+   ],
+   "cita_textual": "When the investor has logarithm utility function, we derive the solution in closed form, which shows that: the optimal allocation functions are piece-wise linear in the pair’s relative price..."
+  },
+  {
+   "nombre": "risk-hedging component",
+   "tipo": "concepto",
+   "definicion_en_contexto": "Parte de la asignación óptima que busca reducir el riesgo creando exposiciones compensatorias. Este componente explica por qué a veces es óptimo realizar una venta en corto incluso si los costos de financiamiento superan su rentabilidad esperada, a modo de cobertura de la posición larga.",
+   "relaciones": [
+    {
+     "tipo": "PARTE_DE",
+     "objeto": "optimal allocation"
+    }
+   ],
+   "cita_textual": "it can be optimal to short sell the overvalued stock even if the short selling costs exceed the expected return earned from short selling... the investor takes a large long position on stock 1, which is undervalued, and it is optimal to short sell stock 2 to hedge the risk associated with this position."
+  },
+  {
+   "nombre": "cost-naive trading strategy",
+   "tipo": "estrategia",
+   "definicion_en_contexto": "Estrategia de referencia obtenida al asumir incorrectamente que las comisiones de préstamo de acciones son nulas. Tiende a operar demasiado agresivamente ante desalineaciones de precios menores.",
+   "relaciones": [
+    {
+     "tipo": "EVALUADO_CONTRA",
+     "objeto": "optimal pairs trading rule"
+    }
+   ],
+   "cita_textual": "When adopting the cost-naive strategy, the investor trades on the relative mispricing too aggressively, leading to excessive stock borrowing fees payment and resulting in considerably lower Sharpe ratios."
+  },
+  {
+   "nombre": "near-optimal allocation rule",
+   "tipo": "estrategia",
+   "definicion_en_contexto": "Regla analítica de asignación propuesta para aproximar las funciones óptimas en casos de utilidad de potencia (power utility), minimizando drásticamente la pérdida de utilidad frente al uso de una estrategia ingenua.",
+   "relaciones": [
+    {
+     "tipo": "MEJORA_A",
+     "objeto": "cost-naive trading strategy"
+    }
+   ],
+   "cita_textual": "Motivated by the structure of the optimal allocation functions in the model, we can propose analytical allocation functions to approximate the optimal ones... adopting the near-optimal rule results in much smaller losses for the investor than adopting the cost-naive rule."
+  }
+ ],
+ "hallazgos": [
+  {
+   "afirmacion": "Bajo una función de utilidad logarítmica, las reglas de asignación óptimas con cortos costosos son funciones lineales por tramos del precio relativo, indicando posiciones nulas sobre activos sobrevalorados en ciertos umbrales para eludir costos.",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  },
+  {
+   "afirmacion": "Los altos costos por préstamo de acciones (borrowing fees) reducen asimétricamente los tamaños de ambas posiciones, impactando directamente en la reducción de la posición corta e indirectamente en la larga (al haber menos necesidad de cobertura).",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  },
+  {
+   "afirmacion": "Una gran exposición de largo genera tal necesidad de cobertura de riesgo que puede justificar abrir un corto aún cuando su retorno esperado (neto de costo de préstamo) sea negativo.",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  },
+  {
+   "afirmacion": "Empíricamente en China, aplicar el modelo de asignación óptima de este estudio mejoró el ratio de Sharpe en 0.3 unidades en comparación a usar la estrategia 'cost-naive' que ignora las tasas de préstamo de los activos.",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  }
+ ],
+ "aplicabilidad_es_intradia": {
+  "nivel": "baja",
+  "nota": "El enfoque asume posiciones overnight y un horizonte amplio donde los costos de apalancamiento (stock borrowing fees/margin requirements) son el eje central del modelo. En operativa intradía pura estos costos de overnight no aplican o son muy distintos, aunque los principios de hedging en pairs trading son conceptualmente útiles."
+ }
+}

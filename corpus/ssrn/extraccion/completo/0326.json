@@ -1,0 +1,109 @@
+{
+  "doc_id": 326,
+  "titulo": "Equilibrium Pairs Trading under Delayed Cointegration",
+  "resumen_operativo": "Resuelve el problema de pairs trading mean-variance time-consistent bajo un modelo de cointegración con retardo (stochastic delay differential equation, SDDE), que es el límite continuo del VECM de alto orden. Obtiene la estrategia de equilibrio open-loop mediante BSDEs y demuestra que constituye statistical arbitrage bajo condiciones sobre los eigenvalues de las functional differential equations asociadas. En el estudio empírico con ETFs de commodities (CRUD y UGAS, 2020), la estrategia VAR(p) supera a la Markoviana VAR(1) en la frontera eficiente, especialmente durante tendencias fuertes de mercado.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Delayed cointegration model",
+      "tipo": "modelo",
+      "definicion_en_contexto": "Modelo continuo donde los log-precios siguen una SDDE: dY(t) = [HY(t) + integral K(u)Y(t+u)du - MY(t-p)]dt + Sigma dW(t). Es el límite difusivo del VECM de orden p cuando el número de rezagos tiende a infinito, permitiendo ajuste gradual (con retardo) hacia el equilibrio de cointegración.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "Continuous-time VECM limit"},
+        {"tipo": "GENERALIZA", "objeto": "Ornstein-Uhlenbeck cointegration model"}
+      ],
+      "cita_textual": "Yan, Chiu, & Wong (2021) investigate the weak limit of VECM and propose a delayed cointegration model using SDDE... a sliding average analogous to the weighted sum of lagged terms in the discrete-time case."
+    },
+    {
+      "nombre": "Stochastic Delay Differential Equation (SDDE)",
+      "tipo": "modelo",
+      "definicion_en_contexto": "Ecuación diferencial estocástica con memoria donde el drift depende de una integral de Lebesgue-Stieltjes sobre valores pasados de Y. La inclusión de distributed delay (integral) y discrete delay (MY(t-p)) permite capturar efectos de ajuste gradual de desviaciones de precios.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Fundamental matrix solution y_0"},
+        {"tipo": "GENERALIZA", "objeto": "Markovian SDE"}
+      ],
+      "cita_textual": "Stochastic delay differential equations (SDDE) can be understood in some cases as the diffusion limit of high-order autoregressive moving average (ARMA) time series."
+    },
+    {
+      "nombre": "Open-loop equilibrium control",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Formulación game-theoretical del control time-consistent donde se considera un juego secuencial con todas las encarnaciones futuras del decisor como jugadores. La estrategia de equilibrio es un Nash sub-game perfect, derivado mediante BSDEs. Extiende el framework de Hu, Jin y Zhou (2012, 2017) a sistemas no Markovianos.",
+      "relaciones": [
+        {"tipo": "RESUELVE", "objeto": "Time inconsistency of mean-variance"},
+        {"tipo": "USA", "objeto": "Backward Stochastic Differential Equation (BSDE)"}
+      ],
+      "cita_textual": "We use the open-loop equilibrium control framework in Hu, Jin, & Zhou (2012, 2017). The open-loop method uses backward stochastic differential equations (BSDEs) to allow the uniqueness of the equilibrium to be addressed."
+    },
+    {
+      "nombre": "Fundamental matrix solution (y_0)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Solución a la functional differential equation autónoma asociada: dy_0/dt = Hy_0(t) + integral K(u)y_0(t+u)du - My_0(t-p), con condición inicial y_0(0)=I_n. Permite representar la solución de la SDDE como Y(t) = a(t) + y_1(t) + integral y_0(t-s)Sigma dW(s).",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Risk premium representation"},
+        {"tipo": "REQUIERE", "objeto": "Characteristic matrix Delta(lambda)"}
+      ],
+      "cita_textual": "y_0 is called the fundamental matrix solution. It is clear that for t > p, y_0(t) is continuously differentiable."
+    },
+    {
+      "nombre": "Characteristic matrix and spectrum",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Matriz característica Delta(lambda) = lambda*I - H - integral e^{lambda*u} K(u)du + e^{-lambda*p} M. El espectro sigma(H,K,M) = {lambda: det[Delta(lambda)]=0} determina la estabilidad asintótica y las condiciones para statistical arbitrage. Tiene un número infinito numerable de raíces (eigenvalues).",
+      "relaciones": [
+        {"tipo": "DETERMINA", "objeto": "Statistical arbitrage conditions"},
+        {"tipo": "USA", "objeto": "Matrix Lambert W function"}
+      ],
+      "cita_textual": "Define the characteristic matrix Delta(lambda) = lambda*I - H - integral_{-p}^{0} e^{lambda u} K(u)du + e^{-lambda p} M and the spectrum sigma(H,K,M) := {lambda in C; det[Delta(lambda)] = 0}."
+    },
+    {
+      "nombre": "Statistical arbitrage conditions",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Condiciones de Hogan, Jarrow, Teo y Warachka (2004): (i) costo inicial cero, (ii) ganancia esperada positiva en el límite, (iii) probabilidad de pérdida converge a 0, (iv) varianza time-averaged converge a 0. El paper demuestra que la estrategia de equilibrio bajo SDDE las satisface si los eigenvalues tienen parte real no positiva.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "Characteristic matrix and spectrum"},
+        {"tipo": "APLICA_A", "objeto": "Equilibrium pairs trading strategy"}
+      ],
+      "cita_textual": "We rigorously prove that our equilibrium strategy leads to statistical arbitrage when the eigenvalues of the AFDEs satisfy certain conditions."
+    },
+    {
+      "nombre": "Distributed delay model solution",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Solución explícita para el caso M=0 (sin discrete delay, solo distributed delay). La solución de Gamma se expresa como forma cuadrática con integrales: Gamma(t) = Y(t)'E_0(t)Y(t) + ... + E_5(t). Las funciones E_i se resuelven secuencialmente mediante integraciones explícitas en lugar de Riccati PDEs.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "Riccati PDE approach"},
+        {"tipo": "APLICA_A", "objeto": "VAR(p) empirical strategy"}
+      ],
+      "cita_textual": "Suppose that M=0 and K(·) is Lipschitz over [-p,0]. There exists a sextuple that satisfies (27)-(33) almost everywhere and can be solved stepwise by the following integrations."
+    },
+    {
+      "nombre": "VAR(p) vs VAR(1) strategy",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Comparación empírica entre la estrategia no Markoviana VAR(p) (con p=15, tres semanas de trading) que incorpora sliding average de precios históricos, y la estrategia Markoviana VAR(1) de Chiu y Wong (2015). La VAR(p) es más agresiva en tendencias y genera retornos anormales con mayor leverage.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "VAR(1) Markovian strategy"},
+        {"tipo": "USA", "objeto": "Rolling window estimation"}
+      ],
+      "cita_textual": "We aim to contrast the non-Markovian equilibrium strategy, which we refer to as the VAR(p) strategy, with its Markovian counterpart in Chiu & Wong (2015), which we refer to as the VAR(1) strategy."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "La estrategia VAR(p) (no Markoviana, p=15) supera a la estrategia VAR(1) (Markoviana) en la frontera eficiente realizada para el par CRUD-UGAS, generando retornos siempre positivos incluso durante el crash de mercado de 2020, con una frontera eficiente consistentemente superior en todo el rango de aversiones al riesgo.",
+      "mercado": "WisdomTree WTI Crude Oil (CRUD) y WisdomTree Gasoline (UGAS)",
+      "periodo": "Enero 2020 a Diciembre 2020 (estimación con rolling window de 2 años)",
+      "magnitud": "VAR(p) domina a VAR(1) en la frontera eficiente para todo mu en [0.001, 0.02]; retornos esperados mensuales de VAR(p) entre ~0.02 y ~0.08 vs VAR(1) entre ~-0.04 y ~0.04",
+      "condiciones": "Ventanas rodantes mensuales con 2 años de datos, p=15 (3 semanas), r=0.02, x_0=1, modelo VECM con pesos linealmente declinantes",
+      "robustez": "media",
+      "cita_textual": "The VAR(p) strategy not only outperforms the VAR(1) strategy in terms of efficiency, and hence the objective function, but also always leads to the positive returns, even in the situation of a market crash."
+    },
+    {
+      "afirmacion": "Los criterios de selección de orden (AIC, FPE, HQ) seleccionan modelos VAR de orden alto después de marzo 2020, mientras BIC (que penaliza más parámetros) selecciona órdenes bajos. Esto sugiere que la estructura no Markoviana es particularmente relevante durante períodos de alta volatilidad.",
+      "mercado": "CRUD y UGAS (commodities)",
+      "periodo": "Enero 2020 - Diciembre 2020",
+      "magnitud": "AIC, FPE, HQ consistentemente seleccionan VAR de orden > 1 después de marzo 2020; BIC selecciona VAR(1) consistentemente.",
+      "condiciones": "Órdenes VAR en {1,2,...,20}; estimación rolling window; criterios: AIC, BIC, FPE, HQ",
+      "robustez": "alta",
+      "cita_textual": "Except for the BIC, which punishes the free parameters more strongly than the others, these criteria select VAR models of a higher-order type after March, 2020."
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "media", "nota": "Modelo continuo aplicable a cualquier frecuencia; el delay effect es especialmente relevante en alta frecuencia según Hasbrouck (2021) quien especifica VECM con lag 106 para microestructura."}
+}

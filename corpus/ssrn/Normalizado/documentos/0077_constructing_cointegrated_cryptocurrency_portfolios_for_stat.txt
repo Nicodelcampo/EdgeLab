@@ -1,0 +1,1548 @@
+Constructing Cointegrated Cryptocurrency Portfolios for
+Statistical Arbitrage
+Tim Leung∗
+Hung Nguyen†
+Abstract
+In this paper, we analyze the process of constructing cointegrated portfolios of cryptocurrencies.
+Our procedure involves a series of statistical tests, including the Johansen
+cointegration test and Engle-Granger two-step approach. Among our results, we construct
+cointegrated portfolios involving four cryptocurrencies: Bitcoin (BTC), Ethereum (ETH),
+Bitcoin Cash (BCH), and Litecoin (LTC). We develop a number of trading strategies under
+diﬀerent entry/exit thresholds and risk constraints, and examine their performance in details through backtesting and comparison analysis. Our methodology can be applied more
+generally to create new cointegrated portfolio using other cryptocurrencies.
+Contents
+1
+Introduction
+2
+2
+Data
+4
+3
+Mean-Reverting Portfolio
+5
+3.1
+Johansen Test . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+6
+3.2
+Engle-Granger Two-Step Method . . . . . . . . . . . . . . . . . . . . . . . . .
+7
+3.3
+Portfolio Time Series . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+9
+4
+Statistical Arbitrage Strategies
+11
+4.1
+Trading the spread . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+12
+4.2
+Trading the spread with stop-loss . . . . . . . . . . . . . . . . . . . . . . . . .
+13
+4.3
+Trading the spread with trailing stop-loss
+. . . . . . . . . . . . . . . . . . . .
+15
+5
+Conclusion
+18
+A Appendix: statistics for trading strategies
+20
+∗Applied Mathematics Department, University of Washington, Seattle WA 98195. Email: timleung@uw.edu.
+Corresponding author.
+†Computational Finance & Risk Management Program, Applied Mathematics Department, University of Washington, Seattle WA 98195. Email: hn11@uw.edu.
+1
+ Electronic copy available at: https://ssrn.com/abstract=3235890 
+Electronic copy available at: https://ssrn.com/abstract=3235890
+
+1
+Introduction
+In 2009, Bitcoin (BTC) was introduced to become the ﬁrst decentralized digital currency.1
+Since then, Bitcoin has been accepted by thousands of merchants and vendors, and the
+cryptocurrency market has seen enormous growth (Hileman and Rauchs, 2017). Its market
+capitalization measured in USD has grown from about $10bn in 2014 to over $200bn in 2018,
+with a peak around $828bn in Jan 2018.2 Today, there are more than a thousand of cryptocurrencies besides Bitcoin, such as Ethereum (ETH), Litecoin (LTC), Bitcoin Cash (BCH),
+and more that are being traded on major cryptocurrency exchanges internationally.3 Many
+alternative coins, also known as altcoins, were invented to be substitutes of Bitcoin for various
+reasons. For instance, Ethereum, a decentralized platform that run smart contracts,4 was
+created to address the lack of a scripting language of Bitcoin for application development.5
+As another example, Bitcoin Cash was invented to address the scalability issue of Bitcoin
+due to its block size limit which put a cap on the amount of transactions Bitcoin network can
+process on a given time frame, etc. Such innovations have led to the rapid growths of many
+altcoins together with the rise in market size of cryptocurrency. However, being known as
+the earliest decentralized currency, Bitcoin have consistently been ranked on top in terms of
+traded volume, price and market capitalizations (see Table 1).
+The rise of Bitcoin and many altcoins has created trading opportunities for investors and
+speculators. In fact, a recent study by Chuen et al. (2017) ﬁnds very low correlations between
+the CRyptocurrency Index (CRIX), a portfolio of cryptocurrencies, and traditional assets.
+Also, their empirical results show that including CRIX in an initial portfolio consisting only
+traditional assets can expand the eﬃcient frontier and give additional utility to investors.
+Recall that S&P 500 returned around 21% in 2017, but Bitcoin gained an astounding 1,318%
+in one year. In an earlier study, Cheah and Fry (2015) consider the Bitcoin phenomenon as a
+speculative bubble with zero fundamental value. In mid December 2017, Bitcoin price reached
+all-time-high at over $19 thousand, with 24h volume approximately $23 billion. However, as
+price plummeted to a low $6000 in early February, Bitcoin has been considered one of the
+greatest bubbles in ﬁnance history.
+The price surges of Bitcoin and Ethereum in early 2017 generated much attention to the
+cryptocurrency market and even triggered a massive series of Initial Coin Oﬀerings (ICOs),
+which are similar to Initial Public Oﬀerings (IPOs), but are for cryptocurrencies or tokens
+and less regulated. Many technology startups launched their own cryptocurrencies as a means
+of crowdfunding, though some ICOs were completely frauds or had been heavily targeted by
+hackers (Labbe, 2017). To purchase tokens, investors must have one of the mainstream coins
+which typically were Bitcoin and Ethereum. Such events created an increased demand that
+pushed the prices of these two coins even higher. One of the most popular ways for investors
+to gain access to the cryptocurrency market was through Coinbase6 where investors could
+purchase coins directly from their bank accounts and then transfer the coins to diﬀerent
+digital wallets and exchanges for trading purposes. Some exchanges even allow short selling
+of cryptocurrencies.
+Unlike traditional equity market, most cryptocurrencies are highly correlated. For exam1See the bitcoin white paper, Bitcoin: A Peer-to-Peer Electronic Cash System, by Satoshi Nakamoto. Available
+at https://bitcoin.org/bitcoin.pdf
+2Source: https://coinmarketcap.com/charts/
+3Source: https://coinmarketcap.com/rankings/exchanges/
+4Smart contracts are applications that allows exchanges of money, property, or anything of value to take place
+without the middleman once certain conditions are met.
+5See the white paper, A Next-Generation Smart Contract and Decentralized Application Platform, by Vitalik Buterin, the founder of Ethereum.
+Available at https://github.com/ethereum/wiki/wiki/White-Paper#
+decentralized-autonomous-organizations
+6Founded in 2012, Coinbase was one of the earliest online platform in the U.S. that allowed users to store,
+trade, and transfer digital currencies.
+2
+ Electronic copy available at: https://ssrn.com/abstract=3235890 
+Electronic copy available at: https://ssrn.com/abstract=3235890
+
+Rank
+Name
+Symbol
+Price ($)
+MarketCap ($)
+1
+Bitcoin
+BTC
+8239.57
+141534282604
+2
+Ethereum
+ETH
+467.785
+47238602070
+3
+XRP
+XRP
+0.454269
+17859896217
+4
+Bitcoin Cash
+BCH
+828.355
+14299695631
+5
+EOS
+EOS
+8.3154
+7451841487
+6
+Stellar
+XLM
+0.314209
+5896895909
+7
+Litecoin
+LTC
+84.5161
+4869209762
+8
+Cardano
+ADA
+0.163161
+4230286756
+9
+IOTA
+MIOTA
+1.02566
+2850853030
+10
+Tether
+USDT
+0.998571
+2503557642
+11
+TRON
+TRX
+0.036809
+2420122242
+12
+Monero
+XMR
+140.502
+2285241135
+13
+NEO
+NEO
+34.0835
+2215427500
+14
+Dash
+DASH
+241.932
+1988855554
+15
+Ethereum Classic
+ETC
+16.9501
+1752226368
+16
+NEM
+XEM
+0.177986
+1601874000
+17
+VeChain
+VEN
+2.6677
+1479361013
+18
+Binance Coin
+BNB
+14.2613
+1362132746
+19
+Tezos
+XTZ
+2.07289
+1259257958
+20
+Zcash
+ZEC
+220.618
+983003486
+Table 1: Summary of top 20 cryptocurrencies ranked by market capitalization
+as of August 16, 2018. Source: CoinMarketCap.
+ple, correlations on daily returns between the 4 major digital currencies, BTC, ETH, LTC,
+and BCH, were over 75% as shown in Figure 1. The high volatility of cryptocurrencies calls
+for the development of market-neutral trading strategies, and the high correlations among
+cryptocurrencies motivates us to investigate cointegration or mean-reversion strategies.
+Mean-reversion trading strategies have been extensively researched and studied by academic researchers and practitioners who seek to understand the long-term co-movements of
+diﬀerent asset prices and arbitrage from the mean-reverting property of the price spread.
+Strategies have been developed for many areas of traditional ﬁnance, including ﬁxed income
+Wagner (2005), commodities and futures (Leung and Ward, 2015), as well as equities and
+ETFs (Kang and Leung, 2017; Leung and Li, 2015). However, very little research has been
+done for trading pairs or baskets of cryptocurrencies. In fact, most research on trading cryptocurrencies are based on technical analysis (Ha and Moon, 2018; Detzel et al., 2018), or
+arbitraging from price diﬀerences across exchanges (Makarov and Schoar, 2018).
+In this paper, we analyze the process of constructing a cointegrated set of cryptocurrencies. The process involves a series of statistical tests, including the Johansen cointegration
+test (Johansen, 1988), and the classical 2-step approach developed by Engle and Granger
+(1987). Among our results, we construct cointegrated portfolios involving four cryptocurrencies: Bitcoin (BTC), Ethereum (ETH), Bitcoin Cash (BCH), and Litecoin (LTC), and
+the corresponding trading strategies are shown to be proﬁtable under diﬀerent entry/exit
+thresholds and risk constraints. To our best knowledge, the proposed cointegrated portfolio
+of 4 cryptocurrencies is new, and our methodology can be applied more generally to create
+new cointegrated portfolio using other cryptocurrencies.
+3
+ Electronic copy available at: https://ssrn.com/abstract=3235890 
+Electronic copy available at: https://ssrn.com/abstract=3235890
+
+−1
+−0.8
+−0.6
+−0.4
+−0.2
+0
+0.2
+0.4
+0.6
+0.8
+1
+BTC
+ETH
+LTC
+BCH
+0.81
+0.83
+0.79
+0.8
+0.75
+0.75
+Figure 1: Correlation in daily returns of BTC, ETH, LTC, and BCH
+2
+Data
+Before designing the trading systems, we ﬁrst make general observations on how prices (in
+USD) of Bitcoin (BTC), Ethereum (ETH), Bitcoin Cash (BCH), and Litecoin (LTC) have
+co-moved since BCH was ﬁrst introduced. To identify a cointegrating relationship among
+these crypto-assets, we employ both Johansen and Engle-Granger approaches to construct
+a mean-reverting portfolio to be tested for stationarity and tradability. Lastly, we design
+and back test trading systems for the mean-reverting portfolio under ﬁve diﬀerent entry/exit
+threshold levels and incorporate a stop-loss exit and trailing stop exit.
+A majority of cryptocurrency exchanges provides traders with user-friendly trading platforms with the intention to attract more users by reducing the complexity of buying and
+selling coins. For instance, Coinbase, in addition to the web application, oﬀers mobile app
+that allows traders to store coins and make trades directly from their phones without having to know much about diﬀerent types of order (i.e. limit, market order, etc.). For larger
+exchanges, such as Binance, Bitﬁnex and Bittrex, historical and live data are also accessible
+through RESTful APIs that allow traders to send price requests for analysis and manage their
+trading accounts. In this paper, we use the Open High Low Close Volume (OHLCV) data
+accessed through an API provided by CryptoCompare, a database in UK that provides raw
+and preprocessed cryptocurrency market data from multiple exchanges around the world.
+Historical data aggregated from all listed exchanges are also available in their inventory.
+However, due to price diﬀerences across exchanges, daily prices in U.S. dollars of Bitcoin
+(BTC), Ethereum (ETH), Litecoin (LTC) and Bitcoin Cash (BCH) were gathered only from
+Coinbase from December 20, 20177 to June 20, 2018 to construct our trading models.
+7Bitcoin Cash only became available on Coinbase on December 20, 2017
+4
+ Electronic copy available at: https://ssrn.com/abstract=3235890 
+Electronic copy available at: https://ssrn.com/abstract=3235890
+
+5
+6
+7
+8
+9
+10
+01/18
+02/18
+03/18
+04/18
+05/18
+06/18
+Date
+logPrices
+BTC
+ETH
+LTC
+BCH
+Figure 2: Log-prices of 4 main cryptocurrencies in Coinbase
+As shown in Figure 2, price movements of all 4 cryptocurrencies during the testing period
+are nearly identical. This could imply a potential linear relationship between these 4 coins.
+Furthermore, if the time series of all 4 cryptocurrencies are stationary after 1-diﬀerencing,
+i.e. their prices are I(1) processes, and there exists a linear combination whose residuals
+are stationary (or mean reverting), then these crypto-assets are said to be cointegrated.
+The linear combination (or number of shares to purchase for each crypto-asset8) that forms
+a stationary portfolio from non-stationary asset prices is often referred to as cointegrating
+vector. From a trading perspective, an investor can proﬁt from purchasing this stationary
+portfolio, or so called the spread, when price is low and realize a proﬁt when its price return
+to the mean price or cross above certain threshold. Similarly, an investor can short sell the
+spread when its price is high and realize a proﬁt when price reverts to the mean price or
+cross below certain level. This characteristic of mean-reverting in price is extensively used
+by hedge fund managers and proprietary trading ﬁrms to construct pair-trading strategies,
+or so-called statistical arbitrage. One can think of the spread as a mutual fund or a basket of
+crypto-assets where the number of shares on each asset (can be positive or negative) would
+be predetermined by the cointegrating vector. And to purchase or sell the spread, an investor
+must be able to long and short on certain assets by the amount of shares suggested their
+cointegrating relationships.
+3
+Mean-Reverting Portfolio
+Cointegration reﬂects how asset prices are tied together in long-term by a common stochastic trend even though they might drift apart in the short run. Therefore, cointegrated asset
+prices may appear to be more useful in developing quantitative trading models. Theoretical framework for constructing cointegrating time series in this paper include the Johansen
+cointegration test (Johansen, 1988), and the classical 2-step approach developed by Engle
+and Granger (1987). Note that, although the two approaches are somewhat equivalent in
+terms of establishing cointegrating relationships between given crypto-assets, the Johansen
+test tends to be more appropriate when it comes to modeling multivariate time series data.
+However, there are good reasons why the Engle-Granger approach is chosen for most ﬁnancial applications, in particular, risk management. While the Johansen criterion seeks for
+8Often referred to as weighted sum vector; however, since we perform regression directly on price series, this
+linear combination implies the number of shares to go long/short on each crypto-asset
+5
+ Electronic copy available at: https://ssrn.com/abstract=3235890 
+Electronic copy available at: https://ssrn.com/abstract=3235890
+
+the linear combination that is most stationary, Engle-Granger approach, based on ordinary
+least squares regression (OLS), seeks for the linear combination with minimum variance. As
+a result, Engle-Granger approach is generally a preferred method for most risk managing
+purposes, especially when involving risk measures. Also, one might be able to ﬁnd more than
+one linear combination to form a mean-reverting portfolio; but to determine the appropriate
+model, we will need to examine both approaches and choose the cointegrating vector that
+would give the spread a faster rate of mean-reversion. In other words, we construct the spread
+in such way that yields highest proﬁt when trading the mean-reverting crypto-portfolio.
+3.1
+Johansen Test
+The main advantage of the Johansen test over the Engle-Granger approach is the ability to
+perform hypothesis testings directly on I(1) price series themselves and derive cointegrating
+vectors without having to constantly check for stationarity.
+The order of cointegration,
+denoted rank(r), from Johansen criterion indicates the number of independent portfolios
+that can be formed by various linear combinations of the price time series, whereas using
+Engle-Granger approach we can only infer at most one linear combination if there exists one.
+From Table 2, the Johansen test estimates of the order of integration from given price
+series with 3 conﬁdence levels, i.e. 10%, 5%, and 1%. We reject the null hypothesis for r = 0
+since the test value is greater than conﬁdence level’s value at 1%. Similarly, we accept the
+null hypothesis for r = 1 at 95% conﬁdence. We infer that BTC, ETH, LTC and BCH are
+of 1st order cointegrated, i.e rank(r) = 1. Reading oﬀthe ﬁrst column of Table 3, we ﬁnd a
+set of linear combinations for constructing a mean-reverting portfolio:
+SPREADt = BTCt −2.22ETHt −29.43LTCt −0.19BCHt
+(1)
+This portfolio is essentially a spread between BTC and the other three cryptocurrencies
+(ETH, LTC, BCH). Somewhat surprisingly, the names of Bitcoin (BTC) and BCH (Bitcoin
+Cash) would suggest a comoving relationship, but in this portfolio BCH carries the least
+weight compared to the other two cryptocurrencies, ETH and LTC, both in terms of units
+and cash amount. During this 6-month period from December 20, 2017 to June 20, 2018,
+prices of BTC were relatively high in comparison to ETH, LTC and BCH, as shown in
+Figure 2. Thus, it is sensible to have a relatively high (short) stake on LTC as suggested
+from equation (1). More importantly, we have established with 95% conﬁdence that there
+exists 1 linear combination of these 4 crypto-assets whose prices are stationary in the longterm. This result is extremely important when constructing a mean-reverting portfolio using
+Engle-Granger approach since we already knew beforehand the existence of cointegration
+between crypto-assets’ prices. In the next section, we apply the Engle-Granger approach to
+construct a cointegrating portfolio using again closing prices of BTC, ETH, LTC, and BCH.
+test
+10%
+5%
+1%
+r ≤3
+1.97
+6.50
+8.18
+11.65
+r ≤2
+11.25
+12.91
+14.90
+19.19
+r ≤1
+22.25
+18.90
+21.07
+25.75
+r = 0
+43.30
+24.78
+27.14
+32.14
+Table 2: Johansen estimates for testing cointegration
+6
+ Electronic copy available at: https://ssrn.com/abstract=3235890 
+Electronic copy available at: https://ssrn.com/abstract=3235890
+
+BTC
+ETH
+LTC
+BCH
+BTC
+1.00
+1.00
+1.00
+1.00
+ETH
+-2.22
+0.75
+-25.79
+69.87
+LTC
+-29.43
+-28.66
+85.76
+1298.44
+BCH
+-0.19
+-2.79
+-6.16
+-94.57
+Table 3: Coeﬃcients from the Johansen test for cointegration
+3.2
+Engle-Granger Two-Step Method
+The classical approach for cointegration testing developed by Engle and Granger (1987) has
+the ability to capture long-term co-movements. We ﬁrst perform a linear regression on some
+given I(1) time series data, then test for stationarity of the residuals. It is crucial to ensure
+that residuals from the OLS model are stationary; otherwise, we may run into a potential
+issue, known as spurious regression.
+To assure stationarity, we then perform a series of
+unit-root tests on the OLS’s residuals including the Augmented Dickey Fuller (ADF) test
+(Dickey and Fuller, 1979), the Phillips-Peron (PP) test (Phillips and Perron, 1988) and the
+Kwiatkowski-Phillips-Schmidt-Shin (KPSS) test (Kwiatkowski et al., 1992).
+As the goal is to perform stationarity check on price series, ﬁrst order price-diﬀerences
+and residuals from the OLS model, testing hypotheses are designed as follows:
+(i) Augmented Dickey Fuller test and Phillips-Peron test:
+Ho: Presence of unit root in observable price series
+Ha: Unit root does not exist in observable price series
+(ii) Kwiatkowski-Phillips-Schmidt-Shin test:
+Ho: Unit root does not exist in observable price series
+Ha: Presence of unit root in observable price series
+The Engle-Granger method involves a linear regression on given time series data which,
+in this case, is BTC; but it is not important which cryptocurrency is taken as the dependent
+variable. We propose the following OLS model:
+BTCt = c + β1ETHt + β2LTCt + β3BCHt + ϵt
+Once a cointegrating relationship is established, we perform 3 stationarity tests on the residuals. Again, prices of these crypto-assets are said to be cointegrated only if prices are all I(1)
+processes and the residuals ϵt from the above OLS model are stationary.
+In many cases, ﬁnancial data follow a random walk. BTC, ETH, LTC, and BCH in our
+study are not exempt from this assumption. According to the results from Table 4, we accept
+the null hypothesis (there exits unit-root in time series) from both ADF and PP tests which
+indicate that daily closing prices of all 4 cryptocurrencies are non-stationary and reject the
+null hypothesis from KPSS test which again suggests that prices are non-stationary. However,
+they all become stationary after the ﬁrst diﬀerencing. Note that, one could theoretically reject
+the null hypothesis from KPSS test performed on ∆BCH series since its p-value is right on
+the edge of rejecting and accepting the null. Both ADF and PP tests, otherwise, suggest the
+non-existence of unit root from the time series. Therefore, we conclude BTC, ETH, LTC,
+and BCH are I(1) processes.
+7
+ Electronic copy available at: https://ssrn.com/abstract=3235890 
+Electronic copy available at: https://ssrn.com/abstract=3235890
+
+BTCt
+ETHt
+LTCt
+BCHt
+∆BTCt
+∆ETHt
+∆LTCt
+∆BCHt
+ADF-test
+0.49
+0.36
+0.24
+0.41
+0.01
+0.01
+0.01
+0.01
+PP-test
+0.33
+0.58
+0.16
+0.35
+0.01
+0.01
+0.01
+0.01
+KPSS-test
+0.01
+0.01
+0.01
+0.01
+0.10
+0.10
+0.10
+0.05
+Table 4: Summary of p-values from stationarity tests on cryptocurrencies’
+prices and their ﬁrst diﬀerences
+An OLS model is introduced to establish linear relationships between BTC with ETH,
+LTC and BCH, see Table 5. Notably, all the regressing coeﬃcients appear to be statistically
+signiﬁcant with p-values less than 1%. Also, the adjusted R-squared of 94.5% is considered
+remarkably high, especially in ﬁnance.
+Dependent variable:
+BTC
+ETH
+0.795∗∗∗
+(0.264)
+LTC
+27.020∗∗∗
+(1.770)
+BCH
+1.838∗∗∗
+(0.140)
+Constant
+1,959.585∗∗∗
+(176.725)
+Observations
+183
+R2
+0.950
+Adjusted R2
+0.949
+Residual Std. Error
+576.961 (df = 179)
+F Statistic
+1,138.254∗∗∗(df = 3; 179)
+Note:
+∗p<0.1; ∗∗p<0.05; ∗∗∗p<0.01
+Table 5: Ordinary least square regression model for BTC
+From Table 5, we obtain the following linear model:
+BTCt = 1, 959.59 + 0.795ETHt + 27.02LTCt + 1.838BCHt + ϵt
+Next, we conduct stationarity tests, i.e. ADF, PP and KPSS tests, on the residuals ϵt from
+this model. The results are as follows:
+ADF test: rejecting the null-hypothesis ⇒no unit-root
+PP test: rejecting the null-hypothesis ⇒no unit-root
+KPSS test: accepting the null-hypothesis ⇒residuals are stationary
+All 3 stationarity tests conﬁrm that the residuals from linear regression model are stationary
+time series.
+Hence, prices of BTC, ETH, LTC and BCH are indeed cointegrated by our
+procedure. With this conﬁrmation, the spread can be constructed using the suggested linear
+coeﬃcients:
+SPREADt = BTCt −0.795ETHt −27.02LTCt −1.838BCHt
+(2)
+This is the portfolio we will use to trade.
+8
+ Electronic copy available at: https://ssrn.com/abstract=3235890 
+Electronic copy available at: https://ssrn.com/abstract=3235890
+
+3.3
+Portfolio Time Series
+The main purpose of our cointegration testing procedure is to construct a tradable meanreverting portfolio. Recall that there are two linear models given in (1) and (2) in which the
+portfolio is a spread between BTC and three other cryptocurrencies. The fact that the linear
+combinations in the two models are highly similar further supports that BTC, ETH, LTC
+and BCH are cointegrated. Observing from Figures 3, it is hard to see which spread process
+appears to be more stationary or mean-reverting.
+However, from a trading perspective,
+periodic movements or ﬂuctuations that lead to frequent crossing of the equilibrium levels
+from both directions are desired, especially given that entry and exit rules are based on
+deviations from the mean price (Chan, 2013). For this reason, Figure 3(b) suggests that
+model (2) from the Engle-Granger approach is more practical to trade, and is thus chosen
+for back-testing our trading system.
+Jan
+Mar
+May
+2000
+4000
+6000
+8000
+USD
+Mean
+Lower−Upper Bounds
+SPREAD
+(a)
+Jan
+Mar
+May
+1000
+3000
+5000
+USD
+Mean
+Lower−Upper Bounds
+SPREAD
+(b)
+Figure 3: Spread constructed from two approaches: (a) Johansen methodology
+(b) Engle-Granger methodology
+Next, we construct a time series model to capture dynamic of the spread in order to
+design the trading rules. Generally, we expect the spread to be highly mean-reverting since
+that is the main criterion we used to choose the 4 crypto-assets in the ﬁrst place. In discrete
+time, the spread is often assumed to be stationary Autoregressive Moving Average (ARMA)
+processes since they are also mean-reverting by design. This is the basic requirement we set
+forth to designing our trading signals. From previous section, we derived from stationarity
+tests that the spread is reverting around the $1,959.058 equilibrium. This helps us determine
+the amount of inventory that are willing to hold on the spread, but more importantly, it
+satisﬁes the stationarity requirement before we propose an appropriate ARMA model.
+To estimate the orders and parameters of an ARMA process, we rely on sample autocorrelation function (ACF) and partial autocorrelation function (PACF) plots with test bounds,
+(see Box et al. (2015)). As suggested by ACF and PACF plots respectively in Figures 4(a)
+and 4(b), the residuals can be modeled by ARMA(1, 0) or AR(1). We summarize the test in
+Table 6.
+9
+ Electronic copy available at: https://ssrn.com/abstract=3235890 
+Electronic copy available at: https://ssrn.com/abstract=3235890
+
+0
+5
+10
+15
+20
+−0.2
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+Lag
+ACF
+(a)
+5
+10
+15
+20
+−0.2
+0.0
+0.2
+0.4
+0.6
+0.8
+Lag
+Partial ACF
+(b)
+Figure 4:
+(a) ACF plot of the residuals from OLS model; (b) PACF plot of
+residuals from OLS model
+Dependent variable:
+residuals
+AR(1) Coeﬀ.
+0.874∗∗∗
+(0.036)
+Intercept
+1,919.026∗∗∗
+(160.731)
+Observations
+183
+Log Likelihood
+−1,294.312
+σ2
+80,800.910
+Akaike Inf. Crit.
+2,594.625
+Note:
+∗p<0.1; ∗∗p<0.05; ∗∗∗p<0.01
+Table 6: Fitting the spread to the ARIMA(1, 0, 0) model
+To ensure that AR(1) is an appropriate model, Ljung-Box test is performed on residuals
+from the ARMA model to check for the overall randomness and no autocorrelation in the
+residual time series (see Box et al. (2015)). Ljung-Box test hypothesis:
+Ho: Price series are independent, or no serial correlations
+Ha: Price series are not independent, or they exhibit serial correlations
+As shown in Figures 5(a) and 5(b), even with some lags outside the 95% conﬁdence levels,
+the p-value of 0.1094 for the Ljung-Box test on residuals implies the failure to reject the null
+hypothesis that there is no autocorrelation in the residuals. We conclude that prices of the
+spread are AR(1) processes.
+10
+ Electronic copy available at: https://ssrn.com/abstract=3235890 
+Electronic copy available at: https://ssrn.com/abstract=3235890
+
+0
+5
+10
+15
+20
+−0.2
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+Lag
+ACF
+(a)
+5
+10
+15
+20
+−0.20
+−0.10
+0.00
+0.10
+Lag
+Partial ACF
+(b)
+Figure 5:
+(a) Autocorrelation graph of the residuals from OLS model; (b)
+Partial autocorrelation graph of residuals from OLS model
+4
+Statistical Arbitrage Strategies
+In trading practices, ﬁnding the right times for entry and exit is key to a proﬁtable trading
+system (see Leung and Li (2016); Vidyamurthy (2004)). As previously mentioned, the default
+entry and exit thresholds in back-testing stage are typically set around 1 deviation, denoted by
+σ, above and below the mean spread level, assuming that traders can go both long and short
+on the spread. It is crucial to assure that these entry and exit levels are set to maximize
+proﬁts in terms of the trading costs and transaction frequency.
+Thus, by back-testing a
+trading system with multiple entry/exit levels, we can get a sense of how proﬁtable the
+system is by looking at diﬀerent performance criteria such as proﬁt and loss (P&L), Sharpe
+ratio, and more.
+Deﬁne St as the spread at time t. A mean reversion strategy for trading the spread is
+described by the following linear combination:
+St = BTCt −β1ETHt −β2LTCt −β3BCHt
+(3)
+where (1, β1, β2, β3) := (1, −0.795, −27.02, −1.838) are the coeﬃcients from the linear model
+(2).
+To purchase 1 “unit” of the spread S, we buy 1 unit of BTC, -0.795 unit of ETH, -27.02
+unit of LTC, and -1.838 unit of BCH. In other words, in addition to buying 1 BTC, we need to
+short sell 0.795 shares of ETH, 27.02 shares of LTC and 1.838 shares of BCH.9 Diﬀerent from
+traditional equity market, traders can purchase fractional shares up to 8 decimal places in
+the cryptocurrency market. It boils down to how the inventor of Bitcoin, Satoshi Nakamoto,
+decided to name Bitcoin in such way. When developing the Bitcoin, the creator Satoshi had
+decided its base unit to be 108 and the smallest fraction is called Satoshi. Many recent altcoins
+have adapted the same philosophy, though some have extended their smallest units up to 16
+decimal places. For simplicity, we only go up to 3 decimal places on each cryptocurrency.
+In addition, we only expose to 1 unit of the spread at any given time. That is to say
+when if we already held 1 unit of the spread and observe a deviation of the spread from the
+mean price, we do not add to our inventory any additional unit of S. As competitions in the
+cryptocurrency market continues to rise, many recent exchanges start charging very minimal
+9Some exchanges, such as Bitﬁnex, allow for margin trading and short selling.
+11
+ Electronic copy available at: https://ssrn.com/abstract=3235890 
+Electronic copy available at: https://ssrn.com/abstract=3235890
+
+fee per transaction (typically 0.1% or less); thus, we assume no transaction cost associated
+with trading the spread.
+Let us now state our trading rule:
+(i) Long the spread/Exit short position when
+St < µ −c · σ
+(ii) Short the spread/Exit long position when
+St > µ + c · σ
+where µ is the mean value of the spread, σ is the standard deviation of the spread, and
+c is a multiple we choose to set our entry/exit thresholds. At any given time t where St
+falls under/over the lower/upper bound, the system will buy/sell 1 share of S then wait
+until the price revert to realize a proﬁt from that particular trade. Here, we backtest and
+compare 5 diﬀerent thresholds for entry/exit including ±0.5σ, ±0.75σ, ±1σ, ±1.25σ, and
+±1.5σ (deviations from the mean).
+4.1
+Trading the spread
+Testing for multiple entry/exit levels allows us to analyze the advantages and disadvantages
+of the trading rules via multiple performance criteria. We summarize some trade statistics
+in Table 7 (see Appendix for deﬁnitions). When setting lower/upper bound at ±1.5σ, our
+system seems to outperform the rest in terms of annual Sharpe ratio, maximum drawdown,
+max/min/end equities, and gross proﬁts.
+Threshold level
+±0.5σ
+±0.75σ
+±σ
+±1.25σ
+±1.5σ
+Num.Txns
+17
+13
+13
+9
+7
+Num.Trades
+8
+6
+6
+4
+3
+Net.Trading.PL
+7601.87
+8112.87
+8307.29
+6313.43
+8422.57
+Avg.Trade.PL
+950.06
+1200.60
+1233.00
+1351.04
+2518.30
+Largest.Winner
+1599.35
+1599.35
+1599.35
+1605.06
+2773.72
+Largest.Loser
+0.00
+0.00
+0.00
+0.00
+0.00
+Gross.Proﬁts
+7600.50
+7203.60
+7398.03
+5404.16
+7554.91
+Gross.Losses
+0.00
+0.00
+0.00
+0.00
+0.00
+Percent.Positive
+100.00
+100.00
+100.00
+100.00
+100.00
+Percent.Negative
+0.00
+0.00
+0.00
+0.00
+0.00
+Avg.Win.Trade
+950.06
+1200.60
+1233.00
+1351.04
+2518.30
+Avg.Losing.Trade
+0.00
+0.00
+0.00
+0.00
+0.00
+Avg.Daily.PL
+950.06
+1200.60
+1233.00
+1351.04
+2518.30
+Ann.Sharpe
+37.22
+56.98
+71.88
+81.09
+109.00
+Max.Drawdown
+-2846.51
+-2846.51
+-2846.51
+-2885.34
+-1536.31
+Proﬁt.To.Max.Draw
+2.67
+2.85
+2.92
+2.19
+5.48
+Max.Equity
+7996.42
+8136.47
+8330.90
+6337.03
+9334.01
+Min.Equity
+-1020.73
+-1020.73
+-1020.73
+-1009.32
+-152.05
+End.Equity
+7601.87
+8112.87
+8307.29
+6313.43
+8422.58
+Table 7: Statistics for trading strategies with diﬀerent entry and exit thresholds
+12
+ Electronic copy available at: https://ssrn.com/abstract=3235890 
+Electronic copy available at: https://ssrn.com/abstract=3235890
+
+Dec
+Jan
+Feb
+Mar
+Apr
+May
+Jun
+Dec 21 2017
+Jan 08 2018
+Jan 22 2018
+Feb 05 2018
+Feb 19 2018
+Mar 05 2018
+Mar 19 2018
+Apr 02 2018
+Apr 16 2018
+Apr 30 2018
+May 14 2018
+May 28 2018
+Jun 11 2018
+spread
+2017−12−21 / 2018−06−20
+ 500
+1000
+1500
+2000
+2500
+3000
+3500
+4000
+4500
+5000
+Positionfill 1
+−1 0
+−0.5
+ 0.0
+ 0.5
+ 1.0
+CumPL 8307.2932
+    0
+ 2000
+ 4000
+ 6000
+ 8000
+Drawdown −23.60296
+ −8000
+ −6000
+ −4000
+ −2000
+     0
+Figure 6: Trading system setting entry/exit level at ±σ
+The mean-reverting behavior of the spread, as we can see in Figure 6, means that trades
+from all threshold levels yield positive proﬁts, i.e. the percentages of proﬁtable trades are
+all 100%. When St moved away from its mean in early January 2018, we see the advantage
+of setting a wide trading band (±1.5σ). In fact, the yield from that particular trade had
+resulted in the highest realized proﬁt, yet lower drawdowns in comparison to cases with
+narrower trading bands. As the band widens, the number of trades and transactions decreases
+as expected; but more importantly, net trading proﬁt & loss (P&L) seems to be optimal
+when we set the bandwidth at ±1.5σ which is consistent with all trading statistics from
+the table. Average P&L and average daily P&L also go up together with the largest gain
+when we increase the band. From asset management perspective, trading system with largest
+threshold level yield astonishing Sharpe ratio of 109 with lowest maximum drawdown. As a
+result, we observe that the trading system is optimal with the entry/exit level set at ±1.5σ.
+4.2
+Trading the spread with stop-loss
+In the cryptocurrency market, we often observe larger price swings not only on daily basis,
+but also potentially anytime of the day. This is the reason why setting a larger entry/exit
+threshold could potentially boost our trading proﬁts.
+At the same time, we cannot set
+it too large that the trading system would result in no-trades. On the other hand, when
+the entry/exit threshold levels get too narrow, traders would suﬀer larger drawdowns due
+to extremely high volatility or short term deviation in crypto-assets’ prices. Therefore, in
+addition to testing multiple entry/exit levels, we propose adding stop-loss order on top of the
+existing 5 threshold levels trading systems, mainly to mitigate the eﬀects of higher drawdown.
+Here, we set an arbitrary stop-loss order at 5%, meaning our system will automatically
+execute the stop-loss order a day after if today’s price falls below 5% of the buy-in price.
+13
+ Electronic copy available at: https://ssrn.com/abstract=3235890 
+Electronic copy available at: https://ssrn.com/abstract=3235890
+
+According to Table 8, stop-loss orders prevent the trading system from unrealized gains
+that we could have earned when not implementing stop-loss orders.
+However, maximum
+drawdown from all 5 threshold levels systems are reduced. Noticeably, numbers of trades
+and transactions go up by a signiﬁcant amount with lower net trading P&L, gross proﬁts,
+and most importantly, the Sharpe ratio. Without zero-transaction cost assumption, making
+trades frequently could ultimately hurt the net trading P&L and gross proﬁts of our system.
+Notably, when imposing a 5% stop-loss, most trades got executed at a lower price and thus,
+we do not fully capture the mean reverting beneﬁt from the spread. In contrast to not having
+stop-loss, more than 70% of trades from all 5 systems resulted in losses. Both Sharpe ratios
+and end equities are signiﬁcantly reduced.
+Threshold level
+±0.5σ
+±0.75σ
+±σ
+±1.25σ
+±1.5σ
+Num.Txns
+31
+19
+23
+15
+9
+Num.Trades
+15
+9
+11
+7
+4
+Net.Trading.PL
+2233.63
+2285.58
+3400.36
+555.88
+1672.08
+Avg.Trade.PL
+88.29
+152.92
+226.46
+-50.48
+201.10
+Largest.Winner
+954.18
+1816.26
+1816.26
+1266.85
+1506.03
+Largest.Loser
+-145.28
+-533.75
+-533.75
+-625.11
+-380.16
+Gross.Proﬁts
+2539.48
+2615.69
+3978.36
+1266.85
+1506.03
+Gross.Losses
+-1215.11
+-1239.38
+-1487.26
+-1620.24
+-701.62
+Percent.Positive
+26.67
+22.22
+27.27
+14.29
+25.00
+Percent.Negative
+73.33
+77.78
+72.73
+85.71
+75.00
+Avg.Win.Trade
+634.87
+1307.85
+1326.12
+1266.85
+1506.03
+Avg.Losing.Trade
+-110.46
+-177.05
+-185.91
+-270.04
+-233.87
+Avg.Daily.PL
+88.29
+152.92
+226.46
+-50.48
+201.10
+Ann.Sharpe
+3.64
+3.39
+4.84
+-1.29
+3.64
+Max.Drawdown
+-791.28
+-1325.03
+-1325.03
+-2010.37
+-1225.63
+Proﬁt.To.Max.Draw
+2.82
+1.72
+2.57
+0.28
+1.36
+Max.Equity
+2257.24
+2640.13
+3754.91
+910.43
+2583.51
+Min.Equity
+-267.28
+-801.02
+-801.02
+-1486.36
+-701.62
+End.Equity
+2233.63
+2285.58
+3400.36
+555.88
+1672.08
+Table 8: Statistics for the trading strategy with 5% stop-loss
+14
+ Electronic copy available at: https://ssrn.com/abstract=3235890 
+Electronic copy available at: https://ssrn.com/abstract=3235890
+
+Dec
+Jan
+Feb
+Mar
+Apr
+May
+Jun
+Dec 21 2017
+Jan 08 2018
+Jan 22 2018
+Feb 05 2018
+Feb 19 2018
+Mar 05 2018
+Mar 19 2018
+Apr 02 2018
+Apr 16 2018
+Apr 30 2018
+May 14 2018
+May 28 2018
+Jun 11 2018
+spread
+2017−12−21 / 2018−06−20
+ 500
+1000
+1500
+2000
+2500
+3000
+3500
+4000
+4500
+5000
+ 
+1
+1
+2
+2
+3
+3
+4
+4
+5
+Positionfill 1
+−1 0
+−0.5
+ 0.0
+ 0.5
+ 1.0
+CumPL 3400.36377
+1000
+    0
+ 1000
+ 2000
+ 3000
+Drawdown −354.54648
+−3000
+−2000
+−1000
+    0
+Figure 7: Trading system with 5% stop-loss, setting entry/exit level at ±σ
+4.3
+Trading the spread with trailing stop-loss
+While a stop-loss order limits the traders’ net loss, a trailing stop is triggered by a large
+drawdown and is adjusted upward as the portfolio value increases. Hence, it has the advantage
+of continuously moving with the portfolio value and allowing the trader to potentially end
+with a gain even when the trailing stop is triggered by a drawdown.
+When implementing a strategy with trailing stop, there is also a possibility that trades
+get exited too early before a bigger upward price movement. This is the opportunity cost of
+having trailing stop rather than just implementing stop-loss alone. In our case, since trading
+signals are only triggered when prices of the spread fall above or drop below the entry/exit
+level, it could potentially prevent the trading system from executing additional trades as
+price fall within one deviation threshold. Also, if we know with certain level of conﬁdence
+that the spread is a stationary process, it may not be ideal to implement either stop-loss or
+trailing stop . Nonetheless, we design additional trading systems setting a trailing stop at
+the same level as we did for stop-loss, which is 5%, to compare 3 trading systems with 5
+threshold levels and evaluate the beneﬁt of having one over the other using multiple trading
+performance criteria.
+From Table 9, the number of trades and transactions increase signiﬁcantly from the
+original trading system which could potentially be an expense when there are transaction
+costs associated with each trade.
+However, net trading P&L, average trade P&L, gross
+proﬁts are higher than from the system with stop-loss. Here, the trailing stop has led to
+multiple exits with small proﬁts as the spread reverts to the mean. As a result, percentages
+of proﬁtable trades have gone up two times from the stop-loss trading systems and average
+15
+ Electronic copy available at: https://ssrn.com/abstract=3235890 
+Electronic copy available at: https://ssrn.com/abstract=3235890
+
+daily P&L are also improved. Notably, maximum drawdown are drastically reduced while
+Sharpe ratios and end equities signiﬁcantly increase.
+Threshold level
+±0.5σ
+±0.75σ
+±σ
+±1.25σ
+±1.5σ
+Num.Txns
+36
+24
+26
+20
+10
+Num.Trades
+18
+12
+13
+10
+5
+Net.Trading.PL
+3509.31
+3872.88
+5080.65
+4682.81
+2114.03
+Avg.Trade.PL
+194.96
+322.74
+390.82
+468.28
+422.81
+Largest.Winner
+954.18
+1816.26
+1816.26
+1266.85
+1303.67
+Largest.Loser
+-137.35
+-137.35
+-137.35
+-125.72
+-179.62
+Gross.Proﬁts
+3991.64
+4440.42
+5367.59
+4849.46
+2334.59
+Gross.Losses
+-482.33
+-567.55
+-286.94
+-166.66
+-220.56
+Percent.Positive
+66.67
+58.33
+76.92
+80.00
+60.00
+Percent.Negative
+33.33
+41.67
+23.08
+20.00
+40.00
+Avg.Win.Trade
+332.64
+634.35
+536.76
+606.18
+778.20
+Avg.Losing.Trade
+-80.39
+-113.51
+-95.65
+-83.33
+-110.28
+Avg.Daily.PL
+194.96
+322.74
+390.82
+468.28
+422.81
+Ann.Sharpe
+8.85
+8.33
+11.03
+14.44
+9.82
+Max.Drawdown
+-676.06
+-1021.65
+-676.06
+-1040.13
+-1066.16
+Proﬁt.To.Max.Draw
+5.19
+3.79
+7.52
+4.50
+1.98
+Max.Equity
+3657.30
+4020.86
+5228.64
+4830.80
+2365.69
+Min.Equity
+-152.05
+-497.65
+-152.05
+-516.12
+-542.16
+End.Equity
+3509.31
+3872.88
+5080.65
+4682.81
+2114.03
+Table 9: Statistics for the trading strategy with 5% trailing stop-loss
+Starting with an initial amount of $50,000 and restricting the exposure of our trading
+systems to only 1 unit of the spread at a time, Figure 8 shows how the three systems perform with 5 proposed entry/exit threshold levels. Overall, the trading system with neither
+stop-loss nor trailing stop produced maximum proﬁts with highest Sharpe ratios. Although
+traders may not prefer drawdowns from the initial trade, the spread reverted to the mean
+price and crossed above the exit level, yielding a total net proﬁt of over $1,599 which is
+equivalent to 175% gain on the period from December 28, 2017 to January 14, 2018. By
+setting larger bands, we were able to capture full proﬁt from the initial trade with little to
+no drawdown, see Figure 8(e). In addition, by not incorporating a stop-loss nor trailing stop,
+setting threshold at ±1.5σ has yielded highest proﬁt and Sharpe ratio out of all the proposed
+trading systems. Although when implementing trailing stop and stop-loss, we are able to reduce drawdowns from the initial system, trading performances also decline. In terms of proﬁt
+maximization, the trading system without stop-loss nor trailing should be preferred since we
+have established that a portfolio comprised of BTC, ETH, LTC, and BCH is mean-reverting.
+16
+ Electronic copy available at: https://ssrn.com/abstract=3235890 
+Electronic copy available at: https://ssrn.com/abstract=3235890
+
+50000
+52000
+54000
+56000
+58000
+Jan
+Feb
+Mar
+Apr
+May
+Jun
+Date
+USD
+Equity Line
+With.Stop.Loss
+With.Trailing.Stop.Loss
+(a)
+50000
+52000
+54000
+56000
+58000
+Jan
+Feb
+Mar
+Apr
+May
+Jun
+Date
+USD
+Equity Line
+With.Stop.Loss
+With.Trailing.Stop.Loss
+(b)
+50000
+52000
+54000
+56000
+58000
+Jan
+Feb
+Mar
+Apr
+May
+Jun
+Date
+USD
+Equity Line
+With.Stop.Loss
+With.Trailing.Stop.Loss
+(c)
+50000
+52000
+54000
+56000
+Jan
+Feb
+Mar
+Apr
+May
+Jun
+Date
+USD
+Equity Line
+With.Stop.Loss
+With.Trailing.Stop.Loss
+(d)
+51000
+54000
+57000
+Jan
+Feb
+Mar
+Apr
+May
+Jun
+Date
+USD
+Equity Line
+With.Stop.Loss
+With.Trailing.Stop.Loss
+(e)
+Figure 8:
+Equity lines: (a) Entry/exit threshold = 0.5σ; (b) Entry/exit threshold
+= 0.75σ; (c) Entry/exit threshold = σ, (d) Entry/exit threshold = 1.25σ.
+(e) Entry/exit threshold = 1.5σ.
+17
+ Electronic copy available at: https://ssrn.com/abstract=3235890 
+Electronic copy available at: https://ssrn.com/abstract=3235890
+
+5
+Conclusion
+In this study, we have identiﬁed price cointegration among the prices of four cryptocurrencies,
+BTC, ETH, LTC, and BCH, using both the Johansen test and Engle-Granger procedure.
+Although the Johansen test implies a stationary portfolio, it is not a preferred approach for
+trading application because the resulting slow mean-reverting portfolio would result in very
+few to no trades. The Engle-Granger approach gives a mean-reverting and tradable portfolio
+since the fast mean-reverting spread would cross the entry and exit levels frequently. We ﬁnd
+that setting greater entry and exit levels leads to larger proﬁts. In comparison to trading
+systems with a stop-loss exit or trailing stop, the one without yields the highest proﬁt but
+also largest drawdowns.
+As the cryptocurrency market continues to grow with new coins and new exchanges, it
+is very important for individual investors, crypto-fund managers, as well as regulators to
+understand the price dependency among all cryptocurrencies, along with their derivatives.
+There are many directions for future research. For example, do the prices and volatilities of
+cryptocurrencies interact with the equity, bond, or commodity markets (see Narayan et al.
+(2017))? Can they be used as an inﬂation hedge like gold (see (Ghosh et al., 2004))? In this
+paper, we have considered several cryptocurrencies with the largest market capitalizations,
+but one can also develop a machine learning approach that automatically selects a small
+portfolio from a vast universe of cryptocurrencies (see Zhang et al. (2018)). Moreover, one
+can analyze and compare the price impacts of trading diﬀerent cryptocurrencies. Results on
+this front will shed light on the process of selecting a cointegrated portfolio and the execution
+of trades.
+References
+Box, G. E., Jenkins, G. M., Reinsel, G. C., and Ljung, G. M. (2015). Time series analysis:
+forecasting and control. John Wiley & Sons.
+Chan, E. (2013). Algorithmic trading: winning strategies and their rationale, volume 625.
+John Wiley & Sons.
+Cheah, E.-T. and Fry, J. (2015).
+Speculative bubbles in bitcoin markets?
+an empirical
+investigation into the fundamental value of bitcoin. Economics Letters, 130:32–36.
+Chuen, K., David, L., Guo, L., and Wang, Y. (2017). Cryptocurrency: A new investment
+opportunity? Working paper.
+Detzel, A. L., Liu, H., Strauss, J., Zhou, G., and Zhu, Y. (2018). Bitcoin: Learning, predictability and proﬁtability via technical analysis. Working paper.
+Dickey, D. A. and Fuller, W. A. (1979). Distribution of the estimators for autoregressive
+time series with a unit root. J. Am. Stat. Assoc., 74(366):427–431.
+Engle, R. F. and Granger, C. W. J. (1987). Co-integration and error correction: Representation, estimation, and testing. Econometrica, 55(2):251–276.
+Ghosh, D., Levin, E. J., MacMillan, P., and Wright, R. E. (2004). Gold as an inﬂation hedge?
+Studies in Economics and Finance, 22(1):1–25.
+Ha, S. and Moon, B.-R. (2018).
+Finding attractive technical patterns in cryptocurrency
+markets. Memetic Computing, pages 1–6.
+Hileman, G. and Rauchs, M. (2017). Global cryptocurrency benchmarking study. Cambridge
+Centre for Alternative Finance. Available at https://ssrn.com/abstract=3040224.
+18
+ Electronic copy available at: https://ssrn.com/abstract=3235890 
+Electronic copy available at: https://ssrn.com/abstract=3235890
+
+Johansen, S. (1988).
+Statistical analysis of cointegration vectors.
+Journal of Economic
+Dynamics and Control, 12(2-3):231–254.
+Kang, J. and Leung, T. (2017). Asynchronous ADRs: overnight vs intraday returns and
+trading strategies. Studies in Economics and Finance, 34(4):580–596.
+Kwiatkowski, D., Phillips, P. C., Schmidt, P., and Shin, Y. (1992). Testing the null hypothesis
+of stationarity against the alternative of a unit root: How sure are we that economic time
+series have a unit root? Journal of Econometrics, 54(1-3):159–178.
+Labbe, A. (2017). PRC regulator blames fraud for ICO ban. International Financial Law
+Review.
+Leung, T. and Li, X. (2015). Optimal mean reversion trading with transaction costs and
+stop-loss exit. International Journal of Theoretical & Applied Finance, 18(3):15500.
+Leung, T. and Li, X. (2016).
+Optimal Mean Reversion Trading: Mathematical Analysis
+and Practical Applications.
+Modern Trends in Financial Engineering. World Scientiﬁc,
+Singapore.
+Leung, T. and Ward, B. (2015). The golden target: Analyzing the tracking performance of
+leveraged gold ETFs. Studies in Economics and Finance, 32(3):278–297.
+Makarov, I. and Schoar, A. (2018). Trading and arbitrage in cryptocurrency markets. Working paper. Available at https://ssrn.com/abstract=3171204.
+Narayan, P. K., Thuraisamy, K. S., and Wagner, N. F. (2017). How do bond, equity and
+commodity cycles interact? Finance Research Letters, 21:151 – 156.
+Phillips, P. C. and Perron, P. (1988).
+Testing for a unit root in time series regression.
+Biometrika, 75(2):335–346.
+Vidyamurthy, G. (2004).
+Pairs Trading: quantitative methods and analysis, volume 217.
+John Wiley & Sons.
+Wagner, N. (2005). Autoregressive conditional tail behavior and results on government bond
+yield spreads. International Review of Financial Analysis, 14(2):247 – 261. Special issue:
+Quantitative Issues in Finance.
+Zhang, J., Leung, T., and Aravkin, S. (2018). Mean reverting portfolios via penalized OUlikelihood estimation. In Proceedings of the 57th IEEE Conference on Decision and Control, 2018.
+19
+ Electronic copy available at: https://ssrn.com/abstract=3235890 
+Electronic copy available at: https://ssrn.com/abstract=3235890
+
+A
+Appendix: statistics for trading strategies
+Num.Txns
+Total number of transactions
+Num.Trades
+Total number of trades
+Net.Trading.PL
+Total proﬁt & loss made due to all trades
+Avg.Trade.PL
+Average proﬁt & loss made due to all trades
+Largest.Winner
+The maximum proﬁt of trades
+Largest.Loser
+The maximum loss of trades
+Gross.Proﬁts
+Total proﬁts
+Gross.Losses
+Total losses
+Percent.Positive
+Percentage of proﬁtable trades
+Percent.Negative
+Percentage of loss trades
+Avg.Win.Trade
+The average of proﬁts of trades
+Avg.Losing.Trade
+The average of losses of trades
+Avg.Daily.PL
+Average proﬁt & loss on daily basis
+Ann.Sharpe
+Sharpe ratio with 0 risk-free rate
+Proﬁt.To.Max.Draw
+The ratio of proﬁt to maximum drawdown
+Avg.WinLoss.Ratio
+The ratio of average proﬁtable trades and average loss trades
+Max.Equity
+Maximum equity
+Min.Equity
+Mimum equity
+End.Equity
+Ending equity
+Table 10: Trade statistics explanations
+20
+ Electronic copy available at: https://ssrn.com/abstract=3235890 
+Electronic copy available at: https://ssrn.com/abstract=3235890

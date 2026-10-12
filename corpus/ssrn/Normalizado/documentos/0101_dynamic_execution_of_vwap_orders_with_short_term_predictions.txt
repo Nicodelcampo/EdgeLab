@@ -1,0 +1,1667 @@
+ Electronic copy available at: http://ssrn.com/abstract=2366177 
+Dynamic execution of VWAP orders
+with short-term predictions
+Ngoc-Minh Dang
+Kepler Cheuvreux and JVN Institute, VNU-HCM
+mdang@keplercheuvreux.com
+Yin Chen∗
+Kepler Cheuvreux
+ychen@keplercheuvreux.com
+December 11, 2013
+Abstract
+We consider a Volume Weighted Average Price (VWAP) trading algorithm in which
+instead of following the static curve passively, the algo may adjust its participation rate
+in each interval. We propose a framework in which the adjustment only makes use of
+the expected value of the price appreciation, captured by trading signals. In order to
+avoid extreme behaviors, we bound the adaptive trading curve within a so-called trading
+envelope. Using two examples of signals, the Forward/Backward and a CAC40 stock, we
+conﬁrm the potential improvement of our adaptive framework compared to previous ones.
+Key words: VWAP, short-term prediction, trading envelopes
+1
+Introduction
+In the execution services today algorithmic trading is rapidly becoming the preferred method
+for clients to acquire and liquidate position of stock, as well as other asset classes. Typically
+a computer based trading algorithm is used to buy or sell a position while attempting to stick
+to a client selected benchmark. One of the oldest and most popular benchmarks is VWAP
+(Volume Weighted Average Price), which is usually used by large institutional traders to
+trade large orders in ﬁnancial markets.
+VWAP execution orders represent around 50% of all the institutional investors’ trading.
+The popularity of the VWAP benchmark for both brokers and clients stems from several
+reasons. Firstly, investors who ask for VWAP execution accept that they will postpone their
+trades in order to reduce their trading cost when buying or selling large amount of shares.
+For example, foreign investors are often forced to place large orders before the market opens
+due to the time lag. In a ﬁxed-price trade, brokers charge a large risk premium because of
+the size of the risk. However, investors can save on the risk premium by using VWAP as
+a benchmark because market directional risk remains with the investors. Secondly, VWAP
+is better than any ﬁxed-time-in-the-future bechmak and also has high price transparency.
+If investors use a price at a ﬁxed time in the future as benchmark, the closing price for
+instance, brokers are forced to trade intensively towards closing, which results in a huge
+market impact and a considerable cost. However, VWAP can reduce the market impact and
+∗This work was realized during the internship of the second author within the Algorithmic Trading Quant
+team at Kepler Cheuvreux.
+1
+Electronic copy available at: https://ssrn.com/abstract=2366177
+
+ Electronic copy available at: http://ssrn.com/abstract=2366177 
+prevent manipulation of market prices. Finally, VWAP benchmark is a common practice to
+evaluate traders’ performance based on their ability to execute the orders at a price better
+or equal to market VWAP. In this case, VWAP can be seen as an optimal benchmark, which
+can improve both market transparency and eﬃciency.
+To discuss VWAP benchmark, we ﬁrst need to give an oﬃcial deﬁnition of VWAP. Here
+we need to distinguish the market VWAP and the execution VWAP. The market VWAP
+is calculated by using all observable traded prices, as well as all traded volumes at those
+prices in a certain period. The market is a collection of all random noise sources, both price
+and volume could be regarded as stochastic processes, thus the market VWAP can also be
+described as a stochastic process.
+Deﬁnition 1.1. Given a series of available prices (Si)i=1,...,n together with volume (Vi)i=1,...,n
+executed at those prices between [t, t + δt], the Volume Weighed Average Price (VWAP) is
+deﬁned to be:
+w[t,t+δt] =
+Pn
+i=1 ViSi
+Pn
+i=1 Vi
+.
+This is also referred to as market VWAP.
+As we could imagine that a trader’s buy and sell behavior, especially for large institutional
+trader, have an action on traded price, which is also referred to as market impact and has
+been discussed in many articles. If we consider a linear market impact, the trader’s realized
+traded price becomes:
+˜Si = Si + κui .
+where ui is the execution rate, normally we have ui > 0 and the coeﬃcient κ is the coeﬃcient
+of the linear (temporary) market impact model. During a short time period [t, t + δt], for
+example δt = 5-min, if we divide our large order proportional to the market traded volume,
+which means our executed volumes are rV1, . . . , rVn, where r ∈(0, 1). The sum Pn
+i=1 rVi = ˜V
+is our real volume to be executed in this short period.
+Deﬁnition 1.2. Consider a linear market impact, the realized VWAP becomes:
+˜w[t,t+δt] =
+Pn
+i=1 rVi ˜Si
+Pn
+i=1 rVi
+= w[t,t+δt] + κ
+Pn
+i=1 Viui
+Pn
+i=1 Vi
+.
+This is also referred to as execution VWAP.
+In this paper, we do not consider the market impact (κ = 0) and we suppose our execution
+can always catch the market VWAP in short periods (δt = 5-min). i.e., we always have in a
+short-term period [t, t + δt]:
+˜w[t,t+δt] = w[t,t+δt] .
+This is an essential assumption in this paper.
+In reality, how to execute a large VWAP
+order in one day’s time (9:00 - 17:30) with average executed price better than market average
+level becomes an interesting problem. As we know by dividing one day’s trading period into
+several short-term periods (5-min), market VWAPs in each period are diﬀerent. This gives us
+a motivation to divide a large VWAP order into several small orders in order to proﬁt from
+price ﬂuctuation. As a result, we are motivated to execute more volume in the short period
+with better short-term price, while execute less in that with worse short-term price. As an
+algorithmic broker, the total volume of a VWAP order in one day is ﬁxed, so the proportion
+distributed into short-term periods becomes a key to improve our execution. In one day’s
+2
+Electronic copy available at: https://ssrn.com/abstract=2366177
+
+time, global market VWAP can be regarded as a linear combination of several local market
+VWAPs in short-term periods, where this allocation of combination is always called trading
+curve. This paper proposes a new method to adapt the trading curve in order to beat the
+market.
+Generally speaking, there are two approaches to model the optimal VWAP trading strategy. The classical approach is to ﬁnd the optimal static execution trajectory before market
+opens which will not be updated during the whole trading period. The ﬁrst work in this area
+is the article by [Konishi, 2002] who derives the optimal execution trajectory for single and
+basket VWAP execution when the price is given by a Brownian motion. The strategy is then
+assessed against actual trade data from the Tokyo stock exchange. [Jedrzej Bialkowski and
+Le Fol, 2008] presented a new methodology to modeling intra-day volume which allows for a
+reduction of the execution risk in VWAP. [McCulloch and Kazakov, 2007], [McCulloch and
+Kazakov, 2012] view it as a quadratic hedging problem under partial information and use
+the mean-variance method to minimize the variance of diﬀerence between market VWAP and
+execution VWAP.
+The new approach is to use an adaptive execution trajectory which comes from available
+information of price and volume in the past, as well as some prediction signals. [Almgren and
+Lorenz, 2006] proposed an Bayesian estimator of intra-day price drift so as to minimize the
+expected transaction cost. The ﬁrst paper dealing with pricing a VWAP-guaranteed and by
+product, optimizing a VWAP execution is [Bouchard and Dang, 2012] where authors made
+use of the stochastic target framework.
+[Frei and Westray, 2013] introduced to modeling
+relative volume curve using Gamma bridge, then solved an HJB equation to get an explicit
+characterization of the optimal trading rate. [Dang and Lehalle, 2013] show that in combining
+estimations on volume and price, one is able to optimize the execution in a sequence manner.
+Note that all the above articles except the last one do not allow for an adaptive changing
+trading curve using short-term predictions.
+The paper is structured as follows.
+In Section 2 we introduce the framework dealing
+with the execution of VWAP orders with both static and adaptive approaches using trading
+signals. Section 3 provides a full discussion on signals and illustrates two important examples, the Forward/Backward signals. Using the previously described methodology and the
+input signals, we present the empirical results on an important CAC40 stock BNP Paribas
+(BNPP.PA) in Section 4. We conclude our paper in Section 5.
+2
+Adaptive trading framework
+In this section, we present the modeling of dynamic VWAP order execution algorithm. We
+add some trading signals in our framework in order to online update static trading curve.
+The aim of this procedure is to get an adaptive trading curve in order to realize dynamic
+execution.
+2.1
+Execution modeling
+The traditional execution method is to ﬁnd an optimal trading curve before market opens.
+Once it is estimated, this optimal trading curve will not be changed during the whole trading
+period.
+To execute a large intraday VWAP order, we ﬁrst divide the trading horizon [0, T] into
+3
+Electronic copy available at: https://ssrn.com/abstract=2366177
+
+N slices, delimited by N + 1 instants.
+0 = t0 < t1 = T
+N < · · · < tN = T .
+Recall that we usually use 5-min interval as short-term period where only one signal is active
+between each 5 minutes, one day’s trading period is usually divided into N = 101 short-term
+periods. In order to work with VWAP order, we need to deﬁne market VWAP:
+(wn)n=1,...,N : the market VWAP in each slice .
+(1)
+A large order with volume V is liquidated by a vector of volume v ∈RN
++ satisfying:
+(vn)n=1,...,N
+
+N
+X
+n=1
+vn = V : the executed volume in each slice .
+In this paper, it is more convenient to work directly with relative volume.
+Deﬁnition 2.1. For an order of a certain stock in one day, (wn)n=1,...,N are ﬁxed. Suppose
+volume of this order is V , the class of all possible strategies to liquidate this large order can be
+deﬁned as a collection of trading curve, which is also regarded as a collection of execution
+trajectory of relative volume, v/V ∈RN
++:
+P =
+
+p = (pn)n=1,...,N, pn = vn
+V ,
+N
+X
+n=1
+pn = 1
+
+.
+This class of liquidating strategies has another notation, deﬁned as a collection of cumulative
+trading curve associated with this order:
+¯P =
+
+¯p = (¯pn)n=0,...,N, ¯pn =
+Pn
+i=1 vi
+V
+, ¯p0 = 0, ¯pN = 1
+
+.
+For a certain liquidating strategy p (or ¯p), it’s easy to have a relation that: ¯pn = Pn
+i=1 pi. We
+can claim: A trading curve (or cumulative trading curve) does not depend on total volume
+V .
+Trading curve is an essential conception in this paper, it is the main subject discussed later.
+Remark 2.1. In this paper, the concept trading curve stands for both the trading curve and
+the corresponding cumulative trading curve.
+By making a very important assumption that our execution VWAP is equivalent to market
+VWAP in each slice, we can easily deﬁne:
+Deﬁnition 2.2. For an order of a certain stock in one day, (wn)n=1,...,N are ﬁxed. The daily
+VWAP can be regarded as a function of trading curve:
+W(p) =
+N
+X
+n=1
+pnwn , where p ∈P .
+We can claim: In an execution, the corresponding daily VWAP is determined by its trading
+curve.
+If our order side is ‘buy’, it is nature to improve the execution by minimizing W(p), while
+in the converse case ‘sell’, we need to maximize W(p). No matter which side the order is,
+choosing an optimal trading curve becomes the most important. So the problem of optimal
+execution can be reduced into a problem of choosing an optimal trading curve before the
+opening of market.
+4
+Electronic copy available at: https://ssrn.com/abstract=2366177
+
+2.2
+Static execution
+Because the traditional optimal trading curve will not be changed during one day’s trading
+period, we can regard it as a static trading curve, which cannot proﬁt from intra-day price
+ﬂuctuation.
+Deﬁnition 2.3. The class of static trading curve is a collection of all possible trading
+curves that will not be changed during one day.
+P stat =
+
+p ∈P , p is determined before market opens
+	
+.
+There are many kinds of static trading curve. A naive trading curve is called unif trading
+curve:
+punif = (punif
+n
+)n=1,...,N, where punif
+n
+= 1/N .
+(2)
+To be more precise, we ﬁrst estimate the median trading curve.
+For all 1 ≤n ≤N,
+pmed
+n
+= median
+ p1
+n, . . . , pM
+n
+
+where (pm
+n )m=1,...,M are the M previously days’ market volume proportion in the n-th slice, and from which, normalize to obtain the pre trading
+curve:
+ppre = (ppre
+n )n=1,...,N, where ppre
+n
+=
+pmed
+n
+PN
+n=1 pmed
+n
+.
+(3)
+This trading curve is calculated a priori, which can be used directly in day trading.
+In traditional execution literature, people are eager to completely copy the market performance:
+Deﬁnition 2.4 (Oracle benchmark). As an oracle benchmark, we deﬁne the real market
+relative volume curve as post trading curve:
+ppost = (ppost
+n
+)n=1,...,N, where ppost
+n
+=
+market volume in n-slice
+market total volume between [0, T] .
+(4)
+This trading curve is always regarded as a ‘perfect’ trading curve, which the corresponding
+daily VWAP is called market daily VWAP:
+W(ppost) =
+N
+X
+n=1
+ppost
+n
+wn .
+(5)
+We cannot use post trading curve in day trading because it is only available a posteriori. A
+lot of articles in this domain try to estimate this curve a priori in order to get a daily VWAP
+equivalent to the market’s one. A static optimal trading curve is exactly an optimal estimated
+post trading curve. In our dynamic execution framework, we focus on ﬁnding an adaptive
+trading curve in order to beat the market.
+To measure the performance of an execution, we need a suitable indicator to compare the
+performance of a given trading curve with the performance of market:
+Deﬁnition 2.5. We deﬁne the slippage of a given trading curve p ∈P as the gain of
+associated daily VWAP comparing with market daily VWAP:
+S(p) = const · side · W(p) −W(ppost)
+W(ppost)
+.
+(6)
+5
+Electronic copy available at: https://ssrn.com/abstract=2366177
+
+Here and below we always take ‘const’ = 104 so as to make unit of slippage be bp (basis
+point), and ‘side’ is a parameter to indicate trading side:
+side =
+
+1
+for sell
+−1
+for buy
+.
+(7)
+Using this notation, we know that no matter which side it is, a high slippage means a good
+execution. A positive value of slippage means our execution can beat the market.
+2.3
+Dynamic execution approach
+Diﬀerent from traditional execution method, a great advantage of dynamic execution method
+is that it can use intra-day information to online update trading curve. Here we ﬁrst deﬁne
+the trading signal:
+Deﬁnition 2.6. A trading signal is a category of indicator that can tell us the price level
+in a short-term period, we have:
+s = (sn)n=1,...,N ∈{1, 0, −1}N .
+where the signal in the n-slice sn indicates:
+sn =
+
+
+
+
+
+
+
+
+
+
+
+1
+good price level, execute more aggressive
+0
+average price level, no action
+−1
+bad price level, execute more conservative
+.
+As the deﬁnition of trading curve, we would like to have a collection of all possible trading
+signals:
+S =
+
+s = (sn)n=1,...,N ∈
+
+1, 0, −1
+	N
+
+.
+The purpose of using trading signal is to improve the execution performance, so the method
+to plug-in the trading signal into our trading curve is another important issue.
+Deﬁnition 2.7 (Adaptive trading curve). An adaptive strategy is a strategy of combining
+the trading signal and a given trading curve in order to improve the performance of execution
+based on this given trading curve:
+F = {f : (p, s) ∈P × S 7→f(p, s) ∈P} .
+With these notations, we would now introduce the most important idea of this paper, adaptive
+trading curve.
+Deﬁnition 2.8. The class of adaptive trading curve is a collection of all possible trading
+curves which is based on a static trading curve and a trading signal:
+P adap =
+
+f(p, s), where p ∈P stat, s ∈S, f ∈F
+	
+.
+And we can also deﬁne adaptive trading curve with signal speciﬁc in side ‘buy’ and ‘sell’.
+P adap, b =
+
+f(p, s), where p ∈P stat, s ∈S, f ∈F, ‘side’ = ‘buy’
+	
+.
+P adap, s =
+
+f(p, s), where p ∈P stat, s ∈S, f ∈F, ‘side’ = ‘sell’
+	
+.
+6
+Electronic copy available at: https://ssrn.com/abstract=2366177
+
+This kind of curve will be mainly discussed is this paper. In the next two sections, we will
+introduce some concrete examples of trading signal and update strategy.
+Obviously, there exists so many types of trading signal. A good trading signal, besides
+allowing for a better understand the market, can also help day trading no matter in order
+liquidating, market making or statistical arbitrage. . . In CAPM, the return of a security is
+composed by two parts: alpha and beta, where alpha stands for the security’s absolute return
+and beta stands for the relative return to the market.
+In the same methodology, alphasignal is usually used to detect the price level on risk-adjusted basis comparing to itself. i.e.
+forward/backward signal. . . Also beta-signal is usually used to detect the price level relative
+to market condition. These will be discussed in Section 3.
+In this section, we mainly discuss the performance of dynamic execution compared with
+static execution. What we concern is how the adaptive trading curve is better than its static
+trading curve, so the market post trading curve is not our issue.
+Deﬁnition 2.9 (Oracle trading signal). As given a static trading curve p ∈P stat, then the
+oracle trading signal based on this trading curve is deﬁned as:
+soracle
+n
+=
+
+
+
+side
+if
+wn > W(p)
+−side
+if
+wn < W(p)
+.
+(8)
+This trading signal is not really an usable signal since both wn and W(p) are variables that
+we do not know at the end of (n−1)-slice when we have to determine the proportion in n-slice
+pn. The only way to realize this strategy is to estimate the oracle signal. In this section, we
+suppose that all signals are known a priori. The following part will verify that a particular
+trading strategy, called decay update, will improve the performance of static curve with this
+oracle trading signal.
+With all of previous notations, one is able to plug in oracle trading signal into the given
+static trading curve to obtain an adaptive trading curve.
+Deﬁnition 2.10 (Decay adaptive strategy). For a given (p, s) ∈P stat×S, a decay adaptive
+strategy associates the initial trading curve p to an adaptive trading curve, fdecay(p, s), in a
+recursive manner as follows.
+• For the ﬁrst iteration, use the static curve p(1) = p.
+• For the n-th iteration where 2 ≤n ≤N −1,
+p(n)
+k
+=
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+p(n−1)
+k
+if
+k ≤n −1
+p(n−1)
+k
+(1 + δsk)
+if
+k = n
+p(n−1)
+k
+
+1 −
+δsnp(n−1)
+n
+P
+l≥n+1 p(n−1)
+l
+
+if
+k ≥n + 1
+.
+(9)
+• For the last iteration
+p(N)
+N
+= 1 −
+N−1
+X
+k=1
+p(N−1)
+k
+.
+7
+Electronic copy available at: https://ssrn.com/abstract=2366177
+
+Then we get a series of trading curve (p(1), . . . , p(N)). Let us denote the adaptive trading
+curve be the one obtained in the last iteration
+fdecay(p, s) = p(N) .
+Given a static trading curve p ∈P stat, if we mix the oracle trading signal and decay adaptive
+strategy, the obtained adaptive trading curve is expressed as follows:
+padap = fdecay(p, soracle) .
+(10)
+The ﬁnal average price associated with this strategy is thus W
+ padap
+. This strategy, even
+described by complex formulas, has a very simple underlying idea: except for the ﬁrst and the
+last slice, for any other slice we increase our volume proportion pn in the case that wn is better
+than W(p), the larger the parameter δ, the larger the deviation we make compared to the
+static curve. Since the sum of all slice weights must be unchanged, we decrease proportionally
+all remaining slices. We hope ﬁnally that W(padap) is better than W(p) in some sense that
+we precise below.
+To measure the performance of trading signal and adaptive strategy, without considering
+the market post curve, we deﬁne:
+Deﬁnition 2.11. For any adaptive trading curve obtained by oracle trading signal and decay
+adaptive strategy, padap = fdecay(p, soracle), for all p ∈P stat. Its performance is measured by
+relative slippage:
+S∗(padap, p) = const · side · W(padap) −W(p)
+W(p)
+.
+(11)
+The relative slippage measures how much adaptive trading curve is better than static trading
+curve.
+Remark 2.2. By choosing diﬀerent static trading curves, p ∈P stat, we can obtain diﬀerent
+adaptive trading curves.
+• If p = punif, naive static trading curve, used in simulated data experiments.
+• If p = ppre, estimated post curve, used in empirical data experiments.
+• If p = ppost, a ‘perfect’ trading curve a posteriori, oracle benchmark.
+Now we would like to discuss the properties of this adaptive trading curve got from oracle
+trading signal and decay update strategy. To simplify the notations, let s = soracle. From
+Equation (9), for all p ∈P stat, we can conclude:
+• For n ≥k + 1, we have p(n)
+k+1 = const, which means p(k+1)
+k+1
+= p(k+2)
+k+1
+= · · · = p(N)
+k+1.
+• For n ≤k, we have
+p(n)
+k+1
+p(k)
+k+1
+=
+p(n)
+k+2
+p(k)
+k+2
+= · · · = p(n)
+N
+p(k)
+N
+, which means for all i > k, we have:
+p(k)
+i
+PN
+l=k+1 p(k)
+l
+=
+p(k−1)
+i
+PN
+l=k+1 p(k−1)
+l
+= · · · =
+p(1)
+i
+PN
+l=k+1 p(1)
+l
+=
+pi
+PN
+l=k+1 pl
+.
+8
+Electronic copy available at: https://ssrn.com/abstract=2366177
+
+• For n ≤k, we can calculate the expression of p(n)
+k :
+p(n)
+k
+= p(1)
+k
+ 
+1 −
+δs2p(1)
+2
+PN
+l=3 p(1)
+l
+! 
+1 −
+δs3p(2)
+3
+PN
+l=4 p(2)
+l
+!
+. . .
+ 
+1 −δsn−1p(n−2)
+n−1
+PN
+l=n p(n−2)
+l
+!
+(1 + δsn)
+= pk
+ 
+1 −
+δs2p2
+PN
+l=3 pl
+! 
+1 −
+δs3p3
+PN
+l=4 pl
+!
+. . .
+ 
+1 −δsn−1pn−1
+PN
+l=n pl
+!
+(1 + δsn)
+= pk
+n−1
+Y
+i=2
+ 
+1 −
+δsipi
+PN
+l=i+1 pl
+!
+· (1 + δsn) .
+Now we can give a deﬁnition of proportion in this adaptive trading curve:
+p(n)
+k
+=
+
+
+
+
+
+
+
+pk
+Qn−1
+i=2
+
+1 −
+δsipi
+PN
+l=i+1 pl
+
+· (1 + δsn)
+if
+n ≤k
+p(k)
+k
+if
+n > k
+.
+(12)
+At the same time, we would like to give the VWAP in every update:
+W(p(n)) =
+N
+X
+k=1
+wkp(n)
+k
+=
+n−1
+X
+k=1
+wkp(n−1)
+k
++ wnp(n−1)
+n
+(1 + δsn) +
+N
+X
+k=n+1
+wnp(n−1)
+k
+ 
+1 −
+δsnp(n−1)
+n
+P
+l≥n+1 p(n−1)
+l
+!
+=
+N
+X
+k=1
+wkp(n−1)
+k
++ δwnp(n−1)
+n
+sn −
+N
+X
+k=n+1
+wkp(n−1)
+k
+δsnp(n−1)
+n
+P
+l≥n+1 p(n−1)
+l
+=
+N
+X
+k=1
+wkp(n−1)
+k
++ δp(n−1)
+n
+sn
+ 
+wn −
+N
+X
+k=n+1
+wk
+p(n−1)
+k
+P
+l≥n+1 p(n−1)
+l
+!
+= W(p(n−1)) + δp(n−1)
+n
+sn
+ 
+wn −
+N
+X
+k=n+1
+wk
+pk
+P
+l≥n+1 pl
+!
+.
+So we have a recursive expression of VWAP:
+W(p(n)) = W(p(n−1)) + δp(n−1)
+n
+sn
+ 
+wn −
+N
+X
+k=n+1
+wk
+pk
+P
+l≥n+1 pl
+!
+.
+(13)
+In the case ‘sell’, for maximizing our proﬁle, we should sell this order on the price as high as
+possible. In each iteration, this suﬃcient condition to beneﬁt from this iteration is:
+W(p(n)) > W(p(n−1)) which means sn
+ 
+wn −
+N
+X
+k=n+1
+wk
+pk
+P
+l≥n+1 pl
+!
+> 0 .
+This is equivalent to the case that there is one unique signal appearing during the while
+trading period. An intuitive question is: If in each iteration under a big probability we have
+W(p(n)) > W(p(n−1)), can we ﬁnally improve our execution?
+In the next section, we will test this liquidating strategy in simulated data and empirical
+data to prove: Under one unique signal during the while trading period, the decay adaptive
+strategy can improve the static trading curve with improving probability larger than 1/2.
+The more signals there are, the bigger the improving probability will be.
+9
+Electronic copy available at: https://ssrn.com/abstract=2366177
+
+2.4
+Numerical experiments
+Simulated data
+To model movement of intra-day price, let us ﬁrst suppose that the market
+VWAP follows an arithmetic Brownian model:
+wn+1 = wn + σεn+1,
+εn+1 ∼N(0, 1) .
+(14)
+where N(0, 1) denotes the standard normal distribution. In the simulation, we set N = 101,
+w0 = 10 and σ = 0.05. As we know in one day’s trading period, if we take 5-min as a slice’s
+period, we have just 101 slices. This price trace is simulated Nsimu = 106 times to get a
+collection of price trajectories {w(1), . . . , w(Nsimu)}. There are two important parameters to
+introduce (α, δ).
+• α: percentage of all used signals out of all detected signals.
+• δ: intensity of curve deformation in each iteration.
+Setting α = 30% means use 30% · 101 = 30 signals randomly. We defer the discussion on δ
+to further section. We choose unif trading curve as static trading curve, then the relative
+slippage c.f. Equation (11) can be deﬁned as:
+S∗(padap, punif) = const · side · W(padap) −W(punif)
+W(punif)
+.
+Here we deﬁne a parameter to describe statistical properties of dynamic execution. Given a
+static trading curve p ∈P stat, the improving rate is deﬁned:
+r∗(padap, p) =
+1
+Nsimu
+
+
+w(k), S∗(padap, p|w(k)) > 0 and k = 1, . . . , Nsimu
+ .
+In the simulated data case using unif trading curve, this parameter can be expressed as
+r∗(padap, punif). It is important to see the probability of improving static trading curve under
+one unique signal, called improving probability:
+P∗
+n(padap, p) = Proba
+
+S∗(fdecay(p, soracle
+n
+), p) > 0
+
+.
+In empirical data case, this parameter can be expressed as P∗(padap, punif).
+In the ﬁrst experiments, we analyze the average performance of adaptive trading curve
+with diﬀerent α and δ. Experiment results are displayed in Table 1. If S∗(padap, punif) > 0, we
+can say that padap improves punif. In most of the cases no matter how many signals we use,
+this dynamic execution method can really improve traditional method. By tuning the two
+parameters (α, δ), the relative slippage increases with the increase of α and δ. But improving
+rate does not depend on δ. The case α = 1% means one unique signal appearing during one
+day.
+In the second experiments, we would like to have a more precise exploration. It is interesting to study the evolution of day VWAP relative to each signal, so as to study the
+contribution of each update to ﬁnal daily VWAP. In Figure 1, in the left side, every point in
+the line is an average value (repeated 106 times) of VWAP depending on all updates’ eﬀects
+on static trading curve before this time. We plot 4 lines in diﬀerent cases of δ levels. We have
+no doubt the expected value of daily VWAP will increase quickly at the beginning of one
+day. In the afternoon, although we know exactly the oracle trading signal, there is not a big
+10
+Electronic copy available at: https://ssrn.com/abstract=2366177
+
+δ
+0.1
+0.3
+0.5
+0.7
+α
+S∗(bp)
+r∗(%)
+S∗(bp)
+r∗(%)
+S∗(bp)
+r∗(%)
+S∗(bp)
+r∗(%)
+1%
+0.11
+75.02
+0.36
+75.50
+0.57
+75.50
+0.81
+75.03
+2%
+0.22
+85.24
+0.67
+85.66
+1.13
+85.36
+1.52
+85.58
+3%
+0.33
+90.03
+1.01
+89.91
+1.69
+90.09
+2.36
+89.86
+5%
+0.56
+94.55
+1.65
+94.68
+2.86
+94.47
+3.93
+94.58
+20%
+2.20
+99.69
+6.71
+99.70
+11.05
+99.68
+15.76
+99.78
+50%
+5.58
+100.00
+16.78
+100.00
+28.06
+100.00
+39.34
+99.98
+100%
+11.14
+100.00
+33.18
+100.00
+56.01
+100.00
+79.21
+99.96
+Table 1: Performance of average relative slippage S∗(padap, punif) and improving rate r∗(padap, punif)
+based on simulated data. By tuning the two parameters (α, δ), the relative slippage increases with the
+increase of α and δ. But improving rate does not depend on δ. The case α = 1% means one unique
+signal appearing during the day.
+probability to improve the daily VWAP with this kind of signal. It is intuitively reasonable
+that the earlier we know the whole day’s complete information, the greater the chance we
+have for improvement. This gives us a good reason to study the improving probability when
+unique signal appears in diﬀerent time. In Figure 1, in the right side, suppose there is only one
+unique signal to update static trading curve, we would like to study its eﬀect with diﬀerent
+appearing times. As precedent experiments, simulation of price process is repeated 106 times.
+Same as the intuition, by studying the improving probability P∗
+n
+ padap, punif
+, n = 1, . . . , N,
+improving probability on positive signal P∗
+n
+ padap, punif soracle
+n
+= 1), n = 1, . . . , N and improving probability on negative signal P∗
+n
+ padap, punif soracle
+n
+= −1), n = 1, . . . , N, all these
+three probabilities decrease from 1 to 0.5.
+Empirical data
+For a future study, we aim at providing an empirical comparison of the
+prescribed methodologies. The data used is CAC40 stocks from January 1, 2007 to June
+30, 2013.
+In this experiment, we consider the BNP Paribas stock (BNPP.PA), there are
+Nempi = 1641 days’ data.
+We choose pre trading curve as static trading curve, which is
+deﬁned in Equation (3) as the median curve of all 60 precedent days’ data.
+Hence the
+relative slippage c.f. Equation (11) becomes:
+S∗(padap, ppre) = const · side · W(padap) −W(ppre)
+W(ppre)
+.
+Also, by changing the static trading curve, the improving rate is expressed as r∗(padap, ppre)
+and the improving probability is expressed as P∗
+n(padap, ppre).
+In Table 2, we use the same methodology to study some statistical properties of parameters
+α and δ. The experiments’ results for empirical data are very similar to those for simulated
+data. But the corresponding relative slippages are always a little smaller no matter which
+level of α and δ are chosen.
+From this table, we can observe that the improving rate in
+empirical data does not always follow the same rule as that in simulated data. This rate
+increases with the increase of α, but it does not always increase with the increase of δ. The
+improving probability with one unique signal is not the same as in simulated data. This
+motivates us to understand the reason that a high δ level could not make all adaptive trading
+curve beat the pre trading curve that will be discussed in the next section.
+11
+Electronic copy available at: https://ssrn.com/abstract=2366177
+
+Figure 1: In the left side, plot of increasing expected value of daily VWAP with diﬀerent appearing
+times of one unique signal in diﬀerent cases of δ. In the right side, improving probability, improving
+probability on positive signal and improving probability on negative signal with diﬀerent appearing
+times of unique signal. These probabilities decrease with increase of appearing time from 1 to 0.5.
+δ
+0.1
+0.3
+0.5
+0.7
+α
+S∗(bp)
+r∗(%)
+S∗(bp)
+r∗(%)
+S∗(bp)
+r∗(%)
+S∗(bp)
+r∗(%)
+1%
+0.10
+84.52
+0.29
+84.95
+0.52
+86.17
+0.70
+85.44
+2%
+0.15
+90.92
+0.44
+88.91
+0.77
+89.76
+1.04
+88.12
+3%
+0.19
+92.50
+0.58
+92.50
+0.96
+91.77
+1.37
+92.32
+5%
+0.29
+95.00
+0.90
+95.37
+1.47
+94.94
+2.11
+95.43
+20%
+1.04
+99.63
+3.07
+99.76
+5.16
+99.51
+7.28
+99.82
+50%
+2.52
+100.00
+7.53
+100.00
+12.66
+100.00
+17.79
+99.94
+100%
+4.99
+100.00
+15.05
+100.00
+25.30
+99.94
+35.87
+99.88
+Table 2: Performance of average relative slippage S∗(padap, ppre) with pre trading curve and improving
+rate r∗(padap, ppre) based on empirical data. The experiments’ results for empirical data are very similar
+to results for simulated data. But the corresponding slippages are always a little smaller no matter
+which level of α and δ.
+By replicating the same methodology used in simulated data, in Figure 2 we plot the
+evolution of improving probability of one unique signal with diﬀerent appearing time. At ﬁrst
+we know that this probability is always larger than 1/2, which means that we have more chance
+to improve pre trading curve by using one unique signal for the general improving probability
+P∗
+n(padap, ppre), n = 1, . . . , N, probability for positive signal P∗
+n
+ padap, ppre soracle
+n
+= 1), n =
+1, . . . , N and probability for negative signal P∗
+n
+ padap, ppre soracle
+n
+= −1), n = 1, . . . , N.
+2.5
+δ-calibrate
+Now we focus on the case α = 100% and δ = 0.7 in Table 2. As we have seen that the
+improving rate is not 100%, so we display two extreme cases in Figure 3, where adaptive
+method cannot improve pre curve.
+The upper graphic shows us ‘pre’ and ‘adap’ trading
+curve with signals in all slices, while the lowershows us signal type of each slice and the
+12
+Electronic copy available at: https://ssrn.com/abstract=2366177
+
+Figure 2: Evolution of improving probability of one unique signal with diﬀerent appearing time,
+P∗
+n(padap, ppre), n = 1, . . . , N. We have more chance to improve pre trading curve by using one unique
+signal.
+Figure 3: Two extreme cases with δ = 0.7. The upper graph shows us the pre and adaptive trading
+curve with all signals, while the lower shows us the raw signal in each slice and the evolution of daily
+VWAP based on continuously updating.
+evolution of VWAP based on continuously updating. Here the red line ‘adap vwap’ has an
+upward trend at the beginning then decreases until it passes the ‘pre vwap’, which means
+that adaptive method cannot improve VWAP based on pre curve with all collected signals.
+Remark 2.3. We here have some new parameters need to be explained:
+• ‘period vwap’: (w1, . . . , wn), which is deﬁned in Equation (1).
+13
+Electronic copy available at: https://ssrn.com/abstract=2366177
+
+Figure 4: In the left part, we see the evolution of volume percentage executed in the last 10 minutes
+with increasing variable δ. Real execution volume curve can be estimated by second-order polynomial.
+In the right part, we see the estimated trading curve with all negative signals, greens points are
+corresponding with volume in the last 5, 10, 30, 60 and 120 minutess. The calculated δ is near 0.3
+(0.3321).
+• ‘adap vwap’:
+ W(p(1)), . . . , W(p(N))
+
+which is deﬁned in Equation (9).
+• ‘pre vwap’: (W(ppre), . . . , W(ppre)).
+It is clearer to obtain the reason from Figure 4. With a high δ level and more negative signals,
+there rests a cumulative large proportion of volume (above 10%) to execute in last slice. This
+proportion comes from all proportion cut in all precedents slices with negative signals. From
+the view of risk management, we need to balance all proportions distributed in every slice as
+much as possible, hence δ is a good parameter to control this kind of risk.
+In an academic scenario, we assume there are always negative signal soracle
+n
+= −1, n =
+1, . . . , N and we always set pre trading ppre as the corresponding static one. So for every ﬁxed
+δ level, there is a proportion of volume executed in the last 10 minutes (2 slices). The graphic
+of percentage of volume executed in the last 10 minutes with δ is displayed in the left part
+of Figure 4. What we need is to obtain a maximal bound of δ from a chosen maximal bound
+of percentage. The advantage of using second-order polynomial is what we can calculate a
+function of δ relative to percentage in the last 10 minutes by inverse the estimated function.
+For example, the execution maximal bound is 10% for the last 10 minutes, than estimated
+trading curve with all negative signals is displayed in the right part of Figure 4, the greens
+points are corresponding with volume in the last 5, 10, 30, 60 and 120 minutes. The calculated
+δ is near 0.3 (0.3321), so the performance at this δ level is near the result displayed in Table
+2, δ = 0.3.
+3
+Short-term prediction signal
+From the precedent analysis and experiments, we have conﬁdence that adaptive trading curve
+can really improve performance of static trading curve with a short-term prediction signal
+which compares the VWAP in next slice with the ﬁnal VWAP associated to the static trading curve. The problem of estimating such a signal becomes an important key to achieve
+14
+Electronic copy available at: https://ssrn.com/abstract=2366177
+
+improvement.
+3.1
+Opportunity zone
+In classic quantitative ﬁnance models, one postulates diﬀusive behavior of the price: without
+a strong view on a drift, the best estimate of the next price is the current price. From a
+fundamental viewpoint, investors value the current price with respect to a discounted view
+on the future value of the asset; from an arbitrage viewpoint, the current price is adjusted
+thanks to comparisons with prices of peers or the liquidity of the market. In view of these
+facts, one can postulate a local trend model for prices, in which the latter oscillates around
+a deterministic trend leading to the new fair value. Based on this assumption, it thus makes
+sense to estimate a benchmark price from observed information.
+The idea of opportunity zone is quantitatively similar to Bollinger Bands. To be more
+precise, we base the prediction signal on the distance between the current spot price and a
+benchmark price. In the framework of this paper, the benchmark can be an estimate of ﬁnal
+VWAP based on static trading curve ‘pre’. From the reversal eﬀect, if the price is too far
+away from this benchmark price, then it has a strong tendency to revert back to normal value
+and vice versa. Also it has a strong tendency to be bigger or smaller than ﬁnal benchmark.
+This distance is wisely normalized to give us a meaningful signal between 0 and 1: 0 meaning
+a very low price and 1 meaning a very high price. This choice of normalization depends on
+the way that we exploit signals in our algorithms. Moreover, it allows us to deal with diﬀerent
+signals, diﬀerent securities or diﬀerent market conditions in a homogeneous and consistent
+manner.
+Figure 5: Opportunity zone for backward signal. The green dashed line is the price, the thick one is
+the cumulative VWAP. Adding the uncertainties around the latter allows us to construct a conﬁdence
+zone. It is interesting to note that the price in fact ﬂuctuates around this envelope.
+15
+Electronic copy available at: https://ssrn.com/abstract=2366177
+
+Mathematically, opportunity zone formation can be expressed as follows. Suppose the
+current spot price St satisﬁes a Gaussian distribution:
+St ∼N(µt, σ2
+t ) .
+Here µt can be regarded as the benchmark price and σt > 0 describes the distance between
+the current price and benchmark price. We have:
+St −µt
+σt
+∼N(0, 1) .
+So if we deﬁne Φ as the cumulative standard normal distribution function, then we have an
+estimate of trading signal:
+ˆst =
+
+
+
+
+
+side
+if
+Φ(St−µt
+σt
+) > Φhigh
+−side
+if
+Φ(St−µt
+σt
+) < Φlow
+.
+(15)
+In the case ‘sell’, it becomes:
+ˆss
+t =
+
+
+
+
+
+1
+if
+Φ(St−µt
+σt
+) > Φhigh
+−1
+if
+Φ(St−µt
+σt
+) < Φlow
+.
+(16)
+There are some parameters to estimate: µt, σt, Φhigh and Φlow. The calibration of Φhigh and
+Φlow depends on the historical data. We determine an α level, a proportion of total signals
+we would like to use, we calibrate these two parameters from 60 precedent days’ data. For
+other two parameters, µt and σt, the estimation depends on the type of signal.
+3.2
+Forward/Backward signals
+Forward and Backward signals are two proper signals used by Kepler Cheuvreux. Although
+based on the same framework, the method of estimation these two signals are totally diﬀerent.
+To be more precise, we base the forward signal on the distance between the current price
+and the cumulative VWAP up to that point. Here the cumulative VWAP is the benchmark
+price, and the distance from this benchmark is estimated from the stock volatility. The real
+forward signal is created to estimate a local trend for cumulative VWAP, but distance of
+VWAP in next slice and the ﬁnal VWAP. For an algorithmic broker, beating the market does
+not always happen, especially in the day with an obvious trend. Once we detect a signal to
+say there will be a local trend for cumulative VWAP, with a little change in static trading
+curve, we can also make the client satisﬁed although it is not a global optimal time. It is not
+reasonable to evaluate the performance of forward signal using the criteria of oracle trading
+signal, but in empirical experiments, this signal works well to improve VWAP.
+The backward signal is really a signal to estimate the distance between instantaneous
+VWAP with ﬁnal VWAP. From the price formation process, in the case without drift, the
+best predict of next price is current price. By considering the impact of current price on ﬁnal
+VWAP, we can use a linear combination of cumulative VWAP and the current price as the
+benchmark, and distance is also estimated from volatility. This benchmark can be regarded
+as a discount of ﬁnal VWAP and the envelope can be regarded as a conﬁdence interval that
+the predicted ﬁnal VWAP is in this envelope with a certain conﬁdence level.
+16
+Electronic copy available at: https://ssrn.com/abstract=2366177
+
+Figure 6: Comparison of forward (left) and backward (right) signal in the same day. Normally, the
+distribution of forward signal is similar to uniform distribution. But for backward, there are always
+more signals in the ending than in the beginning.
+Figure 7: Updating trading curve for a sell order with forward (left) and backward (right) signals.
+More signals are used for forward signal under the same α level. An immediate consequence is that
+the cumulative volume in the last slice for backward is bigger than the one of forward.
+The good news for this kind of signal is that we could use all available tick-by-tick data to
+detect signal. With more information used, we have conﬁdence to have better performance.
+However, since only one signal is needed at the end of each slice, we must aggregate all raw
+signals within the same slice to a single unique one.
+The raw signal is deﬁned in Equation (16). 60 precedent days’ data is used as in-sample
+data to estimate an percentage of selected signals at a given (Φhigh, Φlow) level. Then we can
+determine the corresponding (Φhigh, Φlow) level at a chosen α. For the next slice, just one
+signal can be used as an estimator between all signals collected in this slice. Here we used
+the last observed signal as the aggregated signa but one can work with the signals’ average,
+max-min values or even quantiles. . .
+There is one important thing that this α is a percentage of used signals in all observed
+signals. As we said, just one signal can be used to predict VWAP in the next slice, the real
+17
+Electronic copy available at: https://ssrn.com/abstract=2366177
+
+number of active signals proportion to the number of slices is not equivalent to α.
+To test the forward and backward signal, we would like to test them directly on empirical
+data so as to obtain their empirical properties. As in Section 2.4, the data used is CAC40
+stocks from January 1, 2007 to June 30, 2013 and we concentrate at ‘BNPP.PA’. There are
+Nempi = 1641 days’ available data.
+Firstly in Table 3, we compare all observable signals with the corresponding oracle signals.
+The predict rate is displayed with diﬀerent α levels. Although forward signal is not originally
+created for predicting the oracle signals, it still has a good predicting rate empirically but not
+as good as backward. This fact thus encourage us to plug-in forward signal into our adaptive
+updating framework. However, even with more signals selected, the predict rate decreases.
+Under a high α level (0.9), predict rate for both signals are equivalent.
+α
+signal
+0.3
+0.5
+0.7
+0.9
+Forward
+79%
+77%
+75%
+71%
+Backward
+96%
+90%
+80%
+71%
+Table 3: Predict rate to orale trading signal in cases of forward and backward signals in diﬀerent α
+levels.
+In Figure 8, we can see the empirical appearing percentage at diﬀerent time. Each ﬁgure
+shows the evolution of this percentage at a ﬁxed α level. For forward signal, this percentage
+follows approximately an uniform distribution, which means the appearing probability for
+this signal is similar in diﬀerent time. In contrast for backward signal, we can see an obvious
+trend for this percentage, which means there is more signals appearing in the ending than
+in the beginning of one day. As discussed in the Section 2, improving probability for oracle
+signal decreases with increasing appearing time, so the probability of improving static curve
+using backward signal is less then forward if they have the same predict power. They give
+us a motivation to mix framework of adaptive updating method and short-term prediction
+signal. We will discuss it in next section.
+4
+Performance analysis
+In this section, we want to mix both adaptive trading curve and short-term prediction signal.
+This methodology can be applied directly in the real-time data trading.
+Although these
+two parts work very well separately, it is important to study the performance of the entire
+methodology. We will replicate this method to empirical data and analyze it.
+4.1
+Market context analysis
+In this part, we focus on a 6-month period, from 1 January 2013 to 30 June 2013. There are
+totally 125 days available. We now test our algorithms on these empirical data. For a trading
+algorithm with outstanding performance, it must have a power to deal with diﬀerent trading
+situations and must meet customers’ diﬀerent requirements. Normally, client likes choosing
+one type of signal to use in both ‘buy’ and ‘sell’ execution, so it is reasonable to measure a
+signal from its average performance. In one day, although based on the same static trading
+curve and using the same type of signal, the adaptive trading curve based on two trading
+18
+Electronic copy available at: https://ssrn.com/abstract=2366177
+
+Figure 8: Empirical appearing percentage at diﬀerent time. Each ﬁgure shows the evolution of this
+percentage at a ﬁxed α level. For forward signal, this percentage follows approximately an uniform
+distribution, which means the appearing probability for this signal is uniform in time. In contrast for
+backward signal, we can see an obvious trend for this percentage, which means there is more signals
+appearing in the ending than in the beginning of one day.
+sides are totally diﬀerent, as well as their associated slippage. To measure the performance
+of these two signals, here we deﬁne a modiﬁed slippage, c.f. Deﬁnition 2.8:
+˜S(padap) = const · W(padap.s) −W(padap, b)
+2 · W(ppost)
+.
+(17)
+From Equation (6), this modiﬁed slippage is exactly the average slippage of adaptive trading
+curve with signal in case ‘buy’ and in case ‘sell’.
+˜S(padap) = 1
+2
+
+S(padap, s) + S(padap, b)
+
+.
+As we know if there is no signal during one day, the trading curve will completely follow static
+trading curve, whatever in case ‘buy’ and ‘sell’. So we have:
+S(ppre, s) = const · W(ppre) −W(ppost)
+W(ppost)
+and S(ppre, b) = const · W(ppost) −W(ppre)
+W(ppost)
+.
+19
+Electronic copy available at: https://ssrn.com/abstract=2366177
+
+signal type
+forward
+backward
+α
+Sb
+r∗
+Ss
+r∗
+˜S
+r∗
+Sb
+r∗
+Ss
+r∗
+˜S
+r∗
+20%
+-0.36
+60
+-0.32
+60
+-0.34
+62
+0.00
+00
+0.00
+00
+0.00
+00
+30%
+-0.40
+61
+-0.38
+60
+-0.39
+60
+-0.11
+56
+-0.17
+52
+-0.14
+56
+40%
+-0.34
+62
+-0.31
+61
+-0.32
+62
+-0.11
+58
+-0.18
+57
+-0.15
+58
+50%
+-0.35
+63
+-0.32
+66
+-0.34
+63
+-0.08
+57
+-0.18
+59
+-0.13
+58
+60%
+-0.40
+65
+-0.40
+65
+-0.40
+65
+0.05
+58
+-0.02
+60
+0.01
+59
+70%
+-0.37
+65
+-0.42
+64
+-0.39
+64
+0.07
+59
+0.05
+61
+0.06
+60
+80%
+-0.42
+60
+-0.49
+61
+-0.45
+62
+-0.00
+60
+-0.06
+61
+-0.03
+61
+Table 4: Performance of slippage with diﬀerent α, for each signal, three columns stand individually
+for ‘buy’
+ Sb = S(padap,b)
+
+, ‘sell’
+ Ss = S(padap,s)
+
+and ‘buy/sell’
+
+˜S = ˜S(padap)
+
+, respectively. No
+matter which α is used, backward is better than forward in average performance. But there is an
+interesting thing: although the average performance for forward is worse than backward, the improving
+percentage for forward is a little better than backward.
+Obviously, the modiﬁed slippage of pre trading curve can be regarded as:
+˜S(ppre) = 0.
+So ˜S(padap) can also be regarded as an indicator to measure how signal improves pre trading
+curve’s performance. A positive value of this indicator means that using this signal, dynamic
+execution is better than static execution. The eﬀect of trading signal is independent of given
+static trading curve but the ﬁnal performance of dynamic execution depends on both static
+trading curve and estimated trading signal. Consider if we can completely follow post trading
+curve a posteriori at the beginning of one day, the expected modiﬁed slippage rests 0 but its
+variance is also 0. Recalling that decreasing variance is also a big issue, we can conclude that
+a perfect strategy has to approximate post trading curve and estimate oracle trading signal.
+In the theoretical example in this paper, we always suppose that there is no price drift
+as well as in simulation. This gives us a motivation to study the performance in the nondrift case.
+As presented in the precedent section, δ is used to control the proportion of
+volume executed in the last 10 minutes. From the point of risk management, we ﬁx a bound
+10% to this volume so we obtain δ = 0.332. In real implementation, we use δ = 0.3. The
+performance with diﬀerent α is displayed in Table 4. A crural reality is no matter how good
+it is in simulation, once the experiment is realized in all empirical environment the result
+will be not as good as you imagine. For both forward and backward and in most of the
+cases, they cannot generally beat the market without other operations. No matter which
+α is used, backward is better than forward in average performance. There is an interesting
+thing: although the average performance for forward is worse than backward, the improving
+percentage for forward is better than backward. The reason of this fact is that forward has
+a bigger loose in some extreme cases than backward, while backward can control this kind of
+risk to avoid massive losses.
+Now we continue to study the case with drift. In Figure 10, we parameterize one day’s
+price evolution by two parameters: trend and volatility. We would like to see the performance
+relative to these variables. In this ﬁgure (forward in the left part and backward in the right
+part), these two signals work well if absolute value trend/vol is not too large. An important
+trend/vol implies that the price trend is signiﬁcant without many ﬂuctuations, which seems to
+be a bad day in our framework. The ﬁgure also shows us the evolution of cumulative slippage
+20
+Electronic copy available at: https://ssrn.com/abstract=2366177
+
+Figure 9: Performance of cumulative modiﬁed slippage and close price for the same stock ‘BNPP.PA’.
+There are 125 days’ data from 1 January 2013 to 30 June 2013.
+This adaptive trading curve is
+calculated with parameters (α, δ) = (0.5, 0.5).
+for these two signals. In the extreme cases (very large trend/vol), forward has a bigger lose.
+In Figure 11, we plot the estimated distribution of S(padap), S(ppre) and S(padap) −S(ppre).
+S(padap) −S(ppre) is positive means that the signal can improve the performance.
+4.2
+Trading envelope analysis
+We have seen that our trading signals work well in the case without trend. But if it is not
+the case, this strategy is not so robust as we expect. Thus, it is interesting to study some
+extreme cases.
+Empirical risk
+A trading envelope is a band delimited by two bound curves, which are
+both from 0 to 1. One can interprete these two bounds as the lower/upper thresholds for
+proportion of cumulative executed volume at the end of each slice. Recall the deﬁnition of
+cumulative trading curve in Deﬁnition 2.1, we deﬁne the quantile curve:
+¯pquantile
+n
+(α) = quantileα
+ ¯p1
+n, . . . , ¯pM
+n
+
+.
+where (¯pm
+n )m=1,...,M are the M previously cumulative volume proportion at the end of n-th
+slice. Our trading envelope comes from quantile curve. In reality, by setting M = 60, an
+envelope is two curves with corresponding two parameters
+ ¯pquantile(αmax), ¯pquantile(αmin)
+
+. If
+we set (αmax, αmin) = (1, 0), the two bounds at the end of n-slice pquantile
+n
+is the maximum
+and minimum market cumulative percentage of volume in the 60 previous days. And in this
+section, we always choose pre trading curve as the static trading curve p = ppre.
+21
+Electronic copy available at: https://ssrn.com/abstract=2366177
+
+Figure 10: The upper ﬁgures (left: forward, right: backward) show the performance relative to the
+ratio trend/vol. Two signals work well if absolute value trend/vol is not too important. A large value
+means that price trend is signiﬁcant without many ﬂuctuations, which seems as the worst day in our
+framework. The lower ﬁgures show us the evolution of cumulative slippage for these two signals. We
+set α = 0.7 δ = 0.3, in the extreme cases (very large trend/vol), forward has a bigger lose.
+Figure 11: Distribution of slippage in case ‘buy’ and ‘sell’. We set α = 0.7 δ = 0.3. Upper ﬁgures
+are for ‘buy’, while lower is for ‘sell’. The forward signal is displayed in left and backward signal is in
+right.
+22
+Electronic copy available at: https://ssrn.com/abstract=2366177
+
+Figure 12 gives a ﬁrst idea about quantile envelopes. We can see from this ﬁgure that, the
+greater distance from the ‘pre’ trading curve, the larger the envelope becomes. In this section,
+we mainly discuss the envelope with parameters (αmax, αmin) = (1, 0). This envelope has a
+particular meaning from the view of risk management: Under a given conﬁdence level, the
+relative cumulative percentage of post trading curve (or market volume curve) is empirically
+in a certain interval. The aim of setting this envelope is to assume our execution curve is not
+too far from post trading curve.
+Figure 12: Trading envelope with quantiles (1,0), (0.95,0.05) and (0.9 0.1). With the distance more
+and more far from ‘pre’ trading curve, the envelope becomes larger and larger.
+Now we consider an intuitive question: why do our adaptive trading curves touch the
+bounds of the envelope? Before the market opens, pre trading curve and trading envelope
+for one day are already ﬁxed. Whether adaptive curve touches the bounds of envelope only
+depends on the cumulative eﬀect of signals or to be more precise, the number of appearing
+signals. If there are always positive signals appearing, the cumulative eﬀect can make this
+dynamic execution so aggressive that adaptive curve touches the upper bound. In a similar
+vein, too many negative signals make execution so conservative that adaptive curve touches
+the lower bound. Using empirical data we verify the fact that if there is a daily trend of the
+spot price, it is more probable for adaptive trading curve to touch the bounds of the envelope.
+In Figure 13, we plot the performance of slippage classiﬁed by envelope. In most of the cases
+in which adaptive trading curves touch the bounds of the envelope, we have bad execution.
+We have already known that trading envelope can help us to ﬁnd the good execution.
+As we do not know whether the adaptive curve will touch the bounds of envelope before it
+occurs, an early touching gives us more chances to change our strategy while a late touching
+prevents us from improving the execution. Thus it is interesting to study the ﬁrst touching
+time. In both parts of Figure 14, we plot the histogram of ﬁrst touching time for forward and
+23
+Electronic copy available at: https://ssrn.com/abstract=2366177
+
+Figure 13: Performance of slippage relative to trend/vol with classiﬁcation by envelope. In most of
+the cases in which adaptive trading curves touch the bounds of envelope, we have bad executions.
+backward signal, as well as the percentage of touching empirically. Unluckily, no matter what
+the trading side is, in most of the cases that adaptive curves touch the bounds of envelope, it
+usually happens in the end of one day. Obviously, backward signal makes the execution more
+sensitive that it has more chance to touch the bounds than forward.
+Envelope classiﬁcation
+In this paragraph, let us study on the classiﬁcation of trading
+curve using the envelope. In Figure 15, we can see the box-plot of average slippage in diﬀerent
+α levels for 4 cases: ‘buy out’, ‘buy in’, ‘sell out’ and ‘sell in’. Here ‘buy out’ plots the average
+slippage of all adaptive curves for ‘buy’ orders who touch the bounds of envelope, while ‘buy
+in’ plots that for ‘buy’ but does not touch the bounds of envelope. In the ‘sell’ case, it is the
+same. This ﬁlter is robust for both forward (upper) and backward (lower) signal. We can
+conclude that after classiﬁcation of trading envelope, the average performance of adaptive
+trading curve (‘buy in’, ‘sell in’) is always improved compared with static trading curve
+without signal (S(padap) - S(ppre), noted adap-pre), while improvement is not so obvious for
+‘buy out’ and ‘sell out’.
+If we set α = 0.7, the empirical distributions of performance for these 4 cases are displayed
+in Figure 16.
+Following the same notations in Figure 11, red and blue curves stand for
+distributions of ‘pre’ and ‘adap’, while pink is the diﬀerence between ‘adap’ and ‘pre’ (adappre). The upper ﬁgures are for forward and the lowers are for backward signal. Using this
+envelope as a ﬁlter can really ﬁnd the good execution curve, the performance of adaptive
+trading curve bounded by this envelope is usually better then that of static trading curve. Of
+cause there exist the extreme cases that adaptive trading curves bounded by envelope have
+worse performances then static one, notice in case forward ‘buy in’ (ﬁgure in top right) these
+24
+Electronic copy available at: https://ssrn.com/abstract=2366177
+
+Figure 14: Histogram of ﬁrst touching time for forward (upper panel) and backward (lower panel)
+signal.
+is one day’s slippage around −100. However, the average slippage for this class is still better
+than the one of ‘pre’. Following this ﬁgure, how to classify using envelope or other indicators
+becomes more and more important. At the same time, this envelope strategy can only help
+us to ﬁnd the good execution, how to improve in bad situation is still an issue and is left for
+further research.
+25
+Electronic copy available at: https://ssrn.com/abstract=2366177
+
+Figure 15: Box plot of average slippage in diﬀerent α levels for 4 cases: ‘buy out’, ‘buy in’, ‘sell out’
+and ‘sell in’ (from left to right). This ﬁlter is robust for both forward (upper panel) and backward
+(lowerpanel) signal.
+5
+Conclusions
+This work focuses on research, development and back-test of several trading signals used for
+improving VWAP order execution. The most signiﬁcant contribution of our work compared
+with others is that it provides an adaptive execution method that is not yet mentioned in
+related articles. Trading signal is a familial concept in technical analysis, but embedding
+them into the execution framework is a new attempt as we know. We have conﬁdence that
+this domain is well worth being developed in the future.
+Algorithmic trading is diﬀerent from proprietary trading. For proprietary trading, we can
+execute the volume as more as possible in a short-term period if we can conﬁrm an opportunity
+of arbitrage, while in algorithmic trading we have to average total volume from the point of
+risk. This remind us that not only trading signal, update strategy is also important. So we
+introduce the trading envelope to prevent both aggressive and conservative execution.
+From our experiments, our Forward/Backward signal works well except for some extreme
+cases with drift, so we need to concentrate on these extreme cases with drift in the future
+study.
+A signiﬁcant price drift usually comes from a big change of market environment.
+So detecting these changes a priori becomes a key to make our execution beat the market.
+In the future, we should concentrate on the development of beta-signal, its corresponding
+update strategy as well as the method to proﬁt from the advantage of both alpha-signal and
+beta-signal.
+26
+Electronic copy available at: https://ssrn.com/abstract=2366177
+
+Figure 16: Empirical distributions of performance classiﬁed by envelope. Red and blue stand for
+distributions of ‘pre’ and ‘adap’, while pink is the diﬀerence between ‘adap’ and ‘pre’ (adap-pre). The
+upper ﬁguresare for forward signal and the lowers are for backward signal.
+Acknowledgements
+This work was partially supported by the Initiative de Recherche Microstructure des March´es,
+Kepler Cheuvreux. We thank Marc Hoﬀmann, Professor at University Paris Dauphine and
+Emmanuel Bacry, Professor at Ecole Polytechnique for their guidance that greatly assisted
+27
+Electronic copy available at: https://ssrn.com/abstract=2366177
+
+the research. The ﬁrst author would like to thank Charles-Albert Lehalle for interesting and
+useful discussions on the very ﬁrst stage of this paper.
+References
+Robert Almgren and Julian Lorenz. Baysian adaptive trading with a daily cycle. Jounal of
+Trading, 2006.
+Bruno Bouchard and Ngoc-Minh Dang. Generalized stochastic target problems for pricing
+and partial hedging under loss constraints-application in optimal book liquidation. Finance
+and Stochastics, pages 1–42, September 2012.
+Ngoc-Minh Dang and Charles-Albert Lehalle. Using short-term predictions for participationrate driven trading algorithms. preprint, 2013.
+Christoph Frei and Nicolas Westray. Optimal execution of a vwap order: A stochastic control
+approach. to appear in Mathematical Finance, 2013.
+Serge Darolles Jedrzej Bialkowski and Gaelle Le Fol. Improving vwap strategies: A dynamic
+volume approach. Jounal of Banking and Finance, 32:1709–1722, 2008.
+Hizuru Konishi. Optimal slice of a vwap trade. Jounal of Financial Markets, pages 197–221,
+2002.
+James McCulloch and Vladimir Kazakov. Optimal vwap trading strategy and relative volume.
+Quantitative Finance, 2007.
+James McCulloch and Vladimir Kazakov. Mean variance optimal vwap trading. preprint,
+2012.
+28
+Electronic copy available at: https://ssrn.com/abstract=2366177

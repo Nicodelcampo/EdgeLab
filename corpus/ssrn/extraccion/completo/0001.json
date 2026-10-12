@@ -1,0 +1,173 @@
+{
+  "doc_id": 1,
+  "titulo": "AlphaQuant: LLM-Driven Automated Robust Feature Engineering for Quantitative Finance",
+  "resumen_operativo": "Propone un framework que combina LLMs (generación de código PyTorch de features) con un loop evolutivo de evaluación vía AutoML (FLAML + LightGBM) y validación cruzada temporal para descubrir features financieras robustas a partir de log-returns, con el objetivo de predecir Sharpe ratios futuros. El paper describe la arquitectura y muestra tendencias cualitativas de mejora (menor MAE, mayor correlación de Spearman/nDCG) a lo largo de iteraciones, pero no reporta tablas con valores numéricos concretos ni comparación con baselines cuantificados. Útil como idea de pipeline de feature discovery automatizado con time-series CV, no como fuente de resultados replicables con magnitudes verificables.",
+  "calidad_paper": "baja",
+  "conceptos": [
+    {
+      "nombre": "LLM-driven feature engineering",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Uso de un LLM para generar funciones de extracción de features en código (PyTorch) a partir de ejemplos few-shot, orientadas a indicadores de riesgo-retorno interpretables.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "few-shot prompting"},
+        {"tipo": "PARTE_DE", "objeto": "AlphaQuant framework"},
+        {"tipo": "PREDICE", "objeto": "Sharpe ratio"}
+      ],
+      "cita_textual": "This paper introduces a novel framework that combines large language models (LLMs) with evolutionary optimization to automate robust feature discovery."
+    },
+    {
+      "nombre": "AlphaQuant framework",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Framework end-to-end que integra síntesis de features vía LLM, extracción paralelizada, y evaluación/ranking iterativo con AutoML organizados como un state graph cíclico.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "AutoML"},
+        {"tipo": "USA", "objeto": "time-series cross-validation"},
+        {"tipo": "USA", "objeto": "LLM-driven feature engineering"}
+      ],
+      "cita_textual": "Our methodology implements an iterative feature engineering workflow for financial datasets by combining automated feature generation driven by large language models (LLMs), parallelized feature extraction and evaluation, and iterative model optimization via AutoML."
+    },
+    {
+      "nombre": "evolutionary illumination",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Proceso evolutivo que refina iterativamente el conjunto de features en base a los importance scores de modelos hyper-tuned, buscando diversidad y calidad (quality-diversity optimization).",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "feature importance"},
+        {"tipo": "PARTE_DE", "objeto": "AlphaQuant framework"}
+      ],
+      "cita_textual": "an evolutionary illumination process that iteratively refines the feature-set based on importance scores from hyper-tuned models"
+    },
+    {
+      "nombre": "time-series cross-validation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica de validación cruzada que asegura que las features generalicen a través de splits temporales de los datos, usada como parte de la evaluación robusta de features.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "backtest overfitting"},
+        {"tipo": "USA", "objeto": "AutoML"}
+      ],
+      "cita_textual": "Time-series cross-validation ensures that features generalize across temporal data splits, while leave-one-out cross-validation evaluates feature performance across assets."
+    },
+    {
+      "nombre": "leave-one-out cross-validation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Esquema de validación cruzada usado para evaluar el desempeño de las features a través de distintos activos (assets), complementando la validación temporal.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "feature engineering"}
+      ],
+      "cita_textual": "leave-one-out cross-validation evaluates feature performance across assets"
+    },
+    {
+      "nombre": "AutoML",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Framework (FLAML) usado para entrenar automáticamente un modelo de regresión (LightGBM) sobre la matriz de features extraídas, con warm-starting entre iteraciones y presupuesto de tiempo fijo.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "gradient boosting"},
+        {"tipo": "MIDE", "objeto": "feature importance"}
+      ],
+      "cita_textual": "FLAML is used to train a regression model (with LightGBM as the estimator) on the extracted feature matrix."
+    },
+    {
+      "nombre": "feature importance",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Puntaje extraído post-entrenamiento del modelo LightGBM (o alternativamente SHAP) que se usa para rankear y seleccionar las features generadas, guiando el proceso evolutivo.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "predictive accuracy"},
+        {"tipo": "USA", "objeto": "gradient boosting"}
+      ],
+      "cita_textual": "Post-training, feature importances are extracted from the LightGBM model, which are used to rank the features and drive the selection process."
+    },
+    {
+      "nombre": "Sharpe ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida de performance ajustada por riesgo que el framework busca predecir a futuro (blind Sharpe ratios) a partir de log-returns pasados, como objetivo de las features descubiertas.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "risk-adjusted return"}
+      ],
+      "cita_textual": "obtained indicators should help predicting assets’ future sharpe-ratios"
+    },
+    {
+      "nombre": "log-return time series",
+      "tipo": "dato",
+      "definicion_en_contexto": "Insumo de entrada (torch.Tensor) para las funciones de features generadas por el LLM; representa los retornos logarítmicos históricos de cada activo.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "feature engineering"}
+      ],
+      "cita_textual": "It must take log_returns (torch.Tensor) as the only input parameter that doesn’t have any default value defined in the function body."
+    },
+    {
+      "nombre": "few-shot prompting",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica de prompting donde se proveen funciones estadísticas básicas en PyTorch como ejemplos iniciales, actualizadas a medida que se descubren mejores features.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "LLM-driven feature engineering"}
+      ],
+      "cita_textual": "A set of basic PyTorch functions (e.g., mean, variance, std, etc.) is provided as initial few-shot examples and updated as better features are discovered."
+    },
+    {
+      "nombre": "error-aware generation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Estrategia de prompting que incluye en el prompt la lista de funciones eliminadas previamente y los logs de errores de ejecución para evitar features redundantes o erróneas.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "data snooping"}
+      ],
+      "cita_textual": "The prompt includes a list of previously eliminated functions and a log of execution errors to steer the LLM away from redundant or erroneous features."
+    },
+    {
+      "nombre": "grouped rolling window cross-validation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Esquema de folds organizados como ventanas rodantes agrupadas por fecha de inicio, usado para el entrenamiento AutoML con objetivo MAE, con overlap del 50% entre ventanas.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "time-series cross-validation"}
+      ],
+      "cita_textual": "The AutoML training has been performed with the Mean-Absolute-Error (MAE) objective from cross-validation where folds were organized as grouped rolling windows based on their start date."
+    },
+    {
+      "nombre": "out-of-sample test",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Conjunto ciego separado (10% de los datos, 1.5 años) que incluye periodos de estrés extremo como el crash COVID-19 de 2020, usado para evaluar la robustez de las features descubiertas.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "look-ahead bias"},
+        {"tipo": "APLICA_A", "objeto": "AlphaQuant framework"}
+      ],
+      "cita_textual": "The blind test set included recent periods of extreme market stress, such as the 2020 COVID-19 market crash, highlighting the robustness and stability of the discovered features under high-volatility conditions."
+    },
+    {
+      "nombre": "Spearman correlation",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Métrica usada para evaluar la relación monótona entre las predicciones del modelo y los Sharpe ratios futuros reales, como indicador de calidad del ranking de activos.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "Sharpe ratio"}
+      ],
+      "cita_textual": "Spearman Correlation: Assesses the monotonic relationship between the predicted and future Sharpe ratios."
+    },
+    {
+      "nombre": "nDCG",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Normalized Discounted Cumulative Gain calculado en distintos cortes de cuantiles (Q1 y Q4) para medir la calidad del ranking de features/activos producido por el modelo.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "feature importance"}
+      ],
+      "cita_textual": "Normalized Discounted Cumulative Gain (nDCG): Computed at different quantile cutoffs (nDCG@Q1 and nDCG@Q4) to measure the quality of the feature ranking."
+    },
+    {
+      "nombre": "Mean Absolute Error",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Objetivo de entrenamiento del AutoML y métrica de evaluación de la magnitud promedio de los errores de predicción del modelo sobre validación y test.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "predictive accuracy"}
+      ],
+      "cita_textual": "Mean Absolute Error (MAE): Evaluates the average magnitude of errors in predictions."
+    },
+    {
+      "nombre": "gradient boosting",
+      "tipo": "metodo",
+      "definicion_en_contexto": "LightGBM se usa como estimador de regresión dentro del framework AutoML para evaluar y rankear las features generadas por el LLM.",
+      "relaciones": [],
+      "cita_textual": "FLAML is used to train a regression model (with LightGBM as the estimator) on the extracted feature matrix."
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "La idea de pipeline (LLM generando features candidatas + AutoML/feature-importance con CV temporal) es transferible como método de feature discovery, pero el paper no reporta números verificables (Sharpe, MAE concretos, costos, frecuencia) ni trabaja con datos intradía, por lo que no aporta evidencia directa aplicable al ecosistema ES intradía."
+  }
+}

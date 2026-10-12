@@ -1,0 +1,550 @@
+AI as Pricing Law
+From Arbitrage-Free Valuation to QIS Innovation
+Stefano Iabichino1
+Published in Risk Magazine the 20th of October 2025
+Abstract
+Finance obeys the law of no-arbitrage, not patterns. AI learns patterns, not
+laws, and that is where economic hallucination arises, distorting valuation, hedging,
+and risk. Rather than applying AI to finance and patching arbitrage violations ex
+post, we refound neural networks on asset pricing first principles. The result is the
+first finance-native neural network, in which neurons encode market states, and
+Markovian Activation Functions turn the First Fundamental Theorem of Finance
+into a binding computational constraint. Applied to real-world QIS portfolios, it
+enables XVA-style forward-looking strategy design, learning markets in 8 minutes
+and simulating 100,000 scenarios across 800 layers in 80 seconds on a MacBook
+Pro. Rooted in pricing axioms, AI sheds its black-box mystique to deliver coherent
+valuation, robust risk diagnostics, and strategy innovation in a transparent and
+consistent engine where every neuron obeys the immutable laws of finance.
+1
+Introduction
+AI excels at uncovering nonlinear structure in data, but in quantitative finance patterns are not enough: valuation is governed by the law of no arbitrage. The First
+Fundamental Theorem of Finance (FFTF, [6]) requires prices to admit an arbitragefree, measure-consistent representation, independent of past information. The clash
+between pattern learning and law-based valuation induces cognitive bias and economic
+hallucination in conventional AI models. Anticipatory signals are mistaken for edge,
+spurious arbitrage emerges, and distorted risk exposures materialize, eroding AI’s trustworthiness in markets.
+Rather than applying generic AI to finance and patching arbitrage violations ex
+post (e.g., see [9]), we refound neural networks (NNs) from first principles, hard-wiring
+the axioms of pricing directly into their architecture.
+In our finance-native design,
+neurons represent market states and risk exposures, while Markovian Activation Functions (MAFs) enforce probabilistic transitions consistent with de Finetti coherence and
+Chapman–Kolmogorov dynamics. The result is a paradigm shift, i.e., NNs that are:
+1 UBS AG. This paper represents the personal opinions of the authors, and it is not intended to
+represent the position or opinions of UBS AG or any of its affiliates.
+Email: Stefano.iabi@gmail.com
+Acknowledgement: I am grateful to two anonymous referees for their useful comments.
+1
+
+• Economically interpretable: every neuron, layer, and synapse carries economic
+meaning;
+• Law-consistent: arbitrage violations are mathematically impossible by construction;
+• Measure-agnostic: learning unfolds under physical, risk-neutral, or investor-defined
+measures;
+• Scalable: training and inference remain efficient even in high-dimensional risk
+spaces, bypassing the limitations of stochastic calculus, Monte Carlo, and PDE
+approaches.
+We demonstrate the framework by unifying the siloed domains of Quantitative
+Investment Strategies (QIS) and Valuation Adjustments (XVA) within a single consistent network. Applied to 210 USD swaption-straddle QIS, the network learns marketimplied dynamics in 8 minutes and evaluates 100,000 scenarios in 80 seconds across 800
+layers, spanning 60 years of exposure, on a standard 2024 MacBook Pro1. It delivers
+interpretable P&L decomposition into risk-factor subspaces, enabling attribution, diagnostics, reverse stress testing, optimisation, and seamless attention-based transitions
+across probability measures, all with full no-arbitrage integrity.
+To our knowledge, this is the first AI architecture to embed arbitrage-free valuation
+directly into its structure, effectively turning the FFTF into a computational constraint.
+It is also the first framework to unify QIS and XVA within a single law-consistent engine.
+Being measure-agnostic, our finance-native NN extends naturally to regulatory capital
+calculators, treasury simulations, and stress generators, charting a clear roadmap for
+law-consistent AI across pricing, risk, and capital functions.
+Conventional NNs, by contrast, bypass the axiomatic nature of financial markets,
+treating valuation, hedging, and tail-risk as intrinsic and fully learnable from chronicles.
+Trained without structural priors, they require post hoc arbitrage detection and correction and remain opaque, lacking the economic semantics required for interpretability
+and trust. Approaches such as deep hedging ([2]), TailGAN ([4]), VolGAN ([9]), and
+auto-encoding structures ([8]) exemplify this blind spot: they rely on generic architectures trained on non-repetitive trajectories or model-generated outputs, mistaking
+patterns for statistical laws and treating arbitrage as an afterthought rather than a
+structural prior.
+Finance-native neural networks redefine the relationship between AI and markets:
+no longer opaque pattern learners, but axiomatically grounded engines where every
+neuron carries economic meaning and obeys the immutable laws of financial economics.
+2
+Neural Quantitative Finance
+We reinterpret a neural network as a discrete-time stochastic process on a filtered probability space (Ω, A, {Fti}ti≥0), reconceiving neurons, layers, and activations in probabilistic and time-indexed terms. In this formulation, the forward pass becomes a stochastic
+1Apple M4 Max chip, 16-core CPU, 40-core GPU, 16-core Neural Engine, 128GB RAM
+2
+
+evolution operator that enforces transition constraints, probability conservation, and
+no-arbitrage by construction, transforming the network into a law-preserving engine.
+2.1
+Neurons, Layers, and Activation Functions
+In standard NNs, neurons lack economic interpretability, and activations are computed
+via deterministic layerwise transformations followed by nonlinearities, without structural constraints on learned values. To extend NNs into domains governed by physical
+or financial axioms, we introduce four structural innovations:
+1. Layers as Discrete Time: Unlike conventional neural networks, where depth is
+a tunable hyperparameter without physical meaning, our architecture endogenizes
+depth as a discrete time axis.
+Each layer corresponds to a time point ti =
+t0 + i δt,
+i ∈N, with t0 as the input layer and δt the fixed interlayer time
+step. The total number of layers is determined by the portfolio’s last exposure
+date tN, so that tN−t0
+δt
+defines the network’s temporal resolution.
+2. Neurons with Market Semantic: We define the neuron space Λ = {λn
+i }i,n∈N,
+where λi denotes the set of neurons in layer i, and λn
+i refers to the n-th neuron
+in that layer. To inject economic semantics into neurons, we construct a bijective
+mapping from Λ to a sample space Ω= {ωn
+i }i,n∈N of equal size, such that each
+neuron corresponds to a unique market state:
+ωn
+i : λn
+i −→R
+(market state encoder)
+(1)
+3. Conditionally Constrained Activations: Activations in ti+1, conditional on
+a neuron ωm
+i , are defined in terms of transition probability:
+a(ωi+1) = P(ωi+1; ωm
+i ),
+where P(·; ·) is an activation gate satisfying:
+(
+P(ωn
+i+1; ωm
+i ) ≥0, ∀n,
+P
+n P(ωn
+i+1; ωm
+i ) = 1.
+These conditions verify de Finetti’s coherence principles, ensuring non-negativity
+and mass preservation.
+4. Markovian Activation Functions (MAFs): We introduce Markovian Activation Function (MAFs), a class of transition gates consistent with Chapman–Kolmogorov dynamics and governed by local Markovian generators.
+To
+specialize P(·; ·) as a MAF, we impose Markovian dynamic constraints to it:
+MAF(ωn
+i+1; ωm
+i ) = P(ωn
+i+1; ωm
+i ) = δn + δt L(ωn
+i+1; ωm
+i ) + o(δt),
+(2)
+where L(·; ·) is a local Markovian generator and δn is the Kronecker delta.
+Local mass conservation requires:
+(
+L(ωn
+i+1; ωm
+i ) ≥0
+for n̸ = m,
+P
+n L(ωn
+i+1; ωm
+i ) = 0, ∀m,
+3
+
+consistent with continuous-time Markov processes2.
+For transitions from ti to tj with j > i, the long-step MAF is defined recursively:
+MAF(ωj; ωi) =
+j−1
+Y
+k=i
+MAF(ωk+1; ωk),
+(3)
+as in the Chapman–Kolmogorov equations.
+While inspired by the continuous-time Chapman–Kolmogorov framework, the implementation adopts a discrete-time formulation whose stability and consistency are
+ensured by the Courant–Friedrichs–Lewy (CFL, see [5]) condition on the time step
+relative to the maximum transition intensity. Thus, to ensure numerical stability and
+convergence in forward propagation, δt must satisfy:
+δt ≤
+1
+max |L(ωn
+i ; ωn
+i )|,
+bounding the step size by the generator’s diagonal terms. The CFL condition bounds
+the time step (i.e. the granularity of all layers) to ensure transition probabilities remain
+valid, preventing numerical instability.
+2.2
+Backward Pass, No-arbitrage and the Economic Semantics of Risk
+In encoding financial meaning directly into the network, we enrich each neuron with two
+additional attributes: a num´eraire and a Mark-to-Market (MtM) state. The num´eraire
+is defined as a state-dependent, real-valued, step-0, non-anticipatory bijective function:
+ηn
+i : λn
+i −→R+
+(num´eraire state encoder),
+(4)
+while the MtM state is similarly given by:
+Φn
+i : λn
+i −→R
+(MtM state encoder).
+(5)
+The MtM value at λn
+i is computed via a backward pass as the discounted expectation
+of next-layer MtM states:
+Φn
+i = EMAFQ
+i
+ηn
+i
+ηj
+Φj | ωn
+i
+
+= MAFQ(ωj; ωn
+i ) · ηn
+i
+ηj
+Φj,
+(6)
+where MAFQ denotes the risk-neutral measure associated with the MAF (see Section 2.4).
+This pricing equation operationalizes the FFTF, which states that, in the absence
+of arbitrage, there exists a risk-neutral measure under which discounted asset prices
+evolve as martingales. The result is underpinned by Farkas’ Lemma (see [7]), which
+ensures the existence of a strictly positive linear pricing functional in any arbitragefree market. Equation 6 enables the architecture to impose no-arbitrage as a layer-wise
+pricing constraint during the network’s backward pass, with MAFQ(·; ·) the strictly
+positive linear pricing functional.
+2Because economic states and transitions are abstracted into a general Markovian kernel, the architecture applies directly to any asset class, provided the market states can be encoded into neurons.
+4
+
+2.3
+Forward Pass and Neural Simulation
+The MAF enables efficient forward passes and simulations, generating neural paths
+that preserve probabilistic consistency. Neural simulation extends the architecture’s
+economic semantics to path-dependent instruments, including Bermudan and autocallable derivatives, QIS portfolios, and XVA metrics. Simulation over [t0, t1] proceeds
+as follows:
+1. Neural Initialization: Select the input neuron ωn′
+0 corresponding to the current
+market state.
+2. Cumulative Transition Function: Construct the cumulative distribution induced by the MAF:
+CMAF
+
+ωn
+1 ; ωn′
+0
+
+=
+n
+X
+k=0
+MAF(ωk
+1; ωn′
+0 ).
+3. Neural Evolution:
+• Draw ξ ∼U(0, 1).
+• Activate neuron ωn
+1 such that:
+(a) ξ ≤CMAF(ω0
+1; ωn′
+0 ) ⇒ω0
+1,
+(b) CMAF(ωn
+1 ; ωn′
+0 ) < ξ ≤CMAF(ωn+1
+1
+; ωn′
+0 ) ⇒ωn+1
+1
+,
+(c) ξ > CMAF(ωC−2
+1
+; ωn′
+0 ) ⇒ωC−1
+1
+,
+where C is the number of neurons in the layer.
+This process is iterated over each time step ti, producing a neural path γ = {ω∗
+i }NT
+i=0.
+Along this neural path, the mappings (1), (4), and (5) yield realized market states and
+mark-to-market values, constructing a real-valued, non-anticipatory path suitable for
+forward simulation and valuation of path-dependent instruments.
+For long-dated horizons, Equation (3) invokes the Chapman–Kolmogorov identity
+to efficiently compute multi-step transitions and reduce simulation complexity.
+2.4
+Learning and Attention
+The MAF parameters are learned (commonly termed ‘calibrated’ in finance) from (t0)
+data, but within an architecture that precludes arbitrage by design. Consider a stochastic process (Xt), parameterized by θ, and governed by MAF(·; ωi).
+We learn θ by
+minimizing a loss function J (typically an L2 error) that penalizes deviations between
+all observed market prices M0 and model-implied values V0, evaluated at the current
+input state ωn′
+0 :
+
+
+
+min
+θ
+J
+
+M0, V0
+
+MAF
+
+·; ωn′
+0
+
+,
+subject to θ ∈C
+(7)
+Here, C defines the admissible set, and V0 is the network’s valuation operator dependent on θ and the MAF. Thus learning becomes a single optimisation problem
+5
+
+across all observed prices with built-in no-arbitrage, eliminating the need for post-hoc
+adjustments.
+Attention, interpreted as a change of measure in finance, enables coherent redistribution of probability mass. Transitioning from a risk-neutral kernel Z(ωm
+j ; ωn
+i ) to a
+physical or custom measure eZ(ωm
+j ; ωn
+i ) requires a Radon–Nikodym derivative:
+eZ(ωm
+j ; ωn
+i ) = Z(ωm
+j ; ωn
+i ) · D(ωm
+j ; ωn
+i ),
+where D(·; ·) adjusts the probabilities under Z to reflect eZ.
+For path-dependent securities, rather than re-simulating paths, we use the likelihood ratio method to reweight them. Given a path γ0,NT = {ω∗
+i }NT
+i=0, the cumulative
+likelihood ratio is:
+L(γ0,NT ) =
+NT −1
+Y
+k=0
+D(ω∗
+k+1; ω∗
+k),
+enabling computation of expectations under eZ using simulations from Z:
+E
+eZ
+0[Φ(γ0,NT )] = EZ
+0 [Φ(γ0,NT ) · L(γ0,NT )] ,
+where Φ(γ0,NT ) is any path-dependent functional (e.g., payoff or exposure).
+The Radon–Nikodym factor and the likelihood ratio give the MAF attention: they
+dynamically redistribute probability mass across neural states while safeguarding arbitrage and measure-theoretic consistency. Simulations generated once under a convenient measure can thus be re-used, instantly and exactly, under any measure, yielding
+a fast, no-arbitrage workflow for pricing and risk.
+3
+Case Study: QIS and Forward-Consistent XVA Metrics
+Having established the structural formulation, we now demonstrate how our financenative NN can encode forward-looking, arbitrage-free simulations of real-world portfolios. We focus on a high-dimensional set of swaption-based QIS strategies to showcase
+operational power and interpretability.
+3.1
+Set-up
+We consider a bank managing a portfolio of 210 QIS in the U.S. Fixed Income space.
+Each strategy executes a USD at-the-money (ATM) swaption straddle every two days,
+across a set of maturities and tenors ranging from 1 month to 30 years. Each day,
+the bank delta-hedges all active positions using a combination of 2-year and 10-year
+interest rate swaps.
+Instead of modeling interest rates through classical SDEs, we embed the short rate
+rt natively into the neural architecture. The rate is expressed as a composite neuron
+state dynamics:
+rt = Xt + Yt −ϕt,
+6
+
+where Xt and Yt are latent factors discretized across neuron layers, and ϕt is a shift
+parameter to accommodate low or negative rates.
+Neural transitions follow a two-dimensional MAF structure, governed by Cox–
+Ingersoll–Ross local Markovian generators over the neuron space:
+Lx′,y′;x,y
+i,i+1
+=
+[
+a∈{x,y}
+
+κa(θa −ωa)∇a′;a
+i,i
++ σa2ωa
+2
+∆a′;a
+i,i
+
+,
+where ωa denotes the discrete state of factor a, and ∇, ∆are discrete gradient and
+Laplacian operators.
+Here, S
+a∈{x,y} denotes the set union of the one-dimensional
+generators along each factor axis, forming the two-dimensional local generator without
+additive superposition. Joint dynamics are captured through dynamic copulas over
+marginal MAFs, preserving probabilistic consistency.
+We learn the generator parameters θ by minimizing the mean squared error between
+market-implied volatilities M0 and network-implied volatilities V0, evaluated at the
+current input ωn′
+0 .
+Learning takes place entirely within the MAF-based structure,
+ensuring global consistency and arbitrage-free evolution by design.
+Figure 1: Learning accuracy (in bps)
+Figure 1 reports learning accuracy across 210 swaption volatilities, a task completed in eight minutes with a Root Mean Squared Error (RMSE) of 1.5 bps. Once
+trained, the MAF encodes a high-dimensional, forward-consistent transition operator
+that supports both pricing and risk analytics. To replace back-testing with forwardconsistent MAF repricing, we simulate 100,000 forward neural paths in approximately
+80 seconds over 800 time steps (2-day steps for 180 days, then monthly to 60 years).
+Each path represents a discrete trajectory through the network’s neural space, serving
+as a foundation for QIS evaluation, hedge diagnostics, and forward risk attribution.
+Table 1 contrasts the performance of the proposed MAF NN engine against a standard
+Monte Carlo (MC) implementation.
+In advancing QIS analytics, we leverage two XVA constructs: Hedging Valuation
+Adjustment (HVA, see [3]) and Reverse Stress Testing (RST, see [1]).
+7
+
+Table 1: Runtime and accuracy comparison: Monte Carlo vs MAF engine
+Method
+Scenario #
+Depth
+Runtime
+RMSE
+Hardware
+MC
+100,000
+800 time-steps
+8 hours
+1.5bps
+Kubernetes (128 vCPUs)
+MAF NN
+100,000
+800 layers
+80 seconds
+1.5bps
+MacBook Pro M4 Max
+1. Hedging Valuation Adjustment (HVA).
+HVA quantifies the expected value
+of hedging inefficiencies across the neural state space. It is defined as the discounted
+expectation of the difference between QIS portfolio value V P
+t
+and hedge value V H
+t , over
+forward neural paths:
+HVA0 = EP
+0
+Z T
+0
+e−
+R t
+0 hsds  V P
+t (ωn
+t ) −V H
+t (ωn
+t )
+
+dt
+ ωn′
+0
+
+.
+Since both V P
+t
+and V H
+t
+are computed as recursive passes through shared neuron
+states, HVA becomes an endogenous, interpretable output of the model.
+Interpretation:
+• HVA0 < 0: hedge over-replicates (conservative),
+• HVA0 > 0: hedge under-replicates (exposed),
+• HVA0 ≈0: effective replication.
+2.
+Reverse Stress Testing (RST).
+To identify future vulnerabilities, we define
+the marginal HVA contribution of a neural path γ ∈Γ as:
+δHVAγ = HVAγ −HVA0.
+We isolate the subset Γ∗of neural paths with largest under-replication (δHVAγ > 0),
+and project them back to market states:
+Γ∗∋γ∗7→(X(γ∗), Y (γ∗)).
+RST thus becomes a forward-consistent mechanism that pinpoints high-risk neurons, and their economic semantic, from within the network’s own learned dynamics.
+3. Strategy Selection and Forward Risk Stabilization.
+To complete the loop
+between QIS and XVA, we assess how a candidate strategy ð contributes to replication
+risk. Define its marginal impact on HVA as:
+δHVAð = HVAwith ð −HVA0.
+If:
+HVA0 · δHVAð < 0,
+then the new strategy offsets the hedge imbalance and is classified as risk-stabilizing.
+This metric recasts strategy selection as a structural hedging stabilizer, not just a source
+of historical return.
+8
+
+4. Actionable Insights
+The network not only projects valuations but also diagnoses
+which future states destabilize P&L and which trades restore it, yielding actionable
+guidance. HVA0 quantifies overall hedging effectiveness in dollar terms; δHVAð measures the marginal impact of a trade; and δHVAγ highlights forward economic states
+undermining hedges. This enables the desk to:
+• Add hedges targeting bespoke risky future economic states;
+• Adjust exposures by unwinding trades that generate material P&L leakages or
+incentivizing those that offset it;
+• Pre-position liquidity buffers for adverse scenarios.
+A negative δHVAγ signals over-replication and potential capital redeployment. This
+decomposition turns the NN into a decision engine directly tied to risk-appetite, hedging, and capital allocation policies.
+3.2
+Results
+Figure 2 shows the QIS-HVA term structure, indicating that the portfolio is systematically under-hedged on expectation. The identified systematic under-hedging represents
+approximately 3.9% of portfolio notional in annualized hedging leakages.
+Figure 3a presents projected client portfolio valuations four months forward, revealing a predominantly gamma-negative risk profile. To mitigate this, the bank constructs
+a gamma-positive hedging portfolio (Figure 3b). The resulting valuation differences are
+shown in Figure 3c. These reveal a pattern of frequent small super-replications and
+rarer, larger under-replications. As shown in Figure 3d, these leakages intensify under
+elevated realized volatility, as identified via RST.
+Figure 2: QIS-HVA term structure
+We evaluate two existing QIS trades differing only by directionality: a gammapositive strategy for the client (Figure 4a) and a gamma-negative one (Figure 4c).
+Figures 4b and 4d display their marginal HVA impact. Selling gamma exacerbates P&L
+leakage; buying gamma alleviates it. Extending the analysis to the entire portfolio,
+concentration analysis shows that 21% of strategies account for 53% of total HVA.
+High-gamma exposures generate substantial projected hedging leakages, with the most
+exposed strategy reaching ≈956.30 bps monthly.
+9
+
+(a) Client Portfolio Valuations
+(b) Bank Hedging Portfolio
+(c) Hedging Performance (d)
+10y
+Swap
+Realized
+Volatility
+Figure 3: Projected 4-month P&L across 100,000 neural paths: client vs. hedge portfolios. Probability density indicated by color scale; black dots denote RST states
+(a) Γ+ Strategy
+(b) Γ+ Marginal HVA
+(c) Γ−Strategy
+(d) Γ−Marginal HVA
+Figure 4: Optimizing Strategy Selection
+10
+
+(a) Market MAF: PnL
+(b) High Vol MAF: PnL
+(c) Low Vol MAF: PnL
+(d) Market MAF: Hedges
+(e) High Vol MAF: Hedges
+(f) Low Vol MAF: Hedges
+Figure 5: MAF Calibration: 4-month projected P&L over 100,000 neural paths
+We now vary MAF calibration to reflect three distinct market views:
+1. Market-Implied: Reflecting current sentiment.
+2. High Volatility: Representing stress regimes or turmoil.
+3. Low Volatility: Embedding stability or calm regimes.
+Analogously to attention in deep learning, MAFs dynamically reweight transition
+probabilities across risk clusters. These re-weightings shift the model’s “focus” over
+neurons. Under high-volatility views, attention shifts toward tails: the P&L distribution skews left, the loss tail widens, and the concentration of risky forward states
+expands (Figures 5b vs. 5a and 5e vs. 5d). Under low-volatility views, focus contracts:
+P&L becomes more symmetric, losses shrink, and RST-identified critical neurons reduce (Figures 5c and 5f).
+Conclusion
+In the 1980s, two opposing philosophies shaped the development of AI: the symbolic
+approach, where learning was governed by explicit rules, and the connectionist (i.e.,
+neural) approach, where learning was driven by data. Modern AI emerged from this
+clash, with the latter prevailing. Yet in quantitative finance, pure connectionism often
+breaches the laws of markets, producing valuations that violate no-arbitrage and requiring ex post corrections. Our framework fuses the two worlds: the laws of finance
+become symbolic constraints, encoded directly into a connectionist architecture.
+By uniting financial axioms with connectionist power, our finance-native neural
+networks move beyond pattern recognition and establish a new paradigm for AI in
+markets: interpretable, adaptive, and bound by the immutable laws of finance.
+11
+
+References
+[1] Claudio Albanese, St´ephane Cr´epey, and Stefano Iabichino. Quantitative reverse
+stress testing, bottom up. Quantitative Finance, pages 863–875, 2023.
+[2] H. Buhler, L. Gonon, J. Teichmann, and B. Wood. Deep hedging. Computational
+Finance, 2018.
+[3] Benedict Burnett. Hedging valuation adjustment: Fact and friction. 2020.
+[4] R. Cont, M. Cucuringu, R. Xu, and C. Zhang. Tail-gan: Learning to simulate tail
+risk scenarios. SSRN, 2022.
+[5] R. Courant, K. Friedrichs, and H. Lewy. Ueber die partiellen differenzengleichungen
+der mathematischen physik. Mathematische Annalen, 100:32ˆa€“74, 1928.
+[6] B. de Finetti. Sul Significato Soggettivo della Probabilita’. Fondamenta Mathematicae, 17(1):298–329, 1931.
+[7] J Farkas. Theorie der einfachen ungleichungen. Journal f¨ur die reine und angewandte Mathematik, 1902.
+[8] Andrei Lyashenko, Fabio Mercurio, and Alexander Sokol.
+Auto-encoding termstructure models. Risk.net, 2025.
+[9] M. Vuleti´c and R. Cont. Volgan: A generative model for arbitrage-free implied
+volatility surfaces. Applied Mathematical Finance, 1–36, 2025.
+12

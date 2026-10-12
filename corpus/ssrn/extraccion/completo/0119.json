@@ -1,0 +1,85 @@
+{
+ "doc_id": 119,
+ "titulo": "Ethics, Finance, and Automation A Preliminary Survey of Problems in High Frequency Trading",
+ "resumen_operativo": "Es un artículo de revisión y ensayo teórico sobre las implicancias éticas de la automatización en las finanzas, particularmente en el trading de alta frecuencia (HFT). Los autores argumentan que la falta de un marco ético interdisciplinario entre desarrolladores, quants y traders genera fallas sistémicas, y proponen adoptar un sistema de gestión de la calidad (QMS) tipo ISO 9000 para prevenir fallos operativos como el 'flash crash' y malas prácticas como spoofing o quote stuffing. No contiene investigación empírica ni backtests.",
+ "calidad_paper": "baja",
+ "conceptos": [
+  {
+   "nombre": "quality arbitrage",
+   "tipo": "estrategia",
+   "definicion_en_contexto": "Estrategia donde un participante del mercado automatizado conoce el comportamiento determinista de otros y obtiene beneficios explotando dicho comportamiento o la menor calidad tecnológica de los sistemas competidores.",
+   "relaciones": [
+    {
+     "tipo": "USA",
+     "objeto": "deterministic behavior"
+    }
+   ],
+   "cita_textual": "Quality arbitrage occurs when one automated market participant knows the automated (therefore, deterministic) behavior of other market participants—trading firm, clearing firm, exchange—and profits by exploiting that behavior."
+  },
+  {
+   "nombre": "quote stuffing",
+   "tipo": "riesgo_metodologico",
+   "definicion_en_contexto": "Intento de saturar la red de un exchange enviando y cancelando miles de órdenes por segundo, bloqueando el acceso al mercado para otros participantes.",
+   "relaciones": [
+    {
+     "tipo": "CAUSA",
+     "objeto": "market instability"
+    }
+   ],
+   "cita_textual": "Quote-stuffing is an attempt to overwhelm the network of an exchange by sending and cancelling thousands of trade requests per second, thereby blocking other market participants’ access to a market, a practice not only unfair but inconsistent even with an orderly market."
+  },
+  {
+   "nombre": "spoofing",
+   "tipo": "estrategia",
+   "definicion_en_contexto": "Transmisión de órdenes a un exchange con la intención expresa de cancelarlas antes de su ejecución, para crear una ilusión de mercado líquido y engañar a otros participantes o sistemas.",
+   "relaciones": [
+    {
+     "tipo": "CAUSA",
+     "objeto": "false market"
+    }
+   ],
+   "cita_textual": "Spoofing creates a false market, transmitting trade requests to an exchange with the express intent of cancelling them before execution, the goal being to create the illusion of a deep liquid market in order to fool other market participants or their systems."
+  },
+  {
+   "nombre": "quality management system (QMS)",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Técnicas y controles operativos de software y gestión de lanzamientos propuestos como base para un nuevo estándar ético transdisciplinario en el desarrollo de sistemas automatizados.",
+   "relaciones": [
+    {
+     "tipo": "MITIGA",
+     "objeto": "system failure"
+    }
+   ],
+   "cita_textual": "Better release management, software operational controls, and testing, that is, Quality Management System (QMS) should have prevented it."
+  },
+  {
+   "nombre": "direct market access (DMA)",
+   "tipo": "concepto",
+   "definicion_en_contexto": "Facilidades que permiten a una institución rutear órdenes directamente al libro del exchange sin pasar por los controles pre-trade del bróker o miembro compensador.",
+   "relaciones": [
+    {
+     "tipo": "USA",
+     "objeto": "exchange order book"
+    }
+   ],
+   "cita_textual": "DMA describes the facilities that allow a financial institution to route orders to the exchange order book without first passing through its clearing member or broker’s technology for pre-trade approvals."
+  },
+  {
+   "nombre": "implicit ethical agents",
+   "tipo": "concepto",
+   "definicion_en_contexto": "Sistemas automatizados programados para comportarse éticamente o evitar comportamiento poco ético sin tener una representación explícita de los principios éticos, implementando las reglas de sus diseñadores humanos.",
+   "relaciones": [
+    {
+     "tipo": "PARTE_DE",
+     "objeto": "automated trading systems"
+    }
+   ],
+   "cita_textual": "An implicit ethical agent is “programmed to behave ethically, or at least avoid unethical behavior, though without explicit representation of ethical principles”—much as a safety catch on a gun may prevent unintended killing."
+  }
+ ],
+ "hallazgos": [],
+ "aplicabilidad_es_intradia": {
+  "nivel": "nula",
+  "nota": "Es un trabajo sobre la ética profesional (entre programadores, quants y traders) y la regulación en mercados de alta frecuencia. No contiene algoritmos, backtesting ni análisis de microestructura aplicables operativamente para trading intradía de futuros."
+ }
+}

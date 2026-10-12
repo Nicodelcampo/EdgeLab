@@ -1,0 +1,69 @@
+{
+  "doc_id": 247,
+  "titulo": "Pairs Trading Strategy Based on Cointegration Model and ECM",
+  "resumen_operativo": "Propone una estrategia de pairs trading basada en Error Correction Model (ECM) que captura oportunidades de retorno por desviaciones de corto plazo, comparándola con el método tradicional de cointegración. Sobre el mercado chino de acciones (2010-2023, 3237 stocks), el método ECM produce retorno mensual excedente medio de 67 bps vs 57 bps del método de cointegración, con Sharpe ratio de ~1.5 para ECM vs 0.75 para cointegración en operaciones con relaciones de equilibrio de corto plazo.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "Error Correction Model (ECM) Pairs Trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia de pairs trading que incorpora el término de corrección de error (λ·ecm_{t-1}) para explotar tanto la relación de largo plazo (cointegración) como las desviaciones de corto plazo, generando señales de entrada/salida basadas en el short-spread.",
+      "relaciones": [{"tipo": "MEJORA_A", "objeto": "Cointegration Pairs Trading"}, {"tipo": "USA", "objeto": "Cointegration"}],
+      "cita_textual": "the ECM method has the potential to capture more short-term opportunities"
+    },
+    {
+      "nombre": "Cointegration Pairs Trading (Engle-Granger)",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Método de dos pasos: (1) identificar pares cointegrados con mínima suma de diferencias al cuadrado, (2) abrir posiciones cuando el spread normalizado excede ±2 desviaciones estándar de su media histórica, cerrando al retornar a cero.",
+      "relaciones": [{"tipo": "USA", "objeto": "Cointegration Test"}, {"tipo": "PARTE_DE", "objeto": "Statistical Arbitrage"}],
+      "cita_textual": "I simultaneously open and close long and short positions when the normalized spread diverges beyond 2"
+    },
+    {
+      "nombre": "Return on Committed Capital (RCC)",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida conservadora de retorno que divide los retornos totales entre el número de pares nominados para trading (20), independientemente de si operaron o no, reflejando el coste de oportunidad del capital asignado.",
+      "relaciones": [{"tipo": "MIDE", "objeto": "Strategy Performance"}, {"tipo": "SE_OPONE_A", "objeto": "Return on Employed Capital"}],
+      "cita_textual": "return on committed capital is a more conservative measure that mimics what a hedge fund might use to report returns"
+    },
+    {
+      "nombre": "Short-Spread (ECM Residuals)",
+      "tipo": "dato",
+      "definicion_en_contexto": "Serie temporal construida como ΔX_{2,t} - αΔX_{1,t} + λ·ecm_{t-1} que captura desviaciones de corto plazo del equilibrio. El ECM usa la distribución de sus residuos vt para generar señales de trading.",
+      "relaciones": [{"tipo": "EQUIVALE_A", "objeto": "Short-Term Deviation Signal"}],
+      "cita_textual": "the spread in the ECM method relates to the distribution of residuals in ECM"
+    },
+    {
+      "nombre": "Elasticidad de Corto vs Largo Plazo",
+      "tipo": "concepto",
+      "definicion_en_contexto": "β (coeficiente de cointegración) captura la elasticidad de largo plazo entre dos acciones; α (coeficiente ECM) captura la elasticidad de corto plazo. El ECM usa ambos simultáneamente.",
+      "relaciones": [{"tipo": "PARTE_DE", "objeto": "ECM Framework"}, {"tipo": "MIDE", "objeto": "Price Relationship"}],
+      "cita_textual": "β1 can been considered as the long-term elasticity between X1,t and X2,t. α can been considered as the short-term elasticity"
+    },
+    {
+      "nombre": "Chinese Margin Trading Market",
+      "tipo": "dato",
+      "definicion_en_contexto": "Mercado de préstamo de valores introducido en China en 2010 que habilitó las ventas en corto, haciendo viable el pairs trading en el mercado chino por primera vez. Los datos cubren acciones elegibles para securities lending.",
+      "relaciones": [{"tipo": "REQUIERE", "objeto": "Pairs Trading"}, {"tipo": "PARTE_DE", "objeto": "Chinese Stock Market"}],
+      "cita_textual": "with the introduction and rapid development of the Chinese margin trading market in 2010, the short-selling mechanism became accessible to investors"
+    },
+    {
+      "nombre": "Rolling Formation-Trading Windows",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Estrategia con 12 meses de formación para seleccionar pares y estimar parámetros, seguidos de 6 meses de trading, con 6 carteras solapadas rotando cada mes para suavizar resultados.",
+      "relaciones": [{"tipo": "USA", "objeto": "Out-of-Sample Testing"}],
+      "cita_textual": "I execute the PTS each month and do not wait for a trading period to be complete, resulting in six overlapping portfolios each month"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "El método ECM produce retorno mensual excedente medio de 67 bps (REC) vs 57 bps para cointegración, con Sharpe ratio de 1.105 vs 0.794 respectivamente, y skewness positivo frente a negativo.",
+      "mercado": "Acciones elegibles para short-selling en Shanghai, Shenzhen y Beijing (China)",
+      "periodo": "Abril 2010 - Abril 2023 (~156 meses)",
+      "magnitud": "ECM: 0.665% mensual, Sharpe 1.105; Coint: 0.572% mensual, Sharpe 0.794; volatilidad ECM 2.08% vs Coint 2.43%",
+      "condiciones": "3237 stocks; formación 12 meses; trading 6 meses; 20 pares cointegrados por período; costes de transacción no incluidos explícitamente",
+      "robustez": "media",
+      "cita_textual": "the ECM method consistently maintains a Sharpe ratio of approximately 1.5, which is considered a favorable performance indicator"
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "baja", "nota": "Usa datos diarios exclusivamente; framework adaptable a frecuencias mayores pero requeriría ajustes significativos en la estimación de cointegración y señales."}
+}

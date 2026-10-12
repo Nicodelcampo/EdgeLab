@@ -1,0 +1,105 @@
+{
+  "doc_id": 292,
+  "titulo": "Reinforcement Learning in Algorithmic Trading: Optimizing Trade Execution and Risk Management",
+  "resumen_operativo": "Propone un framework modular de RL para trading algorítmico con state representation (RSI, MACD, OHLCV), action space discreto/continuo (Buy/Sell/Hold, position sizing), y reward function multi-componente (PnL + Sharpe - costos - drawdown). Compara PPO, DQN y SAC sobre S&P 500 y Nasdaq (2015-2023) contra baselines (Buy&Hold, MA Crossover). SAC obtiene mejor performance: 35.8% retorno, Sharpe 1.45, MaxDD 7.2%, VaR(95%) -2.9% y CVaR(95%) -4.1%. Resultados reportados en una sola tabla sin detalles de split IS/OOS, sin costos de transacción detallados, sin significancia estadística. Calidad baja; probablemente un paper académico estudiantil genérico.",
+  "calidad_paper": "baja",
+  "conceptos": [
+    {
+      "nombre": "reinforcement learning",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Agentes RL (PPO, DQN, SAC) que aprenden políticas de trading directamente de la interacción con el mercado modelado como MDP. SAC supera por manejo de acción continua (position sizing, leverage).",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "algorithmic trading"},
+        {"tipo": "USA", "objeto": "deep learning"}
+      ],
+      "cita_textual": "In RL, an agent learns through trial and error to maximize long-term rewards in an environment modeled as a Markov Decision Process (MDP)."
+    },
+    {
+      "nombre": "position sizing",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Dimensionamiento de posición como acción continua del agente SAC. El reward incluye penalización por drawdown, guiando al agente hacia posiciones más conservadoras en condiciones adversas.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "reinforcement learning"}
+      ],
+      "cita_textual": "Position sizing based on confidence score; Stop-loss and take-profit thresholds; Risk constraints using Value-at-Risk (VaR)"
+    },
+    {
+      "nombre": "Sharpe ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Métrica incluida en la función de recompensa del agente RL y como métrica de evaluación. SAC: Sharpe 1.45 vs Buy&Hold 0.81.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "reinforcement learning"}
+      ],
+      "cita_textual": "SAC Agent: Return 35.8%, Sharpe 1.45, Drawdown 7.2%"
+    },
+    {
+      "nombre": "maximum drawdown",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Drawdown máximo como métrica de riesgo: SAC 7.2% vs Buy&Hold 12.5%. Penalizado en la función de recompensa.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "reinforcement learning"}
+      ],
+      "cita_textual": "Max Drawdown: Largest peak-to-trough decline"
+    },
+    {
+      "nombre": "RSI",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Relative Strength Index incluido en el vector de estado del agente RL junto con MACD, precio, volumen y volatilidad.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "technical analysis"}
+      ],
+      "cita_textual": "The state vector combines technical indicators (RSI, MACD), price history, volume, volatility, and optional sentiment scores."
+    },
+    {
+      "nombre": "MACD",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Moving Average Convergence-Divergence incluido como feature técnica en el state vector.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "technical analysis"}
+      ],
+      "cita_textual": "The state vector combines technical indicators (RSI, MACD), price history, volume, volatility..."
+    },
+    {
+      "nombre": "Value at Risk",
+      "tipo": "metrica",
+      "definicion_en_contexto": "VaR al 95% usado como constraint de riesgo: SAC -2.9% vs Buy&Hold -6.1%. CVaR(95%): SAC -4.1% vs Buy&Hold -9.8%.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "risk management"}
+      ],
+      "cita_textual": "VaR (95%): SAC Agent -2.9%, Buy & Hold -6.1%"
+    },
+    {
+      "nombre": "PPO",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Proximal Policy Optimization, algoritmo de RL usado como baseline. Mostró estabilidad pero fue superado por SAC en condiciones volátiles. Sharpe 1.27, retorno 31.5%.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "reinforcement learning"}
+      ],
+      "cita_textual": "PPO Agent: Return 31.5%, Sharpe 1.27, Drawdown 8.3%"
+    },
+    {
+      "nombre": "SAC",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Soft Actor-Critic, algoritmo de RL para acción continua que supera a PPO y DQN. Retorno 35.8%, Sharpe 1.45, MaxDD 7.2%.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "PPO"}
+      ],
+      "cita_textual": "SAC outperformed in volatile conditions due to continuous control."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "El agente SAC supera significativamente a baselines tradicionales: 35.8% retorno vs 18.2% Buy&Hold y 22.6% MA Crossover; Sharpe 1.45 vs 0.81 y 0.92 respectivamente; MaxDD 7.2% vs 12.5% y 10.1%.",
+      "mercado": "S&P 500 y Nasdaq",
+      "periodo": "2015-2023",
+      "magnitud": "SAC: Return 35.8%, Sharpe 1.45, MaxDD 7.2%; VaR(95%) -2.9%, CVaR(95%) -4.1%. PPO: Return 31.5%, Sharpe 1.27, MaxDD 8.3%.",
+      "condiciones": "Sin detalle de split IS/OOS; sin costos de transacción explícitos; sin significancia estadística; rolling-window validation mencionada pero no detallada",
+      "robustez": "baja",
+      "cita_textual": "Our RL agents outperformed baseline strategies in both cumulative return and Sharpe ratio across multiple market conditions."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "El framework de RL con SAC para trading es conceptualmente aplicable a datos intradía de ES futures. Sin embargo, el paper usa datos diarios y carece del rigor necesario para confiar en deployment. La arquitectura de reward function multi-componente es una idea rescatable."
+  }
+}

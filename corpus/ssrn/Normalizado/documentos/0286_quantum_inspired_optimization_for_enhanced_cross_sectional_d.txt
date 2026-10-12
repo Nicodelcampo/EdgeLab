@@ -1,0 +1,1425 @@
+Quantum-Inspired Optimization for Enhanced
+Cross-Sectional Dispersion Strategies
+The 21st WBS Quantitative Finance Conference, Palermo, Italy
+Alejandro Rodriguez Dominguez
+Head of Quantitative Analysis and AI @ Miraltabank
+Quant Advisor @ Inspiration-Q
+September 27, 2025
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+1 / 50
+
+Agenda
+1
+Introduction
+2
+Basket z-Scores for Pairs-Trading Enhancement
+3
+Experiments
+4
+Conclusion
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+2 / 50
+
+Introduction
+Inspiration-Q Optimization Engine: Enhanced Index Tracking
+The “Impossible” made possible
+Quantum-inspired algorithms. Our
+core technology solves complex
+optimization problems once deemed
+infeasible with traditional tools,
+developed at Inspiration-Q and backed
+by the largest research institution in
+Spain.
+Inspiration. We take cues from
+annealing and the self-organizing
+behavior of atoms as they cool into
+robust crystalline states.
+Why it matters. While other solvers
+get stuck in local minima, our algorithms
+escape them and find global minima,
+delivering better performance.
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+3 / 50
+
+Introduction
+Inspiration-Q Optimization Engine: Enhanced Index Tracking
+Applied Research Papers
+Physica A (2024)
+Accurate solution of the Index Tracking
+problem with a hybrid simulated
+annealing algorithm.
+www.inspiration-q.com
+Quantum Sci. & Tech. (2021)
+Hybrid quantum–classical optimization
+with cardinality constraints and
+applications to finance.
+Working paper (2022)
+Portfolio optimization with discrete
+simulated annealing.
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+4 / 50
+
+Introduction
+Inspiration-Q Optimization Engine: Enhanced Index Tracking
+Direct Indexing (Index Tracking)
+Index tracking. Pick a subset of assets (e.g.
+S&P 500) to replicate an index.
+Combinatorial search: infeasible for exact
+solvers (Fig. 1).
+Compute time (10 of 130)
+iQ-Finance (SA)
+10 s
+Gurobi (MIP)
+1 yr
+Figure: Runtime: SA vs. MIP.
+Performance
+Tracking error < 2% with 60 assets, quarterly
+rebalance (Fig. 2).
+Figure: 60-name, quarterly, TE ≤2%.
+Benefits
+∼60% lower trading costs
+Lower TE and risk
+Flexible constraints
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+5 / 50
+
+Introduction
+Inspiration-Q Optimization Engine: Enhanced Index Tracking
+Variation: Enhanced Index Tracking
+Goal. Select a basket that (i) tracks a reference index and (ii) optionally outperforms it.
+Combinatorial search is intractable for exact solvers; metaheuristics/SA provide practical
+solutions.
+Dataset
+S&P 500 as reference
+433 assets (2008–2022,
+Yahoo Finance)
+Requirements
+Basket size: 10–30 names
+TE cap: τ (e.g., 2%/yr)
+Optional ER floor: ρ
+(e.g., +2%/yr)
+Parameters
+Covariance: exp. weights,
+∼2y (e.g., 1500 days)
+Returns: exp. weights,
+∼2y (e.g., 1500 days)
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+6 / 50
+
+Introduction
+Inspiration-Q Optimization Engine: Enhanced Index Tracking
+One Year OOS (Monthly Rebalancing)
+Do a monthly rebalancing over one year of tracker portfolios with 10, 20, 30 assets and a
+minimal annual excess return of 2%.
+Results (1Y out-of-sample, monthly
+rebalances)
+Tracking error falls with k: near ∼3% at k=30.
+Excess return is positive on average, but sensitive to forecast
+quality.
+Summary (1Y OOS, monthly)
+Basket size
+10
+20
+30
+Avg. TE (%)
+4.1
+3.3
+2.9
+Avg. ER (%)
+2.2
+1.5
+1.4
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+7 / 50
+
+Introduction
+Inspiration-Q Optimization Engine: Enhanced Index Tracking
+Outperforming Nasdaq 100 TR
+General strategy
+1
+Build portfolios whose price returns (ex-dividends) closely track NASDAQ-100 TR
+(includes dividends).
+2
+Bias selection to encourage net dividends above a chosen threshold.
+3
+Reinvest dividends.
+Key Challenge
+Pick the best basket of 50 assets out of 100, subject to portfolio
+constraints.
+Combinatorial Explosion
+≈1 × 1029 candidate baskets — about 10× the number of stars in the observable
+universe.
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+8 / 50
+
+Introduction
+Inspiration-Q Optimization Engine: Enhanced Index Tracking
+Tracking Nasdaq 100 TR with prices
+We track Nasdaq-100 TR (includes dividends)
+using prices only (ex-dividends). Dividend
+targeting enables outperformance vs. QQQ TR.
+We favor names with higher expected dividends.
+Strategy is robust.
+Parameters
+50 assets; quarterly rebalance
+Max w 20%, min w 0.1%; turnover cap 20%
+Covariance model (EMWA half-life 60d)
+Include QQQ; min dividend yield 1%
+Mean annual returns (2011–2024)
+Nasdaq 100
+17.01%
+Nasdaq 100 TR
+18.5%
+QQQ TR
+18.3%
+Inspiration-Q
+20.1%
+Spread over QQQ
+1.8%
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+9 / 50
+
+Introduction
+I-Watch: IQ Market Dispersion Indicator
+I-Watch: IQ Market Dispersion Indicator
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+10 / 50
+
+Introduction
+I-Watch: IQ Market Dispersion Indicator
+Motivation and Findings
+Market dispersion can be measured through basket z-scores’ indicators
+(i-Watch), providing structured signals for relative value and pairs trading.
+Data: S&P 500 prices (2011–2024) with 8 features combining qualitative
+(sector, industry, market cap) and quantitative fundamentals (ratios, balance
+sheet items).
+Theory predicts:
+larger baskets reduce idiosyncratic noise and revert faster,
+deeper hierarchical contrasts in pairs yield quicker and more reliable
+mean reversion.
+Experiments confirm these effects: baskets stabilize indicators, while
+cardinality and hierarchy determine the strength of pair-trade performance.
+The search over baskets and features is a nonlinear combinatorial problem;
+quantum-inspired optimization provides a practical solution.
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+11 / 50
+
+Introduction
+I-Watch: IQ Market Dispersion Indicator
+Basket z-Scores as Indicators
+Basket spreads are not traded; their z-scores act as filters/weights for tradable signals (pairs,
+sector spreads, stat-arb). Cross-sectional dispersion of returns rt ∈RN:
+D2
+t = 1
+N
+N
+X
+i=1
+(ri,t −¯rt)2,
+¯rt = 1
+N 1⊤rt
+(Edwards&Lazzara, 2014; Cboe, 2022).
+With ˆΣt the covariance estimator, baskets A, B with equal weights:
+wA =
+1
+|A|1A,
+wB =
+1
+|B|1B,
+wA,B = wA −wB.
+Define spread and variance:
+st(A, B) = w⊤
+A rt −w⊤
+B rt,
+ˆσ2
+t (A, B) = w⊤
+A,B ˆΣtwA,B.
+With lookback L, the indicator is
+z(L)
+t
+(A, B) = st(A, B) −s(L)
+t
+ˆσt(A, B)
+.
+PCA/ML approximate latent factors; basket indicators enumerate semantic contrasts, recovering
+the full between-group component (Avellaneda & Lee, 2010; Edwards & Lazzara, 2014).
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+12 / 50
+
+Introduction
+I-Watch: IQ Market Dispersion Indicator
+Bigger Baskets ⇒Faster Mean Reversion
+Basket factor Ft follows OU:
+dFt = −κFt dt + σF dWt,
+κ > 0.
+Asset return:
+Ri,t = µg(i) + βiFt + εi,t.
+Two disjoint baskets A, B with equal weights wA, wB. Define the basket spread:
+St = ¯RA,t −¯RB,t = (¯βA −¯βB)Ft + ηt.
+Idiosyncratic term:
+ηt := ¯εA,t −¯εB,t,
+Var(ηt) ≈σ2
+ε
+  1
+nA +
+1
+nB
+
+.
+One-step basket SNR:
+SNRbasket
+∆
+=
+κ |St| ∆
+q
+σ2
+F ∆+ 2 σ2ε( 1
+nA +
+1
+nB )
+.
+Larger baskets ⇒lower idiosyncratic variance ⇒cleaner/faster standardized reversion of the
+indicator.
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+13 / 50
+
+Introduction
+I-Watch: IQ Market Dispersion Indicator
+Deeper A-vs-B Hierarchical Contrast ⇒Faster Pair
+Reversion
+Pair spread. For i ∈A, j ∈B:
+Xt = Ri,t −Rj,t = (βi −βj)Ft + (εi,t −εj,t) =: ∆β Ft + ξij,t.
+Approximate one-step pair SNR:
+SNRpair
+∆
+∝
+|∆β|
+p
+(∆β)2σ2
+F + σ2
+ξ/∆
+|Ft|.
+Hierarchy link. Suppose contrast encoded by K discriminative tags with per-tag loading α:
+|∆β| ≈Kα.
+Shared hierarchy ⇒higher Cov(εi,t, εj,t) ⇒lower σξ.
+Result: More hierarchical contrast ⇒larger |∆β| and smaller σξ ⇒faster pair mean reversion.
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+14 / 50
+
+Introduction
+I-Watch: IQ Market Dispersion Indicator
+Reconciling Basket vs Pair Effects
+No contradiction:
+Basket level: larger nA, nB ⇒stable, noise-averaged z-scores.
+Pair level: deeper hierarchy ⇒faster, more reliable reversion.
+Which lever matters more?
+Basket size: dominates selection/gating.
+Hierarchy depth: dominates per-trade speed/risk.
+In conclusion, use large baskets for stable indicators; within them, prefer deepest
+A-vs-B contrasts.
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+15 / 50
+
+Introduction
+I-Watch: IQ Market Dispersion Indicator
+How We Use the Indicator & What Is Guaranteed
+Pipeline.
+1
+Compute basket z(L)
+t
+(A, B) using ˆΣt.
+2
+Use as indicator to gate/rank tradable signals.
+3
+Execute with indicators’ top quantiles and/or sign alignment, costs,
+Take-Profit/Stop-loss (TP/SL), time stops.
+Optimization: Search basket pairs with simulated annealing (SA). At fixed T,
+SA targets πT ∝ef /T. Under Tq = v/ log(1+q) and irreducible proposals,
+convergence to global maximizers holds (Geman & Geman, 1984; Hajek, 1988).
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+16 / 50
+
+Introduction
+I-Watch: IQ Market Dispersion Indicator
+Simulated Annealing (SA)
+We optimize over discrete states x (basket pairs, subsets) with kernel:
+1
+Propose small random edits to x (add/drop/swap elements).
+2
+Accept improvements with probability 1.
+3
+Accept deteriorations with probability exp(∆/T), ∆< 0, at temperature
+T > 0.
+At fixed T, the chain targets πT(x) ∝ef (x)/T (detailed balance). With slow
+cooling Tq ↓0, SA converges (in probability) to global maximizers under classical
+conditions.
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+17 / 50
+
+Introduction
+I-Watch: IQ Market Dispersion Indicator
+Metropolis-Hastings
+Neighborhood. From state x (subject to constraints), propose x′ via a local
+edit. Let
+∆:= f (x′) −f (x),
+T > 0.
+Acceptance (Metropolis).
+α(x →x′) = min{1, exp(∆/T)}.
+Improvements (∆≥0) are accepted; deteriorations (∆< 0) are accepted with
+probability exp(∆/T), the ”accept-worse” rule.
+For example, write α = min{1, exp[β(s) · (new cost −old cost)]} with
+time-varying inverse temperature β(s); this is equivalent after sign conventions
+for maximization vs. minimization.
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+18 / 50
+
+Introduction
+I-Watch: IQ Market Dispersion Indicator
+Simulated Annealing: Convergence Guarantees
+(1) Stationarity at fixed T. With symmetric proposals (or Metropolis–Hastings
+ratio), the Markov chain has invariant distribution
+πT(x) ∝ef (x)/T,
+πT(x) P(x →y) = πT(y) P(y →x)
+(detailed balance).
+(2) Global convergence under slow cooling. On a finite state space with
+irreducible proposals, if the cooling schedule is
+Tq =
+v
+log(1 + q),
+q = 1, 2, . . . ,
+(c large enough),
+then the SA trajectory visits a global maximizer
+x⋆∈arg max f (x)
+with probability →1 as q →∞(Geman & Geman, 1984; Hajek, 1988). q is the
+iteration index; v sets the cooling speed. Larger v means slower cooling, which
+strengthens theoretical convergence guarantees but may be impractical in finite
+time.
+In applications, a linear inverse–temperature ramp β(s) is often effective;
+warm-starting near a continuous relaxation further accelerates convergence.
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+19 / 50
+
+Basket z-Scores for Pairs-Trading Enhancement
+Pairs Trading: Category Baskets, Spread, Rolling z
+Inputs. Full-universe covariance ˆΣt (EWMA/shrinkage on rolling window) and
+returns rt.
+Features. Assets S = {1, . . . , N}; features m ∈[M] with category sets Cm and
+maps ϕm : S →Cm.
+Basket by k-feature match. For K ⊆[M], |K| = k, and c = (cm)m∈K:
+A(c; K) =
+\
+m∈K
+{i : ϕm(i) = cm},
+wc =
+1
+|A(c;K)|1A(c;K).
+Spread & rolling z: For baskets (c, d),
+st = w ⊤
+c rt −w ⊤
+d rt,
+ˆσt =
+q
+(wc −wd)⊤ˆΣt(wc −wd),
+¯s(L)
+t
+= 1
+L
+t
+X
+u=t−L+1
+su,
+z(L)
+t
+= st −¯s(L)
+t
+ˆσt
+.
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+20 / 50
+
+Basket z-Scores for Pairs-Trading Enhancement
+Simulated Annealing for Basket Pairs (A, B)
+Neighborhood. From (A, B) (respect |A|=|B|=card and policy constraints),
+propose (A′, B′) by local add/drop/swap (including A ↔B).
+For (A′, B′), compute:
+s′
+t = w ⊤
+A′rt −w ⊤
+B′rt,
+ˆσ′
+t =
+q
+(wA′ −wB′)⊤ˆΣt(wA′ −wB′).
+Then use as input either z′
+t = (s′
+t −¯s(L)
+t
+)/ˆσ′
+t or [
+SNR
+′
+= |¯s(L)
+t
+|/ˆσ′
+t.
+Define f (A′, B′) := Ψ(z′
+t) (or SNR proxy).
+Acceptance (Metropolis). With ∆= f (A′, B′) −f (A, B) and T > 0,
+α
+ (A, B)→(A′, B′)
+
+= min{1, exp(∆/T)}.
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+21 / 50
+
+Basket z-Scores for Pairs-Trading Enhancement
+Objective Variant: Direct SNR Maximization
+A convenient objective at time t is
+fSNR(A, B) =
+|¯s(L)
+t
+(A, B)|
+q
+(wA −wB)⊤ˆΣt(wA −wB)
+−λ P(A, B),
+where P aggregates policy penalties (overlap, exposures,
+cardinality/turnover).
+SA proceeds with the same neighborhood and Metropolis acceptance.
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+22 / 50
+
+Basket z-Scores for Pairs-Trading Enhancement
+Complexity: Baseline vs. Baskets
+Baseline (all N pairs zscores).
+P0 =  N
+2
+
+= Θ(N2),
+Time = Θ(N2T),
+Space = Θ(N2).
+One cardinality k = 2 (two-feature baskets).
+Time = Θ
+ M
+2
+
+NT
+
++ Θ
+
+T
+X
+|K|=2
+ BK
+2
+
+Worst case BK = N: Θ  M
+2
+
+N2T
+. Coarse baskets BK ≪N: ratio ≈ M
+2
+
+(B2/N)2.
+All cardinalities k = 2, . . . , M.
+Time = Θ
+
+NT
+M
+X
+k=2
+ M
+k
+
++ Θ
+
+T
+M
+X
+k=2
+X
+|K|=k
+ BK
+2
+
+Worst case BK = N: factor 2M −M −1 vs. baseline. Typical coarse case:
+≈
+PM
+k=2
+ M
+k
+
+B2
+k
+N2
+.
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+23 / 50
+
+Basket z-Scores for Pairs-Trading Enhancement
+Runtime Assumptions & Pair Counts
+Single-threaded Python + NumPy on a standard laptop (quad-core ∼3 GHz). Per
+z-score (window T = 252) for one pair: α ≈0.2 ms. Times scale linearly with
+(#pairs)× α. N = 500 assets, M = 10 features; each feature has Cm ∈[5, 20]
+categories. Balanced case: ¯k = 10. For cardinality k, baskets are defined by
+matching categories across any k features.
+Pairs per date (T = 252 window):
+Baseline (assets only):
+ N
+2
+
+= 124, 750.
+k = 2, all
+ M
+2
+
+= 45 feature-pairs: per feature-pair,
+B2 = min(¯C 2, N) = min(100, 500) = 100; basket-pairs
+ 100
+2
+
+= 4, 950; total
+45 × 4, 950 = 222, 750.
+All k = 2, . . . , 10: for k ≥3, ¯C k ≥N so Bk ≃N and each K behaves like
+the baseline. Total 222,750
+| {z }
+k=2
++
+968
+|{z}
+P10
+k=3 (
+10
+k )
+× 124,750
+| {z }
+baseline
+= 120,980,750.
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+24 / 50
+
+Basket z-Scores for Pairs-Trading Enhancement
+Approximate Runtimes (balanced categories: ¯k = 10)
+Case
+Pairs / date Time / date Time / year (52x) Time / 5y (260x)
+Baseline (asset pairs)
+124,750
+≈25 s
+≈21.7 min
+≈1.8 h
+k = 2 (all  10
+2
+
+feature-pairs)
+222,750
+≈44.6 s
+≈38.6 min
+≈3.22 h
+All k = 2 . . . 10
+120,980,750
+≈6.72 h
+≈14.6 days
+≈72.9 days
+Notes. Assumes α = 0.2 ms per pair for a 252-point z on a standard laptop
+(single-threaded NumPy). Actual runtimes vary with I/O, pandas overhead,
+vectorization, and threading.
+Time per date ≈(#pairs) × α, then ×52 (yearly, weekly), ×260 (5y).
+Batching z computations and avoiding pandas overhead narrows the gap
+between theoretical and wall-clock times.
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+25 / 50
+
+Basket z-Scores for Pairs-Trading Enhancement
+Sensitivity to Category Granularity (Cm ∈{5, 20})
+Per date: pairs and time (same N = 500, M = 10, α = 0.2 ms, T = 252).
+Case
+Pairs / date
+Time / date
+Time / year
+Time / 5y
+Sparser categories: Cm = 5 (more assets per basket for small k)
+Baseline
+124,750
+≈25 s
+≈21.7 min
+≈1.8 h
+k = 2 (all  10
+2
+
+)
+45 ×  min(25,500)
+2
+
+= 13,500
+≈2.70 s
+≈2.3 min
+≈11.7 min
+All k = 2 . . . 10
+≈855.6 × 124,750
+≈5.94 h
+≈12.9 days
+≈64.6 days
+Denser categories: Cm = 20 (fewer assets per basket for k = 2)
+Baseline
+124,750
+≈25 s
+≈21.7 min
+≈1.8 h
+k = 2 (all  10
+2
+
+)
+45 ×  min(400,500)
+2
+
+= 3,591,000
+≈12.0 min
+≈10.4 h
+≈2.1 days
+All k = 2 . . . 10
+≈996.8 × 124,750
+≈6.92 h
+≈15.0 days
+≈75.0 days
+For k ≥3 with Cm ≥10, the category grid exceeds N, so most baskets are singletons and each K
+behaves like the baseline. Thus the near-linear growth in the number of K’s (2M −M −1)
+dominates the “all k” case.
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+26 / 50
+
+Basket z-Scores for Pairs-Trading Enhancement
+Multi-Pair Aggregation
+Optimize K category pairs jointly with weights wk > 0:
+F({Ak, Bk}K
+k=1) =
+K
+X
+k=1
+wk Ψ
+ z(L)
+t
+(Ak, Bk)
+
+−λ P({Ak, Bk}),
+where P penalizes overlap/exposures/cardinality. Use the same SA kernel on the
+composite state (A1, B1, . . . , AK, BK).
+Tempered / replica-exchange SA improves mixing for this high-dimensional state
+without changing the acceptance rule.
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+27 / 50
+
+Experiments
+Experiments
+Experiments
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+28 / 50
+
+Experiments
+Experiments
+Baskets and Mean Reversion Distributions
+Universe.
+S&P 500 (∼500 liquid stocks), Mondays only, 2011–2024. Each week we form
+two baskets Bt
+A, Bt
+B with cardinality k ∈{2, 3, 5}.
+Features for basket construction. Sector, Industry, MarketCap, RPS,
+AssetTurnover, P/E, P/B, Cash&Eq., Total Liabilities, Investments, Intangibles,
+EBITDA. (All numeric attributes are discretized into categorical bins.)
+Definition of dR.
+dR is the number of business days between:
+the first time the basket spread z–score exceeds a threshold (2 or 3 standard
+deviations), and
+the subsequent reversion of the basket spread back toward the mean by
+R ∈{1%, 2%}.
+This captures the time to mean reversion conditional on a strong initial
+dislocation.
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+29 / 50
+
+Experiments
+Experiments
+Figure: Time to Mean Reversion (1% vs 2%)
+Empirical distribution of dR across all signals that revert within 150 business days
+(binned counts + cumulative).
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+30 / 50
+
+Experiments
+Experiments
+Cardinality Comparison: k=2 vs. k=3 at d1 (1%) and d2
+(2%)
+k=2, d1=1%
+k=2, d2=2%
+k=3, d1=1%
+k=3, d2=2%
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+31 / 50
+
+Experiments
+Experiments
+Cardinality k = 5: d1 vs d2
+1% threshold (d1)
+2% threshold (d2)
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+32 / 50
+
+Experiments
+Experiments
+Key Findings
+1) Lower cardinality (k) reverts faster & more often.
+k=2: bulk of mass in [1−10] business day; short right tail; low Never.
+k=3: slower and less reliable than k=2.
+k=5: long right tail; many signals never hit the target.
+2) 1% targets are much quicker than 2%.
+Across all k, 1% distributions are left-shifted (steeper cumulatives).
+Operationally: 1% is a realistic PT for higher k; 2% works best when k=2.
+3) Practical horizons for risk rules.
+Most successful hits occur within ≤20−40 business day for k=2, 3.
+A reasonable time stop lies around 60−100 business day; beyond that, benefits
+taper while tail risk rises.
+4) Portfolio design implications. Prefer k=2 (and selectively k=3) for higher PTs;
+throttle k=5 or pair with tighter PTs and earlier time stops. Consider
+scale-out/early-exit at 1%; paths that miss 1% rarely reach 2%.
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+33 / 50
+
+Experiments
+Experiments
+Basket–Conditional Indicators for Enhanced Pairs
+Trading
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+34 / 50
+
+Experiments
+Experiments
+Strategy Setup
+Data. Same as the prior set of experiments. All performance metrics reported from
+02/2022 to 02/2024 - 24 months
+Week sampling. Mondays of every two weeks per month.
+Pair signal. 60 or 120 business days lookback pair–spread zij(T) on log returns;
+pre-gate |zij(T)| ≥2 or 3.
+Indicators. Deterministic Sdet
+ij
+(T) (basket-aggregated, signed); probabilistic Sprob
+ij
+(T)
+(sector-normalized, bounded). Rolling sector scale τs mitigates cross-sector dispersion
+(cf. Avellaneda & Lee, 2010).
+Selection. Mean-reversion sign sgn(S•) = −sgn(zij) and/or keep top
+q ∈{5%, 10%, 15%} by |S•|.
+Exits. Vol-scaled Take-Profit/Stop-Loss (TP/SL) (1.5σ, 1.0σ) and/or (2.0σ, 1.0σ)
+and/or symmetric ±2% and/or time stop 60 days.
+Transaction costs. ≈20 bps per round-trip pair.
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+35 / 50
+
+Experiments
+Experiments
+Deterministic Basket–Aggregated Indicator
+Inputs. At week T, baskets BT = {(Ab, Bb, zb)}; each asset a has tags
+ϕ(a) ⊆F.
+Match per basket row
+mij(b) =
+
+
+
+
+
+
+
++1,
+ϕ(ai) ∩Ab̸ = ∅∧ϕ(aj) ∩Bb̸ = ∅,
+−1,
+ϕ(ai) ∩Bb̸ = ∅∧ϕ(aj) ∩Ab̸ = ∅,
+0,
+otherwise.
+Indicator & ranking
+Sdet
+ij
+(T) =
+X
+b∈BT
+mij(b) zb ,
+rank by |Sdet
+ij
+(T)|.
+Sign gate (mean reversion)
+sgn
+ Sdet
+ij
+(T)
+
+= −sgn
+ zij(T)
+
+.
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+36 / 50
+
+Experiments
+Experiments
+Sector–Calibrated Probabilistic Indicator
+Rolling sector scales. With sectors sec(·) and history up to T,
+τs(T) = max
+n
+median
+ {|Sdet
+uv (t)| : sec(u) = s or sec(v) = s}
+
+, τmin
+o
+.
+For pair (i, j), use leg-average
+τij(T) = 1
+2
+ τsec(ai)(T) + τsec(aj)(T)
+
+.
+Signed, bounded mapping
+Sprob
+ij
+(T) = sgn
+ Sdet
+ij
+(T)
+
+tanh
+|Sdet
+ij
+(T)|
+τij(T)
+
+∈(−1, 1) .
+τ rescales cross-sector dispersion; tanh suppresses outliers and stabilizes ranking.
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+37 / 50
+
+Experiments
+Experiments
+Indicators: Strengths & Weaknesses
+Strengths
+Sdet captures thematic A vs. B tilt ⇒directional pressure for convergence.
+zij gating enforces mean reversion; vol exits monetize reversion while
+truncating tails.
+Sprob normalizes sector heterogeneity, improving cross-sector comparability
+in tails.
+Weaknesses
+Wide sets (15%): dilute tails; Sprob reshuffles extremes, while |Sdet| remains
+more stable.
+Hard ±2% TP clips runners ⇒losers dominate; vol-scaled exits work better.
+Opportunity volatility: sign-pressure spikes; cap via top-N or gross-notional
+clamps.
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+38 / 50
+
+Experiments
+Experiments
+Cardinality = 3 & 5 (last 24M)
+Setup (Card = 3). 1 week/month; |z| ≥2; top {5,10,15}%; exits vol(1.5,1.0), vol(2.0,1.0), or ±2%; cost ∼20 bps/RT.
+Config (Top% + Exit + Signal)
+Mean (bps/tr)
+Sharpe
+Hit%
+MDD (bps)
+Note
+5% + vol(2,1) + prob
+-118
+-0.15
+35%
+-8k
+Least bad
+10% + vol(2,1) + det
+-103
+<0
+40%
+-9k
+Ties ±2%+det
+15% + ±2% + prob
+-131
+<0
+46%
+-12k
+Poor
+15% + vol(1.5,1) + det
+-189
+<0
+low
+-15k
+Worst
+Takeaway. All configs lose money (negative mean, Sharpe< 0). Small baskets + hard ±2% caps upside; losers dominate.
+Implication. Use richer baskets, softer exits, better Sprob calibration.
+Setup (Card = 5). 2 weeks/month; |z| ≥2; top {5,10,15}%.
+Config (Top% + Exit + Signal)
+Mean (bps/tr)
+Sharpe
+Hit%
+MDD (bps)
+Note
+5% + vol(2,1) + prob
++108
+0.15
+40%
+-4.8k
+Best in tight set
+10% + vol(2,1) + prob
++51
+>0
+45%
+-6k
+Solid
+15% + vol(2,1) + det
++64
+0.20
+55%
+-3.5k
+Strong at scale
+15% + ±2% + det
++50
+>0
+61%
+-4k
+Good alt.
+Takeaway. Card = 5 produces positive averages. Sprob excels in 5–10% tails; Sdet wins at 15%. ±2% helps only in wider sets.
+Implication. Use 5–10% + Sprob for lean books; 15% + Sdet for capacity.
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+39 / 50
+
+Experiments
+Experiments
+Insights & Conclusions from Cumulative P&L Panel
+Naming
+cardk: basket cardinality k
+topZ vs. 2pm: week selection
+ZW : lookback length W
+zminz: entry |z| threshold
+det/prob: indicator
+Design inferences
+Week selection: topZ ≻2pm
+For card=5: Z =120 ≻60
+For card=5: zmin = 3 ≻2 (cleaner)
+Indicator: prob≳det in card=5; fragile in
+card=3
+Summary (2-years; 2022-2024)
+Config
+Cum P&L (bps) MDD Sharpe %+ Note
+c5|topZ|Z120|z2 prob
+92.9k -79.5k
+0.61
+15 Best
+c5|topZ|Z120|z3 prob
+48.0k -41.0k
+0.55
+20 Strong
+c5|topZ|Z60|z3 det
+45.9k -37.0k
+0.66
+25 Clean
+c3|topZ|Z120|z2 det
+-181k
+≪0
+≪0
+low Worst
+k is 1000 bps. Leaders show Calmar ∼0.9–1.2 with low weekly hit rates ⇒fat right tails drive
+results.
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+40 / 50
+
+Experiments
+Experiments
+Leaders vs. Laggard — Cumulative P&L (bps)
+0
+10
+20
+30
+40
+50
+60
+70
+Week
+100000
+50000
+0
+50000
+100000
+Cumulative P&L (bps)
+Cumulative P&L (bps): Top 5 vs Worst
+2pct_card5|topZ|2pm|Z120|Zmin2|_prob
+2pct_card5|topZ|2pm|Z120|Zmin3|_prob
+2pct_card5|topZ|2pm|Z60|Zmin3|k_det
+2pct_card5|topZ|2pm|Z120|Zmin3|_det
+2pct_card5|topZ|2pm|Z60|Zmin3|k_prob
+2pct_card3|topZ|2pm|Z120|Zmin2|_prob (worst)
+Top 5 configurations by final P&L (bold colors) vs. the single worst (dashed/grey) to show
+spread across the panel. Leaders are dominated by card=5, topZ weeks, Z = 120, zmin ∈{2, 3};
+laggard is a card=3 topZ setup with Z = 120, zmin = 2.
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+41 / 50
+
+Experiments
+Experiments
+Final Cumulative P&L Distribution (All Configurations)
+100000
+75000
+50000
+25000
+0
+25000
+50000
+75000
+100000
+Final Cumulative P&L (bps)
+0
+2
+4
+6
+8
+10
+12
+Count
+Final Cumulative P&L Distribution (All Configurations)
+Median 
+ -2,705
+75th 
+ 7,402
+90th 
+ 41,967
+Right-skewed distribution with a long right tail: a handful of configurations contribute
+most of total P&L.
+Cut lines (median 75th 90th pct) highlight concentration of winners
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+42 / 50
+
+Experiments
+Experiments
+Hierarchy–Aware Basket Indicators
+Setup. Baskets BT = {(Ab, Bb, zb)} with Ab, Bb ⊂F (sector, Cat1, Cat2).
+Assets have features ϕ(a) ⊆F.
+Overlap (coverage):
+wb(i, j) = |ϕ(ai) ∩Ab| + |ϕ(aj) ∩Bb|
+2 max{1, |Ab|, |Bb|}
+,
+wb(i, j) ≥w.
+Size (geom, clipped): c(b) = min{c,
+p
+|Sp(Ab)| |Sq(Bb)|}, with
+Sp(Ab) = {a : ϕ(a) ∩Ab̸ = ∅}.
+Depth penalty: d(b) = min ℓ(Ab)+min ℓ(Bb)
+2
++ 1, ℓ∈{0, 1, 2}.
+Direction: mij(b) ∈{+1, −1, 0} (as in deterministic slide).
+Structural weight: βb(i, j) = wb(i, j)
+
+(c(b) d(b)γ), γ ∈(0, 1].
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+43 / 50
+
+Experiments
+Experiments
+Hierarchy–Aware Basket Indicators
+Deterministic: Sdet,H
+ij
+(T) =
+X
+b
+mij(b) sgn(zb) |zb| βb(i, j).
+Probabilistic: Sprob,H
+ij
+(T) =
+X
+b
+mij(b) snrb(T) βb(i, j),
+snrb(T) =
+(
+zb/bσnode
+k(b) (T −),
+if node std valid,
+zb/bσglob(T −) or 1
+2 sgn(zb)|zb|,
+fallback.
+Trading: Pre-gate |zij| ≥zmin; sign gate sgn(S•) = −sgn(zij); select top-q
+by |S•|; exits/costs as specified.
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+44 / 50
+
+Experiments
+Experiments
+Hierarchical Indicator: Cardinality = 3 & 5 (last 24M)
+Setup (Card = 3). 1 week/month; |z| ≥2; top {5,10,15}%; exits vol(1.5,1.0), vol(2.0,1.0), or ±2%; cost ∼20 bps/RT.
+Config (Top% + Exit + Signal)
+Mean (bps/tr)
+Sharpe
+Hit%
+MDD (k bps)
+Note
+5% + vol(2,1) + prob
+-103
+-0.22
+37%
+-5.4
+Least bad
+10% + vol(2,1) + prob
+-121
+-0.26
+36%
+-6.2
+Weak
+15% + vol(1.5,1) + det
+-137
+-0.30
+34%
+-8.3
+Worst
+Takeaway. All configs lose money (negative mean, Sharpe< 0). Narrow baskets are too noisy; drawdowns dominate.
+Implication. Card=3 is fragile — needs richer baskets or stronger gating.
+Setup (Card = 5). 2 weeks/month; |z| ≥2; top {5,10,15}%.
+Config (Top% + Exit + Signal)
+Mean (bps/tr)
+Sharpe
+Hit%
+MDD (k bps)
+Note
+5% + vol(2,1) + prob
++16
+0.03
+40%
+-2.4
+Best tight set
+10% + vol(2,1) + prob
++23
+0.05
+42%
+-2.4
+Solid
+15% + vol(2,1) + det
++36
+0.07
+45%
+-3.0
+Strong at scale
+Takeaway. Card=5 consistently produces positive averages. Sprob works best in narrow tails (5–10%), while Sdet wins at
+broader sets (15%).
+Implication. Prefer 5–10% + Sprob for lean books; 15% + Sdet for scale capacity.
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+45 / 50
+
+Experiments
+Experiments
+Cumulative P&L — Top 5 vs. Worst (bps)
+Config
+Final (1000 bps) MDD (1000 bps) % up wks
+5%—vol 2p0 1p0—hier prob
+2.9
+-2.1
+44
+10%—vol 2p0 1p0—hier prob
+2.7
+-2.2
+43
+15%—vol 2p0 1p0—hier det
+2.6
+-2.0
+47
+15%—sym 2pct—hier det
+2.4
+-1.9
+49
+10%—vol 2p0 1p0—hier det
+2.3
+-2.3
+42
+Worst configuration
+Config
+Final (1000 bps)
+MDD (1000 bps)
+% up wks
+15%—vol 1p5 1p0—hier det
+-2.7
+-4.5
+38
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+46 / 50
+
+Experiments
+Experiments
+Cumulative P&L — Distribution Summary (All Configs)
+Statistic
+Value (1000 bps)
+Mean
+1.2
+Std
+1.0
+Median
+1.1
+P75
+2.0
+P90
+2.6
+Min
+-3.4
+Max
+3.2
+Count
+18
+Notes: 24 months with trades every 2-weeks. Values computed from the cumulative
+P&L per configuration aggregated at weekly frequency. Sharpe is based on weekly P&L
+increments (bps).
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+47 / 50
+
+Experiments
+Experiments
+Hierarchical Indicator — Leaders vs. Laggard: Cumulative
+P&L (bps)
+Top 5 configurations by final P&L (bold colors) vs. the single worst (dashed/grey) highlight the
+spread. Leaders are dominated by card=5 with topZ week selection, Z = 120, and zmin ∈{2, 3};
+the laggard is a card=3 topZ setup with Z = 120, zmin = 2.
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+48 / 50
+
+Conclusion
+Conclusion
+Experiments confirm that larger baskets revert faster and more cleanly due
+to reduced idiosyncratic noise, but with lower cardinality (k = 2) mean
+reversion is sharper and more frequent.
+For enhanced pairs trading, higher cardinality (k = 5 ≫k = 3) consistently
+outperforms across all setups, even when using hierarchical indicators.
+⇒In pair-trades, cardinality and hierarchy matter more than the number
+of assets.
+Deeper A–vs.–B contrasts lead to faster pair reversion, while basket size
+stabilizes z-scores.
+→Use large baskets for stable signals; within them, exploit deeper contrasts.
+iQ algorithms enable these computations. Classical approaches (MIP, brute
+force) are infeasible for these nonlinear, combinatorial problems, not even
+solvable with mixed-integer relaxations.
+We are extending to credit, where products depend even more on qualitative
+(rating, issuer, capital structure) and quantitative variables.
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+49 / 50
+
+Conclusion
+References
+Gatev, E., Goetzmann, W. N., & Rouwenhorst, K. G. (2006). Pairs Trading: Performance of a Relative-Value Arbitrage Rule.
+Review of Financial Studies, 19(3), 797–827.
+Do, B., & Faff, R. (2010). Does Simple Pairs Trading Still Work? Financial Analysts Journal.
+Vidyamurthy, G. (2004). Pairs Trading: Quantitative Methods and Analysis. Wiley.
+Avellaneda, M., & Lee, J. (2010). Statistical Arbitrage in the U.S. Equities Market. Quantitative Finance.
+Yu, P.-L., & Lu, Z. (2017). Cointegrated Market-Neutral Strategy for Basket Trading (COINMAN). International Review of
+Economics & Finance, 50, 1–15.
+Or´us, R., Mugel, S., & Lizaso, E. (2019). Quantum Computing for Finance: Overview and Prospects. Reviews in Physics, 4,
+100028.
+Tatsumura, K., Hidaka, R., Nakayama, J., Kashimata, T., & Yamasaki, M. (2023). Pairs Trading System Using a
+Quantum-Inspired Combinatorial Optimization Accelerator for Optimal Path Search in Market Graphs. arXiv preprint,
+arXiv:2307.05923.
+Han, W., Huang, J., Xie, Q., Zhang, B., Lai, Y., & Peng, M. (2023). Mastering Pair Trading with Risk-Aware Recurrent
+Reinforcement Learning. arXiv preprint, arXiv:2304.00364.
+Edwards, T., & Lazzara, C. (2014). Dispersion, Correlation and Diversification. S&P Dow Jones Indices White Paper.
+Elliott, R. J., van der Hoek, J., & Malcolm, W. P. (2005). Pairs Trading. Quantitative Finance.
+Wolpert, D. H., & Macready, W. G. (1997). No Free Lunch Theorems for Optimization. IEEE Transactions on Evolutionary
+Computation.
+Geman, S., & Geman, D. (1984). Stochastic Relaxation, Gibbs Distributions, and the Bayesian Restoration of Images. IEEE
+Transactions on Pattern Analysis and Machine Intelligence.
+Hajek, B. (1988). Cooling Schedules for Optimal Annealing. Mathematics of Operations Research.
+Leung, T., & Li, J. (2015). Optimal Mean Reversion Trading: Mathematical Analysis and Practical Applications. World
+Scientific.
+Cboe. (2022). Cboe S&P 500 Dispersion Index Methodology. Cboe Global Markets.
+Alejandro Rodriguez Dominguez (Head of Quantitative Analysis and AI @ Miraltabank Quant Advisor @ Inspiration-Q)
+Quantum-Inspired Dispersion Trading
+September 27, 2025
+50 / 50

@@ -1,0 +1,2893 @@
+Revisiting the trading activity of high-frequency trading ﬁrms
+around ultra-fast ﬂash events
+October 1, 2024
+Abstract
+We investigate the behavior of High-Frequency Traders (HFTs) in the context of the fastest
+and most extreme price movements that can be observed in the market, i.e. ultra-fast ﬂash
+events, challenging the methodologies employed in academic and practitioner literature for
+identifying sudden liquidity black holes. To reﬁne the price shock identiﬁcation methodology,
+we introduce a new approach called Sequence-Based Flash Events (SFEs), which relies on
+tick sequences instead of relying on predetermined ﬁxed-time intervals inside which all ﬂash
+events in the sample are assumed to occur. This alternative methodology oﬀers the advantage of pinpointing the exact time and duration of the crash, which in turn provides a way
+to more accurately deﬁne the windows of observation around it. We compare our sample
+of Sequence-Based Flash Events (SFEs) with both the so-called ‘mini ﬂash crashes’ (MFCs)
+as identiﬁed by the Nanex detection algorithm, and the so-called ‘extreme price movements’
+(EPMs) as identiﬁed by Brogaard et al. (2018), using close and open prices as well as high
+and low prices. Based on our sample of SFEs, we ﬁnd that there is no evidence that HFTs
+trigger extreme price shocks. However, we ﬁnd that HFTs exacerbate SFEs by increasing net
+imbalance in the direction of these shocks as they occur. Finally, we show that the choice of
+the price shock identiﬁcation methodology is critical so that we urge regulators to exercise
+caution and avoid hasty conclusions regarding the contribution of HFTs to price stability in
+stressful market conditions.
+JEL classiﬁcation: G1, G10, G14
+Keywords: ﬂash events, mini ﬂash crashes, extreme price movements, high-frequency trading,
+trading activity, liquidity, market stability, market microstructure
+1
+
+1
+Introduction
+This study introduces a novel methodology whose purpose is both to identify extreme market shocks with greater precision and better analyze the role played by High-Frequency Traders
+(HFTs) before, during, and after these events. We focus in particular on ultra-fast ﬂash events,
+a subcategory of ‘ﬂash events’ which incorporates so-called ‘mini ﬂash crashes’ (MFCs) and ‘extreme price movements’ (EPMs). Our aim is to explore these events comprehensively, integrating
+both industry and academic perspectives, so as to provide deeper insights into the dynamics of
+ﬁnancial markets and the contribution of HFTs to market (in)stability.
+Practitioners refer to the fastest and most extreme price movements as ‘ultrafast extreme
+events’ (Johnson et al., 2013), ‘ﬂash equity failures’ or ‘mini ﬂash crashes’ (Nanex LLC, 2010).
+They represent sudden and signiﬁcant changes in trade prices that adhere to predeﬁned rules.
+Speciﬁcally, an MFC corresponds to a price change exceeding 0.8%, accompanied by at least
+ten consecutive tick movements in the same direction before a change in the opposite direction
+occurs, all within a duration of 1.5 seconds (Nanex LLC, 2010).
+Academically, these events are referred to as ‘extreme price movements’ (EPMs), and correspond to very signiﬁcant shifts in the National Best Bid and Oﬀer (NBBO) midquotes (Brogaard
+et al., 2018). They consist in multiple sequential trades and are retrospectively identiﬁed based
+on a statistical approach, speciﬁcally utilizing the 99.9th percentile of the absolute return distribution.
+Despite similarities, MFCs and EPMs diﬀer notably in terms of identiﬁcation methods, duration, and statistical properties. For example, there are notable diﬀerences in their identiﬁcation
+methodologies (ex-ante for MFCs versus ex-post for EPMs), their duration (10-second time intervals for EPMs versus 1.5-second time intervals for MFCs), and descriptive statistics (lower
+mean return for EPMs due to ﬁltering mechanisms). Consequently, MFCs appear to be more
+extreme price movements than EPMs, despite the name of the latter. This prompts a need for
+a uniﬁed approach.
+Our study adopts a systematic approach, scrutinizing ultra-fast ﬂash events through various methodologies, including a novel one proposed herein. This aspect is critical, as existing
+studies, typically constrained to using a single methodology, have produced contradictory results
+regarding the behavior of HFTs during these events. Our study aims to discern whether these
+discrepancies stem from the datasets used or the methodologies employed. We therefore test
+whether these divergent perspectives are reconcilable, analyzing HFT behavior on both the same
+stocks and over the same period.
+2
+
+The research process involves three key steps: (1) replicating practitioner-focused MFCs and
+academic-focused EPMs; (2) introducing a new ‘sequence-based ﬂash events’ (SFEs) methodology; (3) comparing SFEs with both practitioner-focused MFCs and academic-focused EPMs.
+Our novel methodology distinguishes itself by capturing ﬂash events without relying on ﬁxedtime windows, instead utilizing tick sequences to accurately identify the duration of each ﬂash
+event and deﬁne precise observation windows. Our data include tick-by-tick data, millisecondlevel timestamps and a ﬂag indicating whether the liquidity provider or consumer is an HFT or
+a non-high frequency trader (NHFT).
+This paper contributes to the ﬁnance ﬁeld by systematically comparing diﬀerent price shock
+identiﬁcation methodologies, including a more precise methodology that we detail in the next
+Section. To the best of our knowledge, this is the ﬁrst study to highlight the inconsistency of
+ﬁndings across methods.
+Interestingly, we ﬁnd no evidence that HFTs trigger extreme price
+shocks, but we also ﬁnd a discernible destabilizing eﬀect during crashes. Our ﬁndings also highlight the methodology-dependent nature of conclusions drawn about the contribution of HFTs
+to market stability. Thus, we caution against premature regulatory judgments and advocate for
+further research in this area.
+The remainder of the paper is organized as follows. Section 2 presents a graphical and intuitive
+analysis of ﬂash events to ease the understanding of our identiﬁcation methodology. Section 3
+reviews the relevant literature on ﬂash events, mini ﬂash crashes and extreme price movements,
+further delineating the contribution of our study. Section 4 introduces the data, presents the
+diﬀerent identiﬁcation methods we use in the paper as well as the summary statistics, and deﬁnes
+the diﬀerent variables. Section 5 is dedicated to the empirical analysis and presents our results.
+Section 6 summarizes the diﬀerent robustness checks performed and addresses the limitations of
+the paper. Section 7 concludes.
+2
+A visual illustration
+MFCs are deﬁned as abrupt, extreme, and brief price ﬂuctuations that involve a minimum of
+ten tick movements in a consistent direction, followed by a movement in the opposite direction,
+partially or fully correcting themselves within a few seconds. These mini ﬂash crashes can be
+considered as scaled-down versions of ﬂash crashes. As highlighted by Johnson et al. (2013)
+however, they diﬀer from ﬂash crashes in two fundamental aspects. Firstly, MFCs have a considerably shorter duration, typically lasting only a few seconds, in contrast to ﬂash crashes that
+can persist for several minutes. This abbreviated timeframe restricts the opportunity for human
+3
+
+Figure 1: A down MFC on AAPL on January 22, 2008
+Source: Tickdata.
+intervention to address the crash eﬀectively. Secondly, the remarkably swift speed of occurrence
+and recovery observed in most MFCs indicates that they are unlikely to be triggered by the
+arrival of exogenous news.
+To illustrate the concept, Figure 1 portrays an instance of a downward mini ﬂash crash that
+impacted the Apple (AAPL) stock on January 22, 2008. This crash unfolded within a remarkably
+short time span of 1180 milliseconds (starting at 10:02:24.100 and ending at 10:02:25.280). The
+transaction price experienced a rapid decline of 5.06% within this compressed interval before
+promptly rebounding to its initial level.
+As deﬁned in Johnson et al. (2013) and Nanex (2010), the above-mentioned MFCs are ﬁltered
+out based on three rules. There must be a price change exceeding 0.8%, with at least ten tick
+movements in the same direction before ticking in the other direction. This price change must
+happen within 1.5 seconds.
+Brogaard et al.(2018) instead focus on EPMs, which are computed as returns above the
+99.9th percentile of the empirical distribution of absolute returns. In total, they identify 45,200
+EPMs at 10 second-intervals on the 40 large stocks of the Nasdaq HFT database over the period
+2008-2010. The median absolute return of an EPM is 0.436% at pre-speciﬁed 10-second time
+intervals.
+Both methodologies could be questioned. First, we could question whether Brogaard et al.
+(2018) really capture extreme price movements since they use ﬁxed-time windows and potentially
+4
+
+Figure 2: Measured crash vs true crash on AA - January 22, 2008
+Source: Tickdata.
+never identify the top and bottom of the price movements. This is particularly important since
+price movements can be extremely short-lived (a few milliseconds). Even when they change the
+time interval from 1s, 5s, 10s, 30s, to 1 minute, there is no guarantee they identify the top and
+bottom of a shock since the time window is ﬁxed. In addition, the shorter the time interval, the
+more critical the identiﬁcation of the top and bottom of a ﬂash event since they can actually
+intervene in the next ﬁxed-time interval.
+To better understand why it may be misleading, let us consider a down crash for example
+and take two diﬀerent undesirable elements. First, when there is a larger drop within the interval
+(larger than the drop between the open and close prices of the interval), then Brogaard et al.
+(2018) underestimate the down crash and include some price correction in their EPM. In other
+words, resiliency may already be occurring within the interval of the EPM. Second, when there
+is a larger drop just after the close price of the interval, Brogaard et al. also underestimate the
+down crash and pollute the next interval since the crash has not ended yet.
+Figure 2 oﬀers a visual illustration of why measuring EPMs from open to close may be
+misleading when ﬁxed-time intervals are used and determined ex-ante. We consider the ﬁrst undesirable element explained above, where the EPM is underestimated and the ﬁxed-time interval
+includes some price correction.
+The graph shows an EPM occurring on the Alcoa (AA) stock on January 22, 2008. The
+red vertical lines represent the 95th, 96th and 97th 10-second intervals respectively for that day.
+Each dot stands for transactions within the same millisecond.1 The red square dots represent the
+1When two or more transactions occur within the same millisecond, all the transactions appear on the same dot
+graphically.
+5
+
+opening and closing transaction prices within the predetermined 10-second interval (from interval
+95 to 96), while the light blue dot represents the true extreme transaction price of the sequence.
+The measured crash, represented by the red diagonal line (Figure 2 on the left), underestimates
+the true crash, represented by the light blue diagonal line (Figure 2 on the right), showing that
+the open-close EPM approach (i.e. measuring the magnitude of the crash based on the close
+price and opening price of the interval) is not well suited, especially when ﬁxed-time intervals
+are used to identify EPMs.
+Second, we could also question Nanex identiﬁcation methodology, which appears to be arbitrary. For example, a price change of 90% happening in less than 10 consecutive tick movements
+in the same direction would not qualify as an MFC while a price change slightly exceeding 0.8%
+in 10 consecutive ticks would. In the same way, a price change of 90% happening in a bit more
+than 1.5 seconds would not qualify as an MFC while a price change slightly exceeding 0.8% in
+less than 1.5 seconds would.
+In this paper, we aim to alleviate some of the drawbacks of these two approaches to better
+capture ﬂash events. The innovation relies on the fact that we ﬁrst identify the extreme price
+shock, that we call ‘sequence-based ﬂash event’ (SFE) and then redeﬁne the window around it
+without relying on any predetermined ﬁxed-time interval for the identiﬁcation of the shock. Our
+methodology consists in thinking in terms of sequences rather than in terms of interval. To do
+so, we rely on the equity curve. As long as the equity curve does not reverse, we stay in the same
+sequence. Once the equity curve changes direction, then we move to the next sequence. Figure
+3 oﬀers a visual illustration of how SFEs work.
+Figure 3: Example of an SFE
+Source: Tickdata. The number on the X axis corresponds to ticks since the open of the day.
+6
+
+We ﬁrst measure the tick curve by summing ticks between the maximum and the minimum
+(and vice versa for up SFEs). To capture the full extent of the shock, we keep measuring the
+equity curve in the following interval as long as the equity curve does not move in the direction
+opposite to the previous equity curve. The ﬁrst sequence goes from point 1 to point 2 in Figure 3.
+To ease comparison across methodologies and focus on ultra-fast ﬂash events only, the duration
+of a sequence in our SFEs does not go over 1.5 seconds. We also require a 100% retracement in
+the second sequence (from point 2 to point 3 in Figure 3) to include liquidity-driven ﬂash events
+only and exclude information-driven shocks.
+3
+Brief literature review
+In this section, we introduce the relevant literature focusing in turn on the identiﬁcation and
+measurement of ultra-fast ﬂash events, the impact of HFTs on the market and the role played
+by HFTs during ﬂash events and ultra-fast ﬂash events.
+Identiﬁcation and measurement of ultra-fast ﬂash events
+Our study focuses on ‘ultra-fast ﬂash crashes’ which are shorter in duration when compared
+to ‘ﬂash crashes’, as indicated in Figure 4, even though both belong to the category of ‘ﬂash
+events’.
+Figure 4: Decomposition of ﬂash events
+7
+
+Within the body of literature focusing on ultra-fast ﬂash events, these events are referred to
+as either ‘mini ﬂash crashes’ (MFCs)2, when they meet (at least partially) the tick, time and
+price change criteria deﬁned by Nanex (2010), or ‘extreme price movements’ (EPMs) when they
+meet the price change criterion deﬁned by Brogaard et al. (2018).
+According to Nanex (2010), an MFC must include at least 10 tick movements in the same
+direction before ticking in the other direction, all within 1.5 seconds, and with an absolute price
+change exceeding 0.8%. The tick criterion is always set at 10 ticks in the literature as in Golub
+et al. (2012), Johnson et al. (2013) and Ozenbas & Schwartz (2018). The duration criterion is
+typically set at 1.5 seconds (Nanex, 2010) but sometimes extended as in Braun et al. (2018),
+F´elez-Vinas (2018), or Laly & Petitjean (2020). In addition, F´elez-Vinas (2018) adds a recovery
+criterion in her identiﬁcation of MFCs since the stock has to recover at least 90% of the initial
+price change within 300 seconds.
+According to Brogaard et al. (2018), an EPM is identiﬁed as a 10-second interval whose return
+belongs to the 99.9th percentile of the absolute return distribution. This 10-second interval has
+been chosen to capture brief liquidity dislocations that are relevant enough in terms of magnitude.
+To the best of our knowledge, MFCs were ﬁrst mentioned in the literature by Johnson et al.
+(2013), who report 18,520 MFCs in the U.S. equity markets alone between January 3, 2006 and
+February 3, 2011, i.e. about 15 MFCs per day, while F´elez-Vinas (2018) reports 2,105 MFCs
+on the Spanish IBEX35 exchange and 947 MFCs on the Italian FTSE MIB exchange over the
+period November 2012-April 2013, i.e. about 17 MFCs per day on the Italian exchange and
+about 8 MFCs per day on the Spanish exchange. Both studies reveal that MFCs are a global
+phenomenon and not just a U.S. phenomenon. As for EPMs, they were ﬁrst mentioned in the
+literature by Longin (2000), who describes them as either market corrections occurring during
+ordinary periods or crashes occurring during extraordinary periods, but it is Brogaard et al.
+(2018) who put EPMs in the context of high-frequency trading determining the price change rule
+to use so as to capture these ‘ultra-fast ﬂash crashes’ ex-post.
+Finally, Aquilina et al. (2018) identify extreme events that they call ‘mini ﬂash crashes/rallies’
+on the UK equity market over the period January 2014-June 2015. Contrary to Nanex (2010),
+Aquilina et al. (2018) deﬁne ‘mini ﬂash crashes’ as large price movements that revert within a
+short time window and during which there is a high level of traded volume. They end up with
+a total of 40 ﬂash events whose drop or spike duration can last up to 10 minutes. Contrary
+to Aquilina et al. (2018), we believe that these intraday market shocks are traditional ﬂash
+2MFCs are also sometimes called ‘down and up crashes’ as in Golub et al. (2012), ‘black swan crashes and dashes’
+or ‘ultrafast extreme events’ as in Johnson et al. (2013).
+8
+
+crashes and do not belong to the universe of ultra-fast liquidity black holes that we study in this
+paper. For a complementary review of the literature on ‘mini ﬂash crashes’ and ‘extreme price
+movements’, see Laly & Petitjean (2020) and Steﬀen (2023).
+The impact of HFTs on the market
+Many beneﬁts have been associated with the arrival of HFTs in electronic markets such as
+a decrease in spreads (Stoll 2014, Boehmer et al. 2021), a decrease in transaction costs (Jones
+2013), a decrease in short-term volatility (Hagstr¨omer & Nord´en 2013, Hasbrouck & Saar 2013)
+as well as an improvement in price eﬃciency (Carrion 2013, Brogaard et al. 2014) so that some of
+the trading strategies used by HFTs such as statistical arbitrage, directional trading and market
+making strategies are perceived as mostly beneﬁcial in the literature (Zaharudin et al. 2022).
+However, some major drawbacks have also been associated with the presence of HFTs and the
+most problematic drawback of all is probably the fact that HFTs are also suspected of harming
+modern automated markets (Hasbrouck & Saar 2013), thus generating externalities related to
+market quality, liquidity and volatility.
+Regarding the negative impact of HFTs on market quality and liquidity, Hirschey (2021)
+provides evidence that HFTs identify patterns in past trades and orders that allow them to anticipate and trade ahead of the order ﬂow of other investors (front-running them) thus increasing
+non-HFT trading costs. Similarly, Goldstein et al. (2023) ﬁnd that HFTs impose a welfare externality by selectively crowding out the most proﬁtable limit orders on the Australian Securities
+Exchange. Indeed, the authors show that HFTs strategically use limit order book information
+to supply liquidity on the thick side of the order book and demand liquidity from the thin side,
+especially during periods of high volatility and when trading speed increases, which echoes both
+Menkveld (2014), who argues that the migration to electronic trading coincided with the occasional disappearance of liquidity supply, and Menkveld & Zoican (2017), who claim that a
+faster exchange does not necessarily improve liquidity especially when price quotes are met with
+‘speculative high-frequency bandits’. Finally, Abreu (2022) shows that while HFTs do improve
+market liquidity on average, they do it at the expense of non-HFTs. In other words, HFTs are
+the great beneﬁciaries of this enhanced market liquidity but the other market participants have
+to satisfy themselves with a worsened level of liquidity.
+Regarding the negative impact of HFTs on volatility, Breckenfelder (2019) ﬁnds that the
+competition between HFTs increases intraday volatility. Moreover, the author shows that an
+increase in HFT competition increases the speculative behavior of HFTs, reduces liquidity and
+thus increases short-term volatility (implicitly leading to more frequent intraday price shocks).
+9
+
+In the same vein, Boehmer et al. (2018) show that HFTs have both very correlated trading
+strategies and a dominating presence so that their actions can exacerbate price movements and
+increase short-term volatility, which is especially problematic due to the fact that, as explained
+by Goldstein et al. (2014), ‘errant or poorly designed HFT programs without necessary risk
+controls can lead to occasional shocks or disruptive events that aﬀect markets and, perhaps as
+importantly, the general public’s perception of them’ (p. 198). Finally, Shkilko & Sokolov (2020),
+in their study of a series of exogenous weather episodes (rain or snow) that temporarily remove
+the speed advantage of the fastest traders (by disrupting their microwave networks) ﬁnd that a
+higher HFT participation resulting from the absence of weather precipitation is associated with
+a higher level of volatility. Again, the ﬁndings of these authors seem to imply that the more
+HFTs being active in the market, the more price shocks are likely to occur. Overall, while some
+trading strategies used by HFTs are considered as beneﬁcial most of the time, other strategies are
+considered as unequivocally harmful. These strategies include front-running, order anticipation,
+quote matching, spooﬁng, layering and quote stuﬃng (Zaharudin et al. 2022).
+Role played by HFTs during ﬂash events and ultra-fast ﬂash events
+On a microstructural level, HFTs are especially suspected of having a harmful behavior during
+sudden intraday shocks as pointed out by Bellia et al. (2022) who show that electronic designated
+market makers consume liquidity when it is most needed. As such, there seems to exist a trade-oﬀ
+between the greater liquidity and eﬃciency provided by market making HFTs in normal times,
+and the disruptive consequences of their quoting and trading activity in times of market stress.
+It is important at this stage to put the emphasis on the fact that intraday market shocks can take
+two forms, the form of ‘ﬂash crashes’, which can be deﬁned as sudden and extreme (up or down)
+price changes that partially or totally self-correct within a maximum of a few dozen minutes,
+or the form of ‘ultra-fast ﬂash crashes’ represented by ‘mini ﬂash crashes’ and ‘extreme price
+movements’ - sometimes called ‘extreme price movements with reversals’ as in Steﬀen (2023) -
+which are faster versions of ‘ﬂash crashes’ that partially or totally self-correct within a few seconds
+only. Many such ﬂash crashes have occurred in the past decade, whether in equities (2010, 2015,
+2023 U.S. equity ﬂash crashes), in ﬁxed income (2014 Japanese government bond ﬂash crash,
+2014 U.S. government bond ﬂash crash, 2015 German bond ﬂash crash, 2018 Italian bond ﬂash
+crash), in currencies (2015 USD ﬂash crash, 2016 GBP ﬂash crash), in commodities (as reported
+by Massad, 2015)3 or more recently in cryptocurrencies. Despite the implementation of various
+protective measures, such as limit-up/limit-down bands and circuit breaker updates in the U.S.
+3A good example is the event of May 4, 2023, where the DJIA closes Down nearly 300 points following West Texas
+Intermediate (WTI) futures tumbling 7.3% shortly after trading opened on the New York Mercantile Exchange.
+10
+
+stock market, ﬂash crashes continue to occur and are expected to persist in the future. This is
+evidenced by the ﬂash crash that occurred on January 24, 2023 during which highly liquid U.S.
+stocks experienced a signiﬁcant drop of approximately 10% at the market open, followed by a
+rapid recovery, in spite of the existing safeguards.
+Flash events seem to have become more frequent with the emergence of high-frequency trading. For example, Leal et al. (2016) ﬁnd that they do not occur when the market (in their
+agent-based model) is populated with low-frequency traders only. While some studies have examined the role played by HFTs during ﬂash events (Kirilenko et al. 2017, Aldrich et al. 2017,
+Menkveld & Yueshen 2019), the literature regarding the role played by HFTs during the fastest
+and most extreme price shocks (during ultra-fast ﬂash events) is much more limited.
+Within the body of literature focusing on the famous May 6, 2010 Flash Crash, ﬁndings
+regarding the role played by HFTs point to similar conclusions. In their study of the behavior of
+HFTs in the E-mini S&P500 futures market during the Flash Crash, Kirilenko et al. (2017) ﬁnd
+that HFTs did not cause the crash, the large automated selling program of a mutual fund later
+on identiﬁed as Waddell & Reed did. They also ﬁnd that HFTs did not fundamentally change
+their trading pattern during the crash. However, the authors note that just before the market
+was paused for 5 seconds, HFTs liquidated 2,000 contracts accumulated earlier (in an already
+illiquid market), coinciding with a signiﬁcant additional price decline, i.e. the most abrupt price
+decline of the crash. On the contrary, traditional market makers (non-HFTs by extension) did
+not liquidate their accumulated inventory. In that sense, HFTs contributed to the extent of the
+Flash Crash. Their ﬁndings are in line with the empirical study led by Aldrich et al. (2017).
+As for Menkveld & Yueshen (2019), they conclude that the crash cannot be attributed to the
+mutual fund alone and that it is rather the result of the interaction between market participants
+that degenerated into a ﬂash crash. This interpretation is in line with the ﬁndings of Demirer
+et al. (2019) who conclude that ‘the market switched to a herding state just before the crash and
+remained in this state over the duration and aftermath of the crash’. In this case, the authors
+establish a clear link between ﬂash events and herding among market participants, but nothing
+more is said about the role played by HFTs.
+In a more recent working paper focusing on ﬂash crashes, Bellia et al. (2022) use the econometric ‘drift burst’ approach of Christensen et al. (2022) to identify 148 ﬂash crashes on 37 liquid
+French stocks belonging to the CAC40 index and traded on NYSE-Euronext Paris in 2013. The
+‘drift burst’ hypothesis postulates that there exist short-lived locally explosive trends in the price
+paths of ﬁnancial assets (in other words periods when the price is trending sharply) as characterized by ﬂash events. They investigate the behavior of diﬀerent groups of traders during the
+identiﬁed ﬂash crashes and ﬁnd that designated market makers (DMMs), most of them HFTs, do
+11
+
+not provide enough liquidity to avoid ﬂash crashes occurring in isolated stocks and that they even
+consume liquidity when crashes aﬀect several stocks at once. Moreover, they ﬁnd that DMMs do
+not mitigate the eﬀects of illiquidity shocks during ﬂash crashes, which contradicts somewhat the
+ﬁndings of Anand & Venkataraman (2016), Clark-Joseph et al. (2017) and Bessembinder et al.
+(2020). Finally, the authors show that in most cases ﬂash crashes are originated by either proprietary trading of investment banks or by client trading from investment banks via sponsored
+access. The crash is then ampliﬁed by the reaction of investment bank DMMs, in particular
+when several stocks are impacted simultaneously.
+Finally, the literature focusing on ultra-fast ﬂash events points to diﬀerent conclusions since,
+as pointed out by Steﬀen (2023), there is no consensus regarding the role played by HFTs during
+’ultra-fast ﬂash crashes’. On the one hand, Brogaard et al. (2018), in their empirical study of
+EPMs, ﬁnd that there is little evidence of HFTs causing EPMs. Indeed, the authors conclude
+that HFTs are net suppliers of liquidity to non-HFTs during EPMs on single stocks and that
+HFTs do supply liquidity during the most extreme EPMs. However, they also concede that
+when several stocks experience simultaneous EPMs, then HFT liquidity demand dominates their
+supply so that HFTs de facto become net demanders of liquidity.
+On the other hand, the
+rare papers focusing on MFCs are more skeptical about the role played by HFTs during these
+liquidity black holes and speculate that HFTs may have a disruptive inﬂuence. For example,
+Johnson et al. (2013) argue that their ﬁndings are consistent with the emergence of ’crowds of
+predatory algorithms’ that destabilize the market and Golub et al. (2012) postulate that ’given
+the speed and the magnitude of the crashes, it appears likely that Mini Flash Crashes are caused
+by HFT activity’, which echoes Gao & Mizrach (2016) who ﬁnd that HFT trading activity raises
+the probability of market breaks. While HFTs are portrayed as having a beneﬁcial behavior
+during EPMs, they tend to be portrayed as having a detrimental behavior during MFCs. It is
+thus crucial to test whether these conﬂicting views are reconcilable.
+4
+Data
+4.1
+Data and sample
+We obtain data from both Tickdata and Nasdaq and work with both datasets together. On the
+one hand, we use tick-by-tick data timestamped to the millisecond on the NBBO from Tickdata
+12
+
+for 74 stocks.4 The data from Tickdata account for all transactions on U.S. stock exchanges5
+for the 74 stocks at our disposal. On the other hand, we use tick-by-tick data timestamped
+to the millisecond on trades from Nasdaq OMX for the same 74 stocks, as compared to 40
+stocks in Brogaard et al. (2018). This dataset is the so-called Nasdaq HFT dataset provided
+to academics under a non-disclosure agreement. The dataset is the same as in O’Hara et al.
+(2014), Carrion (2013), Gerig (2015), Brogaard et al. (2017), Brogaard et al. (2018) and Hirschey
+(2021). It includes a ﬂag which enables us to know if the liquidity consumer/supplier is a highfrequency trader (HFT) or a non-high frequency trader (NHFT). A code (HH, HN, NH, NN) is
+indeed associated with each transaction on Nasdaq. This ﬂag is not provided by the other stock
+exchanges. The ﬁrst letter of the code refers to the liquidity seeker and the second letter of the
+code refers to the liquidity supplier. For example, when a transaction occurs between an HFT
+and an NHFT, the code can either be HN or NH depending on who is on the liquidity demand
+side and who is on the liquidity supply side. HN indicates that the HFT demands liquidity while
+the NHFT supplies liquidity. Conversely, NH indicates that the NHFT demands liquidity while
+the HFT supplies liquidity.
+We proceed with these two datasets as follows. We ﬁrst use the aggregated data from Tickdata
+to identify price shocks since they originate from successive transactions which are likely to occur
+on diﬀerent exchanges. Second, we use the Nasdaq HFT dataset to observe the behavior of HFTs
+around and during these shocks. Nasdaq is by far the U.S. exchange with the highest market
+share (36%) based on the number of trades for the 74 stocks included in our sample, which makes
+a focus on Nasdaq all the more relevant. Third, in terms of window-sizing around the shock, we
+use a window of 30 seconds around each extreme price shock, i.e. ten 1.5-second intervals before
+and after the shock. Fourth, we use transaction prices in the identiﬁcation of MFCs and SFEs in
+order to take into account the full magnitude of each crash (from top to bottom or from bottom
+to top), but we still use midquotes in the identiﬁcation of EPMs to be in line with Brogaard et
+al. (2018). Finally, we focus on trading activity from 9:30 a.m to 4:00 p.m. ET, in order to take
+into account the full trading period from the opening to the closing of the U.S. equity market.
+4Table 11 in the Appendix reports the ticker, company name, market cap and sector (GICS classiﬁcation) of these
+stocks. Ths list includes 32 large-cap, 30 medium-cap, and 12 small-cap stocks
+5NYSE American (formerly AMEX and NYSE MKT), NASDAQ OMX BX (Boston), National Stock Exchange
+(Cincinnati), ISE (International Securities Exchange), DirectEdge A, DirectEdge X, Chicago, NYSE, NYSE Arca,
+NASDAQ, CBOE, NASDAQ OMX PSX (Philadelphia), BATS Y-Exchanges, BATS.
+13
+
+4.2
+Identiﬁcation of ﬂash events
+We begin by revisiting the ﬁrst methodology proposed by Nanex (2010), which is used to
+identify ‘mini-ﬂash crashes’ referred to as ‘MFCs’ thereafter. According to Nanex (2010), an
+MFC is characterized by at least 10 consecutive tick movements in the same direction (excluding
+trades with no tick change) occurring within a duration of 1.5 seconds, and involving a price
+shock exceeding 0.8%. This procedure is also followed by Golub et al. (2012) and Johnson et al.
+(2013). However, the selection criteria, such as the 0.8% absolute return threshold, are arbitrarily
+deﬁned.
+To address this fact, we propose an alternative identiﬁcation methodology based on ‘sequencebased ﬂash events’ (SFEs). In this approach, we eliminate the price change rule and consider
+all sequences, regardless of their return, before ranking them using percentiles.
+As with the
+‘extreme price movements’ (EPMs) deﬁned by Brogaard et al. (2018), we keep the most extreme
+sequences with an absolute log return surpassing the 99.9th percentile of the absolute log return
+distribution. Unlike Brogaard et al. (2018) however, we still incorporate the tick rule from Nanex
+(2010) to capture fast and abrupt shocks. As long as the equity (or tick) curve remains in the
+same direction, we consider it as part of the same sequence.
+Importantly, our SFEs are exclusively determined by their duration and are not constrained
+by predetermined ﬁxed-time intervals. This is not the case for EPMs. They are not only based on
+returns from open to close (OC) prices but are also deﬁned within ﬁxed-time intervals established
+at the start of the day. Consequently, these OC-EPMs may not accurately represent the true
+magnitude of the price shock, as demonstrated in Section 2. To better capture the magnitude of
+these EPMs, we propose to use the high and low (HL) prices observed during the time window.
+We refer to these modiﬁed EPMs as ‘HL-EPMs’ in the subsequent analysis. Unlike EPMs based
+solely on open and close prices, HL-EPMs capture the true amplitude of the shock while still
+being within the same ﬁxed-time interval. It is important to note that even HL-EPMs may not
+fully capture the entire magnitude of the shock if it spans across two time intervals. There is
+never such an issue in our sample of SFEs.
+In our time series analysis, we compare all methodologies (MFCs, SFEs, OC-EPMs, and
+HL-EPMs) by using a duration of 1.5 seconds for the windows of observation around the ﬂash
+events.6
+6See Section 5.5 for the robustness checks.
+Among others, we explore alternative time intervals of 1 second,
+following Brogaard et al. (2018), and 2 seconds, following F´elez-Vinas (2018), with similar conclusions.
+14
+
+4.3
+Variables
+We present below how we compute the main variables of the paper. These variables are either
+trading activity measures, HFT participation measures, liquidity measures or net HFT activity
+measures.
+Liquidity measures
+We measure the order book liquidity through four diﬀerent metrics: depth at best prices
+(Depth), dollar depth at best prices (Dollar Depth), bid-ask spread (Quoted Spread) and relative
+bid-ask spread (Relative Spread).
+We deﬁne Relative Spread as:
+RelativeSpreadi,t = (BestAskPricei,t −BestBidPricei,t)/Midquotei,t
+(4.1)
+where BestBidPricei,t and BestAskPricei,t represent the best bid and ask prices of the order
+book respectively, and where i represents the stock and t represents the time of the quote update.
+The Midquote is deﬁned as the average of the best bid and best ask prices.
+Trading activity measures
+We measure trading activity through three diﬀerent metrics: number of trades (Total Trades),
+dollar volume (Dollar Volume) and share volume (Share Volume).
+The ﬁrst metric, Total Trades, measures the total number of trades per stock per interval
+(<1.5 seconds in Panel B and =1.5 seconds in Panels A and C of Table 1 as well as in panels
+A, D and E of Table 2). The second metric, Dollar Volume, measures the average dollar volume
+per stock per interval. The third metric, Share Volume, measures the average share volume per
+stock per interval.
+HFT participation measures
+We measure the participation of HFTs through three diﬀerent metrics: proportion of HFT
+trades (Proportion HFT Trades), proportion of HFT shares (Proportion HFT Shares), Proportion of HFT volume (Proportion HFT Volume) following Carrion (2013).
+15
+
+First, we deﬁne Proportion of HFT Trades as:
+ProportionHFTtradesi,t = (HHi,t)/(HHi,t + NNi,t),
+(4.2)
+based on Nasdaq trades.
+Second, we deﬁne Proportion of HFT Shares as:
+ProportionHFTsharesi,t = (HHi,t)/(HHi,t + NNi,t),
+(4.3)
+based on Nasdaq shares traded.
+And third, we deﬁne Proportion of HFT Volume as:
+ProportionHFTvolumei,t = (HHi,t)/(HHi,t + NNi,t),
+(4.4)
+based on Nasdaq dollar volume.
+Net HFT activity measures
+We capture HFT and NHFT trading activity around price shocks via a measure of trade
+imbalance (a proxy for their respective behavior) following Brogaard et al. (2018). We compute
+trade imbalance for both HFTs and NHFTs in the following way:
+(N)HFT D = (N)HFT D+ −(N)HFT D−
+(4.5)
+(N)HFT S = (N)HFT S+ −(N)HFT S−
+(4.6)
+where (N)HFT D represents the liquidity demanded by (N)HFTs, where (N)HFT S represents
+the liquidity supplied by (N)HFTs, where (N)HFT D+ and (N)HFT S+ represent the liquidity
+demanded and supplied in the direction of the crash, and where (N)HFT D−and (N)HFT S−
+represent the liquidity demanded and supplied in the opposite direction of the crash.
+We then compute the net imbalance for both HFTs (HFT NET ) and NHFTs (NHFT NET ),
+HFT NET being the sum of HFT D and HFT S, and NHFT NET being the sum of NHFT D
+and NHFT S. Net imbalance informs us on the direction of net trading activity vis-`a-vis the
+crash direction. A positive net imbalance implies trading activity in the direction of the crash
+on an aggregate basis. This hints at ‘vicious’, destabilizing trading conduct. On the contrary,
+a negative net imbalance implies trading activity in the opposite direction of the crash on an
+aggregate basis. This points to ‘virtuous’, market-stabilizing activity.
+16
+
+4.4
+Descriptive statistics
+Table 1 presents the descriptive statistics of our MFC and SFE samples and Table 2 presents
+the descriptive statistics of our OC-EPM and HL-EPM samples. For the sake of comparison,
+both tables include the full sample. We perform a hypothesis test for diﬀerence of means in order
+to check whether the trading activity statistics (total trades, share volume, dollar volume), the
+liquidity statistics (quoted spread, relative spread, depth, dollar depth) as well as the proportion
+statistics (proportion of HFT trades, proportion of HFT shares, proportion of HFT volume)
+are statistically diﬀerent between the full sample and the MFC, SFE, OC-EPM and HL-EPM
+samples.
+Descriptive statistics for MFCs and SFEs
+Panel B in Table 1 reports the descriptive statistics for the sample of 419 MFCs following the
+MFC identiﬁcation methodology used by Nanex (2010). As expected, the absolute log return,
+trading activity (as measured by total trades, share volume and dollar volume), and spread (as
+measured by quoted spread and relative spread) are substantially larger during MFCs than during
+the average 1.5-second interval of the full sample (Panel A), which means that most variables
+are aﬀected by the occurrence of MFCs. The mean absolute MFC log return is 0.5577% while
+the full sample mean absolute log return is only 0.0119%. As such, the mean absolute MFC
+log return is more than 46 times larger than the mean absolute full sample log return. Trading
+activity is also materially higher during MFCs. While about 4 trades are executed on average
+per 1.5 seconds within the full sample (Panel A) we note that about 99 trades are executed on
+average (on all U.S exchanges) per 1.5 seconds during MFCs, which means there are on average
+about 25 times more trades per 1.5-second interval during MFCs. In the same way, share volume
+(resp. dollar volume) is 65 times (resp. 64 times) higher during MFCs based on the mean, the
+quoted spread is 22 times higher during MFCs based on the mean, and the relative spread is 4
+times higher during MFCs based on the mean when compared to the full sample.
+Finally, the means of depth and dollar depth in the two populations are not statistically
+diﬀerent. Available quantities measured in shares and dollars are not materially aﬀected by the
+occurrence of MFCs, which arguably occur too quickly to let market participants modify them.
+Note that some MFCs occur in less than 1 millisecond (presented as 0 ms in the table) within
+our sample, which is in line with the fact the fastest HFTs act within 5 ms while other relatively
+fast traders act at speed levels of 50 ms to 150 ms (Scholtus et al., 2014).
+17
+
+Table 1: Summary statistics for the Full, MFC and SFE samples
+Panel A: Full sample
+Minimum
+Median
+Mean
+Maximum
+Std Dev
+Absolute log return, %
+0
+0
+0.0119
+19.64
+0.0335
+Total trades (all U.S. exchanges)
+0
+0
+3.76
+1,205
+11.25
+Total trades (Nasdaq)
+0
+0
+1.57
+880
+5.45
+Proportion HFT trades (Nasdaq)
+0
+0
+0.1821
+1
+0.3611
+Proportion HFT shares (Nasdaq)
+0
+0
+0.1784
+1
+0.3591
+Proportion HFT volume (Nasdaq)
+0
+0
+0.1784
+1
+0.3591
+Share volume
+0
+0
+850.36
+28,368,232
+10,720.59
+Dollar volume
+0
+0
+36,099.82
+1,458,100,000
+459,793.2
+Depth
+2
+6
+23.77
+100,816
+100.00
+Dollar Depth
+6.34
+152.75
+365.57
+2,225,817
+1819.76
+Quoted spread, $
+0.01
+0.02
+0.0412
+113.91
+0.1143
+Relative spread, %
+0.0022
+0.0631
+0.1225
+56.21
+0.7775
+Panel B: MFC sample
+Minimum
+Median
+Mean
+Maximum
+Std Dev
+Crash duration, ms (MFC speciﬁc)
+0
+60
+216
+1,487
+338
+Total tick change (MFC speciﬁc)
+10
+12
+13.43
+30
+3.78
+Absolute log return, %
+0
+0.2167
+0.5577***
+19.36
+1.6214
+Total trades (all U.S. exchanges)
+3
+64
+99.21***
+883
+109.01
+Total trades (Nasdaq)
+0
+25
+44.64***
+672
+60.32
+Proportion HFT trades (Nasdaq)
+0
+0.6667
+0.6195***
+1
+0.2824
+Proportion HFT shares (Nasdaq)
+0
+0.5667
+0.5492***
+1
+0.2955
+Proportion HFT volume (Nasdaq)
+0
+0.5661
+0.5493***
+1
+0.2954
+Share volume
+500
+19,200
+55,008***
+3,138,737
+175,315
+Dollar volume
+13,343
+634,635
+2,320,004***
+146,020,000
+9,855,164
+Depth
+2
+7.30
+28.62
+1,505
+100.79
+Dollar depth
+20.42
+176.61
+581.25
+36,062.53
+2,554.32
+Quoted spread, $
+0.01
+0.0279
+0.9129**
+113.91
+8.19
+Relative spread, %
+0.0093
+0.0884
+0.4999**
+42.89
+2.99
+Panel C: SFE sample
+Minimum
+Median
+Mean
+Maximum
+Std Dev
+Absolute log return, %
+0
+0
+0.63***
+24.11
+38.77
+Total trades (all U.S. exchanges)
+11
+17
+20.66***
+310
+13.06
+Total trades (Nasdaq)
+0
+5
+7.06***
+128
+8.38
+Proportion HFT trades (Nasdaq)
+0
+0.26
+0.33***
+1
+0.31
+Proportion HFT shares (Nasdaq)
+0
+0.21
+0.32***
+1
+0.32
+Proportion HFT volume (Nasdaq)
+0
+0.21
+0.32***
+1
+0.32
+Share volume
+1,110
+4,205
+8731.84***
+3,947,060
+66,156.09
+Dollar volume
+9,805
+112,098
+384,007.01***
+638,279,950.20
+10,273,938.23
+Depth
+2
+38.40
+84.76
+2,701.92
+148
+Dollar depth
+24.85
+912.34
+1,826.70
+94,057.33
+3,576.94
+Quoted spread, $
+0.01
+0.01
+0.19**
+124.83
+4.12
+Relative spread, %
+0.01
+0.05
+0.13**
+44.81
+1.48
+The table reports descriptive statistics for the full sample (Panel A), the sample of MFCs (Panel B), which follows Nanex identiﬁcation methodology, and the sample of SFEs (Panel C), which is the alternative methodology we propose. N corresponds to the
+number of time intervals in the ﬁrst regression model. The lower the number of ultra-ﬂash events, the lower N. We use a sub-1.5second variable interval for Panel B and a ﬁxed 1.5-second interval for Panels A and C. All data are from Tickdata except Total
+trades and Proportion of HFT trades, HFT shares and HFT volume which are from Nasdaq. The mean of Absolute log return, Total trades, Depth, Dollar volume, Share volume, Quoted spread and Relative spread is computed in two steps. First, we compute
+the P50 by stock so as to obtain one observation by stock. Second, we compute the mean of P50 across the 74 stocks of our sample.
+As an example, the mean of Total trades in panel A is the mean across stocks of the median number of trades within a 1.5-second
+interval. Note that Share volume represents round lots of 100 share units. Absolute log returns in Panel B are returns computed
+over the MFC interval and not over the 1.5-second interval. The table also reports univariate tests for means diﬀerences and covers
+the full sample of ﬂash events with transaction proportions ranging from 0% to 100% on Nasdaq. Asterisks *** and ** indicate
+statistical signiﬁcance at the 1% and 5% levels.
+Panel C in Table 1 reports the descriptive statistics for the sample of 5,491 SFEs following
+the alternative identiﬁcation methodology based on ‘sequence-based ﬂash events’ we propose.
+18
+
+Similarly to MFCs, the trading activity (as measured by total trades, share volume and dollar
+volume) and spread (as measured by quoted spread and relative spread) are considerably larger
+during SFEs than during the average 1.5-second interval of the full sample (Panel A). Again,
+most variables are aﬀected by the occurrence of SFEs. The average absolute SFE log return is
+0.63%, that is 53 times larger than the mean absolute full sample log return. Trading activity
+is also materially higher during SFEs. While about 4 trades are executed on average per 1.5
+seconds within the full sample (Panel A) we note that about 21 trades are executed on average
+(on all U.S exchanges) per 1.5 seconds during SFEs, which means there are on average about
+5 times more trades per 1.5-second interval during SFEs. Share volume (resp. dollar volume)
+is 10 times (resp. 11 times) higher during SFEs on average, and the quoted spread is about 5
+times higher during SFEs based on the mean. Finally, similarly to MFCs, the means of depth
+and dollar depth in the two populations are not statistically diﬀerent.
+Descriptive statistics for OC-EPMs and HL-EPMs
+Table 2 reports the summary statistics for the sample of 28,825 OC-EPMs in Panel D, following the EPM identiﬁcation methodology used by Brogaard et al. (2018). Panel E includes the
+same statistics for the HL-EPM sample (Panel E), which is the alternative EPM identiﬁcation
+methodology that we propose based on the 1.5-second interval high and low prices. The full
+sample is again indicated for ease of comparison (Panel A).
+Similarly to the MFC and SFE samples, the OC-EPM sample presents an absolute return,
+trading activity (as measured by total trades, share volume and dollar volume), and spread (as
+measured by quoted spread and relative spread) that are materially (and highly statistically)
+larger during OC-EPMs than during the average 1.5-second interval of the full sample. The
+mean absolute OC-EPM log return is 0.4241% while the full sample mean absolute return is
+0.0119%. As such, the mean absolute OC-EPM log return is about 36 times larger than the
+mean absolute full sample return.
+Trading activity also appears to be materially higher during OC-EPMs. Indeed, while about
+4 trades are executed on average per 1.5 seconds within the full sample (Panel A), about 32
+trades are executed on average per 1.5 seconds during OC-EPMs, which corresponds to about
+9 times more trades per 1.5-second interval during OC-EPMs. In the same way, share volume
+(resp. dollar volume) is about 13 times (resp. 12 times) higher during OC-EPMs based on the
+mean. Moreover, the quoted spread is about 4 times higher and the relative spread is more than
+3 times higher during OC-EPMs based on the mean when compared to the full sample.
+19
+
+Table 2: Summary statistics for the Full, OC-EPM and HL-EPM samples
+Panel A: Full sample
+Minimum
+Median
+Mean
+Maximum
+Std Dev
+Absolute log return, %
+0
+0
+0.0119
+21.86
+0.0336
+Total trades (all U.S. exchanges)
+0
+0
+3.76
+1,205
+11.25
+Total trades (Nasdaq)
+0
+0
+1.57
+880
+5.45
+Proportion HFT trades (Nasdaq)
+0
+0
+0.1821
+1
+0.3611
+Proportion HFT shares (Nasdaq)
+0
+0
+0.1784
+1
+0.3591
+Proportion HFT volume (Nasdaq)
+0
+0
+0.1784
+1
+0.3591
+Share volume
+0
+0
+850.35
+28,368,232
+10,720.59
+Dollar volume
+0
+0
+36,099.82
+1,458,100,000
+459,793.2
+Depth
+2
+6
+23.77
+100,816
+100.00
+Dollar Depth
+6.34
+152.75
+365.57
+2,225,817
+1819.76
+Quoted spread, $
+0.01
+0.02
+0.0412
+113.91
+0.1143
+Relative spread, %
+0.0022
+0.0631
+0.1225
+56.21
+0.7775
+Panel D: OC-EPM sample
+Minimum
+Median
+Mean
+Maximum
+Std Dev
+Absolute log return, %
+0.1099
+0.3563
+0.4241***
+21.86
+0.4032
+Total trades (all U.S. exchanges)
+0
+13
+32.45***
+1,054
+55.89
+Total trades (Nasdaq)
+0
+5
+14.71***
+672
+28.52
+Proportion HFT trades (Nasdaq)
+0
+0.6667
+0.5538***
+1
+0.3962
+Proportion HFT shares (Nasdaq)
+0
+0.5861
+0.5227***
+1
+0.4000
+Proportion HFT volume (Nasdaq)
+0
+0.5861
+0.5227***
+1
+0.4000
+Share volume
+0
+2,073
+11,095***
+10,356,583
+79,381
+Dollar volume
+0
+66,836
+450,955***
+1,458,100,000
+8,852,987
+Depth
+2
+5.14
+13.68***
+1,823.8
+45.76
+Dollar depth
+6.58
+124.19
+241.51***
+42,745
+800
+Quoted spread, $
+0.01
+0.0468
+0.1501***
+113.91
+1.3609
+Relative spread, %
+0,0024
+0,163
+0,3691***
+42.89
+0.8135
+Panel E: HL-EPM sample
+Minimum
+Median
+Mean
+Maximum
+Std Dev
+Absolute log return, %
+0.1357
+0.4334
+0.5278***
+26.51
+0.5702
+Total trades (all U.S. exchanges)
+0
+13
+33.10***
+1,054
+57.43
+Total trades (Nasdaq)
+0
+5
+14.99***
+672
+29.28
+Proportion HFT trades (Nasdaq)
+0
+0.6429
+0.5383***
+1
+0.3958
+Proportion HFT shares (Nasdaq)
+0
+0.5528
+0.5067***
+1
+0.3987
+Proportion HFT volume (Nasdaq)
+0
+0.5530
+0.5067***
+1
+0.3987
+Share volume
+0
+2,187
+13,906***
+28,368,232
+201,933.1
+Dollar volume
+0
+70,605
+547,667***
+1,458,100,000
+9,996,160
+Depth
+2
+4.88
+12.86***
+1,824
+48.45
+Dollar depth
+6.58
+120.21
+238.30***
+75,122
+920.21
+Quoted spread, $
+0.01
+0.0631
+0.1721***
+113.91
+1.38
+Relative spread, %
+0,0024
+0,2125
+0,4313***
+42.89
+0.8533
+The table reports descriptive statistics for the full sample (Panel A), the sample of OC-EPMs (Panel D), which follows
+the methodology proposed by Brogaard et al. (2018) and the sample of HL-EPMs (Panel E), which is an EPM identiﬁcation methodology alternative to Brogaard et al. (2018) we propose. N corresponds to the number of time intervals in
+the ﬁrst regression model. The lower the number of ultra-ﬂash events, the lower N. We use a ﬁxed 1.5-second interval for
+Panels A, D and E. All data are from Tickdata except Total trades and Proportion of HFT trades, HFT shares and HFT
+volume which are from Nasdaq. The mean of Absolute log return, Total trades, Depth, Dollar volume, Share volume,
+Quoted spread and Relative spread is computed in two steps. First, we compute the P50 by stock so as to obtain one
+observation by stock. Second, we compute the mean of P50 across the 74 stocks of our sample. As an example, the mean
+of Total trades in panel A is the mean across stocks of the median number of trades within a 1.5-second interval. Note
+that Share volume represents round lots of 100 share units. The table also reports univariate tests for means diﬀerences
+and covers the full sample of ﬂash events with transaction proportions ranging from 0% to 100% on Nasdaq. Asterisks
+*** and ** indicate statistical signiﬁcance at the 1% and 5% levels.
+Panel E reports the descriptive statistics for the sample of 28,831 HL-EPMs following the
+alternative EPM identiﬁcation methodology we propose. The descriptive statistics of HL-EPMs
+are very similar to the ones of OC-EPMs so they do not require further comments. Note however
+20
+
+that the mean absolute log return of HL-EPMs is higher than for OC-EPMs due to the fact this
+methodology measures EPMs from high to low (resp. from low to high) instead of from open to
+close like in the original methodology. The mean absolute HL-EPM log return is thus 0.5278%
+while it is ‘only’ 0.4241% for OC-EPMs.
+4.5
+Methodology
+We conduct a three-step empirical analysis. First, we conduct an event study so as to assess
+the liquidity dynamics of HFTs and NHFTs around ﬂash events, without controlling for any
+factors. Then, we conduct a contemporaneous multivariate regression analysis, zooming in on
+the occurrence of these ﬂash events while controlling for additional drivers. Finally, we look into
+the variables that potentially conduct to the occurrence of future crashes, implementing a logistic
+regression framework (logit). For ease of comparison, we ﬁrst focus on MFCs and SFEs and then
+replicate the three-step empirical analysis on EPMs in a separate section in order to compare all
+the diﬀerent methodologies more easily (MFCs vs SFEs vs OC-EPMs vs HL-EPMs).
+While ﬂash events in ﬁnancial markets can be triggered by a combination of factors generating a sudden imbalance between supply and demand such as algorithmic trading or market
+manipulation, we do not control for these trading activity drivers for the following reasons.7 As
+in Brogaard et al. (2018), we are unable to control for market manipulation at the HFT ﬁrm
+level because Nasdaq data are aggregated. To the best of our knowledge, there is also no speciﬁc
+ﬂag for non-HFT algorithmic trades, preventing us from controlling for the speciﬁc behaviors
+of algorithmic traders as opposed to those of pure HFT traders. In any case, analyzing HFT
+behavior during ultra-fast ﬂash events is relevant, regardless of whether the trigger is an imbalance caused by non-HFT algorithmic traders or some form of market manipulation. Indeed, the
+reaction of HFTs and NHFTs during and after the crash is at least as important as what triggers
+the crash.
+7Technical glitches are ﬁltered out in our SFE methodology since we eliminate the price change rule and keep
+the most extreme sequences of consecutive tick movements with an absolute log return surpassing the 99.9th
+percentile of the absolute log return distribution. In addition, we focus on liquidity-driven ﬂash events and ﬁlter
+out information-driven, news-related shocks since we require a 100% retracement in the second sequence in our
+SFE methodology.
+21
+
+5
+Empirical analysis
+5.1
+HFT activity around MFC and SFE events
+Our initial approach involves an event study, designed to evaluate the liquidity behavior of
+HFTs and NHFTs during MFCs and SFEs.
+We aim to understand their respective trading
+activity by quantifying net directional trade imbalance, as conceptualized by Brogaard et al.
+(2018).8
+A positive net imbalance (HFT NET > 0) implies trading activity in the direction
+of the crash on an aggregate basis, which can destabilize the market and lead to liquidity black
+holes, whether it is observed during the pre-crash phase (crash triggering), the crash phase (crash
+exacerbation) or during the post-crash phase (resiliency prevention). On the contrary, a negative
+net imbalance (HFT NET < 0) implies trading activity in the opposite direction of the crash on
+an aggregate basis, which helps stabilize the market in the pre-crash phase (crash prevention),
+the crash phase (crash absorption) or during the post-crash phase (resiliency promotion).
+We compute net imbalance for both types of traders (HFTs and NHFTs) at time intervals
+t −2, t −1, t, t + 1 and t + 2 for MFCs and SFEs, using ﬁxed 1.5-second intervals. We focus in
+particular on time intervals t−1, t and t+1, corresponding to the pre-crash, crash and post-crash
+phases respectively. Time intervals t −2 and t + 2 are only included in the analysis so as to see
+if the pattern observed at t −1 and t + 1 is persistent when compared to the prior or successive
+interval.
+We apply a ﬁlter to the MFC and SFE samples in order to prevent consecutive crashes to
+pollute the diﬀerent windows from time interval t −2 to time interval t + 2. For example, if a
+crash occurs at time interval t and another crash occurs at time interval t + 1 then both crashes
+are removed from our sample so as to prevent any bias in the computation of the directional
+trade imbalance metrics. Moreover, we remove overlapping crashes (across stocks) with the aim
+of preventing imbricated crashes to pollute our results. We end up with ﬁnal samples of 419
+MFCs and 5,491 SFEs after the cleaning process.
+Table 3 presents the liquidity dynamics and net trading imbalance of HFTs and NHFTs
+around MFCs and SFEs.
+8Bellia et al. (2022) use a similar measure of net directional trade imbalance. They use monetary volume instead
+of share volume.
+22
+
+Table 3: (N)HFT Liquidity Supply and Demand around MFCs and SFEs
+MFCs
+t −2
+t −1
+t
+t + 1
+t + 2
+pre-crash
+crash
+post-crash
+HFT NET
+-24.0432
+17.0460
+-30.2291
+13.3256
+-34.0058
+HFT D
+27.2536
+47.5287**
+298.3**
+67.8501***
+89.7291***
+HFT S
+-51.2968
+-30.4828
+-328.5***
+-54.5245***
+-123.7***
+NHFT NET
+24.0432
+-17.0460
+30.2291
+-13.3256
+34.0058
+NHFT D
+132.0
+248.6***
+932,3*
+149.7***
+229.9**
+NHFT S
+-107.9
+-265.7***
+-902.0*
+-163.0***
+-195.9**
+SFEs
+t −2
+t −1
+t
+t + 1
+t + 2
+pre-crash
+crash
+post-crash
+HFT NET
+-560.2***
+-962.6***
+-222.9***
+-680.9***
+-512.9***
+HFT D
+429.6***
+669.4***
+218.6***
+580.6***
+407.3***
+HFT S
+-989.8***
+-1,632***
+-441.5***
+-1,261.5***
+-920.2***
+NHFT NET
+560.2***
+962.6***
+222.9***
+680.9***
+512.9***
+NHFT D
+989.8***
+1,632***
+441.5***
+1,261.5***
+920.2***
+NHFT S
+-429.6***
+-669.4***
+-218.6***
+-580.6***
+-407.3***
+The table reports directional net trade imbalance around MFCs and SFEs. The metric is based on
+share volume and computed from Nasdaq. Time interval t is the sub-1.5-second interval corresponding to the crash. We also report the trade imbalance 3 seconds prior to the crash (t −2, t −1) and 3
+seconds after the crash (t + 1, t + 2). HFT NET (resp. NHFT NET ) is the sum of HFT D and HFT S
+(resp. NHFT D and NHFT S) and HFT NET = −NHFT NET and vice versa. When HFT NET
+(NHFT NET ) is positive, it implies that HFTs (NHFTs) are trading in the direction of the return
+and thus in the direction of the crash (contributing to price instability) on an aggregate basis. When
+HFT NET (NHFT NET ) is negative, it implies that HFTs (NHFTs) are trading in the opposite direction of the return and thus in the opposite direction of the crash (contributing to price stability)
+on an aggregate basis. Asterisks *** and ** indicate statistical signiﬁcance at the 1% and 5% levels.
+5.1.1
+MFCs
+When using the MFC methodology, HFT NET is not statistically signiﬁcant in any time window, which implies that one cannot reject the null hypothesis according to which net imbalance
+from both HFTs and NHFTs is zero in the population. As such, the MFC methodology does not
+tell us much about the liquidity dynamics during crashes. As a consequence, due to the lack of
+statistical signiﬁcance, one cannot conclude who among HFTs and NHFTs triggers MFCs, who
+exacerbates the crash and who enables stock prices to recover.
+23
+
+5.1.2
+SFEs
+When using the SFE methodology, HFT NET becomes highly statistically signiﬁcant in all
+time windows.
+This is due to both the fact we are able to pinpoint the exact time of the
+crash while reconstructing the window around the crash, and the fact that our SFE sample
+(5,491 crashes) is bigger than our MFC sample (419 crashes), which together improve the overall
+signiﬁcance level.
+We focus in turn on the pre-crash, crash and post-crash phases. Just before the crash, at time
+interval t−1, we ﬁnd that HFT NET is negative (-962.6***) and statistically signiﬁcant at the 1%
+level, which implies that HFTs trade on an aggregate basis in the opposite direction of the crash
+to come and help stabilize the market price. As such, they do not trigger the crash. During the
+crash, at time interval t, HFT NET is again negative (-222.9***) and statistically signiﬁcant at
+the 1% level, which implies that HFTs trade in the opposite direction of the crash and contribute
+to price stability. As a consequence, HFTs do not exacerbate the crash. On the contrary, NHFTs
+are the ones trading in the direction of the crash. We also note that HFTs supply twice more
+liquidity during the crash (441.5***/218.6***=2) in the opposite direction of the crash when
+compared to NHFTs while also consuming twice less liquidity (=218.6***/441.5***=0.5) in the
+direction of the crash when compared to NHFTs. Finally, right after the crash, at time interval
+t + 1, HFT NET is again negative (-680.9***) and statistically signiﬁcant at the 1% level, which
+implies that HFTs keep trading in the opposite direction of the crash. By doing so, they do
+contribute to the price recovery and market stability.
+Based on this event study on SFEs, HFTs contribute to price stability in all diﬀerent event
+windows.
+As revealed in the next section however, we ﬁnd diﬀerent results when we run a
+multivariate regression analysis to account for all the key trading activity drivers prevailing at
+the time of the ﬂash event.
+5.2
+HFT activity and other key trading drivers during MFC and SFE events
+An important aspect of our methodological approach must be emphasized at this point.
+Instead of considering all ﬂash events occurring on all U.S. exchanges in the following regressions,
+we only consider ﬂash events for which the proportion of transactions occurring on Nasdaq
+during the interval represents at least 50% of all transactions on U.S. stock exchanges. Indeed,
+transactions may occur on diﬀerent exchanges during ﬂash events and they do sometimes occur
+outside of the Nasdaq exchange. By doing so, we ﬁlter out ﬂash events that are not prevalent
+on Nasdaq, which enables us to focus on the activity of HFTs on Nasdaq (for which we possess
+24
+
+information via a ﬂag) during crashes that partially or totally occur on Nasdaq. We use an event
+window of 15 seconds (10 intervals) before and after the event in our base case methodology.9
+Following Brogaard et al. (2018), we use the following multivariate model speciﬁcation:
+HFT NET
+it
+= α0 + β1EV ENTit + β2AbsRetit + β3SVit + β4RSit + Lags
+Lags
+Lagskit−σΓkσ + ϵit
+(5.1)
+where HFT NET is the diﬀerence between HFT D and HFT S, EV ENTit is a dummy variable
+equal to one if the 1.5-second interval t in stock i corresponds to an MFC or an SFE, zero
+otherwise; AbsRetit is the absolute log return, SV is the share volume, RS is the relative spread,
+and the vector Γkσ includes both the dependent variable and all of the independent variables
+of the regression, which are indexed with a subscript k and lag σ ϵ {1,2,...,10}. So, Lags
+Lags
+Lagskit−σ
+is a vector of 10 lags. All the non-dummy variables are standardized at the stock level and we
+include stock ﬁxed eﬀects.
+We also estimate two alternative speciﬁcations of the model so that we run the multivariate
+regression focusing in turn on all ﬂash events, standalone and simultaneous ﬂash events, as well
+as ﬂash events occurring during extreme hours exclusively. Standalone events occur on their
+own while simultaneous events occur on several stocks within the same time interval. The ﬁrst
+alternative speciﬁcation is as follows:
+HFT NET
+it
+= α0 + β1EV ENT STA
+it
++ β2EV ENT SIM
+it
++ β3AbsRetit
++β4SVit + β5RSit + Lags
+Lags
+Lagskit−σΓkσ + ϵit
+(5.2)
+where all the variables are as previously deﬁned, EV ENT STA
+it
+is a dummy variable equal to one
+if the 1.5-second interval t in stock i is identiﬁed as a standalone ﬂash event and is equal to zero
+otherwise, and where EV ENT SIM
+it
+is a dummy variable equal to one if the 1.5-second interval t
+in stock i is identiﬁed as a simultaneous ﬂash event and is equal to zero otherwise. The second
+alternative speciﬁcation is:
+HFT NET
+it
+= α0 + β1EV ENTit + β2EHit + β3EV ENTit ∗EHit
++β4AbsRetit + β5SVit + β6RSit + Lags
+Lags
+Lagskit−σΓkσ + ϵit
+(5.3)
+9As mentioned in Section 5.5, we run several robustness checks. First, we run the regressions on the full ﬂash
+event sample, that is to say ﬂash events for which the proportion of transactions on Nasdaq is between 0% and
+100%. We also use 6-second (4 intervals) and 9-second (6 intervals) windows before and after the event.
+25
+
+where all the variables are as previously deﬁned, EHit is a dummy variable equal to one if the
+1.5-second interval t in stock i is identiﬁed as occurring during extreme hours (EH), i.e. during
+the ﬁrst ﬁve and last ﬁve minutes of the trading day and EV ENTit ∗EHit is an interaction
+variable that captures the additional eﬀect of ﬂash events that occur during extreme hours (EH).
+Results of the diﬀerent multivariate regressions for both MFCs and SFEs are presented in
+Table 4.
+The SFE methodology yields the most enlightening and consistent outcomes. When pinpointing the exact time of the crash and rebuilding the window around the crash, which is what
+we do with our SFE methodology, we ﬁnd that the coeﬃcient of the SFE dummy variable is
+always positive and statistically signiﬁcant at the 1% level in all speciﬁcations, implying that
+HFTs increase their liquidity demand on aggregate during the extreme price shock and trade in
+the direction of the crash when it occurs. This is not speciﬁc to extreme hours for which we ﬁnd
+no statistical signiﬁcance. We turn to the control variables and ﬁnd that the relative spread is
+the only statistically signiﬁcant variable at the 5% level in all SFE regressions. This indicates
+that HFTs provide more liquidity than they absorb when spreads widen in normal market conditions, i.e. in the absence of shocks. Overall, HFTs seem to play a positive role in normal times
+and a negative role at the time of the shocks. Regarding MFCs, we ﬁnd much weaker evidence.
+The total number of observations is also 10 times lower than in the SFE speciﬁcation (taking all
+observations during the shocks as well as the lags into account).
+5.3
+Predicting ﬂash events based on prior HFT activity
+In this section, we look into the variables that potentially conduct to the occurrence of future
+ﬂash events, whether these events are MFCs or SFEs. We use the logistic regression framework
+to ﬁnd out what drives future shocks, the dependent variable being a binary response variable.
+Our objective is to examine whether the activity of HFTs at time interval t−1 explains the ﬂash
+event at time interval t. Our model is speciﬁed as follows:
+Prob(EV ENT = 1)it = α0 + β1HFT NET it−1 + β2AbsRetit−1
++β3SVit−1 + β4RSit−1 + β5HFTPit−1 + ϵit
+(5.4)
+where EV ENT is a binary variable equal to one if the 1.5-second interval t contains an MFC
+(resp. an SFE) on stock i and zero otherwise, HFT NET corresponds to the diﬀerence between
+HFT D and HFT S as deﬁned above, AbsRet is the absolute log return, SV is the share volume,
+and RS is the relative spread.
+We follow Brogaard et al. (2018) but add a supplementary
+26
+
+Table 4: Multivariate regressions - Net HFT imbalance during crashes
+Proportion of transactions on Nasdaq ≥50%
+MFCs
+(5.1)
+(5.2)
+(5.3)
+MF C
+-1.1459**
+-0.9314
+MF CST ANDALONE
+-1.4241**
+MF CSIMULT ANEOUS
+-0.6728
+EXT REME HOURS
+0.0656
+MF C ∗EXT REME HOURS
+-0.6015
+AbsRet
+-0.0097
+-0.0102
+-0.0091
+SV
+-0.0051
+-0.0043
+-0.0056
+RS
+0.0333
+0.0341
+0.0384
+Adj.R2
+0.009
+0.012
+0.009
+N
+7,072
+7,072
+7,072
+SFEs
+(5.1)
+(5.2)
+(5.3)
+SF E
+0.1762***
+0.1841***
+SF EST ANDALONE
+0.1762***
+SF ESIMULT ANEOUS
+0.1692***
+EXT REME HOURS
+-0.0199
+SF E ∗EXT REME HOURS
+-0.0430
+AbsRet
+-0.0067
+-0.0067
+-0.0067**
+SV
+-0.0188
+-0.0186
+-0.0185
+RS
+-0.0119**
+-0.0120**
+-0.0118**
+Adj.R2
+0.052
+0.052
+0.052
+N
+69,781
+69,781
+69,781
+The table reports the estimated coeﬃcients of equations 5.1, 5.2 and 5.3 where
+HF T NET is the diﬀerence between HF T D, the liquidity demanded by HFTs, and
+HF T S, the liquidity supplied by HFTs.
+A negative HF T NET
+implies an aggregate trading activity in the opposite direction of the crash (contributing to price
+stability) while a positive HF T NET
+implies an aggregate trading activity in the
+direction of the crash (contributing to price instability).
+MF Cit (resp.
+SF Eit)
+is a dummy variable equal to one if the 1.5-second interval t in stock i is identiﬁed as an MFC (resp.
+SFE) and is equal to zero otherwise.
+MF CST ANDALONE
+(resp.
+SF EST ANDALONE) is a dummy that captures MFCs (resp.
+SFEs) that
+occur on their own, MF CSIMULT ANEOUS (resp.
+SF ESIMULT ANEOUS) is a
+dummy that captures MFCs (resp. SFEs) that occur on several sample stocks within
+the same time interval, EXT REME HOURS is a dummy that captures transactions identiﬁed as occurring during extreme hours (EH), i.e.
+from 9:00 a.m.
+to
+9:05 a.m. and from 15:55 p.m. to 16:00 p.m., MF C ∗EXT REME HOURS (resp.
+SF E ∗EXT REME HOURS) is an interaction variable that captures the additional
+eﬀect of MFCs (resp. SFEs) that occur in the ﬁrst ﬁve and last ﬁve minutes of the
+trading day, AbsRet is the absolute log return, SV is the share volume and RS is the
+relative spread.
+The regressions are run on an MFC (resp.
+SFE) subsample whose
+proportion of transactions on Nasdaq is set to at least 0.5, meaning that at least 50%
+of transactions during the crash occur on Nasdaq. All the non-dummy variables are
+standardized at the stock level and regressions are run with stock ﬁxed eﬀects. The
+number of observations (N) is not equal to the number of shocks but to the total number of observations during the shocks as well as the lags. Asterisks *** and ** indicate
+statistical signiﬁcance at the 1% and 5% levels.
+27
+
+explanatory variable, i.e.
+HFT participation based on trades (HFTP), to complement the
+initial model following Carrion (2013) and Leal et al. (2016). All the non-dummy variables are
+standardized at the stock level and lagged by one period. We again consider MFCs and SFEs
+for which the proportion of transactions occurring on Nasdaq during the crash represents at
+least 50% of all transactions on U.S. exchanges, thus ﬁltering out MFCs and SFEs that are not
+prevalent on Nasdaq.
+It is important to note that a logit model may be biased when events and non-events are
+imbalanced, which is the case in our model, MFCs in particular being rare events. As such, and
+due to the potential bias engendered by the imbalance between events and non-events within our
+samples (number of MFCs and SFEs vs number of non-MFCs and non-SFEs), we implement a
+penalized maximum likelihood estimation, as advocated by Firth (1993).
+We also estimate three alternative speciﬁcations of the logit model. Instead of considering
+all shocks as in Equation 5.4, we focus on standalone shocks (STAEV ENT) in Equation 5.5,
+simultaneous shocks (SIMEV ENT) in Equation 5.6, and shocks occurring during extreme hours
+exclusively (EHEV ENT) in Equation 5.7. The three alternative speciﬁcations are as follows:
+Prob(STAEV ENT = 1)it = α0 + β1HFT NET it−1 + β2AbsRetit−1
++β3SVit−1 + β4RSit−1 + β5HFTPit−1 + ϵit
+(5.5)
+Prob(SIMEV ENT = 1)it = α0 + β1HFT NET it−1 + β2AbsRetit−1
++β3SVit−1 + β4RSit−1 + β5HFTPit−1 + ϵit
+(5.6)
+Prob(EHEV ENT = 1)it = α0 + β1HFT NET it−1 + β2AbsRetit−1
++β3SVit−1 + β4RSit−1 + β5HFTPit−1 + ϵit
+(5.7)
+Results for the MFCs are reported in Table 5. The main element is again the lack of overall
+statistical signiﬁcance of our variable of interest. HFT NET is not statistically signiﬁcant in any
+speciﬁcations of the logit model. As a consequence, we cannot reject the null hypothesis that
+HFT trading activity before the extreme price shock plays no role in explaining the shock. The
+two most signiﬁcant control variables are the absolute log return (AbsRet) and the relative spread
+(RS). They both display positive and statistically signiﬁcant coeﬃcients.
+When we consider all shocks, we estimate that a one-standard deviation increase in the
+absolute log return raises the odds of having an MFC in the following interval by 19.2%. This is
+even stronger when focusing on simultaneous shocks only since the odds increase to 33.3%. The
+relative spread plays a pivotal role as well since a one-standard deviation increase in the spread
+28
+
+Table 5: LOGIT - MFCs
+Proportion of transactions on Nasdaq ≥50%
+Coeﬃcient
+Odds ratio
+P-value
+C-stat
+N
+All (Nb of MFCs=114)
+0.554
+2,067
+α0
+-4.1755
+***
+HFT NET
+it−1
+-0.0182
+0.982
+AbsRetit−1
+0.1755
+1.192
+***
+SVit−1
+0.0257
+1.026
+RSit−1
+0.0901
+1.094
+HFTPit−1
+-0.1300
+0.878
+Standalone (Nb of MFCs=77)
+0.545
+1,396
+α0
+-4,5102
+***
+HFT NET
+it−1
+-0.0906
+0.913
+AbsRetit−1
+0.0470
+1.048
+SVit−1
+0.0475
+1.049
+RSit−1
+-0.0666
+0.936
+HFTPit−1
+-0.0241
+0.976
+Simultaneous (Nb of MFCs=37)
+0.665
+671
+α0
+-5,4716
+***
+HFT NET
+it−1
+0.0896
+1.094
+AbsRetit−1
+0.2874
+1.333
+***
+SVit−1
+0.0431
+1.044
+RSit−1
+0.2200
+1.246
+***
+HFTPit−1
+-0.3201
+0.726
+Extreme hours (Nb of MFCs=41)
+0.658
+743
+α0
+-5,2805
+***
+HFT NET
+it−1
+-0.0136
+0.986
+AbsRetit−1
+0.1473
+1.159
+SVit−1
+0.0485
+1.050
+RSit−1
+0.2860
+1.331
+***
+HFTPit−1
+-0.2232
+0.800
+The table reports the results of equations 5.4, 5.5, 5.6, and 5.7 regarding the probability for a stock to undergo an MFC at time interval t as a function of HFT NET , absolute log return (AbsRet), share volume
+(SV ), relative spread (RS) and HFT participation based on trades (HFTP) at time interval t −1. The
+event window is 15 seconds before and after the crash. All the non-dummy variables are standardized at
+the stock level and lagged by one period except the intercept. Asterisks *** and ** indicate statistical signiﬁcance at the 1% and 5% levels. The c-statistic measures the goodness of ﬁt for binary outcomes in the
+logistic regression model. As an illustration, if we randomly choose two stocks from our sample, one that
+has the outcome characteristic (experienced an MFC) and one that does not have the outcome characteristic (did not experience an MFC), each stock has a predicted probability of experiencing a crash from the
+logistic regression model. The c-statistic corresponds to the probability that the stock that truly has the
+outcome characteristic will have a higher predicted probability from the logistic regression equation than
+the stock that truly does not have the characteristic.
+raises the odds of having a simultaneous MFC in the following interval by 24.6%. The increase
+in the odds is even higher (33.1%) when the shock occurs during extreme hours.
+29
+
+Results for the SFEs are reported in Table 6. We ﬁnd that our SFE methodology greatly improves the overall statistical signiﬁcance of the model when compared to the MFC methodology.
+In our base model including all SFEs, the variable of interest HFT NET displays a negative sign
+and is signiﬁcant at the 1% level. A one-standard deviation increase in HFT NET is associated
+with a decrease in the odds of having an SFE in the next interval by 4%. We can therefore reject
+the hypothesis that extreme price shocks are related to HFTs consuming more liquidity than
+they provide during the preceding time interval. This is particularly true for standalone shocks
+for which the odds decrease by 12%. The level of HFT participation in the market (HFTP)
+is also negatively associated with the occurrence of a ﬂash event during the next period. All
+else being equal, a one-standard deviation increase in HFTP leads to a decrease in the odds
+of having an SFE in the next interval by 10.9%. This stabilizing dynamics is observed in all of
+the four speciﬁcations. The most pronounced stabilizing eﬀect is nevertheless observed during
+shocks that occur in extreme hours. The odds fall down by nearly 30% in such a case.
+The control variable that provides the most valuable insight in Table 6 is the share volume
+(SV ). Its coeﬃcient consistently exhibits a positive and statistically signiﬁcant relationship. Its
+economic signiﬁcance is particularly pronounced when considering all SFEs.
+A one-standard
+deviation increase in the share volume increases the odds of having an SFE in the following
+interval by 17.9%. This variable is the most critical driver contributing to the occurrence of a
+ﬂash event during the next period of time.
+5.4
+Comparison with the so-called Extreme Price Movements
+In this section, we provide a parallel analysis on EPMs. After comparing our sample of SFEs
+with MFCs, as identiﬁed by the Nanex detection algorithm, we compare our sample of SFEs
+with EPMs using close and open prices (Brogaard et al., 2018) as well as high and low prices in
+an alternative setting that we propose to use.
+5.4.1
+HFT activity around OC-EPMs and HL-EPMs
+Table 7 presents the trading dynamics of HFTs and NHFTs around events characterized by
+OC-EPMs and HL-EPMs. Table 7 is similar to Table 3. As with MFCs and SFEs, we apply
+the same ﬁlters to the OC-EPM and HL-EPM samples so as to prevent consecutive crashes to
+pollute the diﬀerent windows from time interval t −2 to time interval t + 2. We end up with
+ﬁnal samples of 28,825 OC-EPMs and 24,831 HL-EPMs after the cleaning.
+30
+
+Table 6: LOGIT - SFEs
+Proportion of transactions on Nasdaq ≥50%
+Coeﬃcient
+Odds ratio
+P-value
+C-stat
+N
+All (Nb of SFEs=5,491)
+0.569
+69,854
+α0
+-2.4846
+***
+HFT NET
+it−1
+-0.0409
+0.96
+***
+AbsRetit−1
+0.0277
+1.028
+**
+SVit−1
+0.1648
+1.179
+***
+RSit−1
+-0.2039
+0.816
+***
+HFTPit−1
+-0.1157
+0.891
+***
+Standalone (Nb of SFEs=2,047)
+0.581
+26,041
+α0
+-3.5319
+***
+HFT NET
+it−1
+-0.1277
+0.88
+***
+AbsRetit−1
+0.0253
+1.026
+SVit−1
+0.1037
+1.109
+***
+RSit−1
+-0.2431
+0.784
+***
+HFTPit−1
+-0.0501
+0.951
+**
+Simultaneous (Nb of SFEs=3,444)
+0.553
+43,813
+α0
+-2.9797
+***
+HFT NET
+it−1
+0.0261
+1.026
+AbsRetit−1
+0.0293
+1.03
+*
+SVit−1
+0.0829
+1.086
+***
+RSit−1
+-0.1623
+0.85
+***
+HFTPit−1
+-0.1419
+0.868
+***
+Extreme hours (Nb of SFEs=1,362)
+0.629
+10,067
+α0
+-3.9974
+***
+HFT NET
+it−1
+-0.0157
+0.984
+AbsRetit−1
+0.0934
+1.098
+***
+SVit−1
+0.1549
+1.168
+***
+RSit−1
+0.0664
+1.069
+***
+HFTPit−1
+-0.3386
+0.713
+***
+The table reports the results of equations 5.4, 5.5, 5.6, and 5.7 regarding the probability for a stock to undergo
+an SFE at time interval t as a function of HFT NET , absolute log return (AbsRet), share volume (SV ), relative spread (RS) and HFT participation based on trades (HFTP) at time interval t −1. The event window
+is 15 seconds before and after the crash. All the non-dummy variables are standardized at the stock level and
+lagged by one period except the intercept. Asterisks *** and ** indicate statistical signiﬁcance at the 1% and
+5% levels. The c-statistic measures the goodness of ﬁt for binary outcomes in the logistic regression model. As
+an illustration, if we randomly choose two stocks from our sample, one that has the outcome characteristic (experienced an SFE) and one that does not have the outcome characteristic (did not experience an SFE), each
+stock has a predicted probability of experiencing a crash from the logistic regression model. The c-statistic corresponds to the probability that the stock that truly has the outcome characteristic will have a higher predicted
+probability from the logistic regression equation than the stock that truly does not have the characteristic.
+31
+
+Table 7: (N)HFT Liquidity Supply and Demand around OC-EPMs and HL-EPMs
+OC-EPMs
+t −2
+t −1
+t
+t + 1
+t + 2
+pre-crash
+crash
+post-crash
+HFT NET
+3.4496**
+0.9200
+15.4702***
+10.0552***
+3.3120**
+HFT D
+-0.0190
+13.4265***
+139.2***
+5.5128***
+-4.4022***
+HFT S
+3.4686***
+-12.5065***
+-123.7***
+4.5424***
+7.7142***
+NHFT NET
+-3.4496**
+-0.9200
+-15.4702***
+-10.0552***
+-3.3120**
+NHFT D
+3.0694
+38.0065***
+291.7***
+32.8409***
+10.7208***
+NHFT S
+-6.5190
+-38.9265***
+-307.2***
+-42.8961***
+-14.0328***
+HL-EPMs
+t −2
+t −1
+t
+t + 1
+t + 2
+pre-crash
+crash
+post-crash
+HFT NET
+2.3880
+2.8856
+8.7507
+12.9138***
+2.1112
+HFT D
+-0.3184
+11.5792***
+118.8***
+5.1912***
+-4.4756***
+HFT S
+2.7064
+-8.6936***
+-110.1***
+7.7225***
+6.5868***
+NHFT NET
+-2.3880
+-2.8856
+-8.7507
+-12.9138***
+-2.1112
+NHFT D
+-2.8653
+25.3466***
+274.1***
+22.5343***
+7.6329***
+NHFT S
+0.4773
+-28.2322***
+-282.8***
+-35.4481***
+-9.7441***
+The table reports directional net trade imbalance around OC-EPMs and HL-EPMs. The metric is based on
+share volume and computed from Nasdaq. Time interval t is the sub-1.5-second interval corresponding to
+the crash. We also report the trade imbalance 3 seconds prior to the crash (t −2, t −1) and 3 seconds after
+the crash (t + 1, t + 2). HFT NET (resp. NHFT NET ) is the sum of HFT D and HFT S (resp. NHFT D
+and NHFT S) and HFT NET = −NHFT NET and vice versa. When HFT NET (NHFT NET ) is positive,
+it implies that HFTs (NHFTs) are trading in the direction of the return and thus in the direction of the
+crash (contributing to price stability) on an aggregate basis. When HFT NET (NHFT NET ) is negative,
+it implies that HFTs (NHFTs) are trading in the opposite direction of the return and thus in the opposite
+direction of the crash (contributing to price stability) on an aggregate basis. Asterisks *** and ** indicate
+statistical signiﬁcance at the 1% and 5% levels.
+32
+
+When using the OC-EPM methodology, HFT NET is statistically signiﬁcant in four out of ﬁve
+time windows. There is much weaker evidence when detecting extreme price movements based on
+the highs and lows. The two methods nevertheless agree on the role played by HFTs just before
+and after the shock. We ﬁnd no evidence that HFTs trigger EPMs since their market activity is
+not statistically diﬀerent from the one observed for NHFTs before the crash. They nevertheless
+play a signiﬁcant role after the crash.
+The coeﬃcient of HFT NET is positive (10.0552 and
+12.9138 respectively) and statistically signiﬁcant at 1%. When we look at the decomposition of
+HFT NET , we observe that HFTs both supply and demand more liquidity in the direction of the
+shock after it hit the market during the preceding interval. As opposed to NHFTs, HFTs do not
+contribute to price recovery.
+5.4.2
+HFT activity and other key trading drivers during EPM events
+In this section, we focus on the trading activity of HFTs during EPMs and control for all the
+key trading drivers. We run the same multivariate regressions as in section 5.2. Results of the
+diﬀerent regressions are presented in Table 8.
+We ﬁnd very little evidence that ﬂash events are related to the trading activity of HFTs. The
+only case (out of six) where the net trading activity of HFTs is destabilizing (because it goes in
+the same direction as the shock) is in the model speciﬁcation with OC-EPMs and extreme hours.
+There is nevertheless no observed destabilizing activity for OC-EPMs that intervene during
+extreme hours. On the contrary, the interaction variable (EPMOC ∗EXTREME HOURS) is
+signiﬁcant and the size and negative sign of its coeﬃcient tell us that HFTs help stabilize the
+market during the price shocks that intervene precisely during extreme hours. Except for this
+special case, there is overall insuﬃcient statistical evidence to suggest that HFT activity varies
+signiﬁcantly when extreme price movements occur in the market. Finally, we note that the overall
+statistical signiﬁcance of the models is lower when the EPM methodology is used instead of ours,
+based on SFEs.
+5.4.3
+Predicting ﬂash events based on prior HFT activity
+In this section, we look into the variables that potentially conduct to the occurrence of future
+crashes, whether these crashes are OC-EPMs or HL-EPMs and we compare our results to the
+ones we obtain for MFCs and SFEs in Section 5.3. Results for the OC-EPMs and HL-EPMs are
+reported in Tables 9 and 10.
+33
+
+Table 8: Multivariate regressions - Net HFT Activity during crashes
+Proportion of transactions on Nasdaq ≥50%
+OC-EPMs
+(5.1)
+(5.2)
+(5.3)
+EP MOC
+15.3355
+32.3419**
+EP MOC−ST ANDALONE
+33.8257
+EP MOC−SIMULT ANEOUS
+7.6939
+EXT REME HOURS
+-19.5770**
+EP MOC ∗EXT REME HOURS
+-88.7921***
+AbsRet
+0.9956
+1.1002
+1.7089
+SV
+-9.5890**
+-9.8966**
+-9.4521**
+RS
+-10.6984**
+-10.5563**
+-9.6340**
+Adj.R2
+0.0113
+0.0114
+0.0121
+N
+136,221
+136,221
+136,221
+HL-EPMs
+(5.1)
+(5.2)
+(5.3)
+EP MHL
+5.3031
+16.8067
+EP MHL−ST ANDALONE
+30.1423
+EP MHL−SIMULT ANEOUS
+-4.6606
+EXT REME HOURS
+-23.2225***
+EP MHL ∗EXT REME HOURS
+-46.6136
+AbsRet
+-3.3997
+-3.2856
+-2.9449
+SV
+-6.3452
+-6.9121
+-6.3069
+RS
+-5.5217
+-5.3650
+-4.5542
+Adj.R2
+0.0109
+0.0111
+0.0113
+N
+114,289
+114,289
+114,289
+The table reports the estimated coeﬃcients of equations 5.1, 5.2 and 5.3 where HF T NET is the
+diﬀerence between HF T D, the liquidity demanded by HFTs, and HF T S, the liquidity supplied
+by HFTs. A negative HF T NET implies an aggregate trading activity in the opposite direction
+of the crash (contributing to price stability) while a positive HF T NET implies an aggregate
+trading activity in the direction of the crash (contributing to price instability). EP MOC (resp.
+EP MHL) is a dummy variable equal to one if the 1.5-second interval t in stock i is identiﬁed
+as an OC-EPM (resp. HL-EPM) and is equal to zero otherwise. EP MOC−ST ANDALONE
+(resp. EP MHL−ST ANDALONE) is a dummy that captures OC-EPMs (resp. HL-EPMs) that
+occur on their own, EP MOC−SIMULT ANEOUS (resp. EP MHL−SIMULT ANEOUS) is a
+dummy that captures OC-EPMs (resp. HL-EPMs) that occur on several sample stocks within
+the same time interval, EXT REME HOURS is a dummy that captures transactions identiﬁed
+as occurring during extreme hours (EH), i.e. from 9:00 a.m. to 9:05 a.m. and from 15:55 p.m.
+to 16:00 p.m., EP MOC ∗EXT REME HOURS (resp. EP MHL ∗EXT REME HOURS) is
+an interaction variable that captures the additional eﬀect of OC-EPMs (resp. HL-EPMs) that
+occur in the ﬁrst ﬁve and last ﬁve minutes of the trading day, AbsRet is the absolute log return, SV is the share volume and RS is the relative spread. The regressions are run on an
+OC-EPM (resp. HL-EPM) subsample whose proportion of transactions on Nasdaq is set to at
+least 0.5, meaning that at least 50% of transactions during the crash occur on Nasdaq. All the
+non-dummy variables are standardized at the stock level and regressions are run with stock
+ﬁxed eﬀects. Asterisks *** and ** indicate statistical signiﬁcance at the 1% and 5% levels.
+34
+
+Table 9: LOGIT - OC-EPMs
+Proportion of transactions on Nasdaq ≥50%
+Coeﬃcient
+Odds ratio
+P-value
+C-stat
+N
+All (Nb of OC-EPMs=7,785)
+0.540
+138,624
+α0
+-2.8883
+***
+HFT NET
+it−1
+-0.0001
+1.000
+**
+AbsRetit−1
+0.0672
+1.070
+***
+SVit−1
+0.0568
+1.058
+***
+RSit−1
+0.0367
+1.037
+***
+HFTPit−1
+0.2049
+1.227
+***
+Standalone (Nb of OC-EPMs=2,245)
+0.634
+39,973
+α0
+-3.9544
+***
+HFT NET
+it−1
+-0.0001
+1.000
+**
+AbsRetit−1
+0.0661
+1.068
+***
+SVit−1
+0.0869
+1.091
+***
+RSit−1
+-0.3846
+0.681
+***
+HFTPit−1
+-0.6447
+0.525
+***
+Simultaneous (Nb of OC-EPMs=5,540)
+0.579
+98,651
+α0
+-3.3729
+***
+HFT NET
+it−1
+-0.0001
+1.000
+***
+AbsRetit−1
+0.0681
+1.070
+***
+SVit−1
+0.0337
+1.034
+***
+RSit−1
+0.1036
+1.109
+***
+HFTPit−1
+0.5101
+1.665
+***
+Extreme hours (Nb of OC-EPMs=1,680)
+0.677
+29,610
+α0
+-4.5539
+***
+HFT NET
+it−1
+-0.0001
+1.000
+***
+AbsRetit−1
+0.1023
+1.108
+***
+SVit−1
+0.0480
+1.049
+***
+RSit−1
+0.2831
+1.327
+***
+HFTPit−1
+0.1709
+1.186
+***
+Table 9 reports the results of equations 5.4, 5.5, 5.6, and 5.7 regarding the probability for a stock to undergo an OCEPM at time interval t as a function of HFT NET , absolute log return (AbsRet), share volume (SV ), relative spread
+(RS) and HFT participation based on trades (HFTP) at time interval t −1. The event window is 15 seconds before
+and after the crash. All the non-dummy variables are standardized at the stock level and lagged by one period except
+the intercept. Asterisks *** and ** indicate statistical signiﬁcance at the 1% and 5% levels. The c-statistic measures
+the goodness of ﬁt for binary outcomes in the logistic regression model. As an illustration, if we randomly choose two
+stocks from our sample, one that has the outcome characteristic (experienced an OC-EPM) and one that does not
+have the outcome characteristic (did not experience an OC-EPM), each stock has a predicted probability of experiencing a crash from the logistic regression model. The c-statistic corresponds to the probability that the stock that truly
+has the outcome characteristic will have a higher predicted probability from the logistic regression equation than the
+stock that truly does not have the characteristic.
+35
+
+Table 10: LOGIT - HL-EPMs
+Proportion of transactions on Nasdaq ≥50%
+Coeﬃcient
+Odds ratio
+P-value
+C-stat
+N
+All (Nb of HL-EPMs=7,152)
+0.575
+117,126
+α0
+-2.8357
+***
+HFT NET
+it−1
+-0.00004
+1.000
+AbsRetit−1
+0.1589
+1.172
+***
+SVit−1
+0.0476
+1.049
+***
+RSit−1
+0.0521
+1.053
+***
+HFTPit−1
+0.2716
+1.312
+***
+Standalone (Nb of HL-EPMs=2,085)
+0.628
+34,145
+α0
+-3.8669
+***
+HFT NET
+it−1
+-0.0001
+1.000
+**
+AbsRetit−1
+0.1406
+1.151
+***
+SVit−1
+0.0823
+1.086
+***
+RSit−1
+-0.3470
+0.707
+***
+HFTPit−1
+-0.5791
+0.560
+***
+Simultaneous (Nb of HL-EPMs=5,067)
+0.614
+82,961
+α0
+-3.3408
+***
+HFT NET
+it−1
+-0.0001
+1.000
+**
+AbsRetit−1
+0.1556
+1.168
+***
+SVit−1
+0.0211
+1.021
+***
+RSit−1
+0.1240
+1.132
+***
+HFTPit−1
+0.5902
+1.804
+***
+Extreme hours (Nb of HL-EPMs=1,945)
+0.704
+31,853
+α0
+-4.2947
+***
+HFT NET
+it−1
+-0.0001
+1.000
+**
+AbsRetit−1
+0.1616
+1.175
+***
+SVit−1
+0.0455
+1.047
+***
+RSit−1
+0.3105
+1.364
+***
+HFTPit−1
+0.2612
+1.298
+***
+Table 10 reports the results of equations 5.4, 5.5, 5.6, and 5.7 regarding the probability for a stock to undergo an HLEPM at time interval t as a function of HFT NET , absolute log return (AbsRet), share volume (SV ), relative spread
+(RS) and HFT participation based on trades (HFTP) at time interval t −1. The event window is 15 seconds before and after the crash. All the non-dummy variables are standardized at the stock level and lagged by one period
+except the intercept. Asterisks *** and ** indicate statistical signiﬁcance at the 1% and 5% levels. The c-statistic
+measures the goodness of ﬁt for binary outcomes in the logistic regression model. As an illustration, if we randomly
+choose two stocks from our sample, one that has the outcome characteristic (experienced an HL-EPM) and one that
+does not have the outcome characteristic (did not experience an HL-EPM), each stock has a predicted probability of
+experiencing a crash from the logistic regression model. The c-statistic corresponds to the probability that the stock
+that truly has the outcome characteristic will have a higher predicted probability from the logistic regression equation
+than the stock that truly does not have the characteristic.
+36
+
+Results are very similar irrespective of the choice of open and close prices or high and low
+prices. Our variable of interest, HFT NET , which measures the level of HFT trading activity
+in the direction of the EPM, is signiﬁcant in all model speciﬁcations, except in one (on all
+HL-EPMs). The economic signiﬁcance of HFT trading activity remains very limited however.
+The odds of having an EPM in the following interval is practically unchanged in all model
+speciﬁcations. In fact, the level of HFT participation based on trades (HFTP) seems to matter
+more to anticipate the occurrence of an EPM. In all but one model speciﬁcation, it displays a
+positive and signiﬁcant coeﬃcient estimate. A one-standard deviation increase in the level of HFT
+participation in the market based on trades raises the odds of having an EPM in the following
+interval from 18.6% for an OC-EPM occurring in extreme hours to 80.4% for a simultaneous
+HL-EPM.
+The control variables are always statistically signiﬁcant at the 1% level in both OC-EPM and
+HL-EPM model speciﬁcations, as indicated in Tables 9 and 10. Overall, the absolute log return
+and share volume variables are the most consistent drivers of EPMs (besides HFT participation).
+5.5
+Robustness checks
+In the preceding sections, we conducted a parallel analysis on three types of market events:
+Mini Flash Crashes (MFCs), Extreme Price Movements (both OC-EPMs and HL-EPMs), and
+Sequence-Based Flash Events (SFEs), speciﬁcally examining their similarities and diﬀerences. By
+doing so, we checked if our results were similar across methodologies or conversely methodology
+speciﬁc.
+We found diﬀerent results depending on the price shock identiﬁcation methodology
+used, which implies that concluding on the virtuousness or viciousness of HFTs may be primarily
+methodology dependent. We also performed additional analyses using alternative time intervals
+of 1 second and 2 seconds, in addition to our base time interval of 1.5 seconds. Regardless of the
+time interval considered, our results remained highly consistent.
+Our study focused on ultra-fast ﬂash events (MFCs, EPMs, SFEs), a subcategory of ﬂash
+events, where the proportion of transactions occurring on Nasdaq during the interval constituted
+at least 50% of all transactions on U.S. stock exchanges, thus ﬁltering out price shocks that were
+not prevalent on Nasdaq. However, as a robustness check, we also conducted regressions on the
+full sample, which encompassed ﬂash events with transaction proportions ranging from 0% to
+100% on Nasdaq. There was no signiﬁcant change in the results. This is due to the fact Nasdaq
+is by far the prevalent stock exchange in our database.
+Regarding the event window, we initially employed a 15-second (10 intervals) window before
+and after the crash. However, we also conducted regressions on 12-second (8 intervals) and 1837
+
+second (12 intervals) windows. Regardless of the duration of the event window, our ﬁndings
+remained consistent.
+6
+Conclusion
+Our study investigates the relationship between High-Frequency Traders (HFTs) and ultrafast ﬂash events, challenging the methodologies employed in academic and practitioner literature
+for identifying sudden liquidity black holes.
+We question the criteria used for categorizing ‘mini ﬂash crashes’ (MFCs) based on consecutive tick movements and percentage price changes. In particular, we question the requirements
+of 10 consecutive tick movements in the same direction of the crash and a price change of 0.8%.
+This practically means, for example, that a price change of 90% happening in less than 10 consecutive tick movements in the same direction would not qualify as an MFC while a price change
+of 1% in 10 consecutive ticks would.
+We also critique the accuracy of estimating ‘extreme price movements’ (EPMs) by relying
+on predetermined ﬁxed-time intervals, which may overlook important market dynamics. EPMs
+typically underestimate the magnitude of ﬂash events since they rely on predetermined ﬁxed-time
+intervals for the identiﬁcation of the shock (mechanically starting at the open of the market).
+This implies that price resiliency may already be occurring within the time interval of the EPM
+or that the shock may continue and pollute the next time interval.
+To reﬁne the price shock identiﬁcation methodology, we introduce a new approach called
+‘sequence-based ﬂash events’ (SFEs), which focuses on sequences rather than on ﬁxed intervals.
+We pinpoint the exact time and duration of the crash and then build a window around it. As
+long as the tick curve does not reverse, we stay in the same sequence irrespective of the length
+of the time interval. These SFEs better capture the full extent of the shocks hitting the market.
+Furthermore, we compare our sample of SFEs with MFCs and EPMs, employing close and open
+prices (OC), which replicates the original methodology, but we also suggest using high and low
+(HL) prices, which better capture the extent of the shock within a predetermined time interval.
+Our event studies around SFEs do not indicate that HFTs contribute to price instability.
+Since these event studies do not account for alternative trading and liquidity drivers such as
+relative spread, volatility, or volume. We run a multivariate regression analysis and reveal that
+HFTs increase their liquidity demand on aggregate during extreme price shocks and trade in the
+direction of the crash when it occurs. Otherwise, in the absence of shocks, they provide more
+liquidity than they absorb when spreads widen. Finally, our logit model indicates that SFEs
+38
+
+are not related to HFTs consuming more liquidity than they provide during the preceding time
+interval. As such, we ﬁnd no evidence that HFTs trigger extreme price shocks.
+Our identiﬁcation methodology based on Sequence-Based Flash Events (SFEs) is more accurate and leads to more robust empirical results overall. As they sometimes diverge from those
+obtained through Mini Flash Crashes (MFCs) or Extreme Price Movements (EPMs), we therefore emphasize that conclusions regarding the contribution of High-Frequency Traders (HFTs)
+to price stability are contingent upon the chosen methodology for identifying price shocks.
+We therefore urge regulators to refrain from reaching premature conclusions about the role
+played by HFTs in stressful market conditions. Indeed, our ﬁndings show that the choice of
+the price shock identiﬁcation methodology is critical so that further research is necessary to test
+various identiﬁcation methodologies on an expanded dataset. Stock exchanges should provide
+the academic community with such a database free of charge in order to promote greater transparency, while regulators should make sure that such a dataset is made available to the academic
+community.
+This updated dataset should include at least one of the desirable features that we identify
+below. These suggestions for future research aim to address the gaps identiﬁed in the current
+research and to expand upon the ﬁndings uncovered. The objective is not only to enhance the
+depth and breadth of understanding in this ﬁeld but also to pave the way for future investigations.
+First of all, the focus of this study is on HFTs and ﬂash events in the US market, which may
+present unique characteristics when compared to other markets. As of the time this study was
+conducted, to the best of our knowledge, there appear to be no comparable data sets available
+that include a ﬂag on HFT transactions and cover the same time period in Europe and Asia.
+When available, they could provide valuable insights and enhance the scope of our analysis.
+Second, the Nasdaq HFT dataset we use in this paper is made of aggregated data so that we
+are unable to have a granular view of the liquidity supply and demand at the HFT ﬁrm level.
+As a consequence, our ﬁndings are relevant at the HFT group level only (which is still very
+important), but not at the HFT ﬁrm level which would provide further insight.
+Third, large integrated ﬁrms (which may act as HFTs but not always) as well as HFTs routing
+their orders through large integrated ﬁrms have not been included by Nasdaq in the database
+due to the impossibility for the exchange to identify them precisely. As such, the 26 HFT ﬁrms of
+the database can be considered as pure HFT ﬁrms or simply as ‘independent proprietary trading
+ﬁrms’ as mentioned in Brogaard et al. (2017). The inclusion of data from larger integrated ﬁrms
+and HFTs using their services would undoubtedly enhance the breadth and accuracy of all the
+previous studies, providing a fuller picture of the HFT landscape.
+39
+
+Fourth, the data set is limited to transactions executed on Nasdaq, leaving us without visibility on HFT transactions executed on other U.S. stock exchanges. Although we account for
+this by ﬁltering events based on the proportion of trades executed on Nasdaq, this approach
+inevitably results in a partial view. The potential impact of HFTs (or NHFTs) operating outside
+of Nasdaq, particularly in instances where they may trigger market ﬂuctuations or crashes, remains unobserved. Therefore, integrating data from these other exchanges would enable a more
+holistic analysis, oﬀering deeper insights into the dynamics of HFT activities across the broader
+U.S. stock market landscape.
+Finally, we are unable to control for market manipulation or the potential imbalance generated
+by non-HFT algorithmic traders. To do so, we would need more granular data with an extra ﬂag
+on non-HFT algorithmic trades which are not provided by Nasdaq.
+40
+
+7
+Acknowledgements
+We would like to thank NASDAQ OMX and Frank Hatheway for providing the data as well
+as various conference and seminar participants for their precious comments and suggestions, in
+particular Arseny Gorbenko and Ester F´elez-Vinas. We are also grateful to the managing editorin-chief as well as the three reviewers who all deserve credit for their valuable contributions.
+41
+
+8
+List of Abbreviations
+AA: Alcoa.
+APPL: Apple.
+DMM: Designated Market Maker.
+EPM: Extreme Price Movement.
+HFT: High-Frequency Trader.
+HL-EPM: Extreme Price Movement based on High and Low prices.
+MFC: Mini Flash Crash.
+NBBO: National Best Bid and Oﬀer.
+NHFT: Non-High Frequency Trader.
+OC-EPM: Extreme Price Movement based on Open and Close prices.
+SFE: Sequence-Based Flash Event.
+42
+
+References
+Abreu, D. (2022), ‘High frequency traders and liquidity’, Working paper .
+Aldrich, E., Grundfest, J. & Laughlin, G. (2017), ‘The ﬂash crash: a new deconstruction’,
+Working paper .
+Anand, A. & Venkataraman, K. (2016), ‘Market conditions, fragility, and the economics of market
+making’, Journal of Financial Economics 121(2), 327–349.
+Aquilina, M., Eyles, B., Shao, J. & Ysusi, C. (2018), ‘How do participants behave during ﬂash
+events?
+evidence from the uk equity market’, Financial Conduct Authority Research Note,
+London .
+Bellia, M., Christensen, K., Kolokolov, A., Pelizzon, L. & Ren`o, R. (2022), ‘High-frequency
+trading during ﬂash crashes: Walk of fame or hall of shame?’, Working paper .
+Bessembinder, H., Hao, J. & Zheng, K. (2020), ‘Liquidity provision contracts and market quality:
+Evidence from the new york stock exchange’, The Review of Financial Studies 33(1), 44–74.
+Boehmer, E., Fong, K. & Wu, J. J. (2021), ‘Algorithmic trading and market quality: International
+evidence’, Journal of Financial and Quantitative Analysis 56(8), 2659–2688.
+Boehmer, E., Li, D. & Saar, G. (2018), ‘The competitive landscape of high-frequency trading
+ﬁrms’, The Review of Financial Studies 31(6), 2227–2276.
+Braun, T., Fiegen, J. A., Wagner, D. C., Krause, S. M. & Guhr, T. (2018), ‘Impact and recovery
+process of mini ﬂash crashes: An empirical study’, Plos one 13(5), e0196920.
+Breckenfelder, J. (2019), ‘Competition among high-frequency traders, and market quality’, ECB
+Working Paper No. 2290 .
+Brogaard, J., Carrion, A., Moyaert, T., Riordan, R., Shkilko, A. & Sokolov, K. (2018), ‘High
+frequency trading and extreme price movements’, Journal of Financial Economics 128(2), 253–
+265.
+Brogaard, J., Hendershott, T. & Riordan, R. (2014), ‘High-frequency trading and price discovery’,
+The Review of Financial Studies 27(8), 2267–2306.
+Brogaard, J., Hendershott, T. & Riordan, R. (2017), ‘High frequency trading and the 2008
+short-sale ban’, Journal of Financial Economics 124(1), 22–42.
+43
+
+Carrion, A. (2013), ‘Very fast money: High-frequency trading on the nasdaq’, Journal of Financial Markets 16(4), 680–711.
+Christensen, K., Oomen, R. & Ren`o, R. (2022), ‘The drift burst hypothesis’, Journal of Econometrics 227(2), 461–497.
+Clark-Joseph, A. D., Ye, M. & Zi, C. (2017), ‘Designated market makers still matter: Evidence
+from two natural experiments’, Journal of Financial Economics 126(3), 652–667.
+Demirer, R., Leggio, K. B. & Lien, D. (2019), ‘Herding and ﬂash events: Evidence from the 2010
+ﬂash crash’, Finance Research Letters 31.
+F´elez-Vinas, E. (2018), Market fragmentation, mini ﬂash crashes and liquidity, Working paper
+presented at the FMA European Conference, Kristiansand, Norway.
+Firth, D. (1993), ‘Bias reduction of maximum likelihood estimates’, Biometrika 80(1), 27–38.
+Gao, C. & Mizrach, B. (2016), ‘Market quality breakdowns in equities’, Journal of Financial
+Markets 28, 1–23.
+Gerig, A. (2015), ‘High-frequency trading synchronizes prices in ﬁnancial markets’, Working
+paper .
+Goldstein, M. A., Kumar, P. & Graves, F. C. (2014), ‘Computerized and high-frequency trading’,
+Financial Review 49(2), 177–202.
+Goldstein, M., Kwan, A. & Philip, R. (2023), ‘High-frequency trading strategies’, Management
+Science 69(8), 4413–4434.
+Golub, A., Keane, J. & Poon, S.-H. (2012), ‘High frequency trading and mini ﬂash crashes’,
+Working paper .
+Hagstr¨omer, B. & Nord´en, L. (2013), ‘The diversity of high-frequency traders’, Journal of Financial Markets 16(4), 741–770.
+Hasbrouck, J. & Saar, G. (2013), ‘Low-latency trading’, Journal of Financial Markets 16(4), 646–
+679.
+Hirschey, N. (2021), ‘Do high-frequency traders anticipate buying and selling pressure?’, Management Science 67(6), 3321–3345.
+Johnson, N., Zhao, G., Hunsader, E., Qi, H., Johnson, N., Meng, J. & Tivnan, B. (2013), ‘Abrupt
+rise of new machine ecology beyond human response time’, Scientiﬁc reports 3, 2627.
+44
+
+Jones, C. M. (2013), ‘What do we know about high-frequency trading?’, Columbia Business
+School Research Paper (13-11).
+Kirilenko, A., Kyle, A. S., Samadi, M. & Tuzun, T. (2017), ‘The ﬂash crash: High-frequency
+trading in an electronic market’, The Journal of Finance 72(3), 967–998.
+Laly, F. & Petitjean, M. (2020), ‘Mini ﬂash crashes: Review, taxonomy and policy responses’,
+Bulletin of Economic Research 72(3), 251–271.
+Leal, S. J., Napoletano, M., Roventini, A. & Fagiolo, G. (2016), ‘Rock around the clock: An agentbased model of low-and high-frequency trading’, Journal of Evolutionary Economics 26(1), 49–
+76.
+Longin, F. M. (2000), ‘From value at risk to stress testing: The extreme value approach’, Journal
+of Banking & Finance 24(7), 1097–1130.
+Massad, T. (2015), ‘Remarks of chairman timothy massad before the conference on the evolving
+structure of the u.s. treasury market’.
+Menkveld, A. J. (2014), ‘High-frequency traders and market structure’, Financial Review
+49(2), 333–344.
+Menkveld, A. J. & Yueshen, B. Z. (2019), ‘The ﬂash crash: A cautionary tale about highly
+fragmented markets’, Management Science 65(10), 4470–4488.
+Menkveld, A. J. & Zoican, M. A. (2017), ‘Need for speed? exchange latency and liquidity’, The
+Review of Financial Studies 30(4), 1188–1228.
+Nanex (2010), ‘Flash equity failures in 2006, 2007, 2008, 2009, 2010, and 2011, technical report’.
+O’Hara, M., Yao, C. & Ye, M. (2014), ‘What’s not there: Odd lots and market data’, Journal of
+Finance 69, 2199–2236.
+Ozenbas, D. & Schwartz, R. A. (2018), ‘Do high frequency trading ﬁrms provide two-sided
+liquidity?’, Journal of Portfolio Management 44(7), 63–74.
+Scholtus, M., van Dijk, D. & Frijns, B. (2014), ‘Speed, algorithmic trading, and market quality
+around macroeconomic news announcements’, Journal of Banking & Finance 38, 89–105.
+Shkilko, A. & Sokolov, K. (2020), ‘Every cloud has a silver lining: Fast trading, microwave
+connectivity, and trading costs’, The Journal of Finance 75(6), 2899–2927.
+45
+
+Steﬀen, V. (2023), ‘A literature review on extreme price movements with reversal’, Journal of
+Behavioral and Experimental Finance p. 100806.
+Stoll, H. R. (2014), ‘High speed equities trading: 1993–2012’, Asia-Paciﬁc Journal of Financial
+Studies 43(6), 767–797.
+Zaharudin, K. Z., Young, M. R. & Hsu, W.-H. (2022), ‘High-frequency trading: Deﬁnition,
+implications, and controversies’, Journal of Economic Surveys 36(1), 75–107.
+46
+
+Table 11: Sample stocks summary statistics (Appendix)
+Ticker
+Company Name
+Market Cap
+Sector (GICS)
+AA
+Alcoa Corp
+Large
+Materials
+AAPL
+Apple Inc
+Large
+Information Technology
+ABD
+Acco Brands Corp
+Small
+Industrials
+ADBE
+Adobe Systems Inc
+Large
+Information Technology
+AMED
+Amedisys Inc
+Medium
+Health Care
+AMGN
+Amgen Inc
+Large
+Health Care
+AMZN
+Amazon.com Inc
+Large
+Consumer Discretionary
+ARCC
+Ares Capital Corp
+Medium
+Financials
+AXP
+American Express Co
+Large
+Financials
+AYI
+Acuity Brands Inc
+Medium
+Industrials
+AZZ
+AZZ Inc
+Small
+Industrials
+BARE
+Bare Escentuals Inc
+Medium
+Consumer Staples
+BAS
+Basic Energy Services Inc
+Small
+Energy
+BHI
+Baker Hughes a GE Co LLC
+Large
+Energy
+BIIB
+Biogen Inc
+Large
+Health Care
+BRE
+BEX Portfolio LLC
+Medium
+Real Estate
+BXS
+Bancorp South Inc
+Medium
+Financials
+CBEY
+Cbeyond Inc
+Small
+Telecommunications Services
+CETV
+Central European Media Enterprises Ltd
+Medium
+Consumer Discretionary
+CNQR
+Concur Technologies Inc
+Medium
+Information Technology
+COO
+Cooper Cos IncThe
+Medium
+Health Care
+COST
+Costco Wholesale Corp
+Large
+Consumer Staples
+CR
+Crane Co
+Medium
+Industrials
+CSCO
+Cisco Systems Inc
+Large
+Information Technology
+CSE
+Capital Source Inc
+Medium
+Financials
+CSL
+Carlisle Cos. Inc
+Large
+Industrials
+CTSH
+Cognizant Technology Solutions Corp
+Large
+Information Technology
+DIS
+Walt Disney CoThe
+Large
+Consumer Discretionary
+DOW
+Dow Chemical CoThe
+Large
+Materials
+EBAY
+eBay Inc
+Large
+Information Technology
+ESRX
+Express Scripts Holding Co
+Large
+Health Care
+FCN
+FTI Consulting Inc
+Medium
+Industrials
+FL
+Foot Locker Inc
+Medium
+Consumer Discretionary
+FMER
+FirstMerit Corp
+Medium
+Financials
+FPO
+First Potomac Realty Trust
+Small
+Real Estate
+FULT
+Fulton Financial Corp
+Medium
+Financials
+GE
+General Electric Co
+Large
+Industrials
+GILD
+Gilead Sciences Inc
+Large
+Health Care
+GLW
+Corning Inc
+Large
+Information Technology
+GOOG
+Alphabet Inc
+Large
+Information Technology
+GPS
+Gap IncThe
+Large
+Consumer Discretionary
+HON
+Honeywell International Inc
+Large
+Industrials
+HPQ
+HP Inc
+Large
+Information Technology
+IMGN
+ImmunoGen Inc
+Small
+Health Care
+INTC
+Intel Corp
+Large
+Information Technology
+ISRG
+Intuitive Surgical Inc
+Large
+Health Care
+JKHY
+Jack Henry & Associates Inc
+Medium
+Information Technology
+KMB
+Kimberly-Clark Corp
+Large
+Consumer Staples
+KNOL
+Knology Inc
+Small
+Telecommunications Services
+KR
+Kroger CoThe
+Large
+Consumer Staples
+LANC
+Lancaster Colony Corp
+Medium
+Consumer Staples
+LECO
+Lincoln Electric Holdings Inc
+Medium
+Industrials
+LPNT
+LifePoint Health Inc
+Medium
+Health Care
+LSTR
+Landstar System Inc
+Medium
+Industrials
+MANT
+ManTech International CorpThe
+Medium
+Information Technology
+MDCO
+Medicines CoThe
+Small
+Health Care
+MELI
+Mercadorlibre Inc
+Medium
+Information Technology
+MFB
+Maidenform Brands LLC
+Small
+Consumer Discretionary
+MMM
+3M Co
+Large
+Industrials
+MOD
+Modine Manufacturing Co
+Small
+Consumer Discretionary
+MOS
+Mosaic CoThe
+Large
+Materials
+NSR
+NewStar Inc
+Medium
+Information Technology
+NUS
+Nu Skin Enterprises Inc
+Medium
+Consumer Staples
+PFE
+Pﬁzer Inc
+Large
+Health Care
+PG
+Procter & Gamble CoThe
+Large
+Consumer Staples
+PNC
+PNC Financial Services Group IncThe
+Large
+Financials
+PNY
+Piedmont National Gas Co Inc
+Medium
+Utilities
+PTP
+Platinum Underwriters Holdings Ltd
+Medium
+Financials
+RIGL
+Rigel Pharmaceuticals Inc
+Small
+Health Care
+ROC
+Rockwood Holdings Inc
+Medium
+Materials
+ROCK
+Gibraltar Industries Inc
+Medium
+Industrials
+SF
+Stifel Financial Corp
+Medium
+Financials
+SFG
+StanCorp Financial Group Inc
+Medium
+Financials
+SWN
+Southwestern Energy Co
+Large
+Energy
+The table reports the ticker, company name, market cap, sector (GICS classiﬁcation) regarding the 74
+stocks of our sample. Market capitalization data are provided by Bloomberg. The group classiﬁcation is the same whether we use Bloomberg’s historical market capitalization as of February 26, 2010,
+Bloomberg’s 2008, 2009, 2010 historical market capitalizations or Bloomberg’s 2008, 2009, 2010 average historical market capitalization.
+47
+
+Table 12: Comparison of the diﬀerent methodologies based on empirical results
+Panel A : HFT liquidity supply and demand around ultra-fast ﬂash events
+Methodology
+Variable
+t −2
+t −1
+t
+t + 1
+t + 2
+MFCs
+HFT NET
+NS
+NS
+NS
+NS
+NS
+SFEs
+HFT NET
+−−−
+−−−
+−−−
+−−−
+−−−
+OC-EPMs
+HFT NET
+++
+NS
++++
++++
+++
+HL-EPMs
+HFT NET
+NS
+NS
+NS
++++
+NS
+Panel B : Multivariate regressions - Net HFT imbalance during ultra-fast ﬂash events
+Methodology
+Equations
+All
+Standalone
+Simultaneous
+Extreme-Hours
+MFCs
+5.1, 5.2, 5.3
+−−
+−−
+NS
+NS
+SFEs
+5.1, 5.2, 5.3
++++
++++
++++
+NS
+OC-EPMs
+5.1, 5.2, 5.3
+NS
+NS
+NS
+−−−
+HL-EPMs
+5.1, 5.2, 5.3
+NS
+NS
+NS
+NS
+Panel C : Logit - Ultra-fast ﬂash events
+Methodology
+Variable
+All
+Standalone
+Simultaneous
+Extreme-Hours
+MFCs
+HFT NET
+it−1
+NS
+NS
+NS
+NS
+SFEs
+HFT NET
+it−1
+−−−
+−−−
+NS
+NS
+OC-EPMs
+HFT NET
+it−1
+−−
+−−
+−−−
+−−−
+HL-EPMs
+HFT NET
+it−1
+NS
+−−
+−−
+−−
+The table highlights the diﬀerences between the new methodology (SFEs) and the traditional methodologies (MFCs,
+EPMs). NS stands for not signiﬁcant, −−stands for negative at the 5% level, −−−stands for negative at the
+1% level, ++ stands for positive at the 5% level, and + + + stands for positive at the 1% level.
+48

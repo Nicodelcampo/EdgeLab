@@ -1,0 +1,79 @@
+{
+  "doc_id": 154,
+  "titulo": "Optimal Trading Stops and Algorithmic Trading",
+  "resumen_operativo": "Este paper propone un marco basado en cadenas de Markov de tiempo continuo para determinar niveles óptimos de stop-loss y take-profit en estrategias de trading algorítmico. Resulta útil para modelar señales de trading con vida útil limitada, permitiendo calibrar empíricamente la fuerza y la duración de la señal para definir puntos de salida matemáticamente óptimos.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "trading stop",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Niveles predefinidos para salir de una operación, calculados teóricamente para maximizar la utilidad descontada esperada de la posición.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Markov modulated diffusion"}
+      ],
+      "cita_textual": "we show how to derive optimal trading stops for generic algorithmic trading strategies when the P&L of the position is modelled by a Markov modulated diﬀusion."
+    },
+    {
+      "nombre": "Markov modulated diffusion",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Proceso estocástico donde la deriva (drift) y la volatilidad del P&L dependen de los estados de una cadena de Markov, usado para simular señales que cambian de régimen.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "regime switching"}
+      ],
+      "cita_textual": "The example above, as well as more complex ones can be modelled by letting the P&L be a Markov modulated diﬀusion"
+    },
+    {
+      "nombre": "stop loss",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Umbral de pérdidas que activa el cierre de la posición para evitar reducciones drásticas del capital.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "trading stop"}
+      ],
+      "cita_textual": "Stop loss and target proﬁt thresholds are commonly used by market practitioners to help manage the risk of their portfolios."
+    },
+    {
+      "nombre": "target profit",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Nivel de ganancias objetivo donde el agente cierra la posición, justificable analíticamente cuando se asume que la señal favorable perderá su efecto a corto plazo.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "trading stop"}
+      ],
+      "cita_textual": "Stop loss and target proﬁt thresholds are commonly used by market practitioners to help manage the risk of their portfolios."
+    },
+    {
+      "nombre": "signal decay",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Debilitamiento temporal del drift positivo de una señal, modelado matemáticamente mediante la intensidad de salto de la cadena de Markov hacia un estado de ruido.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "target profit"}
+      ],
+      "cita_textual": "the drift may be high and positive when the trade is entered and weaken over time (or even become negative) as other market participants spot the same opportunity"
+    },
+    {
+      "nombre": "risk aversion",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Nivel de tolerancia al riesgo del operador modelado en la función de utilidad, el cual afecta inversamente a la amplitud (distancia) óptima de los stops.",
+      "relaciones": [],
+      "cita_textual": "The existence of optimal stops is closely linked to the risk aversion of the agents. It is optimal for the risk neutral agent not to place any trading stop."
+    },
+    {
+      "nombre": "transaction costs",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Costo de ejecución asociado a la salida del trade. Si los costos son excesivos en relación a la ventaja predictiva, el trade no debería iniciarse.",
+      "relaciones": [],
+      "cita_textual": "When transaction costs are relatively high, it may be optimal not to enter the position in the ﬁrst place."
+    },
+    {
+      "nombre": "CARA utility",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Función de utilidad exponencial empleada para obtener soluciones analíticas cerradas en el problema de optimal stopping.",
+      "relaciones": [],
+      "cita_textual": "For some speciﬁc choice of utility function, e.g. CARA utility, U(x) = 1 −exp(−γx), ODE (2.5) can be solved in closed form"
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {
+    "nivel": "alta",
+    "nota": "El enfoque permite modelar señales efímeras, como desequilibrios de microestructura, para calcular analíticamente los niveles de stop y límite de toma de ganancias en estrategias intradía."
+  }
+}

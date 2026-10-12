@@ -1,0 +1,195 @@
+{
+  "doc_id": 60,
+  "titulo": "Architecture Over Asset Class: Market Microstructure Across Centralised and Decentralised Trading Venues",
+  "resumen_operativo": "Este paper compara la microestructura y costos de ejecución entre venues tradicionales (NYSE), CEX (Binance) y on-chain (Uniswap y Hyperliquid). Aporta una guía fundamental para calibrar herramientas como GARCH o el ratio de Amihud, advirtiendo que los modelos de acciones tradicionales fallan sistemáticamente al aplicarse en cripto debido a diferencias estructurales.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "limit order book",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Modelo de emparejamiento de órdenes basado en un libro central, que en su versión on-chain (Hyperliquid) logra igualar la eficiencia de un CEX.",
+      "relaciones": [
+        {
+          "tipo": "MEJORA_A",
+          "objeto": "automated market maker"
+        }
+      ],
+      "cita_textual": "the CLOB architecture produces lower all-in execution cost than the AMM at every point on the curve"
+    },
+    {
+      "nombre": "automated market maker",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Protocolo DEX donde los precios se fijan mediante un algoritmo determinista a lo largo de una curva matemática, exponiendo a los proveedores a impermanent loss.",
+      "relaciones": [
+        {
+          "tipo": "SE_OPONE_A",
+          "objeto": "limit order book"
+        }
+      ],
+      "cita_textual": "The constant-product automated market maker, where two token reserves x and y satisfy x·y = k, prices trades deterministically along a curve rather than through order matching."
+    },
+    {
+      "nombre": "effective spread",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida central del costo de ejecución de una operación. En venues TradFi/CEX captura el spread efectivo; en AMMs suma la tarifa base y el impacto en precio.",
+      "relaciones": [
+        {
+          "tipo": "MIDE",
+          "objeto": "transaction costs"
+        }
+      ],
+      "cita_textual": "Effective spread is the primary execution cost metric. In equity and CEX order book markets it is calculated as twice the absolute difference between the transaction price and the prevailing mid-quote"
+    },
+    {
+      "nombre": "Amihud illiquidity",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Ratio empírico estándar para estimar el impacto de mercado. En AMMs resulta inválido por la endogeneidad entre el retorno y el volumen de arbitraje obligado.",
+      "relaciones": [
+        {
+          "tipo": "MIDE",
+          "objeto": "market impact"
+        }
+      ],
+      "cita_textual": "The Amihud illiquidity ratio is calculated as the daily average of |rt|/Vt, where rt is the daily return and Vt is the dollar trading volume."
+    },
+    {
+      "nombre": "funding rate",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Mecanismo periódico de cobro y pago entre posiciones de futuros perpetuos que ancla su precio al spot; actúa como equivalente del cost of carry tradicional.",
+      "relaciones": [
+        {
+          "tipo": "EQUIVALE_A",
+          "objeto": "carry"
+        }
+      ],
+      "cita_textual": "In perpetual swap markets, cost-of-carry is replaced by the funding rate: a periodic transfer between long and short positions calibrated to keep the contract price anchored to spot."
+    },
+    {
+      "nombre": "implied volatility skew",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Diferencial de precio de opciones out-of-the-money. En TradFi tiene un sesgo persistente negativo, mientras que en BTC fluctúa sin un ancla estructural.",
+      "relaciones": [
+        {
+          "tipo": "MIDE",
+          "objeto": "tail risk"
+        }
+      ],
+      "cita_textual": "The implied volatility skew – the difference in implied volatility between out-of-the-money puts and calls at equivalent strikes – is one of the most information-rich quantities in options markets."
+    },
+    {
+      "nombre": "loss-versus-rebalancing",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Marco teórico que captura el verdadero costo de proveer liquidez en AMMs, reflejando el valor sistemático que el arbitraje extrae en cada bloque.",
+      "relaciones": [
+        {
+          "tipo": "MIDE",
+          "objeto": "impermanent loss"
+        }
+      ],
+      "cita_textual": "the true cost to LPs is better captured by comparing the pool position against a continuously rebalanced benchmark, since arbitrageurs systematically extract value in every block"
+    },
+    {
+      "nombre": "maximal extractable value",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Extracción estructural de rentas en redes blockchain por validadores que reordenan u omiten transacciones, operando como el equivalente del arbitraje de latencia HFT.",
+      "relaciones": [
+        {
+          "tipo": "EQUIVALE_A",
+          "objeto": "latency arbitrage"
+        },
+        {
+          "tipo": "CAUSA",
+          "objeto": "transaction costs"
+        }
+      ],
+      "cita_textual": "MEV (Maximal Extractable Value) – the ability of block producers and searchers to reorder, insert, or censor transactions within a block for profit, effectively jumping ahead of other users"
+    },
+    {
+      "nombre": "latency arbitrage",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Práctica de HFT en mercados TradFi para anticiparse a órdenes aprovechando ventajas de velocidad, equivalente al MEV pero sin visibilidad pública.",
+      "relaciones": [
+        {
+          "tipo": "EQUIVALE_A",
+          "objeto": "maximal extractable value"
+        }
+      ],
+      "cita_textual": "Economically, MEV functions as a structural analog to HFT latency arbitrage in TradFi: in both cases, a technically sophisticated participant extracts systematic rents"
+    },
+    {
+      "nombre": "oracle risk",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Riesgo inherente a activos sintéticos on-chain por depender de datos externos, causando divergencias de precio cuando los mercados tradicionales subyacentes cierran.",
+      "relaciones": [
+        {
+          "tipo": "APLICA_A",
+          "objeto": "synthetic asset"
+        }
+      ],
+      "cita_textual": "HIP-3 synthetic equity tokens introduce a qualitatively new category of oracle risk with regulatory implications that existing frameworks are not designed to handle."
+    },
+    {
+      "nombre": "synthetic asset",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Token on-chain cuyo valor rastrea el precio de un activo real sin otorgar propiedad directa, heredando riesgos de oráculo al operar 24/7 sobre mercados que no lo hacen.",
+      "relaciones": [
+        {
+          "tipo": "REQUIERE",
+          "objeto": "oracle risk"
+        }
+      ],
+      "cita_textual": "HIP-3 tokens have no direct claim on the underlying equity – they are purely synthetic, with value contingent on the oracle feed and the protocol’s continued operation."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Los exchanges CLOB (on-chain y centralizados) proporcionan menores costos de ejecución que los AMMs en tamaños de operación minorista al no tener comisión fija.",
+      "mercado": "BTC, ETH, SPY (Binance, Hyperliquid, Uniswap v3, NYSE)",
+      "periodo": "March 2026",
+      "magnitud": "Spread desde <0.001% (CLOB) frente a 0.05% plano (Uniswap) hasta trade size de $1M.",
+      "condiciones": "Observaciones transversales in-sample para activos altamente líquidos.",
+      "robustez": "media",
+      "cita_textual": "Binance and Hyperliquid both sit well below Uniswap at every trade size measured... the CLOB architecture produces lower all-in execution cost than the AMM at every point on the curve."
+    },
+    {
+      "afirmacion": "Las tasas de financiación de perpetuos reaccionan más drásticamente ante pánicos del mercado frente a los futuros regulados (CME), sugiriendo un perfil de inversor distinto.",
+      "mercado": "BTC perpetuals and futures (CME, Binance, Hyperliquid)",
+      "periodo": "2022-2025",
+      "magnitud": "Financiación fuertemente negativa pos-colapso FTX vs paridad más estable en base CME.",
+      "condiciones": "Régimen de estrés sistémico del mercado cripto.",
+      "robustez": "alta",
+      "cita_textual": "During the 2022 bear market and the period immediately following the FTX collapse, CME basis and perpetual funding rates diverged sharply: funding went negative as retail-dominated perpetual markets priced in continued downside"
+    },
+    {
+      "afirmacion": "La volatilidad condicional modelada con GARCH exhibe transiciones de régimen mucho más rápidas en cripto que en acciones, invalidando extrapolaciones de parámetros.",
+      "mercado": "SPY, BTC, ETH",
+      "periodo": "2022-2025",
+      "magnitud": "Ciclo de régimen de volatilidad en BTC es 3 a 4 veces más rápido que en SPY.",
+      "condiciones": "Retornos diarios evaluados con GARCH(1,1).",
+      "robustez": "alta",
+      "cita_textual": "A volatility targeting strategy calibrated on SPY regime persistence would systematically underestimate both the frequency of BTC regime transitions and the front-loaded nature of ETH volatility"
+    },
+    {
+      "afirmacion": "Los activos sintéticos on-chain sufren divergencias de precio persistentes frente a su subyacente tradicional cuando los mercados bursátiles no pueden ser arbitrados por estar cerrados.",
+      "mercado": "HIP-3 TSLA (Hyperliquid) vs TSLA (NYSE)",
+      "periodo": "Enero - Febrero 2026",
+      "magnitud": "Descuentos persistentes de 5–10% en horarios no operables de NYSE.",
+      "condiciones": "Ventana de 45 días, fuera del horario NYSE.",
+      "robustez": "media",
+      "cita_textual": "Outside market hours – evenings, weekends, and US holidays – the synthetic token continues trading on Hyperliquid... The deviation panel shows persistent discounts of 5–10%"
+    },
+    {
+      "afirmacion": "El skew de volatilidad implícita en opciones cripto fluctúa sin un ancla estructural, contrariamente al sesgo inherentemente negativo en opciones de acciones por cobertura institucional.",
+      "mercado": "SPX options (CBOE) vs BTC options (Deribit)",
+      "periodo": "2022-2025",
+      "magnitud": "Proxy DVOL oscila entre positivo y negativo; CBOE Skew Index consistentemente negativo.",
+      "condiciones": "Proxies de asimetría sobre medias móviles de 30 días.",
+      "robustez": "alta",
+      "cita_textual": "Unlike the SPX series, the BTC skew does not anchor around a structural baseline: it cycles between positive and negative on a monthly timescale"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "Valida que métricas clásicas de microestructura (como Amihud o GARCH) requieren ajustes profundos si se migran a mercados no TradFi o de arquitectura diferente."
+  }
+}

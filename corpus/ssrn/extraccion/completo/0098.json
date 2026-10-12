@@ -1,0 +1,92 @@
+{
+  "doc_id": 98,
+  "titulo": "Dry Markets and Statistical Arbitrage Bounds for European Derivatives",
+  "resumen_operativo": "Este paper teórico ofrece una forma de acotar el valor de opciones europeas cuando el mercado subyacente es ilíquido ('seco', operando con cierta probabilidad). Demuestra que aplicar el concepto de 'arbitraje estadístico' resulta en márgenes de compra/venta mucho más estrechos y realistas que los límites de arbitraje puro (super-replicación), útiles para modelar el riesgo de mercado en entornos con disrupciones de liquidez.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "statistical arbitrage bounds",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Límites de precios libres de arbitraje estadístico, basados en la ausencia de estrategias de costo cero con pago esperado positivo y riesgo acotado.",
+      "relaciones": [
+        {
+          "tipo": "MEJORA_A",
+          "objeto": "superreplication bounds"
+        }
+      ],
+      "cita_textual": "We derive statistical arbitrage bounds for the buying and selling price of European derivatives under incomplete markets."
+    },
+    {
+      "nombre": "statistical arbitrage",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Estrategia de trading de costo cero donde el pago esperado es positivo y el condicional de pago en cada estado final no es negativo, relajando la exigencia determinista del arbitraje puro.",
+      "relaciones": [
+        {
+          "tipo": "MEJORA_A",
+          "objeto": "pure arbitrage"
+        }
+      ],
+      "cita_textual": "A statistical arbitrage opportunity is characterized as a zero-cost trading strategy for which (i) the expected payo® is positive, and (ii) the conditional expected payo® in each ¯nal state of the economy is nonnegative."
+    },
+    {
+      "nombre": "dry market",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Mercados donde la liquidez no es continua, modelados con transacciones probabilísticas, causando incompetitud dinámica en los mercados.",
+      "relaciones": [
+        {
+          "tipo": "CAUSA",
+          "objeto": "incomplete market"
+        }
+      ],
+      "cita_textual": "Under such illiquidity we say that markets are dry. In this framework, dryness changes what is otherwise a complete market into a dynamically incomplete market."
+    },
+    {
+      "nombre": "superreplication bounds",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Límites del intervalo de valoración libres de arbitraje puro. Representan el costo máximo y mínimo para replicar con seguridad el pago del derivado.",
+      "relaciones": [
+        {
+          "tipo": "SE_OPONE_A",
+          "objeto": "statistical arbitrage bounds"
+        }
+      ],
+      "cita_textual": "The superreplicating bounds establish the limits of the interval for arbitrage-free value of the option. If the price is outside this range, then a positive pro¯t is attainable with probability one."
+    },
+    {
+      "nombre": "reservation price",
+      "tipo": "concepto",
+      "definicion_en_contexto": "El precio exacto que hace indiferente a un agente entre incluir o no el derivado en su cartera.",
+      "relaciones": [
+        {
+          "tipo": "PARTE_DE",
+          "objeto": "statistical arbitrage bounds"
+        }
+      ],
+      "cita_textual": "the price for which any agent is indi®erent between transacting or not transacting the derivative, to be called the reservation price of the derivative, is contained within the statistical arbitrage bounds derived above."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Los límites de precios basados en la ausencia de arbitraje estadístico son significativamente más estrechos que los de arbitraje puro en mercados secos probabilísticos.",
+      "mercado": "European derivatives",
+      "periodo": "no especificado",
+      "magnitud": "Intervalo [34.31, 35.17] vs [33.88, 37.69] para arbitraje puro",
+      "condiciones": "Ejemplo numérico teórico de 2 períodos con probabilidad de liquidez p=0.65",
+      "robustez": "media",
+      "cita_textual": "Using pure arbitrage arguments we ¯nd the following range of variation for the value of the call option [33:88; 37:69] Using the notion of statistical arbitrage opportunity, the above range gets narrower and is given by [34:31; 35:17]"
+    },
+    {
+      "afirmacion": "Los límites de arbitraje estadístico logran abarcar de forma consistente el precio de reserva de los agentes, lo que no siempre ocurre en alternativas basadas en el ratio de Sharpe.",
+      "mercado": "European derivatives",
+      "periodo": "no especificado",
+      "magnitud": "El precio de reserva de 35.09 está incluido; Sharpe bound no-arbitraje se queda en [34.31, 34.49]",
+      "condiciones": "Mercados suficientemente secos (probabilidad bajo un p* crítico)",
+      "robustez": "media",
+      "cita_textual": "Moreover, we show that, for su±ciently incomplete markets, the statistical arbitrage interval contains the reservation price of the derivative."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "El análisis se basa en opciones europeas y liquidez probabilística discreta; es poco transable directamente pero ilustra el aumento de riesgo por pérdida súbita de liquidez."
+  }
+}

@@ -1,0 +1,1105 @@
+ Electronic copy available at: https://ssrn.com/abstract=2949807 
+Bitcoin Market Microstructure
+Thomas Dimpﬂ∗
+University of Tübingen
+April 2017
+Abstract
+Bitcoin is traded on exchanges which use an open limit order book. This
+paper investigates the microstructure of various bitcoin markets with respect
+to liquidity and private information processing. The markets are found to be
+fairly liquid, providing liquidity at a stable rate throughout the 24 hours trading period. The spread itself as well as the proportion attributed to adverse
+selection costs are high suggesting that private information is an important
+aspect in the bid-ask spread.
+Keywords: adverse selection • Bitcoin • liquidity • market microstructure
+JEL classiﬁcation: C58, E44, F31
+∗Address for correspondence: University of Tübingen, Mohlstr. 36, 72074 Tübingen, Germany.
+E-Mail: thomas.dimpﬂ@uni-tuebingen.de
+Electronic copy available at: https://ssrn.com/abstract=2949807
+
+ Electronic copy available at: https://ssrn.com/abstract=2949807 
+1
+Introduction
+The market capitalization of Bitcoin more than doubled in 2016, increasing from
+6.5 billion USD on 31 December 2015 to 15.5 billion USD on 31 December 2016.
+This suggests that the interest in Bitcoin trading is growing rapidly. The development is fostered by by the adoption of Bitcoin as a means of payment by some large
+companies such as Dell or Microsoft. On the other hand, the United States Securities and Exchange Commission (SEC) only recently rejected the proposal of a
+Bitcoin ETF as requested by the Winklevoss Bitcoin Trust, the Bitcoin Investment
+Trust, and the SolidX Bitcoin Trust.
+Academic research on Bitcoin has largely focused on the question whether
+Bitcoin is a currency or rather a (speculative) investment (see, for example, Baur,
+Lee, and Hong, 2015; Cheah and Fry, 2015; Dwyer, 2015; Bouoiyour and Selmi,
+2016; Dyhrberg, 2016). The current consensus seems to be that Bitcoin cannot be
+considered a currency, in particular due to the high level of volatility observed in
+these markets. Studies that are related to the market structure of Bitcoin exchanges
+are scarcer. Urquhart (2016) studies the properties of Bitcoin returns and concludes
+that the Bitcoin markets are not weakly efﬁcient (yet). Bouri, Azzi, and Dyhrberg
+(2017) study the return-volatility relationship in the Bitcoin market. In contrast to
+stock markets, the authors do not ﬁnd an asymmetric, but an inverted asymmetric
+effect of past returns on future volatility. Brandvold, Molnár, Vagstad, and Valstad
+(2015) investigate the contribution to price discovery of Bitcoin of seven major
+Bitcoin markets. The authors ﬁnd that price discovery is dominated by Mtgox and
+BTC-e. It should be noted though that Mtgox declared bankruptcy on 28 February
+2014.
+As Brandvold et al. (2015) found that the price discovery is dominated by very
+few markets and trading is carried out completely online, it is unclear why a substantial number of Bitcoin market places exist in parallel within one country. If
+the best price when trading in US dollar can be obtained by trading on a particular
+market, one might expect that all trading is routed via this exchange. Even trading
+on a foreign platform is an easily implemented option in Bitcoin trading. As this
+is not the case though, there should be other reasons that make trading at the var1
+Electronic copy available at: https://ssrn.com/abstract=2949807
+
+ious platforms attractive. These reasons might, at least partially, be rooted in the
+microstructure of these markets.
+In this article I focus on the market microstructure of eight Bitcoin markets
+which trade in US dollar, in Euro, or in Renminbi. I will look at two aspects,
+namely liquidity and adverse selection. Liquidity is the most essential feature of
+the trading process and I suggest to use different measures to compare liquidity in
+the different markets. Furthermore, as transparency is one of the key features of
+Bitcoin trading, I am interested in estimating the adverse selection component in
+the bid-ask spread. Transparency on the Bitcoin market means that the entire trading history is available and traders are provided with information on the complete
+state of the order book, but trading itself is anonymous. Hence, the institutional
+framework resembles the trading on regular stock exchanges which use an open
+limit-order book (like the NYSE or XETRA) and I will therefore use the models
+of Huang and Stoll (1997), Glosten and Harris (1988), and Madhavan, Richardson, and Roomans (1997) to estimate the components of the bid-ask spread. These
+models are widely used in empirical studies of the microstructure of stock markets,
+for example by Ahn, Cai, Hamao, and Ho (2002), Hanousek and Podpiera (2003),
+or Riordan, Storkenmaier, Wagener, and Zhang (2013). See Madhavan (2000) for
+an overview of the early literature.
+The results of the study can be summarized as follows. The markets in my
+sample differ substantially with respect to liquidity. As I use a variety of liquidity
+measures which capture different aspects of liquidity, they do not unanimously
+identify the one most liquid market. I ﬁnd that trading volume during the day
+is closely linked to the trading times of the US and European stock markets and
+suggests that liquidity changes throughout the day. The model implied spreads are
+to the largest extent attributed to adverse selection, and are substantially higher
+than on stock markets. In contrast to the latter, there is no intraday pattern of the
+spread which is most likely due to the absence of market makers and the possibility
+to trade 24 hours. The results imply that the markets investigated in this article are
+not fundamentally different from each other. I suggest that the varying results are
+the effect of an unequal distribution of traders across these markets. Therefore, they
+might be considered different entry points to the common, global Bitcoin market,
+2
+Electronic copy available at: https://ssrn.com/abstract=2949807
+
+similar to the conclusion of O’Hara and Ye (2011) for stocks trading on different
+stock markets.
+The article proceeds as follows. Section 2 presents important features of the
+Bitcoin market structure, followed by a description of the dataset. Section 3 presents
+the liquidity analysis and Section 4 the spread decomposition. Section 5 concludes.
+2
+The Bitcoin Market
+2.1
+Market Characteristics
+The Bitcoin market is a fully electronic market. It has been created by Satoshi
+Nakamoto on 31 October 2008 as a peer-to-peer network. In particular, there is no
+central bank, and a number of trading platforms constitute the only intermediaries.
+Transactions are veriﬁed by a network of nodes that check the accuracy of the latest
+transaction against their register of total transactions, called the blockchain. The
+transaction is subsequently added to the ledger and information is redistributed to
+other nodes. Please refer to Brito and Castillo (2013) or Böhme, Christin, Edelman,
+and Moore (2015) for more details on the technological and security aspects of
+Bitcoin trading.
+Trading Bitcoin is similar to trading stocks on a limit order book market. In
+particular, the trading platforms do not act as market makers, but traders post market or limit orders which make up an order book. Market orders are immediately
+executed against standing offers in the book. Limit orders enter the book unless
+they can be (fully) executed immediately. It is also possible to restrict the validity
+of a limit order with respect to time (e.g. “Good until canceled”, “Good this day”,
+etc.). Trading is continuous only, there are no auctions or volatility interruptions.
+Also, the markets never close which allows for trading during 24 hours on 7 days
+per week. The minimum tick size is 0.01 units of the base currency.
+The Bitcoin market is fully transparent in the sense that traders are provided
+with information about the complete state of the order book. In particular, the total
+available volume and the associated price levels are provided. For convenience,
+3
+Electronic copy available at: https://ssrn.com/abstract=2949807
+
+Table 1: Kraken Fee Schedule
+The table presents the fee schedule applicable when trading on Kraken.
+Source: www.Kraken.com/en-us/help/fees
+Maker
+Taker
+Volume
+0.16%
+0.26%
+< 50,000
+0.14%
+0.24%
+< 100,000
+0.12%
+0.22%
+< 250,000
+0.10%
+0.20%
+< 500,000
+0.08%
+0.18%
+< 1,000,000
+0.06%
+0.16%
+< 2,500,000
+0.04%
+0.14%
+< 5,000,000
+0.02%
+0.12%
+< 10,000,000
+0.00%
+0.10%
+> 10,000,000
+the platforms offer graphical analysis tools, displaying for example the evolution
+of the spread during a short period of time. It is also possible to access the entire
+transaction history ever recorded. Furthermore, there are neither hidden volume (as
+in iceberg orders) nor dark pools which makes the Bitcoin market an ideal market
+in the sense of Glosten (1994).
+As on a stock market, there are multiple costs associated with a trade. First,
+the platforms charge transaction fees to cover their costs. As an example, the fee
+schedule of Kraken is displayed in Table 1. The fee structure is such that larger
+trades are cheaper, but this involves trading of Bitcoins worth more than 50,000
+USD at a time which is an order size that is not often observed (see below). The
+more interesting aspect of the fee structure is that the market discriminates between
+liquidity providers (“Maker”) and liquidity takers (“Taker”). As the fees for using
+market orders and, thus, providing liquidity, are lower, there is an incentive for
+customers to forgo immediacy at the beneﬁt of lower transaction costs. This is
+obviously a means for increasing the provision of liquidity. Fees can either be
+payed in Bitcoin or in the respective currency. The fee structure is, however, not
+the same across all markets. OKCoin, for example, only holds one scheme and
+does not differentiate between liquidity provision and liquidity taking.
+4
+Electronic copy available at: https://ssrn.com/abstract=2949807
+
+A second cost associated with trading is adverse selection cost. Trading Bitcoin is anonymous which gives rise to counterparty risk when some traders posses
+private information. As the platforms do not act as market makers, there are no
+inventory holding costs which is the third cost component that would be covered
+by the bid-ask spread and is generally accounted for in the spread decomposition
+models.
+The microstructure of stock markets is, to some extent, shaped by the rules and
+regulations issued by the regulatory authorities like the US SEC. In the case of Bitcoin, there are, however, no explicit regulations. The absence of such regulations
+has been the major reason why the US SEC rejected the installation of Bitcoin
+ETFs in March 2017 (see SEC, 2017). The only guiding principle for an investor
+is the statement of the US Internal Revenue Service (IRS) which announced that
+the IRS will treat Bitcoin (and other virtual currencies) as property for federal tax
+purposes. Hence, tax principles applicable to property transactions are applied to
+determine the tax liability stemming from Bitcoin transactions. In Europe, Bitcoin
+is treated like a currency from a tax point of view. The Court of Justice of the European Union ruled in October 2015 that buying and selling Bitcoin is a service and
+hence not subject to VAT. The court explicitly stated that Bitcoin transactions fall
+into the same category as transactions involving “currency, bank notes and coins
+used as legal tender” (ECJ, 2015).
+2.2
+Data Description
+The dataset used covers eight markets out of which four trade Bitcoin against
+the US dollar (Bitstamp, BTC-e, Hitbtc, Itbit), two against the euro (bitcoin.de,
+Kraken), and two against the Chinese Renminbi (BTC China, Okcoin). The sample covers the time period 1 November 2016 till 31 January 2017 (92 trading days).
+The data are available at no charge from bitcoincharts.com. The markets are selected such that there are no missing days in the dataset. For each market, the
+dataset contains all recorded transactions (price and number of Bitcoins traded)
+together with a unix time stamp.
+5
+Electronic copy available at: https://ssrn.com/abstract=2949807
+
+In order to infer the trade direction, I use the tick test according to Lee and
+Ready (1991). A transaction is considered to be buyer-initiated (seller-initiated)
+if the transaction price is higher (lower) than the previously recorded transaction
+price. If the current and the preceding prices are identical, the price at lag j is
+used to determine the trade direction where the price at lag j is the ﬁrst one to be
+different from the current trading price. As trades within the spread cannot occur,
+all transactions can palpably be classiﬁed.
+Table 2 presents descriptive statistics that characterize the different Bitcoin
+markets. The markets differ substantially with respect the average daily number
+of transactions, time between trades, and daily traded volume. The daily average
+of number of transactions ranges from as little as 102 at HitBTC to 76543 at OKCoin. While the number of transactions on the large European and US markets is
+comparable, the number of transactions carried out in Renminbi is more than 100
+times higher. This results in an average of 1.13 seconds between two consecutive
+trades on OKCoin, while on HitBit a trade is recorded on average every 14 minutes
+only. Again, trading intensity is about 15-20 times higher on the Chinese Bitcoin
+markets than on the European or US markets. This corresponds to the fact that
+the average daily trading volume is much higher in China than elsewhere. However, the markets also differ with respect to the size of an average transaction. On
+OKCoin, a single trade is on average associated with a 20.5 Bitcoin volume. In
+contrast, a transaction in the US or European Bitcoin exchanges is generally worth
+less than 2 Bitcoins.
+The last column of Table 2 presents the result of the tick test. As can be seen,
+buyer- and seller-initiated transactions are more or less equally distributed in the
+sample. If at all, there is a slight tendency towards buyer-initiated trades, but evidence is rather weak. Hence, effects that are rooted in order imbalance as described, for example, by Chordia, Roll, and Subrahmanyam (2002) should be of no
+concern.
+6
+Electronic copy available at: https://ssrn.com/abstract=2949807
+
+Table 2: Descriptive Statistics
+The table presents the average daily number of transactions (transactions), the
+average time between two consecutive trades (time, in seconds), the average
+daily traded volume (volume, in Bitcoin), and the average daily percentage of
+buyer-initiated trades (buyer) for the bitcoin markets for the sample period 1
+November 2016 to 31 January 2017. Standard deviations are given in parentheses.
+Market
+Currency
+transactions
+time
+volume
+buyer
+Bitstamp
+USD
+4072
+21.22
+7201
+54.6
+(2242)
+(45.25)
+(6255)
+(6.5)
+BTC-e
+USD
+7872
+10.98
+5132
+50.7
+(3454)
+(28.56)
+(3126)
+(1.7)
+HitBTC
+USD
+102
+843.50
+17
+50.9
+(67)
+(2553.14)
+(19)
+(12.6)
+itBit
+USD
+1237
+69.82
+2776
+53.7
+(1080)
+(256.96)
+(2600)
+(5.8)
+bitcoin.de
+EUR
+649
+133.13
+540
+50.6
+(328)
+(274.13)
+(386)
+(2.5)
+Kraken
+EUR
+5126
+16.85
+7060
+52.0
+(2456)
+(33.01)
+(5455)
+(3.1)
+BTC China
+CNY
+43930
+1.97
+1712604
+50.2
+(12713)
+(4.05)
+(1285772)
+(0.8)
+OKCoin
+CNY
+76543
+1.13
+1573812
+49.6
+(21182)
+(6.34)
+(1048424)
+(1.1)
+7
+Electronic copy available at: https://ssrn.com/abstract=2949807
+
+3
+Liquidity
+The ﬁrst aspect of the market microstructure of Bitcoin to consider is liquidity.
+Liquidity of any ﬁnancial market is of utmost importance as it guarantees that
+trading is possible at any time at a fair price. However, liquidity is difﬁcult to
+grasp and I will therefore resort to various measures that capture different aspects
+of liquidity, namely trading volume, the liquidity ratio of Cooper, Groth, and Avera
+(1985), and daily spread measures of Roll (1984) and Corwin and Schultz (2012).
+As proposed by Mendelson (1982), trading volume is an increasing function of
+liquidity. Hence, the market where trading volume is higher should be relatively
+more liquid. The average daily trading volume presented in Table 2 suggests that
+the most liquid markets are BTC China and OKCoin. These two markets traded
+on average more than 99% of Bitcoin during the observed time period. When
+considering trading in the different currencies separately, BTC-e is the most liquid
+market in trading in US dollar while Kraken is the more liquid market for trading
+in euro. Still, these two markets only have a relative trading volume of 0.16% and
+0.21%, respectively, compared to the total average daily trading volume.
+In stock markets, it is a well-documented stylized fact that volume is u-shaped
+during a trading day, i.e. volume, and thus liquidity, are high at the beginning
+of the trading period, decrease during the trading day and reach a second high
+towards the end (see, for example, Jain and Joh, 1988; Kalev, Liu, Pham, and
+Jarnecic, 2004). As there are no interruptions of the trading period for Bitcoin, it is
+unclear upfront whether an intraday effect might be present. I therefore calculate
+the relative trading volume per hour (average hourly trading volume as percentage
+of total average daily volume) to shed light on this question.
+The result is graphically depicted in Figure 1. Of course, as there is no natural
+opening and closing of the market, there is no such intraday pattern as for the stock
+market. Still, patterns can be observed in most markets and a test whether volume
+is uniformly distributed over the 24 hours is rejected for all markets but HitBTC.
+This is illustrated by a 95% conﬁdence interval (based on a normal approximation,
+dashed lines) in the graphs in Figure 1. Only for HitBit is the hypothesis of a
+uniform distribution not rejected.
+8
+Electronic copy available at: https://ssrn.com/abstract=2949807
+
+For the markets trading against the dollar, a peak of the trading volume is observed for the interval beginning at 13:00 UTC (with the exception of HitBTC).
+This peak is closely related to the opening time of the NYSE at 14:30 UTC and
+implies that trading volume is about twice as high compared to the lowest observed
+hourly volume. Trading volume of Bitstamp and BTC-e starts to increase around
+8:00 UTC which corresponds to the stock market opening in Europe. However,
+there is no clear picture as trading volume on itBit is comparatively low between
+8:00 and 12:00 UTC while for HitBit, an absolute maximum of the relative trading
+volume is observed in the interval starting at 8:00 UTC.
+For the markets trading in euro, the picture is somewhat clearer. Trading volume starts to increase at 7:00 UTC and remains at a high level until 16:00 UTC.
+These times correspond to the trading times of the Frankfurt or London stock exchanges, or Euronext (8:00 till 16:30 UTC). Trading volume then remains at an
+elevated level until 23:00 UTC (roughly the closing of the US markets) and then
+goes down during the rest of the night. So trading or volume patterns, respectively,
+for trading Bitcoin in euro are closely related to trading times of the European and
+US stock markets.
+The markets trading in Chinese Renminbi do not display the same variability
+of trading volume during the day as the other markets. It seems that trading is only
+slightly slowed down during the time period after the stock market in the US closed
+and before the Shanghai or Hong Kong stock exchanges open, i.e. between 18:00
+and 1:00 UTC (which also corresponds to the night in China). It is interesting that
+volume is slightly lower in the interval 4:00 to 5:00 UTC which corresponds to the
+lunch breaks, both in Shanghai and in Hong Kong.
+In sum, the result suggests that the markets are most liquid during the times
+that the respective stock markets are open. The traded volume during peak times is
+about 2-3 times higher than during quiet times. The patterns are most pronounced
+for the European and US markets of Bitcoin while the distribution of trading volume across the day is more even in the Chinese markets. Hence, liquidity of the
+Bitcoin markets depends on the time of the day, but the effect is much less pronounced than for stock markets. Of course, to some extent this is due to the possibility to trade Bitcoin 24/7.
+9
+Electronic copy available at: https://ssrn.com/abstract=2949807
+
+Figure 1: Hourly Trading Volume
+The graphic presents hourly trading volume as a percentage of total average trading
+volume. The time axis is UTC. The solid line depicts the expected percentage
+if trading was uniformly distributed over the 24 hours, the dashed line is a 95%
+conﬁdence band based on a normal approximation. The bands for HitBTC are too
+large as to be displayed.
+0:00
+2:00
+4:00
+6:00
+8:00
+10:00
+12:00
+14:00
+16:00
+18:00
+20:00
+22:00
+0
+2
+4
+6
+BITSTAMP
+0:00
+2:00
+4:00
+6:00
+8:00
+10:00
+12:00
+14:00
+16:00
+18:00
+20:00
+22:00
+0
+2
+4
+6
+BTCE
+0:00
+2:00
+4:00
+6:00
+8:00
+10:00
+12:00
+14:00
+16:00
+18:00
+20:00
+22:00
+0
+2
+4
+6
+8
+10
+HITBTC
+0:00
+2:00
+4:00
+6:00
+8:00
+10:00
+12:00
+14:00
+16:00
+18:00
+20:00
+22:00
+0
+2
+4
+6
+ITBIT
+0:00
+2:00
+4:00
+6:00
+8:00
+10:00
+12:00
+14:00
+16:00
+18:00
+20:00
+22:00
+0
+2
+4
+6
+BTCDE
+0:00
+2:00
+4:00
+6:00
+8:00
+10:00
+12:00
+14:00
+16:00
+18:00
+20:00
+22:00
+0
+2
+4
+6
+KRAKEN
+0:00
+2:00
+4:00
+6:00
+8:00
+10:00
+12:00
+14:00
+16:00
+18:00
+20:00
+22:00
+0
+1
+2
+3
+4
+5
+BTCN
+0:00
+2:00
+4:00
+6:00
+8:00
+10:00
+12:00
+14:00
+16:00
+18:00
+20:00
+22:00
+0
+1
+2
+3
+4
+5
+OKCOIN
+10
+Electronic copy available at: https://ssrn.com/abstract=2949807
+
+While trading volume is a viable proxy for liquidity, it does not account for the
+price impact of trades nor for potential transaction costs which are both negatively
+related to liquidity. I therefore calculate the liquidity ratio of Cooper et al. (1985)
+which measures the volume (denoted in the respective currency) that is necessary
+to induce a 1% price change. The measure is calculated as follows:
+LR =
+∑j ∑t pj,tVj,t
+∑j ∑t(|∆pj,t|·100)
+where pj,t is the transaction price on day j at time t, Vj,t the corresponding Bitcoin
+volume, and ∆pj,t = pj,t −pj,t−1. To be more precise, the time index t corresponds
+to the high frequency intraday observation at time t and the summation runs across
+all intraday intervals and the 92 days j in the sample.
+The Roll (1984) measure for the percentage effective spread is
+SR = 200
+s
+−Cov
+ ∆pj
+pj−1
+, ∆pj−1
+pj−2
+
+.
+The index j is used without the t index to distinguish daily observations used to
+calculate the Roll measure from intraday observations used to calculate LR.
+As in an empirical application of the Roll measure, a positive autocorrelation
+between ∆pj and ∆pj−1 might result, I also use the spread measure proposed by
+Corwin and Schultz (2012) which relies on daily high and low prices. The measure
+is calculated as
+SCS = 2(eα −1)
+1+eα
+·100
+with α =
+√
+2β−√
+β
+3−2
+√
+2
+−
+γ
+3−2
+√
+2, β = E
+
+∑1
+k=0
+
+ln
+Hj+k
+Lj+k
+2
+, and γ =
+
+ln Hj,j+1
+Lj,j+1
+2
+. Hj
+(L j) denote the high (low) price on day j and Hj,j+1 (L j,j+1) high (low) prices
+observed over a two-day period j and j + 1. To calculate β, the expectation is
+replace by the sample mean.
+Table 3 summarizes these liquidity measures. The liquidity ratio shows that the
+markets are rather heterogeneous. The most liquid market for trading in US dollar
+(in the sense of the liquidity ratio) is Bitstamp. It would require a transaction worth
+11
+Electronic copy available at: https://ssrn.com/abstract=2949807
+
+Table 3: Liquidity Measures
+The table presents the liquidity ratio LR of Cooper et al. (1985) (denoted in
+local currencies), the relative spread measure SR of Roll (1984) (in percent),
+and the relative spread measure SCS of Corwin and Schultz (2012) (in percent),
+calculated over the three months period from November 2016 to January 2017.
+Market
+LR
+SR
+SCS
+Bitstamp
+3698.15
+1.10
+5.01
+BTC-e
+2924.27
+-
+4.74
+HitBTC
+8.19
+1.11
+3.97
+itBit
+1382.23
+1.47
+5.16
+bitcoin.de
+247.16
+-
+15.43
+Kraken
+3547.03
+1.31
+3.53
+BTC China
+697745.11
+2.62
+8.30
+OKCoin
+612732.25
+2.70
+8.35
+3698 USD to move the Bitcoin price by 1% while on HitBTC, a transaction worth
+only 8.19 USD would sufﬁce to achieve the same. Hence the latter market can be
+considered quite illiquid. For trading in euro the most liquid market is Kraken.
+There, an amount of 3547 euro is needed to induce a 1% price change. Using
+an average exchange rate between the USD and the euro of 0.95 during the three
+month period, the euro amount corresponds roughly to 3734 USD which would
+imply that liquidity on Kraken and Bitstamp is similar. Considering the markets
+trading in Renminbi, the liquidity ratio indicates that BTC China is slightly more
+liquid than OKCoin. Still, both markets can be considered more liquid than the
+most liquid markets trading in USD or euro: again, using an average exchange rate
+of 6.92 CNY/USD, the dollar amount needed to move the price by 1% on BTC
+China is 100830 USD which is 27 times more than on Bitstamp or even 12603
+times more than on itBit. One can therefore conclude that currently the most liquid
+markets are based in China. The resulting ranking in terms of liquidity corresponds
+to the trading volume as reported in Table 1.
+The Roll measure for the spread expresses the spread as a percentage and is
+therefore directly comparable across all markets. Unfortunately, the measure cannot be calculated for BTC-e and bitcoin.de for the present sample as they exhibit
+12
+Electronic copy available at: https://ssrn.com/abstract=2949807
+
+a positive serial covariance of relative price changes. I refrain from calculating a
+negative spread as it is not possible that such a spread exists in the Bitcoin market
+setting.
+The third column in Table 3 holds the spread estimates based on the Roll model
+while the fourth column presents the spread estimate (in local currency) based on
+the model of Corwin and Schultz (2012). The SR suggests that the relative spread
+varies between 1.1% and 2.7%. The estimated relative spread of the markets trading in euro or in US dollar are comparable and Bitstamp would again be classiﬁed
+as the most liquid market. Kraken, on the other hand, which was identiﬁed to be
+as liquid as Bitstamp using trading volume or LR, would be considered slightly
+less liquid. HitBTC which was considered the least liquid market, would now be
+considered as liquid as Bitstamp. Surprisingly, BTC China and OKCoin come out
+as the least liquid markets with relative spreads above 2.6%. This ranking is in line
+with the SCS spread estimate. However, the order of magnitude is decisively higher
+than for the Roll measure. For the markets trading in US dollar, the SCS suggests
+a relative spread of 4-5% and 3.5% for Kraken. The relative spread observed on
+bitcoin.de is 15% which is very high and, thus, suggests bitcoin.de to be rather
+illiquid. The spread on BTC China and OKCoin is 8.3% which is about twice as
+high as for the US markets.
+Considering the different liquidity measures a clear answer to which market is
+the most liquid cannot be provided. The trading volume based liquidity measures
+suggest that the markets trading in Renminbi are the most liquid ones, followed by
+Bitstamp and Kraken. This conclusion would also be supported by the descriptive
+statistics presented in Table 2. A higher number of transactions or a lower time
+between transactions could also be used as indicators for a liquid market.
+However, the picture is reversed when looking at the spread estimates which
+suggest that the markets trading in Renminbi are the least liquid ones. However,
+the spread estimates, in particular the SCS are very high, much higher than the ones
+reported by Corwin and Schultz (2012) which suggests that they have to be used
+with care when drawing conclusions about the liquidity of the market. Still both
+provide a tendency, suggesting higher liquidity in the European and US markets.
+13
+Electronic copy available at: https://ssrn.com/abstract=2949807
+
+4
+Spread Decomposition
+To further decompose the spread into adverse selection and other transaction costs,
+I rely on the models of Huang and Stoll (1997), Glosten and Harris (1988), and
+Madhavan et al. (1997). These models assume an unobservable fundamental value
+Xt of the asset which evolves as a random walk accounting for informed trading as
+follows:
+Xt = Xt−1 +θQt−1 +εt.
+(1)
+θQt−1 is the amount of the price change which is attributable to private information. Qt indicates the trade direction where 1 (-1) represents a buyer- (seller-) initiated trade. The trade-indicator models differ in the way this part of Equation (1) is
+speciﬁed. The second common assumption is that the quote midpoint Mt deviates
+from the fundamental value Xt by the cost of holding inventory. As there is no market maker who holds inventory in the Bitcoin market, the quote midpoint (which
+can be observed by market participants) is subsequently assumed to be equal to the
+fundamental value.
+It is worthwhile to take a moment and consider the notion of private information in the Bitcoin context as opposed to the stock market. For trading of stock, private information might refer to a better evaluation of the company’s prospects and
+a more precise estimation of the future cashﬂow. The availability of private information to a limited group of traders gives rise to the distinction between informed
+insiders and uninformed noise traders which trade for liquidity reasons only. The
+latter also exist in the Bitcoin market. The question remains, what information
+private information might constitute as there is no future cashﬂow that could be
+discounted nor assets that could be valued. I suggest that Bitcoin draws its value
+from traders’ level of conﬁdence. Hence, private information is the personal, most
+accurate estimation of the future value of Bitcoin. This valuation depends on the
+potential usage of Bitcoin, in particular for consumption. This private information
+feeds back into the price according to Equation 1 and is largely demand-driven.
+Due to ﬁxed supply, a higher demand (caused by private information) leads to rising prices which is what we see currently with the Bitcoin price.
+14
+Electronic copy available at: https://ssrn.com/abstract=2949807
+
+In the model by Huang and Stoll (1997), the evolution of the fundamental value
+is assumed to take private information into account. The magnitude of the price
+effect is modeled as a proportion α of the constant half-spread (S/2). Hence, in
+Equation (1) θ = α(S/2). Furthermore, they assume that the observed price pt
+deviates from the midquote by the signed half-spread and rounding errors due to
+price discreteness such that pt = Mt +(S/2)Qt +ηt. Using Mt = Xt and taking ﬁrst
+differences of the the price equation leads to the following model:
+∆pt = α S
+2Qt−1 + S
+2(Qt −Qt−1)+et.
+(2)
+This equation is identical to the basic model of Huang and Stoll (1997) with the
+exception that adverse selection costs appear directly, while in their original model
+it is only possible to identify the sum of adverse selection and inventory holding
+costs.
+Glosten and Harris (1988) allow the adverse selection and the inventory holding
+component to depend on order size. They assume that the market maker adjusts
+the spread to recover losses incurred when trading with informed traders. Hence,
+the parameter θ in Equation (1) is replaced by a function z0 +z1Vt. In the Bitcoin
+market, there are no market makers. However, it is still sensible to assume that
+the spread might widen after a large trade because traders might then be cautious
+to enter new limit orders to avoid potential losses – similar to the behaviour of
+a market maker. As in the model of Huang and Stoll (1997), I set the inventory
+holding cost to zero which results in the following model:
+∆pt = z0Qt +z1QtVt +et.
+(3)
+Madhavan et al. (1997) assume that only the surprise component of the order
+ﬂow affects the fundamental value, in contrast to Equation ( 1) in which order ﬂow
+Qt directly is used. Hence, the fundamental value evolves as Xt = Xt−1 + θ(Qt −
+E[Qt | Qt−1])+εt. Madhavan et al. (1997) derive the conditional expectation of Qt
+15
+Electronic copy available at: https://ssrn.com/abstract=2949807
+
+as ρQt−1 where ρ represents the ﬁrst-order autocorrelation of the trade indicator
+Qt. In the absence of inventory holding, their model is then derived as follows:
+∆pt = θQt −ρθQt−1 +et
+(4)
+Due to the structure of the Bitcoin order book, I further assume that the probability
+that a trade occurs within the quoted spread is zero. The assumption that buys and
+sells are equally likely is upheld and seems plausible as approximately 50% of all
+trades have been identiﬁed as buyer-initiated (cp. Table 2).
+In all models described in Equations (2), (3), and (4), the error term et contains
+rounding errors, effects of price discreteness, and the public information content
+of price changes. et is by construction serially correlated. The models of Huang
+and Stoll (1997) and Madhavan et al. (1997) are estimated using GMM while I
+estimate the Glosten and Harris (1988) model directly using OLS. The estimations
+are conducted in SAS.
+Table 4 presents the results from estimating the model of Huang and Stoll
+(1997) as given in Equation (2). The traded spread varies between 0.70 and 4.15
+USD on the US dollar markets, between 0.81 and 13.60 EUR on the euro markets,
+and between 0.55 and 1.74 CNY in the Renminbi markets. In all but one markets,
+about 50% of the traded spread is assigned to adverse selection by the model. The
+estimate for OKCoin is above 1 which is not meaningful for a proportion. However, it seems plausible that a greater proportion of the spread is related to adverse
+selection in the OKCoin market than at BTC China. As the average transaction size
+is larger, ﬁxed transaction costs are lower such that transitory spread components
+do not matter as much. Higher overall traded volume might also be correlated with
+greater uncertainty about information of the other market side. Also, the estimated
+traded spread at OKCoin is about one third of the spread at BTC China which
+would imply that the absolute value of the adverse selection cost on OKCoin is
+still lower than on BTC China, even though a higher proportion of the spread is
+attributed to it.
+For the other markets, the traded spread is also lowest on those markets where
+volume is highest. This is in line with the ﬁndings documented in Section 3.
+16
+Electronic copy available at: https://ssrn.com/abstract=2949807
+
+Table 4: Spread Decomposition: Huang and Stoll Model
+The table presents the estimation results for the model of Huang and Stoll (1997).
+SHS is the estimated spread (in local currencies) and α the proportion attributable
+to adverse selection. se(·) denotes standard deviations of the respective estimate.
+Market
+SHS
+s.e.(SHS)
+α
+s.e.(α)
+Bitstamp
+0.7827
+0.0050
+0.4634
+0.0028
+BTC-e
+0.7762
+0.0031
+0.5382
+0.0020
+HitBTC
+4.1506
+0.0947
+0.6431
+0.0174
+itBit
+0.6973
+0.0131
+0.5220
+0.0090
+Kraken
+0.8081
+0.0038
+0.5071
+0.0024
+bitcoin.de
+13.5983
+0.1409
+0.6475
+0.0065
+BTC China
+1.7381
+0.0068
+0.6376
+0.0021
+OKCoin
+0.5532
+0.0018
+1.0511
+0.0022
+While the model estimated here differs slightly from the model estimated by
+Huang and Stoll (1997), it is still worthwhile to compare the results. First, the estimate of the traded spread as presented in Table 4 is signiﬁcantly higher than the
+spread estimated by Huang and Stoll (1997). For their sample of large US stocks,
+they ﬁnd an average traded spread of 0.12 USD. Considering only the markets trading in USD, the average Bitcoin spread is 1.60 USD, i.e. it is more than 13 times
+higher than at a stock market. Also, the proportion of the spread that is attributed to
+private information is about 5 times higher in the Bitcoin market than in the sample
+of stocks of Huang and Stoll (1997). This observation, a high spread coupled with
+a large adverse selection component, is in line with the result of Easley, Kiefer,
+O’Hara, and Paperman (1996) who propose that infrequently traded assets are exposed to a higher risk of information-based trading. While the daily numbers as
+reported in Table 2 cannot be considered low, it should be noted that they are spread
+over 24 hours which would classify most of the markets as thin. Only the markets
+trading in Renminbi are closer to the market properties as documented by Huang
+and Stoll (1997). On OKCoin, the traded spread is 0.55 CNY which corresponds
+roughly to 0.08 USD, suggesting that adverse selection is, in absolute terms, less
+of a problem there, despite the documented high α.
+17
+Electronic copy available at: https://ssrn.com/abstract=2949807
+
+Table 5: Spread Decomposition: Glosten and Harris Model
+The table presents the estimation results for the model of Glosten and Harris
+(1988). SGH is the model implied spread (in local currencies) and se(SGH) denotes its standard deviation.
+Market
+SGH
+s.e.(SGH)
+Bitstamp
+0.6651
+0.0727
+BTC-e
+0.7780
+0.1233
+HitBTC
+4.2027
+0.4228
+itBit
+0.5447
+0.0733
+Kraken
+0.7800
+0.0977
+bitcoin.de
+15.2394
+0.0107
+BTC China
+1.7283
+0.0683
+OKCoin
+0.5587
+0.1513
+For the model of Glosten and Harris (1988) I report the sample average of the
+model implied spread which is given as SGH = 2(z0 + z1Vt) instead of reporting
+the estimates z0 and z1. Table 3 presents the results. The order of magnitude of
+the implied spread is comparable to the results documented in Table 4. However,
+in the present model, the spread is fully attributed to adverse selection. As the
+spread implied by the model of Glosten and Harris (1988) in the case of OKCoin is
+almost identical to the spread estimated with the model of Huang and Stoll (1997),
+the previously offered explanation and the attribution of the entire spread to adverse
+selection seems plausible.
+Table 6 presents the results of estimating the model by Madhavan et al. (1997).
+The model implied spread is calculated as SMRR = 2θ. Its order of magnitude
+corresponds to the estimates obtained by the other two models. Again, the spread
+is fully attributed to adverse selection.
+The autocorrelation of the order ﬂow Qt is positive with the exception of bitcoin.de. The order of magnitude corresponds roughly to the autocorrelation estimated by Madhavan et al. (1997) for their sample of NYSE-listed stocks. The
+spread, on the other hand, is much higher (by a factor 10 to 100).
+18
+Electronic copy available at: https://ssrn.com/abstract=2949807
+
+Table 6: Spread Decomposition: Madhavan, Richardson and Roomans Model
+The table presents the estimation results for the model of Madhavan et al. (1997).
+θ is the price impact of adverse selection, ρ is ﬁrst-order autocorrelation of the
+trade direction, a is the drift term used by Madhavan et al. (1997) to estimate
+the moment conditions. SMRR is the model implied spread (in local currencies).
+Standard errors are given in parentheses.
+Market
+θ
+ρ
+a
+SMRR
+Bitstamp
+0.3215
+0.3653
+-0.0058
+0.6430
+(0.0021)
+(0.0020)
+(0.0007)
+BTC-e
+0.2721
+0.0745
+-0.0004
+0.5442
+(0.0012)
+(0.0013)
+(0.0004)
+HitBTC
+1.8790
+0.1094
+0.0516
+3.7580
+(0.0457)
+(0.0100)
+(0.0293)
+itBit
+0.3471
+0.4638
+-0.0069
+0.6943
+(0.0053)
+(0.0031)
+(0.0022)
+Kraken
+0.3162
+0.2241
+-0.0011
+0.6324
+(0.0016)
+(0.0015)
+(0.0005)
+bitcoin.de
+4.9653
+-0.0065
+0.0418
+9.9305
+(0.0598)
+(0.0042)
+(0.0175)
+BTC China
+0.5574
+0.0314
+0.0000
+1.1148
+(0.0016)
+(0.0006)
+(0.0005)
+OKCoin
+0.3204
+0.1908
+0.0025
+0.6408
+(0.0009)
+(0.0004)
+(0.0003)
+19
+Electronic copy available at: https://ssrn.com/abstract=2949807
+
+Madhavan et al. (1997) document a weak U-shaped pattern of the implied
+spread over the trading period. McInish and Wood (1992) suggest that such a
+pattern stems from the market maker’s need to protect himself against informed
+trading and inventory consideration. As trading activity is particularly high in the
+morning and before the market closes, the market maker would have to increase
+the spread at these times of the day. Decreasing patterns of the spread, on the other
+hand, are identiﬁed by Chan, Christie, and Schultz (1995) or Chung and Ness
+(2001). In the absence of a market maker, it is not clear whether any pattern should
+exist. On the contrary, the shape might even be inverted as a thinner, less liquid
+market should be associated with a higher spread.
+Following Madhavan et al. (1997), I therefore estimate the model in Equation (4) on intervals of 3 hours1. I do not ﬁnd any intraday pattern of the implied
+spread, neither u- nor inverted-u-shaped, despite the documented intraday pattern
+of volume (cp. Figure 1). Hence, the absence of a market maker coupled with
+the opportunity to trade 24 hours results in a constant spread throughout the day.
+Therefore, transaction costs as measured by the bid-ask spread are basically stable
+during the course of the day as well, such that timing of a transaction does not lead
+to a better price because of lower costs which is an attractive feature of the Bitcoin
+market microstructure.
+5
+Conclusion
+Trading Bitcoin is a risky undertaking when considering the high volatility observed for the Bitcoin price. On the upside, the market structure is designed in a
+way to assure fair and transparent trading. To this end, the markets rely on an open
+limit order book without market makers or designated sponsors and a percentage
+of volume fee basis. Most importantly, there is no hidden volume.
+The above analysis suggests that the risk to encounter unfavorable market conditions due to illiquidity is small. Most of the markets considered in this study are
+fairly liquid. Those markets where the highest trading volume is observed can be
+1Detailed results are not reported, but are available upon request.
+20
+Electronic copy available at: https://ssrn.com/abstract=2949807
+
+considered the most liquid ones. This holds irrespective of the currency in which
+trades are to be executed. Furthermore, there liquidity does not vary regularly during the day which might negatively affect trading of Bitcoin.
+The decomposition of the spread suggests that most of the implied spread is
+due to private information. Due to the design of Bitcoin, in particular the mining
+process, private information with respect to the future value of Bitcoin should be
+limited. However, the private assesment of Bitcoin’s value is of utmost importance
+as it depends on the possibilities available to the individual trader how Bitcoin can
+be used: as investment or means of payment. The private information in Bitcoin
+markets is, hence, based on a personal valuation of Bitcoin. I would argue that the
+low spread observed in the markets trading in Renminbi suggests that private information is indeed of minor relevance once the markets mature and trading volume
+is high. The value of Bitcoin largely relies on the general acceptance of Bitcoin,
+irrespective of its classiﬁcation as investment or currency. Hence, a liquid market
+assures that insider trading has only little pricing effects which is observable for
+the Chinese Bicoin markets.
+21
+Electronic copy available at: https://ssrn.com/abstract=2949807
+
+References
+AHN, H.-J., J. CAI, Y. HAMAO, AND R. Y. HO (2002): “The components of
+the bid–ask spread in a limit-order market: evidence from the Tokyo Stock Exchange,” Journal of Empirical Finance, 9, 399–430.
+BAUR, D. G., A. D. LEE, AND K. HONG (2015): “Bitcoin: Currency or Investment?” Available at https://ssrn.com/abstract=2561183.
+BÖHME, R., N. CHRISTIN, B. EDELMAN, AND T. MOORE (2015): “Bitcoin:
+Economics, Technology, and Governance,” Journal of Economic Perspectives,
+29, 213–238.
+BOUOIYOUR, J. AND R. SELMI (2016): “Bitcoin: a beginning of a new phase?”
+Economics Bulletin, 36, 1–11.
+BOURI, E., G. AZZI, AND A. H. DYHRBERG (2017): “On the return-volatility
+relationship in the Bitcoin market around the price crash of 2013,” Economics:
+The Open-Access, Open-Assessment E-Journal, 11.
+BRANDVOLD, M., P. MOLNÁR, K. VAGSTAD, AND O. C. A. VALSTAD (2015):
+“Price discovery on Bitcoin exchanges,” Journal of International Financial Markets, Institutions and Money, 36, 18–35.
+BRITO, J. AND A. CASTILLO (2013): Bitcoin: A Primer for Policymakers, Arlington: Mercatus Center George Mason University.
+CHAN, K. C., W. G. CHRISTIE, AND P. H. SCHULTZ (1995): “Market Structure
+and the Intraday Pattern of Bid-Ask Spreads for NASDAQ Securities,” Journal
+of Business, 68, 35–60.
+CHEAH, E.-T. AND J. FRY (2015): “Speculative bubbles in Bitcoin markets? An
+empirical investigation into the fundamental value of Bitcoin,” Economics Letters, 130, 32–36.
+CHORDIA, T., R. ROLL, AND A. SUBRAHMANYAM (2002): “Order imbalance,
+liquidity, and market returns,” Journal of Financial Economics, 65, 111–130.
+CHUNG, K. H. AND R. A. V. NESS (2001): “Order handling rules, tick size, and
+the intraday pattern of bid–ask spreads for Nasdaq stocks,” Journal of Financial
+Markets, 4, 143–161.
+COOPER, S. K., J. C. GROTH, AND W. E. AVERA (1985): “Liquidity, exchange
+listing, and common stock performance,” Journal of Economics and Business,
+37, 19–33.
+22
+Electronic copy available at: https://ssrn.com/abstract=2949807
+
+CORWIN, S. A. AND P. SCHULTZ (2012): “A Simple Way to Estimate Bid-Ask
+Spreads from Daily High and Low Prices,” The Journal of Finance, 67, 719–760.
+DWYER, G. P. (2015): “The economics of Bitcoin and similar private digital currencies,” Journal of Financial Stability, 17, 81–91.
+DYHRBERG, A. H. (2016): “Bitcoin, gold and the dollar – A GARCH volatility
+analysis,” Finance Research Letters, 16, 85–92.
+EASLEY, D., N. M. KIEFER, M. O’HARA, AND J. B. PAPERMAN (1996): “Liquidity, Information, and Infrequently Traded Stocks,” Journal of Finance, 51,
+1405–1436.
+ECJ (2015): “The exchange of traditional currencies for units of the ’bitcoin’ virtual currency is exempt from VAT,” Press Release No 128/15 128/15, Court of
+Justice of the European Union, Luxembourg.
+GLOSTEN, L. R. (1994): “Is the Electronic Open Limit Order Book Inevitable?”
+Journal of Finance, 49, 1127–1161.
+GLOSTEN, L. R. AND L. E. HARRIS (1988): “Estimating the components of the
+bid/ask spread,” Journal of Financial Economics, 21, 123–142.
+HANOUSEK, J. AND R. PODPIERA (2003): “Informed trading and the bid–ask
+spread: evidence from an emerging market,” Journal of Comparative Economics, 31, 275–296.
+HUANG, R. D. AND H. R. STOLL (1997): “The Components of the Bid-Ask
+Spread: A General Approach,” The Review of Financial Studies, 10, 995–1034.
+JAIN, P. C. AND G.-H. JOH (1988): “The dependence between hourly prices and
+trading volume,” Journal of Financial and Quantitative Analysis, 23, 269–283.
+KALEV, P. S., W.-M. LIU, P. K. PHAM, AND E. JARNECIC (2004): “Public
+information arrival and volatility of intraday stock returns,” Journal of Banking
+& Finance, 28, 1441–1467.
+LEE, C. M. C. AND M. J. READY (1991): “Inferring Trade Direction from Intraday Data,” Journal of Finance, 46, 733–746.
+MADHAVAN, A. (2000): “Market microstructure: A survey,” Journal of Financial
+Markets, 3, 205–258.
+23
+Electronic copy available at: https://ssrn.com/abstract=2949807
+
+MADHAVAN, A., M. RICHARDSON, AND M. ROOMANS (1997): “Why Do Security Prices Change? A Transaction-Level Analysis of NYSE Stocks,” The
+Review of Financial Studies, 10, 1035–1064.
+MCINISH, T. H. AND R. A. WOOD (1992): “An Analysis of Intraday Patterns in
+Bid/Ask Spreads for NYSE Stocks,” The Journal of Finance, 47, 753–764.
+MENDELSON, H. (1982): “Market Behavior in a Clearing House,” Econometrica,
+50, 1505–1524.
+O’HARA, M. AND M. YE (2011): “Is market fragmentation harming market quality?” Journal of Financial Economics, 100, 459–474.
+RIORDAN, R., A. STORKENMAIER, M. WAGENER, AND S. S. ZHANG (2013):
+“Public information arrival: Price discovery and liquidity in electronic limit order markets,” Journal of Banking & Finance, 37, 1148–1159.
+ROLL, R. (1984): “A Simple Implicit Measure of the Effective Bid-Ask Spread in
+an Efﬁcient Market,” Journal of Finance, 39, 1127–1139.
+SEC (2017): “Order Disapproving a Proposed Rule Change, as Modiﬁed by
+Amendments No. 1 and 2, to BZX Rule 14.11(e)(4), Commodity-Based Trust
+Shares, to List and Trade Shares Issued by the Winklevoss Bitcoin Trust,” Commission Order Release No. 34-80206; File No. SR-BatsBZX-2016-30, US Securities and Exchange Commission, Washington, D.C.
+URQUHART, A. (2016): “The inefﬁciency of Bitcoin,” Economics Letters, 148,
+80–82.
+24
+Electronic copy available at: https://ssrn.com/abstract=2949807

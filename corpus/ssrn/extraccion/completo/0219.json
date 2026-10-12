@@ -1,0 +1,238 @@
+{
+  "doc_id": 219,
+  "titulo": "Make-Take Decisions under High-Frequency Trading Competition",
+  "resumen_operativo": "El paper presenta un modelo dinámico de equilibrio en tiempo continuo de un mercado de órdenes límite donde traders rápidos (HFT) y lentos deciden endógenamente si proveer liquidez (make) o tomarla (take). El bid-ask spread exhibe forma de joroba en función de la competencia HFT: con pocos HFT predomina el comportamiento predatorio vía market orders que pickean órdenes de lentos; con muchos HFT compiten en provisión de liquidez mejorando el mercado. Existe sobreinversión en tecnología HFT, por lo que se analizan un impuesto pigouviano, una tarifa de cancelación y restricciones de latencia como políticas correctivas, las cuales mejoran el bienestar social pero deterioran la calidad de mercado.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "high-frequency trading",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Tecnología de negociación que utiliza computadoras sofisticadas para procesar información rápidamente y algoritmos que automáticamente envían y modifican órdenes mediante conexiones ultrarrápidas a los exchanges. Los HFT firms compiten entre sí y con inversores tradicionales lentos.",
+      "relaciones": [
+        { "tipo": "CAUSA", "objeto": "make-take decisions" },
+        { "tipo": "MEJORA_A", "objeto": "informational efficiency" },
+        { "tipo": "MITIGA", "objeto": "microstructure noise" }
+      ],
+      "cita_textual": "financial markets have undergone a major technological transformation during the past decade, from human-led transactions to high-frequency trading (HFT), in which sophisticated computers quickly process information, and algorithms automatically submit and modify orders utilizing superfast connections to the exchanges."
+    },
+    {
+      "nombre": "make-take decisions",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Decisión endógena de los agentes entre proveer liquidez (make) mediante órdenes límite, capturando el coste de inmediatez pagado por otros, o tomar liquidez (take) mediante órdenes de mercado, potencialmente pickeando órdenes límite mal posicionadas de otros agentes.",
+      "relaciones": [
+        { "tipo": "REQUIERE", "objeto": "limit order book" },
+        { "tipo": "PARTE_DE", "objeto": "high-frequency trading" },
+        { "tipo": "CAUSA", "objeto": "bid-ask spread" }
+      ],
+      "cita_textual": "the make-take preferences of investors depend on high-frequency trading (HFT) competition, under which HFT firms endogenously acquire speed and informational advantages."
+    },
+    {
+      "nombre": "liquidity provision",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia por la cual un agente envía órdenes límite al libro, proporcionando liquidez al mercado y capturando el immediacy cost pagado por quienes envían órdenes de mercado. Los HFT pueden usar su ventaja informacional y de velocidad para proveer liquidez más eficientemente que los traders lentos.",
+      "relaciones": [
+        { "tipo": "EQUIVALE_A", "objeto": "market making" },
+        { "tipo": "SE_OPONE_A", "objeto": "liquidity taking" },
+        { "tipo": "MEJORA_A", "objeto": "bid-ask spread" }
+      ],
+      "cita_textual": "FTs can use HFT technology for liquidity provision, since they observe the contemporaneous level of the fundamental value and they are quick at modifying unexecuted limit orders."
+    },
+    {
+      "nombre": "liquidity taking",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia por la cual un agente envía órdenes de mercado para ejecutar inmediatamente contra las órdenes límite existentes en el libro. Los HFT pueden usar órdenes de mercado para pickear órdenes límite desactualizadas de traders lentos cuando el valor fundamental se mueve en su contra.",
+      "relaciones": [
+        { "tipo": "SE_OPONE_A", "objeto": "liquidity provision" },
+        { "tipo": "CAUSA", "objeto": "adverse selection" },
+        { "tipo": "USA", "objeto": "predatory trading" }
+      ],
+      "cita_textual": "FTs can exploit their trading skills by submitting market orders, which pick off other agents' limit orders that are in unfavorable positions (especially those submitted by 'traditional' slow traders)."
+    },
+    {
+      "nombre": "limit order book",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Estructura de mercado descrita por un conjunto discreto de precios con backlog de órdenes límite no ejecutadas a cada precio. Se respeta prioridad de precio y tiempo. El libro se centra dinámicamente sobre el valor fundamental del activo para reducir la dimensionalidad del espacio de estados.",
+      "relaciones": [
+        { "tipo": "REQUIERE", "objeto": "queue position" },
+        { "tipo": "MIDE", "objeto": "bid-ask spread" },
+        { "tipo": "USA", "objeto": "order flow" }
+      ],
+      "cita_textual": "The limit order book L is described by a discrete set of prices, denoted as p = {p1, p2, ..., pn}, where p1 < p2 < ··· < pn and n is a finite number."
+    },
+    {
+      "nombre": "bid-ask spread",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Diferencia entre el mejor precio de compra (bid) y el mejor precio de venta (ask) en el libro de órdenes. El modelo muestra que tiene forma de joroba como función de la competencia HFT: crece con pocos HFT (por comportamiento predatorio y órdenes límite poco agresivas de los lentos) y decrece cuando hay muchos HFT compitiendo en provisión de liquidez.",
+      "relaciones": [
+        { "tipo": "PARTE_DE", "objeto": "limit order book" },
+        { "tipo": "PREDICE", "objeto": "market quality" },
+        { "tipo": "MIDE", "objeto": "transaction costs" }
+      ],
+      "cita_textual": "the bid-ask spread has a humped shape as a function of HFT competition. Thus, the bid-ask spread increases (decreases) with additional HFT competition when there are few (many) HFT firms."
+    },
+    {
+      "nombre": "adverse selection",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Riesgo que enfrentan los proveedores de liquidez (especialmente slow traders) de que sus órdenes límite sean pickeadas por HFT firms que conocen el valor fundamental contemporáneo del activo y detectan cuándo una orden límite ha quedado en posición desfavorable. Este riesgo induce a los lentos a enviar órdenes límite menos agresivas, ampliando el spread.",
+      "relaciones": [
+        { "tipo": "CAUSA", "objeto": "bid-ask spread" },
+        { "tipo": "CAUSA", "objeto": "predatory trading" },
+        { "tipo": "MITIGA", "objeto": "liquidity provision" }
+      ],
+      "cita_textual": "slow traders are the main ones responsible for liquidity provision, submitting unaggressive limit orders to reduce their risk of being picked off, which increases the bid-ask spread even more."
+    },
+    {
+      "nombre": "competition",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "La competencia entre HFT firms se manifiesta en dos dimensiones: compiten en provisión de liquidez mediante órdenes límite y en toma de liquidez mediante órdenes de mercado. El nivel de competencia (proporción β de fast traders) determina endógenamente si predomina el comportamiento predatorio (pocos HFT) o la provisión competitiva de liquidez (muchos HFT).",
+      "relaciones": [
+        { "tipo": "MEJORA_A", "objeto": "informational efficiency" },
+        { "tipo": "MITIGA", "objeto": "microstructure noise" },
+        { "tipo": "CAUSA", "objeto": "overinvestment in HFT" }
+      ],
+      "cita_textual": "in the case where there are many HFT firms in the market, they compete more through limit orders; meanwhile, in the case with few HFT firms, they compete more through market orders that 'pickoff' limit orders coming from the big crowd of slow traders."
+    },
+    {
+      "nombre": "predatory trading",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Comportamiento de los HFT firms cuando son pocos en el mercado: compiten principalmente mediante órdenes de mercado que pickean (depredan) órdenes límite de la gran masa de traders lentos, en lugar de usar su tecnología para proveer liquidez. Este comportamiento daña la liquidez del mercado.",
+      "relaciones": [
+        { "tipo": "USA", "objeto": "liquidity taking" },
+        { "tipo": "CAUSA", "objeto": "bid-ask spread" },
+        { "tipo": "SE_OPONE_A", "objeto": "liquidity provision" }
+      ],
+      "cita_textual": "Fast traders exhibit predatory behavior when there is low HFT competition, by competing more through market orders that pick off limit orders coming from the big crowd of traditional slow agents in the market."
+    },
+    {
+      "nombre": "microstructure noise",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Componente del precio de transacción que lo separa del valor fundamental del activo (pt = vt + ηt). Se reduce monótonamente al aumentar la proporción de fast traders en el mercado, ya que más agentes con ventaja de velocidad reducen las fricciones del sistema.",
+      "relaciones": [
+        { "tipo": "PARTE_DE", "objeto": "transaction costs" },
+        { "tipo": "MITIGA", "objeto": "high-frequency trading" },
+        { "tipo": "USA", "objeto": "limit order book" }
+      ],
+      "cita_textual": "The mean of the absolute value of microstructure noise is reduced as the number of fast traders competing in the market increases."
+    },
+    {
+      "nombre": "informational efficiency",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Grado en que los precios reflejan el valor fundamental del activo. Mejora con la competencia HFT porque más fast traders actúan sobre su ventaja informacional, revelando información en sus estrategias de trading que los slow traders pueden aprender, reduciendo su belief error sobre el valor fundamental.",
+      "relaciones": [
+        { "tipo": "MEJORA_A", "objeto": "high-frequency trading" },
+        { "tipo": "MEJORA_A", "objeto": "free-riding" }
+      ],
+      "cita_textual": "HFT competition increases informational efficiency and reduces microstructure noise. In both cases, HFT competition improves informational efficiency."
+    },
+    {
+      "nombre": "free-riding",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Comportamiento de los slow traders que se benefician pasivamente de las mejoras en eficiencia informacional y reducción de fricciones generadas por los fast traders. Al haber más HFT, los precios son más informativos y las fricciones menores, lo que reduce el gross expected payoff diferencial entre FTs y STs.",
+      "relaciones": [
+        { "tipo": "CAUSA", "objeto": "overinvestment in HFT" },
+        { "tipo": "USA", "objeto": "informational efficiency" },
+        { "tipo": "SE_OPONE_A", "objeto": "high-frequency trading" }
+      ],
+      "cita_textual": "slow traders can 'free ride' on the improvements in informational efficiency and reductions in market frictions, since there are more fast traders in the market."
+    },
+    {
+      "nombre": "overinvestment in HFT",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "El equilibrio privado de inversión en tecnología HFT implica una proporción de fast traders (β) mayor que la socialmente óptima (β_opt), porque los FTs no internalizan la externalidad negativa que generan sobre los STs. Existen incentivos para ser FT incluso cuando es socialmente ineficiente.",
+      "relaciones": [
+        { "tipo": "MITIGA", "objeto": "Pigovian tax" },
+        { "tipo": "CAUSA", "objeto": "free-riding" }
+      ],
+      "cita_textual": "there is overinvestment in HFT technology, as there are incentives to be a fast trader even in scenarios in which fast trading is socially wasteful."
+    },
+    {
+      "nombre": "Pigovian tax",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Impuesto correctivo que grava a los fast traders para internalizar la externalidad negativa que imponen sobre los slow traders. En el modelo, un impuesto pigouviano de 0.121 ticks mejora el bienestar en 0.095 ticks respecto al caso sin regulación, aunque deteriora las medidas de calidad de mercado.",
+      "relaciones": [
+        { "tipo": "MITIGA", "objeto": "overinvestment in HFT" },
+        { "tipo": "SE_OPONE_A", "objeto": "bid-ask spread" }
+      ],
+      "cita_textual": "the Pigovian tax is 0.121, which generates an improvement in social welfare of 0.095 (i.e., 3.763-3.668=0.095) relative to the case without regulation."
+    },
+    {
+      "nombre": "queue position",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Prioridad temporal en el libro de órdenes: órdenes enviadas antes tienen prioridad sobre otras al mismo precio. Los traders enfrentan un trade-off entre cancelar una orden (perdiendo su posición en la cola y pagando una cancellation fee) y mantenerla (arriesgándose a ser pickeados si el valor fundamental se mueve en contra).",
+      "relaciones": [
+        { "tipo": "PARTE_DE", "objeto": "limit order book" },
+        { "tipo": "REQUIERE", "objeto": "liquidity provision" }
+      ],
+      "cita_textual": "The limit order book respects the time and price priorities for the execution of limit orders. Buy (sell) orders at higher (lower) prices are executed first, and limit orders submitted earlier have priority in the queue over others of the same price."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "El bid-ask spread exhibe una forma de joroba como función de la competencia HFT: crece cuando hay pocos HFT (pendiente positiva entre β=0% y β=14.40%) y decrece cuando hay muchos HFT (para β≥38.40% el spread cae por debajo del nivel sin HFT).",
+      "mercado": "modelo teórico calibrado (acciones genéricas)",
+      "periodo": "simulación de 500 millones de eventos tras equilibrio",
+      "magnitud": "spread crece entre β=0% y β=14.40%; para β≥38.40% el spread es menor que con β=0%",
+      "condiciones": "Parámetros base: llegada de traders cada 40ms, re-entry de STs cada 600ms, FTs 5x más rápidos, innovaciones del valor fundamental cada 320ms (±1 tick, prob 0.5), lag informacional de STs de 800ms, tick size = 0.05 sobre precio de $450.",
+      "robustez": "alta",
+      "cita_textual": "the bid-ask spread has a positive slope between the values of β=0% and β=14.40%. Nevertheless, additional HFT competition improves market liquidity when there are more HFT firms in the market (i.e., when β>14.40%). For instance, for values of β greater than or equal to 38.40%, additional HFT competition reduces the bid-ask spread to a level lower than that when there are no FTs in the market (i.e., β=0%)."
+    },
+    {
+      "afirmacion": "Con pocos HFT (β=14.40%), los FTs tienen comportamiento predatorio: el 55.37% de sus transacciones se ejecutan vía órdenes de mercado, mientras los STs asumen la provisión de liquidez con el 51.12% de sus ejecuciones vía limit orders.",
+      "mercado": "modelo teórico calibrado (acciones genéricas)",
+      "periodo": "simulación de 500 millones de eventos tras equilibrio",
+      "magnitud": "β=14.40%: STs 51.12% limit orders/48.88% market orders; FTs 44.63% limit/55.37% market orders. β=46.40%: STs 43.33% limit/56.67% market; FTs 51.67% limit/48.33% market.",
+      "condiciones": "Mismos parámetros base del modelo. La probabilidad de observar una orden límite agresiva es mínima cuando hay pocos HFT y máxima cuando hay muchos.",
+      "robustez": "alta",
+      "cita_textual": "51.12% (48.88%) of the STs perform transactions through limit (market) orders when β=14.40%. This implies that, when β=14.40%, 44.63% (55.37%) of the FTs perform transactions through limit (market) orders. [...] 43.33% (56.67%) of the STs perform transactions through limit (market) orders when β=46.40%. This means that, when β=46.40%, 51.67% (48.33%) of the FTs perform transactions through limit (market) orders."
+    },
+    {
+      "afirmacion": "La competencia HFT reduce el ruido de microestructura de forma monótona e incrementa la eficiencia informacional: el mean absolute belief error de los STs sobre el valor fundamental disminuye conforme aumenta la proporción de FTs.",
+      "mercado": "modelo teórico calibrado",
+      "periodo": "simulación",
+      "magnitud": "Reducción monótona tanto del mean |vt - pt| (microstructure noise) como del mean |E(vt|st) - vt| (belief error de STs) al aumentar β de 0% a 100%.",
+      "condiciones": "Parámetros base. La reducción del belief error solo se observa si los FTs tienen ventaja informacional (no aplica si solo tienen ventaja de velocidad).",
+      "robustez": "alta",
+      "cita_textual": "the mean of the absolute value of microstructure noise is reduced as the number of fast traders competing in the market increases. [...] HFT competition increases informational efficiency."
+    },
+    {
+      "afirmacion": "Existe sobreinversión en tecnología HFT: sin coste de adquisición (K=0), el equilibrio privado es β=100% mientras que el óptimo social es β_opt=72.20%. Con K=0.166 el equilibrio es β≈50% pero el óptimo social sigue siendo β_opt=0%.",
+      "mercado": "modelo teórico calibrado",
+      "periodo": "simulación",
+      "magnitud": "K=0: equilibrio β=100%, óptimo social β_opt=72.20%; K=0.166: equilibrio β≈50%, óptimo social β_opt=0%; K=0.350: equilibrio β≈0%, óptimo social β_opt=0%.",
+      "condiciones": "FTs con ventaja informacional (∆t=0) y de velocidad de re-entry (λr=1/0.12 para FTs vs λr=1/0.6 para STs).",
+      "robustez": "alta",
+      "cita_textual": "if there is no cost to being an FT (i.e., K=0), Figure 1 shows that all agents acquire HFT technology (i.e., β_eq=100%). However, as explained in the previous paragraph, the proportion of FTs that maximizes social welfare, β_opt, is 72.20% when K=0."
+    },
+    {
+      "afirmacion": "Un impuesto pigouviano de 0.121 ticks mejora el bienestar social en 0.095 ticks respecto al caso sin regulación (de 3.668 a 3.763), pero deteriora todas las medidas de calidad de mercado: el spread sube de 1.444 a 1.667, el depth cae de 2.223 a 1.944, y el ruido de microestructura sube de 0.515 a 1.326 ticks.",
+      "mercado": "modelo teórico calibrado",
+      "periodo": "simulación",
+      "magnitud": "Welfare: 3.668→3.763 (+0.095); Bid-ask spread: 1.444→1.667; Depth: 2.223→1.944; Microstructure noise mean: 0.515→1.326; Belief error mean: 0.503→1.328.",
+      "condiciones": "Modelo con K=0.166. El impuesto pigouviano calibrado como T=∆payoff(β_opt)−K en el nivel socialmente óptimo de fast trading.",
+      "robustez": "media",
+      "cita_textual": "In Table 1, the Pigovian tax is 0.121, which generates an improvement in social welfare of 0.095 (i.e., 3.763-3.668=0.095) relative to the case without regulation. [...] when the Pigovian tax is applied, the bid-ask spread and the means of the absolute values of both the microstructure noise and the belief error of the STs all increase, while the depth at the ask price decreases."
+    },
+    {
+      "afirmacion": "Existe sinergia entre ventaja informacional y de velocidad: un FT con solo ventaja informacional está dispuesto a pagar 0.037 ticks adicionales por adquirir velocidad (cuando β=0%). Inversamente, con solo velocidad pagaría 0.162 ticks adicionales por la ventaja informacional.",
+      "mercado": "modelo teórico calibrado",
+      "periodo": "simulación",
+      "magnitud": "Para β=0%: willingness-to-pay por velocidad adicional (dado info) = 0.037; willingness-to-pay por info adicional (dado speed) = 0.162. Para β=15%: valores caen a 0.030 y 0.127 respectivamente.",
+      "condiciones": "Comparación de casos puros (solo info, solo speed) vs caso combinado (info+speed). La disposición a pagar por la otra tecnología decrece con β.",
+      "robustez": "alta",
+      "cita_textual": "the cost that FTs pay to have only the informational technology is 0.198, but they are willing to pay an additional 0.037 to have the fast trading technology as well [...] for β=15%, the cost that FTs pay to have only the trading speed is 0.073, but they are willing to pay an additional 0.162 to have the informational advantage as well."
+    },
+    {
+      "afirmacion": "Una tarifa de cancelación de 0.1 ticks mejora marginalmente el bienestar en 0.007 ticks (3.668→3.675), y una restricción de latencia que iguala la velocidad de FTs a la de STs (re-entry de 120ms→600ms) mejora el bienestar en 0.011 ticks (3.668→3.679). Ambas medidas deterioran la calidad de mercado.",
+      "mercado": "modelo teórico calibrado",
+      "periodo": "simulación",
+      "magnitud": "Cancellation fee: welfare +0.007, spread 1.444→1.464, depth 2.223→2.159. Latency constraint: welfare +0.011, spread 1.444→1.485, depth 2.223→1.632.",
+      "condiciones": "Modelo base con K=0.166. La tarifa de cancelación es de 0.1 ticks, redistribuida entre agentes. La restricción de latencia aumenta el tiempo de re-entry de FTs de 120ms a 600ms.",
+      "robustez": "media",
+      "cita_textual": "a cancellation fee marginally improves social welfare by 0.007 (i.e., 3.675-3.668=0.007) in relation to the case without any policy measures [...] the latency constraint increases social welfare by 0.011 (i.e., 3.679-3.668=0.011) compared to the case without regulation."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "alta",
+    "nota": "El modelo es dinámico en tiempo continuo con eventos asíncronos, diseñado explícitamente para capturar dinámicas intradiarias de HFT (llegadas cada 40ms, re-entry cada 120ms/600ms, innovaciones del valor fundamental cada 320ms), y explica patrones empíricos de spreads, depth, ruido de microestructura y preferencias make-take a frecuencias intradiarias."
+  }
+}

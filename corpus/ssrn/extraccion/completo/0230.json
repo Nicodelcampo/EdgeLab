@@ -1,0 +1,99 @@
+{
+  "doc_id": 230,
+  "titulo": "Mean-Reverting Statistical Arbitrage in Crude Oil Markets",
+  "resumen_operativo": "Investiga empíricamente oportunidades de arbitraje estadístico con reversión a la media en mercados de crudo usando cointegración entre WTI, Brent y Dubai. Identifica relaciones de pricing de largo plazo y construye un statistical portfolio cuya desviación del WTI genera señales de trading. Verifica que los mispricings son estacionarios y revierten, permitiendo estrategias rentables.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "Cointegration",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica econométrica que identifica relaciones de equilibrio de largo plazo entre series temporales no estacionarias. Usada para construir un statistical portfolio de Brent y Dubai que trackea el precio del WTI.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "mispricing detection"},
+        {"tipo": "APLICA_A", "objeto": "crude oil futures"}
+      ],
+      "cita_textual": "The cointegration regression is used to track the persistent pricing equilibrium, and mispricings arise when West Texas Intermediate crude oil price diverges from the statistical portfolio value."
+    },
+    {
+      "nombre": "Statistical Arbitrage",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia de trading que explota anomalías persistentes en relaciones de largo plazo entre activos, asumiendo que las desviaciones del equilibrio de cointegración son temporales y revierten a la media.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Cointegration"},
+        {"tipo": "APLICA_A", "objeto": "mean-reversion trading"}
+      ],
+      "cita_textual": "We introduce the concept of statistical arbitrage through the definition of a trading strategy that captures persistent anomalies in long-run relationships among assets."
+    },
+    {
+      "nombre": "Statistical Portfolio",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Combinación lineal de Brent y Dubai que replica el valor fair del WTI según la relación de cointegración. La diferencia entre el WTI observado y el valor del statistical portfolio constituye el mispricing.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Cointegration"},
+        {"tipo": "MIDE", "objeto": "fair value of WTI"}
+      ],
+      "cita_textual": "A so-called statistical portfolio, composed by other two crude oils, Brent and Dubai."
+    },
+    {
+      "nombre": "Mispricing",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Residuo de la regresión de cointegración que mide la desviación del precio del WTI respecto al valor del statistical portfolio. Su estacionariedad (reversión a la media) es la base de la señal de trading.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "deviation from equilibrium"},
+        {"tipo": "PREDICE", "objeto": "future price correction"}
+      ],
+      "cita_textual": "Mispricings arise when West Texas Intermediate crude oil price diverges from the statistical portfolio value."
+    },
+    {
+      "nombre": "Mean Reversion",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Propiedad estadística donde precios que se han desviado de su equilibrio de largo plazo tienden a retornar a él. Constituye la base teórica del arbitraje estadístico en mercados de commodities.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "Statistical Arbitrage"},
+        {"tipo": "CAUSA", "objeto": "trading signal generation"}
+      ],
+      "cita_textual": "We devise a methodology to identify and test mean-reverting statistical arbitrage, and to develop trading strategies."
+    },
+    {
+      "nombre": "West Texas Intermediate (WTI)",
+      "tipo": "dato",
+      "definicion_en_contexto": "Crudo de referencia estadounidense usado como activo objetivo del arbitraje estadístico, cuyo precio se compara contra el statistical portfolio de Brent y Dubai para identificar desviaciones.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "crude oil markets"}
+      ],
+      "cita_textual": "We focus on long-term pricing relationships between the West Texas Intermediate crude oil futures and a so-called statistical portfolio, composed by other two crude oils, Brent and Dubai."
+    },
+    {
+      "nombre": "Stationarity of Mispricing",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Verificación econométrica de que el residuo de cointegración es estacionario (rechazo de raíz unitaria), condición necesaria para que la estrategia de arbitraje estadístico sea válida.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "Statistical Arbitrage"},
+        {"tipo": "MIDE", "objeto": "trade validity"}
+      ],
+      "cita_textual": "We verify that mispricing is stationary."
+    },
+    {
+      "nombre": "Long-Run Pricing Equilibrium",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Relación estable de largo plazo entre precios de diferentes crudos derivada de fundamentos de mercado (calidad, costos de transporte, arbitraje geográfico) que la cointegración captura estadísticamente.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "Cointegration"},
+        {"tipo": "CAUSA", "objeto": "Mean Reversion"}
+      ],
+      "cita_textual": "Long-term pricing relationships between the West Texas Intermediate crude oil futures and a so-called statistical portfolio."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Se verifica empíricamente la existencia de una relación de cointegración significativa entre los futuros de WTI, Brent y Dubai. Los residuos de la regresión de cointegración (mispricings) son estacionarios, confirmando reversión a la media y validez de la estrategia de arbitraje estadístico.",
+      "mercado": "Futuros de crudo (WTI, Brent, Dubai)",
+      "periodo": "Datos de futuros de crudo (período no especificado explícitamente)",
+      "magnitud": "Cointegración significativa entre los tres crudos; residuos estacionarios",
+      "condiciones": "Regresión de cointegración estándar; verificación de estacionariedad de residuos",
+      "robustez": "baja",
+      "cita_textual": "We empirically investigate the existence of statistical arbitrage opportunities in crude oil markets. In particular, we focus on long-term pricing relationships between the West Texas Intermediate crude oil futures and a so-called statistical portfolio."
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "baja", "nota": "El enfoque de cointegración de largo plazo opera en frecuencias diarias/semanales; no está diseñado para trading intradiario de alta frecuencia."}
+}

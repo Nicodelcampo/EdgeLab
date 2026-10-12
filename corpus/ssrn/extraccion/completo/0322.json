@@ -1,0 +1,139 @@
+{
+  "doc_id": 322,
+  "titulo": "Streamlined Hierarchical Reinforcement Learning for Algorithmic Trading: Architecture Simplification and Empirical Validation",
+  "resumen_operativo": "Propone un framework simplificado de hierarchical reinforcement learning (HRL) con dos niveles: un Strategic Portfolio Agent (SPA) y un Execution Optimization Agent (EOA), integrados con un agente LSTM (ELTRA) que proporciona forecasting de precios, volatilidad y clasificación de regímenes. Valida empíricamente con datos sintéticos de regime-switching jump diffusion y 12 escenarios de mercado, reportando que estrategias de mean reversion alcanzan rendimiento superior de 2.03% en 30 días. El análisis de costos de transacción estima un drag anual del 0.6%.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "Hierarchical Reinforcement Learning (HRL)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Framework de aprendizaje por refuerzo que descompone el problema de trading en niveles jerárquicos: un agente estratégico de portafolio (SPA, nivel alto) que asigna pesos y gestiona riesgo, y un agente de ejecución (EOA, nivel bajo) que optimiza la ejecución minimizando impacto de mercado. Ambos modelados como PO-SMDPs.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Partially Observable Semi-Markov Decision Process"},
+        {"tipo": "PARTE_DE", "objeto": "Multi-agent trading system"}
+      ],
+      "cita_textual": "The simplified system operates with a two-level HRL architecture where both agents are modeled as Partially Observable Semi-Markov Decision Processes (PO-SMDPs) due to the incomplete market observability."
+    },
+    {
+      "nombre": "Enhanced LSTM-based Time-Series and Regime Agent (ELTRA)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Agente analítico unificado con arquitectura LSTM multi-tarea que comparte un encoder común y tiene cabezales especializados para forecasting de precio/volatilidad, clasificación de régimen de mercado (6 estados: bull/bear/sideways x low/high vol) y estimación de confianza.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Hierarchical Reinforcement Learning (HRL)"},
+        {"tipo": "USA", "objeto": "Multi-task LSTM architecture"}
+      ],
+      "cita_textual": "ELTRA employs a multi-task architecture combining price forecasting, volatility prediction, and market regime classification through a shared encoder with specialized heads."
+    },
+    {
+      "nombre": "Strategic Portfolio Agent (SPA)",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Agente de alto nivel en el HRL que decide asignación de portafolio, niveles de exposición al riesgo, triggers de rebalanceo y stop-loss. Su función de recompensa integra retorno ajustado por CVaR, drawdown y penalizaciones por violación de restricciones.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Hierarchical Reinforcement Learning (HRL)"},
+        {"tipo": "USA", "objeto": "CVaR"},
+        {"tipo": "REQUIERE", "objeto": "Enhanced LSTM-based Time-Series and Regime Agent (ELTRA)"}
+      ],
+      "cita_textual": "R_SPA = r_P - lambda_risk * CVaR_beta[L_P] - lambda_drawdown * DD_t - sum_j mu_j * I[constraint_j violated]"
+    },
+    {
+      "nombre": "Execution Optimization Agent (EOA)",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Agente de bajo nivel enfocado en ejecución óptima de órdenes usando estrategias TWAP/VWAP/IS-minimizing, con sizing de órdenes, timing y splitting. Su recompensa minimiza el implementation shortfall considerando slippage, impacto de mercado y fill rate.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Hierarchical Reinforcement Learning (HRL)"},
+        {"tipo": "MEJORA_A", "objeto": "VWAP execution"}
+      ],
+      "cita_textual": "R_EOA = -IS_t - lambda_fees * c_fees - lambda_impact * Impact(|q_t|) + lambda_speed * FillRate_t"
+    },
+    {
+      "nombre": "Regime-Switching Jump Diffusion",
+      "tipo": "modelo",
+      "definicion_en_contexto": "Modelo estocástico para generación de datos sintéticos usado en validación: dS_t = mu(R_t) S_t dt + sigma(R_t) S_t dW_t + S_{t-} integral jumps, con 5 regímenes de mercado gobernados por cadena de Markov continua con generador Q.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Hidden Markov Model"},
+        {"tipo": "APLICA_A", "objeto": "Synthetic market data generation"}
+      ],
+      "cita_textual": "dS_t = mu(R_t) S_t dt + sigma(R_t) S_t dW_t + S_{t-} * integral_{|z|<=1} z * tilde{N}(dt, dz)"
+    },
+    {
+      "nombre": "CVaR (Conditional Value at Risk)",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida de riesgo usada en la función de recompensa del SPA: CVaR_beta[L_P] = inf_alpha {alpha + 1/(1-beta) * E[(L_P - alpha)_+]}, donde L_P es la pérdida del portafolio. Penaliza el riesgo de cola en la optimización de portafolio.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "Tail risk"},
+        {"tipo": "USA", "objeto": "Rockafellar-Uryasev formulation"}
+      ],
+      "cita_textual": "CVaR_beta[L_P(w)] = inf_{alpha in R} {alpha + 1/(1-beta) * E_P[(L_P(w) - alpha)_+]}"
+    },
+    {
+      "nombre": "Implementation Shortfall",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Diferencia entre el precio de decisión y el precio final de ejecución, usada como base de la función de recompensa del EOA. Incluye costos de spread, impacto de mercado, timing y costo de oportunidad.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "Execution quality"},
+        {"tipo": "PARTE_DE", "objeto": "Execution cost model"}
+      ],
+      "cita_textual": "C_total = C_spread + C_impact + C_timing + C_opportunity"
+    },
+    {
+      "nombre": "Concept Drift Detection",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Métrica D_drift = KL(P_t || P_{t-tau}) que mide cambios en la distribución de datos financieros para detectar degradación de modelos. Requiere reentrenamiento mensual o trimestral, con pérdida de rendimiento del 5-15% anual sin adaptación.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "Model performance degradation"},
+        {"tipo": "USA", "objeto": "Kullback-Leibler divergence"}
+      ],
+      "cita_textual": "D_drift = KL(P_t || P_{t-tau}) where P_t and P_{t-tau} are distributions at current and historical periods."
+    },
+    {
+      "nombre": "Shared Knowledge Base (SKB)",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Repositorio centralizado donde ELTRA publica inteligencia de mercado (forecasts, regímenes, confianza) con timestamps y niveles de confianza. Ambos agentes HRL acceden sincrónicamente para mantener una visión consistente del mercado.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Enhanced LSTM-based Time-Series and Regime Agent (ELTRA)"},
+        {"tipo": "PARTE_DE", "objeto": "Multi-agent coordination"}
+      ],
+      "cita_textual": "Centralized repository where ELTRA publishes market intelligence (price forecasts, volatility predictions, regime probabilities) with timestamps, confidence levels, and regime-specific indicators."
+    },
+    {
+      "nombre": "Alpha Decay Timeline",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Degradación esperada del alpha de estrategias algorítmicas por competencia: 0-10% en 0-6 meses, 10-30% en 6-18 meses, 30-60% en 18-36 meses, y 60-90% después de 36 meses. Requiere inversión continua en I+D del 15-20% de retornos brutos.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Strategy commoditization"},
+        {"tipo": "MITIGA", "objeto": "Continuous R&D investment"}
+      ],
+      "cita_textual": "0-6 months | Low | 0-10%; 6-18 months | Medium | 10-30%; 18-36 months | High | 30-60%; 36+ months | Saturated | 60-90%"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Las estrategias de mean reversion logran rendimiento superior de 2.03% sobre 30 días en datos sintéticos con 12 escenarios de mercado y 17,424 observaciones totales.",
+      "mercado": "Synthetic (regime-switching jump diffusion simulados)",
+      "periodo": "30 días por escenario x 12 escenarios",
+      "magnitud": "2.03% retorno bruto en 30 días; neto 1.98% descontando costos de transacción de 0.025% por round-trip (~2 round-trips). Anualizado: 24.7% bruto, 24.1% neto.",
+      "condiciones": "Portafolio de 10M USD, 5 regímenes HMM con accuracy out-of-sample de 71.2%, costos de spread cripto de 0.01-0.50%",
+      "robustez": "baja",
+      "cita_textual": "Best Strategy Performance: Mean Reversion with 2.03% over 30 days"
+    },
+    {
+      "afirmacion": "La clasificación de regímenes con HMM de 5 estados alcanza 78.4% de precisión in-sample y 71.2% out-of-sample, con persistencia de régimen de 85% (bull), 85% (bear), 70% (sideways).",
+      "mercado": "Synthetic data",
+      "periodo": "30 días x 24 horas = 720 observaciones (sintético)",
+      "magnitud": "In-sample accuracy: 78.4%; Out-of-sample accuracy: 71.2%; Bull/Bear persistence: 85%; Sideways persistence: 70%",
+      "condiciones": "Regime-switching jump diffusion con 5 estados, sin look-ahead bias (solo datos hasta t-1 para decisión en t)",
+      "robustez": "baja",
+      "cita_textual": "In-sample accuracy: 78.4%; Out-of-sample accuracy: 71.2%; Regime persistence: Bull (85%), Bear (85%), Sideways (70%)"
+    },
+    {
+      "afirmacion": "El VaR del modelo subestima el riesgo de cola en 89%: VaR modelo = 15.2% vs percentil 99 empírico = 28.7%. En eventos flash crash (LUNA May 2022, FTX Nov 2022, COVID Mar 2020) las pérdidas estimadas son -22%, -31% y -45% respectivamente.",
+      "mercado": "Criptomonedas (escenarios históricos de crash)",
+      "periodo": "May 2022 (LUNA), Nov 2022 (FTX), Mar 2020 (COVID)",
+      "magnitud": "Model VaR: 15.2%; Empirical 99th percentile: 28.7%; Subestimación: 89%; Pérdidas en flash crashes: -22% (LUNA, 4h), -31% (FTX, 2d), -45% (COVID, 12h)",
+      "condiciones": "Correlación de portafolio con BTC entre 0.95 y 0.99 durante crashes; criptomercados",
+      "robustez": "baja",
+      "cita_textual": "Model VaR: 15.2%; Empirical 99th percentile: 28.7%; Model underestimates tail risk by 89%"
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "media", "nota": "Propone sistema HRL con EOA operando en horizonte intradiario (minutos a horas), pero latencia actual de 561-2211ms es 5-18x más lenta que lo requerido (121ms target) para trading real en cripto."}
+}

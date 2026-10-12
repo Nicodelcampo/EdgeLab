@@ -1,0 +1,637 @@
+Application of Path Integral in Quantum 
+Mechanics and Statistical Mechanics to 
+Quantitative Finance 
+Explicit Approximate Expression of Probability Distribution of the Local Volatility Model 
+ 
+Osamu Tsuchiya1 
+ 
+Abstract 
+The path integral approach in Quantum Mechanics is applied to the Local Volatility Model of 
+quantitative finance. The transition amplitude, which is a fundamental variable in Quantum Mechanics is 
+represented via path integral. The Brownian motion corresponds to free particles in Quantum 
+Mechanics. The Local Volatility model corresponds to a modification of the free particle Quantum 
+Mechanics. The semi-classical approximation is applied to the Local Volatility model, and the 
+approximated probability distribution of it is derived. Here, the square of the volatility of the distribution 
+is the harmonic average of the square of the local volatility. 
+ 
+ 
+ 
+Introduction  
+Most models for pricing the derivative are based on the Brownian motion.   For the European 
+derivatives, the pricing is represented via a propagator, which gives a probability distribution function of 
+the future time. For the pure Brownian motion, the propagator is represented via path integral, which is 
+frequently used in Quantum Physics. Brownian Motion corresponds to a free particle in Quantum 
+Mechanics in the path integral representation. 
+ 
+On the other hand, the local volatility model is frequently used to capture the volatility skew [3]. The 
+local volatility model is typically calibrated via the Dupire formula [3]. For the given local volatility 
+model, calculating the probability distribution (propagator) is possible by calculating the call spread 
+price with an infinitesimal spread.  However, it needs numerical calculation of the call options and does 
+not fit the qualitative analysis of the volatility dynamics.  
+ 
+1 MUFG Securities EMEA plc, Quanteam UK.  The views expressed in this presentation are the personal views of the 
+author and do not necessarily reflect the views or policies 
+of current or previous employers. Not guaranteed fit for any purpose. Use at your own risk. 
+Electronic copy available at: https://ssrn.com/abstract=4354446
+
+ 
+For the analysis of the Local (Stochastic) model, sometimes singular perturbation analysis is used. For 
+example, for the SABR (Stochastic Alpha Beta Rho) 
+𝑑𝐹(𝑡) = 𝛼(𝑡)𝐹𝛽𝑑𝑊(𝑡) 
+𝑑𝛼(𝑡) = 𝜈𝛼(𝑡)𝑑𝑍(𝑡) 
+𝑑𝑊(𝑡)𝑑𝑍(𝑡) = 𝜌𝑑𝑡 
+Hagan et. al. proposed an approximate formula 𝜎𝐻𝑎𝑔𝑎𝑛(𝑇, 𝐾) and analyzed the dynamics of the implied 
+volatility surface [5]. And other practitioners use the average of local volatility along the straight line 
+from spot to strike of the option to analyze the qualitative feature of the model [6]. However, as far as I 
+know, there is not any quantitative analysis of it, and which average is not specified yet. 
+ 
+  
+In this paper, the methodology of quantum mechanics and statistical mechanics is applied to the local 
+volatility model and derives an approximate representation of the probability distribution of the local 
+volatility model. The propagator and path integral representation is applied to the local volatility model. 
+On the path integral representation, the semi-classical approximation is applied. It is shown that in the 
+semi-classical approximation, the square of the volatility for the distribution is a harmonic average of 
+the square of the local volatility.  
+ 
+In the current practice, stochastic volatility is thought to be necessary to explain volatility dynamics 
+properly. However, the distribution of the stochastic volatility model can be mapped to the local 
+volatility model [2]. So the results of this paper can be used for the calibration of the stochastic volatility 
+model also. 
+  
+ 
+Notation 
+𝑃(𝑡, 𝑥(𝑡); 𝑇, 𝑥(𝑇)): Propagator gives the probability distribution of 𝑥(𝑇) at time 𝑇,  when at time 𝑡, the 
+state is 𝑥(𝑡). 
+𝑃𝐶𝑢𝑚(𝑡, 𝑥(𝑡); 𝑇, 𝑥(𝑇)) = ∫
+𝑃(𝑡, 𝑥(𝑡); 𝑇, 𝑦)𝑑𝑦 
+𝑥(𝑇)
+−∞
+: Cumulative probability distribution 
+If the propagator is represented as  
+𝑃(𝑡, 𝑥(𝑡); 𝑇, 𝑥(𝑇)) = (
+1
+2𝜋𝜎𝑑𝑖𝑠𝑡√𝑇−𝑡
+) exp (−(𝑥(𝑇) −𝑥(𝑡))
+2
+𝜎𝑑𝑖𝑠𝑡
+2
+(𝑇−𝑇) ) 
+𝜎𝑑𝑖𝑠𝑡 is called distribution volatility  
+ 
+Electronic copy available at: https://ssrn.com/abstract=4354446
+
+Path Integral in Quantum Mechanics 
+Here, the fundamental of the Quantum Mechanics of the one-dimensional free point particle is 
+summarized [1][2].  
+In Quantum mechanics, the fundamental variable is the state (vectors). If the coordinate is adopted as  
+basis states, the state vector is represented by |𝑥(t) >.  Here, |𝑥(t) > represents the state where the 
+particle is surely at the coordinate 𝑥(t) at time t. 
+ 
+When at time t, the particle is at state |𝑥(t) >,  the probability that it has evolved to the state |𝑥(𝑇) > 
+at time T is given by the square of the transition amplitude < 𝑥(T)|𝑥(𝑡) >. That is  𝑃(𝑥(𝑡), 𝑥(𝑇)) =
+| < 𝑥(T)|𝑥(𝑡) >2. The transition amplitude is given in path integral formulation by 
+< 𝑥(𝑇)|𝑥(t) ≥= ∫𝐷𝑥𝑒𝑥𝑝(−1
+ℏ∫𝐿(𝑢, 𝑥(𝑢))
+𝑇
+𝑡
+𝑑𝑢) 
+Where  
+𝐿(𝑢, 𝑥(𝑢)) = 1
+2𝑚𝜕𝑢𝑥(𝑢)2 
+is called Lagrangian, ℏ is an Euler constant, and 𝑚 is the mass of the particle.  The integral of Lagrangian 
+∫𝐿(𝑢, 𝑥(𝑢))
+𝑇
+𝑡
+𝑑𝑢 is called action. The path which minimize the action gives classical trajectory. 
+ 
+The path integration measure 𝐷𝑥 is properly chosen. It means a summation of all the paths which 
+connect 𝑥(𝑡) at a time t and 𝑥(𝑇) at a time 𝑇. 
+ 
+ 
+Brownian Motion in Path Integral 
+In this chapter, Brownian motion 
+𝑑𝑥(𝑡) = 𝜎𝑑𝑊(𝑡) 
+is analyzed by the path integral approach. The volatility of the model is assumed to be constant. 
+Here, we introduce the propagator which gives the probability distribution function of state variable 
+𝑥(𝑇) at 𝑇, with initial value at 𝑡 is 𝑥(𝑡),  𝑃(𝑡, 𝑥(𝑡); 𝑇, 𝑥(𝑇)). 
+Let time horizon be [𝑡, 𝑇]. The propagator of the period is given by 
+𝑃(𝑡, 𝑥(𝑡); 𝑇, 𝑥(𝑇)) = (
+1
+2𝜋𝜎√𝑇−𝑡
+) exp (−(𝑥(𝑇) −𝑥(𝑡))
+2
+𝜎2(𝑇−𝑇)
+) 
+The relation  
+Electronic copy available at: https://ssrn.com/abstract=4354446
+
+𝑃(𝑇0, 𝑥(𝑇0);𝑇2, 𝑥(𝑇2))
+= ∫𝑑𝑦𝑃(𝑇0, 𝑥(𝑇0);𝑇1, 𝑦)𝑃(𝑇1, 𝑦; 𝑇2, 𝑥(𝑇2))
+∞
+∞
+ 
+ 
+should be trivially satisfied from the definition of the propagator. 
+  
+Now when the time horizon is divided into 𝑁 equidistant time steps as 
+[𝑡= 𝑡0, 𝑡1, ⋯, 𝑡𝑁= 𝑇] 
+where 𝑡𝑗+1 −𝑡𝑗= 𝜖, and  𝑥𝑗= 𝑥(𝑡𝑗). The propagator of the period  [𝑡, 𝑇] is represented as path integral 
+form 
+𝑃(𝑡, 𝑥(𝑡); 𝑇, 𝑥(𝑇)) = ∫𝑑𝑥1 ⋯𝑑𝑥𝑁−1𝑃(𝑡, 𝑥(𝑡); 𝑡1, 𝑥1)𝑃(𝑡1, 𝑥1; 𝑡2, 𝑥2) ⋯𝑃(𝑡𝑁−1, 𝑥N−1; 𝑡𝑁, 𝑥(𝑡𝑁)) 
+= ∫
+𝑑𝑥1
+√2𝜋𝜖𝜎
+⋯𝑑𝑥𝑁−1
+√2𝜋𝜖𝜎
+exp [−∑
+𝐿𝑑𝑖𝑠(𝑥𝑗−𝑥𝑗−1)
+𝑁
+𝑗=2
+𝜖] 
+where discrete Lagrangian is given by  
+𝐿𝑑𝑖𝑠(𝑥𝑗−𝑥𝑗−1) = (𝑥𝑗−𝑥𝑗−1)
+2
+2𝜎2𝜖2
+ 
+In the continuous limit 𝜖→0, the path integral representation is given by 
+𝑃(𝑡, 𝑥(𝑡); 𝑇, 𝑥(𝑇)) = ∫𝐷𝑥exp (−∫𝑑𝑢𝐿𝐵𝑟𝑜𝑤𝑛(𝑢)
+𝑇
+𝑡
+) 
+Where 𝐿𝐵𝑟𝑜𝑤𝑛(𝑢) is a continuous Lagrangian for the Brownian Motion [1][2] 
+𝐿𝐵𝑟𝑜𝑤𝑛(𝑢) = 𝜕𝑢𝑥(𝑢)2 
+This is the path integral representation of quantum mechanics, but with the real  numbers instead of the 
+complex numbers. It corresponds to the Wick rotated quantum field theory in 0 + 1 dimension. 
+ 
+Path Integral Representation of Local Volatility Model 
+In this chapter, local volatility model 
+𝑑𝑥(𝑡) = 𝜎(𝑡, 𝑥(𝑡))𝑑𝑊(𝑡) 
+is investigated by the path integral approach. 
+ 
+Let us consider the propagator 𝑃(𝑡𝑛, 𝑥(𝑡𝑛); 𝑡𝑛+1, 𝑥(𝑡𝑛+1)) on the time step [𝑡𝑛, 𝑡𝑛+1]. Here if the 
+volatility is constant in the time interval, the propagator is given by  
+𝑃(𝑡𝑛, 𝑥(𝑡𝑛); 𝑡𝑛+1, 𝑥(𝑡𝑛+1)) = (
+1
+√2𝜋𝜖𝜎
+) exp (−(𝑥𝑛+1 −𝑥𝑛)2
+2𝜖𝜎2
+) 
+Electronic copy available at: https://ssrn.com/abstract=4354446
+
+as in the previous section. In the local volatility model, the volatility is not constant 𝜎(𝑡, 𝑥(𝑡)), but the 
+time interval 𝜖 is small and the probability distribute about 𝜎√𝜖 in this time interval. So, we need to 
+analyze only in the region of (𝑥−𝑥𝑛) ∼𝜖. In this region, the local volatility is expanded as  
+𝜎(𝑡, 𝑥(𝑡)) = 𝜎(𝑡𝑛, 𝑥𝑛) + 𝜕𝑥𝜎(𝑡𝑛, 𝑥𝑛)(𝑥−𝑥𝑛) + 𝑂((𝑥−𝑥)2) 
+Even though the volatility is close to constant, the distribution is not normal, and the propagator's exact 
+form is unknown. However, we impose the assumption that for enough small  𝜖, the propagator is 
+approximately given as  
+𝑃(𝑡𝑛, 𝑥(𝑡𝑛); 𝑡𝑛+1, 𝑥(𝑡𝑛+1)) = (
+1
+√2𝜋𝜖𝜎(𝑡𝑛, 𝑥𝑛)
+) exp (−(𝑥𝑛+1 −𝑥𝑛)2
+2𝜖𝜎(𝑡𝑛, 𝑥𝑛+1)2)
+= (
+1
+√2𝜋𝜖𝜎(𝑡𝑛, 𝑥𝑛)
+) exp (−(𝑥𝑛+1 −𝑥𝑛)2
+2𝜖𝜎(𝑡𝑛, 𝑥𝑛)2 [1 −2𝜕𝑥𝜎(𝑡𝑛, 𝑥𝑛)
+𝜎(𝑡𝑛, 𝑥𝑛)
+(𝑥𝑛+1 −𝑥𝑛)]) 
+In the limit 𝜖→0, the second term in the exponential is negligible and the propagator converge to  
+𝑃(𝑡𝑛, 𝑥(𝑡𝑛); 𝑡𝑛+1, 𝑥(𝑡𝑛+1)) = (
+1
+√2𝜋𝜖𝜎(𝑡𝑛, 𝑥𝑛)
+) exp (−(𝑥𝑛+1 −𝑥𝑛)2
+2𝜖𝜎(𝑡𝑛, 𝑥𝑛)2 ) 
+and the propagator for the period  [𝑡, 𝑇] is represented as a path integral form  
+𝑃(𝑡, 𝑥(𝑡); 𝑇, 𝑥(𝑇)) = ∫𝐷𝑥𝑒𝑥𝑝(−∫𝐿𝐿𝑜𝑐(𝑢)𝑑𝑢
+𝑇
+𝑡
+) 
+Here the measure  
+𝐷𝑥= lim
+N→∞(
+𝑑𝑥1
+√2𝜋𝜖𝜎(𝑡0, 𝑥0)
+) (
+𝑑𝑥2
+√2𝜋𝜖𝜎(𝑡1, 𝑥1)
+) ⋯(
+𝑑𝑥𝑁−1
+√2𝜋𝜖𝜎(𝑡𝑁−2, 𝑥𝑁−2)
+)  
+depends on local volatility but its dependence is mild comparing to the dependence in the exponential 
+function, and this point is not discussed here.  
+𝐿𝐿𝑜𝑐(𝑢) =
+𝜕𝑥(𝑢)2
+2𝜎(𝑢, 𝑥(𝑢))
+2 
+Is Lagrangian for the local volatility model in the continuous limit. 
+ 
+Note that this path integral representation corresponds to the Quantum Mechanics with mas or Euler 
+parameters depend on the state. 
+ 
+Semi-classical approximation 
+In this section, a semi-classical approximation (small volatility expansion) of Local Volatility model is 
+given. In this section, continuous representation is used. In the limit volatility is zero 𝜎(𝑢, 𝑥(𝑢)) →0 , 
+the particle follows the classical path 𝑥0(𝑢). Let us divide the path into classical path and deviation to it.  
+𝑥(𝑢) = 𝑥0(𝑢) + ℎ(𝑢) 
+Electronic copy available at: https://ssrn.com/abstract=4354446
+
+where at the initial and final point the deviation is zero ℎ(𝑡) = ℎ(𝑇) = 0. Because 𝑥0(𝑢) is a classical 
+path, the first derivative of the Lagrangian with respect to ℎ(𝑡) diminishes on the path ℎ(𝑡) = 0.  
+Here 
+𝜕𝑥(𝑢)2
+𝜎(𝑢, 𝑥(𝑢))
+2 = (𝜕𝑢𝑥0(𝑢) + 𝜕𝑢ℎ(𝑢))
+2
+𝜎(𝑢, 𝑥0(𝑢) + ℎ(𝑢))
+2 
+=
+𝜕𝑢𝑥0(𝑢)2 + 2𝜕𝑢𝑥0(𝑢)𝜕𝑢ℎ(𝑢)
+𝜎(𝑢, 𝑥0(𝑢))
+2 [1 + 2𝜕𝑢𝜎(𝑢, 𝑥0(𝑢))ℎ(𝑢)
+𝜎(𝑢, 𝑥0(𝑢))
+] 
+ 
+=
+𝜕𝑢𝑥0(𝑢)2
+𝜎(𝑢, 𝑥0(𝑢))
+2 + 2𝜕𝑢𝑥0(𝑢)𝜕𝑢ℎ(𝑢)
+𝜎(𝑢, 𝑥0(𝑢))
+2
+−2 𝜕𝑢𝑥0(𝑢)2𝜕𝑢𝜎(𝑢, 𝑥0(𝑢))ℎ(𝑢)
+𝜎(𝑢, 𝑥0(𝑢))
+3
++ 𝑂(ℎ2) 
+ 
+From  
+𝜕{𝜕𝑢𝑥0(𝑢)ℎ(𝑢)
+𝜎(𝑢, 𝑥0(𝑢))
+2}
+= 𝜕𝑢2𝑥0(𝑢)ℎ(𝑢)
+𝜎(𝑢, 𝑥0(𝑢))
+2 + 𝜕𝑢𝑥0(𝑢)𝜕𝑢ℎ(𝑢)
+𝜎(𝑢, 𝑥0(𝑢))
+2
+−2[𝜕𝑢𝜎(𝑢, 𝑥0(𝑢)) + 𝜕𝑥𝜎(𝑢, 𝑥0(𝑢))𝜕𝑢𝑥0(𝑢)]𝜕𝑢𝑥0(𝑢)ℎ(𝑢)
+𝜎(𝑢, 𝑥0(𝑢))
+3
+ 
+ 
+and  
+∫𝜕{𝜕𝑢𝑥0(𝑢)ℎ(𝑢)
+𝜎(𝑢, 𝑥0(𝑢))
+2} 𝑑𝑢
+𝑇
+𝑡
+= 0 
+ 
+we have 
+ 
+∫
+𝜕𝑥(𝑢)2
+𝜎(𝑢, 𝑥(𝑢))
+2
+𝑇
+𝑡
+𝑑𝑢
+= 𝑆0(𝑡, 𝑇)
++ ∫2ℎ(𝑢) [ −𝜕𝑢2𝑥0(𝑢)
+𝜎(𝑢, 𝑥0(𝑢))
+2 + 2𝜕𝑢𝑥0(𝑢)𝜕𝑢𝜎(𝑢, 𝑥0(𝑢)) + 𝜕𝑥𝜎(𝑢, 𝑥0(𝑢))(𝜕𝑢𝑥0(𝑢))
+2
+𝜎(𝑢, 𝑥0(𝑢))
+3
+]𝑑𝑢 
+𝑇
+𝑡
++ 𝑂(ℎ2) 
+ 
+where  
+Electronic copy available at: https://ssrn.com/abstract=4354446
+
+𝑆0(𝑡, 𝑇) = ∫
+𝜕𝑥0(𝑢)2
+𝜎(𝑢, 𝑥0(𝑢))
+2
+𝑇
+𝑡
+𝑑𝑢 
+is the action which depends on classical trajectory. The condition of the action is minimized is the term 
+proportional to ℎ(𝑢) is zero and it gives equation of motion of classical trajectory. 
+𝜕𝑢2𝑥0(𝑢) = 2𝜕𝑢𝑥0(𝑢)𝜕𝑢𝜎(𝑢, 𝑥0(𝑢)) + 𝜕𝑥𝜎(𝑢, 𝑥0(𝑢))(𝜕𝑢𝑥0(𝑢))
+2
+𝜎(𝑢, 𝑥0(𝑢))
+ 
+It is a rather difficult ordinary differential equation to solve for the general local volatility model. 
+However, when the skew is not steep, we can assume right-hand side is negligible. In this case, the 
+classical trajectory is the same as that of the free particle, and the classical solution for the free particle 
+is given by 
+𝑥0(𝑢) = 𝑥(𝑡) + 𝑥(𝑇) −𝑥(𝑡)
+𝑇−𝑡
+(𝑢−𝑡) 
+On this classical path,  
+𝜕𝑢𝑥0(𝑢) = 𝑥(𝑇) −𝑥(𝑡)
+𝑇−𝑡
+ 
+And the propagator is given by 
+𝑃(𝑡, 𝑥(𝑡); 𝑇, 𝑥(𝑇)) = (
+1
+2𝜋𝜎𝑀𝑜𝑑(𝑥(𝑡), 𝑥(𝑇))√𝑇−𝑡
+) exp −{𝑥(𝑇) −𝑥(𝑡)
+𝑇−𝑡
+}
+2
+(∫
+𝑑𝑢
+𝜎(𝑢, 𝑥0(𝑢))
+2
+𝑇
+𝑡
+) 
+ 
+Comparing this representation with the propagator of the Brownian motion, we have the approximate 
+representation of volatility for the distribution by the local volatility as  
+𝜎𝐷𝑖𝑠𝑡
+2
+(𝑡, 𝑥(𝑡), 𝑇, 𝐾)2 = (
+1
+𝑇−𝑡) ∫
+𝑑𝑢
+𝜎(𝑢, 𝑥0(𝑢))
+2
+𝑇
+𝑡
+ 
+where  𝑥0(𝑢) = 𝑥(𝑡) +
+𝐾−𝑥(𝑡)
+𝑇−𝑡(𝑢−𝑡).  The volatility of the distribution 𝜎𝐷𝑖𝑠𝑡
+2
+(𝑡, 𝑥(𝑡), 𝑇, 𝐾) is solely used 
+for the propagator.   
+The modified volatility 𝜎𝑀𝑜𝑑(𝑥(𝑡), 𝑥(𝑇)) comes from the integration of measure. It should make the 
+propagator normalized such that 
+∫𝑃(𝑡, 𝑥(𝑡); 𝑇, 𝑦)𝑑𝑦= 1 
+The contribution of this to the propagator is mild comparing to the volatility of distribution  
+𝜎𝐷𝑖𝑠𝑡(𝑡, 𝑇, 𝐾)  and it will not be discussed here. 
+ 
+The square of the volatility for the propagator of the Brownian motion is the harmonic average of that 
+of the corresponding local volatility. Here the average is taken on the path which connects the initial 
+asset price and the strike at maturity. 
+Electronic copy available at: https://ssrn.com/abstract=4354446
+
+ 
+Implied volatility and propagator 
+ 
+In the previous section, propagator and its distribution volatility of the local volatility model are given. 
+Note that the distribution volatility is different to the implied volatility of the (normal) Black model, in 
+the skew surface. When there is a skew in the volatility surface, call spread gives cumulative distribution 
+function. 
+𝑃𝐶𝑢𝑚(𝑡, 𝑥(𝑡); 𝑇, 𝐾) = lim
+ϵ→0
+𝑐𝑎𝑙𝑙(𝐾+ 𝜖) −𝑐𝑎𝑙𝑙(𝐾)
+𝜖
+ = d𝑐𝑎𝑙𝑙(𝐾)
+𝑑𝐾
+ 
+The cumulative distribution function is given by the integral of the distribution function 
+𝑃𝐶𝑢𝑚(𝑡, 𝑥(𝑡); 𝑇, 𝐾) = ∫
+𝑃(𝑡, 𝑥(𝑡); 𝑇, 𝑦)𝑑𝑦
+𝐾
+−∞
+ 
+ 
+ 
+ 
+Numerical Analysis 
+To analyze the accuracy of the approximation, it is compared with the Monte Carlo simulation. In the 
+analysis, the local volatility model  
+𝜎𝑙𝑜𝑐(𝑡, 𝑥) = 𝑎+ 𝑏𝑥+ 𝑐𝑥2 
+The distribution function of the model is calculated in our semi-classical approximation and compared to 
+the Monte Carlo simulation with 100,000 paths. 
+ 
+Positive skew 
+The local volatility model in this paper is based on the normal model, and skew can be positive. In our 
+numerical analysis, the positive skew local volatility model with 
+𝑎= 0.3 
+𝑏= 0.082 
+𝑐= 0.008 
+is analyzed.  Note that our model is a normal model, and the volatility skew can be positive. 
+ 
+The time independent local volatility curve is given by [Fig 1] 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=4354446
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+[Fig 1] 
+ 
+Electronic copy available at: https://ssrn.com/abstract=4354446
+
+ 
+ 
+ 
+The distribution volatility via semi-classical approximation is given by [Fig 2] 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+[Fig 2] 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=4354446
+
+ 
+The distribution function by the path integral approach with the above distribution volatility is given by 
+[Fig 3] 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+[Fig 3] 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=4354446
+
+ 
+The histogram of the distribution created by Monte Carlo simulation is given as [Fig 4]. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+[Fig 4] 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=4354446
+
+To estimate an accuracy of the approximation, skew ((
+1
+𝑁∑(𝑥(𝑖) −𝑚𝑒𝑎𝑛)3
+𝑁
+𝑖
+) of  both in our 
+approximation and Monte Carlo simulation are caculated. In the semi-classical approximation of path 
+integral, it is 0.15219106163181195, and in the Monte Carlo simulation, it is 0.22236858294930395. 
+ 
+Negative skew 
+For the negative skew local volatility of  
+𝑎= 0.3 
+𝑏= −0.082 
+𝑐= 0.008 
+The time independent local volatility is given by [Fig 5]  
+ 
+ 
+[Fig 5] 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=4354446
+
+The distribution volatility via semi-classical approximation is given by [Fig 6]  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+[Fig 6] 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=4354446
+
+ 
+ 
+The distribution function by the path integral approach with the above distribution volatility is given by 
+[Fig 7]. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+[Fig 7] 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=4354446
+
+The histogram of the distribution created by Monte Carlo simulation is given as [Fig 8]. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+[Fig 8] 
+ 
+Electronic copy available at: https://ssrn.com/abstract=4354446
+
+In the positive skew case, the skew by the semi-classical approximation of path integral approach is 
+given by -0.22777512562616942, and by the Monte Carlo simulation, it is given by -
+0.8644323047716206. 
+ 
+ 
+Conclusion 
+The local volatility model is analyzed via path integral of Quantum Mechanics. It is shown that for the 
+period [𝑡, 𝑇], the volatility for the propagator 𝑃(𝑡, 𝑥(𝑡); 𝑇, x(T)) is estimated by the square root of the 
+harmonic average of the square of the local volatility along the strait line which connect 𝑥(𝑡) and 𝑥(𝑇). 
+In the practice of the quantitative analysis of the derivatives trading, the average along the straight line 
+is typically used. However, the average is not the arithmetic average or its continuous limit, but it is a 
+harmonic average. 
+  
+𝜎𝐷𝑖𝑠𝑡(𝑡, 𝑇, 𝐾)2 = (
+1
+𝑇−𝑡) ∫
+𝑑𝑢
+𝜎(𝑢, 𝑥0(𝑢))
+2
+𝑇
+𝑡
+ 
+This approximate distribution volatility gives distribution in the asset in the local volatility model and is 
+useful for the qualitative analysis of the volatility surface.  Note that in the Hagan et. al. approximation 
+of the SABR model, for the zero correlation and small volatility of volatility limit the approximation 
+formula is converge to 
+1
+𝜎𝐻𝑎𝑔𝑎𝑛(𝑥0, 𝐾) ∼( 1
+𝜎0
+)∫𝑑𝐹
+𝐹𝛽
+𝐾
+𝑥𝑜
+ 
+The harmonic average appear in their approximation formula also, though it is an average of the 
+volatility not the variance. Note that our model is a normal model, where the implied volatility in Hagan 
+approximation is log normal volatility.  
+ 
+ 
+ 
+The extension of this analysis to the multi-dimensional model is possible. 
+ 
+Here the semi-classical approximation is analyzed in the first order. By applying the saddle point 
+method, higher order terms can be analyzed also [7]. The path integral approach to Quantum mechanics 
+and Quantum field theory has long history. Extensive perturbational and non perturbational  analysis of 
+it has been done by many physicist [1]. The application of it can expand the field of financial 
+mathematics. 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=4354446
+
+The author would like to thank Kohei Ueda for suggesting this problem and extensive discussions. 
+ 
+ 
+Reference 
+[1] Jean Zinn Justin, Path Integrals in Quantum Mechanics, (2010), Oxford Gradute Texts and refrences 
+threin 
+[2] J. J. Sakurai, Modern Quantum Mechanics, (1985) 
+[3] Jim Gatheral, The Volatility Surface A Practitioner’s Guide, (2006) John Wiley & Sons, Inc. 
+[4] Bruno Dupire, Pricing with a smile, (1994) 
+[5] Derman, Extending Black Scholes; Local Volatility Models 
+[6] Managing Smile Risk, Patrick S. Hagan, Deep Kumar, Andrew S. Lesniewski, and Diana E. Woodward 
+(2003) 
+[7] Sidney Coleman, Aspects of Symmetry, (1985), Cambridge University Press 
+ 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=4354446

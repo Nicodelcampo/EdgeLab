@@ -1,0 +1,99 @@
+{
+  "doc_id": 343,
+  "titulo": "The 'Neutrinos' of the Order Book: Pervasive, Weakly Interacting Order Flow and its Consequences",
+  "resumen_operativo": "Usa datos ultra-granulares del exchange blockchain-based Hyperliquid (Bitcoin perpetuals, ~4.5 mil millones de mensajes en un mes, julio 2025) para revelar un flujo masivo de órdenes post-only rechazadas (~67% de todos los mensajes) que no aparecen en feeds de mercado estándar. Estas 'órdenes neutrino' provienen de una pequeña cohorte de HFTs ejecutando una Queue Priority Strategy (QPS): bombardean el exchange con submission bursts direccionales para capturar posición first-in-line cuando el spread se ensancha. El 91.3% de las órdenes rechazadas en los 100ms previos a un cambio de precio predicen correctamente su dirección. La estrategia explica ~30% del flickering de órdenes.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Queue Priority Strategy (QPS)",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia HFT que bombardea el exchange con submission bursts (voleas de órdenes post-only simultáneas a múltiples niveles de precio agresivos) de forma anticipatoria, antes de que ocurra un cambio de precio. El objetivo es que las órdenes estén 'in-flight' exactamente cuando el precio cambia, capturando la codiciada posición first-in-line (FIL) en el nuevo mejor precio.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Post-only limit orders"},
+        {"tipo": "CAUSA", "objeto": "Neutrino order flow"}
+      ],
+      "cita_textual": "The QPS is driven by the immense value of queue priority, namely securing the first-in-line (FIL) position at a new price. We show that HFTs engage in relentless, anticipatory 'spamming', flooding the market with a constant rain of orders structured as submission bursts."
+    },
+    {
+      "nombre": "Neutrino orders",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Órdenes post-only masivamente rechazadas (~89% de todas las liquidity-providing submissions, ~67% de todos los mensajes al exchange) que no aparecen en ningún feed de datos estándar. Son invisibles para todos los traders excepto el submitter. Provienen del QPS: órdenes que llegan milisegundos demasiado temprano y son mecánicamente rechazadas.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "Rejected post-only orders"},
+        {"tipo": "PARTE_DE", "objeto": "Queue Priority Strategy (QPS)"}
+      ],
+      "cita_textual": "We identify the 'neutrinos' of the order book: a massive, pervasive, yet weakly interacting flow of rejected 'post-only' orders... accounting for approximately 67% of all messages sent to the exchange."
+    },
+    {
+      "nombre": "Anticipatory spread refilling",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Hallazgo que contradice la visión convencional de que el spread se rellena reactivamente después de ensancharse. En realidad, la liquidez que establece el nuevo mejor precio ya está 'in-flight' antes del cambio de precio, implicando latencia efectiva de replenishment cercana a cero.",
+      "relaciones": [
+        {"tipo": "CONTRADICE_A", "objeto": "Reactive spread refilling models"},
+        {"tipo": "CAUSA", "objeto": "Near-zero effective replenishment latency"}
+      ],
+      "cita_textual": "We show instead that spread refilling is primarily anticipatory. The liquidity that establishes the new best price is typically already 'in-flight' before the price change even occurs, implying that the effective latency of replenishment is close to zero."
+    },
+    {
+      "nombre": "Directional accuracy of rejected orders",
+      "tipo": "metrica",
+      "definicion_en_contexto": "91.3% de las órdenes rechazadas en los 100 ms previos a un cambio de precio predicen correctamente la dirección del cambio. Evidencia de que los QPS traders actúan sobre señales (privadas o comunes) que pronostican movimientos de precio de corto plazo con precisión notable.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "HFT signal quality"},
+        {"tipo": "CAUSA", "objeto": "Predictive order flow"}
+      ],
+      "cita_textual": "The net direction of rejected orders in the 100 ms before each price change correctly predicts the direction of that change 91.3% of the time."
+    },
+    {
+      "nombre": "Flickering orders as QPS cleanup",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "El flickering (órdenes canceladas en <500ms de ser enviadas) es en gran medida un subproducto de risk management del QPS: cuando un submission burst tiene éxito, el trader cancela instantáneamente las órdenes no deseadas off-price para evitar multi-fill risk. Esto explica ~30% del flickering en el dataset.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "QPS risk management byproduct"},
+        {"tipo": "EXPLICA", "objeto": "Flickering quote puzzle"}
+      ],
+      "cita_textual": "When a submission burst succeeds, the trader instantly cancels the unwanted, off-price orders to avoid multi-fill risk. This rapid 'cleanup' accounts for roughly 30% of the flickering activity in our dataset."
+    },
+    {
+      "nombre": "Hyperliquid blockchain-based exchange",
+      "tipo": "dato",
+      "definicion_en_contexto": "Exchange de futuros perpetuos de criptomonedas basado en blockchain cuyo motor de matching permite reconstruir el stream completo de mensajes desde registros on-chain, incluyendo órdenes rechazadas. Datos de BTC-USD perpetual, julio 2025, ~$3 mil millones de volumen diario promedio.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Full message stream reconstruction"},
+        {"tipo": "PERMITE", "objeto": "Rejected order visibility"}
+      ],
+      "cita_textual": "Hyperliquid operates a blockchain-based matching engine whose full message stream can be reconstructed from on-chain records. The sample spans July 1st to July 29th, 2025... approximately 4.5 billion messages."
+    },
+    {
+      "nombre": "Submission bursts",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Voleas de órdenes post-only simultáneas dirigidas a múltiples niveles de precio agresivos, enviadas por HFTs como parte del QPS. Si llegan milisegundos demasiado temprano son rechazadas (neutrino flow); las pocas que aciertan el timing capturan FIL.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Queue Priority Strategy (QPS)"},
+        {"tipo": "GENERA", "objeto": "Rejected orders"}
+      ],
+      "cita_textual": "Submission bursts—volleys of simultaneous post-only submissions targeting multiple aggressive price levels."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Órdenes post-only rechazadas representan ~89% de todas las liquidity-providing submissions y ~67% del total de mensajes enviados al exchange Hyperliquid (~4.5 mil millones de mensajes en un mes). Estas órdenes son invisibles en feeds de mercado estándar.",
+      "mercado": "Hyperliquid BTC-USD perpetual futures",
+      "periodo": "Julio 1-29, 2025 (~1 mes, 4.5 mil millones de mensajes, ~$3B volumen diario promedio)",
+      "magnitud": "Rejected orders = 89% de liquidity-providing submissions; 67% de todos los mensajes totales (~3B de 4.5B mensajes). Dwarf visible LOB liquidity por más de dos órdenes de magnitud.",
+      "condiciones": "Exchange blockchain-based con reconstrucción completa on-chain del message stream; promedio 112,000 mensajes/minuto (~1,860/segundo)",
+      "robustez": "alta",
+      "cita_textual": "Rejected orders account for approximately 89% of all liquidity-providing submissions and dwarf the visible liquidity resting in the LOB by more than two orders of magnitude... approximately 67% of all messages sent to the exchange."
+    },
+    {
+      "afirmacion": "La dirección neta de órdenes rechazadas en los 100 ms previos a cada cambio de precio predice correctamente la dirección de dicho cambio el 91.3% de las veces. Los QPS traders actúan sobre señales con notable precisión direccional.",
+      "mercado": "Hyperliquid BTC-USD perpetual futures",
+      "periodo": "Julio 2025",
+      "magnitud": "91.3% de precisión direccional en predicción de cambios de precio usando órdenes rechazadas en ventana de 100ms pre-cambio.",
+      "condiciones": "Análisis de dirección neta de rejected orders agregadas en ventanas de 100ms antes de cada price change",
+      "robustez": "alta",
+      "cita_textual": "The net direction of rejected orders in the 100 ms before each price change correctly predicts the direction of that change 91.3% of the time."
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "Estudio de microestructura intradiaria de ultra-alta frecuencia con datos de ~1,860 mensajes/segundo; revela mecánicas de queue priority racing y spread refilling relevantes para HFT y market making."}
+}

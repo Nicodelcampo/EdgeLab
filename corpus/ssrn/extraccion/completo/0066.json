@@ -1,0 +1,152 @@
+{
+  "doc_id": 66,
+  "titulo": "Asymmetric Hidden Markov Modeling of Order Flow Imbalances for Microstructure-Aware Market Regime Detection",
+  "resumen_operativo": "Propone un HMM asimétrico entrenado sobre order flow imbalance (OFI) a nivel tick, ajustado por spread, para detectar regímenes latentes de mercado (liquidez pasiva, acumulación agresiva, distribución agresiva, vacío de liquidez). Los regímenes inferidos mejoran la precisión de señales de breakout y reducen costos de ejecución VWAP. Resultados empíricos sobre SPY y NSE muestran Sharpe 2.55 vs 1.32 baseline, con reducción de costos VWAP de ~9 bps y precisión de señal del 74.8% contra 61.3% del OFI crudo.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "order flow imbalance",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Diferencia neta entre volumen iniciado por comprador y por vendedor, usada como indicador de presión de precio de corto plazo. El paper la ajusta con un peso de certeza basado en el spread bid-ask y la normaliza con z-score rodante.",
+      "relaciones": [
+        {"tipo": "PREDICE", "objeto": "short-term returns"},
+        {"tipo": "USA", "objeto": "trade sign"},
+        {"tipo": "USA", "objeto": "bid-ask spread"}
+      ],
+      "cita_textual": "order flow imbalance (OFI) — the difference between buyer-initiated and seller-initiated volume — is a potent indicator of near-term price pressure"
+    },
+    {
+      "nombre": "hidden Markov model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo probabilístico con estados ocultos, matriz de transición y probabilidades de emisión Gaussianas, usado para inferir regímenes de mercado a partir de la serie de OFI ajustada.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Baum-Welch algorithm"},
+        {"tipo": "USA", "objeto": "Viterbi algorithm"},
+        {"tipo": "APLICA_A", "objeto": "regime detection"}
+      ],
+      "cita_textual": "An HMM consists of hidden states, a transition matrix, and emission probabilities modeled as Gaussian."
+    },
+    {
+      "nombre": "asymmetric transition matrix",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Matriz de transición de HMM con restricciones asimétricas que reflejan flujos de mercado realistas, por ejemplo, transiciones raras desde vacío de liquidez hacia mercado pasivo.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "hidden Markov model"},
+        {"tipo": "MEJORA_A", "objeto": "regime detection"}
+      ],
+      "cita_textual": "Constrained to reflect realistic market flows. Example: Transition from vacuum to passive market is rare."
+    },
+    {
+      "nombre": "regime detection",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Inferencia de estados latentes del mercado (pasivo, acumulación, distribución, vacío de liquidez) a partir de datos de order flow; los regímenes se usan luego como overlay para filtrado de señales y dimensionamiento de posición.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "hidden Markov model"},
+        {"tipo": "USA", "objeto": "order flow imbalance"},
+        {"tipo": "APLICA_A", "objeto": "position sizing"}
+      ],
+      "cita_textual": "s1: Passive Liquidity Phase, s2: Aggressive Accumulation, s3: Aggressive Distribution, s4: Liquidity Vacuum"
+    },
+    {
+      "nombre": "Shannon entropy",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Entropía del vector de probabilidades posteriores de los estados ocultos del HMM; usada para escalar el tamaño de posición: menor entropía implica mayor confianza y posiciones más agresivas.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "regime detection"},
+        {"tipo": "APLICA_A", "objeto": "position sizing"}
+      ],
+      "cita_textual": "Position Size ∝ 1 - H(γ)/log N. This normalization ensures the entropy term lies between 0 and 1."
+    },
+    {
+      "nombre": "Baum-Welch algorithm",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Algoritmo EM regularizado para estimar parámetros del HMM con restricciones asimétricas en la matriz de transición.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "hidden Markov model"}
+      ],
+      "cita_textual": "We use the Baum-Welch algorithm for parameter estimation with regularized EM for asymmetric constraints."
+    },
+    {
+      "nombre": "Viterbi algorithm",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Algoritmo de decoding usado para inferir la secuencia más probable de estados ocultos (regímenes) a partir de las observaciones de OFI.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "hidden Markov model"},
+        {"tipo": "APLICA_A", "objeto": "regime detection"}
+      ],
+      "cita_textual": "Decoding is via the Viterbi algorithm."
+    },
+    {
+      "nombre": "position sizing",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Dimensionamiento de posición escalado por la confianza entrópica del régimen inferido: cuando la entropía es baja (alta confianza), las posiciones son más agresivas.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Shannon entropy"},
+        {"tipo": "USA", "objeto": "regime detection"}
+      ],
+      "cita_textual": "When regime uncertainty is high (entropy near maximum), position size is reduced; when confidence is high, it is increased."
+    },
+    {
+      "nombre": "bid-ask spread",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Diferencia entre precio ask y bid en el momento del trade; un spread amplio reduce el peso de certeza del trade en el cálculo del OFI, ya que trades en spreads amplios tienden a ser ruidosos.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "order flow imbalance"},
+        {"tipo": "MIDE", "objeto": "liquidity provision"}
+      ],
+      "cita_textual": "This formulation ensures that trades executed under tight spreads—typically more informative—are weighted more heavily"
+    },
+    {
+      "nombre": "trade sign",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Signo del trade determinado comparando el precio de ejecución con el mid-quote: positivo si precio > mid (compra), negativo si precio < mid (venta), usado en la fórmula del OFI ajustado.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "order flow imbalance"},
+        {"tipo": "USA", "objeto": "Lee-Ready algorithm"}
+      ],
+      "cita_textual": "OFIt = ∑ δi * sign(pi − mi) * vi for i ∈ Tt"
+    },
+    {
+      "nombre": "VWAP",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Benchmark de ejecución usado para medir el costo de ejecución; el paper reporta una reducción de 9 bps en el costo de ejecución VWAP al usar overlays de régimen frente al baseline de OFI crudo.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "regime detection"}
+      ],
+      "cita_textual": "VWAP execution cost reduced by ~9 bps"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "El HMM asimétrico sobre OFI ajustado por spread mejora la precisión de señal de breakout al 74.8% TPR frente al 61.3% del OFI crudo y al 64.1% de un HMM clásico sobre retornos.",
+      "mercado": "US equities (SPY, QQQ) y NSE (India)",
+      "periodo": "no especificado",
+      "magnitud": "TPR 74.8% vs 61.3% (baseline OFI crudo) vs 64.1% (HMM clásico); Sharpe 2.55 vs 1.32 baseline",
+      "condiciones": "Horario 9:30 AM - 12:00 PM, intervalos de 10 segundos; sin mención de costos ni OOS formal",
+      "robustez": "baja",
+      "cita_textual": "Signal Precision (TPR %) 74.8% vs Raw OFI Baseline 61.3% vs Classic HMM 64.1%"
+    },
+    {
+      "afirmacion": "El overlay de régimen reduce el costo de ejecución VWAP en ~9 bps respecto al baseline de OFI crudo.",
+      "mercado": "US equities (SPY ETF)",
+      "periodo": "no especificado",
+      "magnitud": "VWAP execution cost: -7.4 bps (this paper) vs -21.5 bps (raw OFI) vs -16.2 bps (classic HMM)",
+      "condiciones": "Sin detalles de modelo de costos, comisiones o slippage; sin validación OOS",
+      "robustez": "baja",
+      "cita_textual": "VWAP execution cost reduced by ~9 bps"
+    },
+    {
+      "afirmacion": "La duración promedio del régimen de acumulación agresiva (s2) es de ~4.3 minutos, superior a los ~2.5 minutos del HMM clásico sobre retornos.",
+      "mercado": "SPY ETF",
+      "periodo": "no especificado",
+      "magnitud": "Avg regime duration s2: ~4.3 min (this paper) vs ~2.5 min (classic HMM)",
+      "condiciones": "Estimado sobre datos tick de SPY durante sesión de 60 minutos ilustrada en el paper",
+      "robustez": "baja",
+      "cita_textual": "Avg Regime Duration (s2): ~4.3 min vs ~2.5 min"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "alta",
+    "nota": "El modelo opera directamente sobre datos tick-level con intervalos de 10 segundos y los regímenes inferidos (duración ~4 min) se prestan para overlays de ejecución intradía y filtrado de entradas en ES futures."
+  }
+}

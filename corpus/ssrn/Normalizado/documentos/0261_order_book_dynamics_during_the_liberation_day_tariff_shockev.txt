@@ -1,0 +1,171 @@
+Order Book Dynamics During the Liberation Day Tariff Shock:
+Evidence from 20 NASDAQ Stocks
+Boon Chuan Lim
+Independent Researcher, Singapore
+boonchuan@singapore.to
+April 2026
+Abstract
+Using NASDAQ TotalView Level 3 data for 20 stocks, I document how order book microstructure
+changed during the April 2025 Liberation Day tariff shock. Trading volume doubled (+101%), but
+order composition shifted dramatically: median order lifetime collapsed from 120ms to 32ms (−73%),
+sub-millisecond orders rose 18%, and cancel-to-trade ratios fell 27%. These patterns indicate a regime
+shift from patient liquidity provision to aggressive, short-lived order placement. The effect is
+heterogeneous: smaller-cap stocks (CMCSA +478%, CSCO +357%) experienced larger surges than
+mega-caps (TSLA +21%). Cross-sectionally, the volume surge explains the lifetime collapse (r =
+−0.91). This provides nanosecond-resolution evidence on how a trade policy shock transforms limit
+order book dynamics.
+JEL Classification: G10, G12, G14, D47, F13
+Keywords: market microstructure, tariff shock, order book dynamics, high-frequency trading, Liberation
+Day, liquidity, financial stability
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6574207
+Preprint not peer reviewed
+
+Order Book Dynamics During the Liberation Day Tariff Shock:
+Evidence from 20 NASDAQ Stocks
+Abstract
+Using NASDAQ TotalView Level 3 data for 20 stocks, I document how order book microstructure 
+changed during the April 2025 Liberation Day tariff shock. Trading volume doubled (+101%), but order 
+composition shifted dramatically: median order lifetime collapsed from 120ms to 32ms (−73%), submillisecond orders rose 18%, and cancel-to-trade ratios fell 27%. These patterns indicate a regime shift 
+from patient liquidity provision to aggressive, short-lived order placement. The effect is heterogeneous: 
+smaller-cap stocks (CMCSA +478%, CSCO +357%) experienced larger surges than mega-caps (TSLA 
++21%). Cross-sectionally, the volume surge explains the lifetime collapse (r = −0.91). This provides 
+nanosecond-resolution evidence on how a trade policy shock transforms limit order book dynamics.
+JEL: G10, G12, G14, D47, F13. Keywords: market microstructure, tariff shock, order book dynamics, high-frequency trading, 
+Liberation Day, liquidity
+1. Introduction
+On April 2, 2025 — a date President Trump proclaimed “Liberation Day” — the United States announced the 
+most sweeping tariff increase since the Smoot-Hawley Tariff Act of 1930, imposing a minimum 10% tariff on 
+nearly all imports with higher rates for major trading partners (Executive Order 14257). The announcement 
+triggered sharp equity declines, with the S&P 500 losing approximately $5 trillion in market value within two 
+days (Reuters, April 4, 2025). A growing literature examines the macroeconomic and asset-pricing 
+consequences of this shock (Kaczmarek, Demir, Rouatbi, and Zaremba, 2025). However, existing work has 
+mostly focused on macroeconomic and asset-pricing effects rather than order-book microstructure.
+This paper fills that gap. Using NASDAQ TotalView Level 3 Market-by-Order data from Databento 
+(XNAS.ITCH schema), I analyze the order book dynamics of 20 liquid stocks on three days: April 1 (normal), 
+April 4 (first full crisis day), and April 7 (peak crisis). The Level 3 data provides individual order-level 
+messages with nanosecond timestamps, allowing measurement of order lifetimes, cancellation behavior, and 
+participant composition at a granularity unavailable in standard trade-and-quote data.
+I document five key findings. First, trading volume more than doubled (+101%). Second, median order 
+lifetime collapsed from 120ms to 32ms (−73%), indicating a shift from patient limit orders to aggressive, 
+short-lived strategies. Third, the share of ultra-fast orders (lifetime < 1ms) rose from 26% to 31%, suggesting 
+increased high-frequency trading activity. Fourth, the cancel-to-trade ratio fell from 11.3 to 8.3 (−27%), as the 
+surge in executed trades (+101%) outpaced the rise in cancellations (+47%). Fifth, the effect was 
+heterogeneous: smaller-cap names (CMCSA +478%, CSCO +357%) experienced proportionally larger volume 
+surges than mega-caps (TSLA +21%). Cross-sectionally, the correlation between volume surge and lifetime 
+collapse is r = −0.91.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6574207
+Preprint not peer reviewed
+
+These findings contribute to the literature on market microstructure during crises, including the 2010 Flash 
+Crash (Kirilenko, Kyle, Samadi, and Tuzun, 2017) and European sovereign debt crises (Pelizzon, 
+Subrahmanyam, Tomio, and Uno, 2016). This paper provides nanosecond-resolution evidence on how a major 
+trade policy shock — rather than a financial or health crisis — transforms the internal dynamics of the limit 
+order book.
+2. Data
+The sample covers 20 NASDAQ-listed stocks spanning technology, consumer discretionary, healthcare, 
+communication, and consumer staples sectors. I extract one hour of continuous trading (14:00–15:00 UTC) on 
+each of three days: April 1 (normal), April 4 (crisis day 1), and April 7 (crisis day 2). Data is obtained from 
+Databento using the XNAS.ITCH feed with Market-by-Order (MBO) schema.
+Data limitations: Files exceeding 4 million records are truncated to the first 30 minutes. GOOGL (April 7) and 
+NVDA (April 4, 7) are excluded due to memory constraints. Results are robust to using only the first 30 
+minutes for all stocks (available upon request). The total sample comprises approximately 45 million orderlevel records across 57 stock-days.
+Table 1: Sample Summary
+Normal (Apr 1)
+Crisis (Apr 4,7)
+Change
+Records/stock
+623,804
+919,440
++47%
+Trades/stock
+25,816
+51,922
++101%
+3. Results
+3.1 Order Flow Composition
+Table 2 compares order book statistics between the normal day and crisis days. The most striking change is the 
+collapse in order lifetime: the median order survives only 32 milliseconds during the crisis, down from 120 
+milliseconds on the normal day. This 73% reduction indicates that participants submit and cancel orders at 
+dramatically higher rates, consistent with a shift from passive liquidity provision to aggressive quote updating 
+under heightened uncertainty.
+Table 2: Order Book Microstructure: Normal vs Crisis
+Metric
+Normal
+Crisis
+Change
+Cancel/Trade ratio
+11.3
+8.3
+−27%
+Trade % of messages
+5.3%
+6.3%
++20%
+Median lifetime (ms)
+120
+32
+−73%
+Orders < 1ms
+26.2%
+31.0%
++18%
+Price range (intra-hour)
+1.4%
+4.8%
++234%
+Realized volatility
+0.81%
+2.23%
++175%
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6574207
+Preprint not peer reviewed
+
+Notes: Price range = (high − low)/low. Realized volatility = √Σ(r²) of trade-to-trade returns. Normal = April 1 (20 stocks). Crisis = April 4,7 
+(averaged).
+3.2 High-Frequency Trading Activity
+The share of sub-millisecond orders rose from 26.2% to 31.0% (+18%). The decline in the cancel-to-trade ratio 
+(11.3 to 8.3) reflects the surge in executed trades (+101%) outpacing the rise in cancellations (+47%). In 
+levels, cancellations still rose sharply (from ~291K to ~428K per stock), but the efficiency of order submission 
+increased as thinner books meant fewer orders expired unfilled.
+3.3 Cross-Sectional Heterogeneity
+The volume surge was heterogeneous. CMCSA (+478%), CSCO (+357%), and MDLZ (+260%) experienced 
+the largest surges; TSLA (+21%), NFLX (+56%), and AMZN (+73%) the smallest. Stocks with normally 
+lower trading activity experienced proportionally larger surges, consistent with thinner normal-day order books 
+amplifying crisis-driven information flow.
+3.4 Order Lifetime Distribution
+Figure 1. Order Lifetime Distribution: Normal vs Crisis. The crisis distribution shifts leftward, with median collapsing from 
+120ms to 32ms.
+3.5 Mechanism: Volume Drives Lifetime Collapse
+Figure 2 plots the cross-sectional relationship between volume surge and order lifetime change. The correlation 
+is r = −0.91: stocks with larger volume surges experienced larger lifetime collapses. This is consistent with an 
+equilibrium shift where market makers reduce quote duration under heightened uncertainty and volume 
+pressure. When order flow doubles, resting quotes face higher adverse selection risk, incentivizing participants 
+to shorten exposure.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6574207
+Preprint not peer reviewed
+
+Figure 2. Mechanism: Volume Surge Drives Lifetime Collapse. Each point = one stock. r = −0.91.
+4. Conclusion
+This paper provides nanosecond-resolution evidence on how the April 2025 Liberation Day tariff shock 
+transformed NASDAQ order book dynamics. Order lifetimes collapsed 73%, HFT activity increased 18%, 
+trading volume doubled, and the effect was heterogeneous across market capitalizations. The cross-sectional 
+correlation (r = −0.91) between volume surge and lifetime collapse points to a mechanism: increased order 
+flow raises adverse selection risk, forcing market makers to shorten quote duration. These findings 
+complement the macroeconomic literature on Liberation Day by documenting the shock’s propagation through 
+the microstructure of individual securities.
+References
+Brogaard, J., Hendershott, T., Riordan, R., 2014. High-frequency trading and price discovery. Review of 
+Financial Studies 27, 2267–2306.
+Foucault, T., Hombert, J., Rosu, I., 2016. News trading and speed. Journal of Finance 71, 335–382.
+Kaczmarek, T., Demir, E., Rouatbi, W., Zaremba, A., 2025. Tariff exposure and sectoral vulnerability. 
+Research in International Business and Finance 77(B), 102925.
+Kirilenko, A., Kyle, A.S., Samadi, M., Tuzun, T., 2017. The Flash Crash. Journal of Finance 72, 967–1013.
+Menkveld, A.J., 2013. High frequency trading and the new-market makers. Journal of Financial Markets 16, 
+712–740.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6574207
+Preprint not peer reviewed
+
+Pelizzon, L., Subrahmanyam, M.G., Tomio, D., Uno, J., 2016. Sovereign credit risk, liquidity, and ECB 
+intervention. Journal of Financial Economics 122, 86–115.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6574207
+Preprint not peer reviewed

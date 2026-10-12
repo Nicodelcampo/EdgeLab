@@ -1,0 +1,79 @@
+{
+ "doc_id": 75,
+ "titulo": "Buy Low Sell High: a High Frequency Trading Perspective",
+ "resumen_operativo": "Propone un modelo matemático para estrategias de High Frequency Trading (HFT) en el que se modela el flujo de órdenes de mercado mediante procesos mutuamente excitantes (Hawkes) para capturar dinámicas del Limit Order Book (LOB) y predecir una deriva a muy corto plazo en el precio (short-term alpha). Utiliza un problema de control estocástico (ecuación HJB) para determinar de manera óptima a qué distancia colocar las órdenes límite (spreads) con el fin de maximizar la riqueza terminal mientras se gestionan riesgos de inventario. Demuestra en simulaciones que ignorar el short-term alpha lleva a pérdidas por selección adversa frente a traders informados.",
+ "calidad_paper": "alta",
+ "conceptos": [
+  {
+   "nombre": "mutually-exciting process",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Proceso estocástico (tipo Hawkes) utilizado para modelar la intensidad de llegada de las órdenes de mercado, permitiendo que la llegada de órdenes 'influyentes' aumente de manera temporal la probabilidad de más órdenes.",
+   "relaciones": [
+    {
+     "tipo": "PREDICE",
+     "objeto": "short-term alpha"
+    }
+   ],
+   "cita_textual": "By introducing a multi-factor mutually-exciting process we allow for feedback effects in market buy and sell orders and the shape of the limit order book (LOB)."
+  },
+  {
+   "nombre": "short-term alpha",
+   "tipo": "concepto",
+   "definicion_en_contexto": "Componente transitorio y predecible del drift (deriva) del precio medio (midprice), originado por desequilibrios en el flujo de órdenes de compra y venta influyentes.",
+   "relaciones": [
+    {
+     "tipo": "MITIGA",
+     "objeto": "adverse selection"
+    },
+    {
+     "tipo": "CAUSA",
+     "objeto": "directional strategy"
+    }
+   ],
+   "cita_textual": "We also model the impact that market orders have on the short-term drift of the midprice (short-term-alpha)."
+  },
+  {
+   "nombre": "adverse selection",
+   "tipo": "problema",
+   "definicion_en_contexto": "Riesgo de que un creador de mercado ejecute una orden contra un trader con mejor información que sabe que el precio va a cambiar pronto, resultando en pérdidas si no se ajustan los spreads.",
+   "relaciones": [],
+   "cita_textual": "strategies that do not include in their LOs a buffer to cover adverse selection costs... may see their accumulated profits dwindle as a consequence of trading with other market participants that possess private or better information."
+  },
+  {
+   "nombre": "inventory penalty",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Término en la función objetivo del HFT (dentro de la formulación HJB) que penaliza la acumulación de un inventario grande a través del tiempo para evitar mantener posiciones largas o cortas de alto riesgo.",
+   "relaciones": [],
+   "cita_textual": "Optimal postings control for inventory risks by sending quotes to the LOB which induce mean reversion of inventories to an optimal level and by including a state dependent buffer"
+  },
+  {
+   "nombre": "Hamilton-Jacobi-Bellman (HJB) equation",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Ecuación diferencial parcial de control óptimo resuelta analíticamente de forma asintótica para derivar las políticas de colocación de órdenes límite del agente HFT.",
+   "relaciones": [
+    {
+     "tipo": "USA",
+     "objeto": "inventory penalty"
+    }
+   ],
+   "cita_textual": "The value function is the unique viscosity solution of the HJB equation... with boundary condition Φ(T, ·) = x + qs"
+  },
+  {
+   "nombre": "directional strategy",
+   "tipo": "estrategia",
+   "definicion_en_contexto": "Estrategia que, basándose en la predictibilidad del short-term alpha, ajusta asimétricamente las órdenes en el LOB para capturar proactivamente pequeños y efímeros movimientos direccionales en el precio.",
+   "relaciones": [
+    {
+     "tipo": "USA",
+     "objeto": "short-term alpha"
+    }
+   ],
+   "cita_textual": "HF traders who do not include predictors of short-term-alpha in their strategies are driven out of the market because they are adversely selected by better informed traders and because they are not able to profit from directional strategies."
+  }
+ ],
+ "hallazgos": [],
+ "aplicabilidad_es_intradia": {
+  "nivel": "alta",
+  "nota": "El modelo es sumamente relevante para la operativa HFT intradía en mercados líquidos como el ES. La formalización del flujo de órdenes mediante procesos de Hawkes para extraer un 'short-term alpha', en conjunto con políticas asimétricas contra la selección adversa y un estricto control de inventario, reflejan el paradigma central del market making y el trading estadístico moderno."
+ }
+}

@@ -1,0 +1,213 @@
+{
+  "doc_id": 216,
+  "titulo": "MMHP-CVAE: Detecting Informed Alpha in Order Book Microstructure",
+  "resumen_operativo": "El paper propone un marco que combina entropía de Shannon, procesos de Hawkes modulados por Markov (MMHP) y un autoencoder variacional condicional (CVAE) con pérdida asimétrica ponderada (WAL) para detectar flujo informado en el libro de órdenes de Uniswap V3 ETH/USDC. El modelo trata el libro como un sistema dinámico fuera de equilibrio, usando caídas de entropía para detectar transiciones de régimen y el MMHP para distinguir ruido de reacciones en cadena informadas. El CVAE proyecta snapshots del libro sobre una variedad latente donde la señal informada se separa geométricamente del ruido. Empíricamente, MMHP-CVAE obtiene AUC-ROC 0.84 y F1 0.41, superando a GARCH (0.61), VPIN (0.69) y HMM+particle filter (0.78), con latencia negativa de -1.0 buckets.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Shannon entropy",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Entropía computada sobre la distribución empírica de signos de trading (buy/sell) en una ventana deslizante de N eventos de volumen. Bajo condiciones normales HS se aproxima a 1 bit (máximo desorden); una caída abrupta de entropía sin pico de volatilidad constituye la firma de un trader informado que inyecta estructura direccional.",
+      "relaciones": [
+        { "tipo": "USA", "objeto": "trade sign" },
+        { "tipo": "MIDE", "objeto": "regime switching" },
+        { "tipo": "APLICA_A", "objeto": "market microstructure" }
+      ],
+      "cita_textual": "Shannon entropy computed on the empirical distribution of trade signs detects critical regime transitions."
+    },
+    {
+      "nombre": "Markov-modulated Hawkes process",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Proceso de Hawkes extendido donde tanto la intensidad basal µ como el kernel de autoexcitación ϕ dependen de un estado latente Zt que alterna entre régimen de ruido (n≈0) y régimen crítico (n→1). Permite distinguir ruido de reacciones en cadena iniciadas por actores informados, con estimación online mediante el algoritmo forward.",
+      "relaciones": [
+        { "tipo": "PARTE_DE", "objeto": "Hawkes process" },
+        { "tipo": "USA", "objeto": "regime switching" },
+        { "tipo": "APLICA_A", "objeto": "market microstructure" }
+      ],
+      "cita_textual": "Markov-Modulated Hawkes Processes (MMHP) distinguish noise from chain reactions initiated by informed actors."
+    },
+    {
+      "nombre": "Hawkes process",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Proceso puntual autorregresivo donde la intensidad condicional λ(t) depende de eventos pasados a través de un kernel de autoexcitación ϕ, permitiendo descomponer el flujo de órdenes en componentes exógeno y endógeno. Herramienta central para modelar microestructura de mercado.",
+      "relaciones": [
+        { "tipo": "APLICA_A", "objeto": "market microstructure" },
+        { "tipo": "USA", "objeto": "trade sign" }
+      ],
+      "cita_textual": "Hawkes processes as a central tool for microstructure modelling, particularly for the exogenous/endogenous decomposition of order flow."
+    },
+    {
+      "nombre": "Conditional VAE",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Autoencoder variacional condicionado por el vector θτ del MMHP (intensidad basal µ, norma del kernel ∥ϕ∥₁ y probabilidad de régimen crítico P(Zτ=1)). El conditioning guía al encoder/decoder para proyectar snapshots del libro de órdenes de forma distinta según el régimen estocástico, separando señal informada de ruido en el espacio latente.",
+      "relaciones": [
+        { "tipo": "USA", "objeto": "Markov-modulated Hawkes process" },
+        { "tipo": "MEJORA_A", "objeto": "Variational Autoencoder" },
+        { "tipo": "APLICA_A", "objeto": "anomaly detection" }
+      ],
+      "cita_textual": "a Conditional Variational Autoencoder (CVAE), conditioned on MMHP regime estimates and trained with an asymmetric Weighted Anomaly Loss (WAL), projects high-dimensional order book snapshots onto a latent manifold where the informed signal separates from noise."
+    },
+    {
+      "nombre": "Variational Autoencoder",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Red generativa no lineal que aprende una proyección latente preservando la topología de la variedad de estados de mercado, a diferencia de PCA que asume linealidad y colapsa estructuras curvas. En este marco, el VAE despliega la geometría interna del libro de órdenes sin destruir la información necesaria para detectar alpha.",
+      "relaciones": [
+        { "tipo": "APLICA_A", "objeto": "anomaly detection" },
+        { "tipo": "SE_OPONE_A", "objeto": "Kalman filter" }
+      ],
+      "cita_textual": "Our VAE is a non-linear projection operator. Its activation functions (ReLU, Swish) allow it to learn the true geometry of the manifold. It unfolds the internal structure of the market without collapsing it."
+    },
+    {
+      "nombre": "Weighted Anomaly Loss (WAL)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Función de pérdida asimétrica que reemplaza el ELBO estándar, multiplicando el error de reconstrucción por un coeficiente ω(Zt)=1+A·P(Zt=Critical)^γ derivado de la probabilidad de régimen crítico. Con A=100 y γ=2, produce un ratio de ~70× entre señal y ruido, forzando al CVAE a especializarse en anomalías raras en lugar de ajustar el ruido dominante.",
+      "relaciones": [
+        { "tipo": "MEJORA_A", "objeto": "anomaly detection" },
+        { "tipo": "REQUIERE", "objeto": "regime switching" },
+        { "tipo": "APLICA_A", "objeto": "Conditional VAE" }
+      ],
+      "cita_textual": "the WAL concentrates learning on the rare anomalies that constitute alpha, with an asymmetry ratio controlled by the exponent γ."
+    },
+    {
+      "nombre": "regime switching",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Alternancia del mercado entre estados estructuralmente distintos: régimen 0 (ruido) donde µ exógena domina y ∥ϕ∥≈0, y régimen 1 (criticalidad) donde el branching ratio n→1 y cada evento incrementa la probabilidad de eventos subsecuentes. La transición entre regímenes es la señal clave de actividad informada.",
+      "relaciones": [
+        { "tipo": "USA", "objeto": "Markov-modulated Hawkes process" },
+        { "tipo": "MIDE", "objeto": "Shannon entropy" }
+      ],
+      "cita_textual": "financial markets alternate between structurally distinct states, and that a model calibrated under one regime becomes inadequate as soon as the regime shifts."
+    },
+    {
+      "nombre": "square-root law",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Ley de impacto cóncavo que establece que el movimiento de precio sigue ∆p≈Y·σ·(V/Vdaily)^0.5, donde Y representa la profundidad efectiva del mercado. Contradice la hipótesis lineal ∆p∝V usada por modelos clásicos de trading algorítmico. El alpha se ubica en la frontera entre impacto mecánico (ruido reversible) e impacto informacional (permanente).",
+      "relaciones": [
+        { "tipo": "CAUSA", "objeto": "market impact" },
+        { "tipo": "APLICA_A", "objeto": "limit order book" }
+      ],
+      "cita_textual": "impact follows a concave power law: ∆p ≈Y · σ · (V / Vdaily)^0.5."
+    },
+    {
+      "nombre": "VPIN",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Volume-Synchronised Probability of Informed Trading: proxy volumétrico de toxicidad de flujo basado en desbalance de volumen por bucket sincronizado por volumen. Estándar industrial desde Easley et al. (2012), pero limitado a una ratio de desbalance sin capturar geometría del libro ni cambios de régimen.",
+      "relaciones": [
+        { "tipo": "MIDE", "objeto": "informed trading" },
+        { "tipo": "USA", "objeto": "trade sign" }
+      ],
+      "cita_textual": "VPIN as a volumetric proxy for flow toxicity, which has since become an industry standard."
+    },
+    {
+      "nombre": "informed trading",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Actividad de trading por agentes con información superior que deben camuflar sus órdenes fragmentándolas para evitar impacto adverso en precio. El resultado es una anomalía sutil: el precio deriva direccionalmente respecto al bajo volumen aparente, indetectable por GARCH pero accesible mediante análisis de estructura temporal del flujo.",
+      "relaciones": [
+        { "tipo": "CAUSA", "objeto": "regime switching" },
+        { "tipo": "MIDE", "objeto": "VPIN" }
+      ],
+      "cita_textual": "An informed trader is aware of the impact of their orders. They will not enter with a large order that moves the market against them."
+    },
+    {
+      "nombre": "GARCH",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo de volatilidad condicional usado como baseline. Captura clustering de volatilidad pero asume estacionariedad y no detecta quiebres estructurales. En el paper, GARCH(1,1) sobre retornos por bucket de volumen produce señal de anomalía cuando el retorno excede 3 desviaciones condicionales, obteniendo AUC 0.61 y latencia positiva de +4.2 buckets.",
+      "relaciones": [
+        { "tipo": "CONTRADICE_A", "objeto": "regime switching" },
+        { "tipo": "MIDE", "objeto": "market impact" }
+      ],
+      "cita_textual": "GARCH captures volatility clustering but not structural breaks."
+    },
+    {
+      "nombre": "Kalman filter",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Filtro lineal de estados que asume dinámica xt+1=Fxt+wt con ruido Gaussiano. Sus extensiones no lineales (EKF, UKF) retienen la hipótesis de distribución casi-Gaussiana, haciéndolos vulnerables a fat tails de mercados cripto. Incluso el particle filter suaviza quiebres si no se acopla con modelo explícito de cambio de régimen.",
+      "relaciones": [
+        { "tipo": "SE_OPONE_A", "objeto": "Conditional VAE" },
+        { "tipo": "CONTRADICE_A", "objeto": "regime switching" }
+      ],
+      "cita_textual": "The Kalman filter achieves this, but assumes a linear state model (xt+1 = Fxt + wt) with Gaussian noise wt."
+    },
+    {
+      "nombre": "anomaly detection",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia de identificación de flujo informado como anomalías estructurales en el libro de órdenes, no como predicción de precio futuro. El modelo emite una señal cuando la distancia de Mahalanobis St en el espacio latente supera un umbral, indicando que el punto se ha alejado del clúster de ruido por contener estructura que solo flujo informado puede generar.",
+      "relaciones": [
+        { "tipo": "USA", "objeto": "Mahalanobis distance" },
+        { "tipo": "USA", "objeto": "Conditional VAE" }
+      ],
+      "cita_textual": "the framework is designed to characterise anomalies, regime transitions, and structural deformations of the order book more effectively than classical approaches."
+    },
+    {
+      "nombre": "Mahalanobis distance",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Métrica St que mide la distancia de cada punto latente zt al centroide del ruido ¯znoise, ponderada por la inversa de la matriz de covarianza Σnoise estimada adaptativamente vía EMA solo en períodos de ruido confirmado. Valores altos de St indican que el mercado ha abandonado su distribución estándar por presencia de flujo informado.",
+      "relaciones": [
+        { "tipo": "MIDE", "objeto": "anomaly detection" },
+        { "tipo": "REQUIERE", "objeto": "Variational Autoencoder" }
+      ],
+      "cita_textual": "the Mahalanobis distance, which accounts for noise dispersion through its covariance matrix Σnoise."
+    },
+    {
+      "nombre": "limit order book",
+      "tipo": "dato",
+      "definicion_en_contexto": "Representación discreta del libro de órdenes reconstruida a partir de ticks de liquidez concentrada de Uniswap V3, donde cada tick con liquidez activa corresponde a un nivel de precio y el volumen disponible a profundidad. En el paper se usan L=20 niveles (bid+ask) produciendo D=4L+5=85 features por snapshot.",
+      "relaciones": [
+        { "tipo": "PARTE_DE", "objeto": "market microstructure" },
+        { "tipo": "APLICA_A", "objeto": "square-root law" }
+      ],
+      "cita_textual": "Uniswap V3 uses a concentrated liquidity mechanism in which liquidity providers allocate capital to discrete price intervals (ticks). This structure creates a natural analogue of the traditional order book."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "MMHP-CVAE obtiene AUC-ROC de 0.84, F1 de 0.41, precisión al 50% de recall de 0.31, latencia de -1.0 buckets y FPR al 95% de recall de 0.41 en el conjunto de prueba de Uniswap V3 ETH/USDC (octubre-diciembre 2024), superando al mejor baseline HMM+particle filter (AUC 0.78, F1 0.31).",
+      "mercado": "ETH/USDC (Uniswap V3, 0.3% fee tier)",
+      "periodo": "1 enero 2024 – 31 diciembre 2024 (train: enero-septiembre, test: octubre-diciembre)",
+      "magnitud": "AUC-ROC 0.84, F1 0.41, P@R50 0.31, latency -1.0 buckets, FPR@95R 0.41",
+      "condiciones": "847,312 swaps, 42,365 buckets de volumen (umbral 10 ETH), 1,237 anomalías positivas (2.9% de clase), etiquetado post-hoc con movimiento de mid-price >50 bps sin reversión, split temporal 70/30 sin solapamiento",
+      "robustez": "media",
+      "cita_textual": "the MMHP-CVAE achieves the highest AUC-ROC (0.84 vs. 0.78 for the best baseline, HMM + particle filter)."
+    },
+    {
+      "afirmacion": "El estudio de ablación muestra que remover el conditioning del MMHP (θτ eliminado) produce la mayor degradación de AUC bajando a 0.74 y F1 a 0.26; eliminar el WAL (ELBO estándar, ω=1, β=1) baja AUC a 0.79 y F1 a 0.33; eliminar el gating (G=1) baja AUC a 0.81 y F1 a 0.36.",
+      "mercado": "ETH/USDC (Uniswap V3)",
+      "periodo": "Test set octubre-diciembre 2024",
+      "magnitud": "ΔAUC: -0.10 (sin conditioning), -0.05 (sin WAL), -0.03 (sin gating); ΔF1: -0.15, -0.08, -0.05",
+      "condiciones": "Misma configuración de datos y entrenamiento del modelo completo; tres variantes ablativas evaluadas sobre el mismo split temporal",
+      "robustez": "media",
+      "cita_textual": "Removing MMHP conditioning produces the largest degradation, confirming that conditioning is the most critical component of the architecture."
+    },
+    {
+      "afirmacion": "MMHP-CVAE supera a cinco baselines: GARCH(1,1) AUC 0.61 y latencia +4.2 buckets (solo reacciona post-movimiento), Plain Hawkes AUC 0.74 y latencia +1.1, Standard VAE AUC 0.72 y latencia -0.3, HMM+particle filter AUC 0.78 y latencia +0.6, y VPIN AUC 0.69 y latencia +2.8.",
+      "mercado": "ETH/USDC (Uniswap V3)",
+      "periodo": "Test set octubre-diciembre 2024",
+      "magnitud": "MMHP-CVAE AUC 0.84 vs. GARCH 0.61 (+0.23), Hawkes 0.74 (+0.10), VAE 0.72 (+0.12), HMM+PF 0.78 (+0.06), VPIN 0.69 (+0.15)",
+      "condiciones": "GARCH calibrado sobre retornos por bucket con umbral 3σ; Hawkes sin modulación Markov; VAE sin conditioning ni WAL; HMM+PF con 500 partículas y umbral P(Zt)>0.5; VPIN sobre 50 buckets con tick rule",
+      "robustez": "media",
+      "cita_textual": "detection latency is slightly negative (−1.0 bucket), meaning the model emits a signal on average just before the visible price movement."
+    },
+    {
+      "afirmacion": "El análisis de sensibilidad de hiperparámetros sobre 256 configuraciones muestra que el AUC-ROC varía entre 0.77 y 0.84, una amplitud de ±4% alrededor de la configuración óptima. Los parámetros más críticos son γ (exponente del WAL) y β (peso KL), con desviaciones de F1 de hasta 0.09 puntos.",
+      "mercado": "ETH/USDC (Uniswap V3)",
+      "periodo": "Test set octubre-diciembre 2024",
+      "magnitud": "Rango AUC 0.77–0.84 (±4%), desviación F1 hasta 0.09 puntos; parámetros robustos κ, η, τfilter con variación F1 <0.03",
+      "condiciones": "Grid search sobre 256 combinaciones de 8 hiperparámetros (A, γ, β, κ, η, λz, λΣ, τfilter); validación sobre conjunto de prueba sin solapamiento temporal",
+      "robustez": "media",
+      "cita_textual": "AUC-ROC varies between 0.77 and 0.84 depending on the combination, an amplitude of ±4% around the optimal configuration."
+    },
+    {
+      "afirmacion": "En test cross-asset sin recalibración, el modelo entrenado en ETH/USDC pierde entre 5 y 9 puntos de AUC al transferirse a otros pools de Uniswap V3 (WBTC/ETH, ETH/USDT, LINK/ETH), con AUC entre 0.75 y 0.79 y degradación más pronunciada en LINK/ETH por liquidez más fragmentada. Las features geométricas del CVAE son parcialmente transferibles pero se requiere fine-tuning por pool.",
+      "mercado": "WBTC/ETH 0.3%, ETH/USDT 0.3%, LINK/ETH 0.3% (Uniswap V3)",
+      "periodo": "Mismo período de test (octubre-diciembre 2024)",
+      "magnitud": "Pérdida de AUC 5–9 puntos (de 0.84 a 0.75–0.79 según pool)",
+      "condiciones": "Modelo entrenado exclusivamente en ETH/USDC, aplicado sin recalibración a tres pools distintos de Uniswap V3 con diferentes niveles de liquidez y fragmentación",
+      "robustez": "media",
+      "cita_textual": "Results show an AUC decline of 5 to 9 points (AUC between 0.75 and 0.79 depending on the pool), with more pronounced degradation on LINK/ETH where liquidity is more fragmented."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "alta",
+    "nota": "El MMHP online procesa ~45,000 eventos/segundo en NVIDIA A100 y el forward pass del CVAE añade 1.8 ms por bucket, con latencia total de 47 ms desde swap on-chain hasta señal St, compatible con el block time de Ethereum (~12s). La latencia negativa de -1.0 buckets confirma detección anticipada antes del movimiento visible de precio."
+  }
+}

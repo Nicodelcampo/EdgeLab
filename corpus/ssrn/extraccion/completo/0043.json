@@ -1,0 +1,204 @@
+{
+  "doc_id": 43,
+  "titulo": "Algorithmic Trading in Financial and Sports (Exchanges)",
+  "resumen_operativo": "Paper de revisión comparativa (UCL) entre trading algorítmico en mercados financieros y en exchanges de apuestas deportivas (Betfair), mapeando conceptos análogos: microestructura, spreads, comisiones, gestión de riesgo y modelos de ML (HMM, LSTM, RL). No presenta backtests propios ni resultados cuantitativos originales; su valor para un quant de ES es principalmente conceptual (analogías de sizing, hedging y modelos de secuencia), no directamente aplicable a datos intradía de futuros.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "sports exchange",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Plataforma tipo Betfair que traslada el modelo de exchange financiero (peer-to-peer, matching algorítmico a milisegundos) al mercado de apuestas deportivas, reemplazando al bookmaker tradicional.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "limit order book"},
+        {"tipo": "APLICA_A", "objeto": "high-frequency trading"}
+      ],
+      "cita_textual": "Betfair revolutionised sports betting by moving the traditional betting environment to one akin to financial exchanges, thus enabling direct peer-to-peer trading, algorithmic access and allowing for order matching at millisecond speeds."
+    },
+    {
+      "nombre": "back and lay betting",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Mecánica de apuesta en exchanges deportivos análoga a comprar (back) y vender en corto (lay) un instrumento financiero.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "long and short trading"}
+      ],
+      "cita_textual": "A back bet refers to betting in favour of the runner, while a lay bet is a bet against the runner, effectively acting as the bookmaker, this is obviously very similar to buying and selling an instrument on a financial exchange."
+    },
+    {
+      "nombre": "greening",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia de combinar back y lay a distintos precios para asegurar la misma ganancia sin importar el resultado del evento; es el análogo de hedging financiero.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "back and lay betting"},
+        {"tipo": "EQUIVALE_A", "objeto": "hedging"}
+      ],
+      "cita_textual": "Greening is a popular trading strategy on sports exchanges that involves hedging a position to secure the same guaranteed profit regardless of the event's outcome."
+    },
+    {
+      "nombre": "overround",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Margen del bookmaker/exchange calculado como la suma de las probabilidades implícitas (inversas de precio) de todos los resultados posibles; si excede 1 en backs hay edge para la casa.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "bookmaker edge"},
+        {"tipo": "REQUIERE", "objeto": "probability normalization method"}
+      ],
+      "cita_textual": "Overround measures a bookmaker's edge and is calculated by summing the inverse of the prices for all possible outcomes."
+    },
+    {
+      "nombre": "favourite-longshot bias",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Anomalía persistente en mercados de apuestas donde los apostadores sobrevaloran sistemáticamente a los perdedores probables (longshots) e infravaloran a los favoritos, generando retornos esperados menores en longshots.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "lower expected returns on longshots"},
+        {"tipo": "MITIGA", "objeto": "peer-to-peer exchange pricing"}
+      ],
+      "cita_textual": "The favourite-longshot bias is a pervasive anomaly in betting markets where bettors disproportionately favour longshots over favourites."
+    },
+    {
+      "nombre": "Kelly criterion",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Método usado en trading deportivo para determinar el tamaño óptimo de apuesta que maximiza el crecimiento a largo plazo del capital, dado el edge estimado y las odds netas.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "position sizing"},
+        {"tipo": "REQUIERE", "objeto": "edge estimate"}
+      ],
+      "cita_textual": "The Kelly Criterion is used to determine the optimal size of a series of bets to maximise the long-term growth of capital."
+    },
+    {
+      "nombre": "Shin method",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Método iterativo que ajusta las probabilidades implícitas de odds para corregir el favourite-longshot bias, mediante un parámetro z que representa la fracción de apostadores informados.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "favourite-longshot bias"}
+      ],
+      "cita_textual": "Shin's method corrects for the favourite-longshot bias by iterating on a parameter z that represents the fraction of knowledgeable bettors in the market."
+    },
+    {
+      "nombre": "virtual liquidity",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Liquidez efectiva creada por el exchange al emparejar apuestas entre distintos runners de un mismo evento (p.ej. back en un tenista equivale a lay en el otro), ofreciendo precios más ajustados que los visibles individualmente.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "visible order book liquidity"}
+      ],
+      "cita_textual": "Betfair can provide virtual liquidity by matching bets across different runners, thus offering tighter prices and potentially higher volumes than is visible on individual runners."
+    },
+    {
+      "nombre": "dutching",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia de apostar en múltiples resultados calculando los stakes de modo que el payout total sea el mismo sin importar cuál resultado gane; análogo a diversificación de portafolio.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "portfolio diversification"}
+      ],
+      "cita_textual": "In sports trading, dutching involves calculating the stakes for multiple bets in such a way that the total payout is the same regardless of which outcome wins."
+    },
+    {
+      "nombre": "value betting",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia de identificar apuestas donde las odds ofrecidas son mayores que la probabilidad real del resultado, análoga a value investing sobre acciones infravaloradas.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "value investing"}
+      ],
+      "cita_textual": "Value betting involves identifying bets where the odds offered by the bookmaker are higher than the true probability of the outcome."
+    },
+    {
+      "nombre": "momentum betting",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia de apostar por equipos o jugadores con buen desempeño reciente esperando que continúe, análoga al momentum trading financiero.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "momentum"},
+        {"tipo": "SE_OPONE_A", "objeto": "mean reversion"}
+      ],
+      "cita_textual": "Momentum betting involves betting on teams or players that are currently performing well, with the expectation that their good form will continue."
+    },
+    {
+      "nombre": "arbitrage betting",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Explotación de diferencias de odds entre distintos bookmakers/exchanges para asegurar una ganancia libre de riesgo, análogo al arbitraje financiero.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "statistical arbitrage"}
+      ],
+      "cita_textual": "Arbitrage betting involves taking advantage of differing odds offered by different bookmakers to guarantee a profit regardless of the event's outcome."
+    },
+    {
+      "nombre": "in-play bet delay",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Retraso deliberado entre la colocación y el matching de una apuesta en vivo, introducido para igualar el acceso a información y limitar ventajas de velocidad (equivalente sports del speed bump).",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "latency arbitrage"}
+      ],
+      "cita_textual": "Betfair introduces a delay between when a bet is placed and when it is matched to ensure all participants have equal access to the latest information."
+    },
+    {
+      "nombre": "hidden Markov model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo estadístico que representa sistemas con estados ocultos a través de eventos observables, usado tanto para detectar regímenes de mercado financiero como para modelar la evolución de un partido de tenis punto a punto.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "regime switching"},
+        {"tipo": "APLICA_A", "objeto": "sports betting"}
+      ],
+      "cita_textual": "HMMs are statistical models that represent systems with hidden states through observable events."
+    },
+    {
+      "nombre": "LSTM",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Red neuronal recurrente capaz de aprender dependencias de orden en secuencias reteniendo información pasada por periodos variables; aplicada tanto a predicción de mid-price en limit order books como a predicción de resultados deportivos.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "limit order book"},
+        {"tipo": "PARTE_DE", "objeto": "recurrent neural network"}
+      ],
+      "cita_textual": "LSTM networks [29] are a type of recurrent neural network (RNN) capable of learning order dependence in sequence prediction problems by retaining information about past inputs for a variable amount of time."
+    },
+    {
+      "nombre": "reinforcement learning",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Aprendizaje para problemas de decisión secuencial donde un agente interactúa con un entorno y ajusta sus acciones para maximizar recompensas futuras acumuladas; usado en market making y ejecución óptima, y propuesto como área subexplotada en trading deportivo.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "market making"},
+        {"tipo": "APLICA_A", "objeto": "optimal execution"}
+      ],
+      "cita_textual": "RL is a type of learning that is used for sequential decision-making problems."
+    },
+    {
+      "nombre": "market making",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia donde el agente cotiza ambos lados del mercado para capturar el spread; el paper cita su formalización vía aprendizaje online y RL, y propone su extensión conceptual a exchanges deportivos.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "reinforcement learning"}
+      ],
+      "cita_textual": "Abernethy [1] was the first to leverage online learning to solve the market-making problem."
+    },
+    {
+      "nombre": "courtsiding",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Práctica de apostadores presentes en el estadio que explotan el retraso de la transmisión televisiva/broadcast para operar con información más rápida que el resto del mercado.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "informed trading"}
+      ],
+      "cita_textual": "delays such as broadcast lags and in-play delays affect the betting landscape, giving rise to practices like \"courtsiding\" in tennis, where bettors at the venue attempt exploit the time lag."
+    },
+    {
+      "nombre": "Dixon-Coles model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo temprano de fútbol basado en un proceso de arribo de Poisson que capturó derivas predecibles de precio mientras no ocurre un gol, explotando ineficiencias del mercado de apuestas.",
+      "relaciones": [
+        {"tipo": "PREDICE", "objeto": "price drift"},
+        {"tipo": "APLICA_A", "objeto": "football betting"}
+      ],
+      "cita_textual": "Dixon and Coles [15] began with using a Poisson arrival process, which demonstrated predictable price drifts as time passed without a goal."
+    },
+    {
+      "nombre": "co-location",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Práctica de ubicar servidores propios cerca de los servidores del exchange para reducir latencia y obtener ventaja de velocidad; disponible en exchanges financieros pero ausente en Betfair.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "execution speed"},
+        {"tipo": "REQUIERE", "objeto": "low latency infrastructure"}
+      ],
+      "cita_textual": "Co-location, allows traders to place their servers close to the exchange's servers, reducing latency and gaining a speed advantage."
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "Paper puramente comparativo sobre apuestas deportivas sin backtests propios ni datos de ES; solo aporta analogías conceptuales (Kelly sizing, greening/hedging, HMM/LSTM/RL para secuencias) potencialmente reutilizables como inspiración metodológica, no como evidencia aplicable directamente."
+  }
+}

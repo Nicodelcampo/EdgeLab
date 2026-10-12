@@ -1,0 +1,52 @@
+{
+  "doc_id": 315,
+  "titulo": "Statistical Arbitrage in Binary Prediction Markets: Three Systematic Strategies and Their Empirical Properties",
+  "resumen_operativo": "Documenta tres estrategias sistemáticas de arbitraje en mercados de predicción binarios. SPREAD_FADE explota el gap estructural entre mid-prices bid-ask y precios ask en mercados near-certain/zero, generando edge libre de riesgo cuando el spread del market maker excede 2x la taker fee. CROSS_MARKET identifica grupos de outcomes mutuamente excluyentes cuyos precios YES suman >1, shorteando outcomes sobrevalorados vía contratos NO. DEP_GRAPH refuerza dominancia estocástica en ladders de strike: un strike menor debe valer al menos tanto como uno mayor. Incluye dimensionamiento fraccional de Kelly y análisis de constraints de despliegue.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "SPREAD_FADE Strategy",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Arbitraje microestructural en mercados de predicción binarios: cuando el ask cotizado en un outcome near-certain está por debajo de la probabilidad verdadera implicada por su complemento, existe entrada con expected value positivo. Edge libre de riesgo si market maker spread > 2 × taker fee.",
+      "relaciones": [{"tipo": "USA", "objeto": "Bid-Ask Spread"}, {"tipo": "REQUIERE", "objeto": "Near-Certain Outcome Markets"}],
+      "cita_textual": "When the quoted ask on a nearly certain outcome is below the true probability implied by its complement, a positive-expected-value entry exists regardless of one's view on the underlying."
+    },
+    {
+      "nombre": "CROSS_MARKET Consistency Arbitrage",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Identifica grupos de mercados de outcomes mutuamente excluyentes (brackets de torneo, nominaciones) cuyos precios YES suman >1 + 2×round-trip fee. El exceso sobre este umbral constituye oversubscription explotable shorteando outcomes sobrevalorados vía contratos NO complementarios.",
+      "relaciones": [{"tipo": "REQUIERE", "objeto": "Mutually Exclusive Outcomes"}, {"tipo": "USA", "objeto": "NO Contracts"}],
+      "cita_textual": "A well-defined set of mutually exclusive outcomes must price such that their YES asks sum to no more than 1 plus twice the round-trip fee; excess above this threshold constitutes exploitable oversubscription."
+    },
+    {
+      "nombre": "DEP_GRAPH Stochastic Dominance Arbitrage",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Refuerza restricciones de dominancia estocástica en ladders de strike para criptoactivos: el evento 'activo X excede strike K' debe ser al menos tan probable como 'activo X excede strike K' > K'. Violaciones constituyen arbitraje puro.",
+      "relaciones": [{"tipo": "REQUIERE", "objeto": "Strike Price Ladder"}, {"tipo": "APLICA_A", "objeto": "Crypto Assets"}],
+      "cita_textual": "Enforces stochastic dominance constraints on strike-price ladders: a lower strike must price at least as high as any higher strike, and violations constitute pure arbitrage."
+    },
+    {
+      "nombre": "Fractional Kelly Sizing",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Dimensionamiento de trades usando criterio de Kelly fraccional con cap de 25% del bankroll por trade. Kelly (1956) maximiza tasa de crecimiento de largo plazo; la versión fraccional es más conservadora y práctica para gestión de riesgo.",
+      "relaciones": [{"tipo": "MITIGA", "objeto": "Risk of Ruin"}, {"tipo": "USA", "objeto": "Kelly Criterion"}],
+      "cita_textual": "Fractional Kelly sizing produces trade-size distributions consistent with theoretical optima."
+    },
+    {
+      "nombre": "Binary Prediction Market Structure",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Mercados donde cada contrato resuelve a exactamente $1 (YES) o $0 (NO), imponiendo restricciones duras de no-arbitraje que son rutinariamente violadas. Causas: costo estructural de market-making, dificultad computacional de consistencia cross-contract, y latency gap.",
+      "relaciones": [{"tipo": "CAUSA", "objeto": "Arbitrage Opportunities"}, {"tipo": "SE_OPONE_A", "objeto": "Continuous-Price Securities"}],
+      "cita_textual": "Unlike continuous-price securities, each contract resolves to exactly $1 (YES wins) or $0 (NO wins), imposing hard no-arbitrage constraints that are routinely violated in practice."
+    },
+    {
+      "nombre": "Latency Sub-Strategy in Prediction Markets",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Sub-estrategia auxiliar de DEP_GRAPH que se activa cuando un activo de referencia se mueve más rápido de lo que el mercado de predicción re-precifica. La latencia en prediction markets se mide en segundos a minutos (vs milisegundos en equity).",
+      "relaciones": [{"tipo": "USA", "objeto": "Reference Asset Price Feed"}, {"tipo": "APLICA_A", "objeto": "Crypto Derivatives"}],
+      "cita_textual": "An ancillary latency sub-strategy fires when a reference asset moves faster than the prediction market reprices."
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "Estrategias de arbitraje en mercados de predicción con componentes de latencia y microstructure; aplicable a frecuencia intradiaria con ajustes al latency gap (segundos/minutos vs milisegundos)."}
+}

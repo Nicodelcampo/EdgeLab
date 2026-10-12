@@ -1,0 +1,38 @@
+{
+  "doc_id": 320,
+  "titulo": "Statistical Modeling and Trading Strategies: The Case of Pairs Trading",
+  "resumen_operativo": "Investiga si modelos estadísticos sofisticados mejoran las ganancias de trading usando pairs trading como banco de pruebas. Compara estrategias paramétricas (modelos autorregresivos y de cointegración para identificar relaciones estacionarias de precios) contra métodos no paramétricos simples. Con datos diarios CRSP 1962-2011 encuentra que los modelos de series temporales identifican mejor pares con mispricings frecuentes que se corrigen, pero estos mispricings son de menor magnitud. En términos netos, las estrategias con modelado estadístico no generan mayores ganancias que los métodos no paramétricos simples.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "Parametric vs Non-Parametric Pairs Trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Comparación entre estrategias basadas en modelos formales de series temporales (AR(1) para el spread, cointegración) y métodos no paramétricos simples (distance method). Los modelos paramétricos capturan mejor pares con mispricings frecuentes pero de menor magnitud; el resultado neto es similar.",
+      "relaciones": [{"tipo": "SE_OPONE_A", "objeto": "Distance Method"}, {"tipo": "USA", "objeto": "Cointegration Test"}],
+      "cita_textual": "Strategies that are formulated around stationary pricing relations using autoregressive and cointegration models are better able to identify predictable pricing relations compared to simple non-parametric methods. However, the mispricings... are smaller in magnitude."
+    },
+    {
+      "nombre": "AR(1) Spread Modeling",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo autorregresivo de primer orden para el spread entre dos acciones. Si el coeficiente AR es <1 (estacionario), el spread es mean-reverting y pueden identificarse oportunidades de trading cuando el spread se desvía de su media.",
+      "relaciones": [{"tipo": "REQUIERE", "objeto": "Stationarity Condition"}, {"tipo": "APLICA_A", "objeto": "Spread Mean-Reversion"}],
+      "cita_textual": "I search for stationary pricing relations by using a first-order autoregressive model for pricing spreads between two securities."
+    },
+    {
+      "nombre": "Mispricing Magnitude vs Frequency Trade-off",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Trade-off documentado: modelos de series temporales capturan pares con mispricings más frecuentes y corregibles (mejor modelado), pero estos son de menor magnitud que los identificados por métodos no paramétricos. El resultado neto en ganancias es similar entre ambos enfoques.",
+      "relaciones": [{"tipo": "CAUSA", "objeto": "Similar Net Profitability"}, {"tipo": "MIDE", "objeto": "Strategy Efficiency"}],
+      "cita_textual": "The time series models appear to be better able to capture pairs that frequently exhibit mispricings that were subsequently corrected. This evidence of better modelling is offset by the fact that mispricings that get exploited by the time series models are smaller in magnitude."
+    },
+    {
+      "nombre": "Law of One Price in Pairs Trading",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Fundamento teórico: bienes de estrecha sustitución deben tener precios uniformes. Pairs trading es una interpretación y enforcement de esta ley: el arbitraje asegura que cualquier violación sea traded away, sujeto a costos de transacción.",
+      "relaciones": [{"tipo": "APLICA_A", "objeto": "Statistical Arbitrage"}, {"tipo": "REQUIERE", "objeto": "Absence of Transaction Costs"}],
+      "cita_textual": "The Law of One Price proposes that goods of close substitution should be priced uniformly. Arbitrage ensures any violations will be traded away. Pairs trading is essentially an interpretation and enforcement of the Law of One Price."
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {"nivel": "baja", "nota": "Estudio con datos diarios CRSP 1962-2011; comparación de métodos paramétricos vs no paramétricos para selección de pares. No aborda frecuencia intradiaria."}
+}

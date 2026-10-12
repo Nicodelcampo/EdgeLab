@@ -1,0 +1,2574 @@
+ Electronic copy available at: https://ssrn.com/abstract=3092739 
+High-Frequency ETF Pairs Trading
+Jack Simonson
+December 23, 2017
+Abstract
+In this paper we examine the eﬀectiveness of modeling a paris-traded ETF portfolio as an OrnsteinUhlenbeck process. Using ETF pairs that have similar references indexes, we apply maximum likelihood
+estimation to historical data in order to optimize trading sginals for two strategies. Using this information,
+we test the optimal trading rules using intraday price observations over a variety of trading periods
+ranging from 5 days to 42 days. Our results have shown that the sample of ETF pairs-traded portfolios
+selected exhibit mean-reversion properties that are well modeled as an Ornstein-Uhlenbeck process. We
+have found that while higher total trading returns were correlated with shorter optimization and trading
+periods, they also carried considerable risk and as such more stable results were found using longer
+optimization and trading windows.
+1
+Electronic copy available at: https://ssrn.com/abstract=3092739
+
+ Electronic copy available at: https://ssrn.com/abstract=3092739 
+Overview
+My strategy project will focus on statistical arbitrage trading via pairs-trading. It is well understood in
+ﬁnance that numerous instruments exhibit mean-reversion properties (see Elliott, Hoek, and Malcolm
+(2005), Leung and Li (2016), Avellaneda and Lee (2010), Gatev, Goetzmann, and Rouwenhorst (2006),
+Yadav and Pope (1992), and MacKinlay and Ramaswamy (1988)). Single securities are often too volatile
+or non-stationary, but by taking positions in two cointegrated securities we can construct a portfolio
+that displays mean-reversion properties with greater reliability. Rather than testing for cointegration, I
+will instead assume that two ETFs that are designed to track the same index or commodity are highly
+cointegrated, and as such a long-short portfolio of them will create a stationary time series, herein
+modeled as an Ornstein-Uhlenbeck (OU) process (see Leung and Li (2015)). The intuition behind the
+strategy is that two ETFs tracking the same index or commodity should be priced the same (have the
+same proportional price movements), and so any mis-pricing of the assets can be exploited for statistical
+arbitrage (Gatev, Goetzmann, and Rouwenhorst (2006) conclude that the robustness of their results
+from a pairs trading strategy indicate that pairs trading proﬁts from temporary mispricing of assets).
+These assumptions also imply that the market direction shouldn’t aﬀect the success of the strategy and,
+theoretically, there is no exposure to the broader market regardless of global market trends. Thus, the
+strategy is based on relative value pricing between the two assets in each portfolio.
+The pairs portfolios will be composed of two assets, with respective positions αi
+t−1 and βi
+t−1
+P i
+t = αi
+t−1S1
+t −βi
+t−1S2
+t
+where P i
+t is the ith portfolio during trading period t, with optimal weights found via maximum
+likelihood estimation (MLE) during period t −1. Finding the optimal investment weights in t −1 will
+also provide the optimal long-run mean for the portfolio during that trading period, and the hypothesis is
+that the portfolio will continue to revert back to this same mean during out-of-sample testing. Market
+entry/exit signals are also found during period t −1 based on which buy/sell levels maximize total returns.
+From these indicators and signals, we either buy the portfolio (buy αi
+t−1 shares of S1 and sell/short βi
+t−1
+shares of S2) or sell/short the portfolio.
+Based on the model above, I test two trading strategies for each portfolio: 1) Hold positions over
+night and trade exclusively on the price movements and the interaction with indicators, signals, and rules
+process, and 2) trade during the day based on indicators, signals, and rules, but with the additional rule
+where we liquidate all positions at the end of the trading date regardless of portfolio value. Each strategy
+will be tested for trading periods of length 5 days, 11 days, 21 days, 31 days, and 42 days (total trading
+periods = total observations/(trading days x 78), where 78 is the number of observations per day based
+on 5-minute pricing).
+The success of the strategy will be measured based on total returns compounded over the total year’s
+worth of trading data (12 months, with the ﬁrst month serving as the optimization period for the ﬁrst
+actual trading month), where simple returns are given by
+rt = Pt −Pt−1
+Pt−1
+for any observation t, and where total returns over period t to t + i are given by
+TRt =
+n
+Y
+i=1
+(1 + ri) −1
+I will also use Sharpe Ratio to evaluate each portfolio by using the mean return and average volatility
+over the 12 month period, but ‘success’ is ascribed based on total returns.
+Hypotheses
+The central hypothesis of this paper is that the closeout trading strategy – where positions are liquidated
+at the end of every trading day – outperforms the non-closeout strategy – positions are held overnight
+and only adjusted based on the spread and portfolio price – as assessed by total returns when both are
+traded based on their respective optimal market entry/exit points. A secondary but related hypothesis
+is that it is not necessary to trade optimally (in terms of pure returns per trade) given a high enough
+2
+Electronic copy available at: https://ssrn.com/abstract=3092739
+
+ Electronic copy available at: https://ssrn.com/abstract=3092739 
+trading frequency. The closeout strategy should trade more frequently during a given trading period, and
+so consistently higher overall returns with smaller returns per trade would support this hypothesis.
+Another underlying assumption is that the optimal parameters found in trading period t −1 will also
+be optimal during period t, which will be easy to test based on simple comparison. However, the overall
+validity of this assumption can be tested via the mean-squared error between the optimized parameters in
+t −1 and the optimized parameters in t.
+Key Techniques
+While not a hypothesis test, a key technique required for my strategy is to estimate the parameters of the
+OU model using the maximum likelihood estimation procedure outlined by Leung and Li (2015). Under
+the OU model, the conditional probability density of the process (portfolio) {Xti}n
+0 at any given time ti
+given Xti−1 = xti−1 is
+f(xi|xi−1; θ, µ, σ) =
+1
+2π˜σ2 exp
+
+−(xi −xi−1e−µ∆t −θ(1 −e−µ∆t))2
+2˜σ2
+
+where
+˜σ2 = σ2 1 −e−2µ∆t
+2µ
+After observing n values xα,β
+t
+for the process we maximize the average log-likelihood deﬁned by
+l(θ, µ, σ|xα,β
+0
+, xα,β
+1
+..., xα,β
+n
+) = 1
+n
+n
+X
+i=1
+log f(xi|xi−1; θ, µ, σ)
+= −1
+2 log(2π) −log(˜σ) −
+1
+2n˜σ2
+n
+X
+i=1
+(xi −xi−1e−µ∆t −θ(1 −e−µ∆t))2
+Leung and Li (2015) deﬁne the following to express the parameter values that maximize the average
+log-likelihood given above
+Xx =
+n
+X
+i=1
+xα,β
+i−1
+Xy =
+n
+X
+i=1
+xα,β
+i
+Xxx =
+n
+X
+i=1
+(xα,β
+i−1)2
+Xxy =
+n
+X
+i=1
+xα,β
+i−1xα,β
+i
+Xyy =
+n
+X
+i=1
+(xα,β
+i
+)2
+Now, the optimal parameter estimates are given explicitly by
+ˆθ =
+XyXxx −XxXxy
+n (Xxx −Xxy) −(X2x −XxXy)
+ˆµ = −1
+∆t log Xxy −ˆθXx −ˆθXy + nˆθ2
+Xxx −2ˆθXx + nˆθ2
+ˆσ2 =
+2ˆµ
+n(1 −e−2ˆµ∆t)(Xyy −2e−ˆµ∆tXxy + e−2ˆµ∆tXxx
+−2ˆθ(1 −e−ˆµ∆t)(Xy −e−ˆµ∆tXx) + nˆθ2(1 −e−ˆµ∆t)2)
+3
+Electronic copy available at: https://ssrn.com/abstract=3092739
+
+So, letting ˆl(ˆθ, ˆµ, ˆσ), we ﬁx α to be the amount of initial capital divided by the initial value of the
+long asset at time t = 0 and then choose β∗where
+β∗= argmax
+β
+ˆl(ˆθ, ˆµ, ˆσ|xα,β
+0
+, xα,β
+1
+, ..., xα,β
+n
+)
+so that our portfolios are given by
+P i
+t = αS1
+t −β∗S2
+t
+With the long-run mean estimate ˆθ in hand, we back-test entry/exit spreads based on dollar-diﬀerence
+from the long-run mean and isolate the spread that maximizes returns (i.e., test ±$1, ±$2, etc. as the
+entry/exit spreads so that we are buying the portfolio if it is undervalued and selling the portfolio if it
+is overvalued). At every price observation, the strategy will either buy, sell, or remain neutral 1-share
+of the portfolio, where buying one share is buying α shares of asset one and shorting β shares of asset
+two, and vice versa for selling (in this paper, one trade refers to either buying or selling the portfolio
+once). So, when a position is closed in the closeout strategy, the number of trades is the absolute value
+of the number of shares of the portfolio held just prior to the end of the trading day (another way to
+state this is that the number of trades executed in a trading period is the sum of the absolute number of
+shares bought or sold of the portfolio itself). This method is a ‘brute force’ approach rather than solving
+stopping problems or using statistical moments. Whatever the market entry/exits points are discovered
+for trading period t −1 are the ones used to trade in period t. This will act as a rolling estimation and
+trading window where signals (parameters) are ‘rebalanced’ every x days for x ∈{5, 11, 21, 31, 42}.
+Filters – Indicators, Signals, and Rules
+Indicators
+The indicators necessary for implementation of both strategies that I will be testing are based on relative
+value pricing of the two assets in each pairs portfolio, along with OU parameters estimated via maximum
+likelihood estimation (MLE). Speed of mean reversion (µ > 0) and volatility (σ > 0) will not be included
+as indicators in the strategy, although incorporating these could provide material for an extension of
+this paper. The primary indicator will be the estimate of the long-run mean of the process θ, where the
+process is given by
+∆P i
+t = µi
+t−1
+ θi
+t−1 −P i
+t
+
+∆dt −σi
+t−1∆W i
+t
+and W i
+t is a standard Brownian motion.
+The indicator θi
+t−1 for pairs portfolio P i
+t is derived from MLE applied to market data over trading
+period t −1. Given an initial dollar value A invested in the long position, we optimize the dollar value B
+invested in the short position (and by extension, the number of shares invested in each asset) by testing B
+values for B/A = 0.001, 0.002, ..., 1 based on the maximum log-likelihood value obtained via MLE. Thus,
+the positions taken in each asset during trading period t (trading based on market data in period t), are
+given by the optimized dollar amounts A and B from trading period t −1. The portfolio at time t is
+P i
+t = αi
+t−1Si,1
+t
+−βi
+t−1Si,2
+t
+where Si,1
+t
+and Si,2
+t
+are time-series of market data for each asset traded in portfolio i. The primary
+indicator, however, is θi
+t−1, which we will take positions in the asset based on the value of P i
+t relative to
+θi
+t−1.
+The underlying hypothesis about the indicators in the strategy is that the value θi
+t−1 will be an
+accurate measure of the long-run mean for trading period t. In theory, the value of the portfolio should
+ﬂuctuate around the same mean no matter what the broader market conditions are since the portfolio
+is composed of optimized shares invested in each asset. If θi
+t−1 is a good indicator, then the absolute
+total returns calculated in trading period t should be maximal when trading based on the optimal signals
+derived from θi
+t−1, discussed below. The indicator θi
+t−1 will be evaluated based on MSE between periods.
+4
+Electronic copy available at: https://ssrn.com/abstract=3092739
+
+Signals
+The signals for trading during period t will be based on the indicator θi
+t−1.
+After optimizing our
+positions in each asset during t −1 based on MLE, we test each strategy based on a widening
+buy/sell spread built around the value θi
+t−1.
+Each portfolio will be traded using the buy/sell signals ±0.5, ±1.5, ..., {−0.5 −min(k, |P i
+t−1(0) −min(P i
+t−1)|), 0.5 + min(k, |max(P i
+t−1) −P i
+t−1(0))|)}, for
+k ∈[−(P i
+t−1(0) −min(P i
+t−1)), max(P i
+t−1) −P i
+t−1(0)]. Put more simply, we expand the market entry/exit
+signals by $1 around the spread until we hit the maximum absolute diﬀerence between the maximum
+and minimum value of the portfolio in t −1 and its initial value. Our trading signal in t is the spread
+that maximizes total returns over period t −1, and so our signals can change from one trading period to
+another and evolve on a rolling basis. The rules that will be based on the spread are to sell/short the
+portfolio for each pricing time (every 5 minutes) that the portfolio value P i
+t is above θi
+t−1 + selli−1 and to
+buy when it is at or below θi
+t−1 −buyi−1. The choice of $1 is arbitrary, and there is possible room for
+improvement here by decreasing the amount the spread changes over each iteration or by doing this based
+on a relationship to the initial portfolio value (additionally, the signals are also not necessarily symmetric
+about the mean).
+As such, the signals will be diﬃcult to test for since there is not a ﬁxed relationship to the portfolio
+value or any other parameters. Rather, they are found via brute force search and are based on portfolio
+value relative to its long run mean and not measured via standard deviation, for example. Other authors
+have developed diﬀerent market timing signals, such as Gatev, Goetzmann, and Rouwenhorst (2006) who
+study entry/exit levels based on ±1 standard deviation of the price from the mean, Elliott, Hoek, and
+Malcolm (2005) who model market timing signals by the ﬁrst passage of an OU process, and Leung and
+Li (2015) who generate market timing signals by solving an optimal double stopping problem. These
+approaches would be easier to test, but the signals derived in this paper are somewhat ad hoc. This is
+an inherent weakness in the strategy, and so being able to extend the project to develop more rigorous
+signals would be a valuable addition.
+Rules
+My strategy has only a few, simple rules. We are not automating the strategy (i.e. via quantstrat), and the
+strategy doesn’t incorporate any information about the spread, so the orders are not aggressive but rather
+made at the value of the pairs portfolio at the time of execution. The only rules for the non-closeout
+strategy is to buy the portfolio when its value during period t drops below the optimal mean and threshold
+θt−1 −buyt−1, and to sell/short the portfolio when it is priced above θt−1 + sellt−1. The strategies do
+nothing when the value falls in the interval between the buy and sell threshold. The only additional rule
+is for the closeout strategy, where all positions are liquidated at the end each trading day, regardless of
+the value of the portfolio.
+These rules are based on optimization from the prior trading period, and as such they are certainly
+overﬁtted for the trading period in which they are derived. However, given the assumption that the
+portfolio will continue to revert to the mean found in t −1, then this shouldn’t aﬀect proﬁtability, but
+any change in the portfolio dynamics or asset weights will increase the likelihood that the rules are no
+longer optimal.
+Inherently, the strategy is a walk-forward analysis. It optimizes parameters during in-sample period
+t −1 and then evaluates the performance of the indicators, signals, and rules based on these parameters
+using out-of-sample data in period t. As we roll this window forward, the in-sample and out-of-sample
+data roll forward as well to t and t + 1 respectively.
+Literature Review
+In their 2015 paper, Leung and Li develop an analytical approach to ﬁnding optimal market timing signals
+by solving a double stopping problem subject to transaction costs over a ﬁnite horizon. Their approach,
+which models pairs portfolio as an OU process and utilizes maximum likelihood estimation, is the one
+I’ve adopted above as my initial assumptions. In Leung and Li (2015) and Guo and Leung (2015), they
+have applied the methodology to the pairs trading of commodity ETFs.
+Gatev, Goetzmann, and Rouwenhorst (2006) examine the risk and returns characteristics of pairs
+trading using daily data from US equity markets over 1962-2002. They don’t model their portfolios by a
+stochastic process, but rather assume mean reversion for their data based on the theory of the Law of
+One Price (LOP). They ﬁlter by choosing pairs based on the criterion that they have had the same or
+nearly the same historical state prices and test for cointegration of the residuals of their pairs processes.
+5
+Electronic copy available at: https://ssrn.com/abstract=3092739
+
+They further sort their pairs portfolios by choosing a partner asset for each stock that minimizes the sum
+of squared deviations between the two normalized price series. They traded multiple strategies based on
+diﬀerent levels of standard deviation of the pairs from their historical mean (i.e. ±1, ±2), and close out
+once they have reverted. In addition, they close all positions at the end of the trading period.
+Their approach incorporates low-frequency institutional risk factors, such as bankruptcy, as well as
+short term factors such as bid-ask bounce, short selling costs, and transaction costs. They found that
+some short term factors aﬀect the magnitude of excess returns, but that pairs trading remains proﬁtable
+using reasonable assumption over the long term. They argue that even though their pairs strategy beneﬁts
+from short-term mispricing of assets, proﬁts are not caused by simple mean-reversion (they found an
+average annualized return in excess of 11%). Additionally, their risk assesment ﬁnds that their proﬁts
+are uncorrelated to the S&P 500, which supports the hypothesis that the pairs strategy tested here is
+similarly not, or minimally, exposed to broader market movements.
+Hogan et al. (2004) test a dollar-neutral strategy that holds a position α in an equity and β in a
+money-market account (risk free asset) such that their initial investment is $0 (they also argue that
+the risky asset they invest in can be represented by long-short positions in various assets). While they
+examine diﬀerent strategies, such as momentum and value strategies, they also show that long-short
+portfolios can be used for statistical arbitrage purposes.
+Avellaneda and Lee (2010) demonstrated that the residuals of a portfolio composed on long positions
+in two cointegrated assets can be successfully modeled as a mean-reverting process (i.e. shown to be a
+stationary process). The residuals in this case are the results of a long-short poortfolio of two assets, and
+so this lends support to the assumption of a mean-reverting model for a pairs traded portfolio.
+There is considerable literature on the subject of pairs trading and mean-reversion of long-short
+portfolios, and the consensus seems to be that long-short portfolios of signiﬁcantly cointegrated (or
+correlated) assets exhibit mean-reversion and can be used for statistical arbitrage using a variety of
+trading indicators, signals, and rules.
+Data
+This paper will trade six pairs portfolios composed of the following asset pairs and their respective
+reference index
+SPY/V OO
+S&P 500
+SPY/IV V
+S&P 500
+V OO/IV V
+S&P 500
+IWM/SLY
+Russell 2000
+V IOO/V TWO
+S&P Small-Cap 600
+USO/OIL
+Crude Oil
+The instruments were chose to provide a small sample of ETFs that track US equities, with some
+diversity coming from the diﬀerent indexes themselves. The crude oil ETFs were chosen as an example of
+how this strategy might apply to commodity ETFs, and hopefully this could be extended to a broader
+array of commodity or US equity sector ETFs.
+We have collected 5-min intraday observations for all ETFs from December 31, 2015 to January 31,
+2016, which is roughly 272 trading days. With 78 observations per day, this makes for approximately
+21,200 observations for each instrument. The prices are listed for each observation as the ‘Close’ price
+and so the bid/ask spread in not considered.
+Constraints, Benchmarks, and Objectives
+The main objective is to 1) show that both strategies are proﬁtable overall, 2) show that the closeout
+strategy outperforms the non-closeout strategy over the 12-month window, and 3) demonstrate that
+trading at optimal proﬁt levels are not necessary for maximal overall returns. The last objective really
+is to show that although the closeout strategy will likely trade at a lower proﬁt-per-trade, the higher
+number of trades will still lead to higher overall returns than the non-closeout for any given portfolio or
+trading window.
+There is no true benchmark to compare the strategy to, aside from perhaps looking at the overall
+returns for each ETF during the 12-month period. Comparing total returns of a portfolio vs the ETFs that
+make up that portfolio may give an idea as to the success of the strategy versus a buy-and-hold strategy,
+but this is not very relevant to a statistical arbitrage strategy. In theory, the pairs portfolios will have no
+6
+Electronic copy available at: https://ssrn.com/abstract=3092739
+
+market exposure and can be proﬁtable whether or not any given instrument being traded systematically
+increases or decreases in value over the whole investment window. As such, the best benchmark here is
+the measure of overall total returns.
+The strategy is constrained by the fact that, as it is coded right now, it doesn’t incorporate any
+information from the bid/ask spread. This information is important for high-frequency trading, and even
+though 5 minute intervals is often considered slow by HFT standards, lacking order book information is
+likely a limiting factor in the realism of the results, as well as the fact that we have ignored transaction
+costs for the sake of simplicity. Additionally, the strategy assumes that one can take fractional positions
+in ETFs, and so it is trading non-integer share values/weights, which is not a realistic assumption.
+Results and Analysis
+0
+100
+200
+300
+400
+15000
+17000
+IWM/SLY Portfolio −− 5 Days
+θ
+Buy/Sell
+NC Buy/Sell
+0
+10
+20
+30
+40
+50
+−100
+0
+50
+100
+200
+IWM/SLY Results
+Closeout
+Non−Closeout
+7
+Electronic copy available at: https://ssrn.com/abstract=3092739
+
+0
+100
+200
+300
+400
+18000
+20000
+22000
+24000
+VIOO/VTWO Portfolio −− 5 Days
+θ
+Buy/Sell
+NC Buy/Sell
+0
+10
+20
+30
+40
+50
+−100
+−50
+0
+50
+VIOO/VTWO Results
+Closeout
+Non−Closeout
+0
+100
+200
+300
+400
+16500
+17000
+17500
+USO/OIL Portfolio −− 5 Days
+θ
+Buy/Sell
+NC Buy/Sell
+0
+10
+20
+30
+40
+50
+−50
+0
+50
+100
+USO/OIL Results
+Closeout
+Non−Closeout
+8
+Electronic copy available at: https://ssrn.com/abstract=3092739
+
+0
+200
+400
+600
+800
+20000
+30000
+40000
+IWM/SLY Portfolio −− 11 Days
+θ
+Buy/Sell
+NC Buy/Sell
+5
+10
+15
+20
+−100
+0
+100
+200
+IWM/SLY Results
+Closeout
+Non−Closeout
+0
+200
+400
+600
+800
+24000
+26000
+28000
+30000
+VIOO/VTWO Portfolio −− 11 Days
+θ
+Buy/Sell
+NC Buy/Sell
+5
+10
+15
+20
+−20
+0
+20
+40
+60
+80
+VIOO/VTWO Results
+Closeout
+Non−Closeout
+9
+Electronic copy available at: https://ssrn.com/abstract=3092739
+
+0
+200
+400
+600
+800
+15000
+25000
+USO/OIL Portfolio −− 11 Days
+θ
+Buy/Sell
+NC Buy/Sell
+5
+10
+15
+20
+0
+50
+100
+USO/OIL Results
+Closeout
+Non−Closeout
+The graphical results above are taken from the ﬁrst trading period during each trial (i.e. ﬁrst 5 trading
+days, ﬁrst 11 trading days, etc.). It is evident that the portfolios composed of S&P 500 ETFs exhibit
+strong mean reversion properties, but the portfolios also experience signiﬁcant jumps in value. The jumps,
+likely due to a market shock (event) that quickly aﬀects the price of one of the assets, can distort the
+value of the long-run mean being estimated during that period. By looking at the periods between shocks,
+the portfolio exhibits strong mean reversion as well, but over the entire sample these shocks can distort
+the strategy. The other equity ETF portfolios, IWM/SLY and VIOO/VTWO, also exhibit mean reversion
+properties but don’t experience as many jumps in value. The commodities portfolio, USO/OIL, appears
+the most stable and least aﬀected by market shocks, although the graphical results above are only one
+sample of numerous trading periods. Signiﬁcant jumps, however, can lead to immense proﬁt (or immense
+losses) if the jump forces the portfolio value to cross the mean, as evident in the results displayed for
+VOO/IVV 5-day. The more a portfolio actually ﬂuctuates around θi
+t−1 – that is, the more accurate the
+parameters, indicators, and signals are – leads to more stable trading positions and more realistic returns.
+On the whole, all portfolios exhbit relatively strong mean-reversion properties, indicating that the initial
+assumption that they follow an Ornstein-Uhlenbeck process is not a bad one.
+10
+Electronic copy available at: https://ssrn.com/abstract=3092739
+
+SPY/VOO
+VOO/IVV
+VIOO/VTWO
+−0.2
+0.0
+0.2
+0.4
+0.6
+0.8
+Boxplot of Returns
+ 21 day Trading Sample Closeout
+SPY/VOO
+VOO/IVV
+VIOO/VTWO
+−0.05
+0.00
+0.05
+Boxplot of Returns
+ 21 day Trading Sample Non−Closeout
+SPY/VOO
+VOO/IVV
+VIOO/VTWO
+0.0
+0.5
+1.0
+Boxplot of Returns
+ 42 day Trading Sample Closeout
+SPY/VOO
+VOO/IVV
+VIOO/VTWO
+−0.05
+0.00
+0.05
+0.10
+Boxplot of Returns
+ 42 day Trading Sample Non−Closeout
+The hypothesis that the optimized parameter θi
+t−1 and asset weights αi
+t−1, βi
+t−1 are good estimates for
+those that will be optimal in period t is not well supported based on the graphical results. As is evident,
+the parameter θi
+t−1 can be signiﬁcantly diﬀerent from the center of the portfolio value (the actual θi
+t), and
+while this can be distorted visually due to the high value of initial investment in asset Si
+t−1 ($100,000),
+the same proportional diﬀerence would hold for any value (this strategy can be applied without loss of
+generality for any initial investment). As a result, the trading signals are not optimal either, and the rule
+11
+Electronic copy available at: https://ssrn.com/abstract=3092739
+
+evaluation will lead to signifcant risk exposure due to a strong buildup of long or short positions (i.e., all
+trades in a given period will be long or short, depending on value relative to signals derived in period
+t −1).
+12
+Electronic copy available at: https://ssrn.com/abstract=3092739
+
+Table 1: SPY/VOO Results – 21 Day Period
+Total Ret. (%) Non-Roll CO
+Total Ret. (%) Non-Roll NC
+Total Ret. (%) Rolling CO
+Total Ret. (%) Rolling NC
+1351.3861
+1.3348
+-5.5164
+-5.5164
+8375.6873
+3.4629
+124.7517
+175.7842
+140.9095
+1.2540
+5.0724
+8.0807
+20.7851
+1.2006
+17.3391
+15.5101
+1512.7264
+1.9718
+100.0619
+146.4475
+279.7298
+1.4983
+38.5646
+58.0860
+49.1597
+1.4110
+-3.4742
+-3.4742
+418.3291
+2.1980
+5.6424
+5.6424
+1123.6501
+2.8160
+98.3935
+98.3935
+27.5363
+0.9847
+14.7993
+7.7533
+1062.7822
+2.6094
+24.1964
+24.1964
+273.4777
+1.0817
+-5.6699
+-5.6699
+Table 2: SPY/IVV Results – 21 Day Period
+Total Ret. (%) Non-Roll CO
+Total Ret. (%) Non-Roll NC
+Total Ret. (%) Rolling CO
+Total Ret. (%) Rolling NC
+851.7897
+0.9325
+-5.4027
+-5.4027
+8602.7797
+3.3437
+64.6954
+139.9642
+105.2500
+0.9847
+0.7521
+2.4389
+20.2147
+1.3119
+5.8759
+5.8759
+1099.2949
+1.4797
+101.6881
+135.7196
+41.8183
+0.5688
+144.5117
+54.7237
+35.8406
+1.3168
+-3.5792
+-3.5792
+294.0475
+1.8448
+29.5247
+29.5247
+1058.8664
+2.3987
+108.2592
+108.2592
+24.2462
+0.9987
+-6.8826
+-2.0168
+1877.8309
+1.9271
+40.2809
+40.2809
+99.2004
+0.7618
+-8.2035
+-8.2035
+Table 3: VOO/IVV Results – 21 Day Period
+Total Ret. (%) Non-Roll CO
+Total Ret. (%) Non-Roll NC
+Total Ret. (%) Rolling CO
+Total Ret. (%) Rolling NC
+18.4096
+1.6471
+-5.3087
+-5.3087
+14199.8832
+4.8298
+599.9426
+296.8292
+1368.8518
+1.9600
+23.0455
+42.1307
+13
+Electronic copy available at: https://ssrn.com/abstract=3092739
+
+Total Ret. (%) Non-Roll CO
+Total Ret. (%) Non-Roll NC
+Total Ret. (%) Rolling CO
+Total Ret. (%) Rolling NC
+21.4188
+1.0945
+9.2492
+5.2783
+1435.0349
+2.3303
+754.3923
+259.3429
+1230.7869
+1.6029
+482.2632
+217.6264
+1166.9499
+1.9203
+-4.1636
+-4.1636
+1233.1007
+2.7407
+291.0836
+137.9169
+1336.6803
+2.8643
+122.2621
+122.2621
+25.9015
+0.9770
+-2.7794
+-0.0347
+3546.3245
+3.4477
+2.1150
+31.1466
+2512.6150
+2.1876
+136.3007
+136.3007
+Table 4: IWM/SLY Results – 21 Day Period
+Total Ret. (%) Non-Roll CO
+Total Ret. (%) Non-Roll NC
+Total Ret. (%) Rolling CO
+Total Ret. (%) Rolling NC
+228.8433
+9.7223
+-3.1284
+-3.1284
+190.2907
+29.2628
+30.1758
+30.1758
+31.0168
+9.2528
+177.0822
+28.4727
+130.0104
+18.4011
+6.7461
+6.7461
+95.6024
+9.1141
+-20.7147
+18.2701
+39.1939
+8.7619
+47.8760
+47.8760
+103.8787
+18.3538
+-1.1366
+-1.1366
+186.8911
+11.3947
+41.7931
+34.5469
+48.8327
+7.5936
+70.1187
+51.3109
+52.4010
+14.1326
+16.5936
+16.1480
+26.1153
+5.9949
+-9.7537
+-9.7537
+71.5612
+10.2514
+-69.3762
+36.8122
+Table 5: VIOO/VTWO Results – 21 Day Period
+Total Ret. (%) Non-Roll CO
+Total Ret. (%) Non-Roll NC
+Total Ret. (%) Rolling CO
+Total Ret. (%) Rolling NC
+78.5660
+12.9692
+-14.8355
+-14.8355
+194.2216
+32.6433
+9.2523
+7.8184
+102.7762
+7.9479
+6.6920
+17.3322
+175.0710
+9.8979
+15.8111
+10.7277
+201.6917
+7.3756
+-12.3833
+21.1518
+12.6378
+3.3336
+55.4694
+41.8481
+110.2811
+12.2778
+-7.1080
+-7.1080
+36.2419
+7.6322
+7.3837
+9.7532
+14
+Electronic copy available at: https://ssrn.com/abstract=3092739
+
+Total Ret. (%) Non-Roll CO
+Total Ret. (%) Non-Roll NC
+Total Ret. (%) Rolling CO
+Total Ret. (%) Rolling NC
+49.9270
+8.4669
+53.4678
+49.9596
+57.0693
+11.2076
+11.1613
+3.6088
+36.3835
+6.3285
+22.1028
+8.5000
+74.5576
+8.6297
+69.4613
+25.2950
+Table 6: USO/OIL Results – 21 Day Period
+Total Ret. (%) Non-Roll CO
+Total Ret. (%) Non-Roll NC
+Total Ret. (%) Rolling CO
+Total Ret. (%) Rolling NC
+256.4495
+8.9119
+9.4906
+-9.0097
+100.6074
+35.6315
+54.6218
+15.5704
+414.3429
+21.8632
+127.1948
+65.0515
+48.2734
+9.1959
+88.9755
+37.7511
+316.3661
+12.5105
+-2.8587
+-2.8587
+152.2507
+10.0727
+14.0940
+37.3339
+127.7878
+8.0227
+-10.4672
+-10.4672
+66.5327
+4.6731
+19.5501
+23.5112
+547.4493
+8.5441
+64.8338
+87.3296
+222.5042
+7.3958
+3.6085
+3.6085
+71.7631
+5.7910
+-34.0966
+20.5026
+240.4378
+7.1162
+-10.2063
+-10.2063
+Table 7: SPY/VOO Results – 42 Day Period
+Total Ret. (%) Non-Roll CO
+Total Ret. (%) Non-Roll NC
+Total Ret. (%) Rolling CO
+Total Ret. (%) Rolling NC
+5011.3600
+1.8741
+165.8112
+29.9607
+74.2074
+1.0354
+-1.5060
+-1.5060
+716.8370
+2.3794
+18.6532
+37.1595
+48.2661
+1.6018
+6.5427
+12.2496
+38.9164
+1.3937
+-2.8876
+0.8325
+Table 8: SPY/IVV Results – 42 Day Period
+Total Ret. (%) Non-Roll CO
+Total Ret. (%) Non-Roll NC
+Total Ret. (%) Rolling CO
+Total Ret. (%) Rolling NC
+1590.8253
+1.2190
+53.5640
+24.0320
+32.4506
+1.0453
+35.0266
+13.2000
+15
+Electronic copy available at: https://ssrn.com/abstract=3092739
+
+Total Ret. (%) Non-Roll CO
+Total Ret. (%) Non-Roll NC
+Total Ret. (%) Rolling CO
+Total Ret. (%) Rolling NC
+947.5063
+1.8786
+161.1508
+40.0378
+71.3227
+1.2201
+16.5171
+13.6596
+24.2234
+1.4429
+3.7948
+2.8422
+Table 9: VOO/IVV Results – 42 Day Period
+Total Ret. (%) Non-Roll CO
+Total Ret. (%) Non-Roll NC
+Total Ret. (%) Rolling CO
+Total Ret. (%) Rolling NC
+3601.0849
+2.2708
+11.4795
+13.3879
+35.0916
+1.0976
+88.5970
+5.4620
+8968.9280
+3.7847
+367.2042
+109.1223
+1490.3089
+1.9166
+41.5809
+40.7911
+24.1494
+1.4533
+3.1653
+2.8613
+Table 10: IWM/SLY Results – 42 Day Period
+Total Ret. (%) Non-Roll CO
+Total Ret. (%) Non-Roll NC
+Total Ret. (%) Rolling CO
+Total Ret. (%) Rolling NC
+453.0948
+25.5839
+297.6076
+24.3897
+109.5298
+15.1713
+176.4985
+26.5694
+69.1808
+14.3634
+33.2011
+40.5763
+207.1944
+16.2788
+77.2026
+44.2579
+96.0204
+25.5232
+-1.4232
+-1.4232
+Table 11: VIOO/VTWO Results – 42 Day Period
+Total Ret. (%) Non-Roll CO
+Total Ret. (%) Non-Roll NC
+Total Ret. (%) Rolling CO
+Total Ret. (%) Rolling NC
+115.4667
+23.8881
+17.0488
+30.3674
+131.0821
+14.4536
+-7.5889
+-7.5889
+224.8380
+11.1635
+15.3820
+28.0120
+204.2568
+12.1856
+1.2009
+1.2009
+97.0636
+18.0437
+-27.4710
+16.7396
+16
+Electronic copy available at: https://ssrn.com/abstract=3092739
+
+Table 12: USO/OIL Results – 42 Day Period
+Total Ret. (%) Non-Roll CO
+Total Ret. (%) Non-Roll NC
+Total Ret. (%) Rolling CO
+Total Ret. (%) Rolling NC
+27.7059
+16.7665
+190.5921
+100.2309
+524.3192
+26.1971
+-33.5078
+6.6263
+71.8502
+6.7645
+44.0904
+44.0904
+94.6806
+9.3719
+20.5386
+8.0573
+378.5742
+15.1188
+70.9296
+70.9296
+## [1] 0
+Based on total returns for each period shown in the tables above, the optimized results (‘Non-Roll’)
+are signiﬁcantly diﬀerent between the two strategies whereas the total returns for the tested periods are
+signiﬁcantly closer. The above results show that the total returns per trading period can vary signiﬁcantly
+from one period to the next. However, Tables 13-17 below show that the overall sample standard deviation
+for returns for each portfolio is very low, regardless of the trading period, and so this would indicate that
+the returns during the entire 12-month sample are more stable than the period-to-period ﬂuctuation in
+total returns would indicate. This can be seen in the box-plots above as well. There can be signiﬁcant
+outliers for certain portfolios in diﬀerent periods, but generally the returns have a small spread around
+the median.
+Table 13: 12-month Results for 5 trading day window
+t Stat
+MSE
+TR CO
+TR NC
+SR CO
+SR NC
+Avg Ret CO
+Avg Ret NC
+Ret Std Dev CO
+Ret Std Dev NC
+SPY/VOO
+0.905
+19229625
+3.387745e+12
+6.422102e+11
+5.720
+5.225
+0.0014754
+0.0013721
+0.0122650
+0.0097637
+SPY/IVV
+1.167
+21575680
+3.543178e+11
+1.439271e+11
+6.306
+6.209
+0.0013810
+0.0012965
+0.0142309
+0.0096580
+VOO/IVV
+0.964
+26139141
+2.322039e+16
+2.771348e+15
+12.338
+11.168
+0.0019698
+0.0017834
+0.0174643
+0.0107610
+IWM/SLY
+0.179
+79957895
+-2.777375e+01
+5.921352e+01
+0.075
+0.052
+0.0002992
+0.0002124
+0.0146373
+0.0053038
+VIOO/VTWO
+0.147
+30042125
+-3.648767e+00
+1.248275e+02
+0.052
+0.071
+0.0001895
+0.0002473
+0.0105563
+0.0050014
+USO/OIL
+0.241
+155082962
+3.243471e+03
+9.714998e+02
+0.108
+0.080
+0.0005032
+0.0003686
+0.0160827
+0.0082458
+Table 14: 12-month Results for 11 trading day window
+t Stat
+MSE
+TR CO
+TR NC
+SR CO
+SR NC
+Avg Ret CO
+Avg Ret NC
+Ret Std Dev CO
+Ret Std Dev NC
+SPY/VOO
+1.143
+52911251
+3.378970e+05
+5.082253e+05
+7.440
+7.402
+0.0006540
+0.0006660
+0.0083585
+0.0075084
+SPY/IVV
+2.269
+69425977
+4.843308e+05
+5.314546e+04
+8.890
+6.504
+0.0007034
+0.0005563
+0.0131245
+0.0074378
+VOO/IVV
+1.131
+45192473
+2.100703e+07
+5.030370e+06
+17.130
+14.658
+0.0008732
+0.0007842
+0.0113505
+0.0081303
+IWM/SLY
+0.147
+71063617
+-1.503781e+01
+1.391029e+01
+0.136
+0.075
+0.0002678
+0.0001430
+0.0210902
+0.0049431
+VIOO/VTWO
+0.133
+32489837
+1.698316e+01
+1.492000e+01
+0.101
+0.090
+0.0001560
+0.0001432
+0.0053647
+0.0040837
+USO/OIL
+0.262
+185408918
+6.004772e+01
+1.295912e+01
+0.117
+0.070
+0.0002658
+0.0001567
+0.0122149
+0.0075723
+17
+Electronic copy available at: https://ssrn.com/abstract=3092739
+
+Table 15: 12-month Results for 21 trading day window
+t Stat
+MSE
+TR CO
+TR NC
+SR CO
+SR NC
+Avg Ret CO
+Avg Ret NC
+Ret Std Dev CO
+Ret Std Dev NC
+SPY/VOO
+1.421
+64000147
+19.747638
+32.367618
+2.019
+2.620
+0.0001722
+0.0001915
+0.0063462
+0.0054485
+SPY/IVV
+2.029
+78844984
+25.560796
+29.467518
+2.582
+2.810
+0.0001861
+0.0001867
+0.0065606
+0.0054818
+VOO/IVV
+1.584
+62999674
+8661.867394
+1007.531504
+11.915
+6.281
+0.0005387
+0.0003978
+0.0130549
+0.0092801
+IWM/SLY
+0.134
+54666266
+3.360343
+8.729868
+0.148
+0.132
+0.0001068
+0.0001211
+0.0092498
+0.0037138
+VIOO/VTWO
+0.173
+66407009
+5.514254
+4.414772
+0.127
+0.101
+0.0001036
+0.0000851
+0.0047657
+0.0038107
+USO/OIL
+0.357
+641697219
+8.714563
+7.407480
+0.125
+0.100
+0.0001612
+0.0001272
+0.0101105
+0.0072192
+Table 16: 12-month Results for 31 trading day window
+t Stat
+MSE
+TR CO
+TR NC
+SR CO
+SR NC
+Avg Ret CO
+Avg Ret NC
+Ret Std Dev CO
+Ret Std Dev NC
+SPY/VOO
+1.266
+74746604
+7.8380188
+6.103136
+2.408
+2.093
+0.0001243
+0.0001019
+0.0062649
+0.0043479
+SPY/IVV
+1.812
+91866348
+6.1321119
+2.929071
+2.062
+1.328
+0.0001090
+0.0000642
+0.0060782
+0.0045569
+VOO/IVV
+2.064
+79259205
+15.1731497
+12.231819
+3.247
+2.902
+0.0001843
+0.0001709
+0.0075577
+0.0072189
+IWM/SLY
+0.097
+29451205
+23.3879826
+6.229902
+0.438
+0.175
+0.0002122
+0.0001033
+0.0136175
+0.0030235
+VIOO/VTWO
+0.214
+96755956
+4.3764567
+3.235458
+0.161
+0.118
+0.0001040
+0.0000716
+0.0054186
+0.0033501
+USO/OIL
+0.140
+35364444
+0.6082134
+2.135444
+-0.012
+0.058
+0.0000260
+0.0000613
+0.0095413
+0.0067165
+Table 17: 12-month Results for 42 trading day window
+t Stat
+MSE
+TR CO
+TR NC
+SR CO
+SR NC
+Avg Ret CO
+Avg Ret NC
+Ret Std Dev CO
+Ret Std Dev NC
+SPY/VOO
+0.887
+25360720
+3.2141112
+1.987161
+1.987
+0.846
+0.0000951
+0.0000446
+0.0085706
+0.0023018
+SPY/IVV
+1.430
+43114206
+6.5488550
+2.298280
+3.122
+1.087
+0.0001264
+0.0000529
+0.0052174
+0.0020626
+VOO/IVV
+2.506
+65593265
+14.3474541
+3.621515
+5.571
+1.873
+0.0001799
+0.0000841
+0.0062820
+0.0033287
+IWM/SLY
+0.077
+16992790
+25.5799725
+3.147310
+0.691
+0.163
+0.0002894
+0.0000755
+0.0185576
+0.0033124
+VIOO/VTWO
+0.252
+105669153
+0.9160628
+1.821992
+-0.002
+0.100
+0.0000103
+0.0000417
+0.0052187
+0.0031739
+USO/OIL
+0.222
+44947423
+5.7363147
+5.682008
+0.291
+0.232
+0.0001465
+0.0001352
+0.0089144
+0.0076350
+## [1] 0
+18
+Electronic copy available at: https://ssrn.com/abstract=3092739
+
+Considering how much initial investment was made in the ﬁrst asset, $100,000, the MSE is misleading
+since even small weight adjustments in each asset can lead to substantially diﬀerent initial values. Thus,
+the MSE of all estimated long-run means ˆθ is considerably exaggerated by the actual portfolio value. The
+t-statistic, however, is a better measure of the ﬁt of the optimal θi
+t−1 as a predictor for θi
+t. The three
+portfolios composed of ETFs tracking the S&P 500 have (relatively) very high t-statistics, indicating that
+the hypothesis that the optimized θi
+t−1 is a good predictor of the actual θi
+t is not well supported. However,
+the t-statistic is considerably lower for the other three portfolios, two of which also track equity indexes.
+Additionally, there seems to be a slight correlation between smaller t-statistic and lower returns/Sharpe
+Ratios. Higher t-statistics tends to correlate with higher overall returns and Sharpe Ratio. Table 18
+below shows that, generally, shorter testing periods have a higher positive correlation between t-statistic
+and total returns, for both strategies, with the exception of the 31 day testing period. The correlation for
+the 42-day period is close to 0, and slightly negative for the non-closeout strategy. This seems to indicate
+that the more accurate the long-run mean is as a predictor of the future mean, the lower the correlation
+is with overall returns. This is a somewhat paradoxical result in that the more inaccurate the parameter
+θ is as a predictor of future long-run mean, then the more positively correlated it is with total returns.
+However, the graphical and results tables appear to support this as well, where we see signiﬁcantly higher
+returns, generally, for portfolios who t-statistic is high. So, the more ‘stable’ the parameter θ is, the
+higher overall returns we can predict albeit with signiﬁcantly higher risk-exposure due to the buildup of
+long or short positions.
+Table 18: Pearson Correlation between t-statistic and total returns for
+each strategy and trading period test
+Total Ret CO
+Total Ret NC
+5 Days
+0.3871328
+0.3871922
+11 Days
+0.1885304
+0.1948037
+21 Days
+0.3785784
+0.4016496
+31 Days
+0.0545757
+0.5546301
+42 Days
+0.0274624
+-0.0786470
+The ﬁnal conjecture, that the closeout strategy trades less optimally per trade but that higher number
+of total trades leads to higher overall returns, is not supported by the results. Tables 19-23 show that,
+almost always, the closeout strategy trades more frequently but less optimally (lower RPT). However, the
+total returns for the closeout strategy don’t consistently dominate those of the non-closeout, and there is
+no correlation between the periods/portfolios where the non-closeout has higher total returns but also
+trades more optimally. (I’m not certain why the 5-day period returns inﬁnite RPT for the VOO/IVV
+portfolio, but we assume that the RPT are similar to those of IWM/SLY based on observation of their
+similar results elsewhere.)
+Table 19: Returns Per Trade and total number of returns for 5-day
+sample
+Ret Per Trade (%) CO
+No. Trades CO
+Ret Per Trade (%) NC
+No. Trades NC
+SPY/VOO
+0.3820075
+600.7547
+0.4181849
+568.5283
+SPY/IVV
+0.4047642
+588.4906
+0.4492698
+561.2830
+VOO/IVV
+0.6637415
+577.4717
+0.7233151
+537.2830
+IWM/SLY
+0.1862887
+639.0943
+0.2053472
+589.3585
+VIOO/VTWO
+Inf
+544.2642
+Inf
+513.8491
+USO/OIL
+0.2444528
+601.8113
+0.2630264
+551.6226
+Table 20: Returns Per Trade and total number of returns for 11-day
+sample
+Ret Per Trade (%) CO
+No. Trades CO
+Ret Per Trade (%) NC
+No. Trades NC
+SPY/VOO
+0.2010875
+1361.500
+0.2427667
+1239.667
+19
+Electronic copy available at: https://ssrn.com/abstract=3092739
+
+Ret Per Trade (%) CO
+No. Trades CO
+Ret Per Trade (%) NC
+No. Trades NC
+SPY/IVV
+0.1994542
+1368.750
+0.2143500
+1227.167
+VOO/IVV
+0.3600042
+1368.250
+0.4169792
+1211.667
+IWM/SLY
+0.1039792
+1348.917
+0.1139500
+1212.500
+VIOO/VTWO
+0.1090417
+1232.875
+0.1231708
+1133.708
+USO/OIL
+0.0955292
+1432.458
+0.1045167
+1273.625
+Table 21: Returns Per Trade and total number of returns for 21-day
+sample
+Ret Per Trade (%) CO
+No. Trades CO
+Ret Per Trade (%) NC
+No. Trades NC
+SPY/VOO
+0.0517750
+2766.750
+0.0672833
+2534.250
+SPY/IVV
+0.0483000
+2954.833
+0.0627833
+2570.500
+VOO/IVV
+0.1146167
+2836.417
+0.0988833
+2482.750
+IWM/SLY
+0.0477167
+2677.167
+0.0628917
+2362.833
+VIOO/VTWO
+0.0495417
+2557.667
+0.0595083
+2207.667
+USO/OIL
+0.0548833
+2543.583
+0.0658167
+2275.083
+Table 22: Returns Per Trade and total number of returns for 31-day
+sample
+Ret Per Trade (%) CO
+No. Trades CO
+Ret Per Trade (%) NC
+No. Trades NC
+SPY/VOO
+0.0373250
+3950.500
+0.0406500
+3562.250
+SPY/IVV
+0.0570875
+3631.375
+0.0583750
+3114.375
+VOO/IVV
+0.0432250
+3711.625
+0.0520250
+3220.125
+IWM/SLY
+0.0659750
+3447.375
+0.0535875
+2878.875
+VIOO/VTWO
+0.0358500
+3710.125
+0.0378500
+3415.375
+USO/OIL
+0.0281875
+3830.750
+0.0384250
+3520.000
+Table 23: Returns Per Trade and total number of returns for 42-day
+sample
+Ret Per Trade (%) CO
+No. Trades CO
+Ret Per Trade (%) NC
+No. Trades NC
+SPY/VOO
+0.07000
+3495.0
+0.08274
+3214.6
+SPY/IVV
+0.05402
+4445.0
+0.06422
+3955.0
+VOO/IVV
+0.04018
+5176.4
+0.03468
+4589.6
+IWM/SLY
+0.04588
+5125.2
+0.03106
+4402.0
+VIOO/VTWO
+0.01956
+5508.6
+0.03126
+4619.8
+USO/OIL
+0.69190
+4824.8
+0.92764
+3880.4
+Overﬁtting
+The strategy is a not quite a ‘rolling’ strategy, but rather a step-shift where each shift is however many
+days is being tested in the strategy (i.e. 5, 11, etc). Considering that there are 78 observations per day,
+then the number of observation associated with the strategy is either n = 390, 858, 1638, 2418, or 3276 per
+trading period. So rather than continuously removing and then adding 78 degrees of freedom, the whole
+window is adding and removing n observations simultaneously. When optimizing parameters and deriving
+indicators and signals, we rely on n observations during t −1 to trade using n observations during t.
+However, each observation in t is independent of t −1, so it can be argued that there are n degrees of
+freedom in my strategy. The success of short term strategies is likely an anomaly and not a reliable result
+(i.e. too good to be true, so the methodology should be reevaluated). However, with increasing degrees of
+20
+Electronic copy available at: https://ssrn.com/abstract=3092739
+
+freedom for the longer trading/testing periods, the results stabilize and tend to become more realistic in
+terms of total returns and Sharpe Ratio.
+One way to increase degrees of freedom would be to use one of the longer optimization periods, such
+as 31 or 42 days, and then trade based on the parameters, indicators, and signals derived for a longer
+period of time – that is, extend the market data used for out-of-sample testing. The results from this will
+be more robust since any short term anomolies will likely be smoothed out/diluted.
+Conclusion
+From the results above, we can conclude that pairs traded portfolios consisting of ETFs tracking the same
+index or commodity can be modelled well as an Ornstein-Uhlenbeck process. The portfolios exhibit strong
+mean-reversion properties, and this allows for the possibility of statistical arbitrage. The technique of
+optimizing parameters, indicators, and signals during period t −1 and using these to trade during period
+t have produced mixed results. High total returns tend to be associated with the shorter testing/trading
+windows, but these are likely the result on an anomoly and also expose the trader to high risk due to
+signiﬁcant buildup of long or short positions. Longer periods have more stable returns and lower risk, but
+are lower in absolute value.
+The conjecture that the closeout strategy would consistently trade less optimally but with higher
+frequency, leading to higher total returns, appears to be incorrect, at least in this instance. The closeout
+strategy does have consistently more trades and lower returns per trade in any given period, but this
+does no correlate to higher total returns. Additionally, it seems that the parameter estimate θt−1 and the
+optimal asset weights derived based on maximum likelihood estimation generally do not serve as good
+parameters to use during period t. By association, the indicators and signals derived in t −1 are not
+optimal in period t.
+Appendix
+Below are additional graphical results from the testing conducted not discussed above, both portfolio and
+returns resutls along with boxplots of returns.
+21
+Electronic copy available at: https://ssrn.com/abstract=3092739
+
+0
+100
+200
+300
+400
+2000
+2200
+2400
+2600
+SPY/VOO Portfolio −− 5 Days
+θ
+Buy/Sell
+NC Buy/Sell
+0
+10
+20
+30
+40
+50
+0
+100
+200
+300
+400
+500
+SPY/VOO Results
+Closeout
+Non−Closeout
+0
+100
+200
+300
+400
+1400
+1600
+1800
+2000
+SPY/IVV Portfolio −− 5 Days
+θ
+Buy/Sell
+NC Buy/Sell
+0
+10
+20
+30
+40
+50
+0
+200
+400
+600
+800
+SPY/IVV Results
+Closeout
+Non−Closeout
+22
+Electronic copy available at: https://ssrn.com/abstract=3092739
+
+0
+100
+200
+300
+400
+1500
+1700
+1900
+2100
+VOO/IVV Portfolio −− 5 Days
+θ
+Buy/Sell
+NC Buy/Sell
+0
+10
+20
+30
+40
+50
+0
+1000
+3000
+VOO/IVV Results
+Closeout
+Non−Closeout
+0
+100
+200
+300
+400
+2000
+2200
+2400
+2600
+SPY/VOO Portfolio −− 11 Days
+θ
+Buy/Sell
+NC Buy/Sell
+5
+10
+15
+20
+0
+200
+400
+600
+800
+SPY/VOO Results
+Closeout
+Non−Closeout
+23
+Electronic copy available at: https://ssrn.com/abstract=3092739
+
+0
+200
+400
+600
+800
+2000
+4000
+6000
+SPY/IVV Portfolio −− 11 Days
+θ
+Buy/Sell
+NC Buy/Sell
+5
+10
+15
+20
+0
+200
+600
+1000
+SPY/IVV Results
+Closeout
+Non−Closeout
+0
+200
+400
+600
+800
+2000
+4000
+6000
+8000
+10000
+VOO/IVV Portfolio −− 11 Days
+θ
+Buy/Sell
+NC Buy/Sell
+5
+10
+15
+20
+0
+500
+1500
+2500
+3500
+VOO/IVV Results
+Closeout
+Non−Closeout
+24
+Electronic copy available at: https://ssrn.com/abstract=3092739
+
+0
+100
+200
+300
+400
+2000
+2200
+2400
+2600
+SPY/VOO Portfolio −− 21 Days
+θ
+Buy/Sell
+NC Buy/Sell
+2
+4
+6
+8
+10
+12
+0
+50
+100
+150
+SPY/VOO Results
+Closeout
+Non−Closeout
+0
+500
+1000
+1500
+2000
+4000
+6000
+8000
+10000
+SPY/IVV Portfolio −− 21 Days
+θ
+Buy/Sell
+NC Buy/Sell
+2
+4
+6
+8
+10
+12
+0
+50
+100
+150
+SPY/IVV Results
+Closeout
+Non−Closeout
+25
+Electronic copy available at: https://ssrn.com/abstract=3092739
+
+0
+500
+1000
+1500
+2000
+6000
+10000
+VOO/IVV Portfolio −− 21 Days
+θ
+Buy/Sell
+NC Buy/Sell
+2
+4
+6
+8
+10
+12
+0
+200
+400
+600
+VOO/IVV Results
+Closeout
+Non−Closeout
+0
+500
+1000
+1500
+40000
+44000
+48000
+IWM/SLY Portfolio −− 21 Days
+θ
+Buy/Sell
+NC Buy/Sell
+2
+4
+6
+8
+10
+12
+−50
+0
+50
+100
+150
+IWM/SLY Results
+Closeout
+Non−Closeout
+26
+Electronic copy available at: https://ssrn.com/abstract=3092739
+
+0
+500
+1000
+1500
+30000
+35000
+40000
+45000
+VIOO/VTWO Portfolio −− 21 Days
+θ
+Buy/Sell
+NC Buy/Sell
+2
+4
+6
+8
+10
+12
+0
+20
+40
+60
+VIOO/VTWO Results
+Closeout
+Non−Closeout
+0
+500
+1000
+1500
+20000
+40000
+60000
+80000
+USO/OIL Portfolio −− 21 Days
+θ
+Buy/Sell
+NC Buy/Sell
+2
+4
+6
+8
+10
+12
+0
+50
+100
+USO/OIL Results
+Closeout
+Non−Closeout
+27
+Electronic copy available at: https://ssrn.com/abstract=3092739
+
+0
+500
+1000
+1500
+2000
+2500
+4000
+4500
+5000
+5500
+SPY/VOO Portfolio −− 31 Days
+θ
+Buy/Sell
+NC Buy/Sell
+1
+2
+3
+4
+5
+6
+7
+8
+0
+50
+100
+150
+200
+250
+SPY/VOO Results
+Closeout
+Non−Closeout
+0
+500
+1000
+1500
+2000
+2500
+3500
+4500
+5500
+6500
+SPY/IVV Portfolio −− 31 Days
+θ
+Buy/Sell
+NC Buy/Sell
+1
+2
+3
+4
+5
+6
+7
+8
+0
+50
+100
+SPY/IVV Results
+Closeout
+Non−Closeout
+28
+Electronic copy available at: https://ssrn.com/abstract=3092739
+
+0
+500
+1000
+1500
+2000
+2500
+3000
+5000
+7000
+VOO/IVV Portfolio −− 31 Days
+θ
+Buy/Sell
+NC Buy/Sell
+1
+2
+3
+4
+5
+6
+7
+8
+0
+50
+100
+150
+VOO/IVV Results
+Closeout
+Non−Closeout
+0
+500
+1000
+1500
+2000
+2500
+40000
+45000
+50000
+IWM/SLY Portfolio −− 31 Days
+θ
+Buy/Sell
+NC Buy/Sell
+1
+2
+3
+4
+5
+6
+7
+8
+0
+100
+200
+300
+IWM/SLY Results
+Closeout
+Non−Closeout
+29
+Electronic copy available at: https://ssrn.com/abstract=3092739
+
+0
+500
+1000
+1500
+2000
+2500
+32000
+36000
+40000
+44000
+VIOO/VTWO Portfolio −− 31 Days
+θ
+Buy/Sell
+NC Buy/Sell
+1
+2
+3
+4
+5
+6
+7
+8
+0
+20
+40
+60
+VIOO/VTWO Results
+Closeout
+Non−Closeout
+0
+500
+1000
+1500
+2000
+2500
+25000
+35000
+45000
+USO/OIL Portfolio −− 31 Days
+θ
+Buy/Sell
+NC Buy/Sell
+1
+2
+3
+4
+5
+6
+7
+8
+−40
+−20
+0
+20
+40
+USO/OIL Results
+Closeout
+Non−Closeout
+30
+Electronic copy available at: https://ssrn.com/abstract=3092739
+
+0
+500
+1000
+1500
+2000
+2500
+3000
+5000
+6000
+7000
+8000
+SPY/VOO Portfolio −− 42 Days
+θ
+Buy/Sell
+NC Buy/Sell
+1
+2
+3
+4
+5
+0
+50
+100
+150
+SPY/VOO Results
+Closeout
+Non−Closeout
+0
+500
+1000
+1500
+2000
+2500
+3000
+6000
+7000
+8000
+9000
+SPY/IVV Portfolio −− 42 Days
+θ
+Buy/Sell
+NC Buy/Sell
+1
+2
+3
+4
+5
+0
+50
+100
+150
+SPY/IVV Results
+Closeout
+Non−Closeout
+31
+Electronic copy available at: https://ssrn.com/abstract=3092739
+
+0
+500
+1000
+1500
+2000
+2500
+3000
+6500
+7500
+8500
+VOO/IVV Portfolio −− 42 Days
+θ
+Buy/Sell
+NC Buy/Sell
+1
+2
+3
+4
+5
+0
+100
+200
+300
+VOO/IVV Results
+Closeout
+Non−Closeout
+0
+500
+1000
+1500
+2000
+2500
+3000
+34000
+38000
+IWM/SLY Portfolio −− 42 Days
+θ
+Buy/Sell
+NC Buy/Sell
+1
+2
+3
+4
+5
+0
+50
+100
+200
+300
+IWM/SLY Results
+Closeout
+Non−Closeout
+32
+Electronic copy available at: https://ssrn.com/abstract=3092739
+
+0
+500
+1000
+1500
+2000
+2500
+3000
+31000
+33000
+35000
+37000
+VIOO/VTWO Portfolio −− 42 Days
+θ
+Buy/Sell
+NC Buy/Sell
+1
+2
+3
+4
+5
+−20
+0
+10
+20
+30
+VIOO/VTWO Results
+Closeout
+Non−Closeout
+0
+500
+1000
+1500
+2000
+2500
+3000
+15000
+25000
+35000
+USO/OIL Portfolio −− 42 Days
+θ
+Buy/Sell
+NC Buy/Sell
+1
+2
+3
+4
+5
+0
+50
+100
+150
+USO/OIL Results
+Closeout
+Non−Closeout
+33
+Electronic copy available at: https://ssrn.com/abstract=3092739
+
+SPY/VOO
+VOO/IVV
+VIOO/VTWO
+−0.4
+−0.2
+0.0
+0.2
+0.4
+Boxplot of Returns
+ 5 day Trading Sample Closeout
+SPY/VOO
+VOO/IVV
+VIOO/VTWO
+−0.2
+0.0
+0.2
+0.4
+Boxplot of Returns
+ 5 day Trading Sample Non−Closeout
+SPY/VOO
+VOO/IVV
+VIOO/VTWO
+−0.10
+−0.05
+0.00
+0.05
+0.10
+0.15
+0.20
+Boxplot of Returns
+ 11 day Trading Sample Closeout
+SPY/VOO
+VOO/IVV
+VIOO/VTWO
+−0.10
+−0.05
+0.00
+0.05
+Boxplot of Returns
+ 11 day Trading Sample Non−Closeout
+34
+Electronic copy available at: https://ssrn.com/abstract=3092739
+
+SPY/VOO
+VOO/IVV
+VIOO/VTWO
+−0.3
+−0.2
+−0.1
+0.0
+0.1
+0.2
+Boxplot of Returns
+ 31 day Trading Sample Closeout
+SPY/VOO
+VOO/IVV
+VIOO/VTWO
+−0.2
+−0.1
+0.0
+0.1
+0.2
+Boxplot of Returns
+ 31 day Trading Sample Non−Closeout
+35
+Electronic copy available at: https://ssrn.com/abstract=3092739
+
+References
+Avellaneda, Marco, and Jeong-Hyun Lee.
+2010.
+“Statistical Arbitrage in the Us Equities Market.”
+Quantitative Finance 10 (7): 761–82.
+Elliott, Robert, John van der Hoek, and William Malcolm. 2005. “Pairs Trading.” Quantitative
+Finance 5 (3): 271–76.
+Gatev, Evan, William N. Goetzmann, and K. Geert Rouwenhorst. 2006. “Pairs Tradingn: Performance
+of a Relative-Value Arbitrage Rule.” The Review of Financial Studies 19 (3).
+Guo, Kevin, and Tim Leung. 2015. “Understanding the Tracking Errors of Commodity Leveraged
+Etfs.” In Commodities, Energy and Environmental Finance, Fields Institute Communications, edited by
+R. Aid, M. Ludkovski, and R. Sircar, 39–63. Springer.
+Hogan, Steve, Robert Jarrow, Melvyn Teo, and Mitch Warachka. 2004. “Testing Market Eﬃciency
+Using Statistical Arbitrage with Applications to Momentum and Value Strategies.” Journal of Financial
+Economics 73 (June): 525–65.
+Leung, Tim, and Xin Li. 2015. “Optimal Mean Reversion Trading with Transaction Costs and
+Stop-Loss Exit.” International Journal of Theoretical and Applied Finance 18 (3).
+———. 2016. Optimal Mean Reversion Trading: Mathematical Analysis and Practical Applications.
+Modern Trends in Financial Engineering. World Scientiﬁc, Singapore.
+MacKinlay, A. Craig, and Krishna Ramaswamy. 1988. “Index-Futures Arbitrage and the Behavior of
+Stock Index Futures Prices.” The Review of Financial Studies 1 (2): 137–58.
+Yadav, Pradeep, and Peter Pope. 1992. “Intraweek and Intraday Seasonalities in Stock Market Risk
+Premia: Cash and Futures.” Journal of Banking and Finance 16 (1): 233–70.
+36
+Electronic copy available at: https://ssrn.com/abstract=3092739

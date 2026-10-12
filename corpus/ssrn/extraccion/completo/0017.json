@@ -1,0 +1,195 @@
+{
+  "doc_id": 17,
+  "titulo": "A Novel Weighted Microprice Momentum for High-Frequency Trading: Integrating Order Book Dynamics with Execution Flow",
+  "resumen_operativo": "Propone el Weighted Microprice Momentum (WMPM): un indicador de microestructura que combina un precio de liquidez pasiva multi-nivel con decaimiento exponencial (SLP), un momentum de ejecuciones firmadas (EM) y un factor de escala dinámico, más un mecanismo de confirmación multi-ventana y una pendiente de desviación para graduar señales. Reporta accuracy y Sharpe superiores al microprice y al imbalance, pero sin especificar datos, período ni validación OOS: los números parecen ilustrativos, no reproducibles. Útil como receta de ingeniería de features de order flow, no como evidencia.",
+  "calidad_paper": "baja",
+  "conceptos": [
+    {
+      "nombre": "weighted microprice momentum",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Indicador central del paper: WMPM = SLP + γ×(EM − SLP), que mezcla el precio de liquidez pasiva multi-nivel con el momentum de ejecuciones, ponderado por un factor dinámico, para predecir movimientos de precio de muy corto plazo.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "standing liquidity price"},
+        {"tipo": "USA", "objeto": "execution momentum"},
+        {"tipo": "USA", "objeto": "dynamic scaling factor"},
+        {"tipo": "MEJORA_A", "objeto": "microprice"},
+        {"tipo": "PREDICE", "objeto": "short-term price movements"}
+      ],
+      "cita_textual": "WMPM = SLP + γ × (EM - SLP)"
+    },
+    {
+      "nombre": "standing liquidity price",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Promedio de precios bid/ask ponderado por volumen a través de N niveles del libro, con pesos que decaen exponencialmente por índice de nivel y por distancia relativa de precio al mejor nivel.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "weighted microprice momentum"},
+        {"tipo": "USA", "objeto": "limit order book"},
+        {"tipo": "USA", "objeto": "exponential decay weighting"}
+      ],
+      "cita_textual": "The Standing Liquidity Price aggregates information across multiple order book levels using volume-weighted averaging with exponential decay for lower levels"
+    },
+    {
+      "nombre": "execution momentum",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Precio promedio de las últimas M ejecuciones ponderado por volumen y firmado (+1 comprador-iniciado, −1 vendedor-iniciado), que captura la presión de toma de liquidez real en vez de la liquidez pasiva.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "weighted microprice momentum"},
+        {"tipo": "USA", "objeto": "trade sign"},
+        {"tipo": "USA", "objeto": "liquidity taking"}
+      ],
+      "cita_textual": "The Execution Momentum component captures information from recent trades, providing a complementary view of market activity based on actual executions rather than resting orders"
+    },
+    {
+      "nombre": "dynamic scaling factor",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Parámetro γ = γ0×(1 + δ×|OI|×σ_ratio) que aumenta el peso del momentum de ejecución cuando hay alto imbalance en el tope del libro y volatilidad elevada respecto al promedio histórico.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "weighted microprice momentum"},
+        {"tipo": "USA", "objeto": "order flow imbalance"},
+        {"tipo": "USA", "objeto": "realized volatility"}
+      ],
+      "cita_textual": "This dynamic adjustment increases the influence of execution momentum during periods of high imbalance and elevated volatility"
+    },
+    {
+      "nombre": "exponential decay weighting",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Pesos w_i = λ^(i-1) × e^(−θ×|P_i − P_best|/P_best) que reducen progresivamente la contribución de niveles profundos del libro; el paper recomienda λ 0.70-0.85 y θ 0.3-0.6 según el tipo de futuro.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "standing liquidity price"},
+        {"tipo": "APLICA_A", "objeto": "order book depth"}
+      ],
+      "cita_textual": "For Equity Index Futures, a level decay of 0.85 with price sensitivity of 0.3 across 5-10 levels typically works well"
+    },
+    {
+      "nombre": "signal confirmation mechanism",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Filtro de ruido que exige que la señal persista K ventanas consecutivas antes de operar, con K adaptativo al régimen de volatilidad (K=2 en alta, 3 normal, 4 baja, con umbrales en percentiles 25/75 de la volatilidad).",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "market microstructure noise"},
+        {"tipo": "PARTE_DE", "objeto": "weighted microprice momentum"},
+        {"tipo": "USA", "objeto": "regime switching"}
+      ],
+      "cita_textual": "the confirmation mechanism requires consistent signals across multiple windows before generating trading signals"
+    },
+    {
+      "nombre": "deviation slope",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Tasa de cambio de la desviación entre el WMPM y el precio de mercado; una pendiente positiva sostenida indica momentum alcista en fortalecimiento y gradúa el tamaño de posición (25% a 125%) según su persistencia.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "weighted microprice momentum"},
+        {"tipo": "USA", "objeto": "position sizing"},
+        {"tipo": "PREDICE", "objeto": "short-term price movements"}
+      ],
+      "cita_textual": "A consistently positive deviation slope indicates strengthening bullish momentum, while a consistently negative slope suggests accelerating bearish momentum"
+    },
+    {
+      "nombre": "microprice",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Medida martingala de Stoikov que ajusta el mid-price según el imbalance del libro; el paper la usa como benchmark y le critica que solo mira el mejor bid/ask, ignorando niveles profundos y ejecuciones.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "mid-price"},
+        {"tipo": "USA", "objeto": "order flow imbalance"}
+      ],
+      "cita_textual": "The micro-price theory introduced by Stoikov represents a significant advancement by creating a martingale measure that adjusts the mid-price based on order book imbalance"
+    },
+    {
+      "nombre": "mid-price",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Promedio simple del mejor bid y ask; referencia de valor sin costos de transacción pero sin información de imbalance ni profundidad, por lo que tiene poder predictivo limitado.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "limit order book"}
+      ],
+      "cita_textual": "the mid-price fails to incorporate information about supply and demand imbalances or market depth beyond the top level, limiting its predictive power"
+    },
+    {
+      "nombre": "order flow imbalance",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Asimetría normalizada entre volumen bid y ask del libro, entre −1 (dominio ask) y +1 (dominio bid); el paper la cita como predictor fuerte de movimientos de corto plazo y la usa como benchmark y como input de γ.",
+      "relaciones": [
+        {"tipo": "PREDICE", "objeto": "short-term price movements"},
+        {"tipo": "PARTE_DE", "objeto": "limit order book"}
+      ],
+      "cita_textual": "Research has demonstrated that OBI strongly predicts short-term price movements"
+    },
+    {
+      "nombre": "bid-ask spread",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Diferencia entre el mejor ask y el mejor bid; costo inmediato de transacción para órdenes de mercado e indicador clásico de liquidez.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "liquidity provision"}
+      ],
+      "cita_textual": "The bid-ask spread, defined as the difference between the lowest ask price and highest bid price, represents the immediate transaction cost for market orders"
+    },
+    {
+      "nombre": "trade sign",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Clasificación de cada ejecución como comprador- o vendedor-iniciada según si ocurrió al ask, al bid o dentro del spread; insumo del Execution Momentum.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "execution momentum"},
+        {"tipo": "USA", "objeto": "tick data"}
+      ],
+      "cita_textual": "The trade sign classification uses standard inference rules based on whether the trade occurred at the ask price (buyer-initiated), bid price (seller-initiated), or between the spread"
+    },
+    {
+      "nombre": "ultra-short rolling window",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Ventanas de cálculo por tick, por volumen o por tiempo fijo (100ms-1s) sobre las que se recalcula el WMPM; las de un solo tick dan respuesta inmediata pero exigen confirmación multi-ventana.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "weighted microprice momentum"},
+        {"tipo": "REQUIERE", "objeto": "tick data"}
+      ],
+      "cita_textual": "The model operates on ultra-short rolling windows—as brief as singletick intervals—while incorporating a confirmation mechanism"
+    },
+    {
+      "nombre": "intraday seasonality",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Patrones intradía de actividad (aperturas y cierres activos vs. sesión overnight ilíquida) a los que el framework se adapta ajustando pesos de volumen y parámetros según perfiles horarios típicos.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "weighted microprice momentum"}
+      ],
+      "cita_textual": "Volume-weighting adjustments based on typical time-of-day profiles"
+    },
+    {
+      "nombre": "market microstructure noise",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Ruido que contamina las señales en ventanas ultra cortas y hace confundir imbalances transitorios con tendencias genuinas; motiva el mecanismo de confirmación del WMPM.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "short-term price movements"}
+      ],
+      "cita_textual": "ultra-short time windows can capture market microstructure effects but are highly susceptible to noise"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "El WMPM predice la dirección del próximo tick con 72.3% de accuracy, contra 65.1% del microprice y 58.7% del order book imbalance.",
+      "mercado": "futuros de alta liquidez (múltiples contratos, no especificados)",
+      "periodo": "no especificado",
+      "magnitud": "accuracy 72.3% vs 65.1% (microprice) vs 58.7% (OBI)",
+      "condiciones": "backtest con datos tick con profundidad completa y modelado de costos/slippage declarado, pero sin datos, período, ni validación OOS reportados; irreproducible",
+      "robustez": "baja",
+      "cita_textual": "Prediction accuracy: 72.3% for next-tick direction vs. 65.1% for micro-price and 58.7% for order book imbalance"
+    },
+    {
+      "afirmacion": "La estrategia basada en WMPM logra Sharpe 2.14 frente a 1.76 de estrategias basadas en microprice, con 38% de mejora en señal-ruido.",
+      "mercado": "futuros de alta liquidez (no especificados)",
+      "periodo": "no especificado",
+      "magnitud": "Sharpe 2.14 vs 1.76; +38% signal-to-noise",
+      "condiciones": "sin período, sin activos concretos, sin OOS, sin detalle del modelo de costos; números presentados sin tablas ni estadística",
+      "robustez": "baja",
+      "cita_textual": "Risk-adjusted returns: Sharpe ratio of 2.14 vs. 1.76 for micro-price-based strategies"
+    },
+    {
+      "afirmacion": "En un caso ilustrativo de apertura en E-mini S&P 500, el WMPM generó 3 señales en 30 minutos con resultado neto +4.25 puntos (dos ganadoras, una perdedora) y duraciones de 47s a 2m05s.",
+      "mercado": "ES futures (E-mini S&P 500)",
+      "periodo": "un día de trading no especificado",
+      "magnitud": "+2.25, -2.75, +4.75 puntos; duraciones 47s-125s",
+      "condiciones": "anécdota de un solo día sin fecha, cherry-picking evidente, sin costos explícitos",
+      "robustez": "baja",
+      "cita_textual": "the WMPM generated three highconfidence signals within the first 30 minutes"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "La receta SLP+EM+γ con decaimiento por niveles (λ=0.85, θ=0.3, 5-10 niveles para índices) y la confirmación multi-ventana son directamente implementables como features de order flow en el pipeline ES, pero hay que validar todo desde cero porque la evidencia del paper no es confiable."
+  }
+}

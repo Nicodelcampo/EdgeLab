@@ -1,0 +1,81 @@
+{
+  "doc_id": 331,
+  "titulo": "Pairs Trading on International ETFs",
+  "resumen_operativo": "Examina la rentabilidad del pairs trading usando una familia grande de ETFs internacionales. Encuentra que el pairs trading es rentable en este contexto, con una diferencia clara entre el componente largo y corto. Introduce innovaciones metodológicas: usa desviaciones absolutas en lugar de suma de cuadrados para el ranking de pares, y analiza sistemáticamente diferentes reglas de salida. Los factores fundamentales que explican la rentabilidad incluyen EPS, dividend yield y tasa de desempleo como los más importantes, incorporando por primera vez factores macroeconómicos en el análisis de pairs trading.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "Pairs trading strategy on ETFs",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia market-neutral que explota co-movimiento y mean reversion de precios de pares de ETFs internacionales. Se abre una posición long-short cuando los precios divergen y se cierra cuando convergen. Variante metodológica: usa desviaciones absolutas en lugar de suma de cuadrados para detectar divergencias más pequeñas.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Mean reversion"},
+        {"tipo": "APLICA_A", "objeto": "International ETFs"}
+      ],
+      "cita_textual": "Pairs trading uses a number of underlying assumptions about the path that asset prices take; the most important ones are those of co-movement and mean reversion: prices of selected assets tend to move together and when they diverge this presents an investment opportunity."
+    },
+    {
+      "nombre": "Absolute deviations modification",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modificación del algoritmo de trading que reemplaza la suma de cuadrados por desviaciones absolutas para medir divergencia entre pares. Genera una medida más robusta que captura divergencias más pequeñas, aumentando el número de trades y llevando a mayor rentabilidad.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "Pairs trading strategy on ETFs"},
+        {"tipo": "SE_OPONE_A", "objeto": "Sum of squares distance"}
+      ],
+      "cita_textual": "We make a modification of the trading algorithm from the sum of squares to absolute deviations; this leads to a more robust measure to capture smaller divergences, increasing the number of trades and as a result lead to higher profitability."
+    },
+    {
+      "nombre": "Cream-skimming strategy",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia de salida alternativa documentada por Engelberg, Gao y Jagannathan (2008) que limita el trade a solo los primeros 10 días después de iniciado. Contrasta con el enfoque tradicional de GGR (2006) de mantener la posición hasta 6 meses esperando convergencia.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "Long-horizon convergence approach"},
+        {"tipo": "MEJORA_A", "objeto": "Trade exit timing"}
+      ],
+      "cita_textual": "An alternative, and simultaneously shorter perspective, applied by EGJ (2008) is called 'cream-skimming strategy' and limits the trade only to the first 10 days after a trade is initiated."
+    },
+    {
+      "nombre": "Fundamental factors of pairs profitability",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Análisis de los determinantes económicos de la rentabilidad del pairs trading usando variables de mercado, idiosincráticas y macroeconómicas. EPS, dividend yield y unemployment rate emergen como los factores más importantes, siendo la primera vez que se incluyen factores macro en este tipo de análisis.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Earnings per share (EPS)"},
+        {"tipo": "USA", "objeto": "Dividend yield"},
+        {"tipo": "USA", "objeto": "Unemployment rate"}
+      ],
+      "cita_textual": "The most important [fundamentals] being the earnings per share, the dividend yield and the unemployment rate."
+    },
+    {
+      "nombre": "Arbitrageur risk aversion channel",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Mecanismo por el cual alta volatilidad de mercado reduce la participación de arbitrajistas incluso cuando existen oportunidades de mispricing. Basado en Shleifer y Vishny (1997) y Jurek y Yang (2006): los arbitrajistas son reacios a aumentar asignación en entornos volátiles, creando un trade-off entre horizonte y riesgo de divergencia.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Reduced arbitrage activity"},
+        {"tipo": "EXPLICA", "objeto": "Pairs trading profitability variation"}
+      ],
+      "cita_textual": "Extreme circumstances (such as the divergence that is used in pairs trading) do not reflect a direct consequence of fundamentals and macroeconomic risks but may simply reflect the arbitrageurs risk aversion."
+    },
+    {
+      "nombre": "Hedge fund overcrowding effect",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Fenómeno donde la rentabilidad de estrategias de pairs trading disminuye cuando muchos hedge funds persiguen las mismas oportunidades. La modificación del algoritmo a desviaciones absolutas se propone como mitigación parcial al capturar divergencias más pequeñas que pasan desapercibidas.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Diminishing profitability"},
+        {"tipo": "MITIGA", "objeto": "Absolute deviations modification"}
+      ],
+      "cita_textual": "To face the potential problem of diminished profitability, because of 'hedge fund overcrowding', we make a modification of the trading algorithm from the sum of squares to absolute deviations."
+    },
+    {
+      "nombre": "International ETFs",
+      "tipo": "dato",
+      "definicion_en_contexto": "Familia de Exchange Traded Funds internacionales usados como universo de activos. En 2010, la industria global de ETFs comprendía 2,218 ETFs con 4,478 listings y activos de USD 1,044.1bn de 131 proveedores en 42 exchanges.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Pairs trading strategy on ETFs"},
+        {"tipo": "USA", "objeto": "Global ETF market"}
+      ],
+      "cita_textual": "At the beginning of June 2010 the global ETF industry had 2,218 ETFs with 4,478 listings, assets of $1,0441.1bn from 131 providers on 42 exchanges around the world."
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {"nivel": "baja", "nota": "Estrategia de pairs trading con datos diarios de ETFs internacionales, horizonte de varios días a meses; no está diseñada para ejecución intradiaria."}
+}

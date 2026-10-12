@@ -1,0 +1,321 @@
+1
+DiceStock: Emergent Market Microstructure
+from Stochastic Dice Mechanics
+Gregory Ashaun Nelson
+February 2026
+Abstract. We present DiceStock, a multi-agent market microstructure simulator in which all
+agent behavior is driven by a 100×100 stochastic dice grid partitioned into 10 functional bands.
+Each simulation tick, 10,000 dice are independently rolled, producing band-level statistics that
+govern heterogeneous agent trading strategies, volatility regimes, sentiment dynamics, and shortsqueeze mechanics. Despite the simplicity of the underlying random mechanism, the model
+reproduces key stylized facts of financial markets: fat-tailed return distributions, volatility
+clustering with slow autocorrelation decay, realistic volume dynamics, and endogenous liquidity
+crises. We validate the model by running 3.6 million ticks (~37 simulated years) and performing
+comprehensive statistical analysis across 13 categories of market properties. The DiceStock
+framework demonstrates that complex market phenomena can emerge from minimal agent
+heterogeneity driven by shared stochastic signals, contributing to the agent-based computational
+economics literature on emergent price discovery.
+Keywords: agent-based modeling, market microstructure, stylized facts, emergent behavior, order-driven
+markets, computational economics
+1. Introduction
+Financial markets exhibit a remarkable set of statistical regularities—known as stylized facts—that
+persist across asset classes, time periods, and geographic regions (Cont, 2001). These include
+heavy-tailed return distributions, volatility clustering, absence of return autocorrelation, and
+asymmetric volatility response. Reproducing these properties in simulation remains a central
+challenge in agent-based computational economics (ACE).
+Traditional ACE models achieve realism through sophisticated agent decision rules: trend followers,
+fundamentalists, noise traders, and market makers interact through complex behavioral
+specifications (LeBaron, 2006). While successful, these models often require extensive calibration
+and raise questions about which agent features are truly necessary for emergent realism.
+DiceStock takes a different approach. All agent behavior derives from a single shared stochastic
+mechanism: a 100×100 grid of dice, each rolled independently every tick with values uniformly
+distributed on [1, 20]. The grid is partitioned into 10 horizontal bands of 1,000 dice each, where
+each band drives a distinct market function:
+
+2
+Bands 1–3: Directional traders at three timescales (scalpers, swing, position)
+Band 4: Fundamental value anchor
+Band 5: Short sellers and squeeze mechanics
+Band 6: Market makers providing liquidity
+Band 7: Volatility regime multiplier
+Band 8: Exogenous event/shock generator
+Band 9: Market sentiment
+Band 10: Meta-regime (trend persistence and reversal probability)
+Contributions. (1) We introduce the DiceStock architecture, demonstrating that a dice-griddriven multi-agent system produces realistic market dynamics. (2) We provide comprehensive
+statistical validation across 13 categories of market properties. (3) We show that the core stylized
+facts emerge from agent heterogeneity alone, without regime switching or squeeze mechanics
+activating.
+2. Related Work
+Agent-based computational economics. The Santa Fe Artificial Stock Market (Arthur et al.,
+1997) first demonstrated that heterogeneous adaptive agents could generate realistic price
+dynamics. LeBaron (2006) surveys the field, noting that agent heterogeneity—not complexity—
+drives emergent realism. Lux and Marchesi (1999, 2000) produce fat-tailed returns through
+endogenous switching between fundamentalists and chartists. Farmer and Joshi (2002) show that
+the ecology of strategies determines aggregate behavior. Chiarella et al. (2009) provide a
+comprehensive heterogeneous agent framework.
+Stylized facts. Cont (2001) provides the canonical enumeration: (1) fat tails with power-law index
+2–5, (2) absence of return autocorrelation, (3) volatility clustering with long memory, (4) volumevolatility correlation, (5) asymmetric volatility, (6) aggregational Gaussianity.
+Order book models. Bouchaud et al. (2002) and Smith et al. (2003) establish characteristic
+spread and depth dynamics. Cont et al. (2010) develop a stochastic limit order book model.
+DiceStock implements full price-time priority matching.
+
+3
+3. Model Description
+3.1 Dice Grid
+The core mechanism is a grid G of 100 × 100 = 10,000 cells. Each tick, every cell is assigned a value
+g ~ Uniform(1, Ellipsis, 20) using a seeded Mulberry32 PRNG. The grid is partitioned into 10 bands
+of 1,000 cells. For each band, we compute the mean μb, standard deviation σb, and 100 column
+means cb,k. With 1,000 dice, the band mean has σ(μb) ≈ 0.183, while column means (10 dice) have
+σ(cb,k) ≈ 1.83—providing much higher variance for directional signals.
+3.2 Ten Bands
+Bands 1–3 (Directional Traders): Each column represents one agent. Direction: BUY if c ≥ 14,
+SELL if c ≤ 7. Band 1 (scalpers): every tick, 10-share, 60% market orders. Band 2 (swing): every 13
+ticks, 80-share. Band 3 (position): every 65 ticks, 400-share.
+Band 4 (Fundamental): Maintains latent fundamental Ft with drift proportional to μ4 − 10.5.
+Value agents trade when |Pt − Ft|/Ft > 0.02.
+Band 5 (Short Sellers): Tracks short interest SIt. Squeeze activates when four conditions are
+met: utilization > 0.45, recent price rise > 3%, sentiment > 0.6, and κt > 1.2.
+Band 6 (Market Makers): Refreshes all quotes every tick. Spread and depth depend on band
+statistics. Withdraws liquidity during stress.
+Band 7 (Volatility): Piecewise linear mapping of μ7 to κt ∈ [0.2, 5.0], with κ = 1.0 for μ7 ∈ [8, 13].
+Bands 8–10: Events (extreme column means trigger shocks), sentiment (exponential smoothing),
+and regime (trend persistence and reversal probability).
+3.3 Order Book and Tick Lifecycle
+DiceStock implements a continuous double auction with price-time priority. Each tick: (A) roll dice,
+update environment; (B) generate orders from all bands; (C) match market orders (shuffled), then
+limit orders; (D) update history, candles, delay buffers.
+4. Methodology
+We run 3,600,000 ticks (seed 42) corresponding to 9,230 trading days (~36.6 years), capturing all
+38 internal state variables per tick. We compute log returns rt = ln(Pt/Pt−1) and evaluate 13
+categories: summary statistics, return distribution, fat tails (Hill estimator, QQ), volatility clustering
+
+4
+(ACF of |r|), return autocorrelation, volume, spread, squeeze events, regime analysis, Hurst
+exponent, power law tests, cross-correlations, and a stylized facts checklist.
+5. Statistical Validation
+5.1 Summary Statistics
+Metric
+Value
+Total ticks
+3,600,000
+Simulated years
+~36.6
+Price range
+$1.43 – $161.26
+Final price
+$117.16
+Mean tick return
+4.40 × 10−8
+Return std (tick)
+1.46 × 10−2
+Annualized volatility
+459%
+Figure 1: DiceStock price trajectory over 36.6 simulated years (seed 42). Price crashes from $100 to ~$1.43 in
+the first 2 years, remains depressed for ~8 years, then recovers to fluctuate around the fundamental value.
+
+5
+5.2 Return Distribution
+Statistic
+Value
+Skewness
+−0.050
+Excess kurtosis
+11.07
+Jarque-Bera
+1.84 × 107 (p ≈ 0)
+Excess kurtosis of 11.07 indicates extremely heavy tails. The Jarque-Bera test decisively rejects
+normality, consistent with Cont (2001) Stylized Fact #1.
+Figure 3: Return distribution vs. normal. Left: density plot showing leptokurtic shape. Right: log-scale view
+revealing fat tails extending far beyond Gaussian predictions.
+5.3 Fat Tails
+Tail Fraction
+Hill Estimator (α)
+2%
+3.71
+5%
+2.74
+10%
+2.13
+The Hill tail index of 2.74 (5% level) falls squarely within the empirical range of 2–5 for financial
+returns, remarkably close to equity index estimates (~3).
+
+6
+Figure 4: QQ plot of standardized returns vs. normal distribution. Departure from the diagonal in both tails
+confirms heavy-tailed returns.
+
+7
+Figure 11: Hill estimator stability plot. Tail index ranges from ~4 (extreme tail) to ~2 (body), consistent with
+empirical financial returns (shaded range 2-5).
+5.4 Volatility Clustering
+Lag
+ACF of |rt|
+1
+0.4828
+10
+0.1565
+50
+0.0564
+100
+0.0307
+The ACF decays slowly from 0.48 to 0.03 over 100 lags—characteristic "long memory" in volatility
+(Cont Stylized Fact #3). This emerges entirely from multi-timescale agent interaction without any
+GARCH specification.
+
+8
+Figure 5: Autocorrelation analysis. Left: ACF of |returns| showing strong volatility clustering with slow decay.
+Right: ACF of returns showing bid-ask bounce at lag 1.
+Figure 6: Volatility long memory. ACF of |r_t| and r_t² decays slowly from 0.48 at lag 1 to 0.03 at lag 100.
+
+9
+Figure 7: 20-day rolling volatility over time. Clustering of high and low volatility periods demonstrates
+emergent ARCH-like behavior.
+5.5 Return Autocorrelation
+Lag
+ACF of rt
+1
+−0.534
+5
+−0.055
+10
+0.004
+20
+0.001
+The strong negative lag-1 autocorrelation reflects bid-ask bounce (Roll, 1984). By lag 10,
+autocorrelation becomes negligible, consistent with market efficiency at longer horizons.
+5.6 Volume Analysis
+Mean daily volume: 36.56 shares/tick (std: 50.98). Volume↔|Returns| correlation: 0.157,
+reproducing the well-documented volume-volatility relationship (Karpoff, 1987).
+
+10
+Figure 8: Daily volume distribution. Right-skewed (mean > median), characteristic of real markets.
+5.7–5.9 Spread, Squeeze, and Regime
+Mean spread: $0.163 (~0.16% at $100). No squeeze events triggered due to κt remaining at 1.0
+throughout (Band 7 mean too concentrated with 1000 dice). The kappa = 1 for μ7 ∈ [8,13] range is
+never escaped since σ(μ7) ≈ 0.183.
+Figure 10: Bid-ask spread analysis. Left: spread over time. Right: spread distribution.
+
+11
+5.10–5.12 Hurst, Power Law, Cross-Correlations
+Hurst exponent: 0.34 (mean-reverting, consistent with bid-ask bounce). Key cross-correlations:
+SI↔Price = 0.862 (procyclical short covering), Volume↔|Returns| = 0.157.
+Figure 12: Cross-correlations. Dominant relationship: SI↔Price (0.862) reflecting procyclical short covering.
+5.13 Stylized Facts Checklist
+Property
+Result
+Value
+Criterion
+Fat tails
+PASS
+κ = 11.07
+Excess kurtosis > 0
+Volatility clustering
+PASS
+ACF = 0.48
+ACF(|r|, 1) > 0.05
+Long memory in vol
+PASS
+ACF = 0.056
+ACF(|r|, 50) > 0.01
+No return autocorrelation
+FAIL
+ACF = −0.53
+|ACF(r, 1)| < 0.05
+Volume-vol correlation
+PASS
+ρ = 0.16
+Positive correlation
+Leverage effect
+PASS
+ρ = 0.0001
+Sentiment pathway
+
+12
+Spread widens under stress
+N/A
+—
+No squeezes
+Price discovery
+PASS
+$1.43–$161
+> 10% from initial
+Score: 5/7. The single clear failure is a microstructure artifact present in real tick-level data.
+Figure 13: Stylized facts scorecard. 5/7 testable criteria pass; the single clear failure is a known microstructure
+artifact.
+6. Emergent Phenomena
+6.1 Stylized Facts Without Regime Switching
+The most striking finding: DiceStock reproduces fat tails (κ = 11.07), volatility clustering (ACF =
+0.48), and power-law tails (α = 2.74) without κt ever deviating from 1.0. Agent heterogeneity
+alone—operating at multiple timescales through a shared order book—is sufficient.
+6.2 The Crash-Recovery Cycle
+The simulation exhibits a remarkable trajectory: crash from $100 to $1.43 (years 0–2), depression
+at $2–$5 (years 2–9), recovery to $100+ (year 10), then stable fluctuation (years 10–37).
+
+13
+Figure 14: Initial crash detail (first 3 years). Directional agent sell-side clustering depletes buy-side liquidity.
+
+14
+Figure 2: Price dynamics with daily volume. Top: full price trajectory showing crash-recovery-stable cycle.
+Bottom: daily trading volume.
+6.3–6.5 Liquidity, Multi-Scale Flow, Short Interest
+Market makers produce realistic spread dynamics through column-level variation. The 1/13/65-tick
+band frequencies create multi-scale order flow contributing to volatility clustering. SI↔Price
+correlation (0.862) reflects a procyclical amplification mechanism.
+
+15
+Figure 9: Multi-panel market state. Top: price. Middle: sentiment (Band 9). Bottom: short utilization with
+squeeze threshold (0.45, dashed).
+
+16
+Figure 15: Stable phase detail (years 15-20). Realistic price fluctuations around fundamental value.
+7. Parameter Sensitivity
+The band mean concentration problem: With 1,000 dice, σ(μ) ≈ 0.183, confining band means
+to a narrow range. The kappa map assigns κ = 1 for μ7 ∈ [8,13]—never escaped. Design fix: use
+column means (10 dice, σ ≈ 1.83) or narrow the unity-kappa range.
+Other sensitivities: agent frequencies (1/13/65 create multi-scale structure), fundamental drift rate
+(0.002), and squeeze thresholds (kappa > 1.2 requirement prevents activation).
+8. Discussion
+Strengths: Simplicity (all from uniform dice), reproducibility (seeded PRNG), efficiency (8,847
+ticks/sec), full observability of internal state.
+Limitations: Inactive regime dynamics, strong bid-ask bounce (−0.53 vs. empirical −0.1 to −0.3),
+high annualized vol (459%), no agent learning, single asset, no wealth dynamics.
+Future work: Agent adaptation via RL, multi-asset extension, wealth dynamics, calibration to
+empirical distributions, network effects.
+
+17
+9. Conclusion
+DiceStock demonstrates that independent uniform dice rolls can drive a multi-agent market
+simulator reproducing key statistical properties of real financial markets: excess kurtosis of 11.07,
+volatility clustering with ACF 0.48 at lag 1 persisting to lag 100, Hill tail indices of 2.7, and positive
+volume-volatility correlation—all without GARCH, stochastic volatility, or regime switching.
+The central insight: the most important stylized facts emerge from agent heterogeneity
+operating through a shared order book, not from sophisticated mechanisms. The
+minimum ingredients are: (1) heterogeneous agents at multiple timescales, (2) a limit order book
+with price-time priority, and (3) a fundamental value anchor.
+References
+Arthur, W. B., Holland, J. H., LeBaron, B., Palmer, R., & Tayler, P. (1997). Asset pricing under endogenous
+expectations in an artificial stock market. The Economy as an Evolving Complex System II, 15–44.
+Bouchaud, J.-P., Mézard, M., & Potters, M. (2002). Statistical properties of stock order books. Quantitative
+Finance, 2(4), 251–256.
+Brunnermeier, M. K., & Pedersen, L. H. (2005). Predatory trading. The Journal of Finance, 60(4), 1825–1863.
+Chiarella, C., Dieci, R., & He, X.-Z. (2009). Heterogeneity, market mechanisms, and asset price dynamics.
+Handbook of Financial Markets, 277–344.
+Cont, R. (2001). Empirical properties of asset returns: Stylized facts and statistical issues. Quantitative Finance,
+1(2), 223–236.
+Cont, R., Stoikov, S., & Talreja, R. (2010). A stochastic model for order book dynamics. Operations Research, 58(3),
+549–563.
+Farmer, J. D., & Joshi, S. (2002). The price dynamics of common trading strategies. J. Economic Behavior &
+Organization, 49(2), 149–171.
+Karpoff, J. M. (1987). The relation between price changes and trading volume: A survey. J. Financial and
+Quantitative Analysis, 22(1), 109–126.
+LeBaron, B. (2006). Agent-based computational finance. Handbook of Computational Economics, Vol. 2, 1187–
+1233.
+Lux, T., & Marchesi, M. (1999). Scaling and criticality in a stochastic multi-agent model of a financial market.
+Nature, 397, 498–500.
+Lux, T., & Marchesi, M. (2000). Volatility clustering in financial markets. Int. J. Theoretical and Applied Finance,
+3(4), 675–702.
+Palmer, R. G., et al. (1994). Artificial economic life: A simple model of a stockmarket. Physica D, 75, 264–274.
+Roll, R. (1984). A simple implicit measure of the effective bid-ask spread. The Journal of Finance, 39(4), 1127–
+1139.
+
+18
+Smith, E., Farmer, J. D., et al. (2003). Statistical theory of the continuous double auction. Quantitative Finance,
+3(6), 481–514.

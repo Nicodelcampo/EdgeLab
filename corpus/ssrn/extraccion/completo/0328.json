@@ -1,0 +1,119 @@
+{
+  "doc_id": 328,
+  "titulo": "Testing the Effect of Technical Analysis on Market Quality and Order Book Dynamics",
+  "resumen_operativo": "Realiza un estudio de eventos intradiario con datos tick-by-tick de Euronext 100 para validar las predicciones del modelo agent-based de Chiarella y Ladley (2016) sobre el efecto del análisis técnico en la calidad de mercado. Encuentra que el trading técnico en momentos de señales (MACD, RSI, STOCH) reduce la liquidez (spread relativo, efectivo, realizado, dispersión y pendiente del libro) y aumenta la volatilidad. Clasifica a los traders en cinco categorías (ATT, PTT, IIT, PIT, LT) y usa un modelo de datos de panel y causalidad de Granger para complementar el estudio de eventos.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Agent-based model of limit order book",
+      "tipo": "modelo",
+      "definicion_en_contexto": "Modelo de Chiarella y Ladley (2016) que extiende Goettler et al. (2005, 2009) usando una técnica numérica para identificar un equilibrio Markov perfecto donde traders técnicos y informados optimizan endógenamente sus estrategias de submission de órdenes condicional al estado del mercado.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Markov perfect equilibrium"},
+        {"tipo": "APLICA_A", "objeto": "Limit order book dynamics"}
+      ],
+      "cita_textual": "Chiarella and Ladley (2016) use this approach to model the interaction between technical and informed traders in an order book... they are able to derive optimal strategies in the sense that both groups of traders submit and modify their orders in order to maximize their expected payoff, conditional on the state of the market."
+    },
+    {
+      "nombre": "MACD (Moving Average Convergence/Divergence)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Oscilador basado en medias móviles exponenciales: Diff_t = EMA12(price)_t - EMA26(price)_t, Signal_t = EMA9(Diff)_t, MACD = Diff_t - Signal_t. Señal de compra cuando el histograma cruza la línea cero hacia arriba y venta cuando cruza hacia abajo.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Exponential Moving Average (EMA)"},
+        {"tipo": "PARTE_DE", "objeto": "Technical Analysis indicators"}
+      ],
+      "cita_textual": "MACD = Diff_t - Signal_t, where Diff_t is also called the MACD curve, Signal_t, the signal line and MACD, the MACD histogram."
+    },
+    {
+      "nombre": "RSI (Relative Strength Index)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Oscilador de fuerza que evalúa el momentum actual: RSI_t = 100 - 100/(1+RS_t) donde RS_t = EMA_n(U)/EMA_n(D), con n usualmente 14. Valores superiores a 70 indican sobrecompra y señales de venta; inferiores a 30 indican sobreventa y señales de compra.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Exponential Moving Average (EMA)"},
+        {"tipo": "EQUIVALE_A", "objeto": "Momentum oscillator"}
+      ],
+      "cita_textual": "When the RSI is bigger than 70, the asset is overbought and a price decrease is expected. When the RSI is lower than 30, the asset is oversold and a price increase is expected."
+    },
+    {
+      "nombre": "Aggressive Technical Traders (ATT)",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Categoría de traders que envían market y marketable limit orders en la dirección sugerida por una señal técnica. No envían órdenes agresivas en dirección opuesta a la señal. Representan la versión más inmediata y costosa del trading técnico.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Technical trader classification"},
+        {"tipo": "SE_OPONE_A", "objeto": "Patient Technical Traders (PTT)"}
+      ],
+      "cita_textual": "Aggressive technical traders (ATT) who submit market and marketable limit orders in the direction suggested by a technical signal. They do not submit any aggressive order in the direction opposed to the signal."
+    },
+    {
+      "nombre": "Patient Technical Traders (PTT)",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Traders técnicos que siguen la dirección de la señal pero envían únicamente limit orders en lugar de órdenes que toman liquidez. No pagan el spread por inmediatez y compiten con otras limit orders por prioridad de precio y tiempo.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "Aggressive Technical Traders (ATT)"},
+        {"tipo": "USA", "objeto": "Limit orders"}
+      ],
+      "cita_textual": "Patient technical traders (PTT) follow the same process but they submit limit orders instead of liquidity-taking orders. Those traders do not pay the spread for immediacy and compete with other limit orders to gain price and time priority."
+    },
+    {
+      "nombre": "Impatient Informed Traders (IIT)",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Traders informados que operan agresivamente en la dirección dominante evaluada mediante trade imbalance, enviando market y marketable limit orders de compra cuando el signed trade imbalance > 40% y de venta cuando < -40%.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "Patient Informed Traders (PIT)"},
+        {"tipo": "USA", "objeto": "Trade imbalance"}
+      ],
+      "cita_textual": "Impatient informed traders (IIT) who are trading aggressively in the dominant direction assessed through trade imbalance. They submit market and marketable limit orders at the buy side when the signed trade imbalance is bigger than 40%."
+    },
+    {
+      "nombre": "Relative spread",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Proxy de liquidez ex ante definido como (ask - bid) / midpoint. Junto con el effective spread, realized spread, dispersion y slope del order book, constituye el conjunto de métricas usadas para evaluar el impacto del análisis técnico sobre la calidad de mercado.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "Market liquidity"},
+        {"tipo": "EQUIVALE_A", "objeto": "Quoted spread proxy"}
+      ],
+      "cita_textual": "Technical traders lower liquidity as proxied by the relative spread, the effective spread, the realized spread, the dispersion and the slope in the order book."
+    },
+    {
+      "nombre": "Granger causality of technical trading",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Prueba de causalidad de Granger aplicada para determinar si el trading técnico causa dinámicas de liquidez en el libro de órdenes, complementando el estudio de eventos intradiario no paramétrico y el modelo de datos de panel.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "Order book dynamics"},
+        {"tipo": "USA", "objeto": "Panel data model"}
+      ],
+      "cita_textual": "We test whether technical trading causes liquidity dynamics in the sense of Granger causality."
+    },
+    {
+      "nombre": "Euronext 100 tick-by-tick data",
+      "tipo": "dato",
+      "definicion_en_contexto": "Dataset único de datos tick-by-tick de acciones del índice Euronext 100 proporcionado por NYSE Euronext Paris, usado para el estudio de eventos intradiario alrededor de señales de análisis técnico.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Intraday event study"},
+        {"tipo": "PARTE_DE", "objeto": "Euronext market"}
+      ],
+      "cita_textual": "We use a unique tick-by-tick Euronext 100 stock dataset to evaluate Chiarella and Ladley (2016)'s agent-based model."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "El trading técnico en momentos de señales (MACD, RSI, STOCH) reduce significativamente la liquidez, bajando el relative spread, effective spread, realized spread, dispersion y slope del order book, y aumenta la volatilidad.",
+      "mercado": "Euronext 100 (acciones europeas)",
+      "periodo": "No especificado explícitamente (datos tick-by-tick de Euronext Paris)",
+      "magnitud": "Efectos significativos en todas las métricas de liquidez y volatilidad (magnitudes específicas no disponibles en el extracto)",
+      "condiciones": "Estudio de eventos intradiario alrededor de señales MACD, RSI y STOCH; ventana de evento alrededor de cada señal; metodología no paramétrica basada en medianas",
+      "robustez": "alta",
+      "cita_textual": "We find that technical trading at the time of the signals lowers liquidity as estimated by the relative spread, the effective spread, the realized spread, the dispersion and slope of the order book. We also find additional negative impact of technical trading on market quality, most notably in terms of rising volatility."
+    },
+    {
+      "afirmacion": "Se rechazan las cuatro hipótesis nulas (H1-H4) del modelo de Chiarella y Ladley (2016): el trading técnico tiene efecto sobre la liquidez ex ante/ex post, los costos de selección adversa, la eficiencia de precios y la dinámica del libro de órdenes.",
+      "mercado": "Euronext 100",
+      "periodo": "No especificado",
+      "magnitud": "Fuerte soporte empírico en contra de todas las hipótesis nulas (H1: no efecto en liquidez, H2: no efecto en adverse selection, H3: no efecto en price efficiency, H4: no efecto en order book dynamics)",
+      "condiciones": "Metodología mixta: estudio de eventos intradiario + modelo de panel + causalidad de Granger; tres indicadores técnicos (MACD, RSI, STOCH)",
+      "robustez": "alta",
+      "cita_textual": "There is overall strong empirical support against the hypothesis that technical trading has no effect on order book dynamics."
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "Estudio diseñado específicamente para el contexto intradiario con datos tick-by-tick; identifica señales técnicas explotables intradía y mide su impacto inmediato en el libro de órdenes."}
+}

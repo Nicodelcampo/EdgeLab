@@ -1,0 +1,130 @@
+{
+ "doc_id": 84,
+ "titulo": "Deep Learning for VWAP Execution in Crypto Markets: Beyond the Volume Curve",
+ "resumen_operativo": "El documento propone un marco de aprendizaje profundo (basado en una Temporal Linear Network con activación softmax) para optimizar directamente el objetivo de ejecución VWAP en los mercados de criptomonedas (futuros perpetuos de Binance). Al eludir el proceso tradicional de dos pasos de predecir primero la curva de volumen del mercado y luego asignar las órdenes, el modelo minimiza directamente la pérdida absoluta o cuadrática de VWAP (slippage). Los resultados demuestran que las estrategias optimizadas directamente para el rendimiento de VWAP divergen de la replicación exacta de la curva de volumen y logran consistentemente un menor slippage de ejecución, especialmente en mercados volátiles.",
+ "calidad_paper": "alta",
+ "conceptos": [
+  {
+   "nombre": "Temporal Linear Network (TLN)",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Un modelo lineal estructurado, empleado como arquitectura interna, que procesa secuencias históricas progresivamente ajustando la longitud de la secuencia y la dimensión de las características para producir asignaciones de volumen de manera eficiente.",
+   "relaciones": [
+    {
+     "tipo": "USA",
+     "objeto": "softmax"
+    },
+    {
+     "tipo": "APLICA_A",
+     "objeto": "VWAP execution"
+    }
+   ],
+   "cita_textual": "The TLN is conceptually simple and highly interpretable—essentially a linear model with structured transformations—yet it is integrated within a deep learning framework that enables the minimization of arbitrary loss functions..."
+  },
+  {
+   "nombre": "Softmax function",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Función utilizada en la capa de salida para transformar las predicciones del modelo en un vector de asignación de volumen válido, garantizando que los pesos sean no negativos y sumen a uno, y permitiendo una diferenciación suave.",
+   "relaciones": [
+    {
+     "tipo": "PARTE_DE",
+     "objeto": "StaticVWAP Model"
+    }
+   ],
+   "cita_textual": "A key innovation in the framework is the use of the softmax function to enforce allocation constraints... naturally transforms any real-valued input vector z into a smooth probability distribution."
+  },
+  {
+   "nombre": "Absolute VWAP Loss",
+   "tipo": "metrica",
+   "definicion_en_contexto": "Función de pérdida que mide la diferencia absoluta entre el precio de ejecución promedio logrado y el VWAP de mercado real.",
+   "relaciones": [
+    {
+     "tipo": "MIDE",
+     "objeto": "VWAP slippage"
+    }
+   ],
+   "cita_textual": "The Absolute VWAP Loss measures the absolute difference between the achieved VWAP and the market VWAP"
+  },
+  {
+   "nombre": "Quadratic VWAP Loss",
+   "tipo": "metrica",
+   "definicion_en_contexto": "Función de pérdida que calcula la diferencia al cuadrado entre el precio de ejecución promedio y el VWAP de mercado, penalizando más severamente las grandes desviaciones.",
+   "relaciones": [
+    {
+     "tipo": "MIDE",
+     "objeto": "VWAP slippage"
+    }
+   ],
+   "cita_textual": "the Quadratic VWAP Loss measures the squared difference, thereby penalizing larger deviations more heavily."
+  },
+  {
+   "nombre": "StaticVWAP Model",
+   "tipo": "metodo",
+   "definicion_en_contexto": "El modelo de aprendizaje profundo propuesto que genera curvas de asignación estáticas para un horizonte de ejecución determinado basándose en datos históricos, optimizando directamente la pérdida VWAP.",
+   "relaciones": [
+    {
+     "tipo": "USA",
+     "objeto": "Temporal Linear Network"
+    },
+    {
+     "tipo": "APLICA_A",
+     "objeto": "order allocation"
+    }
+   ],
+   "cita_textual": "The proposed deep-learning approach, referred to as the StaticVWAP Model, employs a neural network to generate allocation curves based on historical market data."
+  },
+  {
+   "nombre": "Volume Curve Loss",
+   "tipo": "metrica",
+   "definicion_en_contexto": "Métrica tradicional de evaluación y optimización enfocada en minimizar el error entre la curva de distribución de volumen pronosticada y la observada en el mercado.",
+   "relaciones": [
+    {
+     "tipo": "MIDE",
+     "objeto": "volume prediction accuracy"
+    }
+   ],
+   "cita_textual": "optimization based on the volume curve loss yields a nearly flat allocation. This flat allocation is expected since, in the absence of market information, the average volume in each time bin is equal."
+  }
+ ],
+ "hallazgos": [
+  {
+   "afirmacion": "Optimizar directamente el objetivo de ejecución VWAP (mediante pérdidas absolutas o cuadráticas) produce curvas de asignación de órdenes no uniformes que obtienen consistentemente un menor slippage que los enfoques basados en replicar la curva de volumen pronosticada.",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  },
+  {
+   "afirmacion": "La predicción precisa de la curva de volumen intradiario no es el determinante principal para la ejecución óptima del VWAP, como lo demuestra el hecho de que modelos estáticos enfocados en el precio superen a modelos dinámicos que predicen mejor el volumen.",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  },
+  {
+   "afirmacion": "En mercados volátiles como los de las criptomonedas, una asignación que asume cierto grado de error en la estimación del volumen (incluso una end-loaded allocation) puede mitigar el riesgo de picos repentinos de volatilidad y reducir el deslizamiento general de la ejecución.",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  },
+  {
+   "afirmacion": "El uso de una función Softmax sobre una arquitectura lineal temporal simple (TLN) restringe eficientemente la salida del modelo a vectores válidos de distribución porcentual (pesos positivos que suman 1) sin interrumpir la propagación del gradiente.",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  }
+ ],
+ "aplicabilidad_es_intradia": {
+  "nivel": "alta",
+  "nota": "El documento desarrolla explícitamente un modelo para distribuir la ejecución de grandes órdenes en intervalos de tiempo intradiarios (por ejemplo, bloques horarios o de menor frecuencia) para ajustarse al benchmark de VWAP. Las técnicas y aprendizajes son completamente aplicables al ecosistema de ejecución algorítmica y microestructura intradiaria en cualquier mercado activo y volátil."
+ }
+}

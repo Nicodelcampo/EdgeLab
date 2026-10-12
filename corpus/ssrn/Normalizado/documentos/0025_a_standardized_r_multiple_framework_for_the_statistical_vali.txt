@@ -1,0 +1,858 @@
+A Standardized R-Multiple Framework for the Statistical Validation of 
+Trading Edge in Retail Trading Systems 
+Stefano Viaggi 
+Independent Quantitative Researcher 
+ 
+Abstract 
+This paper proposes a standardized framework for the statistical validation of trading edge in retail 
+trading systems using R-multiples, the unit in which trade outcomes are commonly recorded by 
+practitioners. Existing inference methods based on the Sharpe ratio provide rigorous tools for returnlevel performance evaluation, but they do not directly address the trade-level structure of many retail 
+strategies, which are typically defined by fixed stop-losses, asymmetric reward-to-risk ratios, and 
+discrete payoff profiles. The paper formalizes trade outcomes in R-space and derives significance 
+thresholds for cumulative performance under a zero-edge null hypothesis. On this basis, it develops 
+closed-form expressions for minimum trade record length and benchmark values for path-dependent 
+diagnostics such as maximum drawdown, equity MAE/MFE, and longest losing streak. The framework 
+also incorporates a post-selection adjustment tailored to the retail research process, where traders 
+often choose among multiple entries, filters, reward-to-risk ratios, and management rules. Rather 
+than replacing Sharpe-based inference, the proposed approach complements it by providing a tradelevel validation protocol in the native language of retail trading. The result is a practical and 
+theoretically grounded method for distinguishing genuine trading edge from finite-sample noise. 
+1. Introduction 
+Retail traders commonly evaluate performance at the trade level using R-multiples, where each 
+outcome is normalized by initial risk. In this setting, the natural objects of analysis are not portfolio 
+returns or annualized volatility, but expectancy in R, cumulative R, drawdown in R, and sequences of 
+wins and losses. Despite the widespread practical use of this language, statistical validation of 
+trading skill remains dominated by frameworks developed for return series, most notably those 
+based on the Sharpe ratio and its extensions. This creates a mismatch between the unit in which many 
+retail strategies are designed and recorded, and the unit in which their statistical credibility is typically 
+assessed. 
+This paper addresses that mismatch by proposing a complementary trade-level framework for the 
+statistical validation of edge in retail trading systems. The central idea is to translate the logic of 
+performance inference into R-space, where trade outcomes are modeled directly in units of initial 
+risk. Within this framework, the paper derives significance thresholds for cumulative R under a zeroedge null, closed-form expressions for minimum trade record length, and benchmark distributions for 
+path-dependent quantities such as equity MAE/MFE, maximum drawdown, and longest losing streak. 
+It further extends the framework to account for the multiple-testing problem inherent in retail strategy 
+development, where the final reported setup often emerges from a search across many entries, filters, 
+sessions, and management rules. 
+Existing return-based inference provides the natural point of reference for this effort. Lo showed that 
+the Sharpe ratio is a sample statistic whose distribution may be materially affected by finite samples, 
+serial correlation, and other departures from idealized assumptions, implying that naïve inference can 
+be misleading. Building on this line, Bailey and López de Prado developed the Probabilistic Sharpe 
+Ratio and Minimum Track Record Length, which connect observed performance to statistical 
+credibility and required sample length, and later extended this approach through the Deflated Sharpe 
+
+Ratio and related work on backtest overfitting, which incorporate non-normality and selection bias. 
+Taken together, this literature provides a rigorous framework for evaluating whether observed return 
+performance is more plausibly attributable to skill than to luck. The present paper does not challenge 
+that framework; instead, it asks how an analogous inferential logic can be formulated when the native 
+unit of observation is the trade outcome in R-multiples rather than the return series. 
+The paper makes three contributions. First, it develops a trade-level statistical framework in which 
+cumulative performance in R can be evaluated against a zero-edge null under asymmetric payoff 
+structures. Second, it derives operational quantities that are directly relevant to retail traders, 
+including critical cumulative-R thresholds, minimum trade record length, and benchmark pathdiagnostic values. Third, it incorporates a post-selection perspective tailored to the retail research 
+process, where reported setups are often chosen from a larger and partially informal search space. 
+The proposed methodology is therefore best understood as a complement to Sharpe-based inference: 
+a framework for trade-process validation in R-space, rather than a replacement for return-process 
+validation in portfolio space. 
+ 
+2. Related Literature 
+The present paper relates to the literature on the statistical validation of investment skill, with 
+particular emphasis on frameworks that distinguish observed performance from credible evidence of 
+persistent edge. This literature is dominated by return-based inference, where performance is 
+evaluated through summary statistics defined on portfolio returns rather than on trade-level 
+outcomes. The most relevant line for the present study begins with the Sharpe ratio and extends 
+through its finite-sample distribution, probabilistic and deflated extensions, and methods designed to 
+address model selection and backtest overfitting. Together, these contributions define the benchmark 
+against which a trade-level framework in R-multiples must be positioned. 
+The Sharpe ratio remains the canonical measure of risk-adjusted performance, summarizing mean 
+excess return per unit of return volatility. Its importance for the present paper lies less in the metric 
+itself than in the inferential tradition built around it. Lo’s analysis of the sampling distribution of the 
+Sharpe ratio showed that performance evaluation must be treated as a statistical problem rather than 
+as a purely descriptive one: estimated Sharpe ratios are affected by finite samples, serial correlation, 
+and other time-series properties, so naïve significance statements can be misleading. This 
+contribution established a key principle that also motivates the present study: realized performance is 
+only evidence, and that evidence must be interpreted relative to an explicit stochastic benchmark. 
+Bailey and López de Prado extended this inferential tradition by developing the Probabilistic Sharpe 
+Ratio (PSR) and the Minimum Track Record Length (MinTRL). The PSR reframes performance 
+evaluation as the probability that the true Sharpe ratio exceeds a chosen benchmark, explicitly 
+incorporating sample size and higher moments of the return distribution. MinTRL addresses the 
+complementary question of how much data are required before a reported performance level can be 
+treated as statistically credible. These contributions are especially relevant to the present paper 
+because they shift the focus from raw performance measurement to evidence thresholds and 
+sample-size requirements, which are also central to trade-level validation in R-space. 
+A further extension of this literature addresses the problem of selection bias. The Deflated Sharpe 
+Ratio (DSR) adjusts performance inference for non-normality and for the inflation that arises when 
+many candidate strategies are tested and the best is reported. Closely related is the literature on the 
+Probability of Backtest Overfitting (PBO), which emphasizes that the research process itself may be 
+structurally prone to false discoveries. These contributions are directly relevant to retail trading, 
+
+where strategies are often selected after iterative search across entries, filters, sessions, and 
+management rules. The gap, however, is that these frameworks remain primarily return-level tools. 
+They do not provide a standardized validation framework for the trade-level objects that retail traders 
+actually monitor—cumulative R, trade expectancy, drawdown in R, and losing streaks. The present 
+paper aims to fill that gap by developing a complementary inferential framework in R-multiples. 
+ 
+3. Trade-Level R-Multiple Validation Framework 
+Retail trading systems are often defined at the level of the individual trade rather than as continuous 
+return processes. In these settings, each trade is evaluated relative to a pre-specified initial risk, and 
+outcomes are recorded in R-multiples. The natural unit of observation is therefore not the period 
+return on capital, but the realized trade outcome expressed as a multiple of initial risk. This paper 
+focuses on that unit directly. The goal is to construct a statistical validation framework in which edge 
+is evaluated from the sequence of trade outcomes itself, rather than inferred indirectly through 
+portfolio-return aggregates. 
+To keep the framework transparent, the baseline model assumes a binary payoff structure. Let the 
+outcome of trade 𝑖 be 
+𝑋! = $ 𝑏,
+with probability 𝑝,
+−1,
+with probability 1 −𝑝, 
+ 
+where 𝑏> 0 is the reward multiple and 𝑝is the win probability. This representation captures the most 
+common retail setup with fixed stop-loss and fixed take-profit. The corresponding expectancy per 
+trade is 
+𝑒= 𝔼[𝑋!] = 𝑝𝑏−(1 −𝑝). 
+ 
+The primary null hypothesis is therefore 
+𝐻": 𝑒= 0, 
+ 
+that is, the absence of trading edge. 
+ 
+Under the null of zero edge, the break-even win probability is determined uniquely by the payoff 
+asymmetry. Imposing 𝑒= 0 in 
+𝑒= 𝑝𝑏−(1 −𝑝) 
+ 
+yields 
+𝑝" =
+1
+𝑏+ 1 . 
+ 
+
+This familiar break-even condition is the starting point of the framework, but not its inferential 
+conclusion. Under the same null, the variance of the trade outcome process is 
+Var(𝑋!) = 𝑏, 
+ 
+which implies that higher reward-to-risk structures are mechanically more volatile even when 
+expectancy is exactly zero. This result is central to the paper: increasing 𝑏lowers the break-even win 
+rate, but it also increases the noise of the process, so higher reward asymmetry does not make edge 
+easier to validate statistically. 
+Let cumulative performance after 𝑁 trades be 
+𝑆# = ; 𝑋!
+#
+!$%
+. 
+ 
+Under the zero-edge null, assuming trades are independent and identically distributed (i.i.d.), 
+𝔼[𝑆#] = 0, Var(𝑆#) = 𝑁𝑏. 
+ 
+A natural standardized endpoint statistic is therefore 
+𝑍# = 𝑆#
+√𝑁𝑏
+. 
+ 
+This statistic provides the basis for trade-level inference in R-space. For one-sided testing of positive 
+edge, cumulative performance is significant at level 𝛼 whenever 
+𝑆# > 𝑧&√𝑁𝑏, 
+ 
+where 𝑧&is the relevant standard normal critical value. This yields a simple and operational 
+significance threshold for cumulative R that depends only on the number of trades, the payoff 
+asymmetry, and the chosen confidence level. 
+Full cumulative-R significance thresholds for selected reward-to-risk ratios and sample sizes are 
+reported in Appendix A, Tables A.1–A.5. 
+The same framework yields a closed-form expression for the number of trades required to detect a 
+true positive edge. If the strategy has true expectancy 𝑒> 0, then expected cumulative performance 
+after 𝑁 trades is 𝑁𝑒. Equating this value to the critical threshold gives the Minimum Trade Record 
+Length 
+𝑁'() = 𝑧&*𝑏
+𝑒* . 
+ 
+
+This result has immediate practical meaning. The number of trades required to validate edge 
+increases linearly with the reward multiple and quadratically as the true edge becomes smaller. In 
+other words, small edges require long samples, and high reward-to-risk structures require even longer 
+samples because they embed greater variance. The framework therefore formalizes a point often 
+neglected in retail practice: apparent profitability over a short sample may carry little evidential value 
+when the underlying trade process is noisy. 
+Corresponding minimum trade record length benchmarks are reported in Appendix A, Tables A.6–A.8. 
+ 
+4. Path Diagnostics and Selection Bias 
+Endpoint performance, however, is not the only quantity retail traders care about. In practice, 
+strategies are also judged by the behavior of the equity curve, including interim gains, interim losses, 
+peak-to-trough declines, and losing streaks. For this reason, the framework includes a second 
+inferential layer based on path-dependent diagnostics. These metrics do not replace the 
+cumulative-R test as the primary indicator of edge; rather, they provide benchmark information on 
+whether the realized path of the equity curve is unusually favorable or unfavorable relative to a zeroedge process. In the present paper, the main diagnostics are equity maximum favorable excursion 
+(MFE), equity maximum adverse excursion (MAE), maximum drawdown (MDD), and longest losing 
+streak (LLS). 
+Let the equity curve after 𝑛 trades be 
+𝐸+ = ; 𝑋!
++
+!$%
+, 𝑛= 1, … , 𝑁. 
+ 
+From this process, the main path-dependent quantities are defined in the usual way: maximum 
+favorable excursion as the highest level reached by the equity curve, maximum adverse excursion as 
+the lowest level reached, maximum drawdown as the largest peak-to-trough decline, and longest 
+losing streak as the maximum run of consecutive losing trades. Under the zero-edge null, these 
+quantities have nontrivial benchmark values even when the strategy has no skill. In particular, the 
+expected magnitudes of equity MFE and MAE scale approximately with √𝑁𝑏, implying that both larger 
+samples and higher reward asymmetry naturally generate more dramatic interim path behavior. This 
+is an important practical result: visually impressive equity paths, large temporary profits, or severe 
+losing streaks are not by themselves evidence of edge, because they may arise under a zero-drift trade 
+process. 
+Benchmark values for the main path-dependent diagnostics under the zero-edge null are reported in 
+Appendix A, Tables A.9–A.13. 
+A further complication is that retail strategies are rarely evaluated in a pure single-test setting. In 
+practice, traders often search across entries, filters, reward-to-risk ratios, sessions, and management 
+rules before selecting a final setup. This creates a multiple-testing problem: the reported strategy is 
+often the best realization drawn from a larger research space rather than the outcome of a single prespecified experiment. Accordingly, the cumulative-R thresholds derived above must be interpreted as 
+single-test benchmarks. When strategy search has occurred, the relevant inferential object is the 
+selected maximum across candidate variants, and the validation threshold must be adjusted upward 
+to reflect post-selection bias. This adjustment is the trade-level analogue of deflated performance 
+
+inference in the Sharpe-based literature and is essential if the proposed framework is to remain 
+credible in realistic retail research settings. 
+ 
+5. Monte Carlo Validation 
+The analytical results developed in the previous sections provide closed-form benchmark thresholds 
+for endpoint significance, minimum trade record length, and the expected order of magnitude of the 
+main path-dependent diagnostics. The role of the Monte Carlo analysis is not to generate the 
+framework itself, but to validate its empirical usability in finite samples. In particular, the simulations 
+are used to assess three questions: whether the analytical cumulative-R thresholds provide a 
+reasonable approximation to finite-sample critical values, whether the benchmark magnitudes of 
+path-dependent diagnostics are empirically plausible under the zero-edge null, and whether postselection strategy search materially inflates the evidence thresholds required to claim edge.  
+Supplemental validation tables are reported in Appendix A, including benchmark path-diagnostic 
+values in Tables A.9–A.13 and Monte Carlo endpoint and post-selection results in Tables A.14–A.17. 
+The simulation layer is therefore intentionally limited and serves as an empirical check on the 
+framework rather than as a separate source of theory.  
+The Monte Carlo results support three main conclusions. First, the analytical endpoint thresholds 
+based on the standardized statistic 𝑍# = 𝑆#/√𝑁𝑏perform well for moderate and large trade samples, 
+with only modest finite-sample deviations at very small 𝑁. Second, the simulated values of MFE, MAE, 
+maximum drawdown, and longest losing streak confirm the benchmark intuition developed earlier: 
+even under zero edge, finite trade records can generate substantial temporary profits, deep adverse 
+excursions, and long loss sequences, especially when reward asymmetry is high. Third, post-selection 
+search across multiple candidate variants materially raises the critical values required to validate 
+edge, implying that single-test thresholds are insufficient whenever the final setup is chosen from a 
+broader research process. Taken together, these results suggest that the proposed R-multiple 
+framework is analytically tractable, empirically reasonable, and practically usable, provided that 
+finite-sample and selection effects are taken into account.  
+ 
+6. Practical Implications for Retail Traders 
+The framework developed in this paper has several direct implications for retail trading practice. The 
+first is that break-even logic is not the same as edge validation. A strategy may have an appealing 
+reward-to-risk ratio and therefore require only a modest win rate to avoid negative expectancy, but 
+that fact alone does not imply that positive edge has been demonstrated. What matters for validation 
+is whether the observed cumulative R is sufficiently large relative to the sample size, payoff 
+asymmetry, and null variance of the trade process. In practical terms, a high reward-to-risk ratio may 
+make a strategy look attractive in expectancy arithmetic while simultaneously making it harder to 
+validate statistically because the variance of the process is larger.  
+A second implication is that small trade samples are usually much less informative than traders 
+assume. Short winning runs, visually strong equity curves, or apparently tolerable losing streaks may 
+all occur under a zero-edge process, especially when the strategy has a high reward multiple or when 
+the sample contains only a few dozen trades. The framework therefore suggests that retail journals 
+should be interpreted as data rather than as proof. Observed performance should be compared 
+
+against explicit significance thresholds and path benchmarks, not judged informally from raw profit, 
+win rate, or chart shape alone. This is particularly important for low-frequency styles, where evidence 
+accumulates slowly and where the absence of significance may reflect limited sample size rather 
+than the absence of a real edge.  
+A third implication concerns the research process itself. Retail strategies are often selected after 
+trying multiple entries, filters, sessions, targets, and management rules. In that setting, the final 
+reported setup should not be evaluated as if it were a single isolated experiment. The framework 
+therefore implies a practical discipline: the broader the search process, the more conservative the 
+interpretation of the final result should be. A strategy that appears moderately convincing under a 
+naïve single-test benchmark may become unremarkable once post-selection effects are taken into 
+account. For retail traders, the broader lesson is that credible validation requires not only 
+performance measurement, but also sample-size awareness, null benchmarking, and explicit caution 
+about strategy selection.  
+ 
+7. Conclusion 
+This paper has proposed a standardized framework for the statistical validation of trading edge at the 
+trade level, using R-multiples as the native unit of analysis. The motivation is that many retail trading 
+systems are designed, executed, and reviewed in terms of initial risk, cumulative R, drawdown in R, 
+and sequences of wins and losses, while statistical validation remains largely dominated by returnbased tools. The framework developed here is intended to complement, not replace, that literature by 
+providing an inferential structure suited to trade processes with fixed risk units and asymmetric payoff 
+profiles.  
+The paper makes three main contributions. First, it develops a trade-level statistical framework in 
+which cumulative performance in R can be evaluated against a zero-edge null under the binary payoff 
+structure +𝑏/−1. Second, it derives operational quantities directly relevant to retail trading practice, 
+including critical cumulative-R thresholds, minimum trade record length, and benchmark values for 
+path-dependent diagnostics such as equity MAE/MFE, maximum drawdown, and longest losing 
+streak. Third, it extends the framework to account for strategy selection and multiple testing, 
+recognizing that many retail setups are reported only after search across entries, filters, sessions, 
+reward-to-risk ratios, and management rules.  
+The central result of the framework is that higher reward-to-risk ratios do not make statistical 
+validation easier simply because they lower the break-even win rate. Under the zero-edge null, the 
+variance of the trade process increases with the reward multiple, so the cumulative performance 
+required to establish edge also increases. This implies that a strategy may look attractive in payoff 
+terms while still being difficult to validate statistically. The paper therefore formalizes a distinction 
+that is often blurred in practice: the arithmetic of break-even expectancy is not the same as statistical 
+evidence of positive edge.  
+The paper also emphasizes that endpoint performance should not be interpreted in isolation. Interim 
+equity behavior, drawdowns, favorable and adverse excursions, and losing streaks are all relevant to 
+retail traders, but they acquire inferential meaning only when compared with an explicit null 
+benchmark. Similarly, the research process itself must be treated as part of the evidence problem: 
+when a strategy is selected from many variants, the appropriate validation threshold is no longer the 
+single-test threshold. The Monte Carlo evidence presented in the paper supports both points by 
+showing that the analytical framework is empirically reasonable in finite samples and that postselection effects can materially inflate the level of evidence required to claim edge.  
+
+The framework has several limitations. First, it is built on a benchmark model with i.i.d. trade 
+outcomes and a binary payoff structure. This is appropriate for analytical transparency, but real 
+trading processes may exhibit serial dependence, changing market regimes, non-stationarity, and 
+richer outcome distributions. Second, the framework is inherently more informative in settings where 
+a reasonably large number of trades can be observed. For low-frequency strategies, such as swing 
+trading, the main value of the framework may be less in rapid validation and more in preventing 
+overconfidence and calibrating what can reasonably be inferred from short samples. Third, the model 
+assumes a stable underlying expectancy, whereas real retail performance often reflects variation in 
+execution quality over time. In practice, the framework may therefore be understood as validating the 
+realized trade process, that is, the strategy as actually executed by the trader, rather than the 
+abstract setup in isolation.  
+These limitations point to several directions for future research. One extension would be to relax the 
+binary payoff model while preserving the trade-level R-space perspective. A second would be to 
+model time-varying expectancy and regime-dependent trade processes explicitly. A third would be to 
+distinguish more formally between strategy edge and implementation edge, allowing the framework 
+to capture the effect of variable execution quality on realized expectancy. A fourth would be to refine 
+post-selection adjustments in retail contexts where the search process is informal, correlated, and 
+only partially documented.  
+Despite these limitations, the main conclusion is straightforward. Retail trading already possesses a 
+natural unit of measurement for performance—the R-multiple—but lacks a standardized statistical 
+framework for interpreting it. This paper shows that such a framework can be constructed in a 
+coherent way, producing interpretable significance thresholds, sample-size benchmarks, pathdiagnostic reference values, and post-selection adjustments. In that sense, the contribution of the 
+paper is methodological rather than merely descriptive: it provides a disciplined way to distinguish 
+realized performance from credible evidence of edge in the same language that many retail traders 
+already use.  
+ 
+ 
+
+ 
+Appendix A. Consolidated Validation Tables 
+This appendix collects the main reference tables used in the paper. Its purpose is to provide a 
+compact set of benchmark values for trade-level validation in R-multiples without interrupting the 
+flow of the main text. The appendix is organized into four groups of tables: cumulative-R significance 
+thresholds, minimum trade record length, benchmark path diagnostics under the zero-edge null, and 
+compact Monte Carlo validation results.  
+A.1 Critical cumulative-R thresholds 
+The tables in this section report the cumulative performance in R required to claim weak, moderate, or 
+strong evidence of positive edge under the single-test framework. The values are computed from 
+𝑆#
+,-!. = 𝑧&√𝑁𝑏, 
+ 
+using one-sided critical values 𝑧= 1.282 for weak evidence, 𝑧= 1.645 for moderate evidence, and 
+𝑧= 2.326 for strong evidence. 
+Table A.1. Critical cumulative-R thresholds for 𝑹𝑹= 𝟏: 𝟏 
+N Weak Moderate Strong 
+10 
+4.1R 
+5.2R 
+7.4R 
+20 
+5.7R 
+7.4R 
+10.4R 
+50 
+9.1R 
+11.6R 
+16.4R 
+100 12.8R 
+16.5R 
+23.3R 
+200 18.1R 
+23.3R 
+32.9R 
+300 22.2R 
+28.5R 
+40.3R 
+500 28.7R 
+36.8R 
+52.0R 
+1000 40.5R 
+52.0R 
+73.6R 
+Table A.2. Critical cumulative-R thresholds for 𝑹𝑹= 𝟏: 𝟐 
+N Weak Moderate Strong 
+10 
+5.7R 
+7.4R 
+10.4R 
+20 
+8.1R 
+10.4R 
+14.7R 
+50 12.8R 
+16.5R 
+23.3R 
+100 18.1R 
+23.3R 
+32.9R 
+200 25.6R 
+32.9R 
+46.5R 
+300 31.4R 
+40.3R 
+56.9R 
+500 40.5R 
+52.0R 
+73.6R 
+1000 57.3R 
+73.6R 
+104.0R 
+ 
+ 
+ 
+
+Table A.3. Critical cumulative-R thresholds for 𝑹𝑹= 𝟏: 𝟑 
+N Weak Moderate Strong 
+10 
+7.0R 
+9.0R 
+12.7R 
+20 
+9.9R 
+12.7R 
+18.0R 
+50 15.7R 
+20.1R 
+28.5R 
+100 22.2R 
+28.5R 
+40.3R 
+200 31.4R 
+40.3R 
+56.9R 
+300 38.4R 
+49.3R 
+69.8R 
+500 49.7R 
+63.7R 
+90.1R 
+1000 70.2R 
+90.1R 
+127.4R 
+Table A.4. Critical cumulative-R thresholds for 𝑹𝑹= 𝟏: 𝟓 
+N Weak Moderate Strong 
+10 
+9.1R 
+11.6R 
+16.4R 
+20 12.8R 
+16.5R 
+23.3R 
+50 20.3R 
+26.0R 
+36.8R 
+100 28.7R 
+36.8R 
+52.0R 
+200 40.5R 
+52.0R 
+73.6R 
+300 49.7R 
+63.7R 
+90.1R 
+500 64.1R 
+82.3R 
+116.3R 
+1000 90.7R 116.3R 164.5R 
+Table A.5. Critical cumulative-R thresholds for 𝑹𝑹= 𝟏: 𝟏𝟎 
+N 
+Weak Moderate Strong 
+10 
+12.8R 
+16.5R 
+23.3R 
+20 
+18.1R 
+23.3R 
+32.9R 
+50 
+28.7R 
+36.8R 
+52.0R 
+100 40.5R 
+52.0R 
+73.6R 
+200 57.3R 
+73.6R 
+104.0R 
+300 70.2R 
+90.1R 
+127.4R 
+500 90.7R 
+116.3R 164.5R 
+1000 128.2R 164.5R 232.6R 
+A.2 Minimum Trade Record Length 
+The tables in this section report the minimum number of trades required to detect a true positive 
+expectancy 𝑒 under different reward-to-risk structures. The values are computed from 
+𝑁'() = 𝑧&*𝑏
+𝑒* . 
+ 
+ 
+ 
+
+Table A.6. Minimum Trade Record Length for weak evidence 
+RR 𝑒= 0.05𝑅 𝑒= 0.10𝑅 𝑒= 0.20𝑅 𝑒= 0.30𝑅 
+1:1 
+658 
+165 
+42 
+19 
+1:2 
+1315 
+329 
+83 
+37 
+1:3 
+1972 
+493 
+124 
+55 
+1:5 
+3287 
+822 
+206 
+92 
+1:10 
+6573 
+1644 
+411 
+183 
+Table A.7. Minimum Trade Record Length for moderate evidence 
+RR 𝑒= 0.05𝑅 𝑒= 0.10𝑅 𝑒= 0.20𝑅 𝑒= 0.30𝑅 
+1:1 
+1083 
+271 
+68 
+31 
+1:2 
+2165 
+542 
+136 
+61 
+1:3 
+3248 
+812 
+203 
+91 
+1:5 
+5413 
+1353 
+338 
+151 
+1:10 
+10827 
+2707 
+677 
+301 
+Table A.8. Minimum Trade Record Length for strong evidence 
+RR 𝑒= 0.05𝑅 𝑒= 0.10𝑅 𝑒= 0.20𝑅 𝑒= 0.30𝑅 
+1:1 
+2165 
+542 
+136 
+61 
+1:2 
+4329 
+1082 
+271 
+121 
+1:3 
+6494 
+1624 
+406 
+181 
+1:5 
+10827 
+2706 
+677 
+301 
+1:10 
+21654 
+5411 
+1353 
+602 
+A.3 Benchmark path diagnostics under the zero-edge null 
+The tables in this section report benchmark path-dependent values under the zero-edge null. 
+Reported quantities are mean MFE, mean ∣𝑀𝐴𝐸∣, mean maximum drawdown, and mean longest 
+losing streak. 
+Table A.9. Benchmark path diagnostics for 𝑹𝑹= 𝟏: 𝟏 
+N Mean MFE Mean |MAE| Mean MDD Mean LLS 
+10 
+2.1R 
+2.1R 
+3.1R 
+2.8 
+20 
+3.1R 
+3.1R 
+4.7R 
+3.7 
+50 
+5.2R 
+5.2R 
+7.9R 
+5.0 
+100 
+7.5R 
+7.5R 
+11.6R 
+6.0 
+200 
+10.6R 
+10.6R 
+16.6R 
+7.0 
+ 
+ 
+ 
+
+Table A.10. Benchmark path diagnostics for 𝑹𝑹= 𝟏: 𝟐 
+N Mean MFE Mean |MAE| Mean MDD Mean LLS 
+10 
+3.0R 
+3.0R 
+4.3R 
+4.1 
+20 
+4.4R 
+4.4R 
+6.5R 
+5.7 
+50 
+7.3R 
+7.4R 
+11.1R 
+7.9 
+100 
+10.7R 
+10.6R 
+16.2R 
+9.6 
+200 
+15.0R 
+15.0R 
+23.0R 
+11.5 
+Table A.11. Benchmark path diagnostics for 𝑹𝑹= 𝟏: 𝟑 
+N Mean MFE Mean |MAE| Mean MDD Mean LLS 
+10 
+3.6R 
+3.6R 
+5.1R 
+5.1 
+20 
+5.4R 
+5.4R 
+7.9R 
+7.3 
+50 
+9.0R 
+9.0R 
+13.5R 
+10.3 
+100 
+13.0R 
+13.0R 
+19.8R 
+12.7 
+200 
+18.4R 
+18.4R 
+28.0R 
+15.3 
+Table A.12. Benchmark path diagnostics for 𝑹𝑹= 𝟏: 𝟓 
+N Mean MFE Mean |MAE| Mean MDD Mean LLS 
+10 
+4.6R 
+4.6R 
+6.2R 
+6.2 
+20 
+6.9R 
+6.9R 
+9.8R 
+9.6 
+50 
+11.5R 
+11.5R 
+17.1R 
+14.4 
+100 
+16.7R 
+16.7R 
+25.3R 
+18.2 
+200 
+23.6R 
+23.6R 
+35.8R 
+22.0 
+Table A.13. Benchmark path diagnostics for 𝑹𝑹= 𝟏: 𝟏𝟎 
+N Mean MFE Mean |MAE| Mean MDD Mean LLS 
+10 
+6.1R 
+6.2R 
+7.7R 
+7.7 
+20 
+9.4R 
+9.4R 
+12.8R 
+12.8 
+50 
+15.9R 
+15.9R 
+23.0R 
+21.7 
+100 
+23.2R 
+23.2R 
+34.5R 
+28.8 
+200 
+32.8R 
+32.8R 
+49.0R 
+36.0 
+A.4 Supplemental Monte Carlo validation tables 
+The tables in this section provide compact empirical checks on the analytical framework. 
+ 
+ 
+
+Table A.14. Theoretical versus empirical critical values of 𝒁𝑵 under the single-test null 
+RR 
+N 
+Theoretical 
+90% 
+Empirical 
+90% 
+Theoretical 
+95% 
+Empirical 
+95% 
+Theoretical 
+99% 
+Empirical 
+99% 
+1:1 20 
+1.282 
+1.30 
+1.645 
+1.67 
+2.326 
+2.37 
+1:1 100 
+1.282 
+1.28 
+1.645 
+1.64 
+2.326 
+2.33 
+1:3 20 
+1.282 
+1.33 
+1.645 
+1.69 
+2.326 
+2.39 
+1:3 100 
+1.282 
+1.29 
+1.645 
+1.65 
+2.326 
+2.34 
+1:10 20 
+1.282 
+1.36 
+1.645 
+1.72 
+2.326 
+2.44 
+1:10 100 
+1.282 
+1.30 
+1.645 
+1.66 
+2.326 
+2.36 
+Table A.15. Empirical probability of exceeding the moderate-evidence threshold 
+RR True edge 𝑒 𝑁= 50 𝑁= 100 𝑁= 200 𝑁= 500 
+1:1 
+0.05R 
+0.18 
+0.28 
+0.45 
+0.73 
+1:1 
+0.10R 
+0.36 
+0.55 
+0.79 
+0.97 
+1:3 
+0.05R 
+0.10 
+0.17 
+0.30 
+0.59 
+1:3 
+0.10R 
+0.22 
+0.36 
+0.61 
+0.90 
+1:5 
+0.05R 
+0.07 
+0.12 
+0.23 
+0.48 
+1:5 
+0.10R 
+0.16 
+0.28 
+0.50 
+0.83 
+Table A.16. Post-selection critical values for moderate evidence ( 𝜶= 𝟎. 𝟎𝟓) 
+Number of candidates 𝑀 Independent variants Correlated variants 
+1 
+1.645 
+1.645 
+5 
+2.15 
+1.95 
+10 
+2.40 
+2.10 
+20 
+2.68 
+2.28 
+50 
+3.05 
+2.55 
+Table A.17. Single-test and post-selection-adjusted Minimum Trade Record Length 
+RR True edge 𝑒 Single-test 𝑁'() Adjusted 𝑁'()with 𝑀eff = 10 
+1:1 
+0.10R 
+271 
+577 
+1:3 
+0.10R 
+812 
+1731 
+1:5 
+0.10R 
+1353 
+2886 
+1:1 
+0.20R 
+68 
+145 
+1:3 
+0.20R 
+203 
+433 
+1:5 
+0.20R 
+338 
+722 
+ 
+ 

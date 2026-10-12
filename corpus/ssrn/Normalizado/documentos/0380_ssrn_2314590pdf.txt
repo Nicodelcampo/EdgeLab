@@ -1,0 +1,3157 @@
+A Cheat Sheet for Algorithmic Trading of Investment Portfolios 
+ 
+Belvedere Advisors LLC | 1896 Mountain View Dr., Tiburon, CA 94920 | T: 415 839 5239 | www.BelAdv.com 
+  Page 1 of 18 
+  
+ 
+ 
+ 
+A Cheat Sheet for Algorithmic Trading of Investment Portfolios 
+ 
+These working notes on algorithmic trading are designed as an introduction to the basic equations that govern the 
+day-to-day trading of an investment portfolio to meet a pre-defined strategic asset allocation. The algebraic 
+framework applies generally to long only and long/short strategies. It incorporates the use of leverage as well as the 
+impact of trading costs on a portfolio. The presentation of the material is based on first principles. As such it assumes 
+an elementary knowledge of linear algebra, but no particular expertise in finance or securities trading. 
+ 
+In these notes, we will use the terms ‘portfolio’ and ‘investor account’ interchangeably. Both refer to the pool of 
+money that is being traded using an investment strategy managed by an investor or investment advisor. The investor 
+account could be a separate account such as a personal brokerage account, or a fund structure such as a hedge fund, a 
+mutual fund or a SICAV amongst others.  
+This paper is concerned with developing the algebraic framework that defines how a portfolio should be traded based 
+on the asset allocation created by a given investment strategy. The output of the strategic allocation consists of a list of 
+securities to trade, the target weight of each security in the portfolio post trading, as well as the exposure of each 
+security in the portfolio, i.e. whether the positions are held long or short. We do not delve into how a specific 
+investment strategy is developed, simply in its implementation in a portfolio structure. 
+While trading an account that does not use margin is reasonably straightforward, investment strategies can also take 
+advantage of the full buying power of an account in which leverage is allowed. Managing the strategic asset allocation 
+of a portfolio in the context of leverage limits, margin calls and target risk limits is not especially complex but requires 
+solving different sets of linear equations. In this paper, we derive the sets of equations that provide a complete 
+framework to compute the real time situation of such a portfolio.  
+The resulting systems of equations give rise to matrices that can be inverted with standard analytical packages. No 
+consideration is given to the efficiency of any particular matrix inversion technique, a topic outside the scope of this 
+paper. 
+Finally, while there are similarities between trading futures and trading securities such as bonds or equities, the 
+mechanics and accounting methodology for futures trading are different than what is outlined below. Our notes on an 
+equivalent algebraic framework that applies when trading futures will be published in a separate paper. 
+ 
+ 
+Belvedere Advisors LLC 
+Patrick Beaudan, Ph.D. 
+ 
+ 
+ 
+ 
+            
+    August 2013 
+Chief Executive Officer 
+Electronic copy available at: https://ssrn.com/abstract=2314590
+
+A Cheat Sheet for Algorithmic Trading of Investment Portfolios 
+ 
+Belvedere Advisors LLC | 1896 Mountain View Dr., Tiburon, CA 94920 | T: 415 839 5239 | www.BelAdv.com 
+  Page 2 of 18 
+PART 1: UNDERSTANDING HOW MARGIN ACCOUNTS WORK 
+A margin account is brokerage account that is allowed to use margin in order to leverage its investment positions. The 
+use of margin and leverage involves additional risk of loss. It must be requested by the account owner and approved by 
+the brokerage firm that holds the account. While regulations (such as Regulation T “Reg. T” in the United States) 
+control the use of margin for individual accounts, institutional investors will negotiate the amount of leverage they can 
+employ with the brokerage firm holding the account. 
+Now consider a margin investment account with net asset value equal to A, leverage L, and notional value E. By 
+definition, the notional investment equals the sum of the net asset value and the borrowed amount, or 
+L
+A
+E
++
+=
+ 
+ [1.1] 
+It represents the total amount of capital controlled by the account, whether that capital belongs to the account owner or 
+is borrowed from a brokerage firm to create leverage. When the account does not use leverage, the notional is equal to 
+the net asset value. The account margin is the ratio of net asset value to notional value: 
+E
+A
+m =
+ 
+[1.2] 
+Brokerage firms impose limits on the amount of leverage that can be applied within an investor account. The exact 
+amount will depend on the investor’s level of expertise, the size of the account, the specific securities traded - some 
+securities are not marginable while others are, as well as local regulations. In the United States, brokerages will usually 
+authorize margin on a non-retirement account invested in equities of up to Reg. T margin of 50%. Note from [1.2] that 
+an account with 50% margin can deploy a notional amount equal to twice its net asset value. For example an investor 
+with $100 in a Reg. T margin account can control $200 worth of market positions. 
+Example 1: 
+Account initial cash: $1, 000 
+Account initial positions: None 
+Margin available: 50% 
+Buying power available: $2,000 
+In this first example, an investor owns a marginable brokerage account with $1,000 in cash. The account’s buying 
+power is $2,000 since the investor can purchase securities with a 50% deposit only — that is what ‘margin’ means. 
+The investor decides to buy one share of a security worth $100 per share. To avoid using any margin, the investor can 
+pay 100% of the price using the cash in the account. Alternatively she may wish to only deposit 60 cents for each 
+dollar per share, and borrow the remaining 40 cents from the brokerage firm. Because the account is marginable, and 
+we assume the security being purchased is also marginable, the brokerage firm lends 40 cents upon request, charging a 
+fee in the process on the total amount borrowed (L) on a daily basis. This transaction is described as purchasing the 
+with 60 percent margin. The final account situation after the purchase is: 
+Account net asset value = A = $1,000 
+Account cash = $1,000 – 60% x 100 = $940 
+Market value of securities held in the account = $100 
+Amount borrowed (leverage) = L = 40% x 100 = $40 
+Account notional value = E = Net asset value + leverage = 1,000 + 40 = $1,040 
+Note that because we neglected transaction costs, the account’s net asset value has not changed.  The margin applied to 
+Electronic copy available at: https://ssrn.com/abstract=2314590
+
+A Cheat Sheet for Algorithmic Trading of Investment Portfolios 
+ 
+Belvedere Advisors LLC | 1896 Mountain View Dr., Tiburon, CA 94920 | T: 415 839 5239 | www.BelAdv.com 
+  Page 3 of 18 
+the security’s purchase is 
+%
+60
+100
+60
+Value
+Market 
+Paid
+Amount 
+Margin
+=
+=
+=
+ 
+The margin at the account level is different than the margin at the security level, since there is additional cash in the 
+account. Therefore 
+%
+15
+.
+96
+1040
+1000
+Value
+ 
+Notional
+Account 
+Value
+Asset 
+Net 
+Account 
+m
+=
+=
+=
+ 
+The amount borrowed of $40 is collateralized by $940 in cash as well as the market value of the security which is 
+currently $100 but will fluctuate over time. 
+Using the full margin available in the account, the investor may buy 20 shares of the security worth $2,000, putting 
+down a margin of $1,000 — 50% of the market value — and borrowing the remaining $1,000 from the brokerage 
+firm. In that case, the final situation of the account would be: 
+Account net asset value = A = $1,000 
+Account cash = $0 
+Market value of securities held in the account = $2,000 with 20 shares. 
+Amount borrowed (leverage) = L = 50% x 2,000 = $1,000 
+Account notional value = E = Net asset value + leverage = 1,000 + 1,000 = $2,000 
+Buying power remaining = Free cash  / Available margin = 0 
+The notional value of the account is twice the net asset value. The account is said to be one time levered, or use 
+leverage of 100%. The account margin is:  
+%
+50
+2000
+1000
+Value
+ 
+Notional
+Account 
+Value
+Asset 
+Net 
+Account 
+m
+=
+=
+=
+ 
+All margin accounts have a margin limit which is agreed to with the brokerage firm that holds the account. 
+Non-retirement accounts in the United States that trade equities have a legal limit at 50% margin, which means that the 
+investor cannot pay less than 50% of the price per share for each security bought.  
+Suppose that the investor purchases the full quantity of shares allowable at the minimum margin, such as in our 
+example above with 20 shares worth $100 bought at 50% margin. Suppose that the price of these shares falls after the 
+purchase is made. Each share is now worth $90 instead of $100. Neglecting the cost of borrow, the account situation is 
+then the following: 
+Account net asset value = A = 1,000 - 20 shares x $10 loss per share = $800 
+Account cash = $0 
+Market value of securities held in the account = $1,800 
+Amount borrowed (leverage) = L = $1,000 (is unchanged) 
+Account notional value = E = Net asset value + leverage = 800 + 1,000 = $1,800 
+Because of leverage, the account has lost $200 or 20%, while the securities have lost only 10% in value. The account 
+Electronic copy available at: https://ssrn.com/abstract=2314590
+
+A Cheat Sheet for Algorithmic Trading of Investment Portfolios 
+ 
+Belvedere Advisors LLC | 1896 Mountain View Dr., Tiburon, CA 94920 | T: 415 839 5239 | www.BelAdv.com 
+  Page 4 of 18 
+margin has now fallen to 44%, which means that the leverage in the account has gone up: There are only $800 worth 
+of securities market value to support $1,000 in borrowing. 
+%
+4.
+44
+800
+,1
+800
+Value
+ 
+Notional
+Account 
+Value
+Asset 
+Net 
+Account 
+m
+=
+=
+=
+ 
+ 
+PART 2:  TRADING TO MEET MAINTENANCE MARGIN REQUIREMENTS (NO TRANSACTION COSTS) 
+Assuming that the account in the example above is subject to the standard Reg. T margin limit of 50%, the fall in 
+security value has brought the account to 44% margin, which is below the minimum margin allowed. This margin 
+violation results in a margin call. The investor is required to act so that the account meets its minimum margin 
+requirement.  
+Note that a similar need to rebalance a portfolio can arise periodically if the investment strategy is managed with a 
+target margin level. As the portfolio margin fluctuates away from its target with moving prices over time, the portfolio 
+occasionally needs to be rebalanced for the purpose of bringing its margin level back on target which may either higher 
+or lower than its current position. If the margin is lower than target, as is the case when a margin call occurs, securities 
+will need to be sold to bring leverage down and margin up. Conversely if the margin is higher than target, more capital 
+needs to be borrowed by operating at the lower target margin. Securities need to be purchased using the account’s 
+buying power to reduce the margin level.  
+While we discuss selling securities to meet a margin call in this section for the sake of simplicity, the same resulting 
+equations can be used to increase or decrease portfolio margin towards a target level, by replacing the maintenance 
+margin with the target margin.  
+Rebalancing a portfolio to meet a margin call can be done either by adding cash to the account, or by selling securities 
+to increase the cash position. This section will derive the equations that govern the selling decisions in this situation. 
+If adding cash, the account net asset value A will increase, as well the notional value.  Denoting the cash increase by 
+C
+Δ
+, the margin call requirement corresponds to 
+margin
+ e
+Maintenanc
+ 
+ 
+E
+A 
+=
+Δ
++
+Δ
++
+C
+C
+= m Maint 
+where the maintenance margin is the minimum margin that a brokerage firm requires post a margin call. To avoid a 
+cycle of margin calls one after another in case the security price keeps falling, the maintenance margin is set higher 
+than the minimum margin requirement. Solving for the cash required yields 
+Maint
+Maint 
+m
+1
+m
+−
+−
+=
+Δ
+A
+E
+C
+ 
+[2.1] 
+Assuming in our previous example that the maintenance margin was set by the brokerage firm at 55%, the cash 
+required would be $422.22.  
+The investor may also choose to liquidate a number of shares to re-establish the required margin level. Let’s work out 
+the requirements for liquidation in some details. We will initially neglect trading costs to simplify the presentation. 
+Trading costs will be included in the next section. 
+Let A0 and E0 the account net asset value (NAV) and notional at the time of the margin call respectively. Let A
+Δ
+and 
+E
+Δ
+by the changes in account NAV and notional value that result from liquidating positions to meet the margin call. 
+Finally let A and E denote the account NAV and notional values after shares have been sold. 
+Electronic copy available at: https://ssrn.com/abstract=2314590
+
+A Cheat Sheet for Algorithmic Trading of Investment Portfolios 
+ 
+Belvedere Advisors LLC | 1896 Mountain View Dr., Tiburon, CA 94920 | T: 415 839 5239 | www.BelAdv.com 
+  Page 5 of 18 
+The margin call requirement can be written as 
+E
+E
+A
+A
+E
+A
+Δ
++
+Δ
++
+=
+=
+0
+0
+Maint
+m
+  
+[2.2] 
+This simply states that the margin after liquidation must be equal to the required maintenance margin. Because there 
+are no transaction costs, the account NAV does not change after trading. As shares are sold, the value of these shares 
+simply transfers to cash. Therefore 
+0
+=
+ΔA
+ 
+and equation [2.2] can be rewritten as 
+0
+0
+Maint
+m
+E
+A
+E
+−
+=
+Δ
+ 
+[2.3] 
+Finally we can link the change in notional value to the number of shares sold in the account. The account notional 
+value is the total capital controlled by the account, which is by definition the sum of the market value of all security 
+positions and cash in the account, or 
+C
+N
+P
+E
+k
+k
+k
++
+= ∑
+ 
+[2.4] 
+where Pk is the price of security ‘k’, Nk is the number of shares of security ‘k’ held in the account, and the absolute 
+value accounts for the possibility that the account is short these shares in which case Nk would be a negative number. 
+The manner in which a share liquidation impacts the margin in a brokerage account can vary based on the type of 
+securities traded, the general policies of the brokerage firm, and the way in which a trader wishes for the transaction to 
+proceed. We will keep our discussion at the simplest level to demonstrate the basic mechanics that need to be reflected 
+in trading algorithms.  For our purpose, we will assume that the cash generated from liquidating positions is used to 
+partially increase the account’s cash position, and partially to pay down the amount of leverage. The split between cash 
+and leverage is set to be the same as when purchasing shares. Denoting as 
+k
+N
+Δ
+the number of shares of security ‘k’ 
+that are traded, the change in cash and leverage are written as: 
+∑
+Δ
+−
+=
+Δ
+k
+k
+k
+k
+N
+P
+m
+C
+ 
+ 
+ [2.5] 
+(
+)
+∑
+Δ
+−
+=
+Δ
+k
+k
+k
+k
+N
+P
+m
+L
+ 
+ 
+1
+ 
+ 
+[2.6] 
+where mk is the initial margin required when purchasing security ‘k’. 
+Using a simple example to illustrate, suppose that one share could be purchased using 60% margin. An investor would 
+pay 60% of the price P — equal to mk Pk in equation [2.5] —  and borrow the remainder 40% —  equal to (1 - mk) Pk 
+in equation [2.6] —  from the brokerage firm.  Upon selling this share, equation [2.5] states that the money paid at 
+purchase reverts to the account’s cash balance. Equation [2.6] states that the amount borrowed at purchase gets paid off 
+upon the sale. 
+Taking the differential of equation [1.1] yields 
+L
+A
+E
+Δ
++
+Δ
+=
+Δ
+ 
+[2.7] 
+and since A
+Δ
+ is zero with no trading costs, we have 
+Electronic copy available at: https://ssrn.com/abstract=2314590
+
+A Cheat Sheet for Algorithmic Trading of Investment Portfolios 
+ 
+Belvedere Advisors LLC | 1896 Mountain View Dr., Tiburon, CA 94920 | T: 415 839 5239 | www.BelAdv.com 
+  Page 6 of 18 
+=
+Δ
+=
+Δ
+L
+E
+(
+)
+∑
+Δ
+−
+k
+k
+k
+k
+N
+P
+m
+ 
+ 
+1
+  
+[2.8] 
+Substituting [2.8] into equation [2.3] gives us the following relationship between the maintenance margin at the 
+account level and the number of shares sold: 
+(
+)
+⎟⎠
+⎞
+⎜⎝
+⎛
+−
+=
+Δ
+−
+∑
+0
+0
+ 
+Maint
+m
+ 
+1
+E
+A
+N
+P
+m
+k
+k
+k
+k
+ 
+ 
+[2.9] 
+We shall refer to this equation as the ‘margin call’ equation, which needs to be satisfied for an account to establish its 
+minimum maintenance margin requirement. Note as described earlier that this same equation holds when rebalancing 
+a portfolio to meet a higher or lower target margin level, replacing the maintenance margin in [2.9] with the target 
+margin level. That equation has for unknowns the changes in the number of shares for each security held in the 
+account, 
+k
+N
+Δ
+for k = 1,…,K where ‘K’ is the total number of portfolio securities. There are two principal ways to 
+establish a solution to the margin call equation. 
+The first approach, which works well for large account sizes where only relatively few positions are sold, is to liquidate 
+shares in one security only, selecting for this purpose the security with the largest allocation. This ensures that the 
+impact of the sale on the overall portfolio is small. 
+Equation [2.9] gives the number of shares to be sold in the selected security as 
+⎟
+⎠
+⎞
+⎜
+⎝
+⎛
+−
+−
+=
+Δ
+0
+0
+Maint
+m
+)
+1(
+1
+E
+A
+P
+m
+N
+  
+[2.10] 
+The second approach is to ensure that as securities are sold to meet the margin call, the weights of each position 
+relative to one another does not change. This is the best approach if the trading strategy requires that precise allocation 
+weights be maintained within the portfolio, or in cases where trading only one security as in [2.10] would measurably 
+impact the portfolio’s asset allocation.  
+Assuming that the portfolio holds K different securities, the margin equation [2.9] represents one of the equations used 
+to solve for the K changes in positions 
+k
+N
+Δ
+. The remaining (K – 1) equations are what we refer to as the ‘relative 
+weight’ equations, which state that the relative weight of each security before and after the liquidation should be 
+identical. 
+The portfolio weight of a security ‘k’ is generally defined as 
+E
+P
+N
+w
+k
+k
+k =
+ 
+for  j = 1,…,K  
+[2.11] 
+Note that the weight is defined based on the account’s notional value and not its net asset value. For simplicity, we will 
+assume in this section that all trades are instantaneous and executed without slippage, which means that the price at 
+which security ‘k’ is traded is the last known price Pk, and the account is debited or credited with that exact amount 
+upon purchase or sale. 
+The weights of securities relative to one another, which are the quantities we wish to keep constant, are defined by 
+omitting the cash component of the notional value E. This is because the cash amount in the account will change when 
+securities are traded. What we wish to impose is that the allocation to each security relative to the total value invested 
+into the markets be unchanged. This requirement is written using a modification of [2.11] as 
+∑
+∑
+=
+Δ
++
+Δ
++
+k
+k
+k
+j
+j
+k
+k
+k
+k
+j
+j
+j
+P
+N
+P
+N
+P
+N
+N
+P
+N
+N
+   for  j = 1,…,K-1   
+[2.12] 
+Electronic copy available at: https://ssrn.com/abstract=2314590
+
+A Cheat Sheet for Algorithmic Trading of Investment Portfolios 
+ 
+Belvedere Advisors LLC | 1896 Mountain View Dr., Tiburon, CA 94920 | T: 415 839 5239 | www.BelAdv.com 
+  Page 7 of 18 
+Note that in liquidating positions while keeping relative weights constant, short positions will be partially covered and 
+long positions partially sold. The reverse is true when buying positions. In either case, the sign of the portfolio position 
+exposures will not change. If a position was held short prior to trading, it remains short after adjusting margins, and 
+conversely for long positions. Therefore 
+(
+)
+(
+)
+j
+j
+j
+N
+N
+N
+Δ
++
+= sign
+sign
+  
+[2.13] 
+and 
+)
+(
+sign
+ )
+(
+j
+j
+j
+j
+j
+N
+N
+N
+N
+N
+Δ
++
+=
+Δ
++
+ 
+[2.14] 
+Equation [2.12] can then be rewritten as  
+0
+ )
+(
+sign
+=
+Δ
+−
+Δ
+∑
+∑
+k
+k
+k
+k
+j
+k
+k
+k
+j
+P
+N
+N
+N
+P
+N
+N
+ 
+for  j = 1,…,K-1   
+[2.15.a] 
+The set of K-1 equations in [2.15.a] is referred to in this paper as the ‘relative weight’ equations.  
+As an aside, some algorithms are set up to solve for positions (e.g., 
+k
+N ) instead of positions changes which are 
+denoted as 
+k
+N
+Δ
+in [2.15.a]. Using a ‘0’ subscript to indicate positions before trading, the relative weight equations can 
+be modified using 
+0
+k
+k
+k
+N
+N
+N
+−
+=
+Δ
+ 
+This leads to modified relative weight equations that can be solved directly for the new positions
+k
+N : 
+0
+ )
+(
+sign
+0
+0
+=
+−
+∑
+∑
+k
+k
+k
+k
+j
+k
+k
+k
+j
+P
+N
+N
+N
+P
+N
+N
+o
+ 
+for  j = 1,…,K-1   
+[2.15.b] 
+The margin call and relative weight equations [2.9 and 2.15.a] form a system of K equations with K unknowns, the 
+changes in number of shares for each portfolio position. That governing system of equations is summarized as 
+(
+)
+⎪
+⎪
+⎩
+⎪⎪
+⎨
+⎧
+=
+=
+Δ
+−
+Δ
+−
+=
+Δ
+−
+∑
+∑
+∑
+1
+-
+K
+1,...,
+j
+for  
+   
+0
+ )
+(
+sign
+m
+ 
+1
+0
+0
+ 
+Maint
+k
+k
+k
+k
+j
+k
+k
+k
+j
+k
+k
+k
+k
+P
+N
+N
+N
+P
+N
+N
+E
+A
+N
+P
+m
+  
+[2.16] 
+That system can be solved numerically and yields the number of shares for each position that ensures that (a) the 
+portfolio meets its margin target, in this case the maintenance margin requirements; and (b) the allocation weights of 
+securities relative to each other are unchanged. 
+To develop a feel for the resulting matrix system, it is useful to consider simple examples with three and then two 
+securities. For simplicity, we will assume that the initial margin requirement is the same for each security, namely 
+3 
+2,
+ 
+1,
+k
+for 
+          
+=
+= m
+mk
+ 
+[2.17] 
+ 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2314590
+
+A Cheat Sheet for Algorithmic Trading of Investment Portfolios 
+ 
+Belvedere Advisors LLC | 1896 Mountain View Dr., Tiburon, CA 94920 | T: 415 839 5239 | www.BelAdv.com 
+  Page 8 of 18 
+Expanding [2.16] for three securities in the portfolio leads to 
+(
+)(
+)
+⎪
+⎪
+⎪
+⎩
+⎪
+⎪
+⎪
+⎨
+⎧
+=
+Δ
++
+Δ
++
+Δ
+−
++
++
+Δ
+=
+Δ
++
+Δ
++
+Δ
+−
++
++
+Δ
+−
+=
+Δ
++
+Δ
++
+Δ
+−
+⎟⎠
+⎞
+⎜⎝
+⎛
+⎟⎠
+⎞
+⎜⎝
+⎛
+⎟⎠
+⎞
+⎜⎝
+⎛
+⎟⎠
+⎞
+⎜⎝
+⎛
+0
+ )
+(
+sign
+ )
+(
+sign
+ )
+(
+sign
+N
+N
+N
+0
+ )
+(
+sign
+ )
+(
+sign
+ )
+(
+sign
+N
+N
+N
+m
+ 
+1
+m
+3
+3
+3
+2
+2
+2
+1
+1
+1
+  
+2
+3
+3
+2
+2
+1
+1
+   
+2
+3
+3
+3
+2
+2
+2
+1
+1
+1
+  
+1
+3
+3
+2
+2
+1
+1
+   
+1
+0
+0
+3
+ 3
+2
+ 2
+1
+ 1
+Maint 
+Maint 
+P
+N
+N
+P
+N
+N
+P
+N
+N
+N
+P
+P
+P
+N
+P
+N
+N
+P
+N
+N
+P
+N
+N
+N
+P
+P
+P
+N
+E
+A
+N
+P
+N
+P
+N
+P
+m
+ 
+[2.18] 
+To be clear, remember that the current positions Nk are known, we are solving for the changes in positions denoted as
+k
+N
+Δ
+. The system above can be rewritten in matrix form as:  
+(
+)
+(
+)
+(
+)
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎦
+⎤
+⎢
+⎢
+⎢
+⎢
+⎢
+⎢
+⎢
+⎣
+⎡
+−
+=
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎦
+⎤
+⎢
+⎢
+⎢
+⎢
+⎢
+⎢
+⎢
+⎣
+⎡
+Δ
+Δ
+Δ
+×
+⎪
+⎪
+⎪
+⎭
+⎪
+⎪
+⎪
+⎬
+⎫
+⎪
+⎪
+⎪
+⎩
+⎪
+⎪
+⎪
+⎨
+⎧
+−
++
+−
+−
+−
++
+−
+−
+−
+0
+0
+m
+)
+(
+sign
+N
+N
+)
+(
+sign
+)
+(
+sign
+)
+(
+sign
+N
+N
+1
+m
+1
+m
+1
+m
+0
+0
+3
+2
+1
+3
+ 3
+2
+3
+3
+1
+1
+1
+ 1
+2
+3
+ 3
+1
+2
+ 2
+1
+3
+3
+2
+2
+3
+2
+1
+Maint 
+Maint 
+Maint 
+Maint 
+E
+A
+N
+N
+N
+N
+P
+N
+P
+P
+N
+P
+N
+N
+P
+N
+N
+P
+N
+P
+P
+P
+m
+P
+m
+P
+m
+ 
+[2.19] 
+The structure of these equations is clearly visible in the matrix above. Let us now bring this system down from three to 
+two portfolio securities. The corresponding system is: 
+(
+)
+(
+)
+⎥
+⎥
+⎦
+⎤
+⎢
+⎢
+⎣
+⎡
+−
+=
+⎥
+⎥
+⎦
+⎤
+⎢
+⎢
+⎣
+⎡
+Δ
+Δ
+×
+⎥
+⎥
+⎥
+⎦
+⎤
+⎢
+⎢
+⎢
+⎣
+⎡
+−
+−
+−
+0
+m
+)
+(
+sign
+N
+1
+m
+1
+m
+0
+0
+2
+1
+2
+ 2
+1
+2
+2
+2
+1
+Maint 
+Maint 
+Maint 
+E
+A
+N
+N
+N
+P
+N
+P
+P
+m
+P
+m
+  
+[2.20] 
+It can be solved for the position changes as follows:  
+(
+)
+(
+) (
+)
+(
+)
+(
+)(
+)
+⎪
+⎪
+⎩
+⎪
+⎪
+⎨
+⎧
++
+−
+−
+=
+Δ
++
+−
+−
+=
+Δ
+2
+2
+1
+1
+0
+0
+2
+2
+2
+2
+1
+1
+0
+0
+ 1
+1
+P
+N
+ 
+P
+N
+ 
+1
+m
+m
+ 
+N
+P
+N
+ 
+P
+N
+  
+1
+m
+m
+Maint 
+Maint 
+Maint 
+Maint 
+m
+E
+A
+N
+m
+E
+A
+N
+N
+ 
+ 
+[2.21] 
+ 
+PART 3:  TRADING WITH TRANSACTION COSTS TO MEET MAINTENANCE MARGIN REQUIREMENTS  
+Because the relative weight equations specifically exclude the cash in an account, they are not impacted by trading 
+costs. The margin call equation however, was derived assuming no transaction costs for simplicity. We will now 
+review that equation to include these costs, which may or may not be negligible in practice depending on investor 
+account size and the costs charged by the brokerage firm. 
+Trading costs vary significantly depending on the brokerage firm used to hold and trade accounts. Some firms charge a 
+flat fee per trade. Others charge a minimum flat fee per trade, plus a variable fee per share over a certain number of 
+shares. Also available are wrap fee schedules, whereby an investor pays an annual percentage fee, for instance 1% of 
+the account value, to the brokerage firm but trades are free.  
+Electronic copy available at: https://ssrn.com/abstract=2314590
+
+A Cheat Sheet for Algorithmic Trading of Investment Portfolios 
+ 
+Belvedere Advisors LLC | 1896 Mountain View Dr., Tiburon, CA 94920 | T: 415 839 5239 | www.BelAdv.com 
+  Page 9 of 18 
+In this presentation trading commissions will be assumed to be a linear function of price given by 
+P
+t
+t
+1
+0
+share
+per 
+ 
+costs
+ 
+commission
+ 
+Trading
++
+=
+ 
+[3.1.a] 
+Setting t1 to zero will be equivalent to a trading at a fixed cost per share equal to t0. With t0 set to zero, trading costs are 
+proportional to the market value traded and t1 is the proportionality constant. 
+In addition to trading commissions, effecting trades carries a hidden cost called ‘slippage’. Slippage refers to the 
+impact of trading at a price which is slightly different than the last price available at the time when the trade order was 
+placed. For instance if a security’s last price was $100 per share, a buy order may actually be executed at $100.01 
+while a sell order may be filled at $99.99. The one cent difference is the slippage. It can be due to market prices 
+actually moving between the time the order is sent out and executed. It may also be the profit that a market participant 
+pocketed on the investor’s order for various reasons. We will denote by ‘s’ the slippage cost as a percentage of a 
+security’s price. Slippage costs when trading at price P are then written as: 
+P
+s 
+cost
+ 
+Slippage
+=
+ 
+[3.1.b] 
+Combining [3.1.a] and [3.1b], the full trading costs can be written as a modified price functionP~ : 
+P
+t
+s
+t
+P
+)
+(
+~
+costs
+ 
+Trading
+1
+0
++
++
+=
+=
+ 
+[3.2] 
+The trading cost equation [3.2] can be modified in an algorithmic implementation to accommodate many of 
+the most common commission schedules in use at brokerage firms. Let us now review our margin call equation 
+from the previous section to include trading costs. 
+When trading to meet a margin target, the account’s net asset value A changes only as a result of the corresponding 
+trades. Therefore the change in A is the sum of trading costs across all securities traded which can be written as 
+k
+k
+k
+N
+P
+A
+Δ
+−
+=
+Δ
+∑
+~
+ 
+[3.3] 
+Where 
+k
+P~ is given by [3.2] for each security. The maintenance margin equation [2.2] can then be rewritten as 
+0
+0
+Maint 
+Maint 
+m
+m
+E
+A
+A
+E
+−
+=
+Δ
+−
+Δ
+ 
+or substituting [2.7] for the change in notional, 
+0
+0
+Maint 
+Maint 
+Maint 
+m
+)1
+m
+(
+m
+E
+A
+A
+L
+−
+=
+Δ
+−
++
+Δ
+ 
+The change in leverage L is given by equation [2.6], while the change in NAV is given in [3.3]. Note that 
+this means that the trading costs are entirely imputed to the cash position of the account through [3.3], while 
+there is no impact of trading costs on leverage. We can now write the margin call equation above as one 
+relation linking the numbers of all shares traded as: 
+ 
+(
+)
+0
+0
+Maint 
+Maint 
+Maint 
+m
+~
+)
+m
+1(
+1
+m
+E
+A
+N
+P
+N
+P
+m
+k
+k
+k
+k
+k
+k
+k
+−
+=
+Δ
+−
++
+Δ
+−
+∑
+∑
+ [3.4] 
+Because we are trading to either reduce market positions when increasing margin, or to increase positions 
+while reducing the portfolio’s margin towards its target, the sign of exposures in the account will not change 
+after trading. That means for instance that a security held long before the trade will be sold partially, but the 
+resulting exposure will remain long, and vice and versa as it relates to short exposures.  
+When liquidating positions to increase margin as is the case in a margin call situation, a security that was 
+held long will be partially sold, the change in its position will be negative and we can write 
+Electronic copy available at: https://ssrn.com/abstract=2314590
+
+A Cheat Sheet for Algorithmic Trading of Investment Portfolios 
+ 
+Belvedere Advisors LLC | 1896 Mountain View Dr., Tiburon, CA 94920 | T: 415 839 5239 | www.BelAdv.com   Page 10 of 18 
+k
+k
+N
+N
+Δ
+−
+=
+Δ
+ (For long exposures) 
+Conversely is a security is held short, it will be partially covered to meet margin requirements which means 
+that the change in positions will be positive and 
+k
+k
+N
+N
+Δ
+=
+Δ
+ (For short exposures) 
+Combining short and long exposures, we have when liquidating positions with no change in exposures: 
+k
+k
+k
+N
+N
+N
+Δ
+−
+=
+Δ
+ )
+(
+sign
+ 
+[3.5.a] 
+In the inverse situation where we are decreasing the portfolio margin towards a lower target and increasing 
+leverage, the number of long positions will be increased and additional positions will be sold where the 
+exposures are short. In that case we have 
+k
+k
+k
+N
+N
+N
+Δ
++
+=
+Δ
+ )
+(
+sign
+ 
+[3.5.b] 
+The difference between [3.5.a] and [3.5.b] is that margins are increasing in the former but decreasing in the 
+latter. Both situations are summarized in the following relation, which holds whether the margin target is 
+above or below the current margin level: 
+k
+k
+k
+N
+N
+m
+N
+Δ
+Δ
+−
+=
+Δ
+ )
+(
+sign
+ )
+(
+sign
+ 
+[3.5.c] 
+where
+)
+( m
+sign Δ
+equals +1 when increasing margin and -1 when decreasing margin, a known quantity 
+ahead of the margin adjustment trades. 
+Substituting [3.5c] into equation [3.4] leads to the final margin call equation that includes transaction costs: 
+(
+)
+[
+]
+0
+0
+Maint 
+Maint 
+Maint 
+m
+  
+~
+)1
+-
+m
+( )
+(
+sign
+ )
+(
+sign
+m
+ 
+1
+E
+A
+N
+P
+N
+m
+P
+m
+k
+k
+k
+k
+k
+k
+−
+=
+Δ
+Δ
++
+−
+∑
+ 
+[3.6] 
+This equation reverts to [2.9] when transaction costs P~ are zero. The margin call and relative weight equations 
+[3.6 and 2.15] form our general system of K equations with K unknowns that can be solved for the number of shares 
+for each position that ensures that (a) the portfolio meets its minimum maintenance margin requirements; and (b) the 
+allocation weights of securities relative to each other are unchanged. 
+That system of equations is summarized as 
+(
+)
+[
+]
+⎪
+⎪
+⎩
+⎪⎪
+⎨
+⎧
+=
+=
+Δ
+−
+Δ
+−
+=
+Δ
+Δ
++
+−
+∑
+∑
+∑
+1
+-
+K
+1,...,
+j
+for  
+   
+0
+ )
+(
+sign
+m
+  
+~
+)1
+-
+m
+( )
+(
+sign
+ )
+(
+sign
+m
+ 
+1
+0
+0
+Maint 
+Maint 
+Maint 
+k
+k
+k
+k
+j
+k
+k
+k
+j
+k
+k
+k
+k
+k
+k
+P
+N
+N
+N
+P
+N
+N
+E
+A
+N
+P
+N
+m
+P
+m
+ 
+ 
+[3.7] 
+This matrix equation is represented by a full matrix to be inverted, as was the case with equation [2.16] and 
+demonstrated by the example in [2.19].  
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2314590
+
+A Cheat Sheet for Algorithmic Trading of Investment Portfolios 
+ 
+Belvedere Advisors LLC | 1896 Mountain View Dr., Tiburon, CA 94920 | T: 415 839 5239 | www.BelAdv.com   Page 11 of 18 
+PART 4:  COMPUTING THE PORTFOLIO SITUATION AFTER TRADING FOR MARGIN ADJUSTMENTS 
+Once the number of shares traded for each portfolio position is known, the resulting situation of the portfolio can be 
+computed as follows. The new net asset value is computed from the trading cost equation [3.3] as: 
+k
+k
+k
+N
+P
+A
+A
+A
+A
+Δ
+−
+=
+Δ
++
+=
+∑
+~
+0
+0
+  
+[4.1.a] 
+The notional value of the portfolio is found from the margin definition in [2.2], namely 
+Maint
+m
+A
+E =
+ 
+[4.1.b] 
+The amount of leverage L is found by substituting [1.1] into [4.1.b] which gives 
+⎟
+⎠
+⎞
+⎜
+⎝
+⎛
+−
+=
+1
+m
+1
+ 
+Maint
+A
+L
+ 
+[4.1.c] 
+Finally the cash position can be computed by realizing that cash has been reduced by the trading costs, so that from 
+[3.3] 
+k
+k
+k
+N
+P
+A
+C
+Δ
+−
+=
+Δ
+=
+Δ
+∑
+~
+ 
+[4.1.d] 
+and 
+k
+k
+k
+N
+P
+C
+C
+C
+C
+Δ
+−
+=
+Δ
++
+=
+∑
+~
+0
+0
+  
+[4.1.e] 
+Alternatively, and this is simpler in some computational schemes, we can compute the cash position 
+without reference to the pre-trade value C0 by using equations [2.4] and [4.1.b]: 
+∑
+∑
+−
+=
+−
+=
+k
+k
+k
+k
+k
+k
+N
+P
+A
+N
+P
+E
+C
+Maint
+m
+  
+[4.1.f] 
+The set of equations given in [4.1] form a complete definition of the portfolio situation after trading to meet 
+a particular margin target. 
+To review the notion of margin, remember that if an account is not marginable, such as a retirement 
+brokerage account in the United States for instance, or if margin is simply not used in a marginable account, 
+the investor will pay 100% of the price of each security when buying, and receive in cash 100% of the 
+proceeds when selling. In that case, the margin equals one, which although somewhat counter-intuitive 
+means that no margin power, i.e. no leverage, is actually used.  
+Setting margins to one in equation [1.2] or [4.1.b] leads to
+A
+E =
+, simply stating that the account net asset 
+value is equal to its notional value since there is no money borrowed. The leverage, or amount borrowed, is 
+zero as is confirmed by equations [1.1] and [4.1.c]. With margins equal to one, our margin call equation 
+[3.6] reduces to the identity relation ( 
+0
+0 =
+), which makes sense since margin adjustments cannot take 
+place when no money is borrowed for leverage in the first place. 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2314590
+
+A Cheat Sheet for Algorithmic Trading of Investment Portfolios 
+ 
+Belvedere Advisors LLC | 1896 Mountain View Dr., Tiburon, CA 94920 | T: 415 839 5239 | www.BelAdv.com   Page 12 of 18 
+PART 5:  TRADING A MARGIN ACCOUNT TO ESTABLISH A TARGET ASSET ALLOCATION 
+The target asset allocation of the account is established by the trading strategy which gives known target 
+weights wk for each security ‘k’. These weights are related to the account notional, price and positions by 
+the system of equations [2.11]: 
+E
+P
+N
+w
+k
+k
+k =
+ 
+for k = 1,…,K 
+ 
+[5.1] 
+These represent K equations for K+1 unknowns: the new notional value E and the new numbers of shares 
+Nk for each of K investment positions. 
+Note that the sign of the position for each security, namely +1 or -1 depending on whether the exposure is 
+long or short, is known from the investment strategy. Only the magnitude of each position needs to be 
+solved for. Therefore in the foregoing equations, we can replace 
+k
+N by
+)
+(
+sign
+ 
+k
+k
+N
+N
+ where the sign of 
+k
+N is known a priori. 
+A separate relation defines the cash position given by the investment strategy’s cash policy. The cash 
+weight wC in the portfolio is known and written as 
+E
+C
+wC =
+ 
+[5.2] 
+The cash position can thus be computed as 
+∑
+∑
+−
+=
+⎟
+⎠
+⎞
+⎜
+⎝
+⎛−
+=
+=
+k
+k
+k
+k
+k
+C
+P
+N
+E
+w
+E
+Ew
+C
+1
+ 
+  
+ 
+[5.3] 
+Note that equation [5.3] is the same as equation [2.4]. It can be rewritten as 
+)
+1(
+C
+k
+k
+k
+w
+E
+P
+N
+−
+=
+∑
+  
+[5.4] 
+where wC is known. If the account is fully invested, the sum of all market weights is one and wC equals zero, 
+so that no cash is available in the account. Equation [5.4] in that case simply states that the sum of market 
+weights is equal to 100% of the account value. 
+It is worthwhile noting that [5.4] is not independent from [5.1]. The cash weight in the portfolio given in 
+[5.2] is by definition the remaining capital after the market value of all positions is accounted for. Therefore 
+the it can be derived from the position weights, it is not independent from them. 
+The other equation required to solve for the new positions is what we call the notional equation given by 
+equation [1.2] 
+mE
+A =
+ 
+where the account margin m is specified by the investment strategy. Using [4.1.a] for the change in account 
+net asset value gives: 
+k
+k
+k
+N
+P
+A
+mE
+Δ
+−
+=
+∑
+~
+0
+  
+[5.5] 
+If trading costs are neglected, 
+k
+P~ is zero, the account NAV does not change when trading (
+0
+A
+A =
+ ) and the 
+Electronic copy available at: https://ssrn.com/abstract=2314590
+
+A Cheat Sheet for Algorithmic Trading of Investment Portfolios 
+ 
+Belvedere Advisors LLC | 1896 Mountain View Dr., Tiburon, CA 94920 | T: 415 839 5239 | www.BelAdv.com   Page 13 of 18 
+notional value becomes
+m
+A
+E
+0
+=
+, which can be substituted into the weight equations [5.1] to yield each 
+new position as 
+K 
+1,...,
+k
+for 
+       
+)
+(
+sign
+ 
+ 
+ 0
+ 
+=
+=
+k
+k
+k
+k
+mP
+N
+w
+A
+N
+ 
+[5.6.a] 
+The cash position is obtained from equation [5.2]: 
+m
+ w
+A
+c
+0
+ =
+=
+C
+Ew
+C
+ 
+[5.6.b] 
+The account leverage is found from equation [1.1] as 
+⎟⎠
+⎞
+⎜⎝
+⎛
+−
+=
+−
+=
+1
+1
+  
+0 m
+A
+A
+E
+L
+ 
+[5.6.c] 
+In general however, the trading costs in [5.5] should not be neglected. The key to incorporating trading 
+costs is to express 
+k
+N
+Δ
+in [5.5] as a function of 
+k
+N
+Δ
+so that the margin equation [5.5] can be solved 
+together with the weight equations for the new positions Nk. We present below an iterative solution to this 
+problem which we have found to work well.  
+The approach is based on splitting the security positions into two different subsets which we will refer to as 
+Ω and Ω , where each subset is the complement of the other relative to the set of security indices {1,…,K}. 
+Subset Ω is defined to include all securities for which the investment strategy dictates a change in sign of 
+exposures, namely 
+(
+)
+  )
+0,1
+(
+)
+(
+sign
+)
+(
+sign
+  
+],
+,...,
+1[
+  
+0
+−
+∈
+×
+∈
+=
+Ω
+j
+j
+N
+N
+K
+j
+ 
+[5.7.a] 
+Where 
+0j
+N is the number of shares of security ‘j’ held in the portfolio prior to trading. Remember that the 
+exposures ─ i.e, the signs of each position, are provided a priori by the investment strategy. The 
+complement set Ω is defined as containing the securities where the exposures do not change after 
+rebalancing the portfolio, or 
+(
+)
+  
+1
+)
+(
+sign
+)
+(
+sign
+  
+],
+,...,
+1[
+  
+0
+=
+×
+∈
+=
+Ω
+j
+j
+N
+N
+K
+j
+ 
+[5.7.b] 
+The union of these two subsets includes all K securities in the portfolio, which can be written as: 
+(
+)
+K
+,...,
+1
+=
+Ω
+Ω U
+ 
+[5.7.c] 
+In the case of securities belonging to Ω for which portfolio exposures will change post trading – meaning 
+that a long position will turn into a short position and vice and versa, note that the following relation holds: 
+k
+k
+k
+k
+k
+N
+N
+N
+N
+N
+×
++
+×
+=
+Δ
+)
+(
+sign
+)
+(
+sign
+0
+0
+ 
+[5.8] 
+Combining [5.8] with [5.5] leads to rewriting the notional equation as 
+Electronic copy available at: https://ssrn.com/abstract=2314590
+
+A Cheat Sheet for Algorithmic Trading of Investment Portfolios 
+ 
+Belvedere Advisors LLC | 1896 Mountain View Dr., Tiburon, CA 94920 | T: 415 839 5239 | www.BelAdv.com   Page 14 of 18 
+(
+)
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+N
+P
+N
+N
+N
+N
+P
+A
+N
+P
+N
+P
+A
+N
+P
+A
+mE
+Δ
+−
+×
++
+×
+−
+=
+Δ
+−
+Δ
+−
+=
+Δ
+−
+=
+∑
+∑
+∑
+∑
+∑
+Ω
+Ω
+Ω
+Ω
+~
+)
+(
+sign
+)
+(
+sign
+ 
+~
+       
+~
+~
+       
+~
+0
+0
+0
+0
+0
+ 
+or: 
+0
+0)
+(
+sign
+ 
+~
+)
+(
+sign
+ 
+~
+~
+0
+k
+k
+k
+k
+k
+k
+k
+k
+N
+N
+P
+A
+N
+N
+P
+N
+P
+mE
+×
+−
+=
+×
++
+Δ
++
+∑
+∑
+∑
+Ω
+Ω
+Ω
+ [5.9] 
+The right hand side of [5.9] is known, as are the signs for each security position. For securities belonging to 
+the subset Ω however, it is unclear whether the number of positions will increase or decrease after 
+rebalancing, because the account leverage will change which can lead to an expansion or a reduction of the 
+notional value. As a result, while the investment strategy will indicate that a particular weight should 
+increase or decrease relative to the notional (see equation [2.11]), that information is not sufficient to 
+determine whether the number of shares in a particular position will increase or decrease.  
+This problem can be solved iteratively. The first step is to use the information we already know about 
+securities in subset Ω , while neglecting the trading costs related to securities in subset Ω . We can solve 
+the corresponding system of equations which therefore includes the impact of trading costs in securities 
+belonging to Ω , and should give a reasonably good approximation to the final solution.  
+That first system combines the weight equations [5.1] with the margin equation [5.9] where the term with 
+Ω is neglected. It is written as follows: 
+⎪
+⎩
+⎪
+⎨
+⎧
+=
+=
+−
+×
+−
+=
+×
++
+∑
+∑
+Ω
+Ω
+K
+1,...,
+k
+for 
+     
+0
+ )
+(
+sign
+)
+(
+sign
+ 
+~
+)
+(
+sign
+ 
+~
+ 
+0
+0
+0
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+P
+N
+N
+Ew
+N
+N
+P
+A
+N
+N
+P
+mE
+ 
+ 
+[5.10] 
+This system can be solved for the notional value E and a first approximation for each new position
+k
+N . 
+Using this solution we can now assess whether each position in Ω has increased or decreased, which yields 
+the sign of
+k
+N
+Δ
+for each security in Ω . The identity relation 
+k
+k
+k
+N
+N
+N
+Δ
+×
+Δ
+=
+Δ
+)
+(
+sign
+ 
+Can be used in the notional equation [5.9] for the securities in Ω leading to a new notional equation where 
+all sign functions are known: 
+0
+0
+0
+ )
+(
+sign
+ 
+~
+ )
+(
+sign
+ 
+~
+ )
+(
+sign
+ 
+~
+ )
+(
+sign
+~
+0
+ 
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+N
+N
+P
+N
+N
+P
+A
+N
+N
+P
+N
+N
+P
+mE
+Δ
++
+−
+=
++
+Δ
++
+∑
+∑
+∑
+∑
+Ω
+Ω
+Ω
+Ω
+     [5.11] 
+The resulting system of equation to be solved is then 
+⎪
+⎩
+⎪
+⎨
+⎧
+=
+=
+−
+Δ
++
+−
+=
++
+Δ
++
+∑
+∑
+∑
+∑
+Ω
+Ω
+Ω
+Ω
+K 
+1,...,
+k
+for 
+     
+0
+ )
+(
+sign
+ )
+(
+sign
+ 
+~
+ )
+(
+sign
+ 
+~
+ )
+(
+sign
+ 
+~
+ )
+(
+sign
+~
+ 
+0
+ 
+0
+0
+0
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+P
+N
+N
+Ew
+N
+N
+P
+N
+N
+P
+A
+N
+N
+P
+N
+N
+P
+mE
+[5.12] 
+Electronic copy available at: https://ssrn.com/abstract=2314590
+
+A Cheat Sheet for Algorithmic Trading of Investment Portfolios 
+ 
+Belvedere Advisors LLC | 1896 Mountain View Dr., Tiburon, CA 94920 | T: 415 839 5239 | www.BelAdv.com   Page 15 of 18 
+The solution to [5.12] can once again be used to compute the sign of
+k
+N
+Δ
+for each security in Ω . That sign 
+is used iteratively to solve system [5.12] until the solution converges to a stable number of shares and 
+notional value. Note that the sign of 
+k
+N for each security inΩ is known a priori — it is the opposite of the 
+sign at the previous time step since the strategy dictates that the position will change exposure. It should not 
+be changed during the iteration process. 
+In practice, we have found that a simple convergence criterion used on the number of shares for each 
+position is appropriate, and that one iteration is usually sufficient to establish good convergence. The 
+number of iterations required will depend on the size of the account relative to the size of trading costs. For 
+large portfolios where trading costs are relatively small, a one iteration solution would be expected to yield 
+an excellent result. For smaller portfolios trading multiple securities at fixed commission costs per trade for 
+instance, the impact of trading costs might be more significant and require multiple iterations. In very rare 
+cases, we have experienced situations where convergence was not achieved after 3 to 5 iterations. In those 
+cases, the solution to system [5.10] is used as an approximation of the final number of positions in the 
+account. 
+Once the positions and notional value have been solved for, the account’s cash position is calculated using 
+[5.2] which yields 
+ 
+C
+Ew
+C =
+. The account NAV is given by equation [1.2] as
+mE
+A =
+. The leverage L is 
+calculated from equation [1.1] as the difference between the notional and net asset values, or 
+.
+A
+E
+L
+−
+=
+ 
+The method outlined in this section completely defines the situation of a portfolio that has been rebalanced 
+based on a target strategic asset allocation that includes target weights as well as a target margin. 
+ 
+PART 6:  TRADING A NON-MARGIN ACCOUNT TO ESTABLISH A TARGET ASSET ALLOCATION 
+A non-marginable account is a brokerage account in which margin cannot be used. As a result, the investor 
+may not borrow money when purchasing securities and the leverage L is permanently zero. In this case, the 
+notional value E is the same as the net asset value A —  see equation [1.1]. All margins are effectively equal 
+to one for these accounts. 
+Because there is no leverage to expand the notional value of a non-marginable account, it is known a priori 
+—i.e., before trading, whether the number of positions will increase or decrease for each security. If the 
+weight target of a position is smaller than its current weight, the number of positions will fall, and vice and 
+versa. Therefore the margin equation [5.5] can be written as 
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+N
+w
+P
+A
+N
+N
+P
+A
+N
+P
+A
+E
+Δ
+Δ
+−
+=
+Δ
+Δ
+−
+=
+Δ
+−
+=
+∑
+∑
+∑
+ )
+(
+sign
+~
+    
+ )
+(
+sign
+~
+    
+~
+ 
+0
+ 
+0
+0
+ 
+[6.1] 
+Substituting this value in the weight equations [5.1] gives: 
+K
+1,...,
+j
+for 
+     
+ )
+(
+sign
+ 
+ )
+(
+sign
+~
+0
+ 
+ 
+=
+=
++
+Δ
+Δ
+∑
+j
+j
+j
+j
+k
+k
+k
+k
+j
+w
+A
+P
+N
+N
+N
+w
+P
+w
+ 
+  [6.2] 
+or 
+K
+1,...,
+j
+for 
+     
+ )
+(
+sign
+~
+ )
+(
+sign
+ 
+ )
+(
+sign
+~
+0
+ 
+0
+ 
+ 
+=
+Δ
++
+=
++
+Δ
+∑
+∑
+k
+k
+k
+k
+j
+j
+j
+j
+j
+k
+k
+k
+k
+j
+N
+w
+P
+w
+w
+A
+P
+N
+N
+N
+w
+P
+w
+ 
+  [6.3] 
+Electronic copy available at: https://ssrn.com/abstract=2314590
+
+A Cheat Sheet for Algorithmic Trading of Investment Portfolios 
+ 
+Belvedere Advisors LLC | 1896 Mountain View Dr., Tiburon, CA 94920 | T: 415 839 5239 | www.BelAdv.com   Page 16 of 18 
+These K equations can be solved without iterations for each position Nk. The notional value can then be 
+calculated from [6.1]. The cash position in the account is given by [5.2] as: 
+ 
+C
+Ew
+C =
+ 
+[6.4] 
+Again it is useful to see the structure of the matrix in [6.3] through an example. To simplify the right hand 
+side, define 
+K
+1,...,
+j
+for 
+     
+ )
+(
+sign
+~
+0
+ 
+0
+=
+Δ
++
+=
+∑
+k
+k
+k
+k
+j
+j
+j
+N
+w
+P
+w
+w
+A
+α
+ 
+[6.5] 
+Equations [6.3] can then be written as  
+K
+1,...,
+j
+for 
+     
+ )
+(
+sign
+ 
+ )
+(
+sign
+~
+ 
+ 
+=
+=
++
+Δ
+∑
+j
+j
+j
+j
+k
+k
+k
+k
+j
+P
+N
+N
+N
+w
+P
+w
+α
+   [6.6] 
+Consider a portfolio with three securities. The matrix form of [6.6] is then 
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎦
+⎤
+⎢
+⎢
+⎢
+⎢
+⎢
+⎢
+⎢
+⎣
+⎡
+=
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎦
+⎤
+⎢
+⎢
+⎢
+⎢
+⎢
+⎢
+⎢
+⎣
+⎡
+×
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎦
+⎤
+⎢
+⎢
+⎢
+⎢
+⎢
+⎢
+⎢
+⎣
+⎡
++
+Δ
+Δ
+Δ
+Δ
++
+Δ
+Δ
+Δ
+Δ
++
+Δ
+3
+2
+1
+3
+2
+1
+3
+3
+3
+  
+3
+ 3
+2
+  
+2
+ 3
+1
+  
+1
+ 3
+3
+  
+3
+ 2
+2
+ 
+2
+2
+  
+2
+ 2
+1
+  
+1
+ 2
+3
+  
+3
+ 1
+2
+  
+2
+ 1
+1
+1
+1
+  
+1
+ 1
+ )
+(
+sign
+)
+(
+sign
+~
+)
+(
+sign
+~
+)
+(
+sign
+~
+)
+(
+sign
+~
+)
+(
+sign
+ 
+)
+(
+sign
+~
+)
+(
+sign
+~
+)
+(
+sign
+~
+)
+(
+sign
+~
+ )
+(
+sign
+)
+(
+sign
+~
+α
+α
+α
+N
+N
+N
+P
+N
+w
+P
+w
+w
+P
+w
+w
+P
+w
+w
+P
+w
+P
+N
+w
+P
+w
+w
+P
+w
+w
+P
+w
+w
+P
+w
+P
+N
+w
+P
+w
+    
+Note that all off-diagonal terms in these equations relate to the trading costs. If trading costs are neglected, 
+the governing weight equation [6.3] is the same as [5.6.a] with the margin set to one. The new positions are 
+then simply: 
+K 
+1,...,
+k
+for 
+       
+)
+(
+sign
+ 
+ 
+ 0
+ 
+=
+=
+k
+k
+k
+k
+P
+N
+w
+A
+N
+ 
+[6.7] 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2314590
+
+A Cheat Sheet for Algorithmic Trading of Investment Portfolios 
+ 
+Belvedere Advisors LLC | 1896 Mountain View Dr., Tiburon, CA 94920 | T: 415 839 5239 | www.BelAdv.com   Page 17 of 18 
+NOMENCLATURE 
+A 
+Net asset value of an account  
+C 
+Freely available cash in the account 
+X
+Δ
+ 
+Change in variable X between two time steps  
+E 
+Nominal value of an account  
+K 
+Total number of securities used in the account at the current time step 
+L 
+Leverage 
+m 
+Account margin at the current time step 
+m Maint 
+Maintenance margin on the account 
+Nj 
+Number of shares or contracts held in security ‘j’ 
+Pj 
+Price of security ‘j’ 
+s 
+Slippage expressed as a percentage of a security’s price 
+sign(X) 
+Sign of variable X which can be -1, 0 or +1 
+t0, t1 
+Variables defining trading commissions as a function of price 
+wj 
+Weight of security ‘j’ in the portfolio 
+wC 
+Weight of cash in the portfolio 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2314590
+
+A Cheat Sheet for Algorithmic Trading of Investment Portfolios 
+ 
+Belvedere Advisors LLC | 1896 Mountain View Dr., Tiburon, CA 94920 | T: 415 839 5239 | www.BelAdv.com   Page 18 of 18 
+IMPORTANT INFORMATION 
+ 
+This material is intended solely for information purposes and is not to be construed, under any circumstances, by 
+implication or otherwise, as an offer to sell or a solicitation to buy or sell or trade in any commodities or securities 
+herein named. This document is neither advice nor a recommendation to enter into any transaction with Belvedere 
+Advisors LLC or any fund. Information is obtained from sources believed to be reliable, but is in no way guaranteed. 
+No guarantee of any kind is implied or possible where projections of future conditions are attempted. In no event 
+should the content be construed as an express or implied promise, guarantee or implication by or from Belvedere 
+Advisors LLC or any of its officers, directors, employees, affiliates or other agents that you will profit or that losses can 
+or will be limited in any manner whatsoever. All investments are subject to risk, which should be considered prior to 
+making and investment decisions. 
+ 
+This presentation and its contents are proprietary information of Belvedere Advisors LLC and are being submitted to 
+selected recipients only. They may not be reproduced (in whole or in part) or distributed to any other person without 
+the prior written permission of Belvedere Advisors LLC. Any U.S. person receiving this presentation and wishing to 
+effect a transaction in any security discussed herein, must do so through a U.S. registered broker dealer. 
+ 
+Diversification does not eliminate the risk of experiencing investment losses. 
+ 
+Past performance is not an indication of future performance. 
+Electronic copy available at: https://ssrn.com/abstract=2314590

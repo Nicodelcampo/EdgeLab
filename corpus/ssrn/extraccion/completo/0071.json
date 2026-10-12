@@ -1,0 +1,102 @@
+{
+  "doc_id": 71,
+  "titulo": "Bimodal Dynamics of the Artificial Limit Order Book Stock Exchange with Autonomous Traders",
+  "resumen_operativo": "El paper explora la dinámica de un mercado de valores artificial (ASME) operado mediante un Limit Order Book (LOB) con agentes autónomos y miopes (zero-intelligence). Demuestra que el sistema presenta biestabilidad intrínseca (bifurcación tridente supercrítica), donde desde condiciones iniciales idénticas el precio puede converger a un estado determinista de precio cero o a un equilibrio estocástico de precio positivo. Aplica mapas de Poincaré, dimensión fractal y modelos ocultos de Markov (HMM) para analizar la complejidad del sistema (caos de baja dimensión). Teórico y de modelado computacional.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "Artificial Stock Market Exchange (ASME)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Entorno simulado de mercado impulsado por órdenes donde agentes autónomos interactúan continuamente mediante un libro de órdenes límite.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Limit Order Book"}
+      ],
+      "cita_textual": "Both papers share the ASME framework ot the artificial, order-driven stock market. Autonomous agents or traders who continuously observe market dynamics, interact through a limit order book"
+    },
+    {
+      "nombre": "Limit Order Book (LOB)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Mecanismo de microestructura de mercado donde los agentes envían órdenes límite de compra (bid) y venta (ask).",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Artificial Stock Market Exchange (ASME)"}
+      ],
+      "cita_textual": "The order book is a collection of all bids Bt and asks At in time t"
+    },
+    {
+      "nombre": "Myopic traders / Zero-intelligence",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Agentes en el modelo que toman decisiones de trading de manera aleatoria e inmediatista, guiados por una expectativa de cambio de precio uniforme y sin consideraciones de riesgo.",
+      "relaciones": [],
+      "cita_textual": "a myopic, random (zero intelligent) trader makes a trading decision... If the price is expected to increase by the trader i, a bid (buy) order is submitted."
+    },
+    {
+      "nombre": "Bistability / Bimodal Dynamics",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Propiedad del mercado simulado donde las trayectorias de precios convergen hacia dos estados finales distintos (precio cero o precio positivo) a pesar de partir de condiciones idénticas.",
+      "relaciones": [
+        {"tipo": "CAUSADO_POR", "objeto": "supercritical pitchfork bifurcation"}
+      ],
+      "cita_textual": "The study also identifies a metastable region with elevated volatility between the basins of attraction... agent-based price dynamics possess intrinsic bistability"
+    },
+    {
+      "nombre": "Supercritical pitchfork bifurcation",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Fenómeno de los sistemas dinámicos que explica la transición del sistema desde un único punto fijo estable a dos nuevos puntos estables, induciendo la biestabilidad del mercado.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Bistability / Bimodal Dynamics"}
+      ],
+      "cita_textual": "The evolution of the system with two diverging average price trajectories over time strongly resembles a supercritical pitchfork bifurcation in a stochastic setting."
+    },
+    {
+      "nombre": "Poincaré maps",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica de análisis de sistemas dinámicos para estudiar el comportamiento caótico, discretizando trayectorias para visualizar cuencas de atracción de precios.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "Bistability / Bimodal Dynamics"}
+      ],
+      "cita_textual": "The Poincaré map is a technique employed in the analysis of dynamical systems, focusing on the intersections of the system’s trajectory in the phase space with a lower-dimensional subspace"
+    },
+    {
+      "nombre": "Fractal dimension",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida de complejidad que sugiere un comportamiento de caos intermitente o de baja dimensión en lugar de aleatoriedad pura en la dinámica de precios.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "chaotic characteristics"}
+      ],
+      "cita_textual": "The fractal (correlation) dimension quantifies the complexity of a time series by describing how the system fills its phase space."
+    },
+    {
+      "nombre": "Hidden Markov Model (HMM)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo probabilístico utilizado para identificar regímenes dinámicos ocultos del mercado basándose en secuencias observadas de cambios de precio y desequilibrio del LOB.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "regime switching"}
+      ],
+      "cita_textual": "The choice of an HMM framework is predicated on its inherent ability to model systems characterized by unobserved, underlying states that govern the observed sequence of market activities"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "El modelo basado en agentes con reglas de nivel micro demuestra biestabilidad intrínseca de los precios sin necesidad de heterogeneidad compleja ni shocks externos; incluso con condiciones iniciales idénticas se desarrollan trayectorias divergentes.",
+      "mercado": "Artificial Stock Market Exchange (ASME)",
+      "periodo": "N/A (Simulación computacional)",
+      "magnitud": "De 50 trayectorias idénticas iniciales, 22 convergieron a precio positivo (~5.95) y 28 a precio cero.",
+      "condiciones": "Simulaciones con 10,000 agentes zero-intelligence, t=5000 períodos, 50 repeticiones independientes.",
+      "robustez": "alta",
+      "cita_textual": "The core finding of intrinsic bistability in an artificial stock market with homogeneous agents is significant... shows that even identical initial conditions can lead the system to qualitatively different long-run price equilibria"
+    },
+    {
+      "afirmacion": "Las series de precios generadas en el ASME presentan propiedades de caos de baja dimensión, indicando un comportamiento estructurado y no puramente aleatorio.",
+      "mercado": "Artificial Stock Market Exchange (ASME)",
+      "periodo": "N/A",
+      "magnitud": "Dimensión fractal consistente en el rango de 0.8 a 0.9.",
+      "condiciones": "Cálculo usando el método Grassberger-Procaccia sobre las trayectorias simuladas de precios.",
+      "robustez": "media",
+      "cita_textual": "The calculated fractal dimension for each trajectory consistently fell within the range of 0.8 to 0.9... indicates that the system exhibits a low-dimensional chaotic or quasi-periodic behavior"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "Es un estudio teórico puro en dinámica de sistemas aplicado a un LOB artificial con agentes de inteligencia cero. No analiza datos reales (como el ES intradía) ni propone estrategia de trading explotable. Sus metodologías (mapas de Poincaré, dimensión fractal) podrían usarse teóricamente para estudiar el ES como sistema complejo, pero no aporta 'edge' inmediato."
+  }
+}

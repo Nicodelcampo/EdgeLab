@@ -1,0 +1,147 @@
+{
+  "doc_id": 195,
+  "titulo": "Algorithmic Trading and Market Efficiency Around the Introduction of the NYSE Hybrid Market",
+  "resumen_operativo": "El paper estudia el efecto causal del algorithmic trading sobre la eficiencia de mercado, usando la introducción del NYSE Hybrid Market (2006-2007) como variable instrumental. Extiende el enfoque de Chordia, Roll y Subrahmanyam incorporando tanto market order flow como limit order flow en las regresiones de predictibilidad intradía. El aumento exógeno de algorithmic trading mejora la eficiencia un 17.5% (reducción de R²), con la mejora concentrada en el poder predictivo de los surprises en market order imbalance (-36.53% partial R²) y limit order book imbalances en niveles externos (-36.36%). El poder predictivo de retornos pasados no cambia, y el out-of-sample R² positivo cae 5.18%.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Algorithmic Trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Actividad de trading automatizada que usa algoritmos para ejecutar estrategias a alta velocidad. Se proxea mediante el quote-to-trade ratio (QTE/TRD) y se instrumenta con la introducción del NYSE Hybrid Market para identificación causal.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "market efficiency"},
+        {"tipo": "USA", "objeto": "instrumental variable"}
+      ],
+      "cita_textual": "I study the effect of algorithmic trading on market efficiency, taking into account past market and limit order flows alike."
+    },
+    {
+      "nombre": "NYSE Hybrid Market",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Cambio tecnológico permanente en el diseño de mercado del NYSE implementado escalonadamente entre octubre 2006 y enero 2007, que aumentó automatización y velocidad. Se usa como instrumento para algorithmic trading en stacked IV regression.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "algorithmic trading increase"},
+        {"tipo": "USA", "objeto": "instrumental variable"}
+      ],
+      "cita_textual": "I extend the approach of Hendershott, Jones, and Menkveld (2011) and use the introduction of the NYSE Hybrid Market as an instrumental variable (IV) for algorithmic trading."
+    },
+    {
+      "nombre": "Market Order Imbalance",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Diferencia entre órdenes de mercado iniciadas por compradores y vendedores. Solo los surprises (cambios inesperados) en el order flow contienen información. Su poder predictivo cae 36.53% con más algorithmic trading.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "order flow informativeness"},
+        {"tipo": "PREDICE", "objeto": "intraday returns"}
+      ],
+      "cita_textual": "The partial R2 of the surprises in market order imbalance decreases significantly, by 36.53%, relative to the sample average."
+    },
+    {
+      "nombre": "Limit Order Book Imbalance",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida de desequilibrio en la profundidad del LOB a diferentes niveles (inner, middle, outer). Los surprises en estos imbalances pierden poder predictivo con más algorithmic trading: -12.41% (inner), -10.87% (middle), -36.36% (outer).",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "LOB information content"},
+        {"tipo": "PREDICE", "objeto": "intraday returns"}
+      ],
+      "cita_textual": "The partial R2 of the surprises in depth imbalances at the inner, middle, and outer levels of the limit order book decreases significantly, by 12.41%, 10.87%, and 36.36%, respectively."
+    },
+    {
+      "nombre": "Intraday Return Predictability",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Capacidad de predecir retornos intradía usando retornos pasados y surprises en order flow. La reducción de esta predictibilidad se interpreta como mejora en la eficiencia de mercado (menor R² en regresiones predictivas).",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "market efficiency"},
+        {"tipo": "USA", "objeto": "predictive regressions"}
+      ],
+      "cita_textual": "I use intraday return predictability arising from past returns, surprises in market order imbalance and limit order book imbalances."
+    },
+    {
+      "nombre": "Quote-to-Trade Ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Proxy de algorithmic trading computable del consolidated tape de EE.UU. que mide el número de actualizaciones de best bid-offer quotes relativo al volumen de trading o número de transacciones.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "algorithmic trading activity"},
+        {"tipo": "EQUIVALE_A", "objeto": "HFT proxy"}
+      ],
+      "cita_textual": "I use the quote-to-trade ratio as a proxy for algorithmic trading that can be easily computed from the U.S. consolidated tape."
+    },
+    {
+      "nombre": "Stacked IV Regression",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Metodología econométrica que apila cohortes de acciones tratadas en diferentes fechas con sus respectivos controles (stocks aún no tratados) alrededor del evento de introducción del NYSE Hybrid Market para identificar efectos causales.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "instrumental variable"},
+        {"tipo": "APLICA_A", "objeto": "staggered rollout"}
+      ],
+      "cita_textual": "Stocks had a staggered rollout to the NYSE Hybrid Market from October 2006 through January 2007, which allows for a causal effect identification."
+    },
+    {
+      "nombre": "Market Efficiency",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Velocidad a la que la información se incorpora a los precios. Se mide mediante R² de regresiones predictivas intradía: menor R² implica mayor eficiencia. Mejora 17.5% con un aumento de una desviación estándar en algorithmic trading.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "intraday return predictability"},
+        {"tipo": "MEJORA_A", "objeto": "algorithmic trading"}
+      ],
+      "cita_textual": "With one within standard deviation increase in the proxy for algorithmic trading, market efficiency improves by 17.5% relative to the whole sample average."
+    },
+    {
+      "nombre": "Partial R²",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Contribución marginal de cada variable al R² total de la regresión predictiva. Se usa para cuantificar cuánto poder predictivo pierde cada tipo de order flow con el aumento de algorithmic trading.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "variable importance"},
+        {"tipo": "PARTE_DE", "objeto": "predictive regressions"}
+      ],
+      "cita_textual": "The partial R2 of the surprises in market order imbalance decreases significantly, by 36.53%, relative to the sample average."
+    },
+    {
+      "nombre": "Out-of-Sample R²",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida de la capacidad predictiva fuera de muestra. La probabilidad de observar R² out-of-sample no negativo cae 5.18% con más algorithmic trading, indicando menor rentabilidad potencial de estrategias basadas en order flow.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "trading strategy profitability"},
+        {"tipo": "USA", "objeto": "predictive regressions"}
+      ],
+      "cita_textual": "The probability of observing non-negative out-of-sample R2 decreases significantly with one within standard deviation increase in the proxy for algorithmic trading, by 5.18%."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Con un aumento de una desviación estándar en algorithmic trading (proxy: quote-to-trade ratio), la eficiencia de mercado mejora un 17.5% respecto al promedio de la muestra completa, medido como reducción del R² de regresiones predictivas intradía.",
+      "mercado": "NYSE-listed stocks (875 acciones)",
+      "periodo": "Junio 2006 - Mayo 2007, ventana de evento [-5;+5] días",
+      "magnitud": "17.5% de mejora en eficiencia (reducción de R²); 24,368 stock-cohort observations; 247,841 observaciones totales",
+      "condiciones": "Stacked IV regression con NYSE Hybrid Market como instrumento; ventana de evento de 5 días",
+      "robustez": "alta",
+      "cita_textual": "With one within standard deviation increase in the proxy for algorithmic trading, market efficiency improves by 17.5% relative to the whole sample average."
+    },
+    {
+      "afirmacion": "El poder predictivo (partial R²) de los surprises en market order imbalance cae 36.53% con más algorithmic trading. Para LOB imbalances, la reducción es: 12.41% (inner levels), 10.87% (middle levels) y 36.36% (outer levels), todos respecto al promedio muestral.",
+      "mercado": "875 NYSE-listed common stocks",
+      "periodo": "Jun 2006 - May 2007",
+      "magnitud": "Partial R²: Market OI -36.53%; LOB inner -12.41%; LOB middle -10.87%; LOB outer -36.36%",
+      "condiciones": "Regresiones predictivas intradía con datos tick-by-tick y primeros 10 niveles del NYSE LOB (TRTH)",
+      "robustez": "alta",
+      "cita_textual": "The partial R2 of the surprises in market order imbalance decreases significantly, by 36.53%, relative to the sample average. The partial R2 of the surprises in depth imbalances at the inner, middle, and outer levels of the limit order book decreases significantly, by 12.41%, 10.87%, and 36.36%, respectively."
+    },
+    {
+      "afirmacion": "El poder predictivo de los retornos pasados (mid-quote returns) permanece sin cambios con el aumento exógeno de algorithmic trading, lo que explica por qué estudios previos que solo consideran retornos no detectaron mejora de eficiencia en el corto plazo.",
+      "mercado": "NYSE-listed stocks",
+      "periodo": "Jun 2006 - May 2007",
+      "magnitud": "Sin cambio significativo en partial R² de retornos pasados",
+      "condiciones": "Ventana de evento de 40 días confirma hallazgo de Hendershott y Moulton (2011) para el corto plazo",
+      "robustez": "alta",
+      "cita_textual": "The predictive power of past returns remains unchanged with an exogenous shock to algorithmic trading."
+    },
+    {
+      "afirmacion": "La probabilidad de obtener R² out-of-sample no-negativo (proxy de rentabilidad de estrategias de trading basadas en order flow) cae 5.18% con una desviación estándar más de algorithmic trading, siendo económicamente significativo dado que la probabilidad promedio es 31.50%.",
+      "mercado": "NYSE-listed stocks (875 acciones)",
+      "periodo": "Jun 2006 - May 2007",
+      "magnitud": "-5.18% en probabilidad de out-of-sample R² ≥ 0 (desde promedio 31.50%)",
+      "condiciones": "Forecasts one-step ahead de regresiones predictivas; consistente con aumento de adverse selection costs",
+      "robustez": "alta",
+      "cita_textual": "The probability of observing non-negative out-of-sample R2 decreases significantly with one within standard deviation increase in the proxy for algorithmic trading, by 5.18%."
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "Trabaja directamente con datos tick-by-tick y LOB a 10 niveles en ventanas intradía; los hallazgos sobre predictibilidad de order flow son centrales para estrategias de ejecución y market making intradía."}
+}

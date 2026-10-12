@@ -1,0 +1,328 @@
+A VISUAL GUIDE TO MARKET MICROSTRUCTURE MODELS
+NIHAD ALIYEV
+Macquarie University
+ABSTRACT. In this note, I provide geometric interpretations of the classic asymmetric
+information models of Kyle (1985) and Glosten and Milgrom (1985). This visual approach helps to better understand how market makers infer private information from
+order flow and how prices adjust in response.
+JEL Classification: G14, D4, D82.
+Keywords: Market microstructure, Kyle, Glosten-Milgrom.
+Current version: April 20, 2025..
+Email: nihad.aliyev@mq.edu.au.
+I have written this note during my PhD at the University of Technology Sydney (UTS) as a way to better understand
+market microstructure models.
+1
+
+2
+1. INTRODUCTION
+Classic asymmetric information models of market microstructure study how information is revealed and prices are formed in financial markets. Two workhorse models in this
+literature are Kyle (1985) and Glosten and Milgrom (1985). They differ in their assumptions
+and mechanics, but both aim to explain how prices reflect private information in the presence of
+noise and informed traders. In this note, I provide a geometric interpretation of each model and
+translate their analytical insights into visual frameworks. I focus on how market makers infer
+information from order flow and how equilibrium prices emerge as a function of traders’ beliefs
+and behaviors.
+2. KYLE (1985)
+Consider a single-period economy and one risky asset with the value v drawn from a
+normal distribution N(µv, σ2
+v), with σv > 0. There are three types of agents in the market:
+informed traders who know v, noise traders who trade randomly, and a competitive market
+maker who sets the price p based on total order flow y. The portion of the aggregate demand
+that comes from the informed trader is yI and the remaining that comes from the noise trader is
+yE ∼N(0, σ2
+ε), with σε > 0, i.e., y = yI + yε. Suppose the price function of the risk-neutral
+market maker who observes the aggregate demand y and breaks-even in expectation is given by
+p = E[v|y] = µ + λy = µ + λ(yI + yε)
+(1)
+With the price representation of Eq. (1), µ is the price of the asset with zero net aggregate
+demand, λ is the price responsiveness to aggregate demand changes. The coefficients µ and λ
+will be determined in equilibrium. Suppose the informed demand is linear in the asset value v
+yI = α + βv
+(2)
+where the coefficients α and β will also be determined in equilibrium. The expected profit of
+informed traders is π = E[(v −p)yI], which is equal to
+π = E[(v −µ −λyI −λyε)yI]
+(3)
+after substituting the price function in Eq. (1)
+
+3
+The informed demand yI that maximises the expected profit in Eq. (3) follows from the
+first order condition ∂π
+∂yI = 0 as
+yI = v −µ
+2λ
+(4)
+The price set by the market maker who only observes the aggregate demand y and
+breaks-even in equilibrium due to the perfect competition among market makers is
+p = E[v|y] = E[v] + Cov(y, v)
+V ar(y) (y −E[y])
+(5)
+where the second equality follows from the projection theorem for joint normal random variables. Substituting y = yI + yε = v−µ
+2λ + yε to Eq. (5) obtains
+p =
+
+µv +
+1
+2λσ2
+v
+( 1
+2λ)2σ2
+v + σ2
+ε
+(µv −µ
+2λ
+)
+
+|
+{z
+}
+µ
++
+
+1
+2λσ2
+v
+( 1
+2λ)2σ2
+v + σ2
+ε
+
+|
+{z
+}
+λ
+y
+(6)
+Imposing the linear pricing function in Eq. (1) obtains µ = µv from the first part of Eq.
+(6) and λ =
+σv
+2σε from the second part. Substituting µ = µv and λ =
+σv
+2σε to Eq. (1) obtains the
+equilibrium price as
+p = µv + σv
+2σε
+y
+(7)
+and to Eq. (4) obtains the equilibrium informed demand as
+yI = (v −µv)σε
+σv
+(8)
+Eqs. (7) and (8) together constitute an equilibrium in which competitive market maker
+sets the price and informed traders choose their demand that maximises their profits. It follows
+from Eq. (7) that the market maker sets the price to µv when the aggregate demand is zero
+(y = 0) and changes the prices more in response to aggregate demand when the asset volatility
+is high ( ∂p
+∂σv > 0) or noise trader demand volatility is low ( ∂p
+∂σϵ < 0). It follows from Eq. (8)
+that the informed buy when v > µv and sell v < µv with the amount of buy and sell orders
+increasing with noise trader demand volatility σε and decreasing with the asset volatility σv.
+Figure 1 visualises the market maker’s rationale when setting the price as in Eq. (7).
+Figure 1A plots the price p against the aggregate demand y. This illustrates the equilibrium
+price rule in Eq. (7).
+
+4
+Figure 1B plots what happens in the background. By observing the aggregate demand
+y, the market maker guesses the informed demand. From the market maker’s perspective, the
+best guess for the informed traders’ demand follows from Eq. (8) as
+E[yI|y] = E[(v −µv)σε
+σv
+|y] = E[v|y]σε
+σv
+−µv
+σε
+σv
+= (µv + σv
+2σε
+y)σε
+σv
+−µv
+σε
+σv
+= y
+2
+(9)
+where the second line follows from the equilibrium price in Eq. (7). With no additional information, the market maker simply guesses that half of the aggregate demand is from the informed
+traders.
+Figure 1C shows the equilibrium price with respect to the best guess on the informed
+demand using
+p = µv + σv
+σε
+E[yI|y]
+(10)
+Eq. (10) seems slightly more intuitive than Eq. (7) and its illustration in Figure 1C
+is an interesting way of thinking about the equilibrium concept. In this equilibrium, from the
+market maker’s perspective, the informed demand E[yI|y] maps to price p linearly with slope
+σv
+σε . However, it is also the case that from the informed trader’s perspective, the actual informed
+demand yI maps to the actual asset value v linearly with the same slope σv
+σε . To see this, re-write
+Eq. (8) as
+v = µv + σv
+σε
+yI
+(11)
+Eqs. (10) and (11) show that the mapping of E[yI|y] to p from the market maker’s
+perspective is similar to the mapping of yI to v from the informed trader’s perspective. In
+other words, the price function of the market maker aims to replicate the value function of
+the asset using the best guess for informed demand. Therefore, Figure 1C can be interpreted
+as (E[yI|y], p) plane from the market maker’s perspective and (yI, v) plane from the informed
+traders’ perspective. Rather than looking at Figure 1A to understand just the equilibrium pricing
+rule of the market maker, it seems more intuitive to look at Figure 1C to understand both the
+equilibrium pricing rule and the informed trader’s demand, which together constitute the overall
+equilibrium.
+
+5
+Figure 1. Kyle (1985) model
+Price (𝑝) 
+Aggregate 
+demand (𝑦) 
+Best guess for informed 
+demand (𝐸[𝑦𝐼|𝑦]) 
+𝜇𝑣 
+𝑝= 𝜇𝑣+ 𝜎𝑣
+2𝜎𝜀
+𝑦 
+𝐸[𝑦𝐼|𝑦] = 𝑦
+2 
+𝑝= 𝜇𝑣+ 𝜎𝑣
+𝜎𝜀
+𝐸[𝑦𝐼|𝑦]  
+𝑣= 𝜇𝑣+ 𝜎𝑣
+𝜎𝜀
+𝑦𝐼  
+1A 
+1B 
+1C 
+3. GLOSTEN AND MILGROM (1985)
+Consider one risky asset with value v drawn from the set v ∈0, 1. A competitive market
+maker has an initial belief Pr(v = 1) = p1 =
+1
+2. The market maker sets the bid (Bt) and
+ask (At) prices at time t before trade. Trading takes place over periods t = 1, . . . , T, and the
+risky security pays off in period T + 1. In each period, a trader arrives sequentially and trades
+one unit with a competitive market maker. The trader may be informed or uninformed. The
+informed trader knows the true asset value v and chooses the order that maximizes their profit.
+The uninformed trader buys or sells at random with equal probability. The probability of an
+informed arrival is µ, and of an uninformed arrival is 1 −µ.
+Let Dt denote the trade direction at time t, where Dt = −1 for a sell and Dt = +1 for
+a buy. Let Pt denote the transaction price. Public information at time t consists of the sequence
+of past trades and prices, denoted by ht = (Dτ, Pτ)t−1
+τ=1. The market maker observes ht, updates
+her belief pt = Pr(v = 1 | ht) via Bayes’ rule, and sets quotes (Bt and At) to break even in
+expectation.
+
+6
+In equilibrium, the informed trader with a signal v = 1 will always buy and with a
+signal v = 0 will always sell. This is because in equilibrium v = 1 ≥At (buying at At is
+always profitable when v = 1) and v = 0 ≤Bt (selling at Bt is always profitable when v = 0).
+The market maker’s conditional probabilities follow from Bayes rule as
+Pr(Dt = +1|v = 1, ht) = 1 + µ
+2
+(12)
+Pr(Dt = −1|v = 1, ht) = 1 −µ
+2
+(13)
+Pr(Dt = +1|ht) = 1 + µ(2pt −1)
+2
+(14)
+Pr(Dt = −1|ht) = 1 + µ(1 −2pt)
+2
+(15)
+The market maker’s zero expected profit (break-even) condition requires that the quoted price
+equals the expected asset value conditional on the trade direction.
+Bt = E[v = 1|ht, Dt = −1] = pt · Pr(Dt = −1|v = 1, ht)
+Pr(Dt = −1|ht)
+(16)
+At = E[v = 1|ht, Dt = +1] = pt · Pr(Dt = +1|v = 1, ht)
+Pr(Dt = +1|ht)
+(17)
+Substituting conditional probabilities into Eqs. (16)-(17) obtains:
+Bt =
+pt
+pt + δ · (1 −pt)
+(18)
+At =
+pt
+pt + δ−1 · (1 −pt)
+(19)
+where
+δ = 1 + µ
+1 −µ
+(20)
+and the market maker’s belief pt based on the order imbalance Nt (number of buys minus sells
+up to time t) is
+pt =
+δNt
+1 + δNt
+(21)
+Substituting pt into Eqs. (18) and (19), and finding the their difference obtains the bid-ask
+spread at time t as
+St = At −Bt =
+δNt · (δ −δ−1)
+(δNt + δ) · (δNt + δ−1)
+(22)
+
+7
+The model admits a natural geometric interpretation in which the pricing mechanism
+can be understood as a transformation of the order imbalance Nt. This imbalance serves as a
+sufficient statistic for the market maker’s belief about the asset’s value (pt), and is the timevarying determinant of the bid-ask spread St. The other key parameter that affects the spread
+is δ =
+1+µ
+1−µ, which captures the informativeness of order flow. Since δ increases with the
+probability of informed trading µ, a higher δ implies that trades are more informative, causing
+the market maker to adjust beliefs more aggressively in response to order flow.
+Figure 2A plots the bid-ask spread St against the order imbalance Nt based on Eq. (22)
+for a given value of δ. When Nt = 0, the market maker observes a perfectly balanced sequence
+of buys and sells and therefore does not learn anything about the asset’s value (pt = p1 = 0.5).
+The market maker remains maximally uncertain about the asset value, which leads to the widest
+possible spread. This is the point where informational asymmetry is highest, and the spread
+serves as protection against trading with an informed agent. As Nt grows in either direction
+(more buys or more sells) the spread narrows. The market maker gradually leans quotes in the
+direction of the order flow and becomes more confident about the asset’s true value. In the
+limit, as Nt →+∞(resp. Nt →−∞), the spread converges to zero, as both bid and ask prices
+approach 1 (resp. 0).
+Figure 2B shows how the market maker updates the belief about the asset’s value based
+on observed imbalance. Specifically, it plots the mapping from Nt to pt, the probability that
+the asset value is 1, as given in Eq. (21). This belief function is smooth, strictly increasing,
+and S-shaped. When Nt = 0, the market maker assigns equal probability to either state, i.e.,
+pt = 0.5. As buy orders dominate (Nt > 0), the market maker’s belief pt approaches 1. As
+sell orders dominate (Nt < 0), the market maker’s belief pt approaches 0. This belief forms the
+basis for the bid and ask quotes posted in each round as per Eqs. (18) and (19).
+Figure 2C plots the spread St directly against the belief pt. The relationship is symmetric
+around pt = 0.5, where the spread is maximum. As the belief moves closer to either extreme
+(toward 0 or 1) the spread declines. Intuitively, when the market maker is most uncertain about
+the asset’s value (pt = 0.5), they set the maximum spread to protect against adverse selection.
+As belief becomes more precise in either direction, this informational risk decreases, and the
+market maker tightens the bid-ask spread accordingly.
+
+8
+Figure 2. Glosten and Milgrom (1985) model
+Imbalance (𝑁𝑡) 
+Belief (𝑝𝑡) 
+Bid-ask 
+spread (𝑆𝑡) 
+0 
+∞ 
+𝑝𝑡=
+𝛿𝑁𝑡
+1 + 𝛿𝑁𝑡 
+𝑆𝑡=
+𝛿𝑁𝑡(𝛿−𝛿−1)
+(𝛿𝑁𝑡+ 𝛿)(𝛿𝑁𝑡+ 𝛿−1) 
+   
+ 
+2A 
+2B 
+2C 
+4. CONCLUSION
+The models of Kyle (1985) and Glosten and Milgrom (1985) offer foundational insights
+into how prices incorporate private information in financial markets. By providing geometric
+interpretations, this note shows how market makers use order flow to infer asset values and
+manage adverse selection risk. These visual representations make it easier to understand the
+mechanisms through which equilibrium prices and spreads emerge, and how beliefs evolve in
+response to trading activity.
+
+9
+REFERENCES
+Glosten, L. R. and Milgrom, P. R. (1985), ‘Bid, ask and transaction prices in a specialist market with heterogeneously informed traders’, Journal of Financial Economics 14(1), 71–100.
+Kyle, A. S. (1985), ‘Continuous auctions and insider trading’, Econometrica 15(35), 1315–1335.

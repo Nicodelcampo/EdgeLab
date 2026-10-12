@@ -1,0 +1,38 @@
+{
+  "doc_id": 314,
+  "titulo": "Statistical Arbitrage and Robust Tests for Cointegration",
+  "resumen_operativo": "Desarrolla dos tests robustos de cointegración usando regresión rank-based (weighted Wilcoxon) y least absolute deviation (LAD) como modificaciones del test de Engle-Granger. Genera valores críticos y calcula potencia para distintas distribuciones de error mediante simulaciones Monte Carlo. Backtestea los tests en una estrategia simple de pairs trading con datos diarios 2001-2010, encontrando que el test rank-based tiene cualidades superiores generando oportunidades más rentables con mejor Sharpe ratio.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "Robust Cointegration Tests",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Dos tests alternativos al Engle-Granger: (1) rank-based usando regresión weighted-Wilcoxon; (2) least absolute deviation (LAD). Son robustos a violaciones de normalidad en series de precios de acciones, que típicamente tienen colas pesadas (Mandelbrot, 1963; Fama, 1965).",
+      "relaciones": [{"tipo": "MEJORA_A", "objeto": "Engle-Granger Cointegration Test"}, {"tipo": "MITIGA", "objeto": "Non-Normality of Returns"}],
+      "cita_textual": "This paper develops two robust tests for cointegration by using rank-based and least absolute deviation regression to modify the seminal Engle-Granger test."
+    },
+    {
+      "nombre": "Weighted Wilcoxon (Rank-Based) Regression",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Regresión basada en rangos que reemplaza los valores observados por sus rangos, haciéndola robusta a outliers y distribuciones de cola pesada. En el contexto de cointegración, produce residuos cuya estacionariedad se testea con estadísticos modificados.",
+      "relaciones": [{"tipo": "MEJORA_A", "objeto": "OLS Regression"}, {"tipo": "USA", "objeto": "Monte Carlo Simulation"}],
+      "cita_textual": "The rank-based cointegration test has superior qualities in that context, suggesting one application of this new statistical test."
+    },
+    {
+      "nombre": "Least Absolute Deviation (LAD) Cointegration",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Regresión que minimiza la suma de valores absolutos de residuos en lugar de cuadrados. Robusta a outliers en la serie temporal. Usada como segunda alternativa robusta al OLS en el test de cointegración de Engle-Granger.",
+      "relaciones": [{"tipo": "SE_OPONE_A", "objeto": "OLS Regression"}, {"tipo": "APLICA_A", "objeto": "Pairs Trading Strategy"}],
+      "cita_textual": "This paper develops two robust tests for cointegration by using rank-based and least absolute deviation regression."
+    },
+    {
+      "nombre": "Monte Carlo Critical Values for Robust Tests",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Simulaciones Monte Carlo para generar valores críticos de los tests robustos de cointegración bajo distintas distribuciones de error (normal, t, contaminada). Permite evaluar potencia y tamaño de los tests frente al Engle-Granger tradicional.",
+      "relaciones": [{"tipo": "REQUIERE", "objeto": "Error Distribution Assumptions"}, {"tipo": "USA", "objeto": "Hypothesis Testing"}],
+      "cita_textual": "Critical values are generated and power calculated for various error distributions."
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {"nivel": "baja", "nota": "Tests de cointegración con backtest diario 2001-2010; metodología de screening de pares adaptable pero no diseñada específicamente para frecuencia intradiaria."}
+}

@@ -1,0 +1,69 @@
+{
+  "doc_id": 39,
+  "titulo": "Algorithmic Trading Model for Manifold Learning in FX",
+  "resumen_operativo": "Presentación tipo slides que propone usar reducción de dimensionalidad no lineal (Kernel Dimension Reduction / manifold learning) para extraer features de señales que predicen retornos FX, en vez de modelos ARMA/GARCH clásicos. Ilustra la idea con datos artificiales y un backtest simple en EURUSD, USDJPY y EURGBP a frecuencia diaria, pero no reporta métricas numéricas de performance ni detalles metodológicos verificables.",
+  "calidad_paper": "baja",
+  "conceptos": [
+    {
+      "nombre": "manifold learning",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Metodología para descubrir una variedad (manifold) de datos de menor dimensión que preserva la información relevante para una regresión no lineal, usada para predecir movimientos de FX.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "kernel dimension reduction"},
+        {"tipo": "PREDICE", "objeto": "FX price movement"}
+      ],
+      "cita_textual": "A methodology for discovering a data manifold that best preserves information relevant to a nonlinear regression."
+    },
+    {
+      "nombre": "kernel dimension reduction",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica que mapea variables X e Y a espacios de Hilbert con núcleo reproductor (RKHS) y usa el operador de covarianza condicional para hallar el subespacio central que resume la información relevante para la regresión.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "manifold learning"},
+        {"tipo": "MEJORA_A", "objeto": "GARCH"}
+      ],
+      "cita_textual": "Map X and Y reproducing kernel Hilbert spaces"
+    },
+    {
+      "nombre": "GARCH",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo estándar de series de tiempo que asume correlación serial en la volatilidad y una distribución específica de los retornos; usado como punto de comparación frente al enfoque de machine learning propuesto.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "kernel dimension reduction"}
+      ],
+      "cita_textual": "GARCH assumes serial correlation in volatility"
+    },
+    {
+      "nombre": "feature extraction",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Uso de métodos de machine learning para extraer automáticamente de las señales de entrada v las características de baja dimensión que llevan información sobre la variable objetivo y, luego usadas para predecir mediante regresión.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "manifold learning"},
+        {"tipo": "PREDICE", "objeto": "FX price movement"}
+      ],
+      "cita_textual": "Use machine learning methods to automatically extract features of the input signals v that carry information about y."
+    },
+    {
+      "nombre": "FX price movement",
+      "tipo": "dato",
+      "definicion_en_contexto": "Variable objetivo (retorno de pares de divisas) que el sistema intenta predecir a partir de covariables de retornos rezagados de tres cruces mayores.",
+      "relaciones": [],
+      "cita_textual": "Prediction of FX movement using manifold learning yields promising results."
+    },
+    {
+      "nombre": "signal-weighted portfolio",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Construcción de un portafolio de EURUSD, USDJPY y EURGBP ponderando las posiciones según la fuerza de la señal del modelo, tomando posición cuando la señal supera un umbral dado.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "manifold learning"},
+        {"tipo": "APLICA_A", "objeto": "FX price movement"}
+      ],
+      "cita_textual": "A portfolio consisting of EURUSD, USDJPY, EURGBP is created by weighting the positions according to the signal strengths."
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "El paper no reporta números de performance, costos ni validación OOS, y trabaja en FX diario, no en ES intradía; a lo sumo aporta la idea conceptual de KDR/manifold learning como alternativa de feature extraction no lineal."
+  }
+}

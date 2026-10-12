@@ -1,0 +1,95 @@
+{
+  "doc_id": 89,
+  "titulo": "DEVELOPING AN ARTIFICIAL NEURAL NETWORK ALGORITHMIC TRADING SYSTEM",
+  "resumen_operativo": "El paper desarrolla un sistema de trading algorítmico utilizando una red neuronal LSTM (Long Short Term Memory) para predecir precios de cierre del día siguiente. Utiliza precios históricos e indicadores técnicos y fundamentales como features. Plantea dos estrategias de trading empíricas basadas en reglas if-else en un backtest diario (Quantopian/Zipline): una aversa al riesgo y otra propensa al riesgo. Los resultados sugieren que el LSTM capta tendencias mejor en ventanas de menos de 400 días y que la estrategia propensa al riesgo tuvo mayor rendimiento ajustado en el periodo de 9 meses estudiado. Es un proyecto de estudiante con validación simple.",
+  "calidad_paper": "baja",
+  "conceptos": [
+    {
+      "nombre": "Long Short Term Memory",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Arquitectura de red neuronal recurrente que utiliza celdas de memoria para aprender dependencias a largo plazo, mitigando el problema del desvanecimiento del gradiente en series temporales.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Recurrent Neural Network"}
+      ],
+      "cita_textual": "Long Short Term Memory (LSTM) eliminates the vanishing gradient problem with its ability to learn with many non-linear layers. It consists of memory cells or memory pipeline which flows freely through time."
+    },
+    {
+      "nombre": "Recurrent Neural Network",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Tipo de modelo de deep learning en el cual las salidas se retroalimentan como entradas, usado para analizar secuencias como series de tiempo financieras.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Long Short Term Memory"}
+      ],
+      "cita_textual": "Recurrent Neural Network (RNN) is a type of supervised deep learning which is specifically used for analysing time series."
+    },
+    {
+      "nombre": "Echo State Network",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Otra variante de RNN usada en la literatura previa que, según el autor, genera precisiones de predicción irreales (casi 99%) para series financieras en contraste con LSTM.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "Long Short Term Memory"}
+      ],
+      "cita_textual": "The authors claim to have applied a type of RNN called Echo State Network (ESN) to predict the stock prices of S&P 500. ... When compared to the error using ESN, the error is high and the accuracy is lesser which is realistic and workable (accuracy for ESN is close to 99% which is not very realistic)."
+    },
+    {
+      "nombre": "stochastic interpolation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica referenciada en la metodología para generar valores diarios de indicadores fundamentales corporativos que solo son publicados trimestralmente.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "fundamental indicators"}
+      ],
+      "cita_textual": "Since, fundamental indicators are only released quarterly, stochastic interpolation ensures that we get the indicators daily."
+    },
+    {
+      "nombre": "risk-seeking strategy",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Regla empírica en el backtest donde se envía una orden de compra si la predicción de cambio de precio es positiva, o si es negativa pero no cruza cierto umbral.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "risk-averse strategy"}
+      ],
+      "cita_textual": "for a risk-seeking strategy, the decision for the trader will be BUY if the change in the stock price is positive or if the change in the stock price is negative and within a certain threshold."
+    },
+    {
+      "nombre": "risk-averse strategy",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Regla estricta donde solo se entra largo en una acción si la predicción de precio para el siguiente día es estrictamente positiva.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "risk-seeking strategy"}
+      ],
+      "cita_textual": "In the risk-averse strategy, the decision for the trader will be BUY only if the change in the stock price is positive and hold if it is negative."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "El modelo LSTM predice los movimientos de precios con un RMSE de 7.747, lo cual el autor considera una estimación más realista del error comparada con otros modelos como ESN.",
+      "mercado": "US equities (Google stock)",
+      "periodo": "2012-2016 (train), Enero 2017 (test)",
+      "magnitud": "RMSE = 7.747",
+      "condiciones": "Entrenamiento solo con series de precio abierto utilizando librería Keras (LSTM con 4 unidades, optimizador Adam).",
+      "robustez": "baja",
+      "cita_textual": "The RMSE using LSTM is 7.747 and the predicted prices follows the same trend as the actual prices."
+    },
+    {
+      "afirmacion": "El desempeño del modelo LSTM se deteriora si el período de predicción excede los 400 días, incrementando significativamente el margen de error (RMSE alto).",
+      "mercado": "US equities",
+      "periodo": "2007-2016",
+      "magnitud": "RMSE de 139.6 y 60.81 en validaciones cruzadas multi-anuales, versus 15.49 en predicciones de corto plazo.",
+      "condiciones": "Distintos sets de prueba (2012-2016 y 2014-2016 vs 2017) evaluando Google.",
+      "robustez": "baja",
+      "cita_textual": "the network fails to give reliable results after the 400 day mark. The model fails to predict the prices beyond 400 days (the high RMSE observed above is due to this drawback or else the RMSE would be low)."
+    },
+    {
+      "afirmacion": "Una estrategia de trading risk-seeking (mayor tolerancia) basada en estas predicciones genera un retorno anualizado de 24.3% comparado al 8.0% de una estrategia risk-averse, en un backtest simple sobre un portafolio de 5 acciones sectoriales.",
+      "mercado": "US equities (AAP, COST, BAC, AET, JEC)",
+      "periodo": "Enero 2017 - Septiembre 2017",
+      "magnitud": "Retorno anual: 24.3% (Sharpe 2.95) vs 8.0% (Sharpe 2.36).",
+      "condiciones": "Backtest en Zipline/Quantopian asumiendo pesos equitativos del 20% diarios y capital inicial de 1M, sin short-selling.",
+      "robustez": "baja",
+      "cita_textual": "The returns (annual and cumulative) for the risk-seeking investor is higher compared to the risk-averse investor. ... All the ratios signify that the risk-seeking strategy gives higher risk adjusted returns."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "nula",
+    "nota": "El enfoque completo del proyecto está en barras diarias (OHLC) e indicadores macroeconómicos fundamentales, con rebalanceo una vez por día en la apertura (Zipline schedule daily). No contempla volatilidad ni microestructura intradía utilizable en estrategias de futuros tipo ES."
+  }
+}

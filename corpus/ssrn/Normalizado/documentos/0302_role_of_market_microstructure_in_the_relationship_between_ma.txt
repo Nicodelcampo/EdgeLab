@@ -1,0 +1,2879 @@
+ 
+ 
+ 
+ 
+ 
+Role of Market Microstructure in the Relationship between Market 
+Co-movement and Market Efficiency 
+ 
+Xiaofei Zhang 
+ 
+ 
+ 
+University of Lethbridge 
+Faculty of Management 
+ 
+ 
+4401 University Drive, Lethbridge, Alberta, T1K 3M4 
+xiaofei.zhang@uleth.ca 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+2 
+ 
+Table of Content 
+Abstract ............................................................................................................................................. 1 
+1. Introduction .................................................................................................................................. 2 
+2. Background Knowledge ................................................................................................................. 5 
+2.1 Market Microstructure ........................................................................................................ 5 
+2.2 Efficient Market Hypothesis (EMH) ..................................................................................... 6 
+2.3 Cross-Market Efficiency ....................................................................................................... 7 
+2.4 Market Co-movement ......................................................................................................... 8 
+3. Literature Review .......................................................................................................................... 8 
+3.1 Market Microstructure ........................................................................................................ 8 
+3.1.1 Trading Mechanism .......................................................................................................... 9 
+3.1.1.1 Market Type .................................................................................................................. 9 
+3.1.1.2 Trading Session ............................................................................................................ 10 
+3.1.1.3 Order Forms ................................................................................................................ 11 
+3.1.1.4 Transparency ............................................................................................................... 11 
+3.1.2 Market Regulation .......................................................................................................... 12 
+3.1.2.1 Rules of Order Priority ................................................................................................ 12 
+3.1.2.2 Tick Size and Spreads .................................................................................................. 12 
+3.1.2.3 Listing .......................................................................................................................... 13 
+3.1.2.4 Trading Unit ................................................................................................................. 13 
+3.1.2.5 Price Thresholds .......................................................................................................... 14 
+3.1.2.6 Trading Status .............................................................................................................. 15 
+3.1.2.7 Short Selling ................................................................................................................ 15 
+3.1.2.8 Off-Market Trading ...................................................................................................... 16 
+3.1.3 Other Related Factors..................................................................................................... 16 
+3.1.4 Summaries on Market Microstructure ........................................................................... 17 
+3.2 Market Co-movement ....................................................................................................... 17 
+3.3 Summary ........................................................................................................................... 19 
+4. Measurements ............................................................................................................................ 20 
+4.1 Measurement for Market Efficiency.................................................................................. 20 
+4.1.1 Traditional Measurement for Market Efficiency ............................................................ 21 
+4.1.2 New Measurement for Dependency .............................................................................. 23 
+4.2 Measurement for Market Co-movement .......................................................................... 24 
+4.2.1 Traditional Measurement for Market Co-movement ..................................................... 25 
+4.2.2 Wavelet Measurements ................................................................................................. 26 
+5. Data, Institutional Details and Descriptive Statistics ................................................................... 28 
+5.1 Data and Institutional Details ............................................................................................ 28 
+5.2 Descriptive Statistics ......................................................................................................... 32 
+6. Research Statement .................................................................................................................... 36 
+7. Empirical Results ......................................................................................................................... 38 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+2 
+ 
+7.1 Market Co-movement ....................................................................................................... 39 
+7.2 Internal Market efficiency ................................................................................................. 40 
+7.3 Cross-Market efficiency ..................................................................................................... 41 
+8. Explanations ................................................................................................................................ 42 
+8.1 Financial Crisis Period ........................................................................................................ 43 
+7.2 Period of Releasing Retained Common Shares in the Shanghai Exchange ....................... 49 
+9. Robustness .................................................................................................................................. 54 
+10. Conclusion ................................................................................................................................. 60 
+References ....................................................................................................................................... 62 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+2 
+ 
+ 
+List of Figures 
+ 
+Figure 1 Time Flow of Price Movement in Two Markets ........................................................... 3 
+Figure 2 Market Indices in the Shanghai Exchange and the Hongkong Exchange .................. 34 
+Figure 3 Squared Wavelet Coherence for Market Co-movement ........................................... 39 
+Figure 4 Normalized Entropy for the Shanghai Exchange and Hongkong Exchange ............... 41 
+Figure 5 Normalized Mutual Information between the Two Markets .................................... 42 
+Figure 6 Wavelet Coherence between the two Markets During the Financial Crisis Period ... 44 
+Figure 7 Normalized Entropy and Mutual Information in both Markets During the Financial 
+Crisis ................................................................................................................................ 45 
+Figure 8 Wavelet Coherence between the two Markets During the Leasing Period .............. 50 
+Figure 9 Normalized Entropy and Mutual Information in both Markets During the Releasing 
+Period .............................................................................................................................. 51 
+Figure 10 Wavelet Coherence between the two Markets based on Cross-Listing Indices ...... 58 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+3 
+ 
+ 
+List of Tables 
+ 
+Table 1 Theoretical Effects of Sub-dimensions of Market Microstructure .............................. 17 
+Table 2 Differences of Status Quo of Market Microstructure in the Two Exchanges .............. 29 
+Table 3 Significant Events Related to Market Microstructure in both Equity Markets ........... 31 
+Table 4 Descriptive Statistics for Gross Returns in both Exchanges ........................................ 32 
+Table 5 Paired Differences between Means of Daily Gross Returns ....................................... 33 
+Table 6 Differences of Means between Times Periods in Both Exchanges ............................. 35 
+Table 7 Differences of Variances between Time Periods in Both Exchanges .......................... 36 
+Table 8 Effect of the Change of the Market Microstructure during the Financial Crisis Period
+......................................................................................................................................... 45 
+Table 9 Relationship among Market Co-Movement, Market Efficiency and Cross-Market 
+Efficiency during the Financial Crisis Period .................................................................... 47 
+Table 10 Effect of the Change of the Market Microstructure during the Releasing Period .... 51 
+Table 11 Relationship among Market Co-Movement, Market Efficiency and Cross-Market 
+Efficiency during the Releasing Period ............................................................................ 53 
+Table 12 Relationships among Market Co-movement, Internal Market Efficiency and 
+Cross-Market Efficiency Based on 60 Trading Days ......................................................... 55 
+Table 13 Relationships among Market Co-movement, Internal Market Efficiency and 
+Cross-Market Efficiency Based on 120 Trading Days ....................................................... 56 
+Table 14 Relationships among Market Co-movement, Internal Market Efficiency and 
+Cross-Market Efficiency Based on Cross-Listing Indices .................................................. 59 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+1 
+ 
+Abstract 
+In finance area, it is well known that the cross-market efficiency among financial 
+markets is time varying and is relatively weak when the market is bearish and volatile. 
+At first glance, this characteristic contradicts the exchange regulators’ objective of 
+improving market efficiency since the increasing correlation implies internal market 
+inefficiency. Generally, the researcher attributes these characteristics to the 
+globalization of financial markets (increasing correlation). In this study, we provide an 
+additional explanation, which is the increasing similarity of market microstructures in 
+exchanges. Additionally, we confirm the statement that strong co-movement 
+patterns does not necessarily mean the market is internally inefficient, as suggested 
+by Dwyer and Wallace (1992). Furthermore, we suggest that there are significant 
+interaction effect of the internal market efficiency and the market co-movement on 
+the cross-market efficiency, and that compared to the market in normal condition, 
+the cross-market efficiency depends heavier on the internal market efficiency and 
+the market co-movement when the market is in emergency condition.  
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+2 
+ 
+1. Introduction 
+ 
+The study of the co-movement patterns among international financial markets 
+has drawn a great deal of scholars’ interests. It has been established in prior 
+literatures that the correlations among international markets (i.e., co-movement) are 
+time-varying and relatively strong in bearish and volatile market. Researchers 
+attribute these characteristics to the globalization and integration of international 
+markets (Phylaktis and Xia, 2009). The understanding about the correlation pattern is 
+of interest to both scholars and investors since it plays a significant role in evaluating 
+the potential gains and losses of international portfolio diversification strategy. The 
+underlying theory is that the weaker the correlation across markets, the greater the 
+potential benefit of the international diversification strategy. However, the potential 
+benefits would be reduced if the co-movement of markets is strengthened.  
+ 
+In addition, the dynamic pattern of co-movement across international financial 
+markets also plays an important role in understanding the relationship between 
+self-market efficiency and cross-market efficiency. Compared to previous researches 
+(based on index option markets or exchange rate markets), which generally does not 
+make distinctions between market co-movement and cross-market efficiency, this 
+study suggests that the market strong co-movement is unequal to the cross-market 
+inefficiency, as suggested by Dwyer and Wallace (1992).  
+ 
+To illustrate this statement, consider two markets1, namely home market2 and 
+host market,  
+                                                             
+1 The illustration is based on ideal model, which assumes only two market conditions, namely efficient market 
+and inefficient. In practice, financial markets are inefficient and have different degrees of the internal market 
+efficiency. 
+2 In this illustration, assumes the home market is the basis for analysis. 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+3 
+ 
+ 
+ 
+ 
+ 
+Figure 1 Time Flow of Price Movement in Two Markets 
+ 
+if the home market is self-inefficient and the correlation between home and host 
+markets is strong, the two markets are cross-market inefficient as well. In the home 
+market, because of self-market inefficiency, the future return patterns can be 
+predicted based on the past price movement in the same market, and because of the 
+existing linear relationship, the future price in the host market could also be 
+estimated. In the case that the home market is self-inefficient and the correlation is 
+weak, the two markets are also cross-market efficient. In this case, although the 
+future price is predictable in the home market, the future return patterns in the host 
+market cannot be estimated on the basis of historical market information in the 
+home market because of the weak linear relationship between prices in both 
+markets. If the home market is self-efficient, the two markets are cross-efficient even 
+when the correlation of prices across markets is high. Since the price in the home 
+market is efficient and is close to the Geometric Brownian Motion (GBM), in which 
+the next value of a time series varies randomly from the current value, the future 
+price in the home market cannot be estimated even given the market information in 
+the host market. 
+ 
+Studies on international markets co-movement generally have two traits. First, 
+measurement of cross correlation between two financial market composite indices is 
+Host Market 
+𝑡 
+Home Market 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+4 
+ 
+employed to investigate the pattern of co-movement (for example, Chiang, Tan and Li 
+2007). And second, weekly or monthly returns data are used rather than daily or 
+intraday data (for example, Rua and Nunes, 2009; Phylaktis and Xia, 2009). 
+ 
+Based on the idea that the specific reforms of market have impacts on market 
+microstructure (Lagorade-Segot, 2009), we suggest that, in addition to globalization, 
+the development of market microstructure can partially explain the co-movement 
+pattern between two financial markets since the trading rules and regulation 
+determine how investors behave in the markets. In his book, O’Hara (1995) defined 
+market microstructure as the effects of trading mechanisms on the price formation 
+process. Assuming that two markets are the same in all aspects except for the trading 
+sessions, a high correlation could be observed between market composite indices. In 
+other words, the development of market microstructure affects the correlation 
+pattern of the index return, and hence has an impact on the cross-market efficiency. 
+ 
+The main objective of this study is to understand the dynamic nature of market 
+co-movement based on the development of the market microstructure, and to 
+investigate its role in the relationship between self-market efficiency and 
+cross-market efficiency. Therefore, this study benefits scholars and investors in the 
+following ways: first, to my knowledge, this is the first study to examine the impact of 
+market microstructure on market co-movement. Second, since there is only limited 
+literature on the difference between market co-movement (or integration) and 
+cross-market inefficiency, this study aims to fill this gap in the literature. And finally, 
+by using a novel methodology to investigate the impact of market microstructure 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+5 
+ 
+from both time and frequency domains, investors could have a better understanding 
+of the nature of the trading mechanism and about the influence of changes in a 
+specific trading regulations.  
+ 
+This study is organized as follows. In section 2, the basic concepts related to this 
+study are explained. In section 3, previous research on the effects of market 
+microstructure and market co-movement are reviewed. The measurements related 
+to the study are revisited in section 4, and a data overview is provided in section 5. 
+The empirical results are presented in section 6, the explanation and the robust 
+check are followed and the conclusions are drawn in final section. 
+ 
+2. Background Knowledge 
+ 
+In this section, the basic concepts of market microstructure, efficient market 
+hypothesis, cross-market efficiency and market co-movement are explained to aid 
+the understanding about the topic. 
+2.1 Market Microstructure 
+ 
+Market microstructure, defined by O’Hara (1995), is the research about how 
+specific trading mechanisms affect investors’ decision-making process. Empirically, 
+the study on market microstructure aims to answer the question of how the change 
+of a specific trading rule affects the market efficiency and liquidity. 
+ 
+According to Madhavan (2000), studies on market microstructure can be 
+classified into four categories. First, price formation and price discovery, which aims 
+to investigate how latent demands are translated into realized prices and volumes, 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+6 
+ 
+including investigation of determinants of trading costs and processes of information 
+incorporating into prices. Second, market structure and design issues, which concern 
+the relationship between price formation process and trading protocols. Third, 
+information and disclosure, which assumes that the behavior of traders and their 
+affected by the “black box3”. And the final refers to the topic of informational issues 
+arising from the interface of market microstructure with other areas of finance, such 
+as corporate finance, asset pricing, and international finance.  
+ 
+However, studies on market microstructure focus on the impact about a change 
+of trading rules or regulations in a single market, but pay little attention to the 
+impact caused by a change of microstructure in one market to other related markets. 
+This influence cannot be ignored because any market is not completely isolated from 
+international financial markets, and also because of the tendency of globalization.  
+2.2 Efficient Market Hypothesis (EMH) 
+ 
+The Efficient Market Hypothesis, first defined by Fama (1970), refers to an 
+efficient financial market in which price reflects all value related information (all of 
+market, public and private information) and in which the investor cannot always 
+achieve excess returns. According to Fama (1970), depending on the content of 
+information, which is incorporated in the current price, market efficiency can be 
+categorized into three forms. 
+ 
+The first and weakest form is the weak-form efficiency, which means that 
+historical data cannot be used to predict the future price movement. Therefore, 
+                                                             
+3 The “black box” here refers to situation in which investors have knowledge of their inputs (such as orders) and 
+outputs (such as prices and volumes), but without any knowledge about the internal formation process.  
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+7 
+ 
+under this form of market efficiency, the future price movement is entirely 
+determined by the information which is not contained in the past price series, and 
+technical analysis techniques are unable to generate excess returns consistently. The 
+second form is semi-strong efficiency, which assumes that all public available 
+information has already been incorporated in the current price. In other words, 
+investors with public information cannot earn excess returns, and only the investors 
+with private (inside) information can take advantage of the market under this form of 
+market efficiency. This type of market assumes prices adjust to newly released 
+information in a rapid and unbiased way. Compared to the weak form efficiency, 
+under semi-strong form, neither fundamental analysis nor technical analysis can 
+generate excess returns.  The final and strongest form of market efficiency is 
+strong-form efficiency, which states that all available information (all of market, 
+public and private information) cannot be used to predict future price movement. 
+Therefore, investors cannot earn excess returns regarding the information they 
+processed. 
+2.3 Cross-Market Efficiency 
+ 
+Generally, the cross-market efficiency is investigated from the perspective of 
+mispricing and based on the index option market or exchange rates market (Brunetti 
+and Torricelli 2007; Vipul 2008; Kühl, 2010). In the current study, the cross-market 
+efficiency, as a sub-concept of general market efficiency theory, refers to the idea 
+that the past price movement in one market cannot be used to predict the future 
+price motion in another market since the current price has already incorporated all 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+8 
+ 
+available value-related information. 
+ 
+2.4 Market Co-movement 
+ 
+Market co-movement refers to average cross-correlation or synchronicity which 
+is the fraction of stocks that move together at a given time (Morch et al., 2000). 
+Empirically, co-movement between two financial markets is studied by analyzing the 
+co-integration or cross-correlation between the two market composite indices. 
+ 
+3. Literature Review 
+ 
+The literature related to this topic can be divided into two branches, studies on 
+market microstructure and studies on market co-movement, respectively. Literatures 
+on market microstructure are reviewed based on the theoretical framework 
+suggested by Asmar and Ahmad (2011). Additionally, this study suggests that factors 
+of settlement system, frictions and capital sources have impacts on market 
+microstructure as well.  
+3.1 Market Microstructure 
+ 
+As suggested by Lagorade-Segot (2009), microstructure of emerging markets 
+(such as informational efficiency, volatility and liquidity levels) are affected by 
+economic and political contexts of insider trading regulations, trading system 
+automation and accounting standardization. Additionally, he suggested that specific 
+reforms of market have different marginal impacts on market microstructure. 
+However, in this study, we use market microstructure and trading rules of equity 
+market interchangeably.  
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+9 
+ 
+ 
+Based on the work of Asmar and Ahmad (2011), market microstructure could be 
+analyzed from the two sub-dimensions of trading mechanism and market regulation.  
+3.1.1 Trading Mechanism 
+ 
+Trading mechanism refers to the trading methods, and could be studied in terms 
+of market type, trading sessions, order forms and market transparency (Asmar and 
+Ahmad, 2011). 
+3.1.1.1 Market Type 
+ 
+There are three dimensions for market type, includes degree of continuity, role 
+of market makers and degree of automations. Since most of the financial markets 
+over the world are hybrid4, involving market makers, brokers, dealers and clearing 
+house, and  electronic automation5, there is limited literature about the impacts of 
+a change of market type.  
+ 
+Pagano and Schwartz (2003) investigated the effects of the introduction of 
+electronic closing call auctions on market quality in Euronext Paris, and they revealed 
+that the new degree of continuity could lower the transaction costs and improve 
+market’s ability of price discovery .  
+ 
+Chelley-Steeley (2008) examined the effects of the introduction of closing call 
+auction at the London Stock Exchange in 2000, and concluded that after the 
+effectiveness of the closing call auction, opening and closing market quality has 
+improved and that the greatest improvement is with the most inactive securities.  
+Comerton-Forde, Rydge and Burridge (2007) investigated the impact of 
+                                                             
+4 Hybrid market means the market combines call auction and continuous trading session together. 
+5 The electronic automation is compared to the broker/dealer open cryout trading. 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+10 
+ 
+introducing of a new opening call auction on March 25, 2002 in Hongkong Exchange. 
+Contrary to previous researches, they revealed that there is a decrease in market 
+quality after the introduction, which is measured from the perspective of price 
+efficiency, price volatility and relative volumes and absolute spreads.  
+Similarly, Gerace, Tian and Zheng (2009) investigated the market liquidity before 
+and after the introduction of a new pre-market call auction system on July 1, 2006 in 
+the Shanghai Exchange. And they concluded that after the increase of transparency 
+during the opening call auction, there is an increase in participation during the 
+auction and a reduction of orders placed in the continuous session, which results in 
+lower price volatility and narrower proportional bid-ask spreads. 
+ 
+Huang and Stoll (1996) compared the bid-ask spreads in dealer (quote-driven) 
+markets and in auction (order-driven) markets, and showed that the auction could 
+lower the transaction costs for investors.  
+In addition, Madhavan (1992) suggested that the dealer market could lower the 
+volatility and improve the pricing efficiency in the market.  
+Generally, markets with call auction and electronic systems improve the market 
+quality. 
+3.1.1.2 Trading Session 
+The trading session refers to the defined period time of trading by exchange 
+authority. In his study, Asem (2007) examined the market volume of the NYSE when 
+its trading hours were extended on September 30, 1985, and found out that the 
+volume declined initially, as predicted by closure models, but gradually increased to 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+11 
+ 
+its pre-extension levels, which suggested that the change of trading session has a 
+temporary impact on investors’ trading decision. 
+Alexakis and Balios (2008) investigated the influence of change of microstructure 
+in the Athens Stock Exchange. They concluded that structure and duration of trading 
+session have little effect on volatility and informational efficiency, and that the 
+continuous trading seems to be a more efficient regime than trading with halts. 
+ 
+Generally, markets with halts are less efficient, and a specific time period of 
+trading has little impact on market quality.  
+3.1.1.3 Order Forms 
+ 
+Orders represent the intent of trading (buying or selling) a listed security in 
+secondary market, and could take the forms of market order, limit order, stop order, 
+and other forms which could control the price, quantity and execution of trades. 
+Easley and O’Hara (1991) examined the effect of order forms on security prices, 
+and revealed that the trading behavior of investors is affected by the order forms, 
+which results in the change in information about market order flow, and then affects 
+the price formation process. Harris and Hasbrouck (1996) compared the execution 
+performance for market and limit orders, and revealed that the limit order commonly 
+outperforms market order. 
+3.1.1.4 Transparency 
+ 
+Market transparency is about the quality of the information observed regarding 
+price formation processes by market participants. Generally, the information includes 
+past and current prices, volumes, bid-ask spreads, quotes and identities of market 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+12 
+ 
+participants. The previous research on the impact of transparency suggests that a 
+high level of market efficiency or quality is associated with high levels of 
+transparency (Pagano and Roell 1996; Madhavan, Porter and Weaver., 2005; and 
+Chung and Chuwonganant 2009).  
+3.1.2 Market Regulation 
+ 
+Market regulation, which is defined as the rules about how to trade, could be 
+analyzed from the perspectives of rules of order priority, tick size and spreads, listing, 
+trading unit, price thresholds, trading status, shorting selling, and off-market trading 
+(Asmar and Ahmad, 2011). 
+3.1.2.1 Rules of Order Priority 
+ 
+The order priority refers to the rules about how the orders are matched in the 
+market. Generally, orders are prioritized by of price first and then by time. Demarchi 
+and Foucault (2000) suggested that the choice of secondary priority is important to 
+encourage traders to provide liquidity, and the time priority as the secondary priority 
+could give incentives for price competition among traders.  
+3.1.2.2 Tick Size and Spreads 
+ 
+Tick size refers to the minimum change on the price. Generally, the tick size could 
+be in decimals or fractions, and could also be varied or fixed within different price 
+ranges. Ascioglu, Comerton-Forde, and McInish (2010) examined the different tick 
+sizes in Tokyo Stock Exchange which are based on stock prices solely. They suggested 
+that the tick size should be determined by trading activity and stock price, and 
+posited that, transaction costs would be unnecessarily high, if the minimum tick size 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+13 
+ 
+is set inadequately. 
+Hsieh, Chuang and Lin (2008) examined the impact of tick size reduction in 
+Taiwan Stock Exchange, and showed that this change of market microstructure 
+reduced bid-ask spread, market depth, market liquidity, and binding-constraint 
+probability, which led to improvement in market efficiency and reduction in trading 
+costs in the market. Similarly, many other researchers investigated the impact of 
+reduction of tick size in different stock exchanges, and came to a similar conclusion. 
+(For example, Pavabutr and Prangwattananon (2008) made their investigation based 
+on the Thailand Stock Exchange, Alampieski and Lepone (2009) studied the change of 
+tick size in the Sydney Stock Exchange, and Kurov (2008) studied the tick size 
+reduction in the Chicago Mercantile Exchange (CME)).  
+Theoretically, the smaller the tick size, the small transaction cost it incurred in 
+trading, and thus the higher the market quality. 
+3.1.2.3 Listing 
+ 
+The rules of listing refers to the requirements imposed by the exchange authority 
+to the individual company for being listed in the secondary market. Generally, less 
+strict rules would result in more unfair trades, which would harm the investors, and 
+then lead to less efficiency of the market. On the other hand, more strict rules will 
+result in a healthier trading environment, and thus more participants in the market, 
+which leads to a higher level of market efficiency. 
+3.1.2.4 Trading Unit 
+ 
+In an exchange, securities are generally traded on the basis of a standardized 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+14 
+ 
+quantity, usually 100 shares. However, odd-lot trading is also available in some 
+exchanges to meet the specific requirement of an individual company. 
+Amuhud, Mendelson and Uno (1999) investigated the impact of “round lots” in 
+Japanese Equity Market, and suggested that the reduction in minimum trading unit 
+can increase the number of individual investors, stock liquidity, and stock prices. 
+Similarly, Hauser and Lauterbach (2003) reached similar conclusion on the basis of 
+the Tel-Aviv Stock Exchange. 
+ 
+Theoretically, lower trading unit will result in less transaction costs and more 
+efficiency in the market pricing process. 
+3.1.2.5 Price Thresholds 
+ 
+Price thresholds provide information about the price ranges securities can be 
+traded based on the last closing price. Theoretically, a price threshold will limit the 
+market’s ability to reflect on the newly released information. 
+Ryoo and Graham (2002) examined the market efficiency of the Korean stock 
+market, in which five regimes of daily price limits are employed. And they found a 
+positive relationship between daily price limits and proportion of stock prices 
+movement in random walk. In other words, as daily price limits increase, the stock 
+price is more efficient.  
+Chan, Kim, and Rhee (2005) investigated the impact of wide price limits in the 
+Kuala Lumpur Stock Exchange from the perspectives of information asymmetry, 
+arrival rates of informed traders, and order imbalance. They concluded that the price 
+threshold has no positive effect on those perspectives, and suggested that price 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+15 
+ 
+thresholds helped to improve price discovery and generated great transaction costs.  
+3.1.2.6 Trading Status 
+ 
+In the case of news announcements or corrections of order imbalance, the 
+exchange authority may suspend the trading of a security. And the implementation 
+of the rules of trading status gives investors fair opportunities to reflect on the new 
+information, and could improve the market efficiency. 
+3.1.2.7 Short Selling 
+ 
+Short selling refers to the sale of securities in the market, which are borrowed 
+from a third party, and brought back at a future date to return them to the borrower. 
+This trading strategy is applied when the investor predicts that the price will decline 
+in the future. Generally, the market with short selling available is more efficient than 
+the market with short selling forbidden since, in the former market, investors could 
+earn excess returns when prices are increasing and declining, which makes the price 
+in the market close to the intrinsic value. 
+Boehmer, Jones, and Zhang (2008) suggested that short sellers are important for 
+efficient stock prices. And in a later research, Boehmer and Wu (2009) suggested that 
+greater shorting flow reduces deviations of transaction prices from a random walk, 
+and accelerates the incorporation of public information into prices. In other words, 
+short selling could be helpful to discover the efficient price of stocks. Therefore, the 
+less short sale restriction there is, the more the market informational efficiency, and 
+vice versa. 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+16 
+ 
+3.1.2.8 Off-Market Trading 
+ 
+Off-market trading refers to the trade of listed securities outside the formal 
+exchange. The use of off-market trading is to remove the impact of trading large 
+blocks of shares on the price. In their study, Booth et al. (2002) suggested that 
+upstairs traders (off-market traders) are associated with less information content and 
+lower influence on price.  
+3.1.3 Other Related Factors 
+ 
+In addition to the theoretical framework suggested by Asmar and Ahmad (2011), 
+we suggest that the rules about settlement system, friction, and sources of capital 
+also have impact on market microstructure. 
+ 
+Theoretically, if investors have to wait long time for selling their inventory, they 
+lack the ability to reflect on newly released information in a rapid way, which could 
+result in a deterioration in market efficiency.  
+ 
+In addition, the high friction of trading (i.e., the high commission and stamp duty) 
+will make investors lack the incentive to reflect on the new information since the 
+friction must be subtracted from the gain of the transaction, which makes the market 
+less efficient compared to the market with low trading friction. 
+ 
+Regarding the sources of capital, a multi-sources market, in which both domestic 
+and foreign investors could trade listed securities, could provide heterogeneous 
+investing opinions and increase the participation in the market, which could result in 
+an improved market efficiency compared to the single-source market, in which only 
+domestic investors could participate in the transaction. 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+17 
+ 
+3.1.4 Summaries on Market Microstructure  
+ 
+To sum up, the theoretical effects of sub-dimensions of market microstructure 
+on market efficiency are listed in the following table. 
+Table 1 Theoretical Effects of Sub-dimensions of Market Microstructure 
+Market Microstructure 
+High Level of Market 
+Efficiency 
+Low Level of 
+Market Efficiency 
+Trading 
+Mechanism 
+Market 
+Type 
+Continuity 
+With call auction 
+Without call 
+auction 
+Market Makers 
+Dealer Market 
+Auction 
+Automation 
+Electronic 
+Cryout 
+Trading Sessions 
+Without Halt 
+With Halt 
+Order Forms 
+Limit Order 
+Market Order 
+Transparency 
+High Level of 
+Transparency 
+Low Level of 
+Transparency 
+Market 
+Regulation 
+Order Priority 
+Price/Time 
+Other Priority 
+Tick Size 
+Lower 
+Higher 
+Listing 
+More Strict 
+More Loosen 
+Trading Unit 
+Lower 
+Higher 
+Price Thresholds 
+No Thresholds 
+With Thresholds 
+Trading Status 
+With 
+Implementation 
+Without 
+Implementation 
+Shorting Selling 
+Available 
+Forbidden 
+Other 
+Related 
+Rules 
+Settlement System 
+Less Time Interval 
+More Time Interval 
+Commission & 
+Stamp Duty 
+Lower 
+Higher 
+Main Capital Source 
+Multi-Sources 
+Single-Source 
+ 
+3.2 Market Co-movement 
+Generally, the study on market co-movement is based on series of 
+low-frequency data (daily or longer time period data) and market composite indices 
+rather than high-frequency data (intraday data) and individual stock price.  
+Rua and Nunes (2009) investigated the cross-country co-movement patterns of 
+four developed countries (Japan, Germany, UK and US) from both time and 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+18 
+ 
+frequency domains on the basis of market price index as well as for the ten economic 
+sectors that make up the index. By using wavelet analysis, they revealed that the 
+co-movement pattern between all pairs of these four countries is not constant over 
+different time spans.  
+Chiang, Tan and Li (2007) studied the dynamic correlations of stock returns by 
+using Chinese A-share and B-share composite indices (daily) in both Shanghai and 
+Shenzhen exchanges. They concluded that the correlation coefficient is time-varying 
+and affected by restrictions and trading activities. Similarly, Aslanidis, Osborn and 
+Sensier (2009) found the same result by investigating the STCC (Smooth Transition 
+Conditional Correlation) by using monthly data of the S&P composite index and the 
+Financial Times All Share Index (FT). 
+In their article, Brockman, Liebenberg and Schutte (2010) suggested that the 
+amount of information production is negatively related to market co-movement. In 
+other words, if information production is ample, the co-movement is low, and vice 
+versa.  
+Phylaktis and Xia (2009) investigated contagion effect6, from the perspective of 
+asset pricing at the sector level. They suggested that the integration between sectors 
+is time-varying and heterogeneous, and that some of the market is isolated from 
+international markets during crisis periods. 
+Brooks and Negro (2006) showed that a company’s global nature is positively 
+related to its exposure to global shocks and negatively related to its exposure to 
+                                                             
+6 The contagion effect is defined as the correlation over and above one would expect from economic 
+fundamentals.  
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+19 
+ 
+country shocks. 
+Beine, Cosma and Vermeulen (2010) showed that stock market co-movement 
+across return distribution is affected by macroeconomic variables asymmetrically. To 
+be specific, global trading increases co-movement across the return distribution, 
+“financial liberalization increases left tail co-movement” (p. 184), whereas only minor 
+impact on right tail, and “exchange rate volatility has a strong positive impact on 
+lower tail co-movement” (p.191). 
+Bodart and Reding (1999) focused on the impact of the exchange rate regime on 
+the correlation between time-varying stock market volatilities. Their analysis showed 
+that an increase in exchange rate volatility was accompanied by a decline in 
+international correlations. On the other hand, Kanas (2002) investigated whether the 
+volatility of exchange rates was affected by the volatility of stock market returns for 
+the US, UK, and Japan. Evidence presented suggested that the volatility of the home 
+countries’ stock returns was a determinant of exchange rate volatility for all three 
+countries. 
+3.3 Summary 
+However, to our knowledge, there is limited literature about the relationship 
+between market microstructure and market co-movement. In this study, we 
+hypothesize that similar market microstructures will result in similar investment 
+decision made by trading participants, which leads to strong market co-movement 
+and high correlation among the markets.  
+ 
+Additionally, to distinguish the two concepts of market co-movement and 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+20 
+ 
+cross-market efficiency, this study hypothesizes that the cross-market efficiency is 
+partially determined by the market co-movement and partially by self-market 
+efficiency. 
+ 
+4. Measurements 
+ 
+Traditionally, the measurements on market efficiency and market co-movement 
+are solely from frequency domain, which do not take into account the difference 
+between short-term and long-term investment horizons (Rua and Nunes 2010). 
+Naturally, investors with short-term interests are more interested in high frequency 
+dependency and short horizon co-movement, whereas the long-horizon investors are 
+more interested in low frequency information and long horizon correlations.  
+Additionally, cross-market efficiency and market co-movement are often used 
+interchangeably. However, there is a need to clarify the difference between these 
+two concepts. The co-movement differs from cross-market efficiency from the 
+perspective that the former concept emphasizes the simultaneous price movement, 
+while the later analyzes the dependency pattern by considering the time sequence of 
+price movements in the two markets. Therefore, using co-movement measurements 
+to investigate the cross-market efficiency fundamentally ignores the embedment of 
+time sequence which should be included when considering the issue of market 
+efficiency.  
+4.1 Measurement for Market Efficiency 
+ 
+The essence of measuring price efficiency is to detect the dependency of price 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+21 
+ 
+series. If the price significantly relates to its previous movement, the stock lacks 
+efficiency since the investor could use the previous price movement to predict its 
+following performance. On the other hand, if the relationship is insignificant, the 
+stock is market efficient because investors cannot use the available information to 
+predict the following price movement. The target for analyzing could be abnormal 
+returns, or gross returns (for more details, please see Boehmer and Wu, 2009; 
+Hasbrouck 1993). In this section, after the review of the traditional measurements 
+which investigate the market efficiency and market co-movement solely from 
+frequency domain, the measurements of Boltzmann-Gibbs-Shannon (BGS) entropy, 
+corresponding normalized entropy, mutual information, and wavelet coherence are 
+illustrated.  
+4.1.1 Traditional Measurement for Market Efficiency 
+ 
+The simplest way to examine price efficiency is to use the Autoregressive model 
+(AR model) to detect, to what extent, the current price could be explained by 
+previous price series.  
+ 
+An autoregressive model with order 𝑝 could be defined as: 
+ 
+𝐴𝑅 𝑝 = 𝑋𝑡= 𝑐+ 
+𝜑𝑖𝑋𝑡−𝑖
+𝑝
+𝑖=1
++ 𝜀𝑡 
+ 
+where 𝜑1, … , 𝜑𝑝 are the parameters of the model, 𝑐 is a constant and 𝜀𝑡 is 
+the white noise, which has zero mean and constant variance 𝜎𝜀
+2. A challenge to this 
+model is that, generally, the variance of residual is varying over time, which is 
+contrary to the assumption of this model. 
+ 
+Therefore, the Autoregressive Conditional Heteroskedasticity model (ARCH) is 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+22 
+ 
+introduced to overcome this drawback of the AR model. The ARCH model assumes 
+that the variance of the residual at time point 𝑡 is a function of previous time 
+period’s residual. In its mathematic form, 𝜀𝑡= 𝜎𝑡𝑧𝑡 and 𝜎𝑡
+2 = 𝛼0 + 
+𝛼𝑖𝜀𝑡−𝑖
+2
+𝑞
+𝑖=1
+. 
+Where the distribution has a mean of zero and standard deviation of one, and 
+𝛼𝑖≥0, 𝑖≥0. 
+ 
+As suggested by Engle (1982), the procedure of estimating ARCH(p) model is to 
+estimate the parameters from AR(p) 𝑦𝑡= 𝛼0 + 
+𝛼𝑖𝑦𝑡−𝑖
+𝑝
+𝑖=1
++ 𝜀𝑡 firstly, and then 
+obtain the parameters from the model of 𝜀 𝑡
+2 = 𝛼0
+ + 
+𝛼𝑖 𝜀 𝑡−𝑖
+2
+𝑞
+𝑖=1
+, and finally test the 
+null hypothesis that 𝛼𝑖 for all 𝑖= 0, … , 𝑝 are equal to zero based on Chi-square 
+distribution. 
+ 
+However, the ARCH model cannot solve the problem when the variance 𝜎𝑡
+2 is 
+also related to its previous variances 𝜎𝑡−1
+2 , … , 𝜎𝑡−𝑝
+2
+. In this case, Generalized 
+Autoregressive Conditional Hereroskedasticity (GARCH) model is employed. The 
+GARCH(p, q) takes the form of 𝜎𝑡
+2 = 𝛼0 + 
+𝛼𝑖𝜀𝑡−𝑖
+2
+𝑞
+𝑖=1
++ 
+𝛽𝑖𝜎𝑡−𝑖
+2
+𝑝
+𝑖=1
+. Where p is the 
+order of the GARCH terms 𝜎2 and q is the order of the ARCH terms ε2. 
+Despite the measurements focus on the dependency of time series, the ability of 
+adjusting to efficient price can also be used as a dimension of price efficiency. Hou 
+and Moskowitz (2005) suggested price delays 7 is a good estimate of market 
+efficiency from this aspect. This measurement captures the portion of individual 
+stock return variation which is explained by lagged market returns. The larger the 
+delay, the less efficient the stock price is because it takes longer time for the stock to 
+                                                             
+7 Price delays refer to the speed of adjustment to market-wide information. 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+23 
+ 
+adjust to the efficient price. 
+ 
+4.1.2 New Measurement for Dependency 
+Several researchers, such as Darbellay and Wuertz (2000), and Gulko (1999) 
+suggested using the Boltzmann-Gibbs-Shannon (BGS) Entropy to examining the 
+degree of market efficiency. The investor, as an information receiver, can use entropy 
+as a measurement of uncertainty about the future information received (Brissaud, 
+2005). In other words, the entropy could be seen as a measurement of randomness 
+of the future price (return) movement. Given a continuous random variable 𝑋 with 
+its corresponding probability density function of 𝑓𝑋, the BGS entropy is defined as 
+𝑕 𝑋 = − 𝑓𝑋(𝑥)𝑙𝑜𝑔𝑓𝑋(𝑥) 𝑑𝑥. In its discrete version, the entropy is defined as 
+𝑕 𝑋 = − 𝑓𝑋(𝑥)log⁡(𝑓𝑋 𝑥 ). Theoretically, the higher the value of calculated value 
+of entropy based on the price or return series, the more efficient of the market, and 
+vice versa. 
+Cross-market efficiency focuses on the dependency of two sets of price time 
+series in two different exchanges. If the current price movement in one exchange 
+heavily depends on the previous price movement in another exchange, the two 
+exchanges are cross-inefficient. On the other hand, if the current price motion in one 
+exchange is independent with the previous price movement in the other exchange, 
+the two exchanges is in status of cross-market efficiency.  
+Additionally, one can also employ the normalized entropy, which is defined as 
+n𝑕 𝑋 = − 𝑓𝑋(𝑥)𝑙𝑜𝑔𝑓𝑋(𝑥) 𝑑𝑥/log⁡(𝑛)
+, 
+or 
+n𝑕 𝑋 = − 𝑓𝑋 𝑥 log 𝑓𝑋 𝑥  /
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+24 
+ 
+log⁡(𝑛), to compare the degree of market efficiency in different markets (Pele and 
+Tupus 2011). Where the n is the number of observations when calculating the 
+entropy, and the base for logarithm is 2.  
+Darbellay and Wuertz (2000) also showed how to use mutual information as a 
+measurement to examine the dependency between two sets of time series. Hence, 
+given continuous random variables 𝑋 and 𝑌, their corresponding probability 
+densities 𝑓𝑋 and 𝑓𝑌, and the joint probability density of 𝑓𝑋,𝑌, the joint entropy can 
+be defined as 𝑕 𝑋, 𝑌 = −  𝑓𝑋,𝑌(𝑥, 𝑦)𝑙𝑜𝑔𝑓𝑋,𝑌(𝑥, 𝑦) 𝑑𝑥𝑑𝑦, and the mutual 
+information is defined as 𝐼 𝑋; 𝑌 = 𝑕 𝑋 + 𝑕 𝑌 −𝑕 𝑋, 𝑌  
+= 𝑓𝑋,𝑌(𝑥, 𝑦)𝑙𝑜𝑔
+𝑓𝑋,𝑌(𝑥,𝑦)
+𝑓𝑋(𝑥)𝑓𝑌(𝑦) dx dy , and its corresponding discrete version is 
+𝐼 𝑋; 𝑌 = 𝑕 𝑋 + 𝑕 𝑌 −𝑕 𝑋, 𝑌 =  𝑓𝑋,𝑌(𝑥, 𝑦)𝑙𝑜𝑔
+𝑓𝑋,𝑌(𝑥,𝑦)
+𝑓𝑋(𝑥)𝑓𝑌(𝑦). The value of the 
+mutual information is determined by the calculated entropy of time series of 𝑋 and 
+𝑌. Theoretically, the mutual information 𝐼 𝑋; 𝑌  equals zero if and only if the two 
+sets of time series are independent.  
+However, since the entropy is a increasing function with the length of window, 
+the choice of the rolling window length is important for comparing market 
+efficiencies if different markets (Brissaud, 2005). 
+ 
+  
+4.2 Measurement for Market Co-movement 
+ 
+The essence of market co-movement is the degree to which the market indices 
+move together over time. Therefore, high absolute value of the measurement (for 
+example, the Pearson’s Cross Correlation) indicates a strong co-movement pattern, 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+25 
+ 
+whereas the measurement close to zero indicates a weak co-movement over time.  
+4.2.1 Traditional Measurement for Market Co-movement 
+The most popular and simplest method for computing correlation coefficients is 
+constant-correlation model. This model assumes that the correlation coefficient is 
+constant over time. The calculation is given by 𝜌𝑋,𝑌=
+ 
+ 𝑟𝑥,𝑡−𝜇𝑋 (𝑟𝑌,𝑡−𝜇𝑌)
+𝑇
+𝑡=1
+  
+ 𝑟𝑥,𝑡−𝜇𝑋 
+2 
+(𝑟𝑌,𝑡−𝜇𝑌)2
+𝑇
+𝑡=1
+𝑇
+𝑡=1
+, 
+where rx,t is the return for underlying asset X at time t and rY,t is the returns for 
+underlying asset Y at time t, while μX and μY are the mean returns for X and Y 
+assets over the whole sample period respectively.  
+The drawback of this method is that it assumes that the correlation of two sets 
+of time series is constant over the study period, while in fact, dynamic relations in 
+stock markets are often observed due to continual changes. 
+By considering the issue of time-varying conditions of the market, Rolling 
+Correlation Model is introduced, which is a simple approach to estimating the 
+time-varying correlation by moving a fixed window length of the sample ahead by 
+adding a new observation and dropping the most distant observation. The 
+correlation is 𝜌𝑋𝑌,𝑡𝑚=
+𝐶𝑜𝑣(𝑟𝑋,𝑡𝑚,𝑟𝑌,𝑡𝑚)
+ 𝑉𝑎𝑟(𝑟𝑋,𝑡𝑚) 𝑉𝑎𝑟(𝑟𝑌,𝑡𝑚), where 𝑟𝑋,𝑡𝑚 and 𝑟𝑌,𝑡𝑚 are the return 
+for underlying asset 𝑋 and 𝑌 at time 𝑡 respectively, 𝐶𝑜𝑣(𝑟𝑋,𝑡𝑚, 𝑟𝑌,𝑡𝑚) is the 
+covariance between these two underlying assets and 𝑉𝑎𝑟(𝑟𝑋,𝑡𝑚) and 𝑉𝑎𝑟(𝑟𝑌,𝑡𝑚) 
+are the corresponding variances which are based on a window length of m days 
+instead of based on the whole sample period. 
+The advantage of this model is that it is simple and easy to estimate, while the 
+main drawback is that the choice of window length may be arbitrary. Furthermore, 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+26 
+ 
+the estimation of the correlation is derived from conditional covariances and 
+variances, and these conditional moments have been smoothed out by using a 
+moving average. 
+4.2.2 Wavelet Measurements 
+The wavelet transform decomposes a time series in terms of some elementary 
+functions, the daughter wavelets or simply wavelets 𝜓𝜏,𝑠(𝑡). Wavelets are ‘small 
+waves’ that grow and decay in a limited time period. These wavelets result from a 
+mother wavelet 𝜓(𝑡), that can be expressed as function of the time position 𝜏 
+(translation parameter) and the scale 𝑠 (dilation parameter), which is related with 
+the frequency. While the Fourier transform decomposes the time series into infinite 
+length sines and cosines, discarding all time-localization information, the basic 
+functions of the wavelet transform are shifted and scaled versions of the 
+time-localized mother wavelet. More explicitly, wavelets are defined as 𝜓𝜏,𝑠 𝑡 =
+1
+ 𝑠𝜓(
+𝑡−𝜏
+𝑠), where 
+1
+ 𝑠 is a normalization factor to ensure wavelet transforms are 
+comparable across scales and time series. 
+To be a mother wavelet, 𝜓(𝑡), must fulfill the following three conditions: Zero 
+mean:  
+𝜓(𝑡)
++∞
+−∞
+d𝑡= 0; Square integrates to unity:  
+𝜓2(𝑡)
++∞
+−∞
+d𝑡= 1 , which 
+means that 𝜓(𝑡) is limited to an interval of time; and Admissibility condition: 
+0 < 𝐶𝜓= 
+ 𝜓 (𝜔) 
+2
+𝜔
+𝑑𝜔
++∞
+0
+< +∞ where 𝜓 (𝜔) is the Fourier transform of ψ(t), 
+that is 𝜓  𝜔 = 
+𝜓(𝑡)𝑒−𝑖𝜔𝜏𝑑𝑡
++∞
+−∞
+. This condition allows the reconstruction of a time 
+series 𝑥(𝑡) from its continuous wavelet transform 𝑊𝑋 𝜏, 𝑠 . Thus, it is possible to 
+recover 𝑥(𝑡) from its wavelet transform through the following formula 𝑥 𝑡 =
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+27 
+ 
+1
+𝐶𝜓 
+[ 
+1
+ 𝑠
++∞
+−∞
+𝜓(
+𝑡−𝜏
+𝑠)𝑊𝑋(𝜏, 𝑠) 𝑑𝜏]
++∞
+−∞
+𝑑𝑠
+𝑠2 
+Generally, the wavelet transform could be divided into the following two 
+categories. The continuous wavelet transform of a time series 𝑥(𝑡) with respect to 
+𝜓(𝑡) is given by 𝑊𝑋 𝜏, 𝑠 = 
+𝑥 𝑡 𝜓∗
+𝜏,𝑠 𝑡 𝑑𝑡
++∞
+−∞
+=
+1
+ 𝑠 
+𝑥 𝑡 𝜓∗ 
+𝑡−𝜏
+𝑠 𝑑𝑡
++∞
+−∞
+, where 
+∗ denotes the complex conjugate. And the second one is the discrete transform, in 
+which the discrete time series 𝑥 𝑡 , 𝑡= 1, … , 𝑁, could be repressed by 𝑊𝑋 𝜏, 𝑠 =
+1
+ 𝑠 
+𝑥 𝑡 𝜓∗ 
+𝑡−𝜏
+𝑠 
+𝑁
+𝑡=1
+ 
+Although the most commonly used mother wavelet is the Morlet wavelet, 
+several scholars suggested that the filter Daubechies (db) with scale of 4 to 8 could 
+be a good choice in financial data analyzing (Masset, 2008; Helder and Jin, 2007; 
+Nielsen and Frederiksen, 2005; Gençay, Selçuk and Whitcher, 2003, 2005; Subbotin, 
+2008; Crowley, 2005). 
+Following Maraum and Kurths (2004), given two time series 𝑥(𝑡) and 𝑦(𝑡), 
+with wavelet transforms 𝑊𝑥(𝜏, 𝑠) and 𝑊𝑦(𝜏, 𝑠), one can define the cross-wavelet 
+spectrum as 𝑊𝑥𝑦 𝜏, 𝑠 = 𝑊𝑥 𝜏, 𝑠 𝑊∗
+𝑦 𝜏, 𝑠 , and wavelet power spectrum for time 
+series 𝑥(𝑡) as 𝑊𝑥 𝜏, 𝑠 = 𝑊𝑥 𝜏, 𝑠 𝑊∗
+𝑥 𝜏, 𝑠 . 
+The wavelet coherency of these two sets of time series could be defined as the 
+absolute value squared of the smoothed cross-wavelet spectrum, normalized by the 
+smoothed wavelet power spectra (the product of two wavelet spectra) 𝑅2 𝜏, 𝑠 =
+ 𝑊𝑥𝑦(𝜏,𝑠)) 
+ 𝑊𝑥(𝜏,𝑠)𝑊𝑦(𝜏,𝑠).  
+In a similar fashion, suggested by Torrence and Webster (1998), the wavelet 
+squared coherency also would be defined as 𝑅2 𝜏, 𝑠 =
+ 𝑆(𝑠−1𝑊𝑥𝑦(𝜏,𝑠)) 
+2
+𝑆(𝑠−1 𝑊𝑥(𝜏,𝑠) 2)𝑆(𝑠−1 𝑊𝑦(𝜏,𝑠) 
+2), 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+28 
+ 
+where 
+𝑆(. ) is 
+a 
+smoothing 
+operator 
+and 
+could 
+be 
+written 
+as 
+𝑆 𝑊 = 𝑆𝑠𝑐𝑎𝑙𝑒(𝑆𝑡𝑖𝑚𝑒(𝑊𝑛(𝑠))), where Sscale denotes smoothing along the wavelet 
+scale axis and Stime smoothing in time. For the case of Morlet wavelet, suitable 
+smoothing operators are given by Torrence and Compo (1998), 𝑆𝑡𝑖𝑚𝑒 𝑊 |𝑠=
+ 𝑊𝑛 𝑠 ∗𝑐1
+−𝑡2
+2𝑠2
+ 
+ |𝑠 and 𝑆𝑠𝑐𝑎𝑙𝑒 𝑊 |𝑛= 𝑊𝑛 𝑠 ∗𝑐2𝛱 0.6𝑠  |𝑛. Where 𝑐1 and 
+𝑐2 are normalization constants and 𝛱 is the rectangle function. The factor of 0.6 is 
+the empirically determined scale decorrelation length for the Morlet wavelet. In 
+practice both convolutions are done discretely and therefore the normalization 
+coefficients are determined numerically.  
+The squared wavelet coherency coefficient is in the range 0 ≤𝑅2 𝜏, 𝑠 ≤1. 
+Values close to zero indicate weak correlation, while values close to one provide the 
+evidence of strong correlation. Therefore, one can use squared wavelet coherency to 
+measure the extent to which two time series move together over time and across 
+frequencies. 
+ 
+5. Data, Institutional Details and Descriptive Statistics 
+5.1 Data and Institutional Details 
+The Shanghai Stock Exchange and the Hongkong Exchange are selected for the 
+following reasons. First, the Shanghai Exchange is an emerging market and the 
+Hongkong Exchange is considered as a developed market, thus such selection can 
+improve the knowledge about how these two kinds of markets co-move over time. 
+Second, the Shanghai Exchange and the Hongkong Exchange are under the same 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+29 
+ 
+surveillance of the Chinese governors, which is a unique characteristic compared to 
+the previous study on the co-movement of developed market and emerging market 
+(Rua and Nunes 2010; Christofferson et al. 2011).  
+ 
+Regarding market co-movement and market efficiency, the daily opening and 
+closing prices of market composite index for the time period from Jan. 4th 2000 to 
+Oct. 20th 2010 are obtained from Wind Info. Co., Ltd. By removing the unmatched 
+trading data due to the statutory holiday, there are 2518 pairs of observations.  
+ 
+Table 2 Differences of Status Quo of Market Microstructure in the Two Exchanges 
+Market Microstructure 
+Shanghai 
+Exchanges 
+Hongkong Exchange 
+Trading 
+Mechanism 
+Market 
+Type 
+Continuity 
+Hybrid 
+Hybrid 
+Market 
+Makers 
+No Market Maker 
+Market Maker 
+Automation 
+Electronic System 
+Electronic System 
+Trading Sessions 
+9:30-11:30 
+10:00-12:30 
+13:00-15:00 
+14:30-16:00 
+Order Forms 
+Limit Orders 
+Limit & Fill or Kill 
+Orders 
+Transparency 
+Semi-Transparency 
+Semi-Transparency 
+Market 
+Regulation 
+Order 
+Priority 
+Call Auction 
+Price/Time 
+Order Type/Price/Time 
+Continuous 
+Trading 
+Price/Time 
+Price/Time 
+Tick Size 
+CNY 0.01 
+Variable 
+(From HKD 0.001 to 5.00) 
+Trading Unit 
+100 Shares 
+Odd Lot or 100 Shares 
+Price Thresholds 
+10% 
+No 
+Shorting Selling 
+Forbidden 
+Available (Selected) 
+Off-Market Trading 
+Forbidden 
+Allowed 
+Other 
+Related 
+Rules 
+Settlement 
+System 
+Trading 
+T+1 
+T+0 
+Settlement 
+T+1 
+T+2 
+Commission & 
+Stamp Duty 
+0.255% 
+0.359% 
+Main Capital Source 
+Domestic 
+Local and Foreign 
+ (Source: Gerace, Tian and Zheng 2009, Comerton-Forde, Rydge and Burridge 2007, Xu 2000, Charitou 
+and Panayides 2009, Comerton-Forde and Rydge 2006) 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+30 
+ 
+ 
+Based on the previous research and the information from the webpages of the 
+two exchanges, the differences between the Shanghai Stock Exchange and the 
+Hongkong Exchange are listed in Table 2. 
+According to the table, it is obvious that the two exchanges are similar in trading 
+mechanisms except for the existence of market makers, whereas they are 
+significantly different in the cases of market regulation and other related rules.  
+ 
+Regarding data about the development of market microstructure, amendments 
+about the trading rules are obtained from the webpage of each exchange8. The 
+effective date of new trading rules, and content of changes in both exchanges are 
+listed in Table 3. 
+ 
+Compared to the Hongkong Exchange, in which regulations and rules related to 
+microstructure of equity market are amended and published on a regular basis, the 
+Shanghai Stock Exchange experienced seven significant changes of market 
+microstructure in our entire sample period. Therefore, we assume that the market 
+microstructures before and after each date are relatively constant because of the 
+relatively constant trading rules in the Shanghai Stock Exchange. 
+ 
+ 
+                                                             
+8 The webpages for the Hongkong Exchange and the Shanghai Stock Exchange are http://www.hkex.com.hk and 
+http://www.sse.com.cn/, respectively. 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+31 
+ 
+Table 3 Significant Events Related to Market Microstructure in both Equity 
+Markets 
+Panel A. Significant Events in Shanghai Stock Exchange 
+Effective Date 
+Content of Event 
+Nov. 21 2001 
+Amendment of Trading Rules 
+Dec. 01 2002 
+A-Share Market are Opened to QFII9 
+Jan. 31 2004 
+Announcement of Launch of Releasing the Retained Common 
+Shares Owned by Government and Company Owners 
+Jun. 02 2005 
+Actual Launch of Releasing the Retained Common Shares 
+Jul. 01 2006 
+Amendment of Trading Rules 
+Jan. 01 2007 
+Adoption of New Accounting Reporting Standards for Listed 
+Companies 
+Nov. 23 2009 
+Adoption of New Electronic Trading System 
+Panel B. Significant Events in Hongkong Exchanges 
+Effective Date 
+Content of Event 
+Oct. 23 2000 
+Implementation of AMS/3 Trading Devices10 
+Jan. 27 2005 
+Selection Criteria of Securities for Short Selling11 
+Jun. 09 2005 
+Reduction of Tick Size and Requirement for Market Makers 
+Jul. 04 2005 
+Reduction of Tick Size and Refinement of Quotation Rule 
+Jul. 24 2006 
+Reduction of Tick Size 
+Oct. 19 2006 
+Loosening the Selection Criteria For Short Selling 
+May 26 2008 
+Introduction of Closing Auction Session 
+Mar. 23 2009 
+Suspension of Closing Auction Session 
+Jun. 28 2010 
+Requires of Market Makers, Short Selling and Quotation 
+ (Sources: the China Securities Regulatory Commission, the Shanghai Stock Exchange, and the 
+Hongkong Exchange and Clearing Ltd12.) 
+ 
+                                                             
+9 Retrieved from http://www.asiaetrading.com/exchanges/china/shanghai-stock-exchange/ on 2011/9/13. 
+10 Prior to the adoption of AMS/3, the first and second generation of this electronic system are adopted in 1993 
+and 1996, respectively. 
+11 In 1994, a pilot scheme is conducted for regulated short selling in the Hongkong Exchange. 
+12 The information about the update of trading rules in the Hongkong Exchange are retrieved from 
+http://www.hkex.com.hk/eng/rulesreg/traderules/traderuleupdate-sehk/exrule_ruleupdate.htm, in which the 
+amendments of trading rules after Apr. 6 2004 are listed. The information about the trading rules from 2000 to 
+2003 are obtain from the booklet of A Glimpse of the Past, which is published by Hongkong Exchange and 
+Clearing Ltd. in May 31st, 2011. 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+32 
+ 
+5.2 Descriptive Statistics  
+ 
+Regarding the recent financial crisis, we divide the entire research time period 
+into three sub-periods of Pre-Financial Crisis Period, Financial Crisis Period and 
+Post-Financial Crisis Period. The descriptive statistics about the daily gross returns for 
+the Shanghai Composite Index and the Hongkong Hangseng Index are listed in Table 
+4, in which the daily gross return is calculated as the first difference of the natural log 
+of the closing value of market composite indices times 100. And the differences 
+between the means and variance in each time period are reported in Table 5. 
+Table 4 Descriptive Statistics for Gross Returns in both Exchanges 
+(There are 2517 observations for each series in the entire sample period. The number of observations 
+for Ex-Financial Crisis Period, Financial Crisis Period Post Financial Crisis Period, Period are 1735, 473, 
+and 309, respectively. SSE and HKEx represent the Shanghai Composite Index and the Hongkong 
+Hangseng Index respectively. The LB(10) is the Bjung-Box Q-Statistics for identifying the dependency 
+within the time series with 10-day lags. *** denotes statistical significance at 1% level. ) 
+ 
+Mean 
+S.D. 
+Skewness 
+Ex. Kurtosis 
+LB(10) 
+Panel A. Entire Period (1/4/2000-10/20/2010) 
+ 
+SSE 
+0.013 
+0.762 
+-0.047 
+3.753*** 
+13.704 
+HKEx 
+0.006 
+0.748 
+-0.076 
+7.971*** 
+12.121 
+Panel B. Pre-Financial Crisis Period (1/4/2000-6/30/2007) 
+ 
+SSE 
+0.025 
+0.648 
+0.165*** 
+5.494*** 
+6.649 
+HKEx 
+0.006 
+0.574 
+-0.370*** 
+4.309*** 
+11.804 
+Panel C. Financial Crisis Period (7/1/2007-6/30/2009) 
+ 
+SSE 
+-0.023 
+1.093 
+-0.016 
+1.026*** 
+7.241 
+HKEx 
+-0.016 
+1.243 
+0.099 
+3.394*** 
+8.622 
+Panel D. Post-Financial Crisis Period (7/1/2009-10/20/2010) 
+SSE 
+0.002 
+0.737 
+-0.649*** 
+1.761*** 
+3.505 
+HKEx 
+0.035 
+0.584 
+-0.198 
+0.306 
+5.700 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+33 
+ 
+Table 5 Paired Differences between Means of Daily Gross Returns 
+(The difference of means is calculated as the mean of daily gross returns in Shanghai Stock Exchange 
+less that in Hongkong Exchange by using the Paired Sample T-test. The F-Value is calculated as the 
+variance of daily gross returns in the Shanghai Stock Exchange divided by that in the Hongkong 
+Exchange, which is used to test if the risks in both exchanges are equal for each time period. The 
+corresponding p-value is the minimum significant level for the test.) 
+Time Period 
+Difference of Means P-Value 
+F-Value for 
+Variance 
+P-Value 
+Entire Period 
+0.008 
+0.659 
+1.038 
+0.278 
+Pre-Financial Crisis 
+0.019 
+0.323 
+1.274 
+0.000 
+Financial Crisis 
+-0.008 
+0.881 
+0.773 
+0.003 
+Post-Financial Crisis 
+-0.033 
+0.361 
+1.809 
+0.000 
+ 
+For the entire sample period and all of the sub-periods, both the means and 
+standard deviations of daily gross returns are insignificant from zero. Regarding the 
+aspects of deviation from the normal distribution, the skewness in the Shanghai 
+Stock Exchange are significant from zero except for the Entire Period and the 
+Financial Crisis Period. Additionally, the Kurtosis is generally significant for both 
+exchanges except for the Post-Financial Crisis Period in the Hongkong Exchange. In 
+the case of dependency within the time series of returns in each exchange, all 
+Bjung-Box Q-statistics at 10-day lags are insignificant. However, significance of 
+Q-statistics at the 10% level is identified for 5-day lags in the Hongkong Exchange for 
+the Pre-Financial Crisis.  
+In addition, as reported in Table 5, the differences between the means of returns 
+are insignificant for the entire period and sub-periods. And the variances in both 
+exchanges are significantly different for the periods of the Pre-Financial Crisis, the 
+Financial Crisis and the Post-Financial Crisis, which implies that the risks in both 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+34 
+ 
+exchanges are different within each time period.  
+ 
+In Table 6 and 7, the differences of means and variances between different pairs 
+of time periods and the associating p-values are reported. In the case of the 
+difference in means, no significant difference is observed for all pairs of time periods 
+in both exchanges. However, variance (or risk) is generally significantly different 
+except for the pair of the Entire Period and the Post-Financial Crisis Period in the 
+Shanghai Stock Exchange, and the pair of the Pre-Financial Crisis Period and the 
+Post-Financial Crisis Period in the Hongkong exchange.  
+ 
+Figure 2 Market Indices in the Shanghai Exchange and the Hongkong Exchange 
+(The blue line indicates the Market Index in the Shanghai Exchange, whereas the green lines refers to 
+that in the Hongkong Exchange. For the purpose of better illustration, this figure uses the market 
+index value in each exchange as the basis value (100) to re-calculate the market index values over the 
+study period. ) 
+ 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+35 
+ 
+Table 6 Differences of Means between Times Periods in Both Exchanges 
+(The values in each cell is calculated as the mean of returns for period in the title row less that for 
+period in the title column. For example, cell in the row 3 and column 2 is the mean of returns for the 
+Pre-Financial Crisis less that for the Financial Crisis Period. For comparing the means, we assume that 
+the variances are neither known nor equal, and that the distributions in both exchanges are 
+non-normal. However, since the sample size is consistently greater than 300, the T-test can still be 
+used. The degree of freedom for the T-test is generated from the variances for both sets of returns 
+and the numbers of observations.) 
+Panel A. Difference of Means in Shanghai Stock Exchange 
+ 
+Entire 
+Pre-Crisis 
+Crisis 
+Post-Crisis 
+Entire 
+ 
+ 
+ 
+ 
+Pre-Crisis 
+-0.012 
+(0.583) 
+ 
+ 
+ 
+Crisis 
+0.037 
+(0.487) 
+0.048 
+(0.357) 
+ 
+ 
+Post-Crisis 
+0.011 
+(0.805) 
+0.023 
+(0.609) 
+-0.026 
+(0.696) 
+ 
+Panel B. Difference of Means in Hongkong Exchange 
+ 
+Entire 
+Pre-Crisis 
+Crisis 
+Post-Crisis 
+Entire 
+ 
+ 
+ 
+ 
+Pre-Crisis 
+-0.001 
+(0.979) 
+ 
+ 
+ 
+Crisis 
+0.021 
+(0.721) 
+0.022 
+(0.713) 
+ 
+ 
+Post-Crisis 
+-0.029 
+(0.421) 
+-0.029 
+(0.423) 
+-0.050 
+(0.446) 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+36 
+ 
+Table 7 Differences of Variances between Time Periods in Both Exchanges 
+(The value in each cell is calculated as the variance of returns for the period listed in the title row 
+divided by that for the period listed in the title column. For example, the cell in the row 3 and column 
+2 is calculated as the variance of returns for the Pre-Financial Crisis Period divided by that for the 
+Financial Crisis Period. Each of the degree of freedom for F-test is calculated as the corresponding 
+number of observations less one. ) 
+Panel A. F-Value for Ratios of Variances in Shanghai Exchange 
+ 
+Entire 
+Pre-Crisis 
+Crisis 
+Post-Crisis 
+Entire 
+ 
+ 
+ 
+ 
+Pre-Crisis 
+1.381 
+(0.000) 
+ 
+ 
+ 
+Crisis 
+0.486 
+(0.000) 
+0.352 
+(0.000) 
+ 
+ 
+Post-Crisis 
+1.068 
+(0.244) 
+0.773 
+(0.002) 
+2.199 
+(0.000) 
+ 
+Panel B. F-Value for Ratios of Variances in Hongkong Exchange 
+ 
+Entire 
+Pre-Crisis 
+Crisis 
+Post-Crisis 
+Entire 
+ 
+ 
+ 
+ 
+Pre-Crisis 
+1.699 
+(0.000) 
+ 
+ 
+ 
+Crisis 
+0.362 
+(0.000) 
+0.213 
+(0.000) 
+ 
+ 
+Post-Crisis 
+1.639 
+(0.000) 
+0.965 
+(0.342) 
+4.531 
+(0.000) 
+ 
+ 
+6. Research Statement 
+ 
+Since both of the Shanghai Exchange and the Hongkong Exchange are internal 
+inefficient markets, this section will develop the reasoning in the introduction section, 
+and make testable predictions for further examining. 
+ 
+First, the market microstructure influence the internal market efficiency, but the 
+specific effect is determined by the type of the change of the market microstructure. 
+Second, given the internal market efficiency in each market constant, the higher the 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+37 
+ 
+degree of the market co-movement, the less cross-market efficient the two markets 
+are. On the other hand, given the market co-movement constant, as the degree of 
+the internal market efficiency of either market increasing, the cross-market efficiency 
+between the two market is improving.  
+ 
+To test the relationship among the market co-movement, the internal market 
+efficiency and the cross-market efficiency, this study will run the following linear 
+regression: 
+𝑀𝑢𝑡𝑢𝑎𝑙𝐼𝑛𝑓𝑜𝑖= 𝛼+ 𝛽1𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝑆𝐻,𝑖+ 𝛽2𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝐻𝐾,𝑖+ 𝛽3|𝑅𝐻𝑂𝑖| + 𝜀𝑖                  (1) 
+where the 𝑀𝑢𝑡𝑢𝑎𝑙𝐼𝑛𝑓𝑜𝑖13 refers to the mutual information between the two 
+markets at time point 𝑖 and stands for the cross-market efficiency, 𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝑆𝐻,𝑖 
+and 𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝐻𝐾,𝑖14 stand for the values of entropy in the Shanghai Exchange and 
+Hongkong Exchange at time point 𝑖 and stand for the internal market efficiency in 
+each market, respectively, and the 𝑅𝐻𝑂𝑖 relates to the Pearson’s Correlation 
+Coefficients based on the same underlying observations with the computation of the 
+entropies, and stands for the market co-movement. The operator |*| indicates the 
+absolute value of *. Furthermore, the higher the value of the 𝑀𝑢𝑡𝑢𝑎𝑙𝐼𝑛𝑓𝑜𝑖, the less 
+efficient the cross-market efficiency is, the higher the value of the 𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝑆𝐻,𝑖 and 
+𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝐻𝐾,𝑖, the more efficient the internal market efficiency of each exchange, and 
+the higher the absolute value of the Pearson’s Correlation Coefficient, the higher 
+degree of the co-movement between the two markets. 
+ 
+Hence, we predict that the signs of the 𝛽1 and 𝛽2 are negative, since if each 
+                                                             
+13 𝑀𝑢𝑡𝑢𝑎𝑙𝐼𝑛𝑓𝑜 𝑋; 𝑌 =  𝑓𝑋,𝑌(𝑥, 𝑦)𝑙𝑜𝑔
+𝑓𝑋,𝑌(𝑥,𝑦)
+𝑓𝑋(𝑥)𝑓𝑌(𝑦), the value is in the range of 0 and 1. 
+14 Entropy 𝑋 = − 𝑓𝑋 𝑥 log 𝑓𝑋 𝑥  /log⁡(𝑛), the value is in the range of 0 and 1. 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+38 
+ 
+market becomes more efficient, the return in each exchange moves more randomly 
+and it is more difficult to predict the following returns. Additionally, regarding the 
+sign of 𝛽3, we expect that, given the two markets are inefficient, the stronger 
+co-movement the two market is, the higher predictability of the historical 
+information, and the lower the degree of the cross-market efficiency.  
+ 
+Furthermore, as the difference between the two markets decreasing, the 
+investors’ behavior in each market become similar, as we suggested in the previous 
+section, which means the change of the internal market efficiency would have an 
+effect on the market co-movement. Thus, we expect significant effect of the 
+interactions of the three independent variables. Hence, this study will further run the 
+following regression: 
+𝑀𝑢𝑡𝑢𝑎𝑙𝐼𝑛𝑓𝑜𝑖= 𝛼+ 𝛽1𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝑆𝐻,𝑖+ 𝛽2𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝐻𝐾,𝑖+ 𝛽3 𝑅𝐻𝑂𝑖 + 𝛽4𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝑆𝐻,𝑖
+∗𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝐻𝐾,𝑖+ 𝛽5𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝑆𝐻,𝑖∗ 𝑅𝐻𝑂𝑖 + 𝛽6𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝐻𝐾,𝑖∗ 𝑅𝐻𝑂𝑖 
++ 𝜀𝑖                                                                                                                  (2) 
+Based on our reasoning, all of the coefficients of 𝛽4, 𝛽5, and 𝛽6 are significant, and 
+after controlling the interaction effect of the independent variables, the signs of 𝛽1, 
+𝛽2, and 𝛽3 should be consistent with our previous predictions.  
+ 
+7. Empirical Results 
+ 
+In this section, the empirical results of market co-movement are reported. Based 
+on the effective dates of changes of equity market microstructure, the impacts of 
+each event on co-movement is investigated.  
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+39 
+ 
+7.1 Market Co-movement 
+ 
+The co-movement pattern between daily gross returns in the Shanghai Stock 
+Exchange and the Hongkong Exchange are generated based on the mother wavelet 
+of Morlet15,16 and closing values of market composite indices. By using the squared 
+wavelet coherence, we can examine the co-movement pattern from both time and 
+frequency domains rather than solely from the frequency domain by using traditional 
+correlation analysis.  
+Figure 3 Squared Wavelet Coherence for Market Co-movement 
+(The value of squared wavelet coherence is in the range of 0 and 1. A leftward arrow indicates a 
+negative relationship between the two time series, and a rightward arrow implies a positive 
+correlation. The higher the value of squared wavelet coherence, the stronger correlation between the 
+two time series. The scale (or frequency) of analyzing is indicated by the vertical axis, while the time 
+interval is indicated by the horizontal axis. Moreover, the bold line suggests the significance level at 5% 
+level which is determined by Monte Carlo simulation of 10,000 sets of two white noise time series 
+with the same length as the series in this study, as suggested by Rua and Nunes (2009).) 
+ 
+ 
+From the analysis of the squared wavelet coherence, the co-movement pattern 
+can be investigated from different frequency (or scale) levels. First, at high frequency 
+                                                             
+15 Although it is suggested by many researchers that the mother wavelet of Daubechies with a scale of 4-8 is 
+appropriate for financial time series analysis, in this study, the mother wavelet of Morlet is manipulated since 
+smoothing operators are specially designed for calculating wavelet coherence.  
+16 The program for calculating squared wavelet coherence is based on the work of Grinsted, Moore and Jevrejeva 
+(2004), which is retrieved from http://www.pol.ac.uk/home/research/waveletcoherence/. 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+40 
+ 
+level (such as at daily or weekly base), no persistently strong correlation is observed 
+except for the recent financial crisis period. However, in the case of intermediate 
+frequency level (such as monthly or quarterly base), relatively strong correlations are 
+observed. In addition, stronger co-movement patterns are identified for the period 
+before the first half of 2006 rather than later periods. The above findings are 
+consistent with the idea that high frequency data contain too much noise and longer 
+term data (such as monthly) is stable when analyzing financial time series. Finally, at 
+low frequency level (such as annul or bi-annual base), persistent and strong 
+co-movement between returns of Shanghai Stock Exchange Index and the Hongkong 
+Exchange Index are found, which implies that the two market are co-integrated 
+together in long-run, therefore limit the potential benefit for diversification strategy 
+in these two markets. The above observations are consistent with the suggestion of 
+Christoffersen et al. (2011). 
+ 
+7.2 Internal Market efficiency 
+ 
+In this study, internal market efficiencies in both the Shanghai Stock Exchange 
+and the Hongkong Stock Exchange are examined by using daily price normalized 
+entropy. In this section, the window length of 90 trading days is chosen. The 
+normalized entropy in both markets for the entire study periods are reported in 
+Figure 4.  
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+41 
+ 
+Figure 4 Normalized Entropy for the Shanghai Exchange and Hongkong Exchange 
+(The value of normalized entropy is between 0 and 1. A high value of normalized entropy indicates a 
+more efficient market, and vice versa. The calculation of entropy is based on successive 90 trading 
+days, and thus there are 2428 observations in each entropy series. The logarithm calculation is on the 
+base of 2. ) 
+ 
+The line in blue outlines the entropy in Shanghai Exchange with the given 
+window length of 90 trading days, and the calculation is based on the work of the 
+Peng (2007).  
+Figure 4 suggests that the degrees of efficiencies of each market are 
+time-varying. An interesting observation is that the Hongkong Exchange is not always 
+more efficient than the Shanghai Exchange, which is contrary to our general belief 
+that the developed market (e.g., the Hongkong Exchange) is always more efficient 
+than the emerging market (e.g., the Shanghai Exchange).  
+ 
+7.3 Cross-Market efficiency 
+ 
+In this section the result of cross-market efficiency between the Shanghai 
+Exchange and Hongkong Exchange is reported in Figure 5 based on the calculation of 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+42 
+ 
+mutual information.17 
+ 
+Figure 5 Normalized Mutual Information between the Two Markets 
+(The blue line indicates the normalized mutual information, and the green bond line suggests the 
+significance level at 5% level which is determined by Monte Carlo simulation of 10,000 pairs of two 
+white noise time series with the same means and standard deviations as the underlying return series. 
+The value of mutual information is between 0 and 1, and the higher the value, the greater the 
+dependency between the two sets of time series. If the value of mutual information is greater than 
+the significant value with the same date, the mutual information is significant different from zero, 
+which means the two sets of time series are dependent.) 
+ 
+ 
+Based on figure 5, the Shanghai and Hongkong Exchanges are generally 
+dependent with each other during the entire study period. This degree of 
+dependency is relatively high during the recent financial crisis and returns to a 
+relatively low level during post-crisis period, but stays at a higher level compared to 
+the degree of dependency before the crisis.  
+ 
+8. Explanations 
+ 
+In this section, we will study two interesting time periods within the study period, 
+                                                             
+17 The matlab program of calculating the entropy and the mutual information is based on the work of Peng 
+(2007). 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+43 
+ 
+the financial crisis period and the retained common shares releasing period 
+(hereafter releasing period), by combining cross-wavelet coherence, internal market 
+efficiency and cross-market efficiency together. 
+8.1 Financial Crisis Period 
+ 
+Practically, in the financial crisis period, the market is dominated by downward 
+tendency and great volatility. In this section, we exam the performances of market 
+co-movement, internal market efficiencies, and cross-market efficiency in the 
+following figures during the recent financial crisis, which is between time period from 
+2007/7/3 to 2009/3/31. Additionally, we include the time period from 2006/7/3 to 
+2007/6/30 into our study time period to enrich our knowledge about the two 
+markets before and during the financial crisis. Since the financial crisis may have 
+non-negligible effects on the significant events during the financial crisis, this 
+sub-section focuses on the influence of the financial crisis on the two markets. 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+44 
+ 
+Figure 6 Wavelet Coherence between the two Markets During the Financial Crisis 
+Period 
+(The value of squared wavelet coherence is in the range of 0 and 1. A leftward arrow indicates a 
+negative relationship between the two time series, and a rightward arrow implies a positive 
+correlation. The higher the value of squared wavelet coherence, the stronger correlation between the 
+two time series. The scale (or frequency) of analyzing is indicated by the vertical axis, while the time 
+interval is indicated by the horizontal axis. Moreover, the bold line suggests the significance level at 5% 
+level which is determined by Monte Carlo simulation of 10,000 sets of two white noise time series 
+with the same length as the series.) 
+ 
+During the financial crisis period, there are multiple significant events in both the 
+Shanghai and Hongkong Exchanges.18 In the case of market co-movement, there is a 
+significant co-movement between the two markets at the end of 2006 at the 
+intermediate frequency. However, during the financial crisis, significant co-movement 
+can be observed at all (low, mid-term, and long) frequencies.  
+ 
+ 
+                                                             
+18 There is two significant events in the Shanghai Exchange, these are the Amendment of Trading Rules in Jul. 1, 
+2006 and the Adoption of New Accounting Reporting Standards for Listed Companies in Jan. 1, 2007. And there 
+are three significant events in the Hongkong Exchange, Loosening the Selection Criteria For Short Selling in Oct. 
+19, 2006, Introduction of Closing Auction Session in May 26, 2008, and Suspension of Closing Auction Session in 
+Mar. 23, 2009, respectively. 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+45 
+ 
+Figure 7 Normalized Entropy and Mutual Information in both Markets During the 
+Financial Crisis 
+(The blue line indicates the internal market efficiency of the Shanghai Exchange during the financial 
+crisis, the green line suggests the internal market efficiency of the Hongkong Exchange, and the red 
+line refers to the cross-market efficiency between these two markets. The bond line suggests the 5% 
+significant level of mutual information based on the Monte Carlo simulations of 10,000 pairs of white 
+noises with the same means and standard deviations as the underlying return series. All the 
+calculation are based on the previous 90 days return series.) 
+ 
+ 
+Table 8 Effect of the Change of the Market Microstructure during the Financial 
+Crisis Period 
+(The value in each cell report means of the entropy of 90 successive trading days in the market 
+before and after the effective date of the change. The diff. stands for the difference between the 
+means of entropies, which is calculated as the mean of entropy before the change less that after 
+the change. *** denotes statistical significance at 1% level.) 
+Event 
+Pre-Change Post-Change 
+Diff. 
+Panel A. Changes in the Shanghai Exchange 
+Amendment of the Trading Rules (Jul. 1, 
+2006) 
+0.179 
+0.211 
+-0.032*** 
+Adoption of the New Accounting Reporting 
+Standards (Jan. 1, 2007) 
+0.197 
+0.287 
+-0.090*** 
+Panel B. Changes in the Hongkong Exchange 
+Loosening the Selection Criteria For Short 
+Selling (Oct. 19, 2006) 
+0.166 
+0.124 
+0.042*** 
+Introduction of Closing Auction Session 
+(May 26, 2008) 
+0.354 
+0.285 
+0.067*** 
+Suspension of Closing Auction Session (Mar. 
+23, 2009) 
+0.418 
+0.330 
+0.088*** 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+46 
+ 
+To exam the effect of the change of the market microstructure, we compare the 
+internal market efficiencies before and after the change. The comparison is based on 
+the entropy values of 90 successive trading days, and the results are reported in 
+Table 8. 
+Generally, the change of the microstructure have significant effect on the 
+internal market efficiency. In the Shanghai Exchange, the internal market efficiency 
+has significant improvement after the two changes, whereas the internal market 
+efficiency significantly deteriorates after the changes. In the Hongkong Exchange, the 
+effects of the loosening short selling criteria and introduction of closing auction 
+session are opposite to our previous predictions. This observation may due to the 
+influence of the financial crisis, during which the internal market efficiency will 
+experiences great deterioration. In this vein, the effect of the suspension of closing 
+auction session is enhanced. Additionally, an interesting observation in the Shanghai 
+Exchange is that there seems no significant effect of the financial crisis on the 
+internal market efficiency.  
+In terms of the cross-market efficiency, the dependency between the two 
+markets is significant over the whole time period, and stays at a relatively low level 
+before the financial crisis. However, the market dependency experiences greater 
+fluctuation during the financial crisis. An interesting observation is that the mutual 
+information is relatively high from the second half of 2008 to the March of 2009, 
+which suggests great deterioration of the cross-market efficiency during the period, 
+and such deterioration may due to the investors’ awareness of the loss. To be specific, 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+47 
+ 
+during the financial crisis, because of the sentiment of avoiding loss, the investors 
+tend to ask for more information to verify their judgment of the markets, and in this 
+case, the two market are not as independent as it is in the normal condition. 
+By testing the regression models, the relationships among the market 
+co-movement, the internal market efficiency and the cross-market efficiency are 
+reported in the Table 9. 
+ 
+Table 9 Relationship among Market Co-Movement, Market Efficiency and 
+Cross-Market Efficiency during the Financial Crisis Period 
+(There are 648 observations for each variable. *** denotes statistical significance at 10% and 1% level. The 
+dependent variable is the MutualInfoi, which stands for the cross-market efficiency. The 𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝑆𝐻,𝑖, and 
+𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝐻𝐾,𝑖 stand for the internal market efficiency in the Shanghai Exchange and the Hongkong Exchange, 
+respectively. |RHOi| represents the market co-movement. ) 
+ 
+1 
+2 
+3 
+4 
+𝐼𝑛𝑡𝑒𝑟𝑐𝑒𝑝𝑡 
+-0.188*** 
+-0.132*** 
+-0.177*** 
+0.300*** 
+𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝑆𝐻,𝑖 
+0.083 
+- 
+-0.011 
+-0.703*** 
+𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝐻𝐾,𝑖 
+1.850*** 
+- 
+1.718*** 
+0.607*** 
+|𝑅𝐻𝑂𝑖| 
+- 
+1.114*** 
+0.129 
+-1.792*** 
+𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝑆𝐻,𝑖∗|𝑅𝐻𝑂𝑖| 
+- 
+- 
+- 
+4.990*** 
+𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝐻𝐾,𝑖∗|𝑅𝐻𝑂𝑖| 
+- 
+- 
+- 
+2.441*** 
+𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝑆𝐻,𝑖∗𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝐻𝐾,𝑖 
+- 
+- 
+- 
+-1.646*** 
+Adjusted R-squared 
+0.926 
+0.752 
+0.928 
+0.980 
+The first three columns report the effects of the internal market efficiency, the 
+market co-movement and the interactions on the cross-market efficiency, separately. 
+All of the coefficients are significant at 1% level. However, the signs of the internal 
+market efficiency are opposite to our previous predictions, which states that the 
+signs should be negative to reflect the idea that as the market becoming more 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+48 
+ 
+efficient, the predictability of the historical data declines. Furthermore, the market 
+co-movement is positively related to the cross-market efficiency. This observation is 
+consistent with our prediction.  
+By examining the regression results in the last column, there are several 
+interesting findings. First, the sign of 𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝑆𝐻,𝑖 changes from positive to negative, 
+which suggests that after controlling the interaction effects between the internal 
+market efficiency and the market co-movement, the improvement of the internal 
+market efficiency can lead to increasing of the cross-market efficiency. Second, the 
+sign of the 𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝐻𝐾,𝑖 stays positive even after the controlling of interaction 
+effect. Third, the sign of the market co-movement (|𝑅𝐻𝑂𝑖|) is significant and 
+negative at 1% level, which suggests that, during the financial crisis period, as the 
+market co-movement becoming stronger, the cross-market efficiency is improving.  
+One possible explanation is that, during the financial crisis, there are great 
+uncertainty and volatility of the returns, thus the best investing strategy for 
+uninformed investors is to follow the investment decision of other successful 
+investors, who have the required information and intelligence in the market. This 
+following strategy may increase the degree of the market co-movement, but improve 
+the cross-market efficiency by letting the price adjust to the effective price rapidly 
+and correctly (for a summary of studies on rational herding, see Devenow, and Welch 
+(1996)). Alternatively, during the financial crisis, the correlation between the returns 
+series is relatively high, compared to the market in normal condition, no matter how 
+the two market correlated.  
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+49 
+ 
+7.2 Period of Releasing Retained Common Shares in the Shanghai Exchange  
+ 
+In this sub-section, we explore the relationship among the market co-movement , 
+internal market efficiency and cross-market efficiency on one of the biggest events in 
+the Chinese stock market, which is the releasing of the retained common shares 
+owned by government and company owners at the beginning of 2004. The releasing 
+is announced by the Chinese regulators on Jan. 31, 2004, and actually launched on 
+Jun. 2, 2005, indicated by the releasing practice of Sany Group (SH. 600031). Thus, 
+we choose the time period from 2003/1/1 to 2006/6/30 as the study period. The 
+market co-movement, internal market efficiency and cross-market efficiency are 
+reported in the figure 8 and 9. 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+50 
+ 
+Figure 8 Wavelet Coherence between the two Markets During the Leasing Period 
+(The value of squared wavelet coherence is in the range of 0 and 1. A leftward arrow indicates a 
+negative relationship between the two time series, and a rightward arrow implies a positive 
+correlation. The higher the value of squared wavelet coherence, the stronger correlation between the 
+two time series. The scale (or frequency) of analyzing is indicated by the vertical axis, while the time 
+interval is indicated by the horizontal axis. Moreover, the bold line suggests the significance level at 5% 
+level which is determined by Monte Carlo simulation of 10,000 sets of two white noise time series 
+with the same length as the series.) 
+ 
+Regarding the market co-movement, strong and significant co-movement is 
+observed at low frequency level (e.g., annually). At the high (e.g., weekly) and 
+intermediate (e.g., monthly or quarterly) frequency level, weaker market 
+co-movement is observed, compared to the financial crisis period. 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+51 
+ 
+Figure 9 Normalized Entropy and Mutual Information in both Markets During the 
+Releasing Period 
+(The blue line indicates the internal market efficiency of the Shanghai Exchange during the financial 
+crisis, the green line suggests the internal market efficiency of the Hongkong Exchange, and the red 
+line refers to the cross-market efficiency between these two markets. The bond line suggests the 5% 
+significant level of mutual information based on the Monte Carlo simulations of 10,000 pairs of white 
+noises with the same means and standard deviations as the underlying return series. All the 
+calculation are based on the previous 90 days return series.) 
+ 
+ 
+Table 10 Effect of the Change of the Market Microstructure during the Releasing 
+Period 
+(The value in each cell report means of the entropy of 90 successive trading days in the market 
+before and after the effective date of the change. ** and *** denote statistical significance at 5% 
+and 1% level, respectively.) 
+Event 
+Pre-Change Post-Change 
+Diff. 
+Panel A. Changes in the Shanghai Exchange 
+Actual Launch of Releasing of the Retained 
+Common Shares (Jun. 2, 2005) 
+0.205 
+0.237 
+-0.032*** 
+Amendment of the Trading Rules (Jul. 1, 
+2006) 
+0.179 
+0.211 
+-0.032*** 
+Panel B. Changes in the Hongkong Exchange 
+Selection Criteria of Securities for Short 
+Selling (Jan. 27, 2005) 
+0.139 
+0.109 
+0.030*** 
+Reduction of Tick Size and Other Issues (Jun. 
+30, 2005)19 
+0.108 
+0.102 
+0.005** 
+                                                             
+19 There are two closely happened events, Reduction of Tick Size and Requirement for Market Makers on Jun. 9, 
+2005 and Reduction of Tick Size and Refinement of Quotation Rule on Jul. 4, 2005, respectively. 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+52 
+ 
+ 
+In the case of the effect of the change of the market microstructure, all of the 
+differences before and after the change are significant at 5% level. In the Shanghai 
+Exchange, the internal market efficiency is improved after the changes of the market 
+microstructure. However, in the Hongkong Exchange, the effect of Loosening the 
+Selection Criteria for Shorting Selling is inconsistent with our prediction that the 
+loosening should improve the internal market efficiency. Finally, the unpredicted 
+deterioration of the internal market efficiency of the Reduction of Tick Size and Other 
+Issues on Jun. 30, 2005 may due to the fact that the two events are closely happened, 
+and we employ the middle date of the two events as the effective date of the basket 
+of the events. In this vein, the effects of different events are offsetted by each other, 
+which is evidenced by the relatively small difference of the internal market efficiency.  
+ 
+In the case of cross-market efficiency, although the two markets are significantly 
+dependent, there are three four increases during our study time period before the 
+degree of the cross-market returning back to its original level.  
+The relationship among the cross-market efficiency, the internal market 
+efficiency and the market co-movement during the releasing period are reported in 
+Table 11. 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+53 
+ 
+Table 11 Relationship among Market Co-Movement, Market Efficiency and 
+Cross-Market Efficiency during the Releasing Period 
+(There are 813 observations for each variable. * and *** denote statistical significance at 10% and 1% level, 
+respectively. The dependent variable is the MutualInfoi, which stands for the cross-market efficiency. The 
+𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝑆𝐻,𝑖, and 𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝐻𝐾,𝑖 stand for the internal market efficiency in the Shanghai Exchange and the 
+Hongkong Exchange, respectively. |RHOi| represents the market co-movement.. ) 
+ 
+1 
+2 
+3 
+4 
+𝐼𝑛𝑡𝑒𝑟𝑐𝑒𝑝𝑡 
+0.018 
+0.064*** 
+0.011 
+0.208*** 
+𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝑆𝐻,𝑖 
+0.072 
+- 
+0.044 
+-1.522*** 
+𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝐻𝐾,𝑖 
+0.273*** 
+- 
+0.286*** 
+-0.664* 
+|𝑅𝐻𝑂𝑖| 
+- 
+0.059*** 
+0.069*** 
+0.109 
+𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝑆𝐻,𝑖∗|𝑅𝐻𝑂𝑖| 
+- 
+- 
+- 
+3.321*** 
+𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝐻𝐾,𝑖∗|𝑅𝐻𝑂𝑖| 
+- 
+- 
+- 
+-4.567*** 
+𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝑆𝐻,𝑖∗𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝐻𝐾,𝑖 
+- 
+- 
+- 
+8.586*** 
+Adjusted R-squared 
+0.048 
+0.014 
+0.067 
+0.198 
+ 
+After controlling the interaction effect of the market co-movement and the 
+internal market efficiency, the coefficient of the internal market efficiency of each 
+market is significant at 10% level and has negative sign, which suggests that when 
+the market is in normal condition, if the market becomes more efficient, the 
+cross-market efficiency between the two market is improved. However, regarding the 
+effect of the market co-movement, the 𝛽3 is positive but insignificant. There are 
+two possible explanations for this observation. First, when the market is in normal 
+condition, the investors are more confident about their predictions and judgments of 
+the market than during the financial crisis period. In this vein, the investor does not 
+need additional information to verify his investment decision, thus the market is 
+fulfilled by different opinions about the effective price. Second, the investing 
+channels (for both directions) are limited by the regulations, which makes only the 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+54 
+ 
+institute investors can invest in both markets.  
+ 
+Furthermore, in the case of the explanatory power of the regression model, the 
+adjusted R-squared of the full model is extreme high (0.980) for the financial crisis 
+period, whereas during the releasing period, the adjusted R-squared is 0.198. This 
+observation suggests that the cross-market efficiency is mainly determined by the 
+internal market efficiency of each market, the market co-movement and their 
+interactions, while when the market is in normal condition, the cross-market 
+efficiency is mainly determined by other market specific factors rather than the 
+internal market efficiency and the market co-movement.  
+ 
+9. Robustness 
+ 
+In this section, several robustness checks of the results are performed. First, we 
+select window lengths of 60 days (quarterly) and 120 days (semiannually) rather than 
+90 trading days to calculate the entropies, mutual information and Pearson’s 
+correlation coefficient. Second, since the underlying assets for market composite 
+indices are different for the Shanghai and the Hongkong composite indices, we build 
+up a new pairs of indices composited by 63 cross-listing companies in both markets. 
+The manipulation makes it possible to focus on the influence of the market 
+co-movement and the internal market efficiency on the cross-market efficiency.  
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+55 
+ 
+Table 12 Relationships among Market Co-movement, Internal Market Efficiency and 
+Cross-Market Efficiency Based on 60 Trading Days 
+(There are 648 and 813 observations for each variable for panel A and B, respectively. *, ** and 
+*** denote statistical significance at 10%, 5% and 1% levels, respectively.) 
+Panel A: Financial Crisis Period 
+ 
+1 
+2 
+3 
+4 
+𝐼𝑛𝑡𝑒𝑟𝑐𝑒𝑝𝑡 
+-0.228*** 
+-0.117*** 
+-0.231*** 
+0.187*** 
+𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝑆𝐻,𝑖 
+0.231*** 
+- 
+0.163*** 
+-0.561*** 
+𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝐻𝐾,𝑖 
+1.832*** 
+- 
+1.606*** 
+0.391** 
+|𝑅𝐻𝑂𝑖| 
+- 
+1.160*** 
+0.214*** 
+-0.993*** 
+𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝑆𝐻,𝑖∗|𝑅𝐻𝑂𝑖| 
+- 
+- 
+- 
+2.775*** 
+𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝐻𝐾,𝑖∗|𝑅𝐻𝑂𝑖| 
+- 
+- 
+- 
+1.487*** 
+𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝑆𝐻,𝑖∗𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝐻𝐾,𝑖 
+- 
+- 
+- 
+0.717 
+Adjusted R-squared 
+0.906 
+0.691 
+0.913 
+0.952 
+Panel B: Releasing Period 
+ 
+1 
+2 
+3 
+4 
+𝐼𝑛𝑡𝑒𝑟𝑐𝑒𝑝𝑡 
+-0.029** 
+0.071*** 
+-0.035*** 
+0.081* 
+𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝑆𝐻,𝑖 
+0.219*** 
+- 
+0.182*** 
+-0.964*** 
+𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝐻𝐾,𝑖 
+0.441*** 
+- 
+0.433*** 
+0.179 
+|𝑅𝐻𝑂𝑖| 
+- 
+0.104*** 
+0.089*** 
+0.096 
+𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝑆𝐻,𝑖∗|𝑅𝐻𝑂𝑖| 
+- 
+- 
+- 
+3.194*** 
+𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝐻𝐾,𝑖∗|𝑅𝐻𝑂𝑖| 
+- 
+- 
+- 
+-4.221*** 
+𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝑆𝐻,𝑖∗𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝐻𝐾,𝑖 
+- 
+- 
+- 
+4.897*** 
+Adjusted R-squared 
+0.122 
+0.032 
+0.145 
+0.286 
+ 
+ 
+ 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+56 
+ 
+Table 13 Relationships among Market Co-movement, Internal Market Efficiency 
+and Cross-Market Efficiency Based on 120 Trading Days 
+(There are 648 and 813 observations for each variable for panel A and B, respectively. *, ** and 
+*** denote statistical significance at 10%, 5% and 1% levels, respectively.) 
+Panel A: Financial Crisis Period 
+ 
+1 
+2 
+3 
+4 
+𝐼𝑛𝑡𝑒𝑟𝑐𝑒𝑝𝑡 
+-0.138*** 
+-0.115*** 
+-0.144*** 
+0.336*** 
+𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝑆𝐻,𝑖 
+-0.144** 
+- 
+-0.099 
+-0.805*** 
+𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝐻𝐾,𝑖 
+1.910*** 
+- 
+1.968*** 
+0.577*** 
+|𝑅𝐻𝑂𝑖| 
+- 
+1.012*** 
+-0.054* 
+-1.908*** 
+𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝑆𝐻,𝑖∗|𝑅𝐻𝑂𝑖| 
+- 
+- 
+- 
+5.537*** 
+𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝐻𝐾,𝑖∗|𝑅𝐻𝑂𝑖| 
+- 
+- 
+- 
+2.755*** 
+𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝑆𝐻,𝑖∗𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝐻𝐾,𝑖 
+- 
+- 
+- 
+-2.249*** 
+Adjusted R-squared 
+0.934 
+0.757 
+0.934 
+0.984 
+ 
+1 
+2 
+3 
+4 
+𝐼𝑛𝑡𝑒𝑟𝑐𝑒𝑝𝑡 
+0.090*** 
+0.058*** 
+0.081*** 
+0.674*** 
+𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝑆𝐻,𝑖 
+-0.154*** 
+- 
+-0.173** 
+-3.604*** 
+𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝐻𝐾,𝑖 
+0.013 
+- 
+0.043 
+-3.211*** 
+|𝑅𝐻𝑂𝑖| 
+- 
+0.043*** 
+0.058*** 
+-0.593*** 
+𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝑆𝐻,𝑖∗|𝑅𝐻𝑂𝑖| 
+- 
+- 
+- 
+5.638*** 
+𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝐻𝐾,𝑖∗|𝑅𝐻𝑂𝑖| 
+- 
+- 
+- 
+-2.945*** 
+𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝑆𝐻,𝑖∗𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝐻𝐾,𝑖 
+- 
+- 
+- 
+19.508*** 
+Adjusted R-squared 
+0.015 
+0.011 
+0.035 
+0.213 
+No matter which window length is selected, several commonalities can be 
+observed. First, the explanatory power for the regression is greater for the financial 
+crisis period than for the releasing period, which indicates that the cross-market 
+efficiency is mainly determined by the internal market efficiency in each market and 
+the market co-movement during the financial crisis period. However, when the 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+57 
+ 
+market is in normal condition (releasing period), the cross-market efficiency is 
+influenced by other factors (such as other market specific factors). Second, in the 
+financial crisis period, the improvement of the internal market efficiency in the 
+Shanghai Exchange can improve the cross-market efficiency, whereas the 
+improvement of the internal market efficiency in the Hongkong Exchange 
+deteriorates (or be independent with) the cross-market efficiency. On the other hand, 
+in the releasing period, the improvement of the internal market efficiency of each 
+market has significantly positive effect on the improvement of the cross-market 
+efficiency. Third, the market co-movement is positively related to the cross-market 
+efficiency no matter what condition the market is in, which suggests that the higher 
+the market co-movement, the higher the cross-market efficiency is. Fourth, there are 
+significant interaction effect of the internal market efficiency and the market 
+co-movement on the cross-market efficiency in both periods. Fifth, the effect of the 
+market co-movement on the cross-market is stronger for the financial crisis period 
+than for the releasing period, which is suggested by the great reduction of the 
+absolute value of the regression coefficients.  
+ 
+Compared to that based on the market composite indices, the cross-wavelet 
+coherence based on the cross-listing indices suggests stronger market co-movement 
+for the sample period, and the co-movement patterns are presented in Figure 10. 
+Additionally, we run the regression models based on the new indices,20 and report 
+the results in Table 14.  
+                                                             
+20 The return based on cross-listing indices is weighted by the market capitalization. The market capitalization for 
+each composite company on a given day is computed as the product of the closing price and the total amount of 
+the common shares issued by the company. 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+58 
+ 
+Figure 10 Wavelet Coherence between the two Markets based on Cross-Listing 
+Indices 
+(The value of squared wavelet coherence is in the range of 0 and 1. A leftward arrow indicates a 
+negative relationship between the two time series, and a rightward arrow implies a positive 
+correlation. The higher the value of squared wavelet coherence, the stronger correlation between the 
+two time series. The scale (or frequency) of analyzing is indicated by the vertical axis, while the time 
+interval is indicated by the horizontal axis. Moreover, the bold line suggests the significance level at 5% 
+level which is determined by Monte Carlo simulation of 10,000 sets of two white noise time series 
+with the same length as the series.) 
+ 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+59 
+ 
+Table 14 Relationships among Market Co-movement, Internal Market Efficiency 
+and Cross-Market Efficiency Based on Cross-Listing Indices 
+(There are 648 and 934 observations for each variable for panel A and B, respectively. ** and *** 
+denote statistical significance at 5% and 1% levels, respectively.) 
+Panel A: Financial Crisis Period 
+ 
+1 
+2 
+3 
+4 
+𝐼𝑛𝑡𝑒𝑟𝑐𝑒𝑝𝑡 
+-0.100*** 
+0.432*** 
+-0.100*** 
+0.656*** 
+𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝑆𝐻,𝑖 
+-0.248*** 
+- 
+-0.248*** 
+-3.474*** 
+𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝐻𝐾,𝑖 
+2.055*** 
+- 
+2.055*** 
+-0.047 
+|𝑅𝐻𝑂𝑖| 
+- 
+0.112*** 
+0.000 
+-0.288*** 
+𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝑆𝐻,𝑖∗|𝑅𝐻𝑂𝑖| 
+- 
+- 
+- 
+2.995*** 
+𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝐻𝐾,𝑖∗|𝑅𝐻𝑂𝑖| 
+- 
+- 
+- 
+-2.197*** 
+𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝑆𝐻,𝑖∗𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝐻𝐾,𝑖 
+- 
+- 
+- 
+9.135*** 
+Adjusted R-squared 
+0.892 
+0.019 
+0.892 
+0.926 
+Panel B: Releasing Period 
+ 
+1 
+2 
+3 
+4 
+𝐼𝑛𝑡𝑒𝑟𝑐𝑒𝑝𝑡 
+-0.144*** 
+0.125*** 
+-0.209*** 
+-0.093 
+𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝑆𝐻,𝑖 
+1.054*** 
+- 
+0.879*** 
+1.505*** 
+𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝐻𝐾,𝑖 
+0.336*** 
+- 
+0.487*** 
+-0.205 
+|𝑅𝐻𝑂𝑖| 
+- 
+0.265*** 
+0.273*** 
+0.208*** 
+𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝑆𝐻,𝑖∗|𝑅𝐻𝑂𝑖| 
+- 
+- 
+- 
+-4.416*** 
+𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝐻𝐾,𝑖∗|𝑅𝐻𝑂𝑖| 
+- 
+- 
+- 
+4.113*** 
+𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝑆𝐻,𝑖∗𝐸𝑛𝑡𝑟𝑜𝑝𝑦𝐻𝐾,𝑖 
+- 
+- 
+- 
+-1.181 
+Adjusted R-squared 
+0.281 
+0.305 
+0.595 
+0.674 
+ 
+Compared to the analysis based on the market composite indices, the analyzing 
+based on the cross-listing indices reveals several interesting findings. First, only the 
+change of the internal market efficiency of the Shanghai Exchange has effect on the 
+cross-market efficiency, while the internal market efficiency has no significant 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+60 
+ 
+influence on the cross-market efficiency. In the financial crisis period, the 
+cross-market efficiency is positively related to the internal market efficiency in the 
+Shanghai Exchange, whereas the cross-market efficiency is negatively related to that 
+in the Shanghai Exchange when the market is in normal condition. The observation 
+suggests that, when the market is in emergency condition, the improvement of the 
+internal market efficiency of the emerging market can help improve the cross-market 
+efficiency. However, when the market is in normal condition, the improvement of the 
+internal market efficiency of the emerging market has negative effect on the 
+cross-market efficiency. Second, the market co-movement has different roles in 
+different periods. In the financial crisis period, the strengthening of the market 
+co-movement will lead to the improvement of the cross-market efficiency. However, 
+when the market is in normal condition, the increasing of the degree of the 
+correlation would deteriorate the cross-market efficiency.  
+ 
+10. Conclusion 
+ 
+In this study, we delineate the market co-movement by the cross-wavelet 
+coherence, the market efficiency by the entropy and the cross-market efficiency by 
+the mutual information, respectively. Additionally, we examine the relationships 
+among these three concepts on two time periods, the financial crisis (extreme 
+market) time period and the releasing (normal condition market) time period, 
+respectively.  
+ 
+First, the market microstructure has significant effect on the internal market 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+61 
+ 
+efficiency in each market. However, such effect is also affected by the external 
+environment (such as the condition of the market) and the frequency of the change.  
+ 
+Second, significant interaction effect of the internal market efficiency and the 
+market co-movement are observed. After controlling of such interaction effect, the 
+improvement of the internal market efficiency of each market can improve the 
+cross-market efficiency between the markets during the releasing period. However, 
+when the market is in emergency condition, only the improvement of the internal 
+market efficiency of the emerging market (e.g., the Shanghai Exchange) has positive 
+effect on the cross-market efficiency, whereas the status of the internal market 
+efficiency of the developed market has negative (or no) effect on the cross-market 
+efficiency.  
+Additionally, the effect of the market co-movement is inconsistent with our 
+prediction, which suggests that the strong co-movement pattern can improve the 
+cross-market efficiency rather than deteriorating it. In this vein, the strong market 
+co-movement is unequal to the cross-market inefficiency.  
+Finally, regarding the explanatory power of the regression model, for the 
+financial crisis period, the cross-market efficiency is mainly determined by the 
+internal market efficiency of each exchange, the market co-movement and their 
+interactions. On the other hand, for the releasing time period, the explanation power 
+of the internal market efficiency and the market co-movement decline greatly. 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+62 
+ 
+References  
+Alampieski K. and Lepone A. (2009), Impact of A Tick Size Reduction on Liquidity: 
+Evidence from The Sydney Futures Exchanges, Accounting and Finance, 49. 1-20 
+Alexakis C. and Balios D. (2008), Investigating The Effects of Market Microstructure 
+on Stock Price Formation and Volatility: Evidence from The Athens Stock 
+Exchange, Applied Financial Economics Letters, 4, 225-231 
+Amihud Y., Mendelson H., and Uno J. (1999), Number of Shareholders and Stock 
+Prices: Evidence from Japan, The Journal of Finance, Vol. LIV, No. 3, 1169-1184 
+Ascioglu A., Comerton-Forde C., and McInish T. H. (2010), An Examination of 
+Minimum Tick Sizes on The Tokyo Stock Exchange, Japan and the World 
+Economy, 22, 40-48 
+Asem E. (2007), Concentrated Opening Volume: Market Closure or Strategic Trading?, 
+The Journal of Financial Research, Vol. 30, No.2, 321-334 
+Aslanidis N., Osborn D. R. and Sensier M. (2009), Co-Movements Between US and UK 
+Stock Prices: the Role of Time-Varying Conditional Correlations, International 
+Journal of Finance and Economics, 15, 366-380 
+Asmar M. and Ahmad Z. (2011), Market Microstructure: The Components of 
+Black-Box, International Journal of Economics and Finance, Vol. 3, No.1, 152-159 
+Beine M., Cosma A., and Vermeulen (2009), The Dark Side of Global Integration: 
+Increasing Tail Dependence, Journal of Banking & Finance, Vol. 34, Issue 1, 
+184-192 
+Bodart V. and Reding P. (1999), Exchange Rate Regime, Volatility and International 
+Correlations on Bond and Stock Markets, Journal of International Money and 
+Finance, 18, 133-151 
+Boehmer E., Jones C. M., and Zhang X. (2008), Which Shorts Are Informed?, The 
+Journal of Finance, Vol. LXIII, No. 2, 491-527 
+Boehmer E., and Wu J. (2009), Short Selling and the Informational Efficiency of Prices, 
+Working paper, University of Georgia 
+Booth et al. (2002), Trading and Pricing in Upstairs and Downstairs Stock Markets, 
+The Review of Financial Studies, Vol. 15, No. 4, 1111-1135 
+Brissaud J. (2005), The Meanings of Entropy, Entropy, 7[1], 68-96 
+Brockman P., Liebenberg I., and Schutte M. (2010), Comovement, Information 
+Production and the Business Cycle, Journal of Financial Economics, 97, 107-129 
+Brooks R. and Negro (2006), Firm-Level Evidence on International Stock Market 
+Comovement, Marco. Review of Finance, Vol. 10, Issue 1, 69-98 
+Chan S. H., Kim K. A., and Rhee S. G. (2005), Price Limit Performance: Evidence from 
+Transactions Data and the Limit Order Book, Journal of Empirical Finance, 12, 
+269-290 
+Charitou A. and Panayides M. (2009), Market Making in International Capital Markets: 
+Challenges and Benefits of its Implementation in Emerging Markets, 
+International Journal of Managerial Finance, Vol. 5, Issue 1, 50-80 
+Chelley-Steeley P. L. (2008), Market Quality Changes in the London Stock Market, 
+Journal of Banking & Finance, 32, 2248-2253 
+Chiang T. C., Tan L., and Li H. (2007), Empirical Analysis of Dynamic Correlations of 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+63 
+ 
+Stock Returns: Evidence from Chinese A-share and B-share Market, Quantitative 
+Finance, Vol. 7, No. 6, 651-667 
+Christoffersen et al., (2011), Is the Potential for International Diversification 
+Disappearing?, Working Paper 
+Chung K. H., Kang J., and Kim J. (2011), Tick Size, Market Structure, and Market 
+Quality, Review of Quantitative Finance & Accounting, 36, 57-81 
+Chung K. H., and Chuwonganant C. (2009), Transparency and Market Quality: 
+Evidence from SuperMontage, Journal of Financial Intermediation, 18(1), 93-111 
+Comerton-Forde C. and Rydge J. (2006), The Current State of Asia-Pacific Stock 
+Exchanges: A Critical Review of Market Design, Pacific-Basin Finance, 14, 1-32 
+Comerton-Forde C., Rydge J. and Burridge H. (2007), Not All Call Auction Are Created 
+Equal: Evidence from Hong Kong, Review of Quantitative Finance & Accounting, 
+Vol. 29, Issue 4, 394-413 
+Crowley P. (2005), An intuitive Guide to Wavelets for Economists, Working Paper 
+Series, Bank of Finland 
+Darbellay G. A. and Wuertz D. (2000), The Entropy as a Tool for Analysing Statistical 
+Dependences in Financial Time Series, Physica A, 287, 429-439 
+Demarchi M. and Foucault T. (2000), Equity Trading Systems in Europe: A Survey of 
+Recent Changes, Annals of Economics and Statistics, 60, 1-32 
+Devenow A. and Welch I. (1996), Rational Herding in Financial Economics, European 
+Economic Review, 40, 603-615 
+Dwyer G. P. and Wallace M. S. (1992), Cointegration and Market Efficiency, Journal of 
+International Money and Finance, Vol. 11, Issue 4, 318-327 
+Easley D. and O’Hara M. (1991), Order Form and Information in Securities Markets, 
+The Journal of Finance, Vol. XLVI, No. 3, 905-927 
+Engel C. (1996), A Note on Cointegration and International Capital Market Efficiency, 
+Journal of International Money and Finance, 15 (4), 657-660 
+Gençay R., Selçuk, F. and Whitcher B. (2003), Systematic Risk and Timescales, 
+Quantitative Finance, 3, 108-116 
+Gençay R., Selçuk, F. and Whitcher B. (2005), Information Flow Between Volatilities 
+across Time Scales, Working Paper, Simon Fraser University 
+Gerace D., Tian G., and Zheng W. (2009), Call Auction Transparency and Market 
+Liquidity: The Shanghai Experience, Working paper, University of Wollongong 
+Grinsted A., Moore J. C., and Jevrejeva S. (2004), Cross Wavelet and Wavelet 
+Coherence, Retrieved Sep. 1st 2011 from POL, 
+http://www.pol.ac.uk/home/research/waveletcoherence/  
+Gulko L. (1999), The Entropic Market Hypothesis, International Journal of Theoretical 
+and Applied Finance, Vol. 2, No. 3, 293-329 
+Harris L. and Hasbrouck J. (1996), Market vs. Limit Orders: The SuperDOT Evidence on 
+Order Submission Strategy, The Journal of Financial and Quantitative Analysis, 
+31(2), 213-231 
+Hasbrouck J. (1993), Assessing the Quality of a Security Market: A New Approach to 
+Transaction-Cost Measurement, Review of Financial Studies 6, 191-212 
+Hauser S. and Lauterbach B. (2003), The Impact of Minimum Trading Units on Stock 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+64 
+ 
+Value and Price Volatility, Journal of Financial and Quantitative Analysis, Vol. 38, 
+No. 3, 575-589 
+Helder J. and Jin H. (2007), Long Memory in Commodity Futures Volatility: A Wavelet 
+Perspective, The Journal of Futures Markets, 27, 411-437 
+Hey J. and Morone A. (2004), Do Markets Drive Out Lemmings – or Vice Versa?, 
+Economica, 71, 284, 637-659 
+HKEx (May 31, 2011), A Glimpse of the Past, Retrieved Sep. 1st 2011 from HKEx Ltd., 
+http://www.hkex.com.hk/eng/exchange/corpinfo/history/history.htm 
+Hou K. and T. J. Moskowitz (2005), Market Frictions, Price Delay, and the 
+Cross-Section of Expected Returns, Review of Financial Studies 18, 981-1020 
+Hsieh T., Chuang S., and Lin C. (2008), Impact of Tick-Size Reduction on the Market 
+Liquidity – Evidence from The Emerging Order-Driven Market, Review of Pacific 
+Basin Financial Markets & Policies, Vol. 11, Issue 4, 591-616 
+Huang R. D., and Stoll H. R. (1996), Dealer Versus Auction Markets: A Paired 
+Comparison of Execution Costs on NASDAQ and the NYSE, Journal of Financial 
+Economics, 41, 313-357 
+Janosi T., Jarrow R., and Zullo F. (1999), An Empirical Analysis of the Jarrow-Van 
+Deventer Model for Valuing Non-Maturity Demand Deposits, Journal of 
+Derivatives, 7, No. 1, 8-31 
+Kanas A. (2002), Is Exchange Rate Volatility Influenced by Stock Return Volatility? 
+Evidence from the US, UK and Japan, Applied Economics Letters, 9(8), 501-03 
+Kühl M. (2010), Bivariate Cointegration of Major Exchange Rates, Cross-Market 
+Efficiency and the Introduction of the Euro, Journal of Economics and Business, 
+62, 1-19 
+Kurov A. (2008), Tick Size Reduction, Execution Costs, and Informational Efficiency in 
+the Regular and E-Mini NASDAQ-100 Index Futures Markets, The Journal of 
+Futures Markets, Vol. 28, No. 9, 871-888 
+Lagoarde-Segot T. (2009), Financial Reforms and Time-Varying Microstructure in 
+Emerging Equity Markets, Journal of Banking & Finance, Vol. 33, Issue 10, 
+1755-1769 
+Lence S. and Falk B. (2005), Cointegration, Market Integration, and Market Efficiency, 
+Journal of International Money and Finance, 24, 873-890 
+Lepone A. and Yang J. (2010), The Impact of Off-Market Trading on Liquidity: 
+Evidence from The Australian Options Market, The Journal of Futures Markets, 
+Vol. 30, No. 4, 361-377 
+Madhavan A. (1992), Trading Mechanisms in Securities Markets, The Journal of 
+Finance, Vol. XLVII, No.2, 607-641 
+Madhavan A. (2000), Market Microstructure: A Survey, Working Paper, University of 
+Southern California 
+Madhavan A., Porter D., and Weaver D. (2005), Should Securities Markets Be 
+Transparent? Journal of Financial Markets, 8(3), 265-287 
+Maraun D. and Kurths J. (2004), Cross Wavelet Analysis: Significance Testing and 
+Pitfalls, Nonlinear Processes in Geophysics, 11, 505-514 
+Masset Philippe (2008), Analysis of Financial Time-Series using Fourier and Wavelet 
+Electronic copy available at: https://ssrn.com/abstract=1928195
+
+ 
+65 
+ 
+Methods, Working Paper, University of Fribourg (Switzerland) 
+Morch R., Yeung B., and Yu W. (2000), The Information Content of Stock Markets: 
+Why Do Emerging Markets Have Synchronous Stock Price Movements?, Journal 
+of Financial Economics, 58, 215-260 
+Mucklow B. (1994), Market Microstructure: An Examination of the Effects on Intraday 
+Event Studies, Contemporary Accounting Research, Vol. 10, No. 2, 355-382 
+Nielsen M. and Frederiksen P. (2005), Finite Sample Comparison of Parametric, 
+Semiparametric, and Wavelet Estimators of Fractional Integration, Econometric 
+Reviews, 24(4), 405-443 
+O’Hara M. (1995), Market Microstructure Theory, Basil Blackwell, Cambridge, Mass 
+Pagano M., and Roell A. (1996), Transparency and Liquidity: A Comparison of Auction 
+and Dealer Markets with Informed Trading, The Journal of Finance, 51(2), 
+579-611 
+Pagano M., and Schwartz R. (2003), A Closing Call’s Impact on Market Quality at 
+Euronext Paris, Journal of Financial Economics, 68, 439-484 
+Pavabutr P. and S. Prangwattananon (2008), Tick Size Change on the Stock Exchange 
+of Thailand, Review of Quantitative Finance and Accounting, Vol. 32, Issue 4, 
+351-371 
+Pele D. and Tepus A. (2011), Information Entropy and Efficient Market Hypothesis, 
+International Conference on Applied Economics, 463-472 
+Peng H. (2007), Mutual Information Computation, Retrieved Dec. 2011 from Matlab 
+Central: http://www.mathworks.com/matlabcentral/fileexchange/14888 
+Phylaktis K. and Xia L. (2009), Equity Market Comovement and Contagion: A Sectoral 
+Perspective, Financial Management, 381-409 
+Roosenboom P. and Dijk M. A. (2009), The Market Reaction to Cross-Listing: Does The 
+Destination Market Matter?, Journal of Banking & Finance, 33, 1898-1908 
+Rua A., and Nunes L. C. (2009), International Comovement of Stock Market Returns: 
+A Wavelet Analysis, Journal of Empirical Finance, 16, 632-639 
+Ryoo H. and Graham S. (2002), Korean Stock Prices Under Price Limits: Variance Ratio 
+Tests of Random Walks, Applied Financial Economics, 12, 545-553 
+Sinnakkannu J. and A. Md Nassir (2006), Market Microstructure Changes and Time to 
+Equilibrium (TTE)? Evidence Bursa Malaysia, International Research Journal of 
+Finance and Economics, Issue 6, 31-48 
+Subbotin A. (2008), A Multi-Horizon Scale for Volatility, Working Paper Series, 
+University of Paris-1 
+Torrence C. and Compo G. (1998), A Practical Guide to Wavelet Analysis, Bulletin of 
+American Meteorological Society, 79, 61-78 
+Torrence C. and Webster P. (1998), The Annual Cycle of Persistence in the El Niño 
+Southern Oscillation, Quarterly Journal of the Royal Meteorological Society, Vol. 
+124, Issue 550, 1985-2004 
+Xu C. K. (2000), The Microstructure of the Chinese Stock Market, China Economic 
+Review, 11, 79-97 
+Zunino et al. (2009), Forbidden Patterns, Permutation Entropy and Stock Market 
+Inefficiency, Physica A, 388, 2854-2864 
+Electronic copy available at: https://ssrn.com/abstract=1928195

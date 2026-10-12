@@ -1,0 +1,3438 @@
+Electronic copy available at: http://ssrn.com/abstract=1825223
+Electronic copy available at: http://ssrn.com/abstract=1825223
+High Frequency Trading, Information, and
+Takeovers
+Mark Humphery-Jenner∗
+University of New South Wales
+Tilburg University
+∗Email address:
+M.HumpheryJenner@unsw.edu.au.
+I thank Rudiger Fahlenbrach,
+Rochester Cahan, Joseph McCahery, Fariborz Moshirian, Ronan Powell, Jianxin Wang,
+Ken Wessen, and Bohui Zhang.
+1
+Electronic copy available at: https://ssrn.com/abstract=1825223
+
+Electronic copy available at: http://ssrn.com/abstract=1825223
+Electronic copy available at: http://ssrn.com/abstract=1825223
+High Frequency Trading, Information, and
+Takeovers
+Abstract
+This paper (1) proposes new variables to detect informed highfrequency trading (HFT), (2) shows that HFT can help to predict
+takeover targets, and (3) shows that HFT inﬂuences target announcement announcement returns. Prior literature suggests that informed
+trade may occur before takeovers, but has not examined the role of
+HFT and has relied on monthly measures of informed trade (such
+as PIN or the spread components). I propose microstructure-based
+variables to detect HFT that are derived from hazard modeling and
+from VWAP trading algorithms. I show that these can help predict
+takeover targets and are signiﬁcantly related to target announcement
+returns. This highlights the existence of pre-takeover informed trade
+and the need to control for it when analyzing takeover returns.
+Keywords: High-Frequency Trading, Algorithmic Trading, Takeovers
+1
+Electronic copy available at: https://ssrn.com/abstract=1825223
+
+Electronic copy available at: http://ssrn.com/abstract=1825223
+Electronic copy available at: http://ssrn.com/abstract=1825223
+1
+Introduction
+This paper proposes measures to detect high frequency trading (HFT), shows
+that HFT can help predict takeover targets, and ﬁnds that HFT inﬂuences
+target announcement returns. I contribute to the literature on the detection
+of HFT and informed trade, takeover returns, and takeover prediction. The
+intuition for focusing on HFT is twofold. First, high-levels of HFT represent a liquid investor base, implying that there may be a stronger market
+reaction on the announcement. Second, high levels of HFT might reﬂect preannouncement informed speculation, implying the possibility of a takeover
+and suggesting pre-takeover informed trade. This implies that failing to control for HFT might induce an omitted variable bias in studies that analyze
+takeover returns, and contributes to the policy debate on the regulation of
+HFT.
+HFT has proliferated and has become a live regulatory issue. HFT and
+algorithmic trading have increased in popularity (Chew, 2007; Chordia, Roll
+and Subrahmanyam, 2011; Comerton-Forde, Hendershott, Jones, Moulton
+and Seasholes, 2010; Degryse, Van Achter and Wuyts, 2009). Up to 67%
+of investment managers indicate that they use trading algorithms (Grossman, 2005). They may become more proliﬁc due to the emergence of ‘best
+execution’ requirements as in MIFID (following Anolli and Petrella, 2007;
+Brandes and Domowitz, 2011). Trading algorithms provide one way to for
+informed traders to shift large blocks of stock while minimizing transaction
+2
+Electronic copy available at: https://ssrn.com/abstract=1825223
+
+costs (Humphery-Jenner, 2011; Kissell, Glantz and Malamut, 2004; Kissell
+and Malamut, 2005, 2006).
+Subsequently, HFT has been linked to market manipulation and informed trade, raising the possibility of regulating
+HFT (Bhupathi, 2010; McGowan, 2010; Serritella, 2010). However, there is
+a dearth of tractable proxies for the presence of HFT, and the literature has
+not analyzed the relation between HFT and informed trade.
+The motivation of this study is to contribute to, and to address gaps
+in, four strands of literature: informed trade measurement, pre-takeover informed trade, takeover prediction, and the determinants of target returns.
+First, I contribute to the ‘informed trade’ literature. Proxies for the presence of HFT are especially important because traders do not have access to
+trader IDs; and thus, need ways to transform anonymous trade data into
+measures of HFT and informed trade. Prior literature focuses on monthly
+measures such as PIN and the components of the bid ask spread. However,
+the literature lacks daily measures of informed trade that incorporate intraday trading dynamics. I provide a new daily measure of informed trade. It is
+based on the intraday frequency of trades. Speciﬁcally, it is shape parameter
+of a Weibull distribution that models the end in a ‘lull’ in trade. I compute the shape parameter using method of moments. This variable captures
+the frequency of trades; and thus, represents the presence of high-frequency
+trade.1 I also examine intraday deviations from a ‘standard’ trading volume
+1Note that for this market, a higher shape parameter captures a higher trade frequency.
+This is because the average time between trades is above one second. In which case, the
+Weibull hazard function implies that a higher shape parameter indicates a lower time
+3
+Electronic copy available at: https://ssrn.com/abstract=1825223
+
+proﬁle. This provides a measure of deviations from a ‘standard’ or ‘steady
+state’ type volume proﬁle; and thus, can be a proxy for the existence of HFT.
+I note that HFT may, but need not, be associated with informed trade.
+Some times of HFT can evidence informed trade. These include cost-minimization
+type algorithms (for example VWAP and TWAP algorithms). These algorithms allow (potentially informed) traders to shift large blocks of stock by
+minimizing transaction costs. Other types of HFT include statistical arbitrage techniques. These are less likely to contain information about a corporation’s fundamental value or about approaching announcements. It is
+not possible to distinguish between these types of trade by using publicly
+available information.2
+Second, I contribute to the literature on pre-announcement informed
+trade. The important ﬁnding is that there is some evidence of pre-takeover
+informed trade. Cumming and Li (2011) ﬁnd a stock-price run-up in targets and acquirers before takeover announcements. Cao, Chen and Griﬃn
+(2005) ﬁnd signiﬁcant informed trade in the options market before takeover
+announcements. Farin´os Vi˜nas, Garcia and Ibanez (2003) ﬁnd that the information asymmetry component of the bid-ask spread increases before a
+takeover announcement. Further, Aktas, de Bodt, Declerck and Van Oppens
+(2007) indicate that order-imbalance is higher before a takeover announcement; however, ﬁnd little relation between PIN and merger announcements.
+between trades.
+2However, the presence of non-informed HFT may actually strengthen the results by
+limiting the detection power of the HFT variables used in this paper.
+4
+Electronic copy available at: https://ssrn.com/abstract=1825223
+
+The problem with most of these results are (1) they rely on ‘monthly’-type
+variables.
+For example, PIN or the decomposition of the bid-ask spread
+require at least a month of intraday data. (2) The insider trading papers
+usually rely on information about insider trades,3 which is non-public and
+thus not useful to the general market. (3) the daily measures (such as daily
+order imbalance) ignore intraday trading patterns; and thus, exclude potentially useful information. I show that there is daily ‘informed trade’ (as
+proxied by the intraday frequency of trading) in target stock before takeover
+announcements.
+Third, the paper contributes to the takeover prediction literature. Myriad
+papers have attempted to predict takeover targets. These models aim to predict targets in order to capture abnormal returns on and after the announcement of a takeover. These models are typically based on annual (sometimes
+quarterly) ﬁrm-level data (see Barnes, 1990, 1999; Powell, 2001, 1997). Brar,
+Giamouridis and Liodakis (2009) incorporate market-based daily returns.
+The studies have not analyzed pre-takeover informed trade as a prediction
+mechanism. This is a problem due to the hypothesized presence of informed
+HFT before takeovers.
+Fourth, I show an additional driver of takeover (target) returns. The literature indicates that targets earn signiﬁcant abnormal returns in the window
+surrounding a takeover announcement.4 Prior literature has also examined
+3See for example: Bris (2005); Keown and Pinkerton (1981); Meulbroek (1992); Meulbroek and Hart (1997); Seyhun (1990).
+4See for example: Andrade and Staﬀord (2004); Baugess, Moeller, Schlingemann and
+5
+Electronic copy available at: https://ssrn.com/abstract=1825223
+
+the drivers of acquirer returns. Prior literature has not examined HFT as a
+driver of returns. However, HFT might inﬂuence returns by (a) representing
+greater market interest in the stock, suggesting a more liquid market and a
+potentially greater reaction to news; and (b) indicating pre-announcement
+informed trade and speculation, which might impound takeover-related information. This suggests that pre-takeover HFT might be positively associated
+with takeover returns because it shows interest in the stock. Thus, failure to
+properly control for pre-takeover HFT might induce omitted variable bias in
+cross-sectional regressions of acquirer and/or target returns.
+I note that if ‘all’ informed trade were to shift from being at the takeover
+announcement date to being in pre-announcement HFT, then HFT would be
+negatively associated with takeover returns. However, such a situation seems
+implausible for it would clearly violate insider trading laws (relevantly, in
+Australia’s Corporations Act 2001 (Cth) Section 1317H), incorrectly assumes
+that ‘all’ participants have access to HFT mechanisms (on this see: Foucault,
+Moinas and Biais (2011)), and assumes perfect foresight on the part of the
+HFT trader (and thus, that they do not also trade on the announcement
+date).
+The results conﬁrm the presence of informed trade before takeover announcements and highlight the importance of HFT-based proxies.
+These
+proxies are signiﬁcantly related to the occurrence of takeover events and to
+Zutter (2009); Campa and Hernando (2004); Franks and Harris (1989); Goergen and Renneboog (2004); Jensen and Ruback (1983); Schwert (1996).
+6
+Electronic copy available at: https://ssrn.com/abstract=1825223
+
+takeover returns. I obtain these results by analyzing a sample of ﬁrms listed
+on the Australian Stock Exchange (ASX) between 1998 and 2008. The sample comprises 1014 ﬁrm-day observations on which there is a takeover bid,
+and 1,262,468 ﬁrm-day observations on which there is no takeover bid. Advantages of using the ASX are that (a) it has a wide cross-section of both
+liquid and liquid stocks, (b) it has allowed direct market access for the whole
+of the sample period (thereby facilitating electronic trading), (c) has had a
+purely electronic limit order book for the whole of the sample period (as opposed to an open out cry market), (d) it has strong insider trading rules and
+an eﬀective regulatory. These results should be generalizable to all developed
+markets that enable direct market access.
+The balance of the paper proceeds as follows. Section 2 proposes ways to
+capture the presence of HFT. Section 3 describes the sample and empirical
+methodology. Section 4 contains the results and Section 5 concludes.
+2
+Measuring trade frequency
+The ﬁrst issue is to determine how to measure the presence of HFT. The
+presence of HFT is not a binary variable (i.e. it is not that either there
+is HFT or there is not).
+Rather, the focus should be on high-frequency
+trading dynamics. The important focuses are the frequency of trades and the
+presence of intraday volume spikes. Thus, I analyze three HFT variables: the
+Weibull shape parameter, inspired by hazard modeling; the level of abnormal
+7
+Electronic copy available at: https://ssrn.com/abstract=1825223
+
+trade, inspired by VWAP trading, and the intraday order imbalance.
+2.1
+Weibull Shape Parameter
+Here, I observe that there is a time interval between trades. Gourieroux,
+Jasiak and Le Fol (1999) observe that the duration between trades indicates
+the level of trade intensity, and imply that it may imply informed trade.
+I cull this time interval a ‘lull’ in trading. A shorter time-interval means
+higher-frequency trade. Thus, one approach is to model the time between
+trades. I focus on modeling the time until a trading lull ends. The Weibull
+distribution is particularly appropriate for modeling this trading lull. The
+Weibull distribution has seen frequent use in the failure prediction literature.5
+Thus, I use the shape parameter for the Weibull distribution. In this sample,
+a higher shape parameter indicates a lower time between trades.6
+I compute the shape parameter using a method of moments approach.7 I
+assume a two-parameter Weibull model. This model has a scale parameter
+(α) and a shape parameter (β).The goal is to ﬁnd an estimate for β. 8 The
+5Examples include: Brookman and Thistle (2009); Giot and Schwienbacher (2007); Lee
+and Urrutia (1996); Wong (1995).
+6This is because the average time between trades is greater than one second. If the
+time between trades were to reduce below one second, which is rare in this sample, then
+a lower shape parameter would indicate a shorter time between trades. This is a quirk of
+the non-linear nature of the hazard rate for the Weibull distribution.
+7This approach is not new and has seen prior use, see: Cran (1988); Gove (2003);
+Khalili and Kromp (1991).
+8Note that because the estimation is based on the time between trades rather than
+orders, and for every buy there must be a sell, this is eﬀectively an ‘unsigned’ measure.
+However, given that the focus is on takeover targets, it is reasonable to assume that buyorder pressure drives the pre-takeover stock price movements.
+8
+Electronic copy available at: https://ssrn.com/abstract=1825223
+
+process is:
+1. Deﬁne the the ﬁrst and second moments as:
+m1 = µ =
+ 1
+α
+1/β
+Γ
+
+1 + 1
+β
+
+(1)
+m2 = µ2 + σ2 =
+ 1
+α
+2/β 
+Γ
+
+1 + 2
+β
+
+−
+
+Γ
+
+1 + 1
+β
+2!
+(2)
+Divide the m2 by the square of m1 to obtain:
+σ2
+µ2 =
+Γ
+h
+1 + 2
+β
+i
+−Γ2 h
+1 + 1
+β
+i
+Γ2
+h
+1 + 1
+β
+i
+(3)
+Equation (3) This implicitly deﬁnes shape parameter β.
+2. Compute
+σ2
+µ2 using the actual data. Call this Actual
+
+σ2
+µ2
+
+. I deﬁne
+µ2 as the average time between trades for stock i on day t, and σ2 as
+variance of the time between trades.
+3. Iterate through β values from 0.1 to 10. Compute σ2
+µ2 for each of these
+β estimates. Call this Estimated
+
+σ2
+µ2
+
+.
+4. Choose the β value that minimizes the squared diﬀerence between
+Actual
+
+σ2
+µ2
+
+and Estimated
+
+σ2
+µ2
+
+.
+9
+Electronic copy available at: https://ssrn.com/abstract=1825223
+
+5. Note that the estimate scale parameter is then,
+ˆα = Scale Parameter =
+
+
+µ
+Γ
+h
+1 + (1/ˆβ)
+i
+
+
+(4)
+2.2
+Intraday ‘Abnormal’ Turnover
+The second variable is the intraday abnormal turnover. The basis for this
+variable is the observation that high trading volumes can signal information.9 In the presence of HFT, this means that there should be high intraday
+volume spikes. Thus, the intraday abnormal turnover represents the deviation of intraday trade from that of an ordinary volume proﬁle. A deviation
+from an ‘ordinary’ intraday trade proﬁle may convey information (following Bialkowski, Darolles and Le Fol, 2008; Humphery-Jenner, 2011; Lo and
+Wang, 2000; Manchaldore, Palit and Soloviev, 2010). The ordinary volume
+proﬁle is the percentage of the stock’s daily volume that occurs in any given
+intraday interval (called a ‘bin’). The abnormal turnover is the diﬀerence
+between the actual percent of daily turnover that trades in the interval and
+the ordinary amount. I deﬁne the intraday abnormal turnover in Equation
+(5).
+Intraday
+Abnormal Turnoveri,tb
+= Turnoveri,tb −Expected Turnoveri,tb
+(5)
+9See for example: Easley, O’Hara and Srinivas (1998); Kim and Verrecchia (1991)
+10
+Electronic copy available at: https://ssrn.com/abstract=1825223
+
+Turnoveri,tb =
+Volumei,tb
+PN
+b=1 Volumei,tb
+(6)
+Expected Turnoveri,tb = Ave Turnoveri,tb over past 30 days
+(7)
+I use ﬁve minute intervals and focus on the absolute value of the deviation
+on grounds that both lulls and spikes in volume can convey information. I
+deﬁne the ordinary amount traded in any ﬁve minute interval as the average proportion of turnover traded in that ﬁve minute interval over the past
+month.
+2.3
+Intraday Order Imbalance
+The third variable is the intraday order imbalance. Aktas, de Bodt, Declerck
+and Van Oppens (2007) show that daily order imbalance is more informative
+around takeover announcements than are PIN and the spread components.
+The order imbalance is the number of buy orders less the number of sell
+orders divided by the total number of buy and sell orders. I focus on the
+absolute order imbalance (as per Aktas, de Bodt, Declerck and Van Oppens,
+2007). I calculate the order imbalance at ﬁve minute intervals and control for
+the moving average of the intraday order imbalance over the past ﬁve days.
+11
+Electronic copy available at: https://ssrn.com/abstract=1825223
+
+3
+Methods and Materials
+3.1
+Empirical Strategy
+I analyze whether HFT (a) helps to predict takeover activity, and (b) inﬂuences takeover returns.
+The main independent variables are the HFT
+variables. I measure these over some interval starting 11 days before day t.
+The baseline HFT variable is just the variable on day t−11. However, I also
+report results for the variable over a 5 day window (from t −11 to t −15)
+and a 30 day window (from t −11 to t −40).
+The prediction models use logit regressions. Here, the dependent variable
+is an indicator that ﬁrm i receives a takeover oﬀer within day t and day
+t + j, denoted Bidt+j
+t
+. I focus on the ﬁrm receiving a bid over the windows
+(t, t + 5), (t, t + 10), (t, t + 30). The binomial logit model is common in the
+literature (see e.g. Brar, Giamouridis and Liodakis, 2009; Palepu, 1986). The
+model includes year dummies and standard errors clustered by GICS sector10
+in order to control for takeover waves Almeida and Fernandes (consistent with
+2008); Neumayer (consistent with 2008); Petersen (consistent with 2009). 11
+The logit model is in Equation (8).
+10The results are robust to clustering by the alternative industry deﬁnition, the ‘GICS
+group’
+11The results are robust to using GICS group rather than GICS sector and to using industry dummies. GICs codes, rather than SIC codes, are standard industry classiﬁcations
+for Australian companies.
+12
+Electronic copy available at: https://ssrn.com/abstract=1825223
+
+I
+ Bidt+k
+t
+
+= f(HFTt−11
+t−k , Controls)
+(8)
+The returns models use panel regressions and OLS regressions. There are
+three sets of models. First, I examine only takeover targets. The sample
+comprises only ﬁrms that receive a takeover oﬀer. The dependent variable is
+the ﬁrm’s ‘return’ on the date of the oﬀer. The return is variously the ﬁrm’s
+raw return, the ﬁrm’s market adjusted return, or the ﬁrm’s industry (GICS
+sector) adjusted return. I prefer the industry/market adjusted return to the
+market-model-based abnormal return because some ﬁrms in the Australian
+market are illiquid;12 and thus, might have biased and inconsistent market
+model parameters (Dimson and Marsh, 1983; Scholes and Williams, 1977).
+The model is in Equation (9).
+Returnt = f(HFTt−11
+t−k , Controls)
+(9)
+Second, I examine takeover targets and non-targets together. The sample
+comprises all ﬁrms in the market. This is an unbalanced panel data set where
+I observe each ﬁrm on each day. Thus, I run a ﬁrm-date panel ﬁxed-eﬀects
+regression that also clusters standard errors by GICS sector.13 The depen12On the potential illiquidity of the Australian market see (Humphery-Jenner, 2011).
+13The results are robust to using an OLS regression with year and/or GICS sector/group
+dummies.
+13
+Electronic copy available at: https://ssrn.com/abstract=1825223
+
+dent variables are variously the ﬁrm’s stock return, GICS sector adjusted
+return, and market adjusted return. The main independent variables are the
+HFT variables, an indicator that the ﬁrm receives a bid on day t, and the
+interaction thereof. If pre-announcement HFT drives returns, then the interaction term should be positive and signiﬁcant. The model is in Equation
+(10).
+Returnt = f(HFTt−11
+t−k , I (Bidt) , HFTt−11
+t−k × I (Bidt) , Controls)
+(10)
+3.2
+Sample and variables
+I analyze the Australian market between 1998 and 2008. The Australian
+market is an ideal market for this study. First, Australia transitioned from
+a physical open out-cry market to a fully electronic market between 1987
+and 1990. Australia has allowed direct market access and automated trading
+since 1997, thereby facilitating algorithmic trading. These combined facts
+mean that the Australian market has been relatively liquid and automated
+since before the sample period.14
+Second, the Australian market is of a
+manageable size, and this allows me to include most stocks on the ASX.
+This sample-size makes it possible to analyze intraday trading information
+for all stocks in the market. Third, the Australian market has a wide range
+of liquid and illiquid stocks. This heterogeneity ensures that the results do
+14Full information is available from ASX (2010).
+14
+Electronic copy available at: https://ssrn.com/abstract=1825223
+
+not merely apply to a sub-section of liquid stocks. Fourth, Australia has a
+strong regulatory regime with eﬀective enforcement of insider trading rules.15
+The ASX is a fully electronic market that allows limit orders. It functions
+through a continuous order matching process.
+Normal trading hours are
+from 10:00 am to 4:00 pm. Stocks commence trading between 10:00 am and
+10:30 am. Commencement is staggered by alphabetical order. Trading closes
+between 4:00 pm and 4:05 pm. A ﬁnal closing auction determines the closing
+price. I only include observations that occur between 10:30 am and 4:00 pm.
+The stock market variables come from Reuters (as in Humphery-Jenner,
+2011). Here, Reuters provides intraday trading information and stock return
+information. The takeover announcement data comes from SDC platinum
+as is standard in the takeover literature. The fundamental ﬁrm-level data
+is from FinAnalysis (as in Humphery-Jenner and Powell, 2011). The full
+sample is an unbalanced panel where I have an observation for each stock
+on each day.16 I use the panel sample when analyzing the likelihood that a
+ﬁrm receives a bid (Equation (8) and when comparing target-ﬁrms’ returns
+to other ﬁrms’ returns (Equation (10)). I collapse this into a cross-sectional
+sample when I analyze the sample of targeted ﬁrms. Here, I only have one
+observation for each ﬁrm and takeover bid.
+The sample comprises 1186
+15I note that Cumming, Johan and Li (2011) indicate that Australia has relatively
+poor stock exchange rules. However, in Australia, all relevant rules are in the Corporations Act 2001 (Cth) Division 3 (available here: http://www.comlaw.gov.au/Details/
+C2011C00013/Download). For a detailed discussion see Lyon and du Plessis (2005). Thus,
+exchange rules are not necessary to govern insider trading in Australia.
+16I note that some stocks have missing days for days when there were insuﬃcient trades
+to compute microstructure variables.
+15
+Electronic copy available at: https://ssrn.com/abstract=1825223
+
+companies. Of these, 540 receive a bid at some time. These bids can be
+of varying sizes and for varying degrees of control. I do not require the bid
+to be successful.17.
+There are 1014 ﬁrm-day observations on which there
+is a takeover bid, and 1,262,468 ﬁrm-day observations on which there is no
+takeover bid.
+3.3
+Independent Variables
+I use two classes of independent variables.
+First, the takeover prediction
+models examine an indicator that equals one if the ﬁrm received a takeover
+oﬀer between day t and t + k. I report results for k = 5, 10, 20. I obtain the
+takeover announcement dates from SDC platinum.
+Second, the returns-based models examine the stock’s return on day t.
+I examine the raw return, the ‘market adjusted’ return (the raw return less
+the equally weighted market return) and the ‘industry adjusted’ return (the
+raw return less the equally weighted stock return for all stocks in the ﬁrm’s
+GICS sector18). The stock return data is from Reuters.
+3.4
+HFT Variables
+Section 2 details the variables. I obtain the data to compute these variables
+from Reuters. I focus on the lagged HFT variable in order to ensure that the
+HFT variables strictly pre-date the public announcement of the takeover. I
+17Note that requiring the bid to be for 100% control of the company reduces number of
+bid-observations but increases the ability to detect a takeover
+18The results are robust to using GICS group rather than GICS sector.
+16
+Electronic copy available at: https://ssrn.com/abstract=1825223
+
+estimate both the raw variable on day t −11 and the average of the HFT
+variable between day t −11 and t −k, where k ∈{1, . . . , 30}. For brevity, I
+only report the 5 day window (t−11 to t−15) and the 30 day window (t−11
+to t−40). The results hold for the intermediate windows. The intraday data
+is from Reuters.
+3.5
+Control Variables
+The control variables are factors that might help to predict the likelihood of
+a takeover. Note that Australia has diﬀerent governance arrangements from
+the U.S: Australia forbids (1) anti-takeover provisions (Humphery-Jenner and
+Powell, 2011), (2) ‘frustrating actions’ designed purely to resist a takeover
+rather than to maximize shareholder value (Takeovers Panel, 2010, Guidance
+Note 12), and (3) dual-class shares in general.19 Further, Australian companies that list on the ASX must comply with the ASX corporate governance
+principles, which stimulate appropriate internal governance arrangements.20
+Firm Size (‘ln(Assets)’): Large size should weakly decrease the like19ASX Listing Rule 6.9 mandates that one share has one vote, and Rule 6.10 prevents
+corporations from removing voting rights (ASX, 2001). It is possible to adopt a dual-class
+structure in Australia; however, it tends to apply to unusual corporate arrangements.
+An example is AWB (Australian Wheat Board), which began as a farmer-owned mutual
+company with a government backed monopoly. AWB attempted to move toward a singleclass structure in 2008. AWB delisted in 2010. Nenova (2003) and Doidge (2004) report
+that only 3 Australian companies have dual-class shares.
+20These
+principles
+stipulate
+matters
+such
+as
+the
+ﬁrm’s
+disclosure
+obligations
+and
+the
+required
+number
+of
+independent
+directors
+(ASX,
+2003,
+2008).
+The
+listing
+rules
+are
+available
+from
+http://www.asxgroup.com.au/
+asx-listing-rules-guidance-notes-and-waivers.htm.
+Diﬀerent rules have applied at diﬀerent times; however, year-dummies capture this change.
+17
+Electronic copy available at: https://ssrn.com/abstract=1825223
+
+lihood of a takeover. Large ﬁrms are more expensive to acquire; and thus,
+should be less likely to receive a takeover oﬀer (Powell, 2001, 1997). However,
+this eﬀect is likely to be weak because: (1) Oﬀenberg (2009) shows that size
+does not eﬀectively entrench managers and protect them from disciplinary
+takeovers, suggesting that bidders focus more on the ﬁrm’s price-to-book than
+on its mere size. (2) Australian companies tend to be smaller than companies in other countries (Humphery-Jenner and Powell, 2011); and thus, are
+should beneﬁt less from a size-based entrenchment eﬀect.
+Debt/Assets: Financial leverage may inﬂuence the likelihood of a takeover.
+One possibility is that leverage might reduces the likelihood of a takeover.
+This is for two reasons.
+First, leverage reduces free cash ﬂows. This reduces Jensen (1986) type agency conﬂicts (following Harford, 1999; Maloney,
+McCormick and Mitchell, 1993). This reduces the attractiveness of a disciplinary takeover. Second, leverage reduces available cash holdings. Faleye
+(2004) shows that cash rich ﬁrms are more likely to be taken over. Thus,
+leverage should reduce takeover likelihood. An alternative possibility is that
+excess leverage can induce ﬁnancial distress in industry downturns (see Opler
+and Titman, 1994). This might motivate distress-motivated takeovers.
+Market Cap/Assets: Highly stock prices make ﬁrms more attractive;
+and thus, less likely candidates for a takeover (Powell, 2001, 1997). Thus,
+I control for the ﬁrm’s market capitalization on day t divided by its assets
+reported in the last ﬁnancial report.
+Industry Adjusted Operating Performance (IAOP): Strongly per18
+Electronic copy available at: https://ssrn.com/abstract=1825223
+
+forming companies are less likely to be the subject of a disciplinary takeover,
+are more likely to trade at higher market prices; and thus, are less likely to
+be takeover targets. Thus, I control for the industry adjusted operating performance. The ﬁrm’s operating performance is the its return on assets. The
+industry adjusted operating performance is the ﬁrm’s ROA less the median
+ROA of ﬁrms in its GICS sector.
+Industry M&A Activity: Takeover activity tends to occur in waves
+across time and industry (Harford, 2005; Powell and Yawson, 2005). Thus,
+I control for the number of M&A deals in the ﬁrm’s GICS sector over the
+past year scaled by the total number of M&A deals that occurred in the past
+year.21
+High Tech Firm Indicator: High tech ﬁrms may be more apt takeover
+targets because (a) they tend to be smaller and (b) they may be subject
+to bids designed to replace internal R&D with external technological acquisitions (Gerpott, 1995; Granstrand, Bohlin, Oskarsson and Sj¨oberg, 1992;
+Vanhaverbeke, Duysters and Noorderhaven, 2002). The high tech ﬁrm indicator equals one if the ﬁrm’s GICS group is pharmaceutical, semi-conductor,
+software, or information technology.
+Industry Concentration (HHI): Low industry concentration should
+increase the takeover likelihood as ﬁrms engage in ‘roll-up’ takeovers designed
+21Robustness tests replace this variable with the total value of all deals in the ﬁrm’s
+industry in the prior year divided by the total value of deals in the prior year. This variable
+does not signiﬁcantly inﬂuence takeover likelihood and does not change the results for the
+main microstructure-based variables.
+19
+Electronic copy available at: https://ssrn.com/abstract=1825223
+
+to maximize market share (Powell and Yawson, 2005). Thus, I control for
+the HHI of the ﬁrm’s GICS sector in the year.22
+Cash Payment: The OLS models in Equation (9) also control for the
+method of payment. This is based on prior literature that shows that the
+method of payment inﬂuences the takeover premium and/or the market’s
+reaction to the takeover (for acquire-returns results see Chang, 1998; Fuller,
+Netter and Stegemoller, 2002).
+4
+Results and Analysis
+4.1
+Sample Description
+The univariate statistics indicate that (a) takeover returns increase with the
+level of HFT and pre-takeover trading and (b) there are some key diﬀerences
+between target and non-target ﬁrms.
+Table 1 contains the statistics for the HFT variables. The main ﬁndings
+are: (1) The HFT variables are relatively stable over time-horizon; that is, the
+1-day, 5-day, 15-day and 30-day moving averages are similar in magnitude.
+(2) The HFT variables are stable across years. This is relatively unsurprising given that Australia has allowed direct market access for the whole of
+the sample period. (3) The HFT variables may diﬀer between targets and
+non-targets. Speciﬁcally, Panel C contains statistics sorted by ﬁrm-size and
+22I calculate the HHI as the sum of squared market shares for all ﬁrms in the GICS
+sector. The market share is the ﬁrm’s sales divided by the total sales for all companies in
+that ﬁrm’s industry and year.
+20
+Electronic copy available at: https://ssrn.com/abstract=1825223
+
+whether the ﬁrm receives a takeover bid on day t. Small targets (assets in
+the bottom 50% of the sample) have higher HFT than do small non-targets.
+However, large targets have lower HFT than do large non-targets. This implies that a multivariate regression framework is necessary to fully analyze
+the relation between takeovers and HFT.
+Table 4 contains the ﬁrm-level statistics for targets and non-targets.
+There are some signiﬁcant diﬀerences between targets and non-targets. The
+diﬀerences quadrate with prior literature (see Brar, Giamouridis and Liodakis, 2009; Powell, 2001, 1997). This implies that it is important to control
+for these factors when analyzing takeover prediction/returns.
+Table 2 and Table 3 focus on takeover targets. Table 2 only examines ﬁrmday combinations on which the ﬁrm receives a takeover bid. The main result
+is that there are positive returns on such days (the raw, market adjusted,
+and industry adjusted returns are positive).
+However, the returns are of
+relatively small magnitude. This is because I do not require the takeover bid
+to be completed or to be for 100% control of the company. Table 3 contains
+correlations between the returns and the HFT variables. The key result is
+that there is a signiﬁcant positive correlation between most HFT variables
+and the stock returns.
+Overall, the results suggest that there is a relationship between (a) HFT
+variables, (b) the occurrence of a takeover, and (c) takeover returns. However, when analyzing this relationship it is necessary to control for ﬁrm-level
+characteristics.
+21
+Electronic copy available at: https://ssrn.com/abstract=1825223
+
+4.2
+Takeover Return Results
+This section discusses the takeover return results. The predictions are that
+pre-takeover informed trade is positively related to takeover returns. That is,
+informed trade can predict the market’s reaction to the takeover announcement. I analyze this by (a) running a cross-sectional regression on the sample
+of targets, and (b) running a panel regression on the sample of all ﬁrms.
+The cross sectional results are in Table 5. The sample comprises takeover
+targets only. The key result is that the Weibull shape parameter is positive and signiﬁcant in all models. This implies that pre-takeover informed
+trade helps to predict target returns. Few control variables are signiﬁcant.
+The main ﬁndings are that (1) strong pre-takeover performance increases
+takeover returns. (2) High-tech ﬁrms takeovers receive a more negative market reaction. This quadrates with prior evidence that the market tends to
+under-value high-tech investments.23
+The panel regression ﬁxed eﬀects results are in Table 6 and the panel
+random eﬀects results are in Table 7. The results are similar in both models. The main independent variable is the interaction term ‘Weibull Shape
+Parametert−11
+t−j × I (Bidt)’. Here, the interaction term is positive and signiﬁcant at 1% in all models. This implies that stock returns increase especially
+with a combination of (a) a bid and (b) pre-takeover informed trade.
+23The market’s [under]reaction to high-tech takeovers and investments has received some
+attention in the literature: Benaroch (see 2002); Dos Santos, Peﬀers and Mauer (see 1993);
+Guiso (see 1998); Hall (see 1993); Im, Dow and Grover (see 2001); Porter (see 1992);
+Schwartz and Zozaya-Gorostiza (see 2003); Wooldridge (see 1988).
+22
+Electronic copy available at: https://ssrn.com/abstract=1825223
+
+The panel regressions yield some other interesting results. First, the mere
+presence of a bid on day t does not signiﬁcantly inﬂuence returns on day t
+after controlling for pre-takeover informed trade.
+That is, while ‘Weibull
+Shape Parametert−11
+t−j
+× I (Bidt)’ is positive and signiﬁcant in all models,
+I (Bidt) is not signiﬁcant.
+Second, the level of informed trade in a stock continues to inﬂuence
+returns whether or not there is a bid.
+That is the term ‘Weibull Shape
+Parametert−11
+t−j ’ is positive and signiﬁcant in most models.
+Third, the other informed trade variables (intraday abnormal turnover,
+and order imbalance) are positively and signiﬁcantly related to returns in all
+models. However, unreported results suggest that their interactions with the
+indicator I (Bidt) are not signiﬁcant.
+Overall, the results suggest that the level of informed trade (a) inﬂuences
+stock returns in general, and (b) inﬂuences the returns to target ﬁrms in
+especial. This implies that pre-takeover informed trade is an important determinant of takeover returns and that failure to control for it may induce
+an omitted variable bias.
+4.3
+Takeover Prediction Results
+The main goal is to examine whether intraday variables can help to predict
+takeover events.
+Table 8 contains the prediction results. The key result is that the Weibull
+shape parameter signiﬁcantly predicts takeover events. Further, the intraday
+23
+Electronic copy available at: https://ssrn.com/abstract=1825223
+
+abnormal trunover is positive and signiﬁcant at 1% in most models. This
+implies that there is a high level of intraday-based abnormal trade before
+takeover announcements.
+The control variables have some important implications. First, volatile
+companies are more likely to be acquired. Companies with a high stock return
+variance are signiﬁcantly more likely to receive a bid in all models. This is
+unsurpising given that high stock variance can represent a high dispersion of
+opinion and information asymmetry.
+Second, high market-to-book ratios reduce takeover likelihood. The coefﬁcient on ‘Market Cap/Assets’ is negative and signiﬁcant in all models. This
+implies that ‘expensive’ companies are less likely to receive takeover oﬀers.
+An explanation is that high stock prices deter disciplinary (or opportunistic)
+takeovers that are designed to acquire cheap assets and/or to remove poorly
+performing managers.
+Third, company size (as proxied by ‘ln(Assets)’) does not signiﬁcantly
+inﬂuence the likelihood of a takeover. This appears surprising. However,
+it quadrates with the ﬁndings in Oﬀenberg (2009). A key explanation is a
+combination of the observations that: (1) large companies are more likely
+to suﬀer from agency conﬂicts and ineﬃciencies (see Moeller, Schlingemann
+and Stulz, 2004, 2005); and thus, are more likely to be candidates for disciplinary takeovers. (2) Even large companies in Australia are relatively small
+(Humphery-Jenner and Powell, 2011). Thus, large companies in Australia
+may be prime takeover targets.
+24
+Electronic copy available at: https://ssrn.com/abstract=1825223
+
+Fourth, M&A activity in the ﬁrm’s industry over the prior year is a useful
+predictor of a ﬁrm’s takeover likelihood. This quadrates with prior evidence
+that takeover activity tends to occur in industry waves (see Harford, 2005;
+Powell and Yawson, 2005, 2007).
+Fifth, highly levered companies are more likely to receive a takeover bid.
+This suggests that for the targets in the sample, high leverage may connote
+ﬁnancial distress. This might facilitate restructuring-orientated takeovers.
+Sixth, strongly performing companies are less likely to receive a takeover
+bid. This is consistent with Agrawal and Jaﬀe (2003) and quadrates with the
+theory that strong performance deters hostile acquisitions that are designed
+to remove ineﬃcient managers.
+The model diagnostics are encouraging. The R2 values are low. However,
+(a) they are only marginally lower than those reported in cross-sectional
+takeover studies (see Humphery-Jenner and Powell, 2011; Masulis, Wang
+and Xie, 2007; Moeller, Schlingemann and Stulz, 2004, 2005); and (b) they
+appear acceptable given that there are few takeover events and the sample
+comprises all companies that list on the ASX. Further, the ROC areas are
+reasonable.
+They are comparable to those reported in Demers and Joos
+(2007) in a bankruptcy prediction context.24 Figure 1 graphs the ROC areas
+and Table 8 reports them.
+24They are also similar to, and exceed, the ROC areas that Demers and Joos (2007)
+report for the models in Altman (1968), Zmijewski (1984) and Chava and Jarrow (2004).
+25
+Electronic copy available at: https://ssrn.com/abstract=1825223
+
+4.4
+Robustness
+This section indicates that the results are robust. (1) The results are robust
+to time period holding when I split the time period into ﬁve-year blocks. (2)
+The results are robust to clustering, holding when I cluster by year, GICS
+sector, GICS group, and/or ﬁrm. (3) The results (for the HFT variables)
+are robust to the use of a parsimonious model, which drops all insigniﬁcant
+control variables. (4) The results hold when I replace the bid indicator with
+an indicator that equals one if the bid was for a complete controlling stake in
+the company.25 (5) The results are robust to HFT time horizon (holding when
+I use moving averages between 5 days and 30 days) and to acquisition timehorizon (being qualitatively the same when I predict a bid in the next 5 to 20
+days). (6) The takeover-return results are robust to the announcement return
+deﬁnition, holding when I replace the one-day return with the cumulative
+abnormal returns26 three and ﬁve days around the takeover announcement.
+5
+Conclusion
+I propose new ways to detect HFT, and show that HFT helps to predict
+takeover targets and inﬂuences takeover returns. The literature has documented the presence of a run-up in takeover targets. However, it has not
+25I deﬁne this as a bid for over 90% of the target, at which point the acquirer can
+compulsorily acquire the remaining 10% of outstanding shares.
+26Deﬁned as the sum of the industry adjusted, or market adjusted, returns around the
+event date
+26
+Electronic copy available at: https://ssrn.com/abstract=1825223
+
+analyzed the existence of HFT before takeovers and the literature on informed trading has generally relied on monthly variables.
+I address these issues by proposing three HFT-based variables.
+First,
+the Weibull shape parameter models the time between trades. Second, the
+level of abnormal trade measures deviation from a ‘standard’ trading pattern. Third, the absolute order imbalance detects the existence of buy or sell
+pressure. I show that the Weibull shape parameter especially helps to predict
+takeovers and drives the markets’s reaction to a takeover announcement.
+These results have important implications. First, they show that failure
+to control for HFT might induce an omitted variable bias in takeover returns
+models. Second, they provide an additional input for takeover prediction
+models. Third, they have implications for regulators by providing an additional way for detect the presence of informed trade. In particular, they show
+that a high level of HFT might indicate the presence of informed (possibly
+insider) trading. Future literature can further analyze these variables within
+the context of acquirer returns and in markets that have less exposure to
+high frequency algorithmic trading.
+27
+Electronic copy available at: https://ssrn.com/abstract=1825223
+
+6
+Figures and Tables
+28
+Electronic copy available at: https://ssrn.com/abstract=1825223
+
+Table 1: Intraday Variable Statistics
+Table 1 contains statistics for the intraday variables: the Weibull shape parameter, intraday order imbalance, and intraday abnormal turnover. I compute the moving
+average variable over 5, 15, or 30 days. The column title indicates the relevant moving average interval. Superscripts ***, **, and * denote signiﬁcance at 1%, 5%, and
+10%, respectively.
+HFT Window
+1 Day: HFTt−11
+5 Day: HFTt−11
+t−15
+15 Day: HFTt−11
+t−25
+30 Day: HFTt−11
+t−40
+HFT Statistic
+Abnormal
+Turnover
+Order
+Imbalance
+Shape
+Parameter
+Abnormal
+Turnover
+Order
+Imbalance
+Shape
+Parameter
+Abnormal
+Turnover
+Order
+Imbalance
+Shape
+Parameter
+Abnormal
+Turnover
+Order
+Imbalance
+Shape
+Parameter
+Panel A: General Statistics
+Mean
+0.3211
+0.8858
+0.2663
+0.3495
+0.8873
+0.2683
+0.3654
+0.8873
+0.2682
+0.3739
+0.8876
+0.2682
+Median
+0.1285
+1.0000
+0.2620
+0.1674
+0.9333
+0.2638
+0.1839
+0.9343
+0.2652
+0.1928
+0.9366
+0.2660
+Min
+0.0081
+0.0000
+0.1930
+0.0155
+0.0000
+0.1940
+0.0169
+0.0000
+0.1940
+0.0175
+0.0000
+0.1940
+Max
+3.7255
+1.0000
+2.0000
+3.4571
+1.0000
+2.0000
+3.3853
+1.0000
+0.9297
+3.3431
+1.0000
+0.6034
+Standard Deviation
+0.5524
+0.1664
+0.0357
+0.5239
+0.1409
+0.0289
+0.5199
+0.1351
+0.0172
+0.5178
+0.1326
+0.0134
+Panel B: Averages By year
+1998
+0.3112
+0.9056
+0.2652
+0.3584
+0.9071
+0.2675
+0.4048
+0.9093
+0.2678
+0.4124
+0.9089
+0.2679
+1999
+0.3531
+0.8948
+0.2640
+0.4024
+0.8962
+0.2663
+0.4254
+0.8950
+0.2661
+0.4414
+0.8959
+0.2659
+2000
+0.3189
+0.8791
+0.2661
+0.3494
+0.8801
+0.2679
+0.3653
+0.8801
+0.2679
+0.3768
+0.8800
+0.2677
+2001
+0.2750
+0.8786
+0.2660
+0.3023
+0.8799
+0.2683
+0.3211
+0.8804
+0.2682
+0.3243
+0.8804
+0.2681
+2002
+0.3073
+0.9022
+0.2675
+0.3412
+0.9037
+0.2696
+0.3636
+0.9046
+0.2696
+0.3738
+0.9035
+0.2695
+2003
+0.3333
+0.9054
+0.2669
+0.3662
+0.9074
+0.2690
+0.3814
+0.9072
+0.2688
+0.3956
+0.9075
+0.2688
+2004
+0.3589
+0.9039
+0.2671
+0.3864
+0.9057
+0.2691
+0.4052
+0.9056
+0.2689
+0.4132
+0.9059
+0.2689
+2005
+0.3547
+0.8909
+0.2663
+0.3852
+0.8929
+0.2683
+0.4016
+0.8931
+0.2681
+0.4100
+0.8932
+0.2680
+2006
+0.3437
+0.8883
+0.2659
+0.3709
+0.8900
+0.2679
+0.3837
+0.8899
+0.2678
+0.3936
+0.8902
+0.2677
+2007
+0.2953
+0.8682
+0.2666
+0.3154
+0.8685
+0.2684
+0.3223
+0.8679
+0.2683
+0.3288
+0.8690
+0.2682
+2008
+0.2390
+0.8448
+0.2657
+0.2559
+0.8452
+0.2682
+0.2671
+0.8444
+0.2679
+0.2669
+0.8451
+0.2678
+Panel C: Averages by ﬁrm size and whether company receives a takeover bid on day t
+Panel C(i): All Firms
+No Bid on day t
+0.3210
+0.8858
+0.2663
+0.3495
+0.8873
+0.2683
+0.3653
+0.8874
+0.2682
+0.3738
+0.8877
+0.2682
+Bid on day t
+0.3311
+0.8705
+0.2662
+0.3510
+0.8706
+0.2685
+0.4965
+0.8640
+0.2670
+0.4725
+0.8682
+0.2677
+29
+Electronic copy available at: https://ssrn.com/abstract=1825223
+
+Panel C(ii): Assets in the bottom 50% of the sample
+No Bid on day t
+0.5025
+0.9472
+0.2707
+0.5443
+0.9475
+0.2728
+0.5661
+0.9474
+0.2726
+0.5784
+0.9473
+0.2724
+Bid on day t
+0.5475
+0.9526
+0.2731
+0.5612
+0.9511
+0.2744
+0.7473
+0.9435
+0.2716
+0.7271
+0.9467
+0.2728
+Panel C(iii): Assets in the top 50% of the sample
+No Bid on day t
+0.1412
+0.8262
+0.2628
+0.1564
+0.8276
+0.2639
+0.1645
+0.8273
+0.2639
+0.1692
+0.8280
+0.2639
+Bid on day t
+0.1445
+0.8014
+0.2618
+0.1696
+0.8013
+0.2635
+0.2772
+0.7944
+0.2629
+0.2499
+0.7995
+0.2632
+30
+Electronic copy available at: https://ssrn.com/abstract=1825223
+
+Table 2: Target Firm Univariate statistics
+Table 2 contains univariate statistics for the sample of 1014 days on which ﬁrms receive takeover bids. Note that a ﬁrm can receive multiple bids (i.e. if the ﬁrst n
+takeover bids are unsuccessful).
+Variable
+Mean
+Median
+Std Dev
+Min
+Max
+25th Pctile
+75 Pctile
+Return
+0.0269
+0.0112
+0.0602
+-0.1200
+0.1500
+-0.0056
+0.0552
+IAR
+0.0253
+0.0112
+0.0585
+-0.1243
+0.1906
+-0.0076
+0.0530
+MAR
+0.0259
+0.0111
+0.0594
+-0.1323
+0.1835
+-0.0072
+0.0547
+Intraday Abnormal Turnovert−11
+0.3311
+0.1345
+0.5765
+0.0081
+3.7255
+0.0587
+0.3451
+Intraday Order Imbalancet−11
+0.8705
+0.9583
+0.1788
+0.0000
+1.0000
+0.7937
+1.0000
+Weibull Shape Parametert−11
+t−j
+0.2662
+0.2610
+0.0346
+0.2300
+0.8980
+0.2560
+0.2680
+Intraday Abnormal Turnovert−11
+t−15
+0.3510
+0.1827
+0.4991
+0.0155
+3.4571
+0.0778
+0.4159
+Intraday Order Imbalancet−11
+t−15
+0.8706
+0.9290
+0.1610
+0.1950
+1.0000
+0.8184
+1.0000
+Weibull Shape Parametert−11
+t−15
+0.2685
+0.2632
+0.0295
+0.2432
+0.7840
+0.2582
+0.2703
+Intraday Abnormal Turnovert−11
+t−25
+0.4965
+0.2426
+0.6942
+0.0169
+3.3853
+0.0962
+0.5641
+Intraday Order Imbalancet−11
+t−25
+0.8640
+0.9257
+0.1574
+0.2132
+1.0000
+0.8204
+0.9667
+Weibull Shape Parametert−11
+t−25
+0.2670
+0.2636
+0.0173
+0.2330
+0.4734
+0.2589
+0.2698
+Intraday Abnormal Turnovert−11
+t−40
+0.4725
+0.2306
+0.6612
+0.0175
+3.3431
+0.0959
+0.5330
+Intraday Order Imbalancet−11
+t−40
+0.8682
+0.9317
+0.1536
+0.2074
+1.0000
+0.8373
+0.9644
+Weibull Shape Parametert−11
+t−40
+0.2677
+0.2647
+0.0145
+0.2330
+0.4208
+0.2594
+0.2711
+31
+Electronic copy available at: https://ssrn.com/abstract=1825223
+
+Table 3: Pairwise Correlation Results for Takeover Targets
+Table 3 contains the pairwise correlation results for the sample that contains only takeover targets. Here, the sample comprises ﬁrms that receive a takeover bid on day
+t. Brackets contain p-values.
+A
+B
+C
+D
+E
+F
+G
+A
+Returnt
+B
+IARt
+0.983
+[0.000]
+C
+MARt
+0.990
+0.995
+[0.000]
+[0.000]
+D
+Intraday Abnormal Turnovert−11
+0.020
+0.027
+0.021
+[0.533]
+[0.407]
+[0.518]
+E
+Intraday Order Imbalancet−11
+0.042
+0.033
+0.033
+0.121
+[0.192]
+[0.314]
+[0.307]
+[0.000]
+F
+Weibull Shape Parametert−11
+t−j
+0.108
+0.094
+0.102
+0.043
+0.207
+[0.002]
+[0.008]
+[0.004]
+[0.224]
+[0.000]
+G
+Intraday Abnormal Turnovert−11
+t−15
+0.011
+0.006
+0.005
+0.725
+0.200
+0.090
+[0.741]
+[0.843]
+[0.869]
+[0.000]
+[0.000]
+[0.010]
+H
+Intraday Order Imbalancet−11
+t−15
+0.040
+0.032
+0.032
+0.203
+0.882
+0.174
+0.237
+[0.210]
+[0.324]
+[0.314]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+I
+Weibull Shape Parametert−11
+t−15
+0.098
+0.093
+0.094
+0.090
+0.231
+0.674
+0.105
+[0.002]
+[0.004]
+[0.003]
+[0.005]
+[0.000]
+[0.000]
+[0.001]
+J
+Intraday Abnormal Turnovert−11
+t−25
+0.036
+0.033
+0.033
+0.473
+0.240
+0.188
+0.662
+[0.256]
+[0.306]
+[0.299]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+K
+Intraday Order Imbalancet−11
+t−25
+0.026
+0.018
+0.018
+0.207
+0.872
+0.177
+0.260
+[0.421]
+[0.563]
+[0.581]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+L
+Weibull Shape Parametert−11
+t−25
+0.059
+0.052
+0.055
+0.158
+0.349
+0.512
+0.264
+[0.064]
+[0.102]
+[0.084]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+M
+Intraday Abnormal Turnovert−11
+t−40
+0.044
+0.040
+0.041
+0.478
+0.249
+0.244
+0.672
+[0.167]
+[0.213]
+[0.195]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+N
+Intraday Order Imbalancet−11
+t−40
+0.028
+0.022
+0.020
+0.215
+0.867
+0.181
+0.265
+[0.372]
+[0.498]
+[0.524]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+O
+Weibull Shape Parametert−11
+t−40
+0.071
+0.069
+0.069
+0.198
+0.416
+0.404
+0.272
+[0.025]
+[0.031]
+[0.030]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+H
+I
+J
+K
+L
+M
+N
+32
+Electronic copy available at: https://ssrn.com/abstract=1825223
+
+I
+Weibull Shape Parametert−11
+t−15
+0.246
+[0.000]
+J
+Intraday Abnormal Turnovert−11
+t−25
+0.268
+0.148
+[0.000]
+[0.000]
+K
+Intraday Order Imbalancet−11
+t−25
+0.957
+0.250
+0.232
+[0.000]
+[0.000]
+[0.000]
+L
+Weibull Shape Parametert−11
+t−25
+0.355
+0.513
+0.230
+0.386
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+M
+Intraday Abnormal Turnovert−11
+t−40
+0.267
+0.175
+0.947
+0.240
+0.255
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+N
+Intraday Order Imbalancet−11
+t−40
+0.958
+0.251
+0.238
+0.990
+0.380
+0.244
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+O
+Weibull Shape Parametert−11
+t−40
+0.431
+0.497
+0.245
+0.465
+0.757
+0.271
+0.468
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+33
+Electronic copy available at: https://ssrn.com/abstract=1825223
+
+Table 4: Univariate statistics
+Table 4 contains univariate statistics for the ﬁrm-level characteristics. Columns 1-5 contain statistics for ﬁrms that receive a takeover bid in year y. Columns 6-10 contain
+statistics for ﬁrms that do not receive a bid in year y. Note that a ﬁrm can move from one sample to the other. For example, if a ﬁrm receives a bid in 1994 but not
+1995, it will be in the target sample for 1994 but not for 1995 (and vice-versa). Superscripts ∗∗∗, ∗∗, and ∗in Columns 11 and 12 denote signiﬁcance at 1%, 5%, and
+10% in diﬀerence in means and diﬀerence in medians tests, respectively.
+Takeover Targets (Bid for in year y)
+Non Targets (Not Bid For in year y)
+Target - Non Target
+Mean
+Median
+Std
+Dev
+Min
+Max
+Mean
+Median
+Std
+Dev
+Min
+Max
+Mean
+Median
+(1)
+(2)
+(3)
+(4)
+(5)
+(6)
+(7)
+(8)
+(9)
+(10)
+(11)
+(12)
+Debt/Assets
+0.164
+0.094
+0.192
+0.000
+0.821
+0.145
+0.054
+0.189
+0.000
+0.821
+0.019∗∗∗
+0.041∗∗∗
+Market Cap/Assets
+1.921
+1.169
+2.565
+0.093
+18.296
+2.207
+1.255
+2.950
+0.093
+18.296
+-
+0.287∗∗∗
+-0.086∗
+IAOP
+-0.019
+0.016
+0.268
+-1.407
+0.523
+-0.041
+0.010
+0.290
+-1.407
+0.523
+0.022∗∗
+0.006
+ln(Assets)
+18.401
+17.989
+2.525
+13.666
+25.405
+17.564
+17.175
+2.306
+13.666
+25.405
+0.837∗∗∗
+0.815∗∗∗
+Industry M&A Activity
+0.179
+0.145
+0.111
+0.000
+0.390
+0.161
+0.122
+0.107
+0.000
+0.390
+0.017∗∗∗
+0.023∗∗∗
+High Tech Firm
+0.105
+0.000
+0.307
+0.000
+1.000
+0.117
+0.000
+0.322
+0.000
+1.000
+-0.012
+0.000
+HHI (Sales Based)
+0.265
+0.180
+0.215
+0.000
+1.000
+0.269
+0.194
+0.205
+0.000
+1.000
+-0.005
+-
+0.014∗∗∗
+Number of Observations
+874
+7144
+34
+Electronic copy available at: https://ssrn.com/abstract=1825223
+
+Table 5: OLS Regression Results
+Table 5 contains the takeover returns results. The sample comprises takeover targets. The models include year dummies and use robust standard errors clustered by
+GICS sector. The dependent variable is variously the ﬁrm’s raw return (denoted ‘Return’), the market-adjusted return (‘MAR’), or the GICS sector (industry) adjusted
+return (‘IAR’). The main independent variables are the moving average of the Weibull shape parameter, intraday order imbalance, and intraday abnormal turnover. The
+column title indicates the horizon for the moving average. Brackets contain p-values based upon robust standard errors clustered by vintage. Superscripts ∗∗∗, ∗∗, and
+∗denote signiﬁcance at 1%, 5%, and 10%, respectively.
+Model
+OLS, year ﬁxed eﬀects, GICS sector clustering
+Sample
+Takeover Targets
+HFT Window
+1 Day: HFTt−11
+5 Day: HFTt−11
+t−15
+30 Day: HFTt−11
+t−40
+Dependent Variable
+Return
+MAR
+IAR
+Return
+MAR
+IAR
+Return
+MAR
+IAR
+Weibull Shape Parametert−11
+t−j
+0.162∗∗∗
+0.152∗∗∗
+0.130∗∗∗
+0.166∗∗∗
+0.157∗∗∗
+0.155∗∗∗
+0.242∗∗
+0.235∗∗
+0.236∗∗
+[0.006]
+[0.008]
+[0.005]
+[0.003]
+[0.006]
+[0.002]
+[0.012]
+[0.025]
+[0.012]
+Intraday Abnormal Turnovert−11
+t−j
+0.005
+0.006
+0.006
+-0.001
+-0.001
+-0.001
+0
+0
+-0.001
+[0.197]
+[0.131]
+[0.120]
+[0.950]
+[0.909]
+[0.911]
+[0.969]
+[0.959]
+[0.902]
+Intraday Order Imbalancet−11
+t−j
+-0.003
+-0.007
+-0.007
+0.005
+0
+-0.001
+-0.008
+-0.012
+-0.011
+[0.887]
+[0.751]
+[0.755]
+[0.732]
+[0.975]
+[0.916]
+[0.676]
+[0.531]
+[0.574]
+Stock Return Variancet−11
+t−190
+0.102
+0.085
+0.102
+0.524
+0.516
+0.474
+0.506
+0.493
+0.461
+[0.760]
+[0.791]
+[0.747]
+[0.360]
+[0.347]
+[0.367]
+[0.331]
+[0.316]
+[0.332]
+Industry Return Variancet−11
+t−190
+-0.654
+-0.912
+-0.965
+0.929
+0.657
+0.513
+0.775
+0.5
+0.36
+[0.650]
+[0.484]
+[0.479]
+[0.529]
+[0.651]
+[0.718]
+[0.592]
+[0.727]
+[0.798]
+Industry Stock Returnt−11
+t−190
+-1.429
+-1.265
+-0.978
+-1.434
+-1.288
+-1.027
+-1.312
+-1.16
+-0.905
+[0.478]
+[0.514]
+[0.600]
+[0.426]
+[0.463]
+[0.536]
+[0.470]
+[0.514]
+[0.594]
+Stock Returnt−11
+t−190
+0.322
+0.341
+0.44
+-0.406
+-0.422
+-0.29
+-0.357
+-0.37
+-0.241
+[0.626]
+[0.596]
+[0.487]
+[0.587]
+[0.565]
+[0.692]
+[0.623]
+[0.603]
+[0.735]
+Cash Payment
+0.002
+0.002
+0.002
+-0.004
+-0.004
+-0.004
+-0.003
+-0.004
+-0.003
+[0.503]
+[0.575]
+[0.491]
+[0.298]
+[0.248]
+[0.289]
+[0.341]
+[0.287]
+[0.339]
+Debt/Assets
+-0.004
+-0.006
+-0.004
+-0.013
+-0.014
+-0.012
+-0.012
+-0.013
+-0.011
+[0.782]
+[0.694]
+[0.804]
+[0.439]
+[0.380]
+[0.481]
+[0.500]
+[0.436]
+[0.530]
+Market Cap/Assets
+0.001
+0.001
+0.001
+0.002
+0.001
+0.001
+0.001
+0.001
+0.001
+[0.286]
+[0.310]
+[0.341]
+[0.293]
+[0.293]
+[0.301]
+[0.285]
+[0.280]
+[0.281]
+IAOP
+0.020∗∗
+0.020∗∗
+0.019∗∗
+0.022∗∗
+0.022∗∗
+0.020∗∗
+0.022∗∗
+0.022∗∗
+0.020∗∗
+[0.030]
+[0.024]
+[0.028]
+[0.029]
+[0.028]
+[0.035]
+[0.024]
+[0.024]
+[0.032]
+ln(Assets)
+-0.001
+-0.001
+-0.001
+-0.001
+-0.001
+-0.001
+-0.001
+-0.001
+-0.001
+[0.492]
+[0.495]
+[0.451]
+[0.669]
+[0.550]
+[0.519]
+[0.552]
+[0.509]
+[0.511]
+Industry M&A Activity
+0.007
+0.008
+0.011
+0.017
+0.016
+0.02
+0.016
+0.015
+0.019
+35
+Electronic copy available at: https://ssrn.com/abstract=1825223
+
+[0.726]
+[0.670]
+[0.571]
+[0.412]
+[0.445]
+[0.363]
+[0.472]
+[0.498]
+[0.405]
+High Tech Firm
+-0.006
+-0.004
+-0.002
+-0.016∗∗∗
+-0.015∗∗∗
+-0.013∗∗
+-0.017∗∗∗
+-0.016∗∗∗
+-0.014∗∗
+[0.188]
+[0.226]
+[0.535]
+[0.006]
+[0.007]
+[0.022]
+[0.007]
+[0.007]
+[0.021]
+HHI (Sales Based)
+-0.019∗∗
+-0.022∗∗
+-0.023∗∗
+-0.008
+-0.01
+-0.012
+-0.009
+-0.011
+-0.013
+[0.042]
+[0.016]
+[0.014]
+[0.351]
+[0.231]
+[0.210]
+[0.321]
+[0.219]
+[0.202]
+Constant
+0.003
+0.007
+0.012
+-0.016
+-0.005
+-0.005
+-0.015
+-0.008
+-0.012
+[0.939]
+[0.875]
+[0.785]
+[0.670]
+[0.886]
+[0.887]
+[0.797]
+[0.887]
+[0.833]
+Observations
+765
+765
+765
+930
+930
+930
+930
+930
+930
+R-Squared
+5.80%
+6.10%
+6.20%
+4.30%
+4.50%
+4.50%
+4.00%
+4.20%
+4.20%
+36
+Electronic copy available at: https://ssrn.com/abstract=1825223
+
+Table 6: Fixed Eﬀects Panel Regression Results
+Table 6 contains panel ﬁxed eﬀects results. The sample comprises all ﬁrms listed on the ASX that have the relevant variables. The models are panel ﬁxed eﬀects models
+with company/date panels and GICS sector clustered standard errors. The dependent variable is variously the ﬁrm’s raw return (denoted ‘Return’), the market-adjusted
+return (‘MAR’), or the GICS sector (industry) adjusted return (‘IAR’). The main independent variables are the moving average of the Weibull shape parameter, intraday
+order imbalance, and intraday abnormal turnover. The column title indicates the horizon for the moving average. Brackets contain p-values based upon robust standard
+errors clustered by vintage. Superscripts ∗∗∗, ∗∗, and ∗denote signiﬁcance at 1%, 5%, and 10%, respectively.
+Model
+Panel Fixed Eﬀects (company/date), industry clustering
+Sample
+All ﬁrms
+HFT Window
+1 Day: HFTt−11
+5 Day: HFTt−11
+t−15
+30 Day: HFTt−11
+t−40
+Dependent Variable
+Return
+MAR
+IAR
+Return
+MAR
+IAR
+Return
+MAR
+IAR
+Weibull Shape Parametert−11
+t−j
+0.002
+0.002
+0.001
+0.005∗∗∗
+0.005∗∗∗
+0.005∗∗∗
+0.038∗∗∗
+0.038∗∗∗
+0.035∗∗∗
+[0.121]
+[0.112]
+[0.209]
+[0.001]
+[0.000]
+[0.002]
+[0.000]
+[0.000]
+[0.000]
+I (Bidt)
+-0.023∗
+-0.019
+-0.016
+-0.019
+-0.017
+-0.017
+-0.027
+-0.023
+-0.022
+[0.070]
+[0.136]
+[0.145]
+[0.138]
+[0.186]
+[0.144]
+[0.249]
+[0.305]
+[0.292]
+Weibull Shape Parametert−11
+t−j
+× I (Bidt)
+0.182∗∗∗
+0.168∗∗∗
+0.153∗∗∗
+0.170∗∗∗
+0.159∗∗∗
+0.157∗∗∗
+0.199∗∗
+0.181∗∗
+0.177∗∗
+[0.002]
+[0.004]
+[0.003]
+[0.002]
+[0.003]
+[0.001]
+[0.032]
+[0.034]
+[0.030]
+Intraday Abnormal Turnovert−11
+t−j
+0.001∗∗∗
+0.001∗∗∗
+0.001∗∗∗
+0.001∗∗∗
+0.001∗∗∗
+0.001∗∗∗
+0.002∗∗∗
+0.002∗∗∗
+0.002∗∗∗
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+Intraday Order Imbalancet−11
+t−j
+0.003∗∗∗
+0.003∗∗∗
+0.002∗∗∗
+0.007∗∗∗
+0.007∗∗∗
+0.006∗∗∗
+0.011∗∗∗
+0.010∗∗∗
+0.009∗∗∗
+[0.000]
+[0.000]
+[0.001]
+[0.001]
+[0.000]
+[0.001]
+[0.001]
+[0.000]
+[0.001]
+Stock Return Variancet−11
+t−190
+0.106∗∗∗
+0.090∗∗∗
+0.089∗∗∗
+0.138∗∗∗
+0.122∗∗∗
+0.120∗∗∗
+0.132∗∗∗
+0.116∗∗∗
+0.114∗∗∗
+[0.000]
+[0.001]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+Industry Return Variancet−11
+t−190
+0.116
+-0.046
+-0.015
+0.149∗
+-0.018
+0.013
+0.149∗
+-0.019
+0.012
+[0.154]
+[0.328]
+[0.479]
+[0.087]
+[0.654]
+[0.594]
+[0.076]
+[0.608]
+[0.646]
+Industry Stock Returnt−11
+t−190
+-0.228∗
+0.049
+0.023
+-0.272∗∗
+0.009
+-0.014
+-0.271∗∗
+0.011
+-0.011
+[0.071]
+[0.502]
+[0.516]
+[0.038]
+[0.892]
+[0.664]
+[0.033]
+[0.856]
+[0.729]
+Stock Returnt−11
+t−190
+-0.249∗∗∗
+-0.211∗∗∗
+-0.209∗∗∗
+-0.280∗∗∗
+-0.245∗∗∗
+-0.242∗∗∗
+-0.273∗∗∗
+-0.238∗∗∗
+-0.236∗∗∗
+[0.001]
+[0.002]
+[0.001]
+[0.001]
+[0.002]
+[0.001]
+[0.001]
+[0.002]
+[0.001]
+Debt/Assets
+-0.001
+-0.001
+0.000
+-0.001
+-0.001
+0.000
+-0.001
+-0.001
+-0.001
+[0.315]
+[0.365]
+[0.487]
+[0.203]
+[0.215]
+[0.317]
+[0.109]
+[0.108]
+[0.155]
+Market Cap/Assets
+0.001∗∗∗
+0.001∗∗∗
+0.001∗∗∗
+0.001∗∗∗
+0.001∗∗∗
+0.001∗∗∗
+0.001∗∗∗
+0.001∗∗∗
+0.001∗∗∗
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+IAOP
+0.004∗∗∗
+0.004∗∗∗
+0.004∗∗∗
+0.005∗∗∗
+0.005∗∗∗
+0.004∗∗∗
+0.005∗∗∗
+0.004∗∗∗
+0.004∗∗∗
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+ln(Assets)
+0.0000
+0.0000
+0.0000
+0.000∗
+0.000
+0.000
+0.001∗∗∗
+0.001∗∗∗
+0.000∗∗∗
+37
+Electronic copy available at: https://ssrn.com/abstract=1825223
+
+[0.200]
+[0.823]
+[0.588]
+[0.074]
+[0.220]
+[0.432]
+[0.003]
+[0.005]
+[0.009]
+Industry M&A Activity
+0.000
+0.001
+0.001
+-0.002
+-0.001
+0.000
+-0.002
+-0.001
+0.000
+[0.846]
+[0.670]
+[0.162]
+[0.407]
+[0.718]
+[0.996]
+[0.396]
+[0.750]
+[0.914]
+HHI (Sales Based)
+0.002
+0.002
+0.002∗∗
+0.001
+0.001
+0.001∗
+0.001
+0.001
+0.001
+[0.220]
+[0.197]
+[0.035]
+[0.464]
+[0.442]
+[0.081]
+[0.569]
+[0.553]
+[0.135]
+Constant
+-0.009∗∗∗
+-0.006∗∗∗
+-0.004∗∗∗
+-0.016∗∗∗
+-0.012∗∗∗
+-0.010∗∗∗
+-0.036∗∗∗
+-0.031∗∗∗
+-0.027∗∗∗
+[0.000]
+[0.004]
+[0.009]
+[0.000]
+[0.001]
+[0.005]
+[0.000]
+[0.000]
+[0.000]
+Observations
+970,811
+970,811
+970,811
+1,163,045
+1,163,045
+1,163,045
+1,163,044
+1,163,044
+1,163,044
+Number of Companies
+1,156
+1,156
+1,156
+1,158
+1,158
+1,158
+1,158
+1,158
+1,158
+R-Squared Within
+0.300%
+0.200%
+0.200%
+0.400%
+0.300%
+0.200%
+0.400%
+0.300%
+0.300%
+R-Squared Between
+1.600%
+0.300%
+0.200%
+0.000%
+0.100%
+0.100%
+0.000%
+0.200%
+0.300%
+R-Squared Overall
+0.200%
+0.100%
+0.100%
+0.200%
+0.100%
+0.100%
+0.200%
+0.200%
+0.200%
+38
+Electronic copy available at: https://ssrn.com/abstract=1825223
+
+Table 7: Random Eﬀeccts Panel Regression Results
+Table 7 contains panel random eﬀects results. The sample comprises all ﬁrms listed on the ASX that have the relevant variables. The models are panel random eﬀects
+models with company/date panels. The dependent variable is variously the ﬁrm’s raw return (denoted ‘Return’), the market-adjusted return (‘MAR’), or the GICS sector
+(industry) adjusted return (‘IAR’). The main independent variables are the moving average of the Weibull shape parameter, intraday order imbalance, and intraday
+abnormal turnover. The column title indicates the horizon for the moving average. Brackets contain p-values based upon robust standard errors clustered by vintage.
+Superscripts ∗∗∗, ∗∗, and ∗denote signiﬁcance at 1%, 5%, and 10%, respectively.
+Model
+Panel Random Eﬀects (company/date), industry clustering
+Sample
+All ﬁrms
+HFT Window
+1 Day: HFTt−11
+5 Day: HFTt−11
+t−15
+30 Day: HFTt−11
+t−40
+Dependent Variable
+Return
+MAR
+IAR
+Return
+MAR
+IAR
+Return
+MAR
+IAR
+Weibull Shape Parametert−11
+t−j
+0.002∗
+0.002∗
+0.002
+0.005∗∗∗
+0.005∗∗∗
+0.005∗∗∗
+0.038∗∗∗
+0.038∗∗∗
+0.035∗∗∗
+[0.077]
+[0.069]
+[0.157]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+I (Bidt)
+-0.021∗
+-0.018
+-0.014
+-0.021∗
+-0.018
+-0.018∗
+-0.031
+-0.026
+-0.026
+[0.066]
+[0.152]
+[0.178]
+[0.077]
+[0.118]
+[0.078]
+[0.152]
+[0.188]
+[0.173]
+Weibull Shape Parametert−11
+t−j
+× I (Bidt)
+0.176∗∗∗
+0.162∗∗∗
+0.147∗∗∗
+0.174∗∗∗
+0.163∗∗∗
+0.161∗∗∗
+0.212∗∗∗
+0.194∗∗∗
+0.190∗∗∗
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.006]
+[0.006]
+[0.004]
+Intraday Abnormal Turnovert−11
+t−j
+0.001∗∗∗
+0.001∗∗∗
+0.001∗∗∗
+0.001∗∗∗
+0.001∗∗∗
+0.001∗∗∗
+0.002∗∗∗
+0.002∗∗∗
+0.002∗∗∗
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+Intraday Order Imbalancet−11
+t−j
+0.003∗∗∗
+0.003∗∗∗
+0.002∗∗∗
+0.007∗∗∗
+0.007∗∗∗
+0.006∗∗∗
+0.011∗∗∗
+0.010∗∗∗
+0.009∗∗∗
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+Stock Return Variancet−11
+t−190
+0.102∗∗∗
+0.086∗∗∗
+0.086∗∗∗
+0.133∗∗∗
+0.117∗∗∗
+0.116∗∗∗
+0.127∗∗∗
+0.111∗∗∗
+0.109∗∗∗
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+Industry Return Variancet−11
+t−190
+0.114
+-0.045
+-0.011
+0.147∗
+-0.016
+0.017
+0.146∗∗
+-0.018
+0.015
+[0.124]
+[0.315]
+[0.594]
+[0.052]
+[0.662]
+[0.483]
+[0.042]
+[0.606]
+[0.542]
+Industry Stock Returnt−11
+t−190
+-0.228∗∗
+0.044
+0.014
+-0.272∗∗
+0.004
+-0.023
+-0.268∗∗
+0.008
+-0.019
+[0.040]
+[0.523]
+[0.678]
+[0.013]
+[0.951]
+[0.463]
+[0.010]
+[0.895]
+[0.546]
+Stock Returnt−11
+t−190
+-0.232∗∗∗
+-0.196∗∗∗
+-0.196∗∗∗
+-0.263∗∗∗
+-0.228∗∗∗
+-0.227∗∗∗
+-0.257∗∗∗
+-0.222∗∗∗
+-0.222∗∗∗
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+Debt/Assets
+-0.001
+-0.001
+0.00
+-0.001
+-0.001
+0.000
+-0.001∗
+-0.001∗
+-0.001
+[0.258]
+[0.307]
+[0.468]
+[0.174]
+[0.190]
+[0.340]
+[0.073]
+[0.074]
+[0.142]
+Market Cap/Assets
+0.001∗∗∗
+0.001∗∗∗
+0.001∗∗∗
+0.001∗∗∗
+0.001∗∗∗
+0.001∗∗∗
+0.001∗∗∗
+0.001∗∗∗
+0.001∗∗∗
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+IAOP
+0.004∗∗∗
+0.004∗∗∗
+0.004∗∗∗
+0.005∗∗∗
+0.004∗∗∗
+0.004∗∗∗
+0.005∗∗∗
+0.004∗∗∗
+0.004∗∗∗
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+ln(Assets)
+0.000∗∗∗
+0.000
+0.000
+0.000∗∗∗
+0.000∗∗
+0.000∗∗
+0.001∗∗∗
+0.001∗∗∗
+0.001∗∗∗
+39
+Electronic copy available at: https://ssrn.com/abstract=1825223
+
+[0.008]
+[0.135]
+[0.150]
+[0.002]
+[0.013]
+[0.019]
+[0.000]
+[0.000]
+[0.000]
+Industry M&A Activity
+0.000
+0.001
+0.001
+-0.001
+-0.001
+-0.001
+-0.001
+0.000
+0.000
+[0.981]
+[0.599]
+[0.501]
+[0.432]
+[0.661]
+[0.606]
+[0.478]
+[0.782]
+[0.758]
+High Tech Firm
+-0.003∗∗∗
+-0.002∗∗∗
+-0.002∗∗∗
+-0.003∗∗∗
+-0.002∗∗∗
+-0.002∗∗∗
+-0.002∗∗∗
+-0.002∗∗∗
+-0.001∗∗∗
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+HHI (Sales Based)
+0.001
+0.001
+0.002∗∗
+0.000
+0.000
+0.001
+0.000
+0.000
+0.001
+[0.313]
+[0.234]
+[0.012]
+[0.746]
+[0.701]
+[0.103]
+[0.821]
+[0.776]
+[0.154]
+Constant
+-0.010∗∗∗
+-0.007∗∗∗
+-0.006∗∗∗
+-0.017∗∗∗
+-0.014∗∗∗
+-0.012∗∗∗
+-0.037∗∗∗
+-0.033∗∗∗
+-0.029∗∗∗
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+Observations
+970,811
+970,811
+970,811
+1,163,045
+1,163,045
+1,163,045
+1,163,044
+1,163,044
+1,163,044
+Number of Companies
+1,156
+1,156
+1,156
+1,158
+1,158
+1,158
+1,158
+1,158
+1,158
+R-Squared Within
+0.30%
+0.20%
+0.20%
+0.40%
+0.20%
+0.20%
+0.40%
+0.30%
+0.30%
+R-Squared Between
+0.90%
+0.00%
+0.10%
+0.00%
+0.10%
+0.10%
+0.00%
+0.30%
+0.30%
+R-Squared Overall
+0.20%
+0.10%
+0.10%
+0.20%
+0.20%
+0.20%
+0.30%
+0.20%
+0.20%
+40
+Electronic copy available at: https://ssrn.com/abstract=1825223
+
+Table 8: Prediction Results
+Table 8 contains the takeover prediction results. All models are logit models, include year dummies, and use robust standard errors clustered by GICS sector. The
+dependent variable is an indicator that equals one if a company becomes a takeover target in the next 20 days (in Columns 1-3), 10 days (in Columns 4-6), or 5 days (in
+Columns 7-9). The main independent variables are the moving average of the Weibull shape parameter, intraday order imbalance, and intraday abnormal turnover. The
+column title indicates the horizon for the moving average. The sample comprises all ﬁrms that have the relevant independent variables. Brackets contain p-values based
+upon robust standard errors clustered by vintage. Superscripts ∗∗∗, ∗∗, and ∗denote signiﬁcance at 1%, 5%, and 10%, respectively.
+Model
+Logit, year dummies, GICS sector clustering
+Sample
+All ASX ﬁrms
+Dependent Variable
+I(Bidt+20
+t
+)
+I(Bidt+10
+t
+)
+I(Bidt+5
+t
+)
+HFT Window
+HFTt−11
+HFTt−11
+t−15
+HFTt−11
+t−40
+HFTt−11
+HFTt−11
+t−15
+HFTt−11
+t−40
+HFTt−11
+HFTt−11
+t−15
+HFTt−11
+t−40
+Weibull Shape Parametert−11
+t−j
+0.599∗∗∗
+1.307∗∗∗
+7.412∗∗∗
+0.284
+0.798∗∗
+7.522∗∗∗
+0.398∗∗
+0.531
+7.412∗∗∗
+[0.000]
+[0.000]
+[0.000]
+[0.148]
+[0.012]
+[0.000]
+[0.019]
+[0.233]
+[0.000]
+Intraday Abnormal Turnovert−11
+t−j
+0.127∗∗
+0.207∗∗∗
+0.266∗∗∗
+0.130∗∗
+0.214∗∗∗
+0.271∗∗∗
+0.128∗
+0.216∗∗∗
+0.275∗∗∗
+[0.042]
+[0.001]
+[0.001]
+[0.043]
+[0.001]
+[0.000]
+[0.064]
+[0.000]
+[0.000]
+Intraday Order Imbalancet−11
+t−j
+-0.232
+-0.222
+-0.211
+-0.332∗∗
+-0.331
+-0.184
+-0.392∗∗
+-0.406
+-0.175
+[0.149]
+[0.420]
+[0.495]
+[0.040]
+[0.219]
+[0.545]
+[0.033]
+[0.165]
+[0.577]
+Stock Return Variancet−11
+t−190
+13.535∗∗∗
+15.991∗∗∗
+14.932∗∗∗
+12.427∗∗
+15.066∗∗∗
+14.070∗∗∗
+11.588∗
+15.274∗∗∗
+14.318∗∗∗
+[0.009]
+[0.001]
+[0.002]
+[0.028]
+[0.003]
+[0.005]
+[0.085]
+[0.004]
+[0.006]
+Industry Return Variancet−11
+t−190
+20.652
+14.055
+13.505
+4.531
+4.29
+4.049
+-4.343
+-1.313
+-1.436
+[0.358]
+[0.450]
+[0.457]
+[0.824]
+[0.804]
+[0.808]
+[0.793]
+[0.938]
+[0.929]
+Industry Stock Returnt−11
+t−190
+-50.417
+-41.279
+-38.952
+-35.818
+-31.886
+-29.74
+-34.13
+-30.046
+-27.855
+[0.131]
+[0.143]
+[0.168]
+[0.308]
+[0.287]
+[0.321]
+[0.348]
+[0.325]
+[0.364]
+Stock Returnt−11
+t−190
+-21.072
+-21.972
+-21.176
+-19.483
+-20.289
+-19.526
+-17.566
+-20.272
+-19.539
+[0.144]
+[0.128]
+[0.144]
+[0.189]
+[0.181]
+[0.198]
+[0.298]
+[0.181]
+[0.194]
+Debt/Assets
+0.435∗
+0.478∗∗
+0.457∗∗
+0.433∗∗
+0.454∗∗∗
+0.424∗∗
+0.465∗∗
+0.445∗∗
+0.409∗∗
+[0.058]
+[0.014]
+[0.020]
+[0.044]
+[0.008]
+[0.014]
+[0.040]
+[0.011]
+[0.019]
+Market Cap/Assets
+-0.065∗∗
+-0.073∗∗
+-0.064∗
+-0.061∗∗
+-0.068∗
+-0.056∗
+-0.060∗∗
+-0.064∗
+-0.051
+[0.022]
+[0.044]
+[0.065]
+[0.029]
+[0.053]
+[0.088]
+[0.029]
+[0.067]
+[0.111]
+IAOP
+-0.432∗∗∗
+-0.336∗∗∗
+-0.328∗∗∗
+-0.417∗∗∗
+-0.311∗∗∗
+-0.309∗∗∗
+-0.383∗∗∗
+-0.280∗∗
+-0.279∗∗
+[0.000]
+[0.003]
+[0.004]
+[0.000]
+[0.007]
+[0.006]
+[0.001]
+[0.013]
+[0.014]
+ln(Assets)
+0.017
+0
+0.028
+0.011
+-0.006
+0.032
+0.009
+-0.006
+0.038
+[0.602]
+[0.998]
+[0.489]
+[0.724]
+[0.871]
+[0.399]
+[0.763]
+[0.886]
+[0.312]
+Industry M&A Activity
+1.469∗∗∗
+1.026∗∗∗
+1.057∗∗∗
+1.398∗∗∗
+0.939∗∗∗
+0.988∗∗∗
+1.366∗∗∗
+0.930∗∗∗
+0.987∗∗∗
+[0.000]
+[0.001]
+[0.000]
+[0.000]
+[0.002]
+[0.001]
+[0.000]
+[0.001]
+[0.001]
+High Tech Firm
+0.01
+0.105
+0.118
+0.004
+0.088
+0.102
+-0.01
+0.082
+0.097
+[0.932]
+[0.317]
+[0.241]
+[0.977]
+[0.455]
+[0.369]
+[0.942]
+[0.486]
+[0.392]
+41
+Electronic copy available at: https://ssrn.com/abstract=1825223
+
+HHI (Sales Based)
+0.097
+-0.103
+-0.097
+0.108
+-0.075
+-0.064
+0.136
+-0.068
+-0.055
+[0.669]
+[0.631]
+[0.639]
+[0.661]
+[0.760]
+[0.786]
+[0.627]
+[0.787]
+[0.818]
+Constant
+-2.854∗∗∗
+-2.577∗∗
+-4.782∗∗∗
+-3.309∗∗∗
+-2.968∗∗∗
+-5.647∗∗∗
+-4.060∗∗∗
+-3.644∗∗∗
+-6.541∗∗∗
+[0.000]
+[0.011]
+[0.000]
+[0.000]
+[0.001]
+[0.000]
+[0.000]
+[0.000]
+[0.000]
+Observations
+971,183
+1,163,523
+1,163,522
+971,183
+1,163,523
+1,163,522
+971,183
+1,163,523
+1,163,522
+Pseudo R-Squared
+6.40%
+6.60%
+6.70%
+5.40%
+5.60%
+5.80%
+4.30%
+4.50%
+4.70%
+ROC Area
+0.693
+0.695
+0.698
+0.69
+0.693
+0.696
+0.682
+0.687
+0.69
+42
+Electronic copy available at: https://ssrn.com/abstract=1825223
+
+Figure 1: ROC Curves
+Figure 1 contains the ROC curves for logit models that predict the occurrence of
+a takeover within 5, 10, or 20 days.
+43
+Electronic copy available at: https://ssrn.com/abstract=1825223
+
+References
+Agrawal, A., Jaﬀe, J.F., 2003. Do Takeover Targets Underperform? Evidence from Operating and Stock
+Returns. Journal of Financial and Quantitative Analysis 38, 721–746.
+Aktas, N., de Bodt, E., Declerck, F., Van Oppens, H., 2007. The PIN anomaly around M&A announcements. Journal of Financial Markets 10, 169–191.
+Almeida, R., Fernandes, A.M., 2008. Openness and Technological Innovations in Developing Countries:
+Evidence from Firm-Level Surveys. Journal of Development Studies 44, 701–727.
+Altman, E.I., 1968. Financial ratios, discriminant analysis, and the prediction of corporate bankruptcy.
+Journal of Finance 23, 589–609.
+Andrade, G., Staﬀord, E., 2004. Investigating the economic role of mergers. Journal of Corporate Finance
+10, 1–36.
+Anolli, M., Petrella, G., 2007. Internalization in European Equity Markets Following the Adoption of the
+EU MiFID Directive. Journal of Trading 2, 77–88.
+ASX, 2001. Listing Rules.
+ASX, 2003. Corporate Governance Principles and Recommendations. ASX. 1st edition.
+ASX, 2008. Corporate Governance Principles and Recommendations. ASX. 2nd edition.
+ASX, 2010. Algorithmic Trading and Market Access Arrangements.
+Barnes, P., 1990. The Prediction of Takeover Targets in the U.K. by means of Multiple Discriminant
+Analysis. Journal of Business Finance and Accounting 17, 73–84.
+Barnes, P., 1999. Predicting UK Takeover Targets: Some Methodological Issues and an Empirical Study.
+Review of Quantitative Finance and Accounting 12, 283–301.
+Baugess, S.W., Moeller, S.B., Schlingemann, F.P., Zutter, C.J., 2009. Ownership structure and target
+returns. Journal of Corporate Finance 15, 48–65.
+Benaroch, M., 2002. Managing Information Technology Investment Risk: A Real Options Perspective.
+Journal of Management Information Systems 19, 43–84.
+Bhupathi, T., 2010. echnology’s Latest Market Manipulator - High Frequency Trading: The Strategies,
+Tools, Risks, and Responses. North Carolina Journal of Law and Technology 11, 477–400.
+Bialkowski, J., Darolles, S., Le Fol, G., 2008. Improving VWAP strategies: A dynamic volume approach.
+Journal of Banking and Finance 32, 1709–1722.
+Brandes, Y., Domowitz, I., 2011.
+Alternative Trading Systems in Europe:
+Trading Performance by
+European Venues Post-MiFID, 2010 Update. Journal of Trading 6, 14–21.
+Brar, G., Giamouridis, D., Liodakis, M., 2009. Predicting European Takeover Targets. European Financial
+Management 15, 430–450.
+Bris, A., 2005. Do Insider Trading Laws Work? European Financial Management 11, 267–312.
+Brookman, J., Thistle, P.D., 2009.
+CEO tenure, the risk of termination and ﬁrm value.
+Journal of
+Corporate Finance 15, 331–344.
+44
+Electronic copy available at: https://ssrn.com/abstract=1825223
+
+Campa, J.M., Hernando, I., 2004. Shareholder value creation in European M&As. European Financial
+Management 10, 47–81.
+Cao, C., Chen, Z., Griﬃn, J.M., 2005.
+Informational Content of Option Volume Prior to Takeovers.
+Journal of Business 78, 1073–1109.
+Chang, S., 1998. Takeovers of privately held targets, method of payment, and bidder returns. Journal of
+Finance 53, 773–784.
+Chava, S., Jarrow, R.A., 2004. Bankruptcy prediction with industry eﬀects. Review of Finance 8, 537–569.
+Chew, L.M., 2007.
+Algorithmic Trading:
+Inﬂux of Trading Technologies in Asia.
+Research Report.
+Financial Insights.
+Chordia, T., Roll, R., Subrahmanyam, A., 2011. Recent trends in trading activity and market quality.
+Journal of Financial Economics , Forthcoming.
+Comerton-Forde, C., Hendershott, T., Jones, C.M., Moulton, P.C., Seasholes, M.S., 2010. Time Variation
+in Liquidity: The Role of Market-Maker Inventories and Revenues. Journal of Finance 65, 295–331.
+Cran, G.W., 1988. Moment estimators for the 3-parameter Weibull distribution. IEEE Transactions on
+Reliability 37, 360–363.
+Cumming, D., Johan, S., Li, D., 2011. Exchange trading rules and stock market liquidity. Journal of
+Financial Economics 99, 651–671.
+Cumming, D., Li, D., 2011. Run-up of Acquirer’s Stock in Public and Private Acquisitions. Corporate
+Governance , Forthcoming.
+Degryse, H., Van Achter, M., Wuyts, G., 2009. Shedding Light on Dark Liquidity Pools. Trading 2009,
+147–155.
+Demers, E., Joos, P., 2007. IPO Failure Risk. Journal of Accounting Research 45, 333–372.
+Dimson, E., Marsh, P.R., 1983. The Stability of UK Risk Measures and the Problem of Thin Trading.
+Journal of Finance 38, 753–783.
+Doidge, C., 2004. U.S cross-listings and the private beneﬁts of control: Evidence from dual-class ﬁrms.
+Journal of Financial Economics 72, 519–553.
+Dos Santos, B.L., Peﬀers, K., Mauer, D.C., 1993.
+The impact of information technology investment
+announcements on the market value of the ﬁrm. Information Systems Research 4, 1–23.
+Easley, D., O’Hara, M., Srinivas, P.S., 1998.
+Option Volume and Stock Prices: Evidence on Where
+Informed Traders Trade. Journal of Finance 53, 431–465.
+Faleye, O., 2004. Cash and Corporate Control. Journal of Finance 59, 2041–2060.
+Farin´os Vi˜nas, J.E., Garcia, C.J., Ibanez, A.M., 2003. Insider Trading and Market Behaviour Around
+Takeover Announcements in the Spanish Market. Working Paper. University of Valencia.
+Foucault, T., Moinas, S., Biais, B., 2011. Equilibrium Algorithmic Trading. Technical Report. International Conference of the French Finance Association (AFFI).
+Franks, J.R., Harris, R.S., 1989. Shareholder wealth eﬀects of corporate takeovers: The UK experience
+1955-85. Journal of Financial Economics 23, 225–249.
+45
+Electronic copy available at: https://ssrn.com/abstract=1825223
+
+Fuller, K., Netter, J., Stegemoller, M., 2002. What do returns to acquiring ﬁrms tell us? Evidnce from
+ﬁrms that make many acquisitions. Journal of Finance 57, 1763–1794.
+Gerpott, T.J., 1995. Successful integration of R&D functions after acquisitions: An exploratory empirical
+study. R&D Management 25, 161–178.
+Giot, P., Schwienbacher, A., 2007. IPOs, trade sales and liquidations: Modelling venture capital exits
+using survival analysis. Journal of Banking and Finance 31, 679–702.
+Goergen, M., Renneboog, L., 2004.
+Shareholder wealth eﬀects of European domestic and crossborder
+takeover bids. European Financial Management 10, 9–45.
+Gourieroux, C., Jasiak, J., Le Fol, G., 1999. Intra-day market activity. Journal of Financial Markets 2,
+193–226.
+Gove, J.H., 2003. Moment and maximum likelihood estimators for Weibull distributions under length and
+area biased sampling. Environmental and Ecological Statistics 10, 455–467.
+Granstrand, O., Bohlin, E., Oskarsson, C., Sj¨oberg, N., 1992. External technology acquisition in large
+multi-technology corporations. R&D Management 22, 111–134.
+Grossman, R.L., 2005. Marching Up the Learning Curve: The First Buy-Side Algorithmic Trading Survey.
+Research Report. Financial Insights.
+Guiso, L., 1998. High-tech ﬁrms and credit rationing. Journal of Economic Behavior & Organization 35,
+39–59.
+Hall, B.H., 1993. The stock market’s valuation of R&D investment during the 1980’s. American Economic
+Review 83, 259–264.
+Harford, J., 1999. Corporate cash reserves and acquisitions. Journal of Finance 54, 1969–1997.
+Harford, J., 2005. What drives merger waves? Journal of Financial Economics 77, 529–560.
+Humphery-Jenner, M.L., 2011. Optimal VWAP trading under noisy conditions. Journal of Banking and
+Finance , Forthcoming.
+Humphery-Jenner, M.L., Powell, R.G., 2011. Firm size, takeover proﬁtability, and the eﬀectiveness of the
+market for corporate control: Does the absence of anti-takeover provisions make a diﬀerence? Journal
+of Corporate Finance 17, 418–437.
+Im, K., Dow, K., Grover, V., 2001. A reexamination of IT investment and the market value of the ﬁrmAn
+event study methodology. Information Systems Research 12, 103–117.
+Jensen, M., Ruback, R.S., 1983. The market for corporate control: the scientiﬁc evidence. Journal of
+Financial Economics 11, 5–50.
+Jensen, M.C., 1986. Agency costs of free cash ﬂow, corporate ﬁnance, and takeovers. American Economic
+Review 76, 323–329.
+Keown, A.J., Pinkerton, J.M., 1981. Merger announcements and insider trading activity: an empirical
+investigation. Journal of Finance 36, 855–869.
+Khalili, A., Kromp, K., 1991. Statistical properties of Weibull estimators. Journal of Materials Science
+and Public Policy 26, 6741–6752.
+46
+Electronic copy available at: https://ssrn.com/abstract=1825223
+
+Kim, O., Verrecchia, R.E., 1991. Trading Volume and Price Reactions to Public Announcements. Journal
+of Accounting Research 29, 302–321.
+Kissell, R., Glantz, M., Malamut, R., 2004. A practical framework for estimating transaction costs and
+developing optimal trading strategies to achieve best execution. Finance Research Letters 1, 35–46.
+Kissell, R., Malamut, R., 2005. Understanding the Proﬁt and Loss Distribution of Trading Algorithms.
+Trading 2005, 41–49.
+Kissell, R., Malamut, R., 2006. Algorithmic Decision-Making Framework. Journal of Trading 1, 12–21.
+Lee, S.H., Urrutia, J.L., 1996. Analysis and Prediction of Insolvency in the Property-Liability Insurance
+Industry: A Comparison of Logit and Hazard Models. Journal of Risk and Insurance 63, 121–130.
+Lo, A.W., Wang, J., 2000. Trading volume: deﬁnitions, data analysis, and implications of portfolio theory
+. Review of Financial Studies 13, 257–300.
+Lyon, G., du Plessis, J.J., 2005. The Law of Insider Trading in Australia. Federation Press, Sydney.
+Maloney, M.T., McCormick, R.E., Mitchell, M.L., 1993. Managerial decision making and capital structure.
+Journal of Business 66, 189–217.
+Manchaldore, J., Palit, I., Soloviev, O., 2010.
+Wavelet decomposition for intra-day volume dynamics.
+Quantitative Finance 10, 917–930.
+Masulis, R.W., Wang, C., Xie, F., 2007. Corporate Governance and Acquirer Returns. Journal of Finance
+62, 1851–1889.
+McGowan, M.J., 2010. The Rise of Computerized High Frequency Trading: Use and Controversy. Duke
+Law and Technology Review 2010, Article Number 16.
+Meulbroek, L.K., 1992. An Empirical Analysis of Illegal Insider Trading. Journal of Finance 47, 1661–1699.
+Meulbroek, L.K., Hart, C., 1997. The Eﬀect of Illegal Insider Trading on Takeover Premia. European
+Finance Review 1, 51–80.
+Moeller, S.B., Schlingemann, F.P., Stulz, R.M., 2004. Firm size and the gains from acquisitions. Journal
+of Financial Economics 73, 201–228.
+Moeller, S.B., Schlingemann, F.P., Stulz, R.M., 2005. Wealth Destruction on a Massive Scale? A Study
+of Acquiring-Firm Returns in the Recent Merger Wave. Journal of Finance 60, 757–782.
+Nenova, T., 2003. The value of corporate voting rights and control: A cross-country analysis. Journal of
+Financial Economics 68, 325–351.
+Neumayer, E., 2008. Distance, power and ideology: diplomatic representation in a world of nation-states.
+Area 40, 228–236.
+Oﬀenberg, D., 2009.
+Firm size and the eﬀectiveness of the market for corporate control.
+Journal of
+Corporate Finance 15, 66–79.
+Opler, T.C., Titman, S., 1994. Financial Distress and Corporate Performance. Journal of Finance 49,
+1015–1040.
+Palepu, K.G., 1986. Predicting takeover targets: a methodological and empirical analysis. Journal of
+Accounting and Economics 8, 3–35.
+47
+Electronic copy available at: https://ssrn.com/abstract=1825223
+
+Petersen, M.A., 2009. Estimating Standard Errors in Finance Panel Data Sets: Comparing Approaches.
+Review of Financial Studies 22, 435–480.
+Porter, M.E., 1992. Capital disadvantage: America’s failing capital investment system. Harvard Business
+Review 70, 65–82.
+Powell, R., 2001. Takeover prediction and portfolio performance: a note. Journal of Business Finance and
+Accounting 28, 993–1011.
+Powell, R.G., 1997.
+Modelling takeover likelihood.
+Journal of Business Finance and Accounting 24,
+1009–1030.
+Powell, R.G., Yawson, A., 2005. Industry aspects of takeovers and divestitures: evidence from the UK.
+Journal of Banking & Finance 29, 3015–3040.
+Powell, R.G., Yawson, A., 2007. Are Corporate Restructuring Events Driven by Common Factors? Implications for Takeover Prediction. Journal of Business Finance & Accounting 34, 1169–1192.
+Scholes, M., Williams, J., 1977.
+Estimating betas from nonsynchronous data .
+Journal of Financial
+Economics 5, 309–327.
+Schwartz, E.S., Zozaya-Gorostiza, C., 2003. Investment under Uncertainty in Information Technology:
+Acquisition and Development Projects. Management Science 49, 57–70.
+Schwert, G.W., 1996. Markup pricing in mergers and acquisitions. Journal of Financial Economics 41,
+153–192.
+Serritella, D.M., 2010. High Speed Trading Begets High Speed Regulation: SEC Response to Flash Crash,
+Rash. University of Illinois Journal of Law, Technology and Policy 2010, 433–444.
+Seyhun, N., 1990. Do bidder managers knowingly pay too much for target ﬁrms? Journal of Business 63,
+439–464.
+Takeovers Panel, 2010. Frustrating action. Guidance Note 12. Takeovers Panel.
+Vanhaverbeke, W., Duysters, G., Noorderhaven, N., 2002. External Technology Sourcing Through Alliances or Acquisitions: An Analysis of the Application-Speciﬁc Integrated Circuits Industry. Organization Science 13, 714–733.
+Wong, K.L., 1995.
+A new framework for part failure-rate prediction models.
+IEEE Transactions on
+Reliability 44, 139–146.
+Wooldridge, J.R., 1988. Competitive decline and corporate restructuring: Is a myopic stock market to
+blame? Journal of Applied Corporate Finance 1, 26–35.
+Zmijewski, M., 1984. Methodological issues related to the estimation of ﬁnancial distress prediction models.
+Journal of Accounting Research 22, 59–82.
+48
+Electronic copy available at: https://ssrn.com/abstract=1825223

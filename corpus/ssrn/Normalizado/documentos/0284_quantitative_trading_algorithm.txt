@@ -1,0 +1,773 @@
+ 
+ 
+ 
+ 
+ 
+Quantitative Trading Algorithm 
+ 
+Viktor Gideonsson 
+Independent high school research project 
+ 
+December 16, 2025 
+ 
+ 
+Abstract 
+ 
+This paper explores what a quantitative trading algorithm is, and how one can be developed and 
+evaluated through statistical models and simulations. This independent research paper is exploratory 
+and aims to create a basic understanding of how different models perform in practice. It is not to 
+present a finished trading strategy.  
+ 
+The historical price data for which the developed algorithms are based on is S&P 500 index fund 
+(SPY) from 2021-2026. The five versions of the trading algorithms were developed and evaluated in 
+Python. Each version introduced new tools, from basic market trends to an AI-driven sentiment 
+analysis. The results show that model performance varies significantly through different market 
+conditions, highlighting the importance of flexibility in an algorithm. 
+ 
+The final model achieved a Sharpe ratio of 3.32 and a maximum drawdown of 5.43%. These results 
+are promising but should be interpreted with caution. These models have only been tested on 
+historical data, and historical performance can never be used as a guarantee for future outcomes.  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+ 
+ 
+ 
+ 
+ 
+Table of Contents 
+1. Introduction ............................................................................................................................ 1 
+1.1 Purpose and questions ................................................................................................................. 1 
+1.2 Terms and definitions ................................................................................................................. 1 
+2. Material and methods ............................................................................................................. 2 
+2.1 Tools .............................................................................................................................................. 3 
+2.2 Sources and criticism .................................................................................................................. 3 
+3. Previous research .................................................................................................................... 4 
+3.1 Backtesting ................................................................................................................................... 4 
+3.2 AI .................................................................................................................................................. 4 
+3.3 Theoretical principles .................................................................................................................. 5 
+4. Experiments and results ......................................................................................................... 5 
+4.1 Common methods ........................................................................................................................ 5 
+4.2 Version 1 ....................................................................................................................................... 6 
+4.3 Version 2 ....................................................................................................................................... 6 
+4.4 Version 3 ....................................................................................................................................... 6 
+4.5 Version 4 ....................................................................................................................................... 7 
+4.6 Version 5 ....................................................................................................................................... 7 
+5. Analysis and discussion ......................................................................................................... 8 
+5.1 Mathematical and statistical principles ..................................................................................... 8 
+5.2 Historical data and signals .......................................................................................................... 9 
+5.3 The algorithms performance and previous research ............................................................... 9 
+5.4 Leverage and risk ........................................................................................................................ 9 
+5.5 Answers to main questions ....................................................................................................... 10 
+5.6 Final note .................................................................................................................................... 10 
+Sources ..................................................................................................................................... 11 
+Attachements ............................................................................................................................ 12 
+Code Appendix ................................................................................................................................ 15 
+ 
+ 
+ 
+ 
+ 
+ 
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+1 
+ 
+1. Introduction 
+If you wanted to buy stocks 30 years ago, you would call your stockbroker. Today, the majority of 
+trading is conducted by advanced computer programs. Algorithms that analyze and execute millions of 
+trades in a single split second, which also means that pricing and edge constantly change. Algorithmic 
+trading has revolutionized trading. 
+ 
+Quantitative trading is a combination of math, statistics, computer science, and economics. The core 
+assumption is that markets are not fully stochastic, and that there actually are identifiable tendencies 
+and correlations. This in turn means that models that systematically search for patterns and can 
+execute their observations, can outperform almost every human trader. 
+ 
+This research paper is about just that: Investigating how a quantitative trading algorithm can be built, 
+tested, and improved step by step. Important to remember is that this paper is exploratory. The goal is 
+not to present a finished solution, but instead to get an understanding of which mathematical and 
+statistical tools are relevant for the development of a quantitative model. Furthermore, how these tools 
+interact with each other and their limitations. 
+ 
+This topic possesses significant relevance as it has been proven vital for normal societal function. 
+Quantitative trading affects market liquidity, stability, and accessibility. The most common negative 
+consequence of quantitative trading are flash crashes, which are quick automated crashes. Flash 
+crashes are commonly triggered by badly adjusted risk in trading algorithms, which makes the 
+algorithm amplify the market's volatility by an instant mass sell-off. Therefore, understanding how 
+these systems work is not only crucial for investors, but also for everyone who seeks an understanding 
+of today's economic system. 
+ 
+Moreover, it is the topic’s combination of three disciplines that makes this an interesting topic. Math, 
+programming and economy, all combined can prove an intellectual challenge for even the smartest of 
+people. 
+ 
+ 
+ 
+ 
+1.1 Purpose and questions 
+This research paper aims to develop and evaluate a quantitative trading algorithm with historical 
+market data, statistical methods, and programming. The work is exploratory, and the goal is not to 
+create the perfect strategy, but rather to explore how different models perform and what factors prove 
+important.  
+The three main questions are: 
+• 
+Which mathematical and statistical principles are central for the development of a quantitative 
+trading algorithm? 
+• 
+How can historical market data be analyzed and used to identify key trading signals? 
+• 
+How does the algorithm perform in backtesting, and which factors affect the result? 
+ 
+ 
+ 
+1.2 Terms and definitions  
+These are key concepts for the research paper. 
+
+2 
+ 
+Algorithmic trading 
+Trading where computer programs based on predetermined rules, automatically perform buy and sell 
+orders. 
+Quantitative trading 
+A form of algorithmic trading that builds on specific mathematical models and statistical analysis of 
+historical data. 
+Moving Average 
+The average price under a specific period of time. Used to identify trends and filter out uncertainties 
+Backtesting 
+To try a trading strategy on old market data, to simulate its performance. The results should be lightly 
+interpreted and only used as an indication. 
+Overfitting 
+When a model is negatively tailored for a specific dataset. 
+Volatility 
+A measurement of how much the price has moved, often under a certain time frame. 
+Sharpe-quote 
+A risk adjusted measurement that indicates how big an investments return is in proportion to how big 
+the risk taken is. 
+Maximal drawdown 
+The biggest percentual loss after a high in a certain timeframe. It can be used to determine the worst 
+period. 
+Relative Strength Index (RSI) 
+An indicator that measure based on the price development, if a product is oversold. 
+Leverage 
+Tool used to increase one’s position on the market. Leverage is achieved through borrowed capital or 
+other financial tools. It increases both potential wins and losses. 
+Sentiment 
+A general assessment of the market, often based on news and events. 
+Monte Carlo-simulation 
+A statistical tool that performs hundreds of randomized scenarios to distribute outcome probability. 
+Markov chain 
+A probability model where the previous outcome affects the next outcomes probability. 
+Look-ahead bias 
+An analytical error where future information is used in back testing, which leads to unrealistic 
+outcomes. 
+ 
+ 
+2. Material and methods 
+
+3 
+ 
+This research paper is based on experimental trials and errors. It aims to iteratively build and test a 
+trading algorithm on historical market data. Where every new iteration utilizes new models, this makes 
+it possible to isolate and analyze the effect of every separate addition. 
+ 
+The chosen trading commodity for which to base the algorithm is the SPDR S&P 500. The SPDR S&P 
+500 is an index fund that consists of the 500 biggest publicly traded companies in the USA. SPY was 
+chosen due to a plethora of reasons. Firstly, it is the world's oldest and most traded ETF, which 
+guarantees high liquidity and reliable price data. Secondly, it reflects the price of 500 individual 
+companies, which means that its price is more stable than a single company. A stable price makes it 
+easier to develop a trading algorithm, whereas the algorithm does not need to analyze a specific 
+company in addition to its market analysis. 
+ 
+The timeframe is January 2021 to January 2026, a 5-year period. This timeframe allows for a recent 
+market analysis with relatively few unforeseen market events. If the timeframe were any longer, the 
+algorithm would need to take events such as 911, the 2008 financial crisis, and the 2020 corona 
+pandemic into account. Including more unforeseen market events such as the listed ones makes it 
+harder to calibrate the algorithm and increases the risk for misleading results. A five-year timeframe 
+allows for enough recent market data while minimizing its complexity. 
+ 
+The market data is taken from Yahoo! Finance, a news and financial platform with over 150 million 
+monthly users. The extracted data were also cross-examined with other reliable sources; this ensures 
+that the market data is reliable. 
+ 
+ 
+2.1 Tools 
+The algorithm is written in JupyterLab with Python as its programming language. This ensures simple 
+interactive coding and visualization of the results. External programs were installed onto the 
+Jupyterlab local server.  
+The installed programs were:  
+Pandas Library, data and statistical management 
+Matplotlib, diagrams.  
+The structure is the same for all five versions, historic data is downloaded and managed, the strategy is 
+implemented, and the results are calculated and visualized. This structure allows for a fair comparison 
+between the different versions. 
+ 
+2.2 Sources and criticism 
+Baver (2020), published at the New York University, lays much of this paper’s theoretical 
+groundwork, technical analysis and algorithmic strategy development. The source is pedagogical and 
+relatively neutral in its display, which improves reliability. However, the source is rather limited in its 
+description of a few of its models. A more empirical and deeper description would have been more 
+favorable. 
+ 
+Automated Quantitative Trading Systems and Performance Evaluation (Phan Tien Dung & Giudici, 
+2024), published through SSRN, is a crucial source. It highlights the paper’s most important 
+limitation, that studies based on backtesting tend to blow the results out of proportion. The paper 
+utilizes a clear scientific structure, while motivating its choice of methods. 
+ 
+Guo et al. (2024), published on arXiv, discusses AI in quantitative trading and its relevance.  
+This source requires a little skepticism as it is a preprint, it has not been fully peer reviewed. 
+ 
+Investopedia is used for definitions and technical indicators. The website is constantly being reviewed 
+for errors by experts. Therefore, the website can be seen as a reliable source for fact-based definitions. 
+
+4 
+ 
+ 
+An important limitation of this research paper is that back testing never fully can emulate real time 
+trading. This is because there are always so many random factors, and a computer program can never 
+create true randomization. Factors such as transaction cost, slippage, liquidity, and human actions. 
+Therefore, the results should be used as an indicator of potential, not as a given. 
+ 
+ 
+ 
+3. Previous research                                                           
+Research in algorithmic and quantitative trading has been on an exponential increase during recent 
+decades. It has grown together with computer availability and the strength of its processors. In this 
+chapter, three relevant studies for this paper are presented, followed by an explanation of the 
+theoretical principles behind this paper's algorithms. 
+In a 2011 empirical study conducted by Hendershott, Jones and Menkveld, it was found through the 
+New York Stock exchange that algorithmic trading affected the market's quality. The study concluded 
+with establishing a correlation between automated trading and quicker price adjustments, which 
+boosted liquidity and led to fewer price errors. Algorithms made the stock exchange more effective. 
+The study was also able to identify that when many algorithms reacted to the same data at the same 
+time, its actions were amplified which increased short term volatility. This means that there is a 
+systematic dynamic relationship between algorithms. This can be summarized as algorithms never 
+moving alone, other algorithms become a market factor to consider. 
+ 
+3.1 Backtesting 
+Phan Tien Dung and Giudici (2024) analyzed a broad spectrum of quantitative trading strategies and 
+their performance in backtesting. They found that the strategies that performed well in backtesting 
+often performed worse when used on new market data. This is one of the most common fallacies when 
+developing a trading strategy, it is called overfitting. Overfitting occurs when the model has learned to 
+describe the past rather than identifying new patterns.  
+ 
+To combat this, the study recommends making the algorithm more realistic, and realism is achieved by 
+including transaction costs, splitting the training data from the test data, and stress testing the strategy 
+under different market conditions. They conclude by writing that simpler algorithms should focus 
+more on the methods of reliability rather than maximum historical yield. 
+3.2 AI                                                                                                                                                    
+Guo, Wang, Ni and Shum investigated how AI models and machine learning (ML) could be used in 
+automated trading (2023). Their study showed that AI and ML models outperformed traditional 
+algorithms. The biggest gain was found in the AI and ML models prognostic capacity, they excelled at 
+finding non-linear patterns in big datasets. They discussed the potential large language models (a type 
+of ML) had at identifying market regimes by analyzing the news. 
+
+5 
+ 
+The study simultaneously identified the risks. AI models tend to overfit easily, while also being hard 
+interpreted and rigid. These limitations prove extremely relevant for version 5, where a language 
+model is integrated. 
+3.3 Theoretical principles                                                                                                                       
+The core principles of quantitative trading are mostly theoretical. Although the market is complex and 
+partially unforeseeable, statistics have shown that it can be modeled. Baver (2020) highlights how the 
+market should be viewed as a stochastic system where the outcome can be calculated through 
+analyzing the past.  
+This can be achieved with time-series analysis. It analyzes historical price data to identify trends, 
+patterns, and changes in market measurements such as volatility. By considering relative price 
+changes, a more stable and comparable representation of the market is achieved. Volatility 
+measurements and momentum indicators provide new information about the current market 
+conditions. 
+Monte Carlo simulation with Markov chains enables a better overview of the probability of future 
+outcomes. This enables the algorithm to cancel some of the randomness in a market, allowing for a 
+better and more realistic depiction of its performance. The Markov chains provide another dimension 
+of realism as probability is constantly changing and dependent on previous outcomes. Calibrating the 
+probability in Markov chains is the hard part. A realistic Markov chain requires a huge number of 
+datasets and is paradoxically, also dependent on integrated randomness. 
+ 
+4. Experiments and results 
+In this chapter, five versions of an algorithm were developed and tested. The versions are 
+successively built upon the previous iteration. This allows for the isolation of new models, 
+which creates a more accurate understanding of what every new model actually does. The 
+performance is measured by two key measurements, sharpe quote and maximal drawdown. 
+This is because the yield in relation to the risk and the biggest loss after a high, allows for a 
+fair comparison. Factors such as trade frequency and trading volume are not allowed to 
+impact the algorithms' total reliability. 
+ 
+4.1 Common methods 
+All versions feature the same core algorithm. The core algorithm utilizes logarithmic returns 
+to measure daily price changes, which is more realistic as it is additive over time and not just 
+a simple percentual change. 
+Another core principle is the moving average. It has a 20- and 50-day timeframe where  
+long- and short-term trends are identified. When the shorter moving average crosses the 
+longer one from above, a buy signal is generated. Vice versa for the long moving average but 
+instead of a buy signal, a sell signal is created. This is a commonly used and well tested 
+principle in technical analysis. 
+ 
+
+6 
+ 
+4.2 Version 1 
+The first version was intentionally simple to establish a baseline. It only implemented 
+logarithmic return and moving averages. Risk or any other factors were not taken into 
+account. By establishing a baseline, it becomes clearer about what is actually needed. 
+Measurement 
+Value 
+Sharpe quote 
+-0,271 
+Maximum drawdown 
+-44,52% 
+ 
+It resulted in a negative sharpe quote and a high maximal drawdown. This means that the 
+algorithm took risk without being compensated for it. A maximal drawdown of near –45% 
+means that at one point, the algorithm lost almost half of its worth. The results show that the 
+core model cannot function independently. Moreover, this result was expected and a learning 
+experience. 
+ 
+ 
+4.3 Version 2 
+The second iteration utilizes three additions. The first addition being a volatility filter. The 
+filter worked by generating trade signals when the volatility was really high, high, low and 
+really low respectively. This resulted in the algorithm avoiding trade under volatile market 
+conditions. 
+ 
+The second addition was stop-loss and take-profit function. The daily loss was capped at a 
+maximum of 2% meanwhile win was capped at 4%. These caps further limited the algorithms 
+exposure to risk in a single day. The third addition were more strict signals. A buy signal can 
+now only be generated when three requirements are met, positive trend, low volatility and 
+high positive momentum. 
+ 
+Measurement 
+Value 
+Sharpe quote 
+1,069 
+Maximum drawdown 
+-12,89% 
+ 
+The results showed a significant improvement from the previous version. Sharpe quote went 
+from –0,271 to 1,069, and the maximal drawdown went from –44,52% to –12,89%. This 
+highlights the importance of risk adjustment. 
+ 
+4.4 Version 3 
+The third version calibrated the previous version as well as adding more statistical filters. A 
+trend identifier with a 200-day window was added. It ensured that the algorithm only took buy 
+positions when the trend was positive. Another addition was the RSI indicator, it prevented 
+the algorithm to buy when it considered the market overvalued.  
+
+7 
+ 
+The most crucial addition being a dynamic position sizer. The position of the trade was 
+tailored after the current volatility and risk. When the market had low volatility, the algorithm 
+took on bigger trades, and high volatility decreased the position size. This helps regulate the 
+taken risk automatically. 
+ 
+Measurement 
+Value 
+Sharpe quote 
+2,346 
+Maximum drawdown 
+-5,07% 
+The results show another improvement, The Sharpe quote more than doubled while the maximal 
+drawdown was cut in half. Now the algorithm displays stable and gradual growth with low risk. This 
+confirms that a combination of filters and dynamic position sizing creates a more robust system. 
+ 
+4.5 Version 4 
+The fourth iteration kept the back test results from version 3 but added a new tool for risk adjustment. 
+A Monte Carlo simulation with Markov chains. The purpose was not to improve the results of the 
+previous version, but rather to create an understanding of how the strategy would perform under 
+different future market conditions. 
+The simulation works as follows, based on historical yield patterns and probability from different 
+market conditions (identified via Markov chains), hundreds of random future outcomes are generated. 
+Here are the results of 300 simulated outcomes. 
+ 
+ 
+Measurement 
+Value 
+Worst case 
+1,3x 
+Best case 
+4,15x 
+Median 
+2,31x 
+5% Value at Risk (VaR) 
+1,76x 
+5% VaR means that in 95% of the simulated scenarios, the end capital is at least 1,76x the original 
+value. A median of 2,31x gives a reasonable expectation of a typical outcome. The simulation hints at 
+a robust strategy, but it should be carefully interpreted as extreme events are not represented in the 
+historical data. 
+ 
+ 
+4.6 Version 5 
+The fifth version introduced two new elements. A large language model (LLM) to give a sentiment 
+analysis based on financial news, and leverage connected to the sentiment. The core idea was to 
+generate signals based on current news about the market. Financial news were contained to news 
+channels, analysts, and relevant companies. 
+ 
+
+8 
+ 
+Every fifth to tenth day, the AI model analyzed financial news and generated a sentimental value 
+between –1 (strongly negative) and +1 (strongly positive). The assigned value dictated the leverage.  
+• 
+Sentiment > 0,3 → 6x long: Strong market view, maximal position. 
+• 
+0 < sentiment ≤ 0,3 → 3x long: medium optimism 
+• 
+Sentiment < 0 → 2x short via bear-certificate: Negative market view, defensive position. 
+• 
+Neutral sentiment → 1x: Standard position 
+The motivation behind the leverage scale is to adjust position size according to different 
+market regimes. The bear certificate during negative period acts as a hedge function, the 
+positions sensitivity is reduced, more stable.  
+Measurement 
+Value 
+Sharpe quote 
+3,319 
+Maximum drawdown 
+-5,43% 
+  
+Monte Carlo-simulation shows following 
+Measurement 
+Value 
+Worst case 
+2,35x 
+Best case 
+11,82x 
+Median 
+4,97x 
+5% Value at Risk (VaR) 
+3,43x 
+ 
+These are the strongest results in all the iterations. A Sharpe quote of 3,319 shows a high yield 
+in proportion to the taken risk, meanwhile a maximum drawdown of –5,43 procent in parity 
+with the previous versions. This although the higher risk with leverage. The Monte Carlo 
+median rose from 2,31x to 4,97x, which show that the sentimental analysis was effective.  
+ 
+The results should be treated with skepticism as the sentimental analysis was implemented in 
+back testing. In real time, news can be viewed differently. There is a risk for look ahead bias 
+which is hard to eliminate when back testing. 
+ 
+ 
+5. Analysis and discussion 
+ 
+This chapter analyzes the results in relation to the papers main questions and the previous research 
+represented in chapter 3. This aims to build an understanding of what happened, why, and what the 
+results actually mean. 
+ 
+5.1 Mathematical and statistical principles 
+The results show that a combination of mathematical and statistical principles directly affects the 
+algorithm's performance. The performance of the first version, that only utilized moving average, 
+
+9 
+ 
+gradually became better with each new version's implementation. A single tool such as moving 
+average is not bad just because it performs bad, but rather one of many good tools that need to be 
+composed to generate a good result.  
+ 
+From version two to four, a combination of principles is implemented, Volatility detectors that inform 
+the algorithm of the current market conditions pared with a 200-day moving average window that 
+gives it a longer timeframe, takes a more well-grounded decision together. Baver (2020) and 
+Hendershott et al. (2011) both highlight that statistical models work best when combined which 
+confirms the result. 
+ 
+Monte Carlo simulation with Markov chain enables the algorithm to acceptably quantify uncertainty, 
+which minimizes the risk of statistical errors. Furthermore, this also communicates the algorithms' 
+risks and limitations better. This conclusion supports the findings in Automated Quantitative Trading 
+Systems (2024) that being able to robustly evaluate an algorithm is just as important as its results.  
+ 
+ 
+5.2 Historical data and signals 
+The developed algorithms show that historical market data can be transformed into useful trading 
+signals, but that the processes require filtration and management. Price data first need to be 
+transformed into different series and filtered before it can be used. 
+ 
+The integration of sentiment analysis in version five highlights how market data is intertwined with 
+real world actions. How expectations, news and market atmosphere reflect in the market. The language 
+model complemented the technical indicators, which improved the algorithms' signal handling. 
+ 
+This confirms what Guo et al. (2023) showed that AI models can improve prognostication meanwhile 
+demanding carefulness. The sentimental analysis is plagued with a heightened risk of lookahead bias. 
+It is uncertain how the model would have performed if the news were fresh. 
+ 
+5.3 The algorithms performance and previous research 
+The algorithm’s results followed a linear improvement with every new iteration. From a negative 
+Sharpe quote in version one, to a 3,32 in version 5. Every new version introduced something that was 
+previously missed. The improvements were consistent and measurable. 
+ 
+Hendershott et al. (2011) confirm this in their study. Automated and rule-based systems are more 
+likely to make disciplined choices than humans. This can be explained to a system's lack of fear and 
+greed. It has a structural advantage that becomes more prominent with every new version. 
+ 
+The results are also confirmed by Automated Quantitative Trading Systems (2024) that back testing is 
+optimistic by nature. This is clear in version five, where there was a high risk that the sentimental 
+analysis was interpreted retroactively. An improvement would be to paper trade the strategy, to fully 
+eradicate the possibility of lookahead bias. Therefore, the results should be interpreted with 
+carefulness. 
+ 
+5.4 Leverage and risk 
+The leverage that was introduced in version five proved to be a great addition. The results show that 
+sentimental-based leverage improved yield, but also risk taken. The potential loss is always equal to 
+the potential gain of a trade when leverage is used. That means that leverage should mostly be used 
+when the uncertainty is low. This is taken into account in version five with its dynamic leveraging and 
+need for independent signals. High leverage when the positive signals were many and defensive 
+positions when they were few or negative. How effective the leverage would be outside of the back 
+testing would need to be verified with actual trading. 
+ 
+ 
+
+10 
+ 
+ 
+ 
+ 
+ 
+5.5 Answers to main questions 
+The three main questions are answered: 
+ 
+Which mathematical and statistical principles are central for the development of a quantitative 
+trading algorithm? 
+Timeseries analysis, volatility, RSI indicator, and risk adjusted positioning proved vital for an 
+algorithm's performance. Monte Carlo simulation with Markov chains is a useful tool for modelling 
+uncertainty and indicating an algorithm's reliability. It is important to combine principles and models 
+tastefully; they do not perform well single or as a random composition. 
+ 
+How can historical market data be analyzed and used to identify key trading signals? 
+Raw price data need to be sorted, interpreted, and then they can become the base for an algorithm. If 
+not, then the data is unreliable and can create biases such as the look ahead bias.  Sentiment analysis 
+can provide new information that is not reflected in the price data.  
+ 
+How does the algorithm perform in back testing, and which factors affect the result? 
+The algorithms results improved gradually in parity with the gradual increase of complexity. Risk 
+adjustment, indicators, data quality, and leverage all proportionally improved the outcome. The 
+method of reliability is as important as its results when back testing. 
+ 
+5.6 Final note 
+The results as a whole indicate that a fine-tuned combination of statistical methods and AI-driven 
+analysis can improve a trading algorithm's reliability and profitability. But historical data should 
+always be carefully interpreted. This is a basis for reflection and further research, not a promise of 
+future yield.  
+ 
+ 
+ 
+ 
+
+11 
+ 
+Sources 
+Baver, D. (2020). Practical introduction to quantitative trading. New York University, 
+Tandon School of Engineering. 
+https://engineering.nyu.edu/sites/default/files/2020-07/Practical-Inroduction-to-QuantitativeTrading-baver.pdf 
+Fernando, J. (2025, December 18). Moving average (MA): Purpose, uses, formula, and 
+examples. Investopedia. 
+https://www.investopedia.com/terms/m/movingaverage.asp 
+Fernando, J. (2025, December 23). Sharpe ratio: Definition, formula, and examples. 
+Investopedia. 
+https://www.investopedia.com/terms/s/sharperatio.asp 
+Fernando, J. (2025, December 29). Relative strength index (RSI): What it is, how it works, and 
+formula. Investopedia. 
+https://www.investopedia.com/terms/r/rsi.asp 
+Guo, J., Wang, S., Ni, L. M., & Shum, H.-Y. (2023). Artificial intelligence and quantitative 
+trading: Models, risks and validation (arXiv:2301.04020). ArXiv. 
+https://arxiv.org/abs/2301.04020 
+Hayes, A. (2026, February 12). Volatility: Meaning in finance and how it works with stocks. 
+Investopedia. 
+https://www.investopedia.com/terms/v/volatility.asp 
+Hendershott, T., Jones, C. M., & Menkveld, A. J. (2011). Algorithmic trading and market 
+quality. Journal of Finance, 66(1), 1–33. 
+https://faculty.haas.berkeley.edu/hender/ATMonitor.pdf 
+Kenton, W. (2025, November 29). Monte Carlo simulation: What it is, how it works, history, 
+4 key steps. Investopedia. 
+https://www.investopedia.com/terms/m/montecarlosimulation.asp 
+Kenton, W. (2025, September 11). Understanding Markov analysis: Simple forecasting 
+method and applications. Investopedia. 
+https://www.investopedia.com/terms/m/markovanalysis.asp 
+Phan Tien Dung, & Giudici, P. (2024). Automated quantitative trading systems and 
+performance evaluation. SSRN Electronic Journal.                   
+https://doi.org/10.2139/ssrn.5015984  
+ 
+ 
+ 
+
+12 
+ 
+Attachements 
+ 
+All the code and market data used can be found in For-research-paper repository on Github 
+https://github.com/viktorgbek23/For-research-paper  
+ 
+Graphs for the different versions 
+ 
+Version 1 
+ 
+ 
+Version 2 
+ 
+ 
+Version 3 
+
+13 
+ 
+ 
+ 
+Version 4 
+ 
+
+14 
+ 
+ 
+ 
+Version 5 
+ 
+ 
+
+15 
+ 
+ 
+ 
+ 
+ 
+ 
+Code Appendix 
+Here is a snippet of the most important code. To view the complete code, please visit the Github 
+repository here: 
+https://github.com/viktorgbek23/For-research-paper 
+ 
+Moving average crossover signal logic 
+def create_features(df):  
+ 
+df['return'] = np.log(df['Close'] / df['Close'].shift(1))  
+  
+df['ma_20'] = df['Close'].rolling(20).mean()  
+df['ma_50'] = df['Close'].rolling(50).mean()  
+  
+
+16 
+ 
+df['volatility'] = df['return'].rolling(20).std()  
+  
+return df  
+   
+def generate_signals(df):  
+df['signal'] = 0  
+  
+df.loc[df['ma_20'] > df['ma_50'], 'signal'] = 1  
+df.loc[df['ma_20'] < df['ma_50'], 'signal'] = -1  
+  
+df['position'] = df['signal'].shift(1)  
+  
+return df  
+   
+def backtest(df):  
+df['strategy_return'] = df['position'] * df['return']  
+  
+df['cum_market'] = df['return'].cumsum().apply(np.exp)  
+df['cum_strategy'] = df['strategy_return'].cumsum().apply(np.exp)  
+df['strategy_return'] = np.clip(df['strategy_return'], -0.03, 0.05)  
+stop_loss = -0.02   
+  
+df['strategy_return'] = np.where(  
+df['strategy_return'] < stop_loss,  
+stop_loss,  
+df['strategy_return']  
+)  
+take_profit = 0.04   
+df['strategy_return'] = np.where(  
+df['strategy_return'] > take_profit,  
+take_profit,  
+df['strategy_return']  
+)  
+  
+return df  
+ 
+ 
+Dynamic position sizer 
+def backtest(df):  
+df['position_size'] = 0.01 / df['volatility']   
+  
+df['stop_loss'] = -1 * df['volatility']   
+df['take_profit'] = 2 * df['volatility']   
+  
+df['strategy_return'] = df['signal'].shift(1) * df['return'] * df['position_size']  
+  
+df['strategy_return'] = np.clip(df['strategy_return'], df['stop_loss'], df['take_profit'])  
+  
+df['cum_strategy'] = df['strategy_return'].cumsum().apply(np.exp)  
+df['cum_market'] = df['return'].cumsum().apply(np.exp)  
+  
+return df  
+ 
+ 
+ 
+Sentiment to leverage mapping 
+            sentiment = float(match.group()) if match else 0.0  
+ 
+        except Exception as e:  
+
+17 
+ 
+ 
+            print(f"LLM error for {date_str}: {e}")  
+ 
+            sentiment = 0.0  
+ 
+        sentiment = np.clip(sentiment, -1.0, 1.0)  
+ 
+        sentiment_map[dates.iloc[i]] = sentiment  
+ 
+        print(f"{date_str}: sentiment {sentiment}")  
+ 
+    return sentiment_map  
+ 
+def backtest(df, sentiment_map): df['position_size'] = 0.01 / df['volatility'] df['stop_loss'] = -1 * df['volatility'] 
+df['take_profit'] = 2 * df['volatility']  
+ 
+df['sentiment'] = 0.0  
+sentiment_dates = sorted(sentiment_map.keys())  
+for i in range(len(sentiment_dates)):  
+    start_idx = df.index[df['Date'] == sentiment_dates[i]][0]  
+    end_idx = df.index[df['Date'] == sentiment_dates[i+1]][0] if i+1 < len(sentiment_dates) else len(df)  
+    df.loc[start_idx:end_idx-1, 'sentiment'] = sentiment_map[sentiment_dates[i]]  
+  
+ 
+df['adj_position_size'] = np.where(df['sentiment'] > 0.3, df['position_size'] * 6.0,  
+                                   np.where(df['sentiment'] > 0, df['position_size'] * 3.0,  
+                                            np.where(df['sentiment'] < 0, df['position_size'] * -2.0,  
+                                                     df['position_size'])))  
+  
+ 
+df['strategy_return'] = df['signal'].shift(1) * df['return'] * df['adj_position_size']  
+df['strategy_return'] = np.clip(df['strategy_return'], df['stop_loss'], df['take_profit'])  
+  
+ 

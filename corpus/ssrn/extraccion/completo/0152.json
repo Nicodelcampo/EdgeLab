@@ -1,0 +1,126 @@
+{
+ "doc_id": 152,
+ "titulo": "High frequency trading and fragility",
+ "resumen_operativo": "El paper desarrolla un modelo teórico de expectativas racionales dinámicas con ruido en dos períodos para mostrar que la participación limitada de los dealers y las fricciones informativas (opacidad) introducidas por el trading de alta frecuencia (HFT) pueden generar inestabilidad en el mercado. Demuestran que en mercados opacos la liquidez puede ser frágil y presentar equilibrios múltiples, donde la demanda de liquidez se vuelve creciente respecto a la iliquidez (complementariedad estratégica), propiciando 'flash crashes'. Además, muestran que la liquidez puede tener forma de U respecto a la proporción de HFTs y la transparencia del mercado. Es un trabajo puramente teórico, sin aplicación directa a estrategias cuantitativas intradía, pero útil para entender la microestructura de episodios de estrés extremo de liquidez.",
+ "calidad_paper": "alta",
+ "conceptos": [
+  {
+   "nombre": "High Frequency Trading (HFT) / Full Dealers",
+   "tipo": "agente",
+   "definicion_en_contexto": "Dealers adversos al riesgo que proveen liquidez y tienen una presencia continua en el mercado a través de múltiples períodos de trading, en contraste con los dealers estándar que solo participan limitadamente.",
+   "relaciones": [
+    {
+     "tipo": "MITIGA",
+     "objeto": "participation friction"
+    }
+   ],
+   "cita_textual": "Full dealers, like stylized high frequency traders (HFTs), are continuously in the market and can therefore accommodate the reverting orders of the first traders' cohort"
+  },
+  {
+   "nombre": "Informational friction",
+   "tipo": "concepto",
+   "definicion_en_contexto": "Fricción generada cuando no todos los traders tienen acceso a información oportuna y transparente sobre el mercado (como los desbalances de órdenes pasados), lo que exacerba la incertidumbre.",
+   "relaciones": [
+    {
+     "tipo": "CAUSA",
+     "objeto": "liquidity fragility"
+    },
+    {
+     "tipo": "CAUSA",
+     "objeto": "strategic complementarities"
+    }
+   ],
+   "cita_textual": "an informational friction (not all traders have access to timely market information)"
+  },
+  {
+   "nombre": "Participation friction",
+   "tipo": "concepto",
+   "definicion_en_contexto": "Situación en la cual no todos los proveedores de liquidez están presentes continuamente en el mercado, dificultando la absorción de shocks a lo largo del tiempo.",
+   "relaciones": [
+    {
+     "tipo": "CAUSA",
+     "objeto": "endowment shock propagation"
+    }
+   ],
+   "cita_textual": "a participation friction (not all liquidity suppliers are continuously present in the market)"
+  },
+  {
+   "nombre": "Strategic complementarities in liquidity demand",
+   "tipo": "fenomeno",
+   "definicion_en_contexto": "Dinámica por la cual los traders demandan más inmediatez/liquidez cuando perciben que el mercado es menos líquido, generando un bucle de retroalimentación que puede detonar una crisis de liquidez.",
+   "relaciones": [
+    {
+     "tipo": "CAUSA",
+     "objeto": "flash crash"
+    }
+   ],
+   "cita_textual": "traders demand more liquidity when the market becomes less liquid, which in turn makes the market more illiquid, fostering the initial demand hike."
+  },
+  {
+   "nombre": "Liquidity fragility",
+   "tipo": "fenomeno",
+   "definicion_en_contexto": "Estado del mercado en el que pueden existir múltiples equilibrios y un pequeño shock en los parámetros puede detonar el paso de un equilibrio de alta liquidez a uno de baja liquidez extrema.",
+   "relaciones": [
+    {
+     "tipo": "ASOCIADO_A",
+     "objeto": "multiple equilibria"
+    }
+   ],
+   "cita_textual": "there is fragility: multiple equilibria, that can be ranked in terms of liquidity, price volatility, and demand for immediacy, can arise, and a small shock to market parameters can prompt a switch from the high liquidity equilibrium to an equilibrium with low liquidity"
+  },
+  {
+   "nombre": "Flash event / Flash crash",
+   "tipo": "fenomeno",
+   "definicion_en_contexto": "Episodio de inestabilidad extrema y rápida del mercado donde los precios caen y se recuperan bruscamente, impulsado por retiros de liquidez que generan pánico.",
+   "relaciones": [
+    {
+     "tipo": "USA",
+     "objeto": "liquidity withdrawal"
+    }
+   ],
+   "cita_textual": "an episode in which the price of a contract moved at least 200 basis points within a trading hour but returned to within 75 basis points of the original or starting price within that same hour."
+  }
+ ],
+ "hallazgos": [
+  {
+   "afirmacion": "La limitación en la participación de los dealers propaga los shocks de dotación (endowment shocks) en el tiempo, creando patrones predecibles de presión en los precios.",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  },
+  {
+   "afirmacion": "En mercados transparentes, la especulación de los traders estabiliza el mercado y una mayor proporción de HFTs mejora la liquidez.",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  },
+  {
+   "afirmacion": "En mercados opacos, con fricciones informativas, la especulación incrementa la incertidumbre, provocando complementariedades estratégicas donde una menor liquidez lleva a los traders a demandar más liquidez (feedback loop).",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  },
+  {
+   "afirmacion": "La presencia combinada de HFTs y opacidad de la información puede hacer que la liquidez tenga forma de U respecto a la proporción de HFTs y al nivel de transparencia, sugiriendo que facilitar la entrada a más HFTs no siempre mejora la liquidez.",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  }
+ ],
+ "aplicabilidad_es_intradia": {
+  "nivel": "baja",
+  "nota": "El modelo es altamente teórico, ofreciendo explicaciones microestructurales a nivel macro sobre el surgimiento de flash crashes. No provee features, señales cuantificables, ni metodologías estadísticas aplicables de forma directa al trading intradía del ES."
+ }
+}
