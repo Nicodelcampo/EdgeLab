@@ -230,3 +230,10 @@ def test_thresholds_prioritise_but_never_exclude():
     base = dict(cid="X", title="t", rule="r", gap_kind="NO_PRIOR_EVIDENCE", evidence=[], power=0.5, est_seconds=600, group="G", family="F")
     easy = score(Candidate(required_rho=0.05, **base), [], {}); hard = score(Candidate(required_rho=2.0, **base), [], {})
     assert hard.score > 0 and hard.score_parts["feasibility"] == FEAS_FLOOR and easy.score > hard.score >= 0.25 * easy.score - 1e-12              # prioridad más baja, nunca cero
+
+
+def test_scan1_candidate_is_ready_and_counts_cells_not_just_tests():
+    from edgelab.autopilot.generate import generate, to_runspec
+    c = next(x for x in generate([]) if x.cid == "SCAN-1"); rs = to_runspec(c)
+    assert c.template == "slot_scan" and rs["n_trials"] == 495 and rs["n_tests_holm"] == 20 and rs["kind"] == "study" and not rs["internet"]
+    assert {"ES", "GC", "NQ", "YM", "6E"} <= {n.split(":")[0] for n in rs["needs"]} and rs["origin"]["UNIVERSE_SCAN_1"]["sample"] == "scan_1"

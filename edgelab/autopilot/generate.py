@@ -113,15 +113,18 @@ def rules(ev: dict, lits: dict) -> list:
             out.append(Candidate("WAIT-GC_LH_MOMENTUM", "Confirmación prospectiva de GC (último 30 min) con datos posteriores al 2026-09-30", "R6_NEW_LEAD_NEEDS_UNSEEN_DATA", "NO_PRIOR_EVIDENCE", ["GC_LH_MOMENTUM"], template=None, n_trials=1, power=0.5,
                                  est_seconds=600, group="BLOCKED", family="WAIT", owner="human-decision",
                                  why="La única muestra realmente independiente en el tiempo es posterior a 2026-09-30 (holdout cerrado). Requiere una decisión humana: pre-registro específico y apertura controlada, o esperar a que haya sesiones nuevas fuera del holdout formal."))
+    e = E.get("UNIVERSE_SCAN_1")
     uni = REPO / "docs/research/propfirm_thresholds/UNIVERSO.json"
-    if uni.exists():                                # R9: celdas del universo con el menor ρ requerido (umbral de las cuentas), una candidata por instrumento
-        cells = json.loads(uni.read_text())["cells"]; seen = set()
-        for c in cells:
-            if c["inst"] in seen or len(seen) >= 5: continue                 # sin corte por umbral: los umbrales ordenan, no excluyen
-            seen.add(c["inst"]); same = [x for x in cells if x["inst"] == c["inst"] and x["horizon_min"] == c["horizon_min"]][:6]
-            out.append(Candidate(f"UNIV-{c['inst']}-{c['horizon_min']}m", f"Barrido de franjas de {c['horizon_min']} min en {c['inst']} (celdas con menor umbral de cuenta)", "R9_UNIVERSE_BY_ACCOUNT_THRESHOLD", "NO_PRIOR_EVIDENCE", [],
-                                 template=None, n_trials=len(same) * 2, power=0.3, est_seconds=1800, group=c["inst"], family="UNIVERSE", utility_class="tradeable", required_rho=c["rho_required"],
-                                 why=f"Mejores franjas por umbral: " + "; ".join(f"{x['slot']} CT (ρ* {x['rho_required']:.3f}, {x['contracts']} {x['symbol']}, {x['best_account']})" for x in same[:4]) + ". Requiere un script de barrido de esas franjas (momentum y reversión, bilateral, nulo de máximo) y su pre-registro."))
+    if e and "scan_1" in e["unused_samples"] and uni.exists():       # R9: barrido en los instrumentos de menor umbral de cuenta (UNIVERSO.json), con réplica en otra muestra
+        cells = json.loads(uni.read_text())["cells"]; best = {}
+        for c in cells: best.setdefault(c["inst"], c["rho_required"])
+        rho = float(np.median([best[i] for i in ("GC", "NQ", "ES", "YM", "6E") if i in best])) if best else None
+        out.append(Candidate("SCAN-1", "Barrido de franjas (07:00-14:30 CT) en GC, NQ, ES, YM y 6E: momentum y reversión, descubrimiento → réplica", "R9_UNIVERSE_BY_ACCOUNT_THRESHOLD", "NO_PRIOR_EVIDENCE", ["UNIVERSE_SCAN_1"],
+                             template="slot_scan",
+                             cfg=dict(mode="slot_scan", nperm=10000, seed=20261016, n_planned=20, spot_ranges={"ES_spot": ["ES", "2018-01-01", "2025-06-30"], "GC_spot_old": ["GC", "2022-07-01", "2025-06-30"]},
+                                      scans=[dict(name="ES", disc="ES_spot", rep="ES"), dict(name="GC", disc="GC_spot_old", rep="GC"), dict(name="NQ", disc="NQ", rep="NQ", split=0.6), dict(name="YM", disc="YM", rep="YM", split=0.6), dict(name="6E", disc="6E", rep="6E", split=0.6)]),
+                             n_trials=5 * 96 + 15, power=0.3, est_seconds=2400, group="MULTI", family="SLOT_SCAN", utility_class="tradeable", required_rho=rho, consumes={"UNIVERSE_SCAN_1": "scan_1"},
+                             why="El universo guiado por umbrales ubica los umbrales más bajos de cuenta en la apertura de EE. UU. (08:00-10:00 CT) de GC, NQ, ES y YM. Se barren 96 celdas por instrumento (franja × horizonte × predictor), con nulo de máximo en el descubrimiento (spot largo para ES y GC, 60 % inicial de los futuros para NQ, YM y 6E) y réplica de las 3 mejores celdas en la otra muestra. 495 celdas/pruebas al contador global; 20 pruebas reportadas para Holm."))
     for e in ev["entries"]:                       # pistas nuevas nacidas de resultados del propio autopilot
         if e["status"] == "WEAK_LEAD" and e.get("unused_samples") == ["new_data_after_holdout"]:
             out.append(Candidate("WAIT-" + __import__("re").sub(r"[^A-Za-z0-9_-]", "_", e["id"]), f"Réplica pendiente de datos nuevos: {e['asset']} ({e['indicator']})", "R6_NEW_LEAD_NEEDS_UNSEEN_DATA", "NO_PRIOR_EVIDENCE", [e["id"]], template=None, n_trials=1, power=0.5,
@@ -146,6 +149,14 @@ MODE_DEFS = {
 - Modelo: OLS LH ~ 1 + ROD_salto + ROD_cont. Estadístico = coeficiente de ROD_salto. H1: > 0 (unilateral). Nulo: signo aleatorio independiente sobre LH, 20.000 sorteos, semilla 20261013.
 - `reference_sources` (GC futuro 2025-26) se informan pero NO entran en Holm: es la muestra que originó la pista. La prueba de la pista es `idmj/GC_spot_old` (spot 2022-07-01 → 2025-06-30).
 - Descriptivo (no es prueba): participación de sesiones con salto, coeficiente de ROD_cont, rango del coeficiente de salto al excluir cada trimestre.''',
+ "slot_scan": '''Definiciones congeladas (script `tools/study_slot_effect.py`, modo `slot_scan`):
+- Celdas por instrumento (96): franja de inicio t ∈ {07:00, 07:30, …, 14:30} CT × horizonte h ∈ {15, 30, 60} min (solo si t+h ≤ 15:30) × predictor ∈ {«prev»: log(P_t / P_{t−h}); «rod»: log(P_t / P_cierre previo 15:00 CT)}. Retorno siguiente Y = log(P_{t+h} / P_t). P = apertura del minuto, último precio conocido del día (ffill); se descartan fechas con datos faltantes.
+- Estadístico por celda: correlación de Pearson corr(X, Y), BILATERAL (momentum +, reversión −).
+- Descubrimiento (por instrumento): z_c = corr·√n; máximo |z| sobre las 96 celdas; nulo de MÁXIMO con 10.000 permutaciones de las sesiones de Y (la misma permutación en todas las celdas); p = (1 + #{máx_nulo ≥ máx_obs}) / (1 + B).
+- Réplica (por instrumento): las 3 celdas con mayor |z| del descubrimiento; en la muestra de réplica, con el signo del descubrimiento FIJADO, corr unilateral, nulo de signo aleatorio sobre Y (10.000 sorteos).
+- Muestras: ES: descubrimiento en spot ES 2018-01-01 → 2025-06-30 y réplica en el futuro ES 2025-07 → 2026-09; GC: spot 2022-07-01 → 2025-06-30 y futuro 2025-07 → 2026-09; NQ, YM, 6E: futuros 2025-07 → 2026-09 con el primer 60 % de las sesiones para descubrir y el 40 % final para replicar. Semilla 20261016.
+- Pruebas reportadas para Holm: 4 por instrumento (1 máximo + 3 réplicas) = 20; el contador global recibe 495 (480 celdas + 15 réplicas).
+- Descriptivo (no es prueba): top-10 de celdas del descubrimiento con su correlación en la réplica.''',
  "idm": "Ver docstring del script (modo `idm`): corr(resto del día, última media hora), unilateral positiva; diferencia por gamma bajo con permutación por bloques de 20.",
  "slot_corr": "Ver docstring del script (modo `slot_corr`): corr(retorno previo, siguiente) de `horizon_min` minutos en cada franja; unilateral negativa.",
 }
@@ -192,8 +203,8 @@ Nulo de signo aleatorio / permutación por bloques según el modo; Holm sobre {c
 
 def to_runspec(c: Candidate) -> dict | None:
     if not c.template: return None
-    return dict(run_id=c.cid.lower(), kind="study", family=c.family, group=c.group, script="tools/study_slot_effect.py", prereg=f"docs/research/autopilot/drafts/{c.cid}.md", n_trials=c.n_trials,
-                needs=[f"{s}:2025-07-01:2026-09-30" for s in c.cfg["sources"] + c.cfg.get("reference_sources", []) if s not in c.cfg.get("spot_ranges", {})], extra_datasets=[
+    return dict(run_id=c.cid.lower(), kind="study", family=c.family, group=c.group, script="tools/study_slot_effect.py", prereg=f"docs/research/autopilot/drafts/{c.cid}.md", n_trials=c.n_trials, n_tests_holm=c.cfg.get("n_planned"),
+                needs=[f"{s}:2025-07-01:2026-09-30" for s in (c.cfg.get("sources") or sorted({x[k] for x in c.cfg.get("scans", []) for k in ("disc", "rep")})) + c.cfg.get("reference_sources", []) if s not in c.cfg.get("spot_ranges", {})], extra_datasets=[
                     "nicolasbuttaro/edgelab-dukascopy-es-usa500"] + (["nicolasbuttaro/edgelab-dukascopy-xauusd-ticks-m1"] if any(k.startswith("GC_spot") for k in c.cfg.get("spot_ranges", {})) else []),
                 internet=c.internet, env={"STUDY_CFG": json.dumps(c.cfg, sort_keys=True)}, est_seconds=c.est_seconds, decision_rule="holm", notes=c.title, origin={k: dict(sample=v, tests=c.lead_tests.get(k)) for k, v in c.consumes.items()})
 
@@ -203,5 +214,5 @@ def research_gaps(c: Candidate) -> dict:
     `public_query_reviewed` queda en False: la revisión es humana."""
     topic = {"SLOT-1": "intraday return reversal at fixed time of day across futures markets", "IDM-1": "intraday momentum last half-hour return predicted by rest-of-day return gamma hedging",
              "OU-2": "short-horizon negative autocorrelation futures bid-ask bounce mid-quote versus transaction prices", "GEX-2": "dealer gamma exposure and intraday volatility index futures",
-             "AVCL-2": "volume clusters order flow direction after high volume nodes futures", "IDM-2": "jumps rest-of-day return last half-hour return commodity futures gold intraday momentum", "DATA-METALS": "intraday momentum metals silver platinum palladium crude oil futures"}.get(c.cid, c.title)
+             "AVCL-2": "volume clusters order flow direction after high volume nodes futures", "SCAN-1": "intraday return predictability time of day futures momentum reversal US open", "IDM-2": "jumps rest-of-day return last half-hour return commodity futures gold intraday momentum", "DATA-METALS": "intraday momentum metals silver platinum palladium crude oil futures"}.get(c.cid, c.title)
     return dict(candidate=c.cid, gap_kind=c.gap_kind, missing_evidence=c.why[:2048], public_query=topic, contrary_query=f"evidence against or limitations: {topic}", public_query_reviewed=False)

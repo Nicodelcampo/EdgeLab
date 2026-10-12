@@ -4,6 +4,9 @@ r"""Estudio paramétrico de efectos por franja horaria (CT) con nulo de signos y
   idm        retorno «resto del día» (cierre previo 15:00 CT → 14:30 CT) vs última media hora (14:30 → 15:00 CT); corr; unilateral positiva (momentum). Opcional: diferencia de corr con gamma bajo (DIX/GEX, causal) en la fuente `gamma_source`.
   idm_jump   descompone el «resto del día» (cierre previo 15:00 CT → 14:30 CT) en componente de SALTOS (retornos de 5 min con |r| > 4σ, σ = 1,4826·mediana(|r|) de las 20 sesiones previas, causal) y el resto continuo;
              OLS LH ~ 1 + ROD_salto + ROD_cont; prueba unilateral b_salto > 0 con nulo de signo sobre LH; `reference_sources` se informan pero NO entran en Holm.
+  slot_scan  barrido de franjas por familia (descubrimiento → réplica): celdas = franja de 30 min (07:00-14:30 CT) × horizonte h ∈ {15,30,60} × predictor ∈ {retorno de los h min previos, «resto del día» desde el cierre previo 15:00 CT};
+             estadístico corr(predictor, retorno de los h min siguientes), BILATERAL (momentum +, reversión −). Descubrimiento: nulo de MÁXIMO por permutación conjunta de sesiones (misma permutación en todas las celdas); réplica: las 3 mejores celdas del
+             descubrimiento, con el signo fijado, unilateral, nulo de signo. El descubrimiento usa `disc` (spot largo o 60 % inicial de los futuros) y la réplica `rep` (futuros 2025-26 o 40 % final).
   slot_corr  corr(r previo, r siguiente) de `horizon_min` minutos en cada franja de `slots`; unilateral negativa (reversión).
 Fuentes: futuros por load_m1 (2025-07-01→2026-09-30) o spot Dukascopy (spot_ranges). Precio = apertura del minuto indicado. Sin holdout.
 """
@@ -43,7 +46,7 @@ BLOCK = 20
 
 def load_source(name):
     if SYNTH:
-        return synth_jump(CFG.get("synth_jump_effect", 0.0)) if CFG.get("mode") == "idm_jump" else synth(CFG.get("synth_gamma_effect", 0.0))
+        return synth_jump(CFG.get("synth_jump_effect", 0.0)) if CFG.get("mode") in ("idm_jump", "slot_scan") else synth(CFG.get("synth_gamma_effect", 0.0))
     if name in CFG.get("spot_ranges", {}):
         inst, a, b = CFG["spot_ranges"][name]
         t = ed.load_spot(inst, a, b, "m1"); mid = ((t.bid_open + t.ask_open) / 2).to_numpy()
@@ -80,6 +83,8 @@ def synth_jump(effect=0.0, n_days=420, seed=5):
             k = int(rng.integers(0, 14 * 60 + 25)); jumps[k] = rng.choice([-1, 1]) * rng.uniform(15, 40) * 1e-4
         lp = np.cumsum(r + jumps); i1430, i1500 = 870, 900
         lp[i1500:] += effect * jumps[:i1430].sum()
+        se = float(CFG.get("synth_slot_effect", 0.0))
+        if se: lp[10 * 60 + 30:] += se * (lp[10 * 60] - lp[9 * 60 + 30])           # el tramo 10:30 sigue al tramo 09:30-10:00 (momentum sintético en la celda 10:00_h30_prev)
         ts = (pd.Timestamp(day, tz=CT) + pd.to_timedelta(np.arange(24 * 60), unit="m")).tz_convert("UTC").tz_localize(None).values.astype("datetime64[ns]").astype("int64")
         rows.append(pd.DataFrame(dict(ts=ts, open=100 * np.exp(lp))))
     return pd.concat(rows, ignore_index=True)
@@ -174,6 +179,54 @@ def mode_idm_jump(rng):
     return out, ps, rows
 
 
+SCAN_SLOTS = [f"{m // 60:02d}:{m % 60:02d}" for m in range(7 * 60, 14 * 60 + 31, 30)]; SCAN_H = (15, 30, 60)
+
+
+def scan_matrices(df):
+    """Fechas (n) y matrices X, Y (n × celdas) con X = predictor y Y = retorno siguiente; precio = apertura del minuto, ffill dentro del día; se descartan fechas con datos faltantes."""
+    times = [f"{m // 60:02d}:{m % 60:02d}" for m in range(6 * 60, 15 * 60 + 31, 15)] + ["15:00"]
+    t = sessions_table(df, sorted(set(times))); t = t.ffill(axis=1); prev = t["15:00"].shift(1)
+    ok = t.notna().all(axis=1) & prev.notna(); t, prev = t[ok], prev[ok]
+    X, Y, labels = [], [], []
+    for sl in SCAN_SLOTS:
+        hh, mm = map(int, sl.split(":")); m0 = hh * 60 + mm; lab = lambda m: f"{m // 60:02d}:{m % 60:02d}"
+        for h in SCAN_H:
+            if m0 + h > 15 * 60 + 30: continue
+            nxt = np.log(t[lab(m0 + h)] / t[sl]).to_numpy()
+            X.append(np.log(t[sl] / t[lab(m0 - h)]).to_numpy()); Y.append(nxt); labels.append(f"{sl}_h{h}_prev")
+            X.append(np.log(t[sl] / prev).to_numpy()); Y.append(nxt); labels.append(f"{sl}_h{h}_rod")
+    return list(t.index), np.column_stack(X), np.column_stack(Y), labels
+
+
+def _std(a):
+    return (a - a.mean(0)) / a.std(0)
+
+
+def mode_slot_scan(rng):
+    out, ps, rows, desc = [], [], [], []; B = int(os.environ.get("STUDY_NPERM", CFG.get("nperm", 5000)))
+    for sc in CFG["scans"]:
+        name = sc["name"]; d_disc, X, Y, labels = scan_matrices(load_source(sc["disc"]))
+        if sc["rep"] == sc["disc"] or sc.get("split"):
+            k = int(len(d_disc) * float(sc.get("split", 0.6))); d0, X0, Y0, d1, X1, Y1 = d_disc[:k], X[:k], Y[:k], d_disc[k:], X[k:], Y[k:]
+        else:
+            d0, X0, Y0 = d_disc, X, Y; d1, X1, Y1, lab1 = scan_matrices(load_source(sc["rep"])); assert lab1 == labels
+        n0 = len(d0)
+        if n0 < 150 or len(d1) < 100: out.append(dict(test=f"scan/{name}/max_disc", evaluable=False, n_disc=n0, n_rep=len(d1))); continue
+        Xs, Ys = _std(X0), _std(Y0); c0 = (Xs * Ys).mean(0); z0 = c0 * np.sqrt(n0); obs = float(np.abs(z0).max())
+        mx = np.empty(B)
+        for i in range(B): mx[i] = np.abs((Xs * Ys[rng.permutation(n0)]).mean(0)).max() * np.sqrt(n0)      # misma permutación en todas las celdas
+        p_max = float((1 + np.sum(mx >= obs)) / (1 + B)); top = np.argsort(-np.abs(z0))[:3]
+        r = dict(test=f"scan/{name}/max_disc", source=name, n_disc=n0, n_cells=len(labels), max_abs_z=obs, null_q95=float(np.quantile(mx, 0.95)), p=p_max, evaluable=True, disc=f"{sc['disc']} {d0[0]}..{d0[-1]}")
+        out.append(r); ps.append(p_max); rows.append(r); print(r, flush=True)
+        for j in top:
+            sgn = 1.0 if c0[j] > 0 else -1.0; x1, y1 = X1[:, j], Y1[:, j]; c1, p1, sd1 = signflip_p(x1, y1, rng, sgn)
+            r2 = dict(test=f"scan/{name}/rep/{labels[j]}", source=name, cell=labels[j], n_rep=int(len(x1)), corr_disc=float(c0[j]), corr_rep=c1, direction="momentum" if sgn > 0 else "reversion", null_sd=sd1, p=p1, evaluable=True, rep=f"{sc['rep']} {d1[0]}..{d1[-1]}")
+            out.append(r2); ps.append(p1); rows.append(r2); print(r2, flush=True)
+        o = np.argsort(-np.abs(z0))[:10]; desc.append(dict(scan=name, top_cells=[dict(cell=labels[j], corr_disc=float(c0[j]), corr_rep=float(np.corrcoef(X1[:, j], Y1[:, j])[0, 1])) for j in o]))
+    CFG["_descriptive"] = desc
+    return out, ps, rows
+
+
 def block_perm(v, rng):
     blocks = [v[i:i + BLOCK] for i in range(0, len(v), BLOCK)]; return np.concatenate([blocks[i] for i in rng.permutation(len(blocks))])
 
@@ -217,14 +270,14 @@ def mode_slot_corr(rng):
 
 def main():
     t0 = time.time(); rng = np.random.default_rng(SEED); mode = CFG["mode"]
-    out, ps, rows = {"idm": mode_idm, "idm_jump": mode_idm_jump, "slot_corr": mode_slot_corr}[mode](rng)
+    out, ps, rows = {"idm": mode_idm, "idm_jump": mode_idm_jump, "slot_corr": mode_slot_corr, "slot_scan": mode_slot_scan}[mode](rng)
     m = int(CFG.get("n_planned", len(ps)))
     for r, h in zip(rows, holm(np.array(ps)) if ps else []): r["p_holm_%d" % m] = float(min(1.0, h * 1.0))
     # Holm con m planeado (≥ evaluables): reajusta usando m en el denominador
     o = np.argsort(ps); mx = 0.0
     for rank, i in enumerate(o):
         mx = max(mx, min(1.0, (m - rank) * ps[i])); rows[i]["p_holm_%d" % m] = mx
-    res = dict(campaign=CFG.get("campaign", "study_slot_effect"), cfg=CFG, nperm=NPERM, results_flat=out, n_planned=m, seconds=round(time.time() - t0))
+    res = dict(campaign=CFG.get("campaign", "study_slot_effect"), descriptive=CFG.pop("_descriptive", None), cfg=CFG, nperm=NPERM, results_flat=out, n_planned=m, seconds=round(time.time() - t0))
     (OUT / "STUDY_RESULTS.json").write_text(json.dumps(res, indent=1, default=float), encoding="utf-8"); print("listo en %.0f s" % (time.time() - t0))
 
 

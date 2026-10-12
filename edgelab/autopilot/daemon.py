@@ -46,7 +46,7 @@ class Autopilot:
                 except Exception as e:                                                 # error de configuración o de red: no tumba el ciclo, queda registrado y se reintenta
                     self.ledger.event(spec.run_id, "fetch_failed", repr(e)[:200]); rep["blocked"].append((spec.run_id, [f"no se pudo traer el resultado: {e!r}"[:200]])); continue
                 bid = self.fdr.state["open"][f"{spec.run_id}"]
-                d = analyze.decide(res, bid["alpha"], spec.n_trials)
+                d = analyze.decide(res, bid["alpha"], spec.n_tests_holm or spec.n_trials)
                 self.fdr.settle(spec.run_id, d["rejections"]); self.ledger.finish(spec.run_id, "ANALYZED", d); rep["closed"].append((spec.run_id, d["hit"]))
                 if self.cfg.get("evidence_runtime"): evidence.record_outcome(Path(self.cfg["evidence_runtime"]), spec, d, evidence.current_states(Path(self.cfg["evidence_runtime"])), result=res)
                 if self.brain: self.brain(spec, d)

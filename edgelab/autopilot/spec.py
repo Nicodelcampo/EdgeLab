@@ -26,6 +26,7 @@ class RunSpec:
     est_gb: float = 8.0
     decision_rule: str = "holm"                # cómo se interpreta el resultado; identificador que entiende analyze.py
     notes: str = ""
+    n_tests_holm: int | None = None             # nº de pruebas REPORTADAS para Holm (None = n_trials); n_trials cuenta las celdas escaneadas en el contador global
     origin: dict = field(default_factory=dict)  # {evidence_id: muestra consumida}: qué pista originó la corrida y qué muestra independiente gasta
 
     def spec_hash(self) -> str:
