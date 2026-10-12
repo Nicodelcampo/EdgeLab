@@ -20,24 +20,28 @@ def utility_weight(utility_class: str, cfg: dict | None = None) -> float:
 
 
 def pass_probability(daily_pnl, rules: dict, n_sims: int = 5000, seed: int = 20261014, block: int = 3) -> dict:
-    """Probabilidad de superar un challenge remuestreando días de P&L neto (bloques de `block` días). Reglas: profit_target_usd, max_trailing_drawdown_usd (desde el máximo de equity),
-    daily_loss_limit_usd (opcional), min_trading_days, max_days. Falla por drawdown/límite diario o por tiempo."""
+    """Probabilidad de superar un challenge remuestreando días de P&L neto (bloques de `block` días). Modela lo que importa de las reglas (config/autopilot/mandate.json):
+    - piso de pérdida: EOD trailing (sobre el cierre de cada día) que se bloquea en saldo inicial + `locked_floor_profit_usd` cuando el pico supera `lock_profit_usd` (None = trailing sin bloqueo);
+    - límite diario opcional; días mínimos; consistencia (mayor día ≤ cuota del beneficio total al momento de pasar: si no se cumple se sigue operando);
+    - sin límite de tiempo si `max_days` es None (tope de simulación `sim_day_cap`, que cuenta como «timeout»).
+    La granularidad diaria es válida para drawdown de fin de día (EOD); para drawdown intradía subestima el riesgo."""
     x = np.asarray(daily_pnl, float); rng = np.random.default_rng(seed); n = len(x)
-    tgt, dd, dl, mind, maxd = rules["profit_target_usd"], rules["max_trailing_drawdown_usd"], rules.get("daily_loss_limit_usd"), rules.get("min_trading_days", 1), rules.get("max_days", 30)
-    res = dict(passed=0, failed_dd=0, timeout=0); days = []
+    tgt, dd = rules["profit_target_usd"], rules["max_trailing_drawdown_usd"]; dl = rules.get("daily_loss_limit_usd"); mind = rules.get("min_trading_days", 1)
+    cap = rules.get("max_days") or rules.get("sim_day_cap", 600); lock, lockf = rules.get("lock_profit_usd"), rules.get("locked_floor_profit_usd", 0.0); cons = rules.get("consistency_max_best_day_share")
+    res = dict(passed=0, failed_dd=0, timeout=0); days_to_pass = []
     for _ in range(n_sims):
-        eq = peak = 0.0; d = 0; out = "timeout"
-        while d < maxd:
-            s = int(rng.integers(0, n)); 
-            for v in x[np.arange(s, s + block) % n]:
-                d += 1; eq += v; peak = max(peak, eq)
-                if (dl is not None and v <= -dl) or eq <= peak - dd: out = "failed_dd"; break
-                if eq >= tgt and d >= mind: out = "passed"; break
-                if d >= maxd: break
-            if out != "timeout" or d >= maxd: break
-        res["passed" if out == "passed" else out] += 1
-        if out == "passed": days.append(d)
-    return dict(p_pass=res["passed"] / n_sims, p_fail_dd=res["failed_dd"] / n_sims, p_timeout=res["timeout"] / n_sims, median_days_to_pass=float(np.median(days)) if days else None, n_sims=n_sims)
+        eq = peak = best = 0.0; d = 0; out = "timeout"
+        while d < cap and out == "timeout":
+            s0 = int(rng.integers(0, n))
+            for v in x[np.arange(s0, s0 + block) % n]:
+                d += 1; eq += v; peak = max(peak, eq); best = max(best, v)
+                floor = (lockf if (lock is not None and peak >= lock) else peak - dd)
+                if (dl is not None and v <= -dl) or eq <= floor: out = "failed_dd"; break
+                if eq >= tgt and d >= mind and (cons is None or best <= cons * eq): out = "passed"; break
+                if d >= cap: break
+        res[out if out != "timeout" else "timeout"] += 1 if out != "passed" else 0
+        if out == "passed": res["passed"] += 1; days_to_pass.append(d)
+    return dict(p_pass=res["passed"] / n_sims, p_fail_dd=res["failed_dd"] / n_sims, p_timeout=res["timeout"] / n_sims, median_days_to_pass=float(np.median(days_to_pass)) if days_to_pass else None, n_sims=n_sims)
 
 
 def viability(summary: dict, cfg: dict | None = None) -> dict:

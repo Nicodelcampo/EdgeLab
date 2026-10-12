@@ -10,13 +10,22 @@ Un efecto estadísticamente significativo **no cumple el objetivo por serlo**. N
 - **inestables**: que dependen de un trimestre, de pocos días extremos o de un régimen que no se repite;
 - **sin margen para diversificar**: que no se pueden combinar con otras estrategias (misma señal, mismo horario, mismo activo, alta correlación de P&L).
 
+## 1b. La cuenta de referencia: Lucid
+Las reglas de referencia son las de **Lucid** (centro de ayuda público, crawl del 2026-10-13; ver [`docs/research/PROPFIRM_LUCID_REFERENCIAS_20261013.md`](docs/research/PROPFIRM_LUCID_REFERENCIAS_20261013.md)). Extraídas por el agente, **sin verificar por una persona**. Lo que más pesa en el diseño de estrategias:
+- **Sin límite de tiempo** en la evaluación: decide P(llegar al objetivo antes del piso), no el tiempo. 50K: objetivo 3.000, piso (MLL) 2.000 con drawdown de **fin de día**, que se bloquea en saldo inicial + 100 al superar 52.100.
+- **Consistencia 50 %** en LucidFlex/Daily (60 % Black; Pro la exige solo en los retiros, 40 %): el mayor día no puede pasar de esa fracción del beneficio. **Castiga los edges que ganan en pocos días grandes.**
+- **Estrictamente intradía:** posiciones cerradas antes de las 15:45 CT (16:45 ET). Máx. 4 minis o 40 micros en 50K.
+- **Prohibido:** HFT, microscalping (> 50 % de ganancias en operaciones de ≤ 5 s) y **cobertura entre cuentas** (posiciones opuestas en cuentas del mismo usuario): al combinar estrategias en cuentas distintas, **no pueden estar en lados opuestos del mismo instrumento al mismo tiempo**. Se permiten hasta 10 cuentas de evaluación y 5 fondeadas.
+- Un participante **sin ventaja** pasa poco: techo geométrico 40 % (L/(T+L)) y, con 1 contrato y costos reales, ≈ 3,5 % con brackets de USD 100, ≈ 16 % con USD 200 y ≈ 0 con brackets chicos (los costos se comen todo). **Toda estrategia debe compararse contra ese control sin ventaja** (módulo `edgelab/propfirm`).
+
 ## 2. Por qué
 Un challenge impone reglas duras (objetivo de ganancia, drawdown máximo que suele ser de tipo *trailing*, a veces límite de pérdida diaria, días mínimos y tiempo máximo, a veces consistencia). Una estrategia sola, con rachas y drawdown, rara vez los supera de forma confiable; **varias estrategias pequeñas, estables y poco correlacionadas suavizan la curva y aumentan la probabilidad de pase**. Lo que importa es la **probabilidad de pasar y de sostener la cuenta**, no el p-valor de un efecto.
 
 ## 3. Criterios de utilidad (se evalúan con P&L NETO de costos)
 Definidos en `config/autopilot/mandate.json` (valores propuestos; ver §7) e implementados en `edgelab/autopilot/mandate.py`:
 1. **Neto positivo y resistente a costos** (sigue positivo con costos × 1,5).
-2. **Frecuencia** suficiente (≥ 10 operaciones/mes) para llegar al objetivo en el plazo.
+2. **Compatibilidad con las reglas de Lucid**: intradía (cerrada antes de 15:45 CT), sin HFT/microscalping, consistencia del 50 % (el mayor día ≤ 50 % del beneficio), sin posiciones opuestas a otras estrategias de la cartera.
+2b. **Frecuencia** suficiente (≥ 10 operaciones/mes) para llegar al objetivo en el plazo.
 3. **Estabilidad temporal**: ≥ 4 trimestres observados y ≥ 70 % de ellos positivos; no depende de los 5 mejores días (≤ 50 % del P&L); no depende de un solo trimestre (siempre mirar «sin el mejor trimestre»).
 4. **Diversificación**: correlación absoluta del P&L diario ≤ 0,30 con las estrategias ya aceptadas; meta de ≥ 3 estrategias independientes.
 5. **Drawdown compatible** con el límite del challenge (drawdown máximo ≤ objetivo de ganancia).
@@ -46,7 +55,7 @@ Hoy **no hay ninguna estrategia en nivel A**. La pista de GC (último 30 min) es
 4. Solo después, refinar mecanismos.
 
 ## 7. Lo que debe confirmar Nico (el agente no lo decide)
-- Las **reglas reales del challenge** (firma, tamaño de cuenta, objetivo, drawdown y tipo, límite diario, días mínimos/máximos, consistencia, contratos máximos, horarios obligatorios de cierre). `config/autopilot/mandate.json` trae valores de EJEMPLO.
+- **Qué producto de Lucid usás** (Flex, Pro, Daily, Black, Direct), el tamaño de cuenta y el **precio** (no está en el centro de ayuda). `config/autopilot/mandate.json` trae LucidFlex 50K extraído por el agente; `config/propfirms/catalogo_lucid_50k.json` trae Flex y Pro, con `verified: false`.
 - Los **umbrales** del §3 (propuestos por el agente).
 - Si hay límites por instrumento (micros o minis) y por cuenta para el sizing.
 Este documento, `mandate.json` y `mandate.py` están en el manifiesto de **archivos protegidos**: el agente no puede cambiar su propio objetivo; si se modifican, el ciclo se detiene hasta que un humano lo revise.

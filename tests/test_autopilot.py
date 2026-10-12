@@ -195,3 +195,22 @@ def test_fetch_failure_does_not_crash_the_cycle(repo, tmp_path):
         def fetch(self, handle, filename): raise FileNotFoundError("nada")
     ap = Autopilot(tmp_path / "root", Boom({}), _cfg(tmp_path), repo=repo, registry=Reg()); ap.tick([spec()])
     t = ap.tick([spec("r2", grp="Z")]); assert t["blocked"] and ap.ledger.running()                  # sigue RUNNING, se reintentará
+
+
+def test_challenge_simulator_models_consistency_lock_and_no_time_limit():
+    import numpy as np
+    from edgelab.autopilot import mandate
+    r = mandate.load()["challenge"]; assert r["max_days"] is None and r["consistency_max_best_day_share"] == 0.5 and r["lock_profit_usd"] == 2100
+    steady = mandate.pass_probability(np.full(50, 100.0), r, 100, block=1); assert steady["p_pass"] == 1.0 and steady["median_days_to_pass"] == 30      # +100 por día: 3.000 en 30 días, consistencia 1/30
+    rng = np.random.default_rng(3); weak = rng.normal(15, 130, 500)
+    base = mandate.pass_probability(weak, r, 800); strict = mandate.pass_probability(weak, dict(r, consistency_max_best_day_share=0.15), 800)
+    assert 0.0 < base["p_pass"] < 1.0 and strict["p_pass"] <= base["p_pass"] + 0.03 and strict["median_days_to_pass"] >= base["median_days_to_pass"]        # consistencia más dura: pasa menos o más tarde
+    assert mandate.pass_probability(weak, dict(r, lock_profit_usd=None), 800)["p_pass"] <= base["p_pass"] + 0.03                                          # sin bloqueo del piso no mejora
+    assert mandate.pass_probability(np.full(50, -10.0), r, 50)["p_fail_dd"] == 1.0                                                                        # solo pérdidas: rompe el piso
+
+
+def test_lucid_catalog_loads_and_is_marked_unverified():
+    from edgelab.propfirm.rules import load_catalog
+    c = {x.plan: x for x in load_catalog(REPO / "config/propfirms/catalogo_lucid_50k.json")}
+    f = c["LucidFlex_50K"]; assert (f.profit_target, f.max_loss, f.consistency_cap, f.lock_at_profit) == (3000, 2000, 0.5, 2100) and not f.verified and f.flat_by.startswith("16:45")
+    assert c["LucidPro_50K"].daily_loss_limit == 1200 and c["LucidPro_50K"].funded_consistency_cap == 0.4

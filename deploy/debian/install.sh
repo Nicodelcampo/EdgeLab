@@ -26,6 +26,7 @@ sudo -u edgelab $H/venv/bin/pip install -q numpy pandas pyarrow scipy jsonschema
 [ -f /etc/edgelab/autopilot.env ] || install -o edgelab -g edgelab -m 0600 /dev/null /etc/edgelab/autopilot.env
 # 5) systemd
 cp $H/EdgeLab/deploy/debian/edgelab-autopilot{,-generate}.{service,timer} /etc/systemd/system/ 2>/dev/null || true
+cp $H/EdgeLab/deploy/debian/edgelab-propfirm-refresh.service $H/EdgeLab/deploy/debian/edgelab-propfirm-refresh.timer /etc/systemd/system/
 cp $H/EdgeLab/deploy/debian/edgelab-autopilot.service $H/EdgeLab/deploy/debian/edgelab-autopilot.timer $H/EdgeLab/deploy/debian/edgelab-autopilot-generate.service $H/EdgeLab/deploy/debian/edgelab-autopilot-generate.timer /etc/systemd/system/
 systemctl daemon-reload
 echo "Instalado. Siguiente: LEEME.md (credencial de Kaggle, deploy key, doctor, primer ciclo en modo propose)."

@@ -1,21 +1,54 @@
 {
  "schema": "edgelab_mandate_v1",
- "status": "BORRADOR_A_CONFIRMAR_POR_NICO",
+ "status": "BORRADOR_REGLAS_LUCID_EXTRAIDAS_POR_EL_AGENTE_A_CONFIRMAR_POR_NICO",
  "objective": "Encontrar estrategias intradía de futuros que sirvan para superar challenges de cuentas fondeadas y operarlas, combinando VARIAS estrategias poco correlacionadas. Un efecto estadísticamente significativo pero pequeño, inestable o sin margen para diversificar NO cumple el objetivo.",
  "challenge": {
-  "note": "VALORES DE EJEMPLO para poder simular. Nico debe fijar las reglas reales de la firma (objetivo de ganancia, drawdown, límite diario, días mínimos, regla de consistencia) antes de usar `pass_probability` para decidir.",
-  "account_usd": 50000, "profit_target_usd": 3000, "max_trailing_drawdown_usd": 2000, "daily_loss_limit_usd": null, "min_trading_days": 5, "max_days": 30, "consistency_max_best_day_share": null
+  "note": "Reglas de LucidFlex 50K extraídas por el agente del centro de ayuda de Lucid (crawl 2026-10-13; páginas actualizadas jul-ago 2026), NO verificadas por una persona. Nico debe confirmar qué producto usa (Flex, Pro, Daily, Black, Direct) y el precio. Catálogo completo: config/propfirms/catalogo_lucid_50k.json; inventario: artifacts/propfirm/crawl/Lucid/.",
+  "firm": "Lucid",
+  "product": "LucidFlex",
+  "account_usd": 50000,
+  "profit_target_usd": 3000,
+  "max_trailing_drawdown_usd": 2000,
+  "drawdown_kind": "eod_trailing",
+  "lock_profit_usd": 2100,
+  "locked_floor_profit_usd": 100,
+  "daily_loss_limit_usd": null,
+  "min_trading_days": 2,
+  "max_days": null,
+  "sim_day_cap": 600,
+  "consistency_max_best_day_share": 0.5,
+  "max_contracts_mini": 4,
+  "max_contracts_micro": 40,
+  "flat_by_ct": "15:45",
+  "max_eval_accounts": 10,
+  "max_funded_accounts": 5,
+  "funded": {
+   "consistency": null,
+   "split": 0.9,
+   "payout_min_profit_days": 5,
+   "payout_min_day_profit_usd": 150,
+   "payout_min_usd": 500,
+   "payout_max_usd": 2000,
+   "payouts_before_live": 5
+  },
+  "constraints": [
+   "Posiciones cerradas antes de las 16:45 ET (15:45 CT): estrategias estrictamente intradía.",
+   "Prohibido el HFT y el microscalping (se marca si > 50 % de las ganancias vienen de operaciones de ≤ 5 s): duración mínima razonable por operación.",
+   "Prohibida la cobertura (posiciones opuestas) entre cuentas del mismo usuario, de otros usuarios o de otras firmas: dos estrategias en cuentas distintas NO pueden estar en lados opuestos del mismo instrumento al mismo tiempo.",
+   "La consistencia de la evaluación (mayor día ≤ 50 % del beneficio total) castiga los edges que ganan en pocos días grandes.",
+   "Sin límite de tiempo en la evaluación: lo que decide es P(llegar al objetivo antes del piso), no el tiempo."
+  ]
  },
  "thresholds": {
   "note": "Propuestas del agente, a confirmar. Se evalúan con P&L NETO de costos (comisión, spread, 1 tick de deslizamiento por lado).",
   "cost_stress_multiplier": 1.5,
   "min_trades_per_month": 10,
-  "min_fraction_positive_quarters": 0.70,
+  "min_fraction_positive_quarters": 0.7,
   "min_quarters_observed": 4,
-  "max_share_of_pnl_top5_days": 0.50,
-  "max_abs_corr_with_portfolio": 0.30,
+  "max_share_of_pnl_top5_days": 0.5,
+  "max_abs_corr_with_portfolio": 0.3,
   "min_pass_probability_single": 0.15,
-  "min_pass_probability_portfolio": 0.50,
+  "min_pass_probability_portfolio": 0.5,
   "max_drawdown_to_target_ratio": 1.0,
   "target_independent_strategies": 3
  },
@@ -25,5 +58,9 @@
   "C": "Información: efecto real o posible, sin forma operable todavía (o inestable/pequeño). Sirve como ingrediente o filtro; no se promueve sola.",
   "D": "Descartada o artefacto."
  },
- "utility_weight": {"tradeable": 1.0, "bridgeable": 0.6, "info": 0.3}
+ "utility_weight": {
+  "tradeable": 1.0,
+  "bridgeable": 0.6,
+  "info": 0.3
+ }
 }
