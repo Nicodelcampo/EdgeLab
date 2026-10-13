@@ -250,3 +250,9 @@ def test_scan_hit_requires_replication():
     res = {"results_flat": [{"test": "scan/A/max_disc", "p": 0.0005, "evaluable": True}, {"test": "scan/A/rep/c1", "p": 0.6, "evaluable": True}, {"test": "scan/A/rep/c2", "p": 0.4, "evaluable": True}]}
     d = analyze.decide(res, 0.02, 3); assert d["hit"] is False and d["rejections"] == 0 and d["discovery_only_passes"] == ["scan/A/max_disc"]
     ok = {"results_flat": res["results_flat"][:1] + [{"test": "scan/A/rep/c1", "p": 0.0001, "evaluable": True}]}; assert analyze.decide(ok, 0.02, 3)["hit"] is True
+
+
+def test_pnl1_candidate_needs_futures_for_rules():
+    from edgelab.autopilot.generate import generate, to_runspec
+    c = next(x for x in generate([]) if x.cid == "PNL-1"); rs = to_runspec(c)
+    assert {n.split(":")[0] for n in rs["needs"]} == {"GC", "ES"} and rs["n_trials"] == 5 and rs["n_tests_holm"] == 2 and rs["origin"]["PNL_EVAL_1"]["tests"] == ["pnl/"]

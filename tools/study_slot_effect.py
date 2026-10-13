@@ -7,6 +7,9 @@ r"""Estudio paramétrico de efectos por franja horaria (CT) con nulo de signos y
   slot_scan  barrido de franjas por familia (descubrimiento → réplica): celdas = franja de 30 min (07:00-14:30 CT) × horizonte h ∈ {15,30,60} × predictor ∈ {retorno de los h min previos, «resto del día» desde el cierre previo 15:00 CT};
              estadístico corr(predictor, retorno de los h min siguientes), BILATERAL (momentum +, reversión −). Descubrimiento: nulo de MÁXIMO por permutación conjunta de sesiones (misma permutación en todas las celdas); réplica: las 3 mejores celdas del
              descubrimiento, con el signo fijado, unilateral, nulo de signo. El descubrimiento usa `disc` (spot largo o 60 % inicial de los futuros) y la réplica `rep` (futuros 2025-26 o 40 % final).
+  strategy_pnl  evalúa REGLAS OPERABLES fijas (entrada y salida por reloj, 1 operación/día, dirección = signo del predictor) con P&L NETO de costos en USD por contrato, por muestra (descubrimiento / fuera de muestra / descriptivas):
+             media neta por operación, desvío, aciertos, P&L por trimestre, parte de los 5 mejores días, resistencia a costos × 1,5, frecuencia, drawdown; prueba confirmatoria SOLO en la muestra fuera de muestra (nulo de dirección aleatoria por operación,
+             unilateral; p = 1 si la media neta ≤ 0). Guarda el P&L diario para simular challenges (control sin ventaja incluido) fuera del kernel.
   slot_corr  corr(r previo, r siguiente) de `horizon_min` minutos en cada franja de `slots`; unilateral negativa (reversión).
 Fuentes: futuros por load_m1 (2025-07-01→2026-09-30) o spot Dukascopy (spot_ranges). Precio = apertura del minuto indicado. Sin holdout.
 """
@@ -46,7 +49,7 @@ BLOCK = 20
 
 def load_source(name):
     if SYNTH:
-        return synth_jump(CFG.get("synth_jump_effect", 0.0)) if CFG.get("mode") in ("idm_jump", "slot_scan") else synth(CFG.get("synth_gamma_effect", 0.0))
+        return synth_jump(CFG.get("synth_jump_effect", 0.0)) if CFG.get("mode") in ("idm_jump", "slot_scan", "strategy_pnl") else synth(CFG.get("synth_gamma_effect", 0.0))
     if name in CFG.get("spot_ranges", {}):
         inst, a, b = CFG["spot_ranges"][name]
         t = ed.load_spot(inst, a, b, "m1"); mid = ((t.bid_open + t.ask_open) / 2).to_numpy()
@@ -227,6 +230,55 @@ def mode_slot_scan(rng):
     return out, ps, rows
 
 
+COSTS = {"GC": dict(mult=100.0, cost_rt=24.8), "ES": dict(mult=50.0, cost_rt=30.0), "NQ": dict(mult=20.0, cost_rt=32.0), "YM": dict(mult=5.0, cost_rt=24.0)}     # USD por punto de precio y costo de ida y vuelta por contrato (supuestos de edgelab.autopilot.universe)
+
+
+def rule_trades(df, rule, inst):
+    """Operaciones diarias de una regla: entrada y salida a la apertura del minuto indicado. pred = 'prev_h' (retorno de h min antes de la entrada) o 'rod' (desde el cierre previo 15:00 CT)."""
+    em = int(rule["entry"][:2]) * 60 + int(rule["entry"][3:]); xm = em + int(rule["hold_min"]); lab = lambda m: f"{m // 60:02d}:{m % 60:02d}"
+    times = {rule["entry"], lab(xm), "15:00"}
+    if rule["pred"].startswith("prev_"): times.add(lab(em - int(rule["pred"][5:])))
+    t = sessions_table(df, sorted(times)).ffill(axis=1); prev15 = t["15:00"].shift(1)
+    pred = np.log(t[rule["entry"]] / (prev15 if rule["pred"] == "rod" else t[lab(em - int(rule["pred"][5:]))]))
+    ok = pred.notna() & t[lab(xm)].notna() & t[rule["entry"]].notna(); t, pred = t[ok], pred[ok]; a = np.abs(pred.to_numpy())
+    keep = np.ones(len(a), bool)
+    if rule.get("filter") == "bigmove_q67":                                     # |pred| ≥ cuantil 2/3 expansivo de las sesiones previas (causal, mínimo 60)
+        keep = np.array([len(a[:i]) >= 60 and a[i] >= np.quantile(a[:i], 2 / 3) for i in range(len(a))])
+    sgn = np.sign(pred.to_numpy()) * (1.0 if rule["dir"] == "momentum" else -1.0); mult = COSTS[inst]["mult"]
+    gross = sgn * (t[lab(xm)].to_numpy() - t[rule["entry"]].to_numpy()) * mult
+    return pd.DataFrame(dict(date=t.index[keep], sign=sgn[keep], gross=gross[keep], entry=t[rule["entry"]].to_numpy()[keep]))
+
+
+def trade_metrics(tr, inst, stress=1.5):
+    cost = COSTS[inst]["cost_rt"]; net = tr.gross.to_numpy() - cost; q = pd.PeriodIndex(pd.to_datetime(tr.date), freq="Q").astype(str).to_numpy(); n = len(net)
+    qp = {k: float(net[q == k].sum()) for k in sorted(set(q))}; best5 = float(np.sort(net)[::-1][:5].sum() / net.sum()) if net.sum() > 0 else None
+    cum = np.cumsum(net); dd = float((np.maximum.accumulate(cum) - cum).max()) if n else 0.0; months = max(1.0, (pd.to_datetime(tr.date.iloc[-1]) - pd.to_datetime(tr.date.iloc[0])).days / 30.4) if n else 1.0
+    return dict(n=int(n), mean_net_usd=float(net.mean()) if n else None, sd_usd=float(net.std()) if n else None, hit_rate=float((net > 0).mean()) if n else None, mean_gross_usd=float(tr.gross.mean()) if n else None,
+                total_net_usd=float(net.sum()), total_net_cost_x1_5_usd=float((tr.gross - cost * stress).sum()) if n else None, quarterly_net_usd=qp, frac_positive_quarters=float(np.mean([v > 0 for v in qp.values()])) if qp else None,
+                best5_days_share_of_pnl=best5, max_drawdown_usd=dd, trades_per_month=float(n / months), first=str(tr.date.iloc[0]) if n else None, last=str(tr.date.iloc[-1]) if n else None)
+
+
+def mode_strategy_pnl(rng):
+    out, ps, rows, desc = [], [], [], []; B = int(os.environ.get("STUDY_NPERM", CFG.get("nperm", 20000))); daily = {}
+    for rule in CFG["rules"]:
+        inst = rule["inst"]
+        for role in ("discovery", "oos", "descriptive"):
+            for src in rule.get(role, []):
+                tr = rule_trades(load_source(src), rule, inst)
+                if len(tr) < 60: out.append(dict(test=f"pnl/{rule['name']}/{role}/{src}", evaluable=False, n=int(len(tr)))); continue
+                m = trade_metrics(tr, inst)
+                daily[f"{rule['name']}|{role}|{src}"] = dict(date=list(tr.date), gross=[float(x) for x in tr.gross], sign=[float(x) for x in tr.sign])
+                r = dict(test=f"pnl/{rule['name']}/{role}/{src}", rule=rule["name"], role=role, source=src, **m, evaluable=role == "oos")
+                if role == "oos":                                                  # confirmatoria: media neta > 0 y mayor que la del control de dirección aleatoria
+                    g = tr.gross.to_numpy(); cost = COSTS[inst]["cost_rt"]; obs = float((g - cost).mean()); nul = np.empty(B)
+                    for i in range(B): nul[i] = float((g * rng.choice([-1.0, 1.0], len(g)) - cost).mean())
+                    praw = float((1 + np.sum(nul >= obs)) / (1 + B)); r.update(p_placebo_raw=praw, null_mean_net_usd=float(nul.mean()), null_sd=float(nul.std()), p=praw if obs > 0 else 1.0)
+                    ps.append(r["p"]); rows.append(r)
+                out.append(r); print({k: (round(v, 3) if isinstance(v, float) else v) for k, v in r.items() if k in ("test", "n", "mean_net_usd", "hit_rate", "p", "frac_positive_quarters", "best5_days_share_of_pnl")}, flush=True)
+    CFG["_descriptive"] = dict(daily=daily)
+    return out, ps, rows
+
+
 def block_perm(v, rng):
     blocks = [v[i:i + BLOCK] for i in range(0, len(v), BLOCK)]; return np.concatenate([blocks[i] for i in rng.permutation(len(blocks))])
 
@@ -270,7 +322,7 @@ def mode_slot_corr(rng):
 
 def main():
     t0 = time.time(); rng = np.random.default_rng(SEED); mode = CFG["mode"]
-    out, ps, rows = {"idm": mode_idm, "idm_jump": mode_idm_jump, "slot_corr": mode_slot_corr, "slot_scan": mode_slot_scan}[mode](rng)
+    out, ps, rows = {"idm": mode_idm, "idm_jump": mode_idm_jump, "slot_corr": mode_slot_corr, "slot_scan": mode_slot_scan, "strategy_pnl": mode_strategy_pnl}[mode](rng)
     m = int(CFG.get("n_planned", len(ps)))
     for r, h in zip(rows, holm(np.array(ps)) if ps else []): r["p_holm_%d" % m] = float(min(1.0, h * 1.0))
     # Holm con m planeado (≥ evaluables): reajusta usando m en el denominador

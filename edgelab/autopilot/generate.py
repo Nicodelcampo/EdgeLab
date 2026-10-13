@@ -113,6 +113,19 @@ def rules(ev: dict, lits: dict) -> list:
             out.append(Candidate("WAIT-GC_LH_MOMENTUM", "Confirmación prospectiva de GC (último 30 min) con datos posteriores al 2026-09-30", "R6_NEW_LEAD_NEEDS_UNSEEN_DATA", "NO_PRIOR_EVIDENCE", ["GC_LH_MOMENTUM"], template=None, n_trials=1, power=0.5,
                                  est_seconds=600, group="BLOCKED", family="WAIT", owner="human-decision",
                                  why="La única muestra realmente independiente en el tiempo es posterior a 2026-09-30 (holdout cerrado). Requiere una decisión humana: pre-registro específico y apertura controlada, o esperar a que haya sesiones nuevas fuera del holdout formal."))
+    e = E.get("PNL_EVAL_1")
+    if e and "pnl_1" in e["unused_samples"]:       # R10: pistas en reserva → reglas operables con P&L neto (mandato: lo que importa es el neto, estable y combinable)
+        out.append(Candidate("PNL-1", "P&L neto de reglas operables de las pistas en reserva: GC último 30 min (2 variantes) y celdas de SCAN-1 en GC y ES", "R10_RESERVE_LEADS_TO_NET_PNL", "NEW_MECHANISM", ["GC_LH_MOMENTUM", "UNIVERSE_SCAN_1", "PNL_EVAL_1"],
+                             pro=lit("GC_LH_MOMENTUM", ("pro",)), contra=lit("GC_LH_MOMENTUM", ("contra",)), template="strategy_pnl",
+                             cfg=dict(mode="strategy_pnl", nperm=20000, seed=20261017, n_planned=2,
+                                      spot_ranges={"GC_spot_old": ["GC", "2022-07-01", "2025-06-30"], "GC_spot_new": ["GC", "2025-07-01", "2026-09-30"], "ES_spot": ["ES", "2018-01-01", "2025-06-30"]},
+                                      rules=[dict(name="GC_ROD_LH_ALL", inst="GC", entry="14:30", hold_min=30, pred="rod", dir="momentum", filter="none", discovery=["GC"], oos=["GC_spot_old"], descriptive=["GC_spot_new"]),
+                                             dict(name="GC_ROD_LH_BIG", inst="GC", entry="14:30", hold_min=30, pred="rod", dir="momentum", filter="bigmove_q67", discovery=["GC"], oos=["GC_spot_old"], descriptive=["GC_spot_new"]),
+                                             dict(name="GC_PREV15_1330_MOM", inst="GC", entry="13:30", hold_min=15, pred="prev_15", dir="momentum", filter="none", discovery=["GC_spot_old"], descriptive=["GC", "GC_spot_new"]),
+                                             dict(name="ES_PREV60_0730_REV", inst="ES", entry="07:30", hold_min=60, pred="prev_60", dir="reversion", filter="none", discovery=["ES_spot"], descriptive=["ES"]),
+                                             dict(name="ES_PREV30_1230_MOM", inst="ES", entry="12:30", hold_min=30, pred="prev_30", dir="momentum", filter="none", discovery=["ES_spot"], descriptive=["ES"])]),
+                             n_trials=5, power=0.3, est_seconds=900, group="GC_ES", family="PNL_EVAL", utility_class="tradeable", consumes={"PNL_EVAL_1": "pnl_1"}, lead_tests={"PNL_EVAL_1": ["pnl/"]},
+                             why="Convierte las pistas en reserva en reglas operables y mide el P&L neto de costos por muestra, estabilidad (trimestres, 5 mejores días), resistencia a costos × 1,5 y frecuencia; la prueba confirmatoria es solo la de GC último 30 min (2 variantes) en el spot 2022-25, que no se usó para esta prueba. Las celdas de SCAN-1 se reportan de forma descriptiva (su muestra ya se consumió en la réplica)."))
     e = E.get("UNIVERSE_SCAN_1")
     uni = REPO / "docs/research/propfirm_thresholds/UNIVERSO.json"
     if e and "scan_1" in e["unused_samples"] and uni.exists():       # R9: barrido en los instrumentos de menor umbral de cuenta (UNIVERSO.json), con réplica en otra muestra
@@ -157,10 +170,19 @@ MODE_DEFS = {
 - Muestras: ES: descubrimiento en spot ES 2018-01-01 → 2025-06-30 y réplica en el futuro ES 2025-07 → 2026-09; GC: spot 2022-07-01 → 2025-06-30 y futuro 2025-07 → 2026-09; NQ, YM, 6E: futuros 2025-07 → 2026-09 con el primer 60 % de las sesiones para descubrir y el 40 % final para replicar. Semilla 20261016.
 - Pruebas reportadas para Holm: 4 por instrumento (1 máximo + 3 réplicas) = 20; el contador global recibe 495 (480 celdas + 15 réplicas).
 - Descriptivo (no es prueba): top-10 de celdas del descubrimiento con su correlación en la réplica.''',
+ "strategy_pnl": '''Definiciones congeladas (script `tools/study_slot_effect.py`, modo `strategy_pnl`):
+- Una operación por día y regla: entrada a la apertura del minuto `entry` (CT) y salida a la apertura `entry + hold_min`; dirección = signo del predictor × (+1 momentum, −1 reversión). Predictor: `prev_h` = log(P_entrada / P_{entrada−h min}); `rod` = log(P_entrada / P cierre previo 15:00 CT). Filtro `bigmove_q67`: solo si |predictor| ≥ cuantil 2/3 expansivo de las sesiones previas (causal, mínimo 60).
+- P&L en USD por contrato = signo × (P_salida − P_entrada) × multiplicador (GC 100 oz, ES 50 USD/pt) − costo de ida y vuelta (GC 24,80; ES 30,00; supuestos de `edgelab/autopilot/universe.py`). Precio spot = punto medio bid/ask de la apertura del minuto.
+- Reglas, muestras y roles (cfg abajo): `discovery` = muestra donde se halló la pista (descriptiva); `oos` = muestra confirmatoria; `descriptive` = otras fuentes.
+- Prueba confirmatoria (solo `oos`): estadístico = media neta por operación; nulo = dirección aleatoria independiente por operación (20.000 sorteos); p unilateral; **p = 1 si la media neta ≤ 0**. Holm sobre 2 pruebas (GC_ROD_LH_ALL y GC_ROD_LH_BIG en el spot 2022-07 → 2025-06). Semilla 20261017.
+- Descriptivo (no es prueba): media neta, desvío, aciertos, P&L por trimestre, parte de los 5 mejores días, P&L total con costos × 1,5, drawdown, operaciones por mes, y el P&L diario (para simular challenges y el control sin ventaja fuera del kernel).''',
  "idm": "Ver docstring del script (modo `idm`): corr(resto del día, última media hora), unilateral positiva; diferencia por gamma bajo con permutación por bloques de 20.",
  "slot_corr": "Ver docstring del script (modo `slot_corr`): corr(retorno previo, siguiente) de `horizon_min` minutos en cada franja; unilateral negativa.",
 }
 TRANSPARENCY = {
+ "PNL-1": '''## Transparencia sobre lo ya mirado (antes de este pre-registro)
+- `GC_ROD_LH_ALL` y `GC_ROD_LH_BIG`: la pista nació en el futuro de GC 2025-26 (`discovery`). En el spot 2022-2025 (`oos`) ya se miró antes la correlación del tercil de |ROD| alto (+0,026) y el P&L bruto medio de seguir el signo (+0,66 pb, por debajo del costo): se espera que no pasen; la prueba sirve para cerrar la pista en su forma operable.
+- Celdas de SCAN-1 (`GC_PREV15_1330_MOM`, `ES_PREV60_0730_REV`, `ES_PREV30_1230_MOM`): su muestra de réplica (futuros 2025-26) ya se consumió en SCAN-1 sin éxito: aquí son DESCRIPTIVAS, no confirmatorias.''',
  "IDM-2": '''## Transparencia sobre lo ya mirado (antes de este pre-registro)
 - En GC 2025-26 (futuro y spot, misma muestra que originó la pista) se miraron: correlación por trimestre, sin 2026Q1, sin los 10 días más influyentes, terciles de |ROD|, economía bruta de seguir el signo. Son descriptivos y no cuentan como pruebas.
 - En el spot 2022-2025 se miró **una** cosa antes de pre-registrar: el tercil de |ROD| alto (causal expansivo) dio corr +0,026 (n = 309). Por eso esa versión del refinamiento no se pre-registra ni se usa; la descomposición en saltos NO se calculó en ese tramo.
@@ -204,7 +226,7 @@ Nulo de signo aleatorio / permutación por bloques según el modo; Holm sobre {c
 def to_runspec(c: Candidate) -> dict | None:
     if not c.template: return None
     return dict(run_id=c.cid.lower(), kind="study", family=c.family, group=c.group, script="tools/study_slot_effect.py", prereg=f"docs/research/autopilot/drafts/{c.cid}.md", n_trials=c.n_trials, n_tests_holm=c.cfg.get("n_planned"),
-                needs=[f"{s}:2025-07-01:2026-09-30" for s in (c.cfg.get("sources") or sorted({x[k] for x in c.cfg.get("scans", []) for k in ("disc", "rep")})) + c.cfg.get("reference_sources", []) if s not in c.cfg.get("spot_ranges", {})], extra_datasets=[
+                needs=[f"{s}:2025-07-01:2026-09-30" for s in (c.cfg.get("sources") or sorted({x[k] for x in c.cfg.get("scans", []) for k in ("disc", "rep")} | {n for r in c.cfg.get("rules", []) for k in ("discovery", "oos", "descriptive") for n in r.get(k, [])})) + c.cfg.get("reference_sources", []) if s not in c.cfg.get("spot_ranges", {})], extra_datasets=[
                     "nicolasbuttaro/edgelab-dukascopy-es-usa500"] + (["nicolasbuttaro/edgelab-dukascopy-xauusd-ticks-m1"] if any(k.startswith("GC_spot") for k in c.cfg.get("spot_ranges", {})) else []),
                 internet=c.internet, env={"STUDY_CFG": json.dumps(c.cfg, sort_keys=True)}, est_seconds=c.est_seconds, decision_rule="holm", notes=c.title, origin={k: dict(sample=v, tests=c.lead_tests.get(k)) for k, v in c.consumes.items()})
 
