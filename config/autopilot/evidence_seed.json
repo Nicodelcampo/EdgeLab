@@ -286,6 +286,22 @@
     "nt8/aVolClusterPOI_violet_v05.cs",
     "docs/parity/PARIDAD_AVOLZONEPOI2_MNQ1226_25T_20261008.md"
    ]
+  },
+  {
+   "id": "MNQ_PHENOMENA_CONT_V4",
+   "indicator": "continuous_microstructure_components_vs_AE_labels",
+   "asset": "MNQ",
+   "status": "LEAD_INFO",
+   "tier": "C",
+   "tier_reason": "hallazgo externo (otro agente, Research Ops PR117, commit 8a5ce17); desarrollo, 10 sesiones, anclas solapadas, sin P&L ni holdout; verificado contra sus agregados, no recontado",
+   "note": "Predicción de primer pasaje del punto medio a 60 s (Brier de 3 clases): componentes continuos de presión/actividad/progreso/contexto 0,6015 vs frecuencias históricas 0,6476 (−7,12 %, mejor en 10/10 sesiones). Las etiquetas A/E deterministas no agregan (A+E +0,00011 peor; E sola −0,00002, 5/10 sesiones). Orientación: usar variables continuas, no multiplicar configuraciones A/E. No es rentabilidad: sin spread, costos ni latencia; la señal fina de microestructura suele disolverse con costos (VIO-1, OU-2).",
+   "unused_samples": [
+    "new_data_after_holdout"
+   ],
+   "sources": [
+    "docs/research/ops/MNQ_PHENOMENA_MODEL_V4_CLOSEOUT.md@origin/feat/research-ops-supervisor-mvp:8a5ce17",
+    "docs/research/ops/MNQ_PHENOMENA_MODEL_V4_ANALYSIS.json"
+   ]
   }
  ]
 }
