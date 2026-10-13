@@ -6,7 +6,7 @@ from .package_phenomena_atlas import ATLAS_BOOT,FILES as ATLAS_FILES
 from .source_footer import validate_pin
 from .build_target_free_pilot import digest
 from .phenomena_model_pilot import validate_plan,CAL_PATH
-PLAN='docs/research/ops/MNQ_PHENOMENA_MODEL_PLAN.json'
+PLAN='docs/research/ops/MNQ_PHENOMENA_MODEL_AVAILABLE_PLAN.json'
 FILES=ATLAS_FILES+['tools/research_ops/confluence/'+n+'.py' for n in ('phenomena_states','phenomena_response','phenomena_science_pilot','phenomena_models','phenomena_model_pilot','source_footer')]+[PLAN,CAL_PATH]
 BOOT=ATLAS_BOOT.replace('edgelab-atlas-private-','edgelab-model-private-').replace('/phenomena-atlas','/phenomena-model-pilot').replace('phenomena_atlas_boot_v1','phenomena_model_boot_v1').replace('confluence.phenomena_atlas','confluence.phenomena_model_pilot').replace('atlas-receipt.json','model-receipt.json').replace('atlas_receipt_sha256','model_receipt_sha256').replace('ATLAS_MEASUREMENT_COMPLETE_NOT_EDGE','DEVELOPMENT_MODEL_COMPLETE_NOT_EDGE').replace('ATLAS_FAILED_NO_EDGE_CLAIM','MODEL_FAILED_NO_EDGE_CLAIM').replace('RUNNING_MEASUREMENT_ONLY','RUNNING_FIXED_REPRESENTATION_BENCHMARK').replace("'outcomes_computed':False","'outcomes_requested':True,'outcomes_computed':False")
 BOOT=BOOT.replace("if rc==0 and stop is None:state['model_receipt_sha256']=hashlib.sha256((out/'model-receipt.json').read_bytes()).hexdigest()", "if rc==0 and stop is None:state['model_receipt_sha256']=hashlib.sha256((out/'model-receipt.json').read_bytes()).hexdigest();state['outcomes_computed']=True")

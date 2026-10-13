@@ -105,6 +105,20 @@ class ModelTests(unittest.TestCase):
    (root/'tools/research_ops/confluence/source_footer.py').unlink()
    broken=subprocess.run([sys.executable,'-m','tools.research_ops.confluence.phenomena_model_pilot','--help'],cwd=root,env=env,text=True,capture_output=True,timeout=30)
    self.assertNotEqual(broken.returncode,0);self.assertIn("No module named 'tools.research_ops.confluence.source_footer'",broken.stderr)
+ def test_source_empty_eval_reported_without_replacement(self):
+  p=plan();seen=[]
+  def source(src,r,p):
+   seen.append(r['trade_date'])
+   if r['trade_date']=='2026-06-18':return
+   a=tape(2200);a[0]=r['start_ns']+np.arange(2200,dtype=np.int64)*500000000
+   yield SimpleNamespace(ticks=SimpleNamespace(**dict(zip(('ts_ns','sequence','price_ticks','volume','bid_ticks','ask_ticks'),a))))
+  with patch.dict('os.environ',{'KAGGLE_KERNEL_RUN_TYPE':'SYNTHETIC'}),patch.object(P,'one_session',source):result=P.run('synthetic',p,'/tmp/private',frozen())
+  self.assertEqual(result['available_evaluation_session_count'],11);self.assertEqual(len(result['unavailable_evaluation_sessions']),1);self.assertEqual(seen,list(M.TRAIN+M.EVAL));self.assertFalse(result['original_strict12_protocol_succeeded']);self.assertFalse(result['unavailable_evaluation_sessions'][0]['response_read'])
+ def test_empty_reader_and_mismatched_session_guard(self):
+  p=plan();r=p['session_ranges'][2]
+  with patch.object(P,'iter_sessions',return_value=iter(())):self.assertEqual(list(P.one_session('synthetic',r,p)),[])
+  with patch.object(P,'iter_sessions',return_value=iter([SimpleNamespace(session_id=0)])):
+   with self.assertRaises(ValueError):list(P.one_session('synthetic',r,p))
  def test_failure_receipt_closed_static_no_private_text(self):
   x=P.failure_receipt(ValueError('finite nonnegative feature'),{'stage':'MEASURE_CLASSIFY_AND_LABEL','trade_date':M.TRAIN[0]})
   self.assertTrue(x['guard_code'].startswith('GUARD_'));self.assertEqual(x['trade_date'],M.TRAIN[0]);self.assertFalse(x['partial_success'])
