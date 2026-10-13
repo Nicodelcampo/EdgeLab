@@ -42,7 +42,7 @@ def one_session(source,r,p):
         if found!=1 or actual!=r['trade_date']:raise ValueError('exact selected session only')
         yield st
 
-def session_data(st,date,plan,cal,started):
+def session_data(st,date,plan,cal,started,*,feature_callback=None):
     t=st.ticks;m=ClockMeasurements(max_ticks=plan['max_session_ticks'],max_anchors=plan['max_anchors'],wall_seconds=plan['wall_seconds'])
     response=SecondsResponse(t.ts_ns,t.sequence,t.bid_ticks,t.ask_ticks,max_ticks=plan['max_session_ticks'],max_anchors=plan['max_anchors'],max_scan_elements=plan['max_scan_elements_per_session'],wall_seconds=plan['wall_seconds'])
     rows=m.measure(t.ts_ns,t.sequence,t.price_ticks,t.volume,t.bid_ticks,t.ask_ticks,trade_date=date)
@@ -60,6 +60,7 @@ def session_data(st,date,plan,cal,started):
         add(labels,lab['status'])
         if not lab['usable']:add(reasons,lab['status']);continue
         if lab['status'] not in USABLE:raise ValueError('fixed usable response labels')
+        if feature_callback is not None:feature_callback(row,i,d)
         xs.append(x);ccs.append(cc);aes.append([int(s in ('A_ONLY','BOTH')),int(s in ('E_ONLY','BOTH'))]);ys.append(USABLE.index(lab['status']));keys.append(phase_key(row));states.append(s)
     n=len(ys)
     if anchors!=sum(census.values()) or anchors!=sum(reasons.values())+n:raise ValueError('population reconciliation')

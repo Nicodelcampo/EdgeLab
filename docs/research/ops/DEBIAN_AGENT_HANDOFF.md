@@ -1,3 +1,9 @@
+# Complemento actual: runner de contexto de zonas preparado, sin despliegue
+
+Leer `MNQ_ZONE_CONTEXT_DESIGN.md`, PLAN/IMPLEMENTATION_RECEIPT. Piloto manual finito de desarrollo, no segundo daemon ni autorización para producir jobs autónomos. Reutiliza baseline/labels v4 y preserve nativehist; cambia experimento/paquete →nuevo single-attempt journal ligado al cierre anterior, nunca reset/retry ambiguo. Receipts no son writer canónico ni cuota global. Contexto reconocido por sesión, carry excluido de exposición primaria pero NO borrado del detector; UNKNOWN/cero reconocimientos no ausencia física. Antes de operar: recuperar latestremote y journals exactos, no snapshots históricos. No mergear/deploy/holdout/P&L ni promover ganador por Brier.
+
+---
+
 # Complemento actual: cierre v4 COMPLETE y resultados agregados revisados
 
 Leer `MNQ_PHENOMENA_MODEL_V4_CLOSEOUT.md` y la enmiendaAVAILABILITY. Benchmark manual finito cerrado id138420049/v4:10/12fechas originales, dos vacías reportadas/no reemplazo. Continuousbaseline mejor10/10 vsprior; AE sin mejora media. Ningún edge/gate/agent promotion autorizado. El controlador debe distinguir protocolo estricto y estimando disponible explícito, verificardatecensus yguardarEMPTY sin reemplazar/label0 ni soltar guardas de calidad/soporte. Proposal outcomes_inspected=true no es entradaoperationalblindfalse ni writer canónico autenticado. No segundo daemon/retry/merge/deploy. V3ERROR/v4COMPLETE terminales en batch2intents; snapshot no atestación global.
