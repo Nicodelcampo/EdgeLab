@@ -1,6 +1,6 @@
-# Entrada actual: benchmark v1 ERROR; defecto de paquete corregido, sin retry
+# Entrada actual: benchmark v2 ERROR en runtime; causa ValueError no identificada
 
-Leer `MNQ_PHENOMENA_MODEL_V1_CLOSEOUT.md`, terminal diagnosis, boot y watch/dispatch terminales. Kernel138420049/v1 sourcee6eff31 cerradoERROR, dos consultas; sin outcomes. Pin descargado correcto, hijo exit1 temprano. Paquete exacto aislado reproduce dependencia`source_footer.py`faltante; corregida y nueva prueba positiva/negativa fuera del repo. No traceback remoto leído. Protocolo científico/calibración/modelos intactos. No nuevo intento enviado; autorización explícita antes de nuevo batch, no reset ni relanzar v1. Código/protocolo de benchmark12 sesiones sigue siguiente hito, aún sin resultados nuevos. Estado RUNNING debajo es histórico, superado.
+Leer `MNQ_PHENOMENA_MODEL_V2_CLOSEOUT.md`, diagnosis, boot/failure y watch/dispatch terminales. Usuario autorizó segundo intento corregido, id138420049/v2 sourceeb3aeb3..., fuente exacta/privadoCPU PASS; terminalERROR tras una consulta. Main alcanzado, ValueError sin detalle. Causa NO conocida; no atribuir al soporte/feriado/datos. Sin resultado completo; labels parciales desconocidos. Nuevo diagnóstico seguro de guardas/etapas/fecha planificada añadido, no cambio científico. No v3 enviado: requiere autorización explícita nueva, nunca reset de journals. Entrada v1 y estados debajo históricos.
 
 ---
 

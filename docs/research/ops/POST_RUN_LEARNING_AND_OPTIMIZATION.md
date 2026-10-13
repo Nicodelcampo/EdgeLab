@@ -95,3 +95,8 @@ El piloto previo no aislaba representación A/E de componentes/observabilidad: A
 ## Falla de paquete y aprendizaje operacional
 
 Benchmark138420049/v1ERROR antes de resultados: bundle omitió`source_footer.py`, dependencia nueva del runner. Compile y tests dentro de repo pasaron pero no probaron aislamiento. Reproducción exacta del bundle fuera del repo identificó import faltante; corrección con prueba startup positiva/negativa sin mercado. Un fallo de ejecución NO es resultado científico negativo, y outcomes_requested no equivale a outcomes_computed. Evitar segundo transporte76.7s por reintento ciego; congelar protocolo y conservar journals terminales. No dispatcher/daemon ni writer científico activados.
+
+
+## Benchmark v2: registrar causa segura, no interpretar silencio
+
+Tras reparar aislamiento, v2 main alcanzado pero ValueError sin guard/stage. Failure receipt con sólo tipo no permite arreglo fundado. Agregar mapa cerrado de guardas estáticas, etapas y fecha sólo del roster; nunca exception text libre ni traceback/filas. Sin aflojar calidad/censura/soporte. Pausar ante error desconocido, no gastar transportes y reruns ciegos. outcomes_computed en wrapper indica éxito COMPLETO, no conteo0de respuestas parciales. v2 no genera evidencia incremental del fenómeno ni escritura canónica.

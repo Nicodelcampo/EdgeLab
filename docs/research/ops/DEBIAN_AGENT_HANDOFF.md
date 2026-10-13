@@ -1,3 +1,9 @@
+# Complemento actual: benchmark v2 ERROR, no resultado ni despliegue
+
+Leer `MNQ_PHENOMENA_MODEL_V2_CLOSEOUT.md`. v2 id138420049 alcanzó main pero terminó ValueError desconocido; boot/failure agregados guardados y journals cerrados. Nuevo diagnóstico closedstatic guard/stage/fecha mejora observabilidad sin filas privadas ni aflojar científico. No v3 autorizado/enviado; no segunda daemon ni retry por simpleERROR. Cierres fallidos no se promueven como resultados del Brain. El flag outcomes_computed=false de boot sólo indica ausencia de recibo completo, no ausencia de labels parciales.
+
+---
+
 # Complemento: benchmark de representación A/E v1 ERROR, paquete corregido, sin deploy
 
 Leer `MNQ_PHENOMENA_MODEL_DESIGN.md` y `MNQ_PHENOMENA_MODEL_LAUNCH.json`: intento único id138420049/v1, fuente exacta verificada, terminalERROR; leer `MNQ_PHENOMENA_MODEL_V1_CLOSEOUT.md`. Sin outcomes, dependencia faltante reproducida y corregida; no retry ni nuevo intento enviado. Experimento manual finito Kaggle, no segundo daemon ni integración automática en autopilot. Fecha de ajuste ya inspeccionada,12 sesiones posteriores de investigación; no writer canónico/inferencia/holdout ni gates de release cumplidos por un score. Guardar datos privados dentro de Kaggle; adquirir sólo boot/model receipt agregados. No rerun tras send ambiguo ni reset de journals; recuperar job exacto.

@@ -105,6 +105,17 @@ class ModelTests(unittest.TestCase):
    (root/'tools/research_ops/confluence/source_footer.py').unlink()
    broken=subprocess.run([sys.executable,'-m','tools.research_ops.confluence.phenomena_model_pilot','--help'],cwd=root,env=env,text=True,capture_output=True,timeout=30)
    self.assertNotEqual(broken.returncode,0);self.assertIn("No module named 'tools.research_ops.confluence.source_footer'",broken.stderr)
+ def test_failure_receipt_closed_static_no_private_text(self):
+  x=P.failure_receipt(ValueError('finite nonnegative feature'),{'stage':'MEASURE_CLASSIFY_AND_LABEL','trade_date':M.TRAIN[0]})
+  self.assertTrue(x['guard_code'].startswith('GUARD_'));self.assertEqual(x['trade_date'],M.TRAIN[0]);self.assertFalse(x['partial_success'])
+  private='private_clock=123456789 price=99999 email=secret'
+  y=P.failure_receipt(ValueError(private),{'stage':private,'trade_date':'2026-10-01'})
+  self.assertNotIn(private,json.dumps(y));self.assertEqual(y['guard_code'],'UNCLASSIFIED_STATIC_GUARD');self.assertIsNone(y['trade_date']);self.assertEqual(y['stage'],'UNCLASSIFIED_STAGE')
+ def test_failure_progress_preflight_without_data(self):
+  progress={}
+  with patch.dict('os.environ',{},clear=True):
+   with self.assertRaises(ValueError):P.run('fake',plan(),'/tmp/private',frozen(),progress=progress)
+  self.assertEqual(progress,{'stage':'PREFLIGHT','trade_date':None})
  def test_kaggle_guard(self):
   with patch.dict('os.environ',{},clear=True):
    with self.assertRaises(ValueError):P.run('fake',plan(),'/tmp/private',frozen())
