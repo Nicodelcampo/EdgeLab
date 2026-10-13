@@ -1,0 +1,20 @@
+# Protocolo GC A/E: nueva prueba de trayectoria causal
+
+Congelado antes de nuevos outcomes:planSHA `3abcfe6990faf97962ad185f3c9ff1668541187ec435089427e2f203e442e39d` en `GC_AE_HISTORY_PLAN.json`. Desarrollo seleccionado tras negativosGC; no holdout virgen, mecanismo certificado o confirmación. Una intención/una corrida privadaCPU; máximo6polls; sin auto-retry o promoción.
+
+## Población, calibración y calendario
+GC12-26/tick0,1, fuente física ya utilizada (SHA3a9686bf…). CalibraciónGC del31 de julio sin outcomes SHA539b4ba2…, copiada con digest intacto desde `GC_FOCUSED_RETURN_RECEIPT.json`; no nueva calibración o datasetQA. Training original3–10 de agosto (6sesiones); evaluación10fechas17–30 de septiembre. Vacíos se registran, no reemplazan; train completo/min100anchors por sesión, evaluación≥6sesiones. Cada lectura se fija por rangoUTC natural antes de tocar payload y termina antes delholdout.
+
+## Features y orden causal
+Componentes originales20s/contexto60s/grid5s +retardos20/40/60/120s, máscaras/edad: `178` componentesdehistoria. Mismo prefijo observado para proxy y base, gaps>10s/UNKNOWN/sesión/dirección cortan transición. Duración sólo hastaahora/cap120s; A→E y E→A observadas en120s, no duración final retrospectiva. Historia avanza sobreTODOSlosanchors antes de censor/label/purga/embargo. Purga: últimos120s de cada sesióntrain (horizonte60s+purga60s); embargo: primeros60s de cada evaluación, pero mantienen historia. Barriersymmetric midquote60s=max4ticks/ceil(0,5rango60s previo); dirección derivada dehistoria, no futuro.
+
+## Preguntas y controles
+14representaciones fijas:PRIOR,HISTORY yparesPROXY/CAPACITY deestado(3),duración(1),A→E(1),E→A(1),transiciones(2),todo(6). Dimensionesidénticas dentrodecadapar, ridge0,01/equal-session/trainstandardization, fituna vez antes de leer evaluación. Dos primarios:A→E yE→A reciente, cadauno frenteaHISTORY yCAPACITYsobreexactamente susmismos anchors; los14modelos sefittean sobreeluniversocomúntrain. Lasotrasablaciones/nocorte/60s son diagnósticos, no rescatan primario negativo. Sensibilidad60s seleccionaobservadosantesdelabelysinreemplazocensurado. No detectoresdezona aquí:medir primero trayectoria vscomponentes, no atribuirspeedupBT2Aaunrunnerquenoloejecuta.
+
+## Decisiones exploratorias y potencia
+Soporte primario≥2000anchorsy≥6sesionesconsoporte. Métrica:sumadeBrier3clases,mediapor sesión; pooled separado. Margenpráctico exante0,001Brier enamboscomparadores. Cruzarlo seetiqueta EXPLORATORY_PRACTICAL_MARGIN_CROSSED_NOT_EDGE, no ganador; sinsoporte=inconcluso. Bootstrap2000/semilla19413 por sesión ymismaextracciónparaamboscomparadores;95%DESCRIPTIVO, NO ajuste demultiplicidad/confirmación/independencia. Losdosprimariosysusnegativossereportan.
+
+`GC_AE_HISTORY_POWER_DISCLOSURE.json` fija antesdeoutcomes una referencia normalaproximada devariancia máxima (delta∈[-2,2],σ≤2;alpha familiar0,05/dosdirecciones/potencianominal80%):MDEreferencian10≈1.949876,n6≈2.517279Brier. Esuncontrol de escala extremadamente conservador, NO una garantíaestadísticao estimacióndepotenciareal;sesionesnoIIDycortesrarospuedenreduciraúnmáslainformación. Elplan dice NOT_COMPUTED_NO_POWER_OR_CONFIRMATION_CLAIM porque NO conocemosvarianciaprospectivani potenciaefectiva. No prometer detectar0,001nimultiplicarmuestraporcantidaddeanchors. La utilidaddeestaetapaesmedirsoporte,signos/estabilidadyrepresentación; una confirmación requeriráprotocoloindependiente.
+
+## Recursos y custodia
+Máximos100Mticks/8Mpersesión,250kanchors,1,8Bscanelements,CPU/wall1800s,parent2700s,notebook3600s,AS6GiB/RSS4GiB,receipt1MiB. Singlethread BLAS/Numba; lecturaas-of,y/anchors compartidos porlos14modelos,ventanas/rangeindexexistentes,reutilizacióncalibración,noscansdetector. Bundletransitivodeimports+startupaislado, manifiestos/sha exactos. Ticks,featurearrays,parámetrosymodelos/logsprivados sóloenKaggletemp. Outputsboot+receipt/failure agregados,nozip. SHA/bytes al descargar=identidadtransporte, noauditoría nueva. NoBraincanónico,P&L,merge,Debiandeploy/24x7.

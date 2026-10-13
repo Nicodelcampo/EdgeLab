@@ -1,3 +1,7 @@
+## Checkpoint — nuevo protocolo GC A/E listo; NO enviado todavía
+
+Leer GC_AE_HISTORY_PROTOCOL.md,PLAN.json,POWER_DISCLOSURE.json eIMPLEMENTATION.json. Runner ypurga/embargo unidos,calibraciónGC539b4ba2 reutilizada,14modelos/dosprimarios/10fechasSept17–30,ridge0,01,margen0,001desarrollo,soporte2000/6.21focalPASS3,435s;regresióncompletaencurso,no reclamarresultadoaún. No kernel enviado; faltaidentidadcommit/bundle exacta ynuevo journaldeunasolaintenciónantesdeSaveAndRunAll. No repetircalibración/datasetQA;ningúndefaultdetectorcambió. MDEreferencianormalmuyconservador enPOWER_DISCLOSURE,NO potenciaefectivani confirmación. Abajo eshistoria,no permiso dereenviarjobsanteriores.
+
 ## Checkpoint actual — historia causal A/E implementada; nueva corrida NO lanzada
 
 Leer `AE_HISTORY_IMPLEMENTATION.md/.json`. Historia20/40/60/120s y StatePath avanzan sobre todos los anchors observados ANTES de labels/filtros; UNKNOWN conserva denominador. Cambio de dirección, gap>10s y sesión rompen transición: no mezclar mecanismos con orientación distinta. Catorce representaciones con controles iguales en dimensión, fit sólo training/equal-session/ridge0,01; sensibilidad60s antes de labels, grupos vacíos null.36tests focales PASS2,551s (tape sintético, no mercado).

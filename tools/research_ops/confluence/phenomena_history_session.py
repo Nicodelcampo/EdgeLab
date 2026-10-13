@@ -59,6 +59,12 @@ def session_data(st, date, plan, calibration, started):
         if current is None:
             add(excluded, "ORIGIN_60S_CONTEXT_UNKNOWN")
             continue
+        # Clock-only purge/embargo AFTER advancing all observed history and
+        # BEFORE computing any outcome. Existing callers without bounds unchanged.
+        bound = plan.get("scoring_bounds", {}).get(date)
+        if bound is not None and not bound["lower_ns"] <= clock.ns < bound["upper_ns"]:
+            add(excluded, "CLOCK_ONLY_PURGE_EMBARGO")
+            continue
         i = int(np.searchsorted(tape.sequence, row["sequence"]))
         if (i >= len(tape.sequence) or int(tape.sequence[i]) != row["sequence"] or
                 int(tape.ts_ns[i]) != row["timestamp_ns"]):
@@ -85,6 +91,7 @@ def session_data(st, date, plan, calibration, started):
         "thin_60s_usable_anchors": sum(thin), "measurement": measurements.summary,
         "response_scanned_elements": response.scanned,
         "history_advanced_before_outcomes": True, "raw_exported": False,
+        "clock_only_purge_embargo_applied": date in plan.get("scoring_bounds", {}),
     }
     return {
         "base": np.asarray(bases, float).reshape(n, len(HISTORY_NAMES)),
