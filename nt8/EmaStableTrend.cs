@@ -153,7 +153,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 			if (length >= MinZoneBars && (CurrentBar - lastFitBar >= RefitBars || !lineValid))
 			{
 				lastFitBar = CurrentBar;
-				lineValid = FitTrendline(rawNow, nfit) && EnvelopeOk(rawNow, nfit);
+				lineValid = FitTrendline(rawNow, nfit) && EnvelopeOk(rawNow, nfit - lineI);                // la distancia constante se mide desde el ancla
 			}
 			if (lineValid && BrokenLine(rawNow, nfit)) { broken = true; confirmed = false; return; }
 
@@ -230,11 +230,11 @@ namespace NinjaTrader.NinjaScript.Indicators
 				for (int k = lo; k <= hi; k++) { if (h[k] == h[i]) cnt++; }
 				if (h[i] == mx && cnt == 1) pv.Add(i);
 			}
-			// anclas: los 2 pivotes mas altos dentro del primer 50% de la zona
+			// anclas: los 4 pivotes mas altos dentro del primer 50% de la zona
 			System.Collections.Generic.List<int> cand = new System.Collections.Generic.List<int>();
 			foreach (int k in pv) if (k <= 0.5 * n) cand.Add(k);
 			cand.Sort((a, b) => h[b].CompareTo(h[a]));
-			if (cand.Count > 2) cand.RemoveRange(2, cand.Count - 2);
+			if (cand.Count > 4) cand.RemoveRange(4, cand.Count - 4);
 
 			bool found = false; int bi = 0; double bsl = 0; int bestTouches = 0;
 			foreach (int i in cand)                                                // anclas por extremidad: la primera que tenga una recta valida gana
