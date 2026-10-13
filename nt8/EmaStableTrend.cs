@@ -76,6 +76,9 @@ namespace NinjaTrader.NinjaScript.Indicators
 				PivotBars        = 5;
 				TouchTolAtr      = 0.2;
 				ViolFraction     = 0.02;
+				MinExtentAtr     = 10;
+				MaxMeanDistAtr   = 4;
+				MaxDistAtr       = 8;
 				MinTouches       = 3;
 				BreakAtr         = 0.5;
 				RefitBars        = 10;
@@ -246,6 +249,17 @@ namespace NinjaTrader.NinjaScript.Indicators
 					foreach (int k in pv)
 						if (k >= i && Math.Abs(h[i] + sl * (k - i) - h[k]) <= tol) { touches++; if (k > last) last = k; }
 					if (touches < MinTouches) continue;
+					double extent = Math.Abs(sl) * (n - 1 - i);                          // desplazamiento de la linea en ATR: descarta lineas cortas/planas
+					if (extent < MinExtentAtr * atr) continue;
+					double sumDist = 0, maxDist = 0;
+					for (int k = i; k < n; k++)
+					{
+						double dk = h[i] + sl * (k - i) - h[k];                          // >0: precio del lado correcto
+						sumDist += Math.Abs(dk);
+						if (dk > maxDist) maxDist = dk;
+					}
+					if (sumDist / (n - i) > MaxMeanDistAtr * atr) continue;              // linea floja: el precio anda lejos de ella
+					if (maxDist > MaxDistAtr * atr) continue;                            // tendencia deforme: en algun tramo el precio se aleja demasiado
 					int span = last - i;
 					if (touches > bt || (touches == bt && span > bestSpan)) { bt = touches; bestSpan = span; bj = j; bs = sl; }
 				}
@@ -296,8 +310,8 @@ namespace NinjaTrader.NinjaScript.Indicators
 		{
 			double atr = rangeAvg[0];
 			double l = LineH(n);
-			if (dir < 0) return Close[0] > l + BreakAtr * atr;                       // baja: cierre por encima de la resistencia
-			return Close[0] < -l - BreakAtr * atr;                                   // suba: cierre por debajo del soporte
+			if (dir < 0) return Close[0] > l + BreakAtr * atr || (l - Close[0]) > MaxDistAtr * atr;        // baja: rompe por arriba o el precio se aleja demasiado por debajo
+			return Close[0] < -l - BreakAtr * atr || (Close[0] + l) > MaxDistAtr * atr;                      // suba: rompe por abajo o se aleja demasiado por arriba
 		}
 
 		private void DrawSegment(int dir, int n)
@@ -342,6 +356,18 @@ namespace NinjaTrader.NinjaScript.Indicators
 		[NinjaScriptProperty] [Range(0.0, 10.0)]
 		[Display(Name = "Touch Tolerance (ATR)", Order = 4, GroupName = "2. Longitud de la zona", Description = "Un pivote 'toca' la linea si esta a menos de esta distancia (en ATR).")]
 		public double TouchTolAtr { get; set; }
+
+		[NinjaScriptProperty] [Range(0.0, 1000.0)]
+		[Display(Name = "Min Extent (ATR)", Order = 9, GroupName = "2. Longitud de la zona", Description = "Desplazamiento minimo de la linea en ATR. Descarta lineas cortas o casi planas (capturas del usuario: buenas >= 12, malas <= 7).")]
+		public double MinExtentAtr { get; set; }
+
+		[NinjaScriptProperty] [Range(0.0, 1000.0)]
+		[Display(Name = "Max Mean Distance (ATR)", Order = 10, GroupName = "2. Longitud de la zona", Description = "Distancia media maxima entre el precio y la linea (descarta lineas flojas).")]
+		public double MaxMeanDistAtr { get; set; }
+
+		[NinjaScriptProperty] [Range(0.0, 1000.0)]
+		[Display(Name = "Max Distance (ATR)", Order = 11, GroupName = "2. Longitud de la zona", Description = "Distancia maxima precio-linea en cualquier punto; si se supera la tendencia es 'deforme' y la zona termina.")]
+		public double MaxDistAtr { get; set; }
 
 		[NinjaScriptProperty] [Range(0.0, 1.0)]
 		[Display(Name = "Max Violation Fraction", Order = 8, GroupName = "2. Longitud de la zona", Description = "Fraccion maxima de barras que pueden cruzar la linea (mas que la tolerancia).")]

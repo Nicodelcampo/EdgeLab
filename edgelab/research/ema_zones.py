@@ -136,7 +136,7 @@ def _pivots_slow(x, p, high=True):
     return out
 
 
-def fit_trendline(high, low, direction, p=5, tol=0.0, vmax=0.02, min_touches=3, max_start_frac=0.5, min_len=30, anchors=2, min_gap=10):
+def fit_trendline(high, low, direction, p=5, tol=0.0, vmax=0.02, min_touches=3, max_start_frac=0.5, min_len=30, anchors=2, min_gap=10, atr=None, min_extent_atr=0.0, max_mean_dist_atr=None, max_dist_atr=None):
     """Línea de tendencia como la traza un humano: en baja une máximos y el precio queda (casi siempre) POR DEBAJO; en suba une mínimos y el precio queda por ENCIMA.
     Para cada ancla (los `anchors` pivotes más extremos del primer `max_start_frac` de la zona, en ese orden) prueba las rectas hacia pivotes posteriores con la pendiente correcta; una recta es válida si a lo sumo
     una fracción `vmax` de las barras posteriores al ancla la cruza por más de `tol` y toca ≥ `min_touches` pivotes (|dist| ≤ tol). Se queda con la primera ancla que tenga una recta válida y, dentro de ella, con la que
@@ -153,6 +153,11 @@ def fit_trendline(high, low, direction, p=5, tol=0.0, vmax=0.02, min_touches=3, 
         js, sl = js[good], sl[good]; seg = xs[i:]; L = h[i] + sl[:, None] * (seg - i)[None, :]; d = L - h[i:][None, :]                  # (rectas × barras posteriores al ancla)
         viol = (d < -tol).sum(1); pk = pva[pva >= i]; dk = np.abs(d[:, pk - i]); tmask = dk <= tol; touches = tmask.sum(1)
         okm = (viol <= vmax * (n - i)) & (touches >= min_touches)
+        if atr:                                                                                                                  # filtros de utilidad según las capturas del usuario (en ATR)
+            dd = np.abs(d)                                                                                                   # d = recta − precio (>0: precio del lado correcto)
+            if min_extent_atr > 0: okm &= (np.abs(sl) * (n - 1 - i) >= min_extent_atr * atr)
+            if max_mean_dist_atr: okm &= (dd.mean(1) <= max_mean_dist_atr * atr)
+            if max_dist_atr: okm &= (d.max(1) <= max_dist_atr * atr)
         if not okm.any(): continue
         last = np.where(tmask, pk[None, :], -1).max(1); span = last - i; order = np.lexsort((-span, -touches)); order = [o for o in order if okm[o]]
         b = order[0]; return dict(i=int(i), j=int(js[b]), slope=float(sl[b]), intercept=float(h[i] - sl[b] * i), touches=int(touches[b]), violations=int(viol[b]), span=int(span[b]))
@@ -176,7 +181,7 @@ def envelope_ok(env, max_far_cv, max_near_cv, min_pivots=2):
     return (max_far_cv is None or env["far_cv"] <= max_far_cv) and (max_near_cv is None or env["near_cv"] <= max_near_cv) and env["near_mean"] > 0
 
 
-def simulate_zones(P, high, low, st, M, atr_mult_tol=0.2, atr_mult_break=0.5, vmax=0.02, min_touches=3, pivot_p=5, refit=20, min_zone=120, tick=0.25, env_q=10, max_far_cv=None, max_near_cv=None, min_env_pivots=2):
+def simulate_zones(P, high, low, st, M, atr_mult_tol=0.2, atr_mult_break=0.5, vmax=0.02, min_touches=3, pivot_p=5, refit=20, min_zone=120, tick=0.25, env_q=10, max_far_cv=None, max_near_cv=None, min_env_pivots=2, min_extent_atr=10.0, max_mean_dist_atr=4.0, max_dist_atr=8.0):
     """Réplica del indicador: sobre cada tramo crudo de `st` (inicio retroactivo = detección − M + 1) ajusta la tangente cada `refit` barras; confirma la zona cuando hay recta válida y
     longitud ≥ min_zone; la zona termina cuando el cierre rompe la línea más de atr_mult_break·ATR (o cuando termina el tramo crudo). Devuelve una lista de dicts por tramo crudo."""
     c = P["c"]; atr = P["atr"]; n = len(c); out = []; ch = np.flatnonzero(np.r_[True, st[1:] != st[:-1], True])
@@ -186,13 +191,14 @@ def simulate_zones(P, high, low, st, M, atr_mult_tol=0.2, atr_mult_break=0.5, vm
         t0, t1 = int(a), int(b - 1); rs = max(0, t0 - M + 1); rec = dict(start=rs, detect=t0, raw_end=t1, dir=d, confirmed=False); line = None; t = max(t0, rs + min_zone - 1)
         while t <= t1:
             if line is None or (t - rec.get("last_fit", -10**9)) >= refit:
-                tol = atr_mult_tol * atr[t]; r = fit_trendline(high[rs:t + 1], low[rs:t + 1], d, p=pivot_p, tol=tol, vmax=vmax, min_touches=min_touches); rec["last_fit"] = t
+                tol = atr_mult_tol * atr[t]; r = fit_trendline(high[rs:t + 1], low[rs:t + 1], d, p=pivot_p, tol=tol, vmax=vmax, min_touches=min_touches, atr=float(atr[t]), min_extent_atr=min_extent_atr, max_mean_dist_atr=max_mean_dist_atr, max_dist_atr=max_dist_atr); rec["last_fit"] = t
                 if r is not None:
                     env = gap_envelope(c[rs:t + 1], P["e"][rs:t + 1], d, env_q); line = r if envelope_ok(env, max_far_cv, max_near_cv, min_env_pivots) else None; rec["env"] = env
                 else: line = None
             if line is not None:
                 k = t - rs; l = line["intercept"] + line["slope"] * k; price_line = l if d < 0 else -l; brk = (c[t] > price_line + atr_mult_break * atr[t]) if d < 0 else (c[t] < price_line - atr_mult_break * atr[t])
-                if brk: rec["broken_at"] = t; break
+                run = bool(max_dist_atr) and (((price_line - c[t]) > max_dist_atr * atr[t]) if d < 0 else ((c[t] - price_line) > max_dist_atr * atr[t]))          # el precio se alejó demasiado de la línea: la tendencia quedó «deforme»
+                if brk or run: rec["broken_at"] = t; break
                 if not rec["confirmed"]: rec.update(confirmed=True, confirm_bar=t, touches=line["touches"], slope=line["slope"], anchor=rs + line["i"])
                 rec["end"] = t
             t += 1
