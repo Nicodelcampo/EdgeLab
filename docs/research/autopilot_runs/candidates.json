@@ -153,5 +153,38 @@
     "tests": null
    }
   }
+ },
+ {
+  "run_id": "pnl-1",
+  "kind": "study",
+  "family": "PNL_EVAL",
+  "group": "GC_ES",
+  "script": "tools/study_slot_effect.py",
+  "prereg": "docs/research/autopilot/drafts/PNL-1.md",
+  "n_trials": 5,
+  "n_tests_holm": 2,
+  "needs": [
+   "ES:2025-07-01:2026-09-30",
+   "GC:2025-07-01:2026-09-30"
+  ],
+  "extra_datasets": [
+   "nicolasbuttaro/edgelab-dukascopy-es-usa500",
+   "nicolasbuttaro/edgelab-dukascopy-xauusd-ticks-m1"
+  ],
+  "internet": false,
+  "env": {
+   "STUDY_CFG": "{\"mode\": \"strategy_pnl\", \"n_planned\": 2, \"nperm\": 20000, \"rules\": [{\"descriptive\": [\"GC_spot_new\"], \"dir\": \"momentum\", \"discovery\": [\"GC\"], \"entry\": \"14:30\", \"filter\": \"none\", \"hold_min\": 30, \"inst\": \"GC\", \"name\": \"GC_ROD_LH_ALL\", \"oos\": [\"GC_spot_old\"], \"pred\": \"rod\"}, {\"descriptive\": [\"GC_spot_new\"], \"dir\": \"momentum\", \"discovery\": [\"GC\"], \"entry\": \"14:30\", \"filter\": \"bigmove_q67\", \"hold_min\": 30, \"inst\": \"GC\", \"name\": \"GC_ROD_LH_BIG\", \"oos\": [\"GC_spot_old\"], \"pred\": \"rod\"}, {\"descriptive\": [\"GC\", \"GC_spot_new\"], \"dir\": \"momentum\", \"discovery\": [\"GC_spot_old\"], \"entry\": \"13:30\", \"filter\": \"none\", \"hold_min\": 15, \"inst\": \"GC\", \"name\": \"GC_PREV15_1330_MOM\", \"pred\": \"prev_15\"}, {\"descriptive\": [\"ES\"], \"dir\": \"reversion\", \"discovery\": [\"ES_spot\"], \"entry\": \"07:30\", \"filter\": \"none\", \"hold_min\": 60, \"inst\": \"ES\", \"name\": \"ES_PREV60_0730_REV\", \"pred\": \"prev_60\"}, {\"descriptive\": [\"ES\"], \"dir\": \"momentum\", \"discovery\": [\"ES_spot\"], \"entry\": \"12:30\", \"filter\": \"none\", \"hold_min\": 30, \"inst\": \"ES\", \"name\": \"ES_PREV30_1230_MOM\", \"pred\": \"prev_30\"}], \"seed\": 20261017, \"spot_ranges\": {\"ES_spot\": [\"ES\", \"2018-01-01\", \"2025-06-30\"], \"GC_spot_new\": [\"GC\", \"2025-07-01\", \"2026-09-30\"], \"GC_spot_old\": [\"GC\", \"2022-07-01\", \"2025-06-30\"]}}"
+  },
+  "est_seconds": 900,
+  "decision_rule": "holm",
+  "notes": "P&L neto de reglas operables de las pistas en reserva: GC \u00faltimo 30 min (2 variantes) y celdas de SCAN-1 en GC y ES",
+  "origin": {
+   "PNL_EVAL_1": {
+    "sample": "pnl_1",
+    "tests": [
+     "pnl/"
+    ]
+   }
+  }
  }
 ]
