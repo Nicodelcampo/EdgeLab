@@ -1,4 +1,4 @@
-// EmaStableTrend.cs v2 — zonas de tendencia "tipo trendline" a partir de una EMA (NinjaTrader 8).
+// EmaStableTrend.cs v3 — zonas de tendencia "tipo trendline" a partir de una EMA (NinjaTrader 8).
 //
 // IDEA: una trendline por picos/toques es dificil de detectar; una EMA es mas permisiva y permite programar las interacciones.
 // ZONA = periodo en el que, medido sobre ventanas moviles (todo en cocientes o en unidades de ATR, sin ticks fijos):
@@ -6,10 +6,14 @@
 //   (2) el precio vive del lado de la tendencia: fraccion de las ultimas M barras con close del lado >= MinSideFraction
 //   (3) la distancia precio-EMA es estable: desvio(g)/|media(g)| <= MaxGapCV, y |media(g)| >= MinGapAtr * ATR   (g = close-EMA)
 //   Se mantiene HoldBars barras tras dejar de cumplirse (evita que una zona se parta por una barra).
+// LINEA DE TENDENCIA (v3): la linea azul es una TANGENTE como la dibuja un humano, no la EMA desplazada: en baja une maximos y el precio queda por DEBAJO; en suba une minimos
+//   y el precio queda por ENCIMA (desde uno de los 2 pivotes mas extremos del primer tramo de la zona; el precio puede cruzarla en <= ViolFraction de las barras). Debe tocar >= MinTouches pivotes
+//   (|dist| <= TouchTolAtr*ATR). Se recalcula cada RefitBars barras y la zona TERMINA cuando el cierre rompe la linea mas de BreakAtr*ATR. La zona solo se confirma si hay una tangente valida.
+//   Referencia: edgelab/research/ema_zones.py::fit_trendline (verificada contra una linea trazada a mano por el usuario: misma pendiente).
 // LONGITUD DE LA ZONA (lo que importa para operar): la zona solo se CONFIRMA (State = +1/-1) cuando lleva MinZoneBars barras seguidas
 //   y (si MinMovePoints > 0) el precio recorrio al menos esos puntos desde el inicio de la zona. Antes de eso State = 0.
 // ATRIBUTOS por zona (plots): Length (barras desde el inicio), MovePts (puntos recorridos), SlopeAtr (pendiente de la EMA en ATR por barra, con signo),
-//   Peaks (picos aproximados: veces que el precio retrocede >= 35% de la distancia media a la EMA y vuelve a hacer un nuevo extremo a favor).
+//   Peaks (= numero de toques de la tangente).
 //   Sirven para clasificar tipos: mas/menos empinadas (SlopeAtr), con mas/menos picos (Peaks), cortas/largas (Length).
 // CAUSALIDAD: Calculate=OnBarClose; el estado en la barra t usa solo datos <= t. La linea azul se dibuja desde el inicio retroactivo de la zona
 //   (anotacion, NO disponible antes de la confirmacion). Para usarlo como filtro, usar solo el plot State.
@@ -43,9 +47,10 @@ namespace NinjaTrader.NinjaScript.Indicators
 		private bool   confirmed;
 		private double lastMu;
 		private int    peaks;
-		private double extreme, trough;
-		private bool   retraced;
 		private double runStartClose;
+		private bool   lineValid, broken;
+		private int    lineI, lastFitBar;      // lineI: indice del ancla relativo al inicio de la zona
+		private double lineSlope, lineH0;      // pendiente por barra y valor en el ancla (en el espacio h: High en baja, -Low en suba)
 
 		// parametros efectivos (despues de aplicar el preset)
 		private int    pM, pK, pHold;
@@ -67,6 +72,12 @@ namespace NinjaTrader.NinjaScript.Indicators
 				Preset           = 2;
 				MinZoneBars      = 120;
 				MinMovePoints    = 0;
+				PivotBars        = 5;
+				TouchTolAtr      = 0.3;
+				ViolFraction     = 0.10;
+				MinTouches       = 3;
+				BreakAtr         = 0.5;
+				RefitBars        = 10;
 
 				WindowBars       = 200;
 				SlopeBars        = 150;
@@ -120,17 +131,24 @@ namespace NinjaTrader.NinjaScript.Indicators
 				runStart = CurrentBar - pM + 1;                                     // inicio retroactivo: la ventana que la probo
 				runStartClose = Close[Math.Min(pM - 1, CurrentBar)];
 				segCounter++; curTag = "EST_" + segCounter.ToString(CultureInfo.InvariantCulture);
-				confirmed = false; peaks = 0; extreme = 0; trough = 0; retraced = false;
+				confirmed = false; peaks = 0; lineValid = false; broken = false; lastFitBar = -1000000;
 			}
 			rawDir = rawNow;
 			if (rawNow == 0) { confirmed = false; return; }
 
 			int length = CurrentBar - runStart + 1;
 			double move = Math.Abs(Close[0] - runStartClose);                               // puntos de precio
-			UpdatePeaks(rawNow);
+			if (broken) return;
+			if (length >= MinZoneBars && (CurrentBar - lastFitBar >= RefitBars || !lineValid))
+			{
+				lastFitBar = CurrentBar;
+				lineValid = FitTrendline(rawNow, length);
+			}
+			if (lineValid && BrokenLine(rawNow, length)) { broken = true; confirmed = false; return; }
 
-			if (!confirmed && length >= MinZoneBars && (MinMovePoints <= 0 || move >= MinMovePoints))
+			if (!confirmed && lineValid && length >= MinZoneBars && (MinMovePoints <= 0 || move >= MinMovePoints))
 				confirmed = true;
+			if (!lineValid) confirmed = false;
 
 			if (confirmed)
 			{
@@ -140,7 +158,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 				double atr = rangeAvg[0];
 				Values[3][0] = atr > 0 ? (ema[0] - ema[Math.Min(pK, CurrentBar)]) / pK / atr : 0;
 				Values[4][0] = peaks;
-				DrawSegment();
+				DrawSegment(rawNow, length);
 			}
 		}
 
@@ -176,27 +194,85 @@ namespace NinjaTrader.NinjaScript.Indicators
 			return mu < 0 && (double)dn / pM >= pF;
 		}
 
-		// picos aproximados: retroceso >= 35% de la distancia media y nuevo extremo a favor
-		private void UpdatePeaks(int dir)
+		// h[k] (k=0 inicio de la zona): High en baja, -Low en suba. Tangente por envolvente convexa desde pivotes extremos del primer tramo.
+		private double H(int dir, int k, int n)
 		{
-			double gd = dir * (Close[0] - ema[0]);                      // distancia a favor de la tendencia
-			double thr = 0.35 * Math.Abs(lastMu);
-			if (extreme == 0 && trough == 0) { extreme = gd; trough = gd; return; }
-			if (gd > extreme) { if (retraced) { peaks++; retraced = false; } extreme = gd; trough = gd; }
-			else
-			{
-				if (gd < trough) trough = gd;
-				if (extreme - trough >= thr) retraced = true;
-			}
+			int ago = n - 1 - k;
+			return dir < 0 ? High[ago] : -Low[ago];
 		}
 
-		private void DrawSegment()
+		private bool FitTrendline(int dir, int n)
 		{
-			if (curTag == null) return;
-			int startAgo = CurrentBar - runStart;
+			int p = PivotBars;
+			double atr = rangeAvg[0];
+			double tol = TouchTolAtr * atr;
+			if (n < 30 || atr <= 0) return false;
+			double[] h = new double[n];
+			for (int k = 0; k < n; k++) h[k] = H(dir, k, n);
+
+			System.Collections.Generic.List<int> pv = new System.Collections.Generic.List<int>();
+			for (int i = 0; i < n - p; i++)
+			{
+				int lo = Math.Max(0, i - p), hi = i + p;
+				double mx = h[lo]; int cnt = 0;
+				for (int k = lo; k <= hi; k++) { if (h[k] > mx) mx = h[k]; }
+				for (int k = lo; k <= hi; k++) { if (h[k] == h[i]) cnt++; }
+				if (h[i] == mx && cnt == 1) pv.Add(i);
+			}
+			// anclas: los 2 pivotes mas altos dentro del primer 50% de la zona
+			System.Collections.Generic.List<int> cand = new System.Collections.Generic.List<int>();
+			foreach (int k in pv) if (k <= 0.5 * n) cand.Add(k);
+			cand.Sort((a, b) => h[b].CompareTo(h[a]));
+			if (cand.Count > 2) cand.RemoveRange(2, cand.Count - 2);
+
+			bool found = false; int bi = 0; double bsl = 0; int bestTouches = 0;
+			foreach (int i in cand)                                                // anclas por extremidad: la primera que tenga una recta valida gana
+			{
+				int bestSpan = -1; int bt = 0; int bj = -1; double bs = 0;
+				foreach (int j in pv)
+				{
+					if (j < i + 10) continue;
+					double sl = (h[j] - h[i]) / (j - i);
+					if (sl >= 0) continue;                                         // la tangente de una resistencia bajista debe bajar
+					int viol = 0;
+					for (int k = i; k < n; k++)
+						if (h[k] > h[i] + sl * (k - i) + tol) viol++;
+					if (viol > ViolFraction * (n - i)) continue;                   // el precio solo puede cruzarla ocasionalmente
+					int touches = 0, last = i;
+					foreach (int k in pv)
+						if (k >= i && Math.Abs(h[i] + sl * (k - i) - h[k]) <= tol) { touches++; if (k > last) last = k; }
+					if (touches < MinTouches) continue;
+					int span = last - i;
+					if (touches > bt || (touches == bt && span > bestSpan)) { bt = touches; bestSpan = span; bj = j; bs = sl; }
+				}
+				if (bj >= 0) { found = true; bi = i; bsl = bs; bestTouches = bt; break; }
+			}
+			if (!found) return false;
+			lineI = bi; lineSlope = bsl; lineH0 = h[bi]; peaks = bestTouches;
+			return true;
+		}
+
+		private double LineH(int n)                                                   // valor de la tangente (espacio h) en la barra actual
+		{
+			return lineH0 + lineSlope * ((n - 1) - lineI);
+		}
+
+		private bool BrokenLine(int dir, int n)
+		{
+			double atr = rangeAvg[0];
+			double l = LineH(n);
+			if (dir < 0) return Close[0] > l + BreakAtr * atr;                       // baja: cierre por encima de la resistencia
+			return Close[0] < -l - BreakAtr * atr;                                   // suba: cierre por debajo del soporte
+		}
+
+		private void DrawSegment(int dir, int n)
+		{
+			if (curTag == null || !lineValid) return;
+			int startAgo = CurrentBar - (runStart + lineI);
 			if (startAgo < 0 || startAgo > CurrentBar) return;
-			double y0 = ema[startAgo] + lastMu;
-			double y1 = ema[0] + lastMu;
+			double y0 = dir < 0 ? lineH0 : -lineH0;
+			double l  = LineH(n);
+			double y1 = dir < 0 ? l : -l;
 			Draw.Line(this, curTag, false, startAgo, y0, 0, y1, LineBrush, DashStyleHelper.Solid, LineWidth);
 		}
 
@@ -223,6 +299,30 @@ namespace NinjaTrader.NinjaScript.Indicators
 		[Display(Name = "Min Move Points (0 = off)", Order = 2, GroupName = "2. Longitud de la zona",
 			Description = "Recorrido minimo del precio (puntos) desde el inicio de la zona para confirmarla.")]
 		public double MinMovePoints { get; set; }
+
+		[NinjaScriptProperty] [Range(2, 50)]
+		[Display(Name = "Pivot Bars", Order = 3, GroupName = "2. Longitud de la zona", Description = "Un pivote es un maximo/minimo local en +-N barras.")]
+		public int PivotBars { get; set; }
+
+		[NinjaScriptProperty] [Range(0.0, 10.0)]
+		[Display(Name = "Touch Tolerance (ATR)", Order = 4, GroupName = "2. Longitud de la zona", Description = "Un pivote 'toca' la linea si esta a menos de esta distancia (en ATR).")]
+		public double TouchTolAtr { get; set; }
+
+		[NinjaScriptProperty] [Range(0.0, 1.0)]
+		[Display(Name = "Max Violation Fraction", Order = 8, GroupName = "2. Longitud de la zona", Description = "Fraccion maxima de barras que pueden cruzar la linea (mas que la tolerancia).")]
+		public double ViolFraction { get; set; }
+
+		[NinjaScriptProperty] [Range(2, 20)]
+		[Display(Name = "Min Touches", Order = 5, GroupName = "2. Longitud de la zona", Description = "Toques minimos de la tangente (incluye el ancla).")]
+		public int MinTouches { get; set; }
+
+		[NinjaScriptProperty] [Range(0.0, 10.0)]
+		[Display(Name = "Break (ATR)", Order = 6, GroupName = "2. Longitud de la zona", Description = "La zona termina cuando el cierre rompe la linea mas que esto.")]
+		public double BreakAtr { get; set; }
+
+		[NinjaScriptProperty] [Range(1, 500)]
+		[Display(Name = "Refit Bars", Order = 7, GroupName = "2. Longitud de la zona", Description = "Cada cuantas barras se recalcula la tangente.")]
+		public int RefitBars { get; set; }
 
 		[NinjaScriptProperty] [Range(10, 5000)]
 		[Display(Name = "Window Bars (M)", Order = 1, GroupName = "3. Detector manual (Preset 0)")]

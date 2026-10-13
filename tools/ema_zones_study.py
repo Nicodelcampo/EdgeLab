@@ -56,6 +56,12 @@ def process(tk, dates, label):
     P = Z.precompute(c, h, l, ema_n=EMA_N, atr_n=100); tick = float(tk.tick_size); rows = []
     slope = np.sign(np.r_[np.zeros(100), P["e"][100:] - P["e"][:-100]])
     for name, kw in CONFIGS.items():
+        if CFG.get("sim"):                                                      # réplica del indicador con tangente: zonas confirmadas
+            kw = dict(kw); M = kw["M"]; st = Z.state(P, **kw); st = np.where(inset, st, 0); sim = Z.simulate_zones(P, h, l, st, M, tick=tick, **CFG.get("sim_params", {})); cf = [z for z in sim if z["confirmed"] and inset[z["detect"]]]; fw = {}
+            for H in HZ:
+                v = [z["dir"] * (c[min(z["confirm_bar"] + H, n - 1)] - c[z["confirm_bar"]]) for z in cf]; fw[str(H)] = (float(np.sum(v)), len(v))
+            rows.append(dict(config=name, contract=label, sessions=len(dates), raw_runs=int(sum(1 for z in sim if inset[z["detect"]])), confirmed=len(cf), length=[z["length"] for z in cf], move_pts=[z["move_pts"] for z in cf], touches=[z["touches"] for z in cf],
+                             delay=[z["delay"] for z in cf], dirs=[z["dir"] for z in cf], broken=int(sum(1 for z in cf if "broken_at" in z)), fwd=fw)); continue
         st = Z.state(P, **kw); st = np.where(inset, st, 0); rs = [r for r in runs(st)]
         fwd = {}
         for H in HZ:
@@ -66,7 +72,19 @@ def process(tk, dates, label):
     print(label, "barras", int(inset.sum()), {r["config"]: r["runs"] for r in rows}, flush=True); del P; gc.collect(); return rows
 
 
+def summarize_sim(rows):
+    out = {}
+    for name in CONFIGS:
+        R = [r for r in rows if r["config"] == name]; ses = sum(r["sessions"] for r in R); q = lambda a: dict(p10=float(np.percentile(a, 10)), median=float(np.median(a)), p90=float(np.percentile(a, 90))) if len(a) else None
+        L = np.array([x for r in R for x in r["length"]]); mv = np.array([x for r in R for x in r["move_pts"]]); tc = np.array([x for r in R for x in r["touches"]]); dl = np.array([x for r in R for x in r["delay"]]); dirs = [d for r in R for d in r["dirs"]]
+        out[name] = dict(params=CONFIGS[name], raw_runs=int(sum(r["raw_runs"] for r in R)), confirmed=int(len(L)), confirmed_per_session=round(len(L) / max(1, ses), 2), confirmed_up=int(sum(1 for d in dirs if d > 0)), confirmed_down=int(sum(1 for d in dirs if d < 0)),
+                         length_bars=q(L), move_points=q(mv), touches=q(tc), confirm_delay_bars=q(dl), broken_share=round(sum(r["broken"] for r in R) / max(1, len(L)), 3),
+                         forward_drift_ticks_after_confirmation={H: dict(mean=float(sum(r["fwd"][H][0] for r in R) / max(1, sum(r["fwd"][H][1] for r in R))), n=int(sum(r["fwd"][H][1] for r in R))) for H in map(str, HZ)})
+    return out
+
+
 def summarize(rows):
+    if CFG.get("sim"): return summarize_sim(rows)
     out = {}
     for name in CONFIGS:
         R = [r for r in rows if r["config"] == name]; bars = sum(r["bars"] for r in R); ses = sum(r["sessions"] for r in R); dur = np.array([d for r in R for d in r["dur"]]); gap = np.array([g for r in R for g in r["gap_pts_median"]]); disp = np.array([g for r in R for g in r["disp_pts"]]); long_ = dur >= 150; n_up = sum(1 for r in R for d in r["dirs"] if d > 0)
