@@ -34,3 +34,11 @@ def test_gap_envelope_constant_channel_vs_converging():
     conv = e - (40 * (1 - t / n) + 5 + 4 * np.sin(t / 12.0))                                                                 # el precio converge hacia la EMA: la distancia cae
     a, b = Z.gap_envelope(chan, e, -1), Z.gap_envelope(conv, e, -1)
     assert Z.envelope_ok(a, 0.3, 0.4) and not Z.envelope_ok(b, 0.3, 0.4) and a["far_cv"] < b["far_cv"]
+
+
+def test_rolling_r2_straight_vs_curved_ema():
+    t = np.arange(400.0); straight = 100 - 0.1 * t + np.random.default_rng(0).standard_normal(400) * 0.01; curved = 100 - 0.00045 * (t - 200) ** 2
+    r1, r2 = Z.rolling_r2(straight, 100), Z.rolling_r2(curved, 100)
+    assert np.nanmin(r1[99:]) > 0.995 and np.nanmin(r2[99:]) < np.nanmin(r1[99:]) and np.isnan(r1[98])
+    sl = np.polyfit(np.arange(100.0), straight[:100], 1); ref = 1 - np.sum((straight[:100] - np.polyval(sl, np.arange(100.0))) ** 2) / np.sum((straight[:100] - straight[:100].mean()) ** 2)
+    assert abs(r1[99] - ref) < 1e-9                                                                                          # coincide con el R² clásico

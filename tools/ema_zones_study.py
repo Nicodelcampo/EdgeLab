@@ -53,11 +53,11 @@ def process(tk, dates, label):
     mod = ct_minute_of_day(tk.ts_ns); keep = np.asarray(~((mod >= 960) & (mod < 1020)))
     tk = dataclasses.replace(tk, **{f: (getattr(tk, f)[keep] if getattr(tk, f) is not None else None) for f in ("ts_ns", "price_ticks", "volume", "bid_ticks", "ask_ticks", "sequence")})
     bars = B.build_tick_bars(tk, SPEC); c, h, l = (np.asarray(x, float) for x in (bars.close_t, bars.high_t, bars.low_t)); sd = session_date_of(bars.end_ns); inset = np.isin(sd, list(dates)); n = len(c)
-    P = Z.precompute(c, h, l, ema_n=EMA_N, atr_n=100); tick = float(tk.tick_size); rows = []
+    P = Z.precompute(c, h, l, ema_n=EMA_N, atr_n=100); PCACHE = {}; tick = float(tk.tick_size); rows = []
     slope = np.sign(np.r_[np.zeros(100), P["e"][100:] - P["e"][:-100]])
     for name, kw in CONFIGS.items():
         if CFG.get("sim"):                                                      # réplica del indicador con tangente: zonas confirmadas
-            kw = dict(kw); M = kw["M"]; ex = {k: kw.pop(k) for k in ("max_far_cv", "max_near_cv") if k in kw}; st = Z.state(P, **kw); st = np.where(inset, st, 0); sim = Z.simulate_zones(P, h, l, st, M, tick=tick, **{**CFG.get("sim_params", {}), **ex}); cf = [z for z in sim if z["confirmed"] and inset[z["detect"]]]; fw = {}
+            kw = dict(kw); M = kw["M"]; ex = {k: kw.pop(k) for k in ("max_far_cv", "max_near_cv") if k in kw}; en = kw.pop("ema_n", EMA_N); PP = PCACHE[en] if en in PCACHE else PCACHE.setdefault(en, P if en == EMA_N else Z.precompute(c, h, l, ema_n=en, atr_n=100)); st = Z.state(PP, **kw); st = np.where(inset, st, 0); sim = Z.simulate_zones(PP, h, l, st, M, tick=tick, **{**CFG.get("sim_params", {}), **ex}); cf = [z for z in sim if z["confirmed"] and inset[z["detect"]]]; fw = {}
             for H in HZ:
                 v = [z["dir"] * (c[min(z["confirm_bar"] + H, n - 1)] - c[z["confirm_bar"]]) for z in cf]; fw[str(H)] = (float(np.sum(v)), len(v))
             rows.append(dict(config=name, contract=label, sessions=len(dates), raw_runs=int(sum(1 for z in sim if inset[z["detect"]])), confirmed=len(cf), length=[z["length"] for z in cf], move_pts=[z["move_pts"] for z in cf], touches=[z["touches"] for z in cf],

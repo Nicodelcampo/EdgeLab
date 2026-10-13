@@ -88,7 +88,17 @@ def precompute(close, high, low, ema_n=200, atr_n=100, e=None):
     return dict(c=close.astype(float), e=e, atr=atr, g=close - e)
 
 
-def state(P, M=150, K=100, f=0.9, er=0.5, dmin=0.0, cv=0.0, hold=0, drift_atr=0.0):
+def rolling_r2(e, K):
+    """R² de un ajuste lineal de la serie `e` en cada ventana de K barras (1 = recta perfecta: pendiente constante). NaN en las primeras K−1 barras."""
+    e = np.asarray(e, float); n = len(e); out = np.full(n, np.nan)
+    if n < K: return out
+    j = np.arange(K, dtype=float); sj = j.sum(); sjj = (j * j).sum(); c1 = np.r_[0.0, np.cumsum(e)]; c2 = np.r_[0.0, np.cumsum(e * e)]
+    se = c1[K:] - c1[:-K]; see = c2[K:] - c2[:-K]; sje = np.convolve(e, j[::-1], mode="valid")                                    # Σ j·e_j sobre cada ventana
+    sxy = sje - sj * se / K; sxx = sjj - sj * sj / K; syy = np.maximum(see - se * se / K, 1e-18); out[K - 1:] = sxy * sxy / (sxx * syy)
+    return out
+
+
+def state(P, M=150, K=100, f=0.9, er=0.5, dmin=0.0, cv=0.0, hold=0, drift_atr=0.0, ema_r2=0.0):
     """+1/−1/0 causal. Condiciones en ventana de M barras: EMA direccional en K barras (eficiencia ≥ er y desplazamiento ≥ drift_atr·ATR·√K),
     fracción de barras del lado de la tendencia ≥ f, distancia media ≥ dmin·ATR, y (si cv>0) desvío de la distancia / media ≤ cv. `hold` mantiene el estado tantas barras tras dejar de cumplirse."""
     c, e, atr, g = P["c"], P["e"], P["atr"], P["g"]; n = len(c); de = np.abs(np.diff(e, prepend=e[0]))
@@ -98,6 +108,7 @@ def state(P, M=150, K=100, f=0.9, er=0.5, dmin=0.0, cv=0.0, hold=0, drift_atr=0.
     dire = np.sign(np.nan_to_num(disp)); eff = np.abs(np.nan_to_num(disp)) / np.maximum(sumde, 1e-12)
     up = _rmean((g > 0).astype(float), M); dn = _rmean((g < 0).astype(float), M); mu = _rmean(g, M)
     ok = (eff >= er) & (np.abs(np.nan_to_num(disp)) >= drift_atr * atr * np.sqrt(K)) & (np.abs(np.nan_to_num(mu)) >= dmin * atr)
+    if ema_r2 > 0: ok &= np.nan_to_num(rolling_r2(e, K)) >= ema_r2                                                               # la EMA es casi una recta: pendiente constante
     if cv > 0:
         sd = np.sqrt(np.maximum(_rmean(g * g, M) - mu * mu, 0)); ok &= (sd / np.maximum(np.abs(mu), 1e-9) <= cv)
     cu = ok & (dire > 0) & (np.nan_to_num(up) >= f) & (np.nan_to_num(mu) > 0); cd = ok & (dire < 0) & (np.nan_to_num(dn) >= f) & (np.nan_to_num(mu) < 0)
