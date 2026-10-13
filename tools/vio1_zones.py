@@ -117,15 +117,23 @@ def analyze(ag, rng):
 def main():
     t0 = time.time(); rng = np.random.default_rng(SEED); import edgelab_data as ed
     ed.check_inputs((INST, DESDE, HASTA))                                  # verifica el manifiesto de lanzamiento (versiones y bytes) y que haya fuente para cada sesión aprobada
-    sess = ed.sessions(INST, DESDE, HASTA); print("sesiones aprobadas", len(sess), "contratos", sorted(sess.contract.unique()), flush=True); parts, cnts = [], []
+    sess = ed.sessions(INST, DESDE, HASTA); print("sesiones aprobadas", len(sess), "contratos", sorted(sess.contract.unique()), flush=True); parts, cnts, errors = [], [], []
     for c in sorted(sess.contract.unique(), key=lambda x: (x[-2:], x[-5:-3])):
-        ds, fl, a, b, dates = contract_rows(c, sess); tk = T.load_canonical_parquet(str(ed._path(ds, fl)), start_utc_ns=a, end_utc_ns=b); ev, cnt = process_ticks(tk, dates, c); parts.append(ev); cnts.append(cnt); del tk; gc.collect()
+        try:
+            ds, fl, a, b, dates = contract_rows(c, sess); tk = T.load_canonical_parquet(str(ed._path(ds, fl)), start_utc_ns=a, end_utc_ns=b); ev, cnt = process_ticks(tk, dates, c); parts.append(ev); cnts.append(cnt); del tk; gc.collect()
+        except Exception:                                                              # un contrato que falla no tumba la corrida: queda registrado y la API de Kaggle devuelve la salida
+            import traceback; errors.append(dict(contract=c, traceback=traceback.format_exc()[-3000:])); print("ERROR", c, errors[-1]["traceback"], flush=True); gc.collect()
+    if not parts:
+        (OUT / "ERROR.json").write_text(json.dumps(dict(errors=errors, sessions=len(sess)), indent=1)); print("sin resultados"); return
     ev = pd.concat(parts, ignore_index=True); ag = aggregate(ev); ag.to_parquet(OUT / "vio1_aggregates.parquet")
     out, ps, rows, tab = analyze(ag, rng); m = int(CFG.get("n_planned", len(ps))); o = np.argsort(ps); mx = 0.0
     for rank, i in enumerate(o): mx = max(mx, min(1.0, (m - rank) * ps[i])); rows[i]["p_holm_%d" % m] = mx
-    (OUT / "STUDY_RESULTS.json").write_text(json.dumps(dict(campaign="VIO-1", cfg=CFG, nperm=NPERM, results_flat=out, descriptive=dict(table=tab, contracts=cnts), n_planned=m, seconds=round(time.time() - t0)), indent=1, default=float))
+    (OUT / "STUDY_RESULTS.json").write_text(json.dumps(dict(campaign="VIO-1", cfg=CFG, nperm=NPERM, results_flat=out, descriptive=dict(table=tab, contracts=cnts, errors=errors), n_planned=m, seconds=round(time.time() - t0)), indent=1, default=float))
     print("listo en %.0f s" % (time.time() - t0))
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception:
+        import traceback; (OUT / "ERROR.json").write_text(json.dumps(dict(errors=[dict(contract="main", traceback=traceback.format_exc()[-4000:])]), indent=1)); print(traceback.format_exc())
