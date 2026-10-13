@@ -1,4 +1,4 @@
-// EmaStableTrend.cs v3 — zonas de tendencia "tipo trendline" a partir de una EMA (NinjaTrader 8).
+// EmaStableTrend.cs v3.2 — zonas de tendencia "tipo trendline" a partir de una EMA (NinjaTrader 8).
 //
 // IDEA: una trendline por picos/toques es dificil de detectar; una EMA es mas permisiva y permite programar las interacciones.
 // ZONA = periodo en el que, medido sobre ventanas moviles (todo en cocientes o en unidades de ATR, sin ticks fijos):
@@ -71,7 +71,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 
 				EmaPeriod        = 200;
 				AtrPeriod        = 100;
-				Preset           = 3;
+				Preset           = 2;
 				MinZoneBars      = 120;
 				MinMovePoints    = 0;
 				PivotBars        = 5;

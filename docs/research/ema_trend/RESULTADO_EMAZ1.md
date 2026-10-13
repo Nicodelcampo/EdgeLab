@@ -70,3 +70,16 @@ Mismos filtros de utilidad que EMAZ-5; umbrales de distancia constante «Normal�
 
 - EMA 100 confirma antes (131 vs 199 barras) pero las zonas también son más cortas: **sobra lo mismo (~25–35 barras)**. La condición de EMA recta casi no cambia el resultado: con estos umbrales no es selectiva (la EMA ya es lisa) y, al cambiar la estructura de los tramos, hasta suma zonas.
 - Conclusión: el cuello de botella no es la elección de la EMA sino el diseño: la zona se reconoce con una ventana de 100-200 barras y se confirma recién al completarla. Para que sea operable en tiempo real hay que **detectarla por la propia tangente** (confirmar al tercer toque con desplazamiento suficiente), usando la EMA solo como contexto de dirección y rectitud con ventanas cortas. Pendiente de implementar.
+
+## EMAZ-8/9 — extensión hacia atrás (todo el recorrido) y número de anclas
+La línea ahora busca su ancla hasta `ExtendBars` (100) barras antes del inicio detectado, y la distancia constante se mide desde el ancla. Con pocas anclas candidatas (2–4) la extensión hacía desaparecer casi todas las zonas (EMAZ-7: 11; EMAZ-8: 89 de 766): los extremos previos ganaban el ranking y no pasaban los filtros. Con **12 anclas** (se prueba cada pivote extremo por orden hasta hallar una línea válida) se recupera:
+
+| Variante (filtros de utilidad del usuario, distancia constante 0,4/0,5) | Zonas | Por sesión | Largo desde el ancla (p10 / mediana / p90) | Recorrido mediano | Deriva a 100 / 200 barras (ticks; n solapado) |
+|---|---:|---:|---|---:|---|
+| EMA 200, sin extensión | 1.126 | 4,05 | 132 / 182 / 257 | 41 pts | +2,3 / +1,5 |
+| **EMA 200, extensión 100** | **630** | **2,27** | **171 / 215 / 284** | 44 pts | +2,7 / +3,4 |
+| EMA 100, extensión 100 | 549 | 1,97 | 130 / 162 / 221 | 45 pts | +1,8 / +0,2 |
+
+- La extensión alarga la zona marcada (mediana 182 → 215 barras, p10 132 → 171) y descarta casi la mitad de las zonas (las que no tienen un extremo claro de arranque).
+- Indicador v3.2: Preset 2 por defecto = «EMA 200, extensión 100, 12 anclas» (~2,3 zonas por sesión). La deriva posterior a la confirmación es de décimas de punto, sin significancia (barras solapadas, sin costos): no hay evidencia de continuación.
+- Corridas: emaz-1..9 (Kaggle `edgelab-emaz-*`); resultados en `EMAZ*_RESULTADOS.json`.
