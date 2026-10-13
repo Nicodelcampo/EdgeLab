@@ -21,9 +21,14 @@ class CrossFamilyScene:
         self.configs=roster['configs'];self.plan=plan;self.started=time.monotonic();self.ticks=0
         self.primitives=SessionPrimitives(max_ticks=plan['max_session_ticks'],max_cells=plan['max_footprint_cells'])
         self.streams=[];self.times=Counter();self.progress={}
+        self.footprint_cache=None
+        if plan.get('shared_bt2a_footprints') is True:
+            from .bt2a_footprint_cache import BucketFootprintCache
+            self.footprint_cache=BucketFootprintCache()
+        tick_size=plan.get('tick_size',.25)
         for c in self.configs:
             f=FAMILY[c['indicator']]
-            stream=AVZStream(params=c['params'],bar_spec=c['bar_spec']) if f=='AVZP2' else BT2Stream(params=c['params'],bar_spec=c['bar_spec'],tick_size=.25) if f=='BT2' else BT2AStream(params=c['params'],tick_size=.25)
+            stream=AVZStream(params=c['params'],bar_spec=c['bar_spec']) if f=='AVZP2' else BT2Stream(params=c['params'],bar_spec=c['bar_spec'],tick_size=tick_size) if f=='BT2' else BT2AStream(params=c['params'],tick_size=tick_size,footprint_cache=self.footprint_cache)
             if stream.config!=c['config_sha256']:raise ValueError('nine native profile hashes')
             self.streams.append(stream)
     def guard(self):

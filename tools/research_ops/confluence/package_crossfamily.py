@@ -8,6 +8,8 @@ from .build_target_free_pilot import digest
 
 FILES=MODEL_FILES+['tools/research_ops/confluence/'+n+'.py' for n in
                  ('asof_intersections','detector_capture','session_primitives','avz_stream','bt2_stream','bt2a_stream','_pinned_avzp2','_pinned_total_footprint','zone_context','zone_model_design','observed_print_index','cross_family_context','cross_family_collector','cross_family_design','cross_family_scene','cross_family_streaming','cross_family_pilot','cross_family_diagnostics')]+[PLAN,ROSTER]
+FILES+=['tools/research_ops/confluence/bt2a_footprint_cache.py','tools/research_ops/confluence/multiasset_crossfamily.py']
+
 BOOT=MODEL_BOOT.replace('edgelab-model-private-','edgelab-crossfamily-private-').replace('/phenomena-model-pilot','/crossfamily-pilot').replace('phenomena_model_boot_v1','crossfamily_boot_v1').replace('confluence.phenomena_model_pilot','confluence.cross_family_pilot').replace('model-receipt.json','crossfamily-receipt.json').replace('model_receipt_sha256','crossfamily_receipt_sha256').replace('DEVELOPMENT_MODEL_COMPLETE_NOT_EDGE','DEVELOPMENT_CROSSFAMILY_COMPLETE_NOT_EDGE').replace('MODEL_FAILED_NO_EDGE_CLAIM','CROSSFAMILY_FAILED_NO_EDGE_CLAIM').replace('RUNNING_FIXED_REPRESENTATION_BENCHMARK','RUNNING_FIXED_CROSSFAMILY_BENCHMARK')
 
 

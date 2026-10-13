@@ -1,3 +1,7 @@
+## Latest: four-asset exploratory campaign implemented, not yet dispatched
+
+Read MULTIASSET_CROSSFAMILY_PLAN/DESIGN.ES/GC/6E/ZB,72pairs,calibrationJuly31/sixtrainAug3–10/twelveevalAug11–26; own real tick sizes, no MNQthreshold substitution. Approximate parity explicitly accepted, not100%certificate. Shared immutable bounded BT2Afootprints preserve native config states and exact synthetic18pairfeatures/146fits. Check MULTIASSET_LAUNCH/CONTINUATION and original durable journals before any send. No active campaign yet; V3 remains terminalCOMPLETE. No raw/holdout/confirmation/P&L/Brainwriter/deploy.
+
 ## Latest: cross-family V3 COMPLETE, results reviewed — no active attempt
 
 Kernel138540378/v1, runtime source3f3039c09a75eb12b5f887a3506cda36844a54a6. Read MNQ_CROSS_FAMILY_V3_CLOSEOUT.md, CLOSEOUT/ANALYSIS/KNOWLEDGE_PROPOSAL and lossless public MODEL_RECEIPT_PACKED. All18pairs/146models complete,10available original dates/70,544anchors, prior population/baseline exact. No zone representation improves continuous mean; arrival improves matched capacity17/18pair means but not net baseline. Density expands coincidence support, not measured edge. Real bounded streaming succeeded: maxselected-session426387mutations, maxpending2141, runner2139.216s/BT2A986.010s;900tests+18nav PASS. V1/V2 record counters were GLOBAL across9configs, profile_index identifies producer at overflow, not origin of all counts.

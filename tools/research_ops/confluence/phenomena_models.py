@@ -21,16 +21,17 @@ def verified_calibration(c):
     if c.get('sha256')!=CAL_SHA or digest({k:v for k,v in c.items() if k!='sha256'})!=CAL_SHA:raise ValueError('published frozen calibration only')
     return c
 
-def phase_key(row):
+def phase_key(row,*,research_dates=None):
     date=row['trade_date'];ns=row['timestamp_ns']
-    if date not in TRAIN+EVAL or type(ns) is not int:raise ValueError('explicit benchmark research dates')
+    allowed=TRAIN+EVAL if research_dates is None else tuple(research_dates)
+    if date not in allowed or date>='2026-10-01' or type(ns) is not int:raise ValueError('explicit benchmark research dates')
     end=int(datetime.fromisoformat(date+'T22:00:00+00:00').timestamp())*10**9
     if not end-86400*10**9<=ns<end:raise ValueError('natural session clock binding')
     local=datetime.fromtimestamp(ns//10**9,timezone.utc).astimezone(ZoneInfo('America/Chicago'))
     return ('RTH' if 510<=local.hour*60+local.minute<900 else 'OTHER')+':'+str(row['windows']['20']['direction_from_prior'])
 
-def state(row,c):
-    key=phase_key(row);return classify_components(row['windows']['20'],c['cells'].get(key))
+def state(row,c,*,research_dates=None):
+    key=phase_key(row,research_dates=research_dates);return classify_components(row['windows']['20'],c['cells'].get(key))
 
 def logpos(x):
     if type(x) not in (int,float) or not math.isfinite(x) or x<0:raise ValueError('finite nonnegative feature')
@@ -39,7 +40,7 @@ def signed(x):
     if type(x) not in (int,float) or not math.isfinite(x):raise ValueError('finite signed feature')
     return math.copysign(math.log1p(abs(x)),x)
 
-def features(row,barrier):
+def features(row,barrier,*,research_dates=None):
     p=row['windows']['20']
     if eligible(p) or row['windows']['60']['current']['status']!='OBSERVABLE':raise ValueError('common observable feature population')
     values=[logpos(p[side][k]) for side in ('current','prior') for k in WINDOW_NONNEG]
@@ -50,7 +51,7 @@ def features(row,barrier):
             values.append(v)
     values += [signed(p[side]['signed_volume_proxy']) for side in ('current','prior')]
     values += [logpos(p[k]) for k in ('pressure_ratio','trade_count_ratio','total_volume_ratio')]
-    values += [signed(p['directed_progress_ticks']),signed(p['prior_directed_progress_ticks']),logpos(abs(p['directed_progress_ticks'])),logpos(row['windows']['60']['current']['range_midpoint_ticks']),logpos(barrier),float(phase_key(row).startswith('RTH')),float(p['direction_from_prior'])]
+    values += [signed(p['directed_progress_ticks']),signed(p['prior_directed_progress_ticks']),logpos(abs(p['directed_progress_ticks'])),logpos(row['windows']['60']['current']['range_midpoint_ticks']),logpos(barrier),float(phase_key(row,research_dates=research_dates).startswith('RTH')),float(p['direction_from_prior'])]
     # Capacity-matched smooth bases fixed before scoring. Not a tuned contender.
     cc=(math.tanh(math.log(max(p['pressure_ratio'],1e-12)))*math.tanh(p['directed_progress_ticks']/4.),math.tanh(math.log(max(p['trade_count_ratio'],1e-12)))*math.tanh(p['prior_directed_progress_ticks']/4.))
     return np.array(values,dtype=float),np.array(cc,dtype=float)

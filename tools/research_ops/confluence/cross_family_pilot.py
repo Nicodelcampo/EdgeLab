@@ -38,7 +38,7 @@ def fit_models(training):
     for p in range(z.shape[2]):pairs.append({name:fit(design(x,z[:,:,p],name),y,w) for name in MODELS})
     return continuous,pairs,prior
 
-def score(data,z,models,prior,roster):
+def score(data,z,models,prior,roster,*,extra_cuts=None):
     x=data[0];y=data[3];phases=data[4];states=data[5];s=data[-1];continuous,pairs=models
     base={'PRIOR':brier(np.broadcast_to(prior,(len(y),3)),y),'CONTINUOUS':brier(predict(continuous,x),y)}
     s['baseline_mean_brier']={n:float(v.mean()) for n,v in base.items()};s['pairs']=[]
@@ -47,6 +47,7 @@ def score(data,z,models,prior,roster):
     for p,identity in enumerate(roster['pairs']):
         loss={**base,**{name:brier(predict(pairs[p][name],design(x,z[:,:,p],name)),y) for name in MODELS}}
         means={name:float(v.mean()) for name,v in loss.items()}
+        if extra_cuts is not None:extra_cuts(p,z[:,0,p],loss)
         # These are common-anchor pooled descriptive cuts, not additional IID tests.
         geom=z[:,0,p,8:25];ages=geom[:,4:10];joint=geom[:,2];inside=geom[:,3]
         buckets={'NO_LOCAL_JOINT':joint==0,'LOCAL_JOINT_NOT_INSIDE_BOTH':(joint>0)&(inside==0),'INSIDE_BOTH':inside==1}

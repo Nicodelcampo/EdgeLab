@@ -34,8 +34,8 @@ class ChunkDelta:
     unavailable_events: int
     buckets_processed: int
 
-@lru_cache(maxsize=2)
-def _bucket_code(collect_diagnostics):
+@lru_cache(maxsize=4)
+def _bucket_code(collect_diagnostics,shared_footprint=False):
     fn=_capture_tree('BT2A').body[0]
     cut=next(i for i,n in enumerate(fn.body) if isinstance(n,ast.For) and ast.unparse(n.target)=='i' and ast.unparse(n.iter)=='range(n_ticks)')
     body=[];counts={'pending':0,'log':0,'omitted_log':0,'omitted_diagnostics':0}
@@ -55,6 +55,12 @@ def _bucket_code(collect_diagnostics):
                 # Same content without retaining CSV/seq strings or FILL logs.
                 counts['log']+=1;n.body=ast.parse('_log(t_ns,ev_type,payload)').body;return n
             return self.generic_visit(n)
+    if shared_footprint:
+        flush=next(n for n in fn.body if isinstance(n,ast.FunctionDef) and n.name=='flush_block')
+        begin=next(i for i,n in enumerate(flush.body) if isinstance(n,ast.Assign) and any(isinstance(t,ast.Name) and t.id=='ask_map' for t in n.targets))
+        stop=next(i for i,n in enumerate(flush.body[begin:],begin) if isinstance(n,ast.For) and ast.unparse(n.target)=='k' and ast.unparse(n.iter)=='range(len(blk))')
+        if len(flush.body[begin:stop+1])!=6:raise ValueError('pinned footprint census drift')
+        flush.body[begin:stop+1]=ast.parse('ask_map,bid_map,signed_flow,n_quote,n_rule=_shared_footprint(blk_px,blk_vol,blk_bid,blk_ask)').body
     tr=Trim()
     for n in fn.body[:cut]:
         if isinstance(n,ast.Assign) and any(isinstance(t,ast.Name) and t.id in ('n_ticks','s_ids') for t in n.targets):continue
@@ -68,7 +74,7 @@ def _bucket_code(collect_diagnostics):
 _FIELDS=('ts_ns','price_ticks','volume','bid_ticks','ask_ticks','sequence','sessions')
 
 class BT2AStream:
-    def __init__(self,*,params,tick_size,max_active=100000,max_records_per_chunk=200000,max_chunk_ticks=100000,max_buffer_ticks=1000,max_history_values=5000,collect_diagnostics=False):
+    def __init__(self,*,params,tick_size,max_active=100000,max_records_per_chunk=200000,max_chunk_ticks=100000,max_buffer_ticks=1000,max_history_values=5000,collect_diagnostics=False,footprint_cache=None):
         mod=_module('BT2A')
         if not isinstance(params,dict) or set(params)-set(mod.DEFAULTS):raise ValueError('unknown detector params')
         self.params=MappingProxyType({**mod.DEFAULTS,**params})
@@ -84,7 +90,11 @@ class BT2AStream:
         self.ticks=SimpleNamespace(tick_size=float(tick_size));self.current=None;self.buffer=None;self.session=None;self.last_clock=None;self.last_session=None;self.next_index=0
         self.closed=False;self.poisoned=False;self.log_hash=hashlib.sha256();self.log_count=0;self.total_buckets=0
         env=dict(mod.__dict__);env.update(_observe_raw=self._observe,_log=self._log)
-        exec(_bucket_code(collect_diagnostics),env);self.flush,self.state_sizes=env['bucket_engine'](self.ticks,params=dict(self.params))
+        if footprint_cache is not None:
+            from .bt2a_footprint_cache import BucketFootprintCache
+            if not isinstance(footprint_cache,BucketFootprintCache):raise ValueError('typed shared footprint memo')
+            env['_shared_footprint']=footprint_cache.prepare
+        exec(_bucket_code(collect_diagnostics,footprint_cache is not None),env);self.flush,self.state_sizes=env['bucket_engine'](self.ticks,params=dict(self.params))
     def _log(self,t_ns,kind,payload):
         # Ordered normalized native detector diagnostics, no FILL/order labels.
         self.log_hash.update(f'{kind}|{payload}\n'.encode());self.log_count+=1

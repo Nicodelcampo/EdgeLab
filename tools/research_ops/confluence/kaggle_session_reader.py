@@ -14,10 +14,12 @@ from .session_primitives import SessionTape
 HOLDOUT_NS=1790805600000000000
 COLUMNS=('ts_utc_ns','price_ticks','volume','bid_ticks','ask_ticks','sequence')
 
-def iter_sessions(path,*,start_ns,end_ns,contract='MNQ_09-26',batch_size=100000,max_session_ticks=5000000,max_total_ticks=8000000):
+def iter_sessions(path,*,start_ns,end_ns,contract='MNQ_09-26',instrument='MNQ',tick_size=.25,batch_size=100000,max_session_ticks=5000000,max_total_ticks=8000000):
     if type(start_ns) is not int or type(end_ns) is not int or not 0<start_ns<end_ns<=HOLDOUT_NS:raise ValueError('prebound preholdout range required')
     for v in (batch_size,max_session_ticks,max_total_ticks):
         if type(v) is not int or v<1:raise ValueError('finite reader budgets')
+    import math
+    if not isinstance(instrument,str) or not instrument or type(tick_size) not in (int,float) or not math.isfinite(tick_size) or tick_size<=0:raise ValueError('explicit asset tick identity')
     import pyarrow.parquet as pq
     pf=pq.ParquetFile(path);col=pf.schema_arrow.names.index('ts_utc_ns');groups=[]
     for i in range(pf.metadata.num_row_groups):
@@ -42,7 +44,7 @@ def iter_sessions(path,*,start_ns,end_ns,contract='MNQ_09-26',batch_size=100000,
             if sid is not None and new!=sid:
                 if new<sid:raise ValueError('retrograde session')
                 arr=[np.concatenate([p[k] for p in parts]) for k in range(len(COLUMNS))]
-                tape=TickSeries(*arr,.25,instrument='MNQ',contract=contract)
+                tape=TickSeries(*arr,tick_size,instrument=instrument,contract=contract)
                 yield SessionTape(tape,absolute,Clock(int(clocks[a]),int(seq[a])),sid)
                 absolute+=have;parts=[];have=0
             sid=new;have+=z-a
@@ -50,4 +52,4 @@ def iter_sessions(path,*,start_ns,end_ns,contract='MNQ_09-26',batch_size=100000,
             parts.append([v[a:z].copy() for v in vals])
     if parts:
         arr=[np.concatenate([p[k] for p in parts]) for k in range(len(COLUMNS))]
-        yield SessionTape(TickSeries(*arr,.25,instrument='MNQ',contract=contract),absolute,None,sid)
+        yield SessionTape(TickSeries(*arr,tick_size,instrument=instrument,contract=contract),absolute,None,sid)
