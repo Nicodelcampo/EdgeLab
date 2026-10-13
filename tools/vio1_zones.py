@@ -33,6 +33,10 @@ DESDE, HASTA = CFG.get("desde", "2025-07-01"), CFG.get("hasta", "2026-09-30"); S
 END_NS = pd.Timestamp("2026-09-30 22:00", tz="UTC").value
 
 
+from edgelab.data.nt8_contract import InstrumentSpec                                # noqa: E402
+T.INSTRUMENT_CATALOG.setdefault("MGC", InstrumentSpec(symbol="MGC", tick_size=0.1, tick_value=1.0, multiplier=10.0))   # independiente de la versión del dataset de código
+
+
 def load_ticks(path, a, b, inst, label):
     """Canónico F2 si el parquet lo es; si no, raw NT8 (last/bid/ask float) -> ticks enteros."""
     import pyarrow.parquet as pq
