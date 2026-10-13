@@ -1,3 +1,9 @@
+# Estado vigente: piloto manual138437923/v1 cerradoCOMPLETE; ampliación en preparación
+
+Leer MNQ_ZONE_CONTEXT_CLOSEOUT/ANALYSIS/receipts/KNOWLEDGE_PROPOSAL. Durable journals zone-context-v1-{dispatch,watch}.sqlite terminales,3reservas, sin retry/rerun ni quota global. Agregados científicamente revisados NO equivalen a autonomíacientífica/writercanónico; proposal outcomes_inspected=true nooperationalblind. Nuevo pedido BigTrap×AVOLZONEPOI2 con más perfiles: CROSS_FAMILY_NEXT_DESIGN/PARAMETER_ROSTER9configs18pairs preparado, no enviado/runtimeplancompleto. ObservedPrintIndex probado sintético, no certificado de integración/touch físico. Antes de ejecutar en servidor recuperar latestremote y journals exactos, completar plan y budgets/integración/control con gates; no resetear snapshots, segundo daemon, merge/deploy/holdout/P&L. Este handoff no instala el sistema ni autoriza selección/promoción automática.
+
+---
+
 # Estado más reciente: piloto manual de contexto RUNNING, no deployment
 
 Id138437923/v1 privadoCPU, source4319cc7, identidad exacta PASS. LAUNCH/REMOTE_IDENTITY_CHECK/WATCH_PENDING son la referencia actual: primerpollRUNNING,1/6reservas de nuevo batchsingle-attempt. Recuperar journals exactos originales; snapshots del repo no permiten reconstruir latestness ni presupuesto externo. No mandar otra versión, segundo daemon ni resetear batchv3/v4. Adquirir sólo agregados y revisar conciliación, no repetir QA de datasets. Sin resultadocientífico nuevo, writer Brain ni promoción autónoma. Read PLAN/DESIGN para scopes específicos: desarrollo de fechas inspeccionadas, no liveness/firsttouch/especificidad de zona.

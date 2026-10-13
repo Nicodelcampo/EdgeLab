@@ -23,6 +23,7 @@ def review(boot,result,plan,package,raw,*,baseline=None):
     if boot.get('status')!='DEVELOPMENT_ZONE_COMPLETE_NOT_EDGE' or boot.get('exit_code')!=0 or boot.get('stop_reason') is not None or boot.get('outcomes_computed') is not True:
         raise ValueError('not successful terminal benchmark')
     if boot.get('zone_receipt_sha256')!=hashlib.sha256(raw).hexdigest():raise ValueError('zone receipt SHA mismatch')
+    if result.get('calibration_sha256')!=plan['calibration_sha256']:raise ValueError('frozen calibration identity')
     if result.get('status')!='DEVELOPMENT_ZONE_BENCHMARK_COMPLETE_NOT_EDGE':raise ValueError('wrong scientific scope')
     for k in ('confirmation','new_inference','edge_claim','holdout_opened','pnl','raw_exported','canonical_brain_written','automatic_model_selection','overlapping_anchors_independent','rows_or_snapshots_persisted','retained_pair_graph','sqlite_capture_store','native_zone_liveness_measured','first_touch_measured','bt2_or_bt2a_computed','zone_specific_attribution'):
         if result.get(k) is not False:raise ValueError('scope guard not false')
