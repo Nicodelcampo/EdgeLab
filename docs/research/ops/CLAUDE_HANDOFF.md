@@ -1,6 +1,6 @@
-# Entrada actual: benchmark de representación implementado, aún NO enviado
+# Entrada actual: benchmark de representación RUNNING, intento único
 
-Leer `MNQ_PHENOMENA_MODEL_DESIGN.md`, plan, calibración congelada, runner/modelos/package y pruebas. Ajuste June15/16 ya inspeccionado; evaluación12 fechas June17→July2 por calendario. Seis predictores compartiendo anclas/labels, ridge0.01, control de capacidad2 términos continuos, media Brier por sesión. Sin recalibrar estados, inferencia/holdout/zonas/P&L ni writer/deploy. Antes de enviar revisar estado/launch nuevos; no convertir este snapshot preparado en liveness. Trabajo previo COMPLETE no relanzar.
+Leer `MNQ_PHENOMENA_MODEL_DESIGN.md`, plan, calibración congelada, runner/modelos/package y pruebas. Ajuste June15/16 ya inspeccionado; evaluación12 fechas June17→July2 por calendario. Seis predictores compartiendo anclas/labels, ridge0.01, control de capacidad2 términos continuos, media Brier por sesión. Sin recalibrar estados, inferencia/holdout/zonas/P&L ni writer/deploy. Kaggle id138420049/v1 slug`edgelab-mnq-phenomena-model-benchmark`, sourcee6eff31a84eb0ed78b46cfe21c39f67f16bc240a, fuente exacta/privadoCPU verificada; última consulta RUNNING,1 de4 usada. Leer launch/package/identity y watch/dispatch nuevos; reserva antes de cada consulta. No convertir RUNNING histórico en liveness ni relanzar. Recibos por archivo individual boot/model agregados cuando terminal. Trabajo previo COMPLETE no relanzar.
 
 ---
 
