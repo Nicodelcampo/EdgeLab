@@ -1,0 +1,168 @@
+{
+  "schema": "multiasset_crossfamily_analysis_v1",
+  "grain": "own asset and observed-gap protocol x session x pair; pairs/anchors not independent",
+  "equal_session_headline_weights": true,
+  "pooled_anchor_weights_only_for_predefined_scenario_cuts": true,
+  "cross_asset_mean_computed": false,
+  "models_per_asset": 146,
+  "pairs_per_asset": 18,
+  "approximate_NT8_parity_accepted_not_100pct_measured": true,
+  "assets": {
+    "ES": {
+      "plan_sha256": "1fc00c5ad2e4a5a2d01641f60726d1c56c41c512ef5fdbbca824e6bca8826dd2",
+      "receipt_sha256": "80291580759d77f5150d44780060f72cdf961c8c48d855907e034ced3330aaba",
+      "max_observed_gap_seconds": 2.0,
+      "evaluation_sessions": 8,
+      "evaluation_dates": [
+        "2026-08-11",
+        "2026-08-12",
+        "2026-08-13",
+        "2026-08-17",
+        "2026-08-18",
+        "2026-08-19",
+        "2026-08-24",
+        "2026-08-25"
+      ],
+      "unavailable_sessions": [
+        {
+          "trade_date": "2026-08-14",
+          "status": "INSUFFICIENT_COMMON_SUPPORT_NO_REPLACEMENT",
+          "replacement_selected": false
+        },
+        {
+          "trade_date": "2026-08-20",
+          "status": "INSUFFICIENT_COMMON_SUPPORT_NO_REPLACEMENT",
+          "replacement_selected": false
+        },
+        {
+          "trade_date": "2026-08-21",
+          "status": "SOURCE_EMPTY_NO_REPLACEMENT",
+          "replacement_selected": false
+        },
+        {
+          "trade_date": "2026-08-26",
+          "status": "INSUFFICIENT_COMMON_SUPPORT_NO_REPLACEMENT",
+          "replacement_selected": false
+        }
+      ],
+      "common_anchors": 11422,
+      "baseline_brier": 0.6030915465910879,
+      "pairs_below_base": {
+        "DENSITY": 9,
+        "GEOMETRY": 2,
+        "ARRIVAL": 0,
+        "INTERACTION": 0
+      },
+      "pairs_below_capacity_control": {
+        "GEOMETRY": 0,
+        "ARRIVAL": 5,
+        "INTERACTION": 2
+      },
+      "full_minus_base_range": {
+        "min": 0.0002192323334869739,
+        "max": 0.004113695283211816
+      },
+      "full_improved_sessions_by_pair": [
+        3,
+        2,
+        2,
+        3,
+        4,
+        3,
+        0,
+        0,
+        2,
+        2,
+        2,
+        1,
+        1,
+        2,
+        1,
+        3,
+        3,
+        1
+      ],
+      "supported_arrival_cuts_not_edge": 117,
+      "supported_joint_arrival_cuts_not_edge": 0,
+      "supported_arrival_cuts_below_both_base_and_control_not_edge": 5,
+      "native_births_by_config": {
+        "AVZ25 denso": 1911,
+        "AVZ25 referencia": 1158,
+        "AVZ200 densidad": 593,
+        "BT2 denso": 39529,
+        "BT2 referencia": 1664,
+        "BT2 200": 15829,
+        "Abs denso": 9600,
+        "Abs referencia": 5,
+        "Abs 50": 19233
+      },
+      "inside_both_by_pair": [
+        138,
+        10,
+        118,
+        57,
+        0,
+        90,
+        1050,
+        63,
+        1097,
+        284,
+        0,
+        939,
+        907,
+        71,
+        950,
+        285,
+        0,
+        832
+      ],
+      "runner_seconds": 1388.46266526,
+      "native_stage_seconds": {
+        "classify": 5.672951886000192,
+        "primitives": 48.10172354200003,
+        "AVZP2": 175.02483441506928,
+        "BT2": 109.64358915012576,
+        "BT2A": 921.1020446629914
+      },
+      "bt2a_runner_fraction": 0.6633970561178237,
+      "cache_hit_fraction": 0.10268469304421672,
+      "cache_receipt": {
+        "hits": 378466,
+        "misses": 3307244,
+        "evictions": 3305196,
+        "retained_entries": 2048,
+        "retained_cells": 8070,
+        "peak_cells": 19369,
+        "max_entries": 2048,
+        "max_cells": 200000,
+        "native_history_shared": false
+      },
+      "runner_peak_rss_bytes": 870178816,
+      "measured_speedup_vs_uncached_market_baseline": null
+    }
+  },
+  "visual_plan": [
+    {
+      "comparison": "count of18pair means below own baseline or own capacity control",
+      "grain": "asset and gap protocol",
+      "population": "all18pairs per complete asset",
+      "unit": "pair count",
+      "disposition": "chart",
+      "reason": "distinguishes full model failure from limited representation improvements; protocols must be visibly distinct"
+    },
+    {
+      "comparison": "all pair effect sizes and supported/unsupported17arrival cuts",
+      "grain": "asset x pair and overlapping scenario",
+      "disposition": "table",
+      "reason": "lookup detail and rare coincidence support, no survivor-only shortlist"
+    },
+    {
+      "comparison": "cache and native runtime stage",
+      "grain": "single perasset run",
+      "disposition": "prose",
+      "reason": "no uncached samepopulation runtime comparator, cannot claim market speedup"
+    }
+  ],
+  "canonical_brain_written": false,
+  "edge_claim": false
+}
