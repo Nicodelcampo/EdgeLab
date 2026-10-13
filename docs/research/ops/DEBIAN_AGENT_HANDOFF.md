@@ -1,5 +1,12 @@
 ## Latest: multiasset campaign terminal; three reviewed results, one support stop
 
+## Checkpoint actual — perfil BT2A multis sesión TERMINAL
+
+Job `138566248/v1` COMPLETE, dos polls, una intención cerrada. Leer `GC_BT2A_PROFILE_CLOSEOUT.md`, `GC_BT2A_PROFILE_LAUNCH.json` y `NEXT_MECHANISM_AFTER_GC_NEGATIVE.md`.470.027 ticks/4 sesiones; estado semántico y capturas exactos enABBA; intercalado sólo1,01224×. Percentiles~23,30% de tiempo acumulado del pase instrumentado, NO sumar con sorting. Journals originales: `/data/operational-state/gc-bt2a-profile-269f62b9991e-{dispatch,watch}.sqlite`; no recrear para obtener presupuesto.
+
+Candidato rolling_native_percentile no integrado/no desplegado,2 tests exactos. Próximo: hook pinned +paridad completa multis sesión y ABBA bajo NUEVO plan/budget. EstadoA→E/E→A tiene prototipo causal3 tests, pero falta control continuo con misma historia y congelación científica; ninguna nueva corrida científica lanzada. No rescatar negativoGC.8tests focales nuevosPASS; regresión922 es snapshot anterior, no cobertura de estos cambios. Datos/estados privados sólo enKaggle; agregados y hashes públicos. Holdout cerrado, P&L/canonicalwriter/deployment/merge no realizados. Abajo: historial, no permiso de reenvío.
+
+
 ## Checkpoint actual — GC focal y benchmark TERMINALES
 
 Científico `138560454/v1` y benchmark `138560470/v1` COMPLETE. Leer `GC_FOCUSED_CLOSEOUT.md`, `GC_FOCUSED_RETURN_PROTOCOL.md`, `GC_FOCUSED_LAUNCH.json` y `GC_FOCUSED_KNOWLEDGE_PROPOSAL.json` antes de actuar. Resultado primario NO_SOSTENIDO:3.099 anclas/9 sesiones, llegada−control+1,1332 Brier×1000 por sesión,4/9 mejores; llegada−densidad+3,3401,1/9 mejores. No rescatar con cortes secundarios ni relanzar.
