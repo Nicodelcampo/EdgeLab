@@ -20,13 +20,13 @@ Las secciones antiguas de `CLAUDE_HANDOFF.md` son snapshots. No restaurar estado
 - Datasets ya resueltos: reusar manifests/pins/selecciones. No otra QA general, campaña MNQ congelada o auditoría NT8 exhaustiva. Paridad aproximada aceptada para explorar, no porcentaje medido. Tests de un cambio optimizado contra referencia siguen siendo necesarios.
 - EXPLORAR ≠ CONFIRMAR. Configuraciones, zonas y filas correlacionadas no equivalen a muestras independientes. Preservar censuras, UNKNOWN, negativos y todos los intentos; no reiniciar multiplicidad/historial.
 
-### Corrida existente: consultar, nunca relanzar en recovery
+### Corridas cerradas: no relanzar en recovery
 
-Notebook `nicolasbuttaro/edgelab-mnq-dense-confluence-engineering-pilot`, id138386707, versión3, source`97cc93d40d531627381fe71ee4b9e70ca496512b`, bundle`7e0802892baa98fe901579541dc6d017ffd76674dc5ebd8895bc272ea34c9dc6`. Última consulta del slug: RUNNING, no garantía de liveness futura ni attestation nueva de versión. Obtener metadata/version exactas antes de actuar; nunca enviar otra versión para “recuperar”.
+Confluencias `nicolasbuttaro/edgelab-mnq-dense-confluence-engineering-pilot`, id138386707/v3, source97cc93d40d531627381fe71ee4b9e70ca496512b: ERROR ACTIVE_PAIR_BUDGET. Recibos/version y prefijo preservados; no censo completo ni negativo científico. Leer `MNQ_CONFLUENCE_MARKET_KAGGLE_V3_TERMINAL_DIAGNOSIS.json`. NoV4. Nuevo `GeometryCountStream` permite censo de conteos exactos sin conservar gráfica viva, ver `CONFLUENCE_ACTIVE_PAIR_CAPACITY_FIX.md`; no sustituye episodios/llegadas.
 
-Leer `MNQ_CONFLUENCE_MARKET_KAGGLE_V3_PACKAGE_RECEIPT.json`, `MNQ_CONFLUENCE_MARKET_KAGGLE_V3_LAUNCH.json` y `CONFLUENCE_TERMINAL_ACQUISITION.md`. A terminal, adquirir únicamente allowlist agregada y límites de `terminal_acquisition.py`, atada a V3. Prefix/failure no son censo final/edge. V1/V2 fallidos quedan preservados; V2 llegó a target y sólo2tríadas, no32.
+P0 fenómenos `nicolasbuttaro/edgelab-mnq-phenomena-p0`, id138410298/v1, source3419122f0c571bc17b0cd96e539ff23dd068c7ef: COMPLETE, recibos de medición vinculados PASS. Leer `MNQ_PHENOMENA_P0_CLOSEOUT.md/.json`. Sesión2026-06-16, ventanas5/20/60s, anclas5s; presión/progreso/decaimiento, NO clasificador A/E/respuestas/edge. Intent durable antes del send y terminal registrados por host manual finito, no integración del daemon. Los snapshots no reemplazan SQLite local completo/witness externo ni prueban globalbudget/custodia.
 
-P0 fenómenos: motor/runner privados listos y probados, **host/notebook aún no empaquetado ni enviado**. Sesión2026-06-16 previamente seleccionada, ventanas5/20/60s, anclas5s. Mide componentes; NO calibra A/E ni calcula respuestas. Lanzarlo sólo después de resolver la carga activa y empaquetar límites/identidad. No existe un servicio automático esperando para hacerlo.
+Siguiente etapa propuesta: atlas target-free multisesión con causas UNKNOWN y distribuciones; protocolo de clasificación/respuestas antes de inferencia. Features privadas fueron temporales fuera de outputs; no asumir reuso tras cierre VM. No nuevas corridas enviadas ni writer canónico activado. Tests772ResearchOps +18navegación PASS en source previo al lanzamiento. Las secciones posteriores de blockers siguen vigentes.
 
 ## 2. Bloqueos de la implementación externa actual
 

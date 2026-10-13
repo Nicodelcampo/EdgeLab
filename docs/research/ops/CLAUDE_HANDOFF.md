@@ -1,3 +1,11 @@
+# Último estado: P0 fenómenos COMPLETE; V3 confluencias ERROR
+
+Leer `MNQ_PHENOMENA_P0_CLOSEOUT.md/.json` y recibos. P0 privadoCPU id138410298/v1, source3419122f0c571bc17b0cd96e539ff23dd068c7ef: medición completa en46,17s totalhost;16.536anclas, sin clasificación A/E/outcomes/inferencia. Identidad exacta y hash measurement verificados. No relanzar. Journal pre-send→ACK→COMPLETE y watch preservados; no equivalen a controlador24/7/custodia global.
+
+V3 confluencias ERROR ACTIVE_PAIR_BUDGET, preservado; variante de conteo afectado con paridad sintética exacta publicada, no activada en otra corrida. NoV4. Próximo trabajo útil: atlas target-free multisesión con causas UNKNOWN/distribuciones y protocolo previo a respuestas, no más QA del dataset. Features temporales privadas no son caché persistente verificada. Handoff Debian actualizado; históricos debajo no son estados vivos.772ResearchOps +18navegación PASS antes del lanzamiento.
+
+---
+
 # Último estado remoto: V3 ERROR, no relanzar
 
 Kaggle devolvió ERROR. Recibos de versión3 vinculados al source/bundle/plan correctos: ACTIVE_PAIR_BUDGET, ValueError en EPISODES línea66. Review de prefix agregada PASS;26sesiones y6.296.969capturas reportadas, sólo tríadas0/1 de32. Fallo de capacidad del join geométrico, no resultado científico negativo ni cierre completo. Leer `MNQ_CONFLUENCE_MARKET_KAGGLE_V3_TERMINAL_DIAGNOSIS.json` y recibos preservados. No blind retry ni repetir detectores por inercia. El handoff Debian sigue vigente pero la instrucción de esperar V3 RUNNING quedó superada; P0 fenómenos sigue preparado/no enviado.
