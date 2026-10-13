@@ -56,3 +56,17 @@ Réplica del indicador (`simulate_zones`) sobre NQ 25T, EMA 200, sesiones aproba
 - Los filtros bajan las zonas a un tercio (987 → 267 en «Muchas»): se eliminan las cortas, planas y deformes.
 - **Problema abierto:** la zona se confirma ~200 barras después de su inicio y su largo mediano es ~235: quedan ~35 barras *después* de confirmada hasta que termina. Como área operable en tiempo real casi no sobra recorrido. Se prueba EMA 100 (confirmación más temprana) y la condición de EMA recta (R²) en EMAZ-6.
 - Deriva posterior a la confirmación sin signo consistente (Pocas +2,8/+5,5/+12,8 ticks a 50/100/200 barras con n = 55; Normal y Muchas negativas): no hay evidencia de continuación.
+
+## EMAZ-6 — EMA 100 vs 200 y condición de EMA recta (R²)
+Mismos filtros de utilidad que EMAZ-5; umbrales de distancia constante «Normal» (0,4/0,5). EMA 100 usa M=100, K=75.
+
+| Variante | Zonas | Por sesión | Largo mediano | Demora de confirmación | Restante tras confirmar |
+|---|---:|---:|---:|---:|---:|
+| EMA 200 sin R² | 100 | 0,36 | 236 | 199 | ~37 barras |
+| EMA 200 + R² ≥ 0,98 | 109 | 0,39 | 238 | 200 | ~38 |
+| EMA 100 sin R² | 166 | 0,60 | 162 | 131 | ~31 |
+| EMA 100 + R² ≥ 0,98 | 202 | 0,73 | 160 | 132 | ~28 |
+| EMA 100 + R² ≥ 0,99 | 293 | 1,05 | 153 | 130 | ~23 |
+
+- EMA 100 confirma antes (131 vs 199 barras) pero las zonas también son más cortas: **sobra lo mismo (~25–35 barras)**. La condición de EMA recta casi no cambia el resultado: con estos umbrales no es selectiva (la EMA ya es lisa) y, al cambiar la estructura de los tramos, hasta suma zonas.
+- Conclusión: el cuello de botella no es la elección de la EMA sino el diseño: la zona se reconoce con una ventana de 100-200 barras y se confirma recién al completarla. Para que sea operable en tiempo real hay que **detectarla por la propia tangente** (confirmar al tercer toque con desplazamiento suficiente), usando la EMA solo como contexto de dirección y rectitud con ventanas cortas. Pendiente de implementar.
