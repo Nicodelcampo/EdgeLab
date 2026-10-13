@@ -28,11 +28,11 @@ P0 fenómenos `nicolasbuttaro/edgelab-mnq-phenomena-p0`, id138410298/v1, source3
 
 Atlas target-free multisesión enviado manualmente: `nicolasbuttaro/edgelab-mnq-target-free-phenomena-atlas`, id138412105/v1, source `5a8d74c2b31526aafb30d6618e7012097116e194`; terminal COMPLETE; recibos agregados vinculados PASS. Fuente exacta privadaCPU verificada. Leer `MNQ_PHENOMENA_ATLAS_CLOSEOUT.md` (análisis está en `MNQ_PHENOMENA_ATLAS_ANALYSIS.json`), launch, plan y diseño. No relanzar en recovery. Sesiones June12/15/16, gates P0 intactos, causas UNKNOWN y distribuciones; protocolo de clasificación/respuestas aún pendiente antes de inferencia. Features privadas fueron temporales fuera de outputs; no asumir reuso tras cierre VM. Sólo ese nuevo atlas enviado; no writer canónico activado. Tests772ResearchOps +18navegación PASS en source previo al lanzamiento. Las secciones posteriores de blockers siguen vigentes.
 
-### Siguiente protocolo implementado, todavía no enviado en este snapshot
+### Piloto científico manual completado, no servicio desplegado
 
-`MNQ_PHENOMENA_SCIENTIFIC_PROTOCOL.md` y plan fijan calibraciónJune12 / evaluaciónJune15-16 de desarrollo: A/E/coexistencia sin zonas, respuestas observadas60s en midpoint, censura, gates sin relajar por éxito. NO M2−M1 ni inferencia todavía. Tests812ResearchOps+18nav PASS. No usar ejemplos de este piloto como órdenes de producción.
+Leer `MNQ_PHENOMENA_SCIENCE_CLOSEOUT.md`, launch/analysis y receipts:138417158/v1/sourceed82301d4c884ac73e84e5d32142882dd90b13ea, COMPLETE/noedge. `MNQ_PHENOMENA_SCIENTIFIC_PROTOCOL.md` y plan fijan calibraciónJune12 / evaluaciónJune15-16 de desarrollo: A/E/coexistencia sin zonas, respuestas observadas60s en midpoint, censura, gates sin relajar por éxito. NO M2−M1 ni inferencia todavía. Tests812ResearchOps+18nav PASS. No usar ejemplos de este piloto como órdenes de producción.
 
-En recovery actual, los journals del sandbox estaban anteriores a snapshots publicados; conservarlos como históricos, no rearmar eventos inventados/resetear lifetime. Se recuperó source exactof3d9f26 para seguir. Un nuevo batch manual tendrá intención1/watch4 y ancla al snapshot latest; **no integra ni demuestra presupuesto/lock global**. Debian necesita recuperación durable aprobada/latest witness antes de adoptar ejecución automática.
+En recovery actual, los journals del sandbox estaban anteriores a snapshots publicados; conservarlos como históricos, no rearmar eventos inventados/resetear lifetime. Se recuperó source exactof3d9f26 para seguir. El batch científico manual completado preserva intención1/watch4(una consulta usada) y ancla al snapshot latest previo; **no integra ni demuestra presupuesto/lock global**. Debian necesita recuperación durable aprobada/latest witness antes de adoptar ejecución automática.
 
 ## 2. Bloqueos de la implementación externa actual
 
