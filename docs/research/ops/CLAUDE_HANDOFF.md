@@ -1,3 +1,9 @@
+# Último estado remoto: V3 ERROR, no relanzar
+
+Kaggle devolvió ERROR. Recibos de versión3 vinculados al source/bundle/plan correctos: ACTIVE_PAIR_BUDGET, ValueError en EPISODES línea66. Review de prefix agregada PASS;26sesiones y6.296.969capturas reportadas, sólo tríadas0/1 de32. Fallo de capacidad del join geométrico, no resultado científico negativo ni cierre completo. Leer `MNQ_CONFLUENCE_MARKET_KAGGLE_V3_TERMINAL_DIAGNOSIS.json` y recibos preservados. No blind retry ni repetir detectores por inercia. El handoff Debian sigue vigente pero la instrucción de esperar V3 RUNNING quedó superada; P0 fenómenos sigue preparado/no enviado.
+
+---
+
 # Entrada actual: handoff al agente Debian y piloto de fenómenos
 
 Leer primero `DEBIAN_AGENT_HANDOFF.md`, su source review y `DEBIAN_AGENT_HANDOFF_RECEIPT.json`. Usuario pidió completar trabajo posible y entregar implementación correcta al servidor Debian. Autopilot externo recién revisado en `d19629fd5df4317aaef2ac2cecbd51198f86a127`; sigue separado de PR117. `propose` NO es read-only; no enable execute/timers ni auto-pull por doctor LISTO. Python package requiere3.12 aunque Debian12 default sea3.11.
