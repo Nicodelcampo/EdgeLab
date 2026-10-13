@@ -28,11 +28,15 @@ def records(result: dict) -> list:
 
 
 def decide(result: dict, family_alpha: float, n_planned: int) -> dict:
-    """Aplica Holm propio al nivel familiar que apostó el alpha-investing (`family_alpha`), sobre `n_planned` pruebas. Devuelve hit y rechazos; las no evaluables cuentan en n_planned."""
+    """Aplica Holm propio al nivel familiar que apostó el alpha-investing (`family_alpha`), sobre `n_planned` pruebas. Devuelve hit y rechazos; las no evaluables cuentan en n_planned.
+    Si el diseño tiene réplica (pruebas `.../rep/...`), el HIT exige rechazo en una prueba de RÉPLICA: pasar solo el descubrimiento no recarga el alfa ni cuenta como acierto."""
     rec = [r for r in records(result) if r["evaluable"] and r["p"] is not None]
-    rej = holm_rejections([r["p"] for r in rec], family_alpha, n_planned)
-    return dict(hit=rej > 0, rejections=rej, n_evaluable=len(rec), n_planned=n_planned, family_alpha=family_alpha,
-                top=sorted(rec, key=lambda r: r["p"])[:5], tier_hint="C (información) hasta que exista P&L neto, estabilidad y diversificación (mandato)", note="hallazgo estadístico exploratorio: NO es un edge útil por serlo (ver MANDATO.md); requiere réplica pre-registrada y evaluación de utilidad")
+    rej = holm_rejections([r["p"] for r in rec], family_alpha, n_planned); names = rejected_tests(result, family_alpha, n_planned)
+    has_rep = any("/rep/" in r["test"] for r in rec); hit = (any("/rep/" in t for t in names) if has_rep else rej > 0)
+    rej_eff = sum(1 for t in names if "/rep/" in t) if has_rep else rej
+    return dict(hit=hit, rejections=rej_eff, discovery_only_passes=sorted(t for t in names if has_rep and "/rep/" not in t), n_evaluable=len(rec), n_planned=n_planned, family_alpha=family_alpha,
+                top=sorted(rec, key=lambda r: r["p"])[:5], tier_hint="C (información) hasta que exista P&L neto, estabilidad y diversificación (mandato)",
+                note="hallazgo estadístico exploratorio: NO es un edge útil por serlo (ver MANDATO.md); requiere réplica pre-registrada y evaluación de utilidad")
 
 
 def rejected_tests(result: dict, family_alpha: float, n_planned: int) -> set:

@@ -123,7 +123,7 @@ def rules(ev: dict, lits: dict) -> list:
                              template="slot_scan",
                              cfg=dict(mode="slot_scan", nperm=10000, seed=20261016, n_planned=20, spot_ranges={"ES_spot": ["ES", "2018-01-01", "2025-06-30"], "GC_spot_old": ["GC", "2022-07-01", "2025-06-30"]},
                                       scans=[dict(name="ES", disc="ES_spot", rep="ES"), dict(name="GC", disc="GC_spot_old", rep="GC"), dict(name="NQ", disc="NQ", rep="NQ", split=0.6), dict(name="YM", disc="YM", rep="YM", split=0.6), dict(name="6E", disc="6E", rep="6E", split=0.6)]),
-                             n_trials=5 * 96 + 15, power=0.3, est_seconds=2400, group="MULTI", family="SLOT_SCAN", utility_class="tradeable", required_rho=rho, consumes={"UNIVERSE_SCAN_1": "scan_1"},
+                             n_trials=5 * 96 + 15, power=0.3, est_seconds=2400, group="MULTI", family="SLOT_SCAN", utility_class="tradeable", required_rho=rho, consumes={"UNIVERSE_SCAN_1": "scan_1"}, lead_tests={"UNIVERSE_SCAN_1": ["scan/"]},
                              why="El universo guiado por umbrales ubica los umbrales más bajos de cuenta en la apertura de EE. UU. (08:00-10:00 CT) de GC, NQ, ES y YM. Se barren 96 celdas por instrumento (franja × horizonte × predictor), con nulo de máximo en el descubrimiento (spot largo para ES y GC, 60 % inicial de los futuros para NQ, YM y 6E) y réplica de las 3 mejores celdas en la otra muestra. 495 celdas/pruebas al contador global; 20 pruebas reportadas para Holm."))
     for e in ev["entries"]:                       # pistas nuevas nacidas de resultados del propio autopilot
         if e["status"] == "WEAK_LEAD" and e.get("unused_samples") == ["new_data_after_holdout"]:

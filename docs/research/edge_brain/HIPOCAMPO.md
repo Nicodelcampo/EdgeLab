@@ -1,5 +1,26 @@
 # Ledger de experimentos — Hipocampo EdgeLab
 
+## AUTOPILOT-idm-1 — PLANNING
+
+**Goal**: IDM/MULTI: Momentum intradía «resto del día → última media hora» y su modulación por gamma bajo
+- ✅ 1 rechazos de Holm a nivel 0.0238 sobre 10 pruebas planeadas: idm/GC p=0.0009; idm/GC_spot p=0.1349; idm_gamma_diff/ES_spot p=0.1754
+
+## AUTOPILOT-idm-2 — PLANNING
+
+**Goal**: IDM_JUMP/GC_MULTI: Momentum de la última media hora en GC: ¿lo explican los saltos del día? Prueba en spot 2022-2025 (muestra no usada para esta versión) y en otros activos
+- ❌ **NO_FINDING**: ninguna prueba pasa Holm a nivel 0.0351 (root: mejores: idmj/GC p=0.0083; idmj/GC_spot_old p=0.0831; idmj/ES_spot p=0.08555)
+
+## AUTOPILOT-scan-1 — PLANNING
+
+**Goal**: SLOT_SCAN/MULTI: Barrido de franjas (07:00-14:30 CT) en GC, NQ, ES, YM y 6E: momentum y reversión, descubrimiento → réplica
+- ❌ **NOT_REPLICATED**: El OK1 registrado antes contaba solo rechazos de descubrimiento (ES spot y GC spot pasaron el nulo de máximo) y ninguna de las 15 réplicas pasó Holm (root: corrección: sin réplica no hay acierto; ES 2018-25 y GC 2022-25 muestran estructura en el spot que no se sostiene en los futuros 2025-26)
+- ✅ 2 rechazos de Holm a nivel 0.0189 sobre 20 pruebas planeadas: scan/GC/max_disc p=0.0005; scan/ES/max_disc p=0.0005999; scan/YM/max_disc p=0.011
+
+## AUTOPILOT-slot-1 — PLANNING
+
+**Goal**: SLOT_REVERSAL/MULTI: Reversión de 15 min a las 04:30 CT en otros activos (generalización del hallazgo débil de GC)
+- ❌ **NO_FINDING**: ninguna prueba pasa Holm a nivel 0.0238 (root: mejores: slot/ZB/04:30 p=0.0547; slot/ES_spot/04:30 p=0.3997; slot/NQ/04:30 p=0.6622)
+
 ## DATA-PERF-GEX1-20261005 — PLANNING
 
 **Goal**: Que las corridas de Kaggle sobre datos de ticks sean rápidas: la corrida GEX-1 tardó 25,7 min y falló al final

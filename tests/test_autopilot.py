@@ -244,3 +244,9 @@ def test_adding_a_spec_field_does_not_relaunch_old_specs_and_run_ids_are_unique(
     ap.tick([a]); ap.tick([a]); assert ex.launched == ["same"]
     renamed_hash = spec("same", grp="OTRO"); ap.tick([renamed_hash]); assert ex.launched == ["same"]            # mismo run_id con otro hash: no se relanza ni revienta
     assert spec("x").spec_hash() == RunSpec(**{k: v for k, v in spec("x").__dict__.items() if k != "n_tests_holm"}).spec_hash()
+
+
+def test_scan_hit_requires_replication():
+    res = {"results_flat": [{"test": "scan/A/max_disc", "p": 0.0005, "evaluable": True}, {"test": "scan/A/rep/c1", "p": 0.6, "evaluable": True}, {"test": "scan/A/rep/c2", "p": 0.4, "evaluable": True}]}
+    d = analyze.decide(res, 0.02, 3); assert d["hit"] is False and d["rejections"] == 0 and d["discovery_only_passes"] == ["scan/A/max_disc"]
+    ok = {"results_flat": res["results_flat"][:1] + [{"test": "scan/A/rep/c1", "p": 0.0001, "evaluable": True}]}; assert analyze.decide(ok, 0.02, 3)["hit"] is True

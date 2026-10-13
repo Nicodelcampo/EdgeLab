@@ -11,6 +11,7 @@ TRANSITIONS = {  # estado previo -> (si hit, si no hit)
     "LEAD_INFO": ("REPLICATED_ONCE", "FAILED_REPLICATION"),
     "REPLICATED_ONCE": ("REPLICATED_TWICE", "FAILED_REPLICATION"),
     "ARTIFACT_SUSPECT": ("SURVIVES_CHECK", "ARTIFACT_CONFIRMED"),
+    "UNEXPLORED": ("REPLICATED_ONCE", "NULL_RESULT"),
 }
 
 
@@ -26,10 +27,15 @@ def record_outcome(path: Path, spec, decision: dict, current: dict | None = None
     for eid, o in (spec.origin or {}).items():
         sample, prefixes = (o, None) if isinstance(o, str) else (o.get("sample"), o.get("tests"))
         mine = {t for t in rej if prefixes is None or any(t.startswith(p) for p in prefixes)}; owned |= mine
+        has_rep = result is not None and any("/rep/" in t for t in rej | {r['test'] for r in __import__('edgelab.autopilot.analyze', fromlist=['records']).records(result)})
+        if has_rep: mine = {t for t in mine if "/rep/" in t}             # con réplica, solo cuenta el rechazo en la réplica
         hit = bool(mine) if result is not None else bool(decision.get("hit"))
         prev = cur.get(eid, {}).get("status", "WEAK_LEAD"); nxt = TRANSITIONS.get(prev, (prev, prev))[0 if hit else 1]
         put(dict(ts=time.time(), evidence_id=eid, run_id=spec.run_id, prev_status=prev, status=nxt, consumed=[sample], hit=hit, rejected=sorted(mine), top=[(t["test"], t["p"]) for t in decision.get("top", [])[:3]]))
-    for t in sorted(rej - owned):                                           # hallazgo fuera de las pistas de origen: pista nueva, sin muestra independiente aún
+    for t in sorted(x for x in rej if x.endswith("/max_disc") and not any(y.startswith(x.rsplit("/", 1)[0] + "/rep/") for y in rej)):     # descubrimiento sin réplica: estructura que no se sostiene en otra muestra
+        put(dict(ts=time.time(), evidence_id=f"{spec.run_id}:{t}", run_id=spec.run_id, prev_status=None, status="NOT_TIME_STABLE", consumed=[], hit=False, rejected=[t],
+                 new_entry=dict(indicator=spec.family, asset=t, tier="C", tier_reason="pasa en el descubrimiento y no replica en la otra muestra", note=f"{t} pasó el nulo de máximo en el descubrimiento de {spec.run_id} pero ninguna de las 3 mejores celdas replicó", unused_samples=[], sources=[spec.prereg])))
+    for t in sorted(x for x in rej - owned if not x.endswith("/max_disc")):               # hallazgo fuera de las pistas de origen: pista nueva, sin muestra independiente aún
         put(dict(ts=time.time(), evidence_id=f"{spec.run_id}:{t}", run_id=spec.run_id, prev_status=None, status="WEAK_LEAD", consumed=[], hit=True, rejected=[t],
                  new_entry=dict(indicator=spec.family, asset=t, note=f"hallazgo exploratorio de {spec.run_id} (Holm al nivel apostado) fuera de la pista de origen; sin réplica independiente",
                                 unused_samples=["new_data_after_holdout"], sources=[spec.prereg])))
