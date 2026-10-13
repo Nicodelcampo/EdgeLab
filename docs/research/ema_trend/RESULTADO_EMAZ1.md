@@ -46,3 +46,13 @@ Réplica del indicador (`simulate_zones`) sobre NQ 25T, EMA 200, sesiones aproba
 - 64–76 % de las zonas terminan por ruptura de la tangente (cierre a > 0,5 ATR), el resto cuando termina el tramo de la EMA.
 - **Deriva posterior a la confirmación** (ticks de 0,25 pt, a favor de la tendencia, media por zona; solapada y sin costos): Pocas +0,0/+0,9/+3,2 (50/100/200 barras), Normal −1,8/−3,0/−8,0, Muchas −0,3/−0,0/+2,8. Sin signo consistente: no hay evidencia de continuación; la pregunta del usuario requiere una medición pre-registrada específica.
 - Archivo: `EMAZ3_RESULTADOS.json`.
+
+## EMAZ-5 — con los filtros de utilidad del usuario (desplazamiento ≥ 10 ATR, distancia media ≤ 4, máxima ≤ 8,5)
+| Preset | Zonas confirmadas | Por sesión | Largo mediano | Recorrido mediano | Demora de confirmación | Terminan por ruptura/alejamiento |
+|---|---:|---:|---:|---:|---:|---:|
+| 1 Pocas | 55 | 0,20 | 234 barras | 32 pts | 199 | 93 % |
+| 2 Normal | 100 | 0,36 | 236 | 44 pts | 199 | 95 % |
+| 3 Muchas | 267 | 0,96 | 230 | 37 pts | 205 | 94 % |
+- Los filtros bajan las zonas a un tercio (987 → 267 en «Muchas»): se eliminan las cortas, planas y deformes.
+- **Problema abierto:** la zona se confirma ~200 barras después de su inicio y su largo mediano es ~235: quedan ~35 barras *después* de confirmada hasta que termina. Como área operable en tiempo real casi no sobra recorrido. Se prueba EMA 100 (confirmación más temprana) y la condición de EMA recta (R²) en EMAZ-6.
+- Deriva posterior a la confirmación sin signo consistente (Pocas +2,8/+5,5/+12,8 ticks a 50/100/200 barras con n = 55; Normal y Muchas negativas): no hay evidencia de continuación.
