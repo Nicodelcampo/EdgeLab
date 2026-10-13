@@ -4,7 +4,7 @@
 
 ## Implicancias de diseño
 - Cada zona debe llevar atributos para clasificarla en tipos: pendiente de la EMA (en ATR por barra), distancia media precio-EMA (ATR y puntos), duración, y **número de picos/toques** (swings que se acercan a la EMA sin cruzarla).
-- Distancia aceptable = mínima en ATR y en puntos, para que el stop/target tenga sentido operativo.
+- **Distancia aceptable = LONGITUD de la zona** (no la distancia precio-EMA): duración en barras y recorrido del precio a lo largo de la zona (puntos), con un mínimo para que sirva como área de desplazamiento de trades. La distancia precio-EMA es solo un atributo secundario.
 - Solo contexto: no hay evidencia de edge. La pregunta operativa (¿atraviesan las zonas más de lo que rebotan?) requiere medición pre-registrada aparte, como VIO-1.
 
 ## Archivos
