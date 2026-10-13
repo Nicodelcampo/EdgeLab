@@ -119,7 +119,16 @@ def score(st, targets):
 
 # ---------------- línea de tendencia tangente (soporte/resistencia de la zona) ----------------
 def pivots(x, p, high=True):
-    """Índices de máximos (o mínimos) locales en ±p barras (el borde inicial cuenta si domina sus p vecinos a la derecha)."""
+    """Índices de máximos (o mínimos) locales en ±p barras (el borde inicial cuenta si domina sus p vecinos a la derecha). Vectorizado."""
+    x = np.asarray(x, float); n = len(x)
+    if n <= p: return []
+    pad = -np.inf if high else np.inf; xp = np.concatenate([np.full(p, pad), x, np.full(p, pad)])
+    w = np.lib.stride_tricks.sliding_window_view(xp, 2 * p + 1)[:n]; ext = w.max(1) if high else w.min(1)
+    ok = (x == ext) & ((w == x[:, None]).sum(1) == 1); ok[n - p:] = False
+    return np.flatnonzero(ok).tolist()
+
+
+def _pivots_slow(x, p, high=True):
     n = len(x); out = []
     for i in range(0, n - p):
         w = x[max(0, i - p):i + p + 1]
@@ -135,18 +144,18 @@ def fit_trendline(high, low, direction, p=5, tol=0.0, vmax=0.02, min_touches=3, 
     h = np.asarray(high if direction < 0 else -np.asarray(low), float); n = len(h)                      # alcista: se espeja (−mínimos) y se trata como bajista
     if n < min_len: return None
     pv = pivots(h, p, True); cand = sorted([k for k in pv if k <= max_start_frac * n], key=lambda k: -h[k])[:anchors]; xs = np.arange(n)
+    pva = np.asarray(pv, int)
     for i in cand:
-        best = None
-        for j in [k for k in pv if k >= i + min_gap]:
-            sl = (h[j] - h[i]) / (j - i)
-            if sl >= 0: continue
-            line = h[i] + sl * (xs - i); d = line - h; viol = int((d[i:] < -tol).sum())
-            if viol > vmax * (n - i): continue
-            tk = [k for k in pv if k >= i and abs(d[k]) <= tol]
-            if len(tk) < min_touches: continue
-            key = (len(tk), max(tk) - i)
-            if best is None or key > best[0]: best = (key, dict(i=int(i), j=int(j), slope=float(sl), intercept=float(h[i] - sl * i), touches=len(tk), violations=viol, span=int(max(tk) - i)))
-        if best is not None: return best[1]
+        js = pva[pva >= i + min_gap]
+        if len(js) == 0: continue
+        sl = (h[js] - h[i]) / (js - i); good = sl < 0
+        if not good.any(): continue
+        js, sl = js[good], sl[good]; seg = xs[i:]; L = h[i] + sl[:, None] * (seg - i)[None, :]; d = L - h[i:][None, :]                  # (rectas × barras posteriores al ancla)
+        viol = (d < -tol).sum(1); pk = pva[pva >= i]; dk = np.abs(d[:, pk - i]); tmask = dk <= tol; touches = tmask.sum(1)
+        okm = (viol <= vmax * (n - i)) & (touches >= min_touches)
+        if not okm.any(): continue
+        last = np.where(tmask, pk[None, :], -1).max(1); span = last - i; order = np.lexsort((-span, -touches)); order = [o for o in order if okm[o]]
+        b = order[0]; return dict(i=int(i), j=int(js[b]), slope=float(sl[b]), intercept=float(h[i] - sl[b] * i), touches=int(touches[b]), violations=int(viol[b]), span=int(span[b]))
     return None
 
 
