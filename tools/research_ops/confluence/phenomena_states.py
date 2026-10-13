@@ -74,6 +74,13 @@ def classify(row,calibration):
     if why:return {'state':'UNKNOWN','reason':why,'tags':[]}
     key=cell(row);c=calibration['cells'].get(key)
     if not c or not c['supported']:return {'state':'UNKNOWN','reason':'CALIBRATION_CELL_UNSUPPORTED','tags':[]}
+    return classify_components(p,c)
+
+def classify_components(p,c):
+    """Pure unchanged proxy definition; callers own chronology/calibration binding."""
+    why=eligible(p)
+    if why:return {'state':'UNKNOWN','reason':why,'tags':[]}
+    if not c or not c['supported']:return {'state':'UNKNOWN','reason':'CALIBRATION_CELL_UNSUPPORTED','tags':[]}
     x=components(p);a,b=p['current'],p['prior']
     if any(not math.isfinite(p[k]) for k in ('pressure_ratio','trade_count_ratio','prior_directed_progress_ticks')):raise ValueError('finite state ratios')
     high=x['pressure']>=c['current_pressure_q80'] and x['prior_pressure']>=c['prior_pressure_q80']

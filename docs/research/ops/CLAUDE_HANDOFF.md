@@ -1,3 +1,9 @@
+# Entrada actual: benchmark de representación implementado, aún NO enviado
+
+Leer `MNQ_PHENOMENA_MODEL_DESIGN.md`, plan, calibración congelada, runner/modelos/package y pruebas. Ajuste June15/16 ya inspeccionado; evaluación12 fechas June17→July2 por calendario. Seis predictores compartiendo anclas/labels, ridge0.01, control de capacidad2 términos continuos, media Brier por sesión. Sin recalibrar estados, inferencia/holdout/zonas/P&L ni writer/deploy. Antes de enviar revisar estado/launch nuevos; no convertir este snapshot preparado en liveness. Trabajo previo COMPLETE no relanzar.
+
+---
+
 # Entrada actual: piloto de estados/respuestas COMPLETE, no edge
 
 Leer primero `MNQ_PHENOMENA_SCIENCE_CLOSEOUT.md`, analysis/receipts/launch y protocolo fijo. Kernel138417158/v1 privadoCPU/sourceed82301d4c884ac73e84e5d32142882dd90b13ea, terminalCOMPLETE, source exacto y recibo agregadoPASS. A88anclas/78utilizables, E654/472, BOTH4; A rawreversalvsNEITHER cambia de signo entre fechas; Econtinuación169/reversión163. No edge, no controles igualados, rango/pathA sólo confinamiento relativo. Prox: baseline continuo y más sesiones disjuntas con soporte/observabilidad antes de inferencia/interacciónzonas. No relanzar ni recalibrar por este resultado. Split June12calibración / June15-16eval de desarrollo; features ya inspeccionadas, no holdout virgen. W20, contexto60s, gates P0 más cobertura de signo80%; A highpressure/confinamiento(range/path), E priorimpulso+caída presión Y trades. A/E/BOTH/NEITHER/UNKNOWN, calibración por fase×dirección sólo train y hash congelado. First passage midpoint en segundos, barrera causal y censura explícita; no modelos/zonas/inferencia/P&L.812ResearchOps+18navegación,57focales PASS.

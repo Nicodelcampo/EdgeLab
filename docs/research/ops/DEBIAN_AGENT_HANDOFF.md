@@ -1,3 +1,9 @@
+# Complemento: benchmark de representación A/E preparado, sin deploy
+
+Leer `MNQ_PHENOMENA_MODEL_DESIGN.md` y recibos de lanzamiento si existen. Experimento manual finito Kaggle, no segundo daemon ni integración automática en autopilot. Fecha de ajuste ya inspeccionada,12 sesiones posteriores de investigación; no writer canónico/inferencia/holdout ni gates de release cumplidos por un score. Guardar datos privados dentro de Kaggle; adquirir sólo boot/model receipt agregados. No rerun tras send ambiguo ni reset de journals; recuperar job exacto.
+
+---
+
 # Handoff al agente del servidor Debian — EdgeLab Research Ops
 
 **Objetivo:** operar un único host de investigación que proponga, supervise Kaggle, recupere cierres y prepare aprendizaje trazable. Este handoff NO declara producción lista ni habilita trading, holdout o P&L. No instalar un segundo controlador que compita con el existente.

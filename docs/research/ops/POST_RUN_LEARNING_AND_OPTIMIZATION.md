@@ -85,3 +85,8 @@ No incluye LLM, lectura de datos de mercado, red, patch generation, ejecutor de 
 ## Extensión posterior: ingest y outbox local
 
 Se conectó el planificador a [sobres técnicos externos y outbox idempotente](CLOSEOUT_LEARNING_OUTBOX.md), con CLI y snapshot/restore. Esto cubre la importación local/registro, no el productor Kaggle, la escritura al Brain o la activación. La exigencia de custodia y la separación científica/técnica no cambian.
+
+
+## Aprendizaje aplicado: benchmark de representación multisesión
+
+El piloto previo no aislaba representación A/E de componentes/observabilidad: A cambió signo entre dos sesiones, BOTH sólo4. Nuevo protocolo separa ajuste supervisado ya inspeccionado y12 fechas posteriores por calendario, recicla calibración agregada sin leer June12, comparte primitives/labels entre seis predictores y controla capacidad con dos bases continuas. Brier equiponderado por sesión y censura explícita, sin tratar anclas solapadas como n independiente. Código preparado no es resultado científico nuevo ni writer canónico. Ver `MNQ_PHENOMENA_MODEL_DESIGN.md`.
