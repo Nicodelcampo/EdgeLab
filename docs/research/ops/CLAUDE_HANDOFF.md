@@ -1,6 +1,6 @@
-## Latest: V3 causal streaming implemented; not yet dispatched
+## Latest: V3 causal streaming LIVE — RUNNING, no resubmit
 
-Read MNQ_CROSS_FAMILY_V3_DESIGN and PLAN_V3. V1/V2 remain terminalERROR; their journals must never be reset. V3 replaces whole-session event storage with bounded causal-prefix mutation replay, preserving all9native configs/18pairs/146fits and fixed science. Synthetic exact reference equivalence passed; real completion still required. Check V3_LAUNCH/CONTINUATION and exact durable journal BEFORE any provider mutation; absence is not resend permission. No scientific results yet, no holdout/raw export/Brainwriter/deploy.
+Kernel138540378/v1 privateCPU, exact source3f3039c09a75eb12b5f887a3506cda36844a54a6/Docker/version verified. Read V3_LAUNCH, PACKAGE_RECEIPT, DISPATCH_ACK, CONTINUATION and PLAN_V3. Journals crossfamily-v3-a00f0b5a244a exist; one poll recorded/6. V1/V2 remain terminalERROR and diagnosis terminalCOMPLETE. Never reset journals or resend. Bounded causal-prefix mutation replay preserves all9native configs/18pairs/146fits;900ResearchOps+18navigation PASS,24session dense synthetic arrays/fits exact. Actual scientific success still requires COMPLETE +verified bounded aggregate +all18pair/baseline review. User requests continuing to actual results, not stopping at RUNNING. Acquire progress/boot/receipt only, no logs/raw/ZIP/model/holdout/P&L/Brainwriter/deploy.
 
 ## Latest: V2 ERROR on June23 — bounded streaming needed, no active run
 
