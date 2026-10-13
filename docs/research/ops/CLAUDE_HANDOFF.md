@@ -1,3 +1,13 @@
+# Entrada actual: protocolo de respuesta implementado, aún no enviado
+
+Leer `MNQ_PHENOMENA_SCIENTIFIC_PROTOCOL.md`, plan e implementation receipt. Split June12calibración / June15-16eval de desarrollo; features ya inspeccionadas, no holdout virgen. W20, contexto60s, gates P0 más cobertura de signo80%; A highpressure/confinamiento(range/path), E priorimpulso+caída presión Y trades. A/E/BOTH/NEITHER/UNKNOWN, calibración por fase×dirección sólo train y hash congelado. First passage midpoint en segundos, barrera causal y censura explícita; no modelos/zonas/inferencia/P&L.812ResearchOps+18navegación,57focales PASS.
+
+Los archivos locales reaparecieron previos al último checkpoint. Se recuperó worktree exacta f3d9f26 en `/data/research-current`, conservando `/data/ro` antiguo. **No usar journals viejos como latest ni resetearlos/inventar eventos.** Nuevo intento manual batch1y watch4 consultas sólo tras fuente publicada, anclados al snapshot público latest(10consultas previas, terminales). No cuota global/autoridad/deploy.
+
+P0/V3/atlas anteriores cerrados; no relanzar para recuperar. Handoff Debian sigue vigente; no writer canónico. Secciones debajo son snapshots históricos.
+
+---
+
 # Entrada actual: atlas multisesión COMPLETE, recibos agregados PASS
 
 Leer `MNQ_PHENOMENA_ATLAS_DESIGN.md`, plan e implementation receipt. Nuevo atlas target-free para June12/15/16 por calendario dentro del historial existente, mismo estimador/gates P0. Sin96detectores, estados/outcomes/holdout/P&L. Desglose exclusivo y joint de UNKNOWN, cuantiles exactos con soporte100, tabla6×6 presión×progreso; no fitted thresholds. Kaggle privadoCPU id138412105/v1, slug `edgelab-mnq-target-free-phenomena-atlas`, source `5a8d74c2b31526aafb30d6618e7012097116e194`: fuente exacta/metadata verificadas, terminal COMPLETE registrado con reserva. Intent SEND_UNCERTAIN→ACK→COMPLETE preservado; no relanzar ni segunda versión. Leer launch/package/identity/watch receipts. Un intento manual finito, sin retry.785ResearchOps+18nav PASS y34focales finales PASS; 785suite final mismo código repetida PASS, nota de orden preservada en recibo. Fuente/plan publicados antes de envío. Boot/atlas por versión1 ya adquiridos; leer `MNQ_PHENOMENA_ATLAS_CLOSEOUT.md`, análisis y receipt. Tres fechas medidas,4.262.580ticks/41.906anclas,29,32s host. Gaps son primer motivo de99,57%UNKNOWN W20, no diagnóstico de feed ni ausencia de fenómenos.355anclas presión>=previa/progreso[-2,2),3026presión<mitad; no etiquetas A/E ni episodios independientes. Próximo protocolo debe manejar cobertura/path/selección de dirección previa antes de outcomes. No más QA ni relanzar corridas cerradas.
