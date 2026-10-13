@@ -150,7 +150,24 @@ def fit_trendline(high, low, direction, p=5, tol=0.0, vmax=0.02, min_touches=3, 
     return None
 
 
-def simulate_zones(P, high, low, st, M, atr_mult_tol=0.2, atr_mult_break=0.5, vmax=0.02, min_touches=3, pivot_p=5, refit=20, min_zone=120, tick=0.25):
+def gap_envelope(c, e, direction, q=10):
+    """Distancia constante según el usuario: el promedio de los puntos en que el precio MÁS SE ACERCA a la EMA y de los puntos en que MÁS SE ALEJA se mantienen relativamente constantes.
+    g = distancia a favor de la tendencia (e−c en baja, c−e en suba); extremos de g con ventana ±q: lejos = máximos, cerca = mínimos. Devuelve medias y coeficientes de variación (desvío/media) de cada serie."""
+    g = (e - c) if direction < 0 else (c - e); far = g[pivots(g, q, True)]; near = g[pivots(-g, q, True)]
+    def st(v): return (float(np.mean(v)), float(np.std(v) / max(abs(np.mean(v)), 1e-9)), len(v))
+    out = dict(far_n=len(far), near_n=len(near))
+    if len(far) >= 2: out["far_mean"], out["far_cv"], _ = st(far)
+    if len(near) >= 2: out["near_mean"], out["near_cv"], _ = st(near)
+    return out
+
+
+def envelope_ok(env, max_far_cv, max_near_cv, min_pivots=2):
+    if max_far_cv is None and max_near_cv is None: return True
+    if env["far_n"] < min_pivots or env["near_n"] < min_pivots or "far_cv" not in env or "near_cv" not in env: return False
+    return (max_far_cv is None or env["far_cv"] <= max_far_cv) and (max_near_cv is None or env["near_cv"] <= max_near_cv) and env["near_mean"] > 0
+
+
+def simulate_zones(P, high, low, st, M, atr_mult_tol=0.2, atr_mult_break=0.5, vmax=0.02, min_touches=3, pivot_p=5, refit=20, min_zone=120, tick=0.25, env_q=10, max_far_cv=None, max_near_cv=None, min_env_pivots=2):
     """Réplica del indicador: sobre cada tramo crudo de `st` (inicio retroactivo = detección − M + 1) ajusta la tangente cada `refit` barras; confirma la zona cuando hay recta válida y
     longitud ≥ min_zone; la zona termina cuando el cierre rompe la línea más de atr_mult_break·ATR (o cuando termina el tramo crudo). Devuelve una lista de dicts por tramo crudo."""
     c = P["c"]; atr = P["atr"]; n = len(c); out = []; ch = np.flatnonzero(np.r_[True, st[1:] != st[:-1], True])
@@ -161,8 +178,9 @@ def simulate_zones(P, high, low, st, M, atr_mult_tol=0.2, atr_mult_break=0.5, vm
         while t <= t1:
             if line is None or (t - rec.get("last_fit", -10**9)) >= refit:
                 tol = atr_mult_tol * atr[t]; r = fit_trendline(high[rs:t + 1], low[rs:t + 1], d, p=pivot_p, tol=tol, vmax=vmax, min_touches=min_touches); rec["last_fit"] = t
-                if r is not None: line = r
-                elif line is not None and False: line = None
+                if r is not None:
+                    env = gap_envelope(c[rs:t + 1], P["e"][rs:t + 1], d, env_q); line = r if envelope_ok(env, max_far_cv, max_near_cv, min_env_pivots) else None; rec["env"] = env
+                else: line = None
             if line is not None:
                 k = t - rs; l = line["intercept"] + line["slope"] * k; price_line = l if d < 0 else -l; brk = (c[t] > price_line + atr_mult_break * atr[t]) if d < 0 else (c[t] < price_line - atr_mult_break * atr[t])
                 if brk: rec["broken_at"] = t; break

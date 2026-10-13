@@ -4,7 +4,8 @@
 // ZONA = periodo en el que, medido sobre ventanas moviles (todo en cocientes o en unidades de ATR, sin ticks fijos):
 //   (1) la EMA conserva direccion:   |EMA[t]-EMA[t-K]| / suma|dEMA| >= MinEmaEfficiency     y   |EMA[t]-EMA[t-K]| >= MinEmaDriftAtr * ATR * sqrt(K)
 //   (2) el precio vive del lado de la tendencia: fraccion de las ultimas M barras con close del lado >= MinSideFraction
-//   (3) la distancia precio-EMA es estable: desvio(g)/|media(g)| <= MaxGapCV, y |media(g)| >= MinGapAtr * ATR   (g = close-EMA)
+//   (3) DISTANCIA CONSTANTE (definicion del usuario): el promedio de los puntos en que el precio MAS SE ALEJA de la EMA y el de los puntos en que MAS SE ACERCA son relativamente constantes
+//       (coeficiente de variacion de cada serie de extremos <= MaxFarCv / MaxNearCv; se evalua sobre la zona, ver EnvelopeOk). Ademas |media(close-EMA)| >= MinGapAtr * ATR.
 //   Se mantiene HoldBars barras tras dejar de cumplirse (evita que una zona se parta por una barra).
 // LINEA DE TENDENCIA (v3): la linea azul es una TANGENTE como la dibuja un humano, no la EMA desplazada: en baja une maximos y el precio queda por DEBAJO; en suba une minimos
 //   y el precio queda por ENCIMA (desde uno de los 2 pivotes mas extremos del primer tramo de la zona; el precio puede cruzarla en <= ViolFraction de las barras). Debe tocar >= MinTouches pivotes
@@ -54,7 +55,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 
 		// parametros efectivos (despues de aplicar el preset)
 		private int    pM, pK, pHold;
-		private double pF, pEr, pCv, pDriftAtr, pDminAtr;
+		private double pF, pEr, pCv, pDriftAtr, pDminAtr, pFarCv, pNearCv;
 
 		protected override void OnStateChange()
 		{
@@ -84,7 +85,10 @@ namespace NinjaTrader.NinjaScript.Indicators
 				MinEmaEfficiency = 0.7;
 				MinEmaDriftAtr   = 0.8;
 				MinSideFraction  = 0.95;
-				MaxGapCV         = 0.5;
+				MaxGapCV         = 0.0;
+				MaxFarCv         = 0.4;
+				MaxNearCv        = 0.5;
+				EnvPivotBars     = 10;
 				MinGapAtr        = 2.0;
 				HoldBars         = 66;
 
@@ -108,10 +112,10 @@ namespace NinjaTrader.NinjaScript.Indicators
 
 		private void ApplyPreset()
 		{
-			pM = WindowBars; pK = SlopeBars; pHold = HoldBars; pF = MinSideFraction; pEr = MinEmaEfficiency; pCv = MaxGapCV; pDriftAtr = MinEmaDriftAtr; pDminAtr = MinGapAtr;
-			if (Preset == 1)      { pM = 200; pK = 150; pF = 0.95; pEr = 0.7; pCv = 0.3; pDriftAtr = 0.8; pDminAtr = 2.0; pHold = 66; }
-			else if (Preset == 2) { pM = 200; pK = 150; pF = 0.95; pEr = 0.7; pCv = 0.5; pDriftAtr = 0.8; pDminAtr = 2.0; pHold = 66; }
-			else if (Preset == 3) { pM = 150; pK = 100; pF = 0.90; pEr = 0.7; pCv = 0.5; pDriftAtr = 0.5; pDminAtr = 2.0; pHold = 50; }
+			pM = WindowBars; pK = SlopeBars; pHold = HoldBars; pF = MinSideFraction; pEr = MinEmaEfficiency; pCv = MaxGapCV; pDriftAtr = MinEmaDriftAtr; pDminAtr = MinGapAtr; pFarCv = MaxFarCv; pNearCv = MaxNearCv;
+			if (Preset == 1)      { pM = 200; pK = 150; pF = 0.95; pEr = 0.7; pCv = 0; pFarCv = 0.3; pNearCv = 0.4; pDriftAtr = 0.8; pDminAtr = 2.0; pHold = 66; }
+			else if (Preset == 2) { pM = 200; pK = 150; pF = 0.95; pEr = 0.7; pCv = 0; pFarCv = 0.4; pNearCv = 0.5; pDriftAtr = 0.8; pDminAtr = 2.0; pHold = 66; }
+			else if (Preset == 3) { pM = 150; pK = 100; pF = 0.90; pEr = 0.7; pCv = 0; pFarCv = 0.6; pNearCv = 0.7; pDriftAtr = 0.5; pDminAtr = 2.0; pHold = 50; }
 		}
 
 		protected override void OnBarUpdate()
@@ -142,7 +146,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 			if (length >= MinZoneBars && (CurrentBar - lastFitBar >= RefitBars || !lineValid))
 			{
 				lastFitBar = CurrentBar;
-				lineValid = FitTrendline(rawNow, length);
+				lineValid = FitTrendline(rawNow, length) && EnvelopeOk(rawNow, length);
 			}
 			if (lineValid && BrokenLine(rawNow, length)) { broken = true; confirmed = false; return; }
 
@@ -252,6 +256,37 @@ namespace NinjaTrader.NinjaScript.Indicators
 			return true;
 		}
 
+		// distancia constante: extremos de g = distancia a favor de la tendencia (EMA-close en baja, close-EMA en suba) en la zona
+		private bool EnvelopeOk(int dir, int n)
+		{
+			if (pFarCv <= 0 && pNearCv <= 0) return true;
+			int q = EnvPivotBars;
+			double[] g = new double[n];
+			for (int k = 0; k < n; k++)
+			{
+				int ago = n - 1 - k;
+				g[k] = dir < 0 ? ema[ago] - Close[ago] : Close[ago] - ema[ago];
+			}
+			double fs = 0, fss = 0, ns = 0, nss = 0; int fn = 0, nn = 0;
+			for (int i = 0; i < n - q; i++)
+			{
+				int lo = Math.Max(0, i - q), hi = i + q;
+				double mx = g[lo], mn = g[lo]; int cmx = 0, cmn = 0;
+				for (int k = lo; k <= hi; k++) { if (g[k] > mx) mx = g[k]; if (g[k] < mn) mn = g[k]; }
+				for (int k = lo; k <= hi; k++) { if (g[k] == g[i]) { cmx++; cmn++; } }
+				if (g[i] == mx && cmx == 1) { fs += g[i]; fss += g[i] * g[i]; fn++; }
+				if (g[i] == mn && cmn == 1) { ns += g[i]; nss += g[i] * g[i]; nn++; }
+			}
+			if (fn < 2 || nn < 2) return false;
+			double fm = fs / fn, nm = ns / nn;
+			if (fm <= 0 || nm <= 0) return false;
+			double fcv = Math.Sqrt(Math.Max(fss / fn - fm * fm, 0)) / fm;
+			double ncv = Math.Sqrt(Math.Max(nss / nn - nm * nm, 0)) / nm;
+			if (pFarCv > 0 && fcv > pFarCv) return false;
+			if (pNearCv > 0 && ncv > pNearCv) return false;
+			return true;
+		}
+
 		private double LineH(int n)                                                   // valor de la tangente (espacio h) en la barra actual
 		{
 			return lineH0 + lineSlope * ((n - 1) - lineI);
@@ -347,6 +382,18 @@ namespace NinjaTrader.NinjaScript.Indicators
 		[NinjaScriptProperty] [Range(0.0, 10.0)]
 		[Display(Name = "Max Gap CV (0 = off)", Order = 6, GroupName = "3. Detector manual (Preset 0)")]
 		public double MaxGapCV { get; set; }
+
+		[NinjaScriptProperty] [Range(0.0, 10.0)]
+		[Display(Name = "Max Far CV (0 = off)", Order = 9, GroupName = "3. Detector manual (Preset 0)", Description = "Variacion maxima (desvio/media) de las distancias a la EMA en los puntos en que el precio mas se aleja.")]
+		public double MaxFarCv { get; set; }
+
+		[NinjaScriptProperty] [Range(0.0, 10.0)]
+		[Display(Name = "Max Near CV (0 = off)", Order = 10, GroupName = "3. Detector manual (Preset 0)", Description = "Idem para los puntos en que el precio mas se acerca a la EMA.")]
+		public double MaxNearCv { get; set; }
+
+		[NinjaScriptProperty] [Range(2, 100)]
+		[Display(Name = "Envelope Pivot Bars", Order = 11, GroupName = "3. Detector manual (Preset 0)", Description = "Un extremo de distancia es el maximo/minimo local en +-N barras.")]
+		public int EnvPivotBars { get; set; }
 
 		[NinjaScriptProperty] [Range(0.0, 100.0)]
 		[Display(Name = "Min Gap (ATR)", Order = 7, GroupName = "3. Detector manual (Preset 0)")]

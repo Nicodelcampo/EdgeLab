@@ -26,3 +26,11 @@ def test_trendline_is_a_tangent_mostly_not_crossed_by_price():
     up = Z.fit_trendline(200 - hi, 200 - lo, 1, p=5, tol=0.8, min_touches=3)                               # espejo: soporte por mínimos
     assert up is not None and up["slope"] < 0 or up is None
     flat = Z.fit_trendline(np.full(200, 10.0) + rng.random(200) * 0.1, np.full(200, 9.0), -1, p=5, tol=0.05, min_touches=3); assert flat is None or flat["slope"] < 0
+
+
+def test_gap_envelope_constant_channel_vs_converging():
+    n = 600; t = np.arange(n); e = 100 - 0.1 * t
+    rng = np.random.default_rng(2); chan = e - (20 + 6 * np.sin(t / 12.0)) + rng.standard_normal(n) * 0.2                    # canal paralelo a la EMA: distancias extremas constantes
+    conv = e - (40 * (1 - t / n) + 5 + 4 * np.sin(t / 12.0))                                                                 # el precio converge hacia la EMA: la distancia cae
+    a, b = Z.gap_envelope(chan, e, -1), Z.gap_envelope(conv, e, -1)
+    assert Z.envelope_ok(a, 0.3, 0.4) and not Z.envelope_ok(b, 0.3, 0.4) and a["far_cv"] < b["far_cv"]

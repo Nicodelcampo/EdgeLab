@@ -57,7 +57,7 @@ def process(tk, dates, label):
     slope = np.sign(np.r_[np.zeros(100), P["e"][100:] - P["e"][:-100]])
     for name, kw in CONFIGS.items():
         if CFG.get("sim"):                                                      # réplica del indicador con tangente: zonas confirmadas
-            kw = dict(kw); M = kw["M"]; st = Z.state(P, **kw); st = np.where(inset, st, 0); sim = Z.simulate_zones(P, h, l, st, M, tick=tick, **CFG.get("sim_params", {})); cf = [z for z in sim if z["confirmed"] and inset[z["detect"]]]; fw = {}
+            kw = dict(kw); M = kw["M"]; ex = {k: kw.pop(k) for k in ("max_far_cv", "max_near_cv") if k in kw}; st = Z.state(P, **kw); st = np.where(inset, st, 0); sim = Z.simulate_zones(P, h, l, st, M, tick=tick, **{**CFG.get("sim_params", {}), **ex}); cf = [z for z in sim if z["confirmed"] and inset[z["detect"]]]; fw = {}
             for H in HZ:
                 v = [z["dir"] * (c[min(z["confirm_bar"] + H, n - 1)] - c[z["confirm_bar"]]) for z in cf]; fw[str(H)] = (float(np.sum(v)), len(v))
             rows.append(dict(config=name, contract=label, sessions=len(dates), raw_runs=int(sum(1 for z in sim if inset[z["detect"]])), confirmed=len(cf), length=[z["length"] for z in cf], move_pts=[z["move_pts"] for z in cf], touches=[z["touches"] for z in cf],
