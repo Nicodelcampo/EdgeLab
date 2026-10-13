@@ -24,3 +24,10 @@ Nuevo parámetro `MinZoneBars` (por defecto 120): la zona se confirma, y `State`
 - Si operar estas zonas tiene ventaja. Deriva posterior media a favor de la tendencia dentro de las zonas (ticks de 0,25 pt por 100 barras): Normal +0,57, Pocas +0,51, Muchas −0,09, original −1,52; una regla trivial (solo pendiente de la EMA) da −0,4 a −0,5. Diferencias de décimas de tick, barras solapadas, sin costos: es descripción, no una prueba. La pregunta del usuario (¿al darse vuelta el precio atraviesa/continúa más de lo que rebota?) necesita una medición pre-registrada aparte, como VIO-1.
 - Que el indicador compile en NT8 (no hay compilador acá; la lógica es la de `edgelab/research/ema_zones.py`, probada en Python con `tests/test_ema_zones.py`).
 - El «ATR» del indicador es la media simple de (High−Low) en 100 barras, no el ATR de Wilder de NT8, porque así se calibró.
+
+
+## Corrección (2026-10-13, tras la observación del usuario)
+- Las 4 líneas azules del montaje inicial **no eran del usuario**: eran las del indicador anterior (la EMA desplazada), y se había dicho por error que eran trazadas a mano. La **única** línea hecha a mano es la de la última captura (NQ 12-26, 13/10/2026, 15:59), la más empinada.
+- Esa línea es una **tangente**: el precio queda por debajo (resistencia bajista) y casi nunca la cruza. El indicador anterior dibujaba la EMA desplazada por la distancia media, que atraviesa el precio por cualquier lado.
+- Por eso el indicador v3 dibuja una tangente (`fit_trendline`). Verificación real: sobre esa captura (digitalizada) el ajuste da pendiente 0,878 vs 0,877 de la línea del usuario, con 0 cruces, anclada en el máximo del inicio y con 3 toques. Parámetros estrictos: tolerancia de toque 0,2 ATR y ≤ 2 % de barras cruzando. Los parámetros más laxos (10 % de cruces) que se habían elegido usando las líneas del indicador viejo como si fueran del usuario quedaron **descartados**.
+- Validación: 1 línea, 1 captura. No se calibró nada más contra capturas.

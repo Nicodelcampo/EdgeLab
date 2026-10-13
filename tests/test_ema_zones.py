@@ -21,8 +21,8 @@ def test_score_and_match_roundtrip():
 
 def test_trendline_is_a_tangent_mostly_not_crossed_by_price():
     rng = np.random.default_rng(7); n = 400; base = 100 - 0.2 * np.arange(n) + np.cumsum(rng.standard_normal(n) * 0.3); hi = base + 0.5 + rng.random(n); lo = base - 0.5
-    r = Z.fit_trendline(hi, lo, -1, p=5, tol=0.8, min_touches=3)
-    assert r is not None and r["slope"] < 0 and r["touches"] >= 3 and r["violations"] <= 0.10 * (n - r["i"])
+    r = Z.fit_trendline(hi, lo, -1, p=5, tol=0.8, vmax=0.05, min_touches=3)
+    assert r is not None and r["slope"] < 0 and r["touches"] >= 3 and r["violations"] <= 0.02 * (n - r["i"])
     up = Z.fit_trendline(200 - hi, 200 - lo, 1, p=5, tol=0.8, min_touches=3)                               # espejo: soporte por mínimos
     assert up is not None and up["slope"] < 0 or up is None
     flat = Z.fit_trendline(np.full(200, 10.0) + rng.random(200) * 0.1, np.full(200, 9.0), -1, p=5, tol=0.05, min_touches=3); assert flat is None or flat["slope"] < 0

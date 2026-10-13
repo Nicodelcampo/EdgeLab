@@ -127,11 +127,11 @@ def pivots(x, p, high=True):
     return out
 
 
-def fit_trendline(high, low, direction, p=5, tol=0.0, vmax=0.10, min_touches=3, max_start_frac=0.5, min_len=30, anchors=2, min_gap=10):
+def fit_trendline(high, low, direction, p=5, tol=0.0, vmax=0.02, min_touches=3, max_start_frac=0.5, min_len=30, anchors=2, min_gap=10):
     """Línea de tendencia como la traza un humano: en baja une máximos y el precio queda (casi siempre) POR DEBAJO; en suba une mínimos y el precio queda por ENCIMA.
     Para cada ancla (los `anchors` pivotes más extremos del primer `max_start_frac` de la zona, en ese orden) prueba las rectas hacia pivotes posteriores con la pendiente correcta; una recta es válida si a lo sumo
     una fracción `vmax` de las barras posteriores al ancla la cruza por más de `tol` y toca ≥ `min_touches` pivotes (|dist| ≤ tol). Se queda con la primera ancla que tenga una recta válida y, dentro de ella, con la que
-    más toca y llega más lejos. Calibrada contra 5 líneas trazadas a mano por el usuario (pendiente con ~2 % de error). Devuelve dict(i, j, slope, intercept, touches, violations, span) en índices de la zona, o None."""
+    más toca y llega más lejos. Verificada contra UNA línea trazada a mano por el usuario (captura NQ 12-26 del 13/10/2026): misma pendiente (0,878 vs 0,877) con vmax=0 y tol 0,1–0,3 ATR; con esos parámetros estrictos el precio no cruza la línea. Devuelve dict(i, j, slope, intercept, touches, violations, span) en índices de la zona, o None."""
     h = np.asarray(high if direction < 0 else -np.asarray(low), float); n = len(h)                      # alcista: se espeja (−mínimos) y se trata como bajista
     if n < min_len: return None
     pv = pivots(h, p, True); cand = sorted([k for k in pv if k <= max_start_frac * n], key=lambda k: -h[k])[:anchors]; xs = np.arange(n)
@@ -150,7 +150,7 @@ def fit_trendline(high, low, direction, p=5, tol=0.0, vmax=0.10, min_touches=3, 
     return None
 
 
-def simulate_zones(P, high, low, st, M, atr_mult_tol=0.3, atr_mult_break=0.5, vmax=0.10, min_touches=3, pivot_p=5, refit=20, min_zone=120, tick=0.25):
+def simulate_zones(P, high, low, st, M, atr_mult_tol=0.2, atr_mult_break=0.5, vmax=0.02, min_touches=3, pivot_p=5, refit=20, min_zone=120, tick=0.25):
     """Réplica del indicador: sobre cada tramo crudo de `st` (inicio retroactivo = detección − M + 1) ajusta la tangente cada `refit` barras; confirma la zona cuando hay recta válida y
     longitud ≥ min_zone; la zona termina cuando el cierre rompe la línea más de atr_mult_break·ATR (o cuando termina el tramo crudo). Devuelve una lista de dicts por tramo crudo."""
     c = P["c"]; atr = P["atr"]; n = len(c); out = []; ch = np.flatnonzero(np.r_[True, st[1:] != st[:-1], True])

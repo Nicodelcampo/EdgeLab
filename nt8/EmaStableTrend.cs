@@ -9,7 +9,7 @@
 // LINEA DE TENDENCIA (v3): la linea azul es una TANGENTE como la dibuja un humano, no la EMA desplazada: en baja une maximos y el precio queda por DEBAJO; en suba une minimos
 //   y el precio queda por ENCIMA (desde uno de los 2 pivotes mas extremos del primer tramo de la zona; el precio puede cruzarla en <= ViolFraction de las barras). Debe tocar >= MinTouches pivotes
 //   (|dist| <= TouchTolAtr*ATR). Se recalcula cada RefitBars barras y la zona TERMINA cuando el cierre rompe la linea mas de BreakAtr*ATR. La zona solo se confirma si hay una tangente valida.
-//   Referencia: edgelab/research/ema_zones.py::fit_trendline (verificada contra una linea trazada a mano por el usuario: misma pendiente).
+//   Referencia: edgelab/research/ema_zones.py::fit_trendline (verificada contra UNA linea trazada a mano por el usuario: misma pendiente; el precio no la cruza).
 // LONGITUD DE LA ZONA (lo que importa para operar): la zona solo se CONFIRMA (State = +1/-1) cuando lleva MinZoneBars barras seguidas
 //   y (si MinMovePoints > 0) el precio recorrio al menos esos puntos desde el inicio de la zona. Antes de eso State = 0.
 // ATRIBUTOS por zona (plots): Length (barras desde el inicio), MovePts (puntos recorridos), SlopeAtr (pendiente de la EMA en ATR por barra, con signo),
@@ -73,8 +73,8 @@ namespace NinjaTrader.NinjaScript.Indicators
 				MinZoneBars      = 120;
 				MinMovePoints    = 0;
 				PivotBars        = 5;
-				TouchTolAtr      = 0.3;
-				ViolFraction     = 0.10;
+				TouchTolAtr      = 0.2;
+				ViolFraction     = 0.02;
 				MinTouches       = 3;
 				BreakAtr         = 0.5;
 				RefitBars        = 10;

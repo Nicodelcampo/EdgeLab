@@ -9,3 +9,6 @@
 
 ## Archivos
 `nt8/EmaStableTrend_original.cs` (versión del otro agente), `edgelab/research/ema_zones.py`, `tools/ema_digitize.py`, `tools/ema_calibrate_screens.py`, `tools/ema_zones_study.py`, `templates.json` (geometría de píxeles de las capturas), `calibration.json`.
+
+## Línea de tendencia (precisión del usuario, 2026-10-13)
+La línea correcta es una **tangente**: en baja une máximos y el precio queda por debajo (en suba, une mínimos y el precio queda por encima); no puede estar «cruzada por cualquier lado». La EMA solo detecta la zona; la línea se ajusta sobre los extremos. Única referencia hecha a mano: la captura NQ 12-26 (13/10/2026 15:59), pendiente 0,877 px/px, reproducida por `fit_trendline` (0,878).
