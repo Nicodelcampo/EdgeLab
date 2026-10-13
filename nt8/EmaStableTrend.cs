@@ -230,11 +230,11 @@ namespace NinjaTrader.NinjaScript.Indicators
 				for (int k = lo; k <= hi; k++) { if (h[k] == h[i]) cnt++; }
 				if (h[i] == mx && cnt == 1) pv.Add(i);
 			}
-			// anclas: los 4 pivotes mas altos dentro del primer 50% de la zona
+			// anclas: los 12 pivotes mas altos dentro del primer 50% de la zona
 			System.Collections.Generic.List<int> cand = new System.Collections.Generic.List<int>();
 			foreach (int k in pv) if (k <= 0.5 * n) cand.Add(k);
 			cand.Sort((a, b) => h[b].CompareTo(h[a]));
-			if (cand.Count > 4) cand.RemoveRange(4, cand.Count - 4);
+			if (cand.Count > 12) cand.RemoveRange(12, cand.Count - 12);
 
 			bool found = false; int bi = 0; double bsl = 0; int bestTouches = 0;
 			foreach (int i in cand)                                                // anclas por extremidad: la primera que tenga una recta valida gana
