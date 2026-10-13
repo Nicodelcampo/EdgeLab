@@ -25,3 +25,6 @@ MLOFI: trades con bid/ask no reconstruyen cambios de profundidad ni cancelacione
 
 ## Antes de lanzar
 Implementar y probar truncación/prefijo, same-ns, transición trasUNKNOWN, gaps, sesión, purga60s, embargo y calendario. Congelar los dos contrastes, formas funcionales, límites, soporte mínimo y criterio inconcluso en plan propio. Medir soporte dentro de esa misma corrida; no repetir QA de dataset ni crear cadena de probes de validación. Registrar todos los negativos. No canonicalBrainwriter ni ganador automático.
+
+## Guardia adicional de implementación
+La máquina de transiciones debe avanzar sobre **todos los anchors observados y estados proxy antes de calcular/filtrar la respuesta futura**, incluidos los que después queden censurados o sin label usable. No construir la historia sólo sobre filas que sobrevivieron el filtro de outcomes: eso cambiaría transiciones usando elegibilidad futura. Features y controles con retardos comparten ese mismo prefijo; filtro de scoring se aplica al final. PrototipoStatePath no acepta etiquetas/outcomes, pero esta integración sigue pendiente.

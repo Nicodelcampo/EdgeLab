@@ -34,8 +34,8 @@ class ChunkDelta:
     unavailable_events: int
     buckets_processed: int
 
-@lru_cache(maxsize=4)
-def _bucket_code(collect_diagnostics,shared_footprint=False):
+@lru_cache(maxsize=8)
+def _bucket_code(collect_diagnostics,shared_footprint=False,rolling_percentile=False):
     fn=_capture_tree('BT2A').body[0]
     cut=next(i for i,n in enumerate(fn.body) if isinstance(n,ast.For) and ast.unparse(n.target)=='i' and ast.unparse(n.iter)=='range(n_ticks)')
     body=[];counts={'pending':0,'log':0,'omitted_log':0,'omitted_diagnostics':0}
@@ -61,6 +61,19 @@ def _bucket_code(collect_diagnostics,shared_footprint=False):
         stop=next(i for i,n in enumerate(flush.body[begin:],begin) if isinstance(n,ast.For) and ast.unparse(n.target)=='k' and ast.unparse(n.iter)=='range(len(blk))')
         if len(flush.body[begin:stop+1])!=6:raise ValueError('pinned footprint census drift')
         flush.body[begin:stop+1]=ast.parse('ask_map,bid_map,signed_flow,n_quote,n_rule=_shared_footprint(blk_px,blk_vol,blk_bid,blk_ask)').body
+    if rolling_percentile:
+        census={'threshold':0,'append':0}
+        class Rolling(ast.NodeTransformer):
+            def visit_Call(self,n):
+                if ast.unparse(n)=='_percentile(abs_ring, abs_pct)':
+                    census['threshold']+=1;return ast.parse('_rolling_percentile.percentile(abs_pct)',mode='eval').body
+                return self.generic_visit(n)
+            def visit_Expr(self,n):
+                if ast.unparse(n)=='abs_ring.append(a_score)':
+                    census['append']+=1;return [n,ast.parse('_rolling_percentile.append(a_score)').body[0]]
+                return self.generic_visit(n)
+        fn=Rolling().visit(fn)
+        if census!={'threshold':1,'append':2}:raise ValueError('pinned rolling percentile hook census drift')
     tr=Trim()
     for n in fn.body[:cut]:
         if isinstance(n,ast.Assign) and any(isinstance(t,ast.Name) and t.id in ('n_ticks','s_ids') for t in n.targets):continue
@@ -74,7 +87,7 @@ def _bucket_code(collect_diagnostics,shared_footprint=False):
 _FIELDS=('ts_ns','price_ticks','volume','bid_ticks','ask_ticks','sequence','sessions')
 
 class BT2AStream:
-    def __init__(self,*,params,tick_size,max_active=100000,max_records_per_chunk=200000,max_chunk_ticks=100000,max_buffer_ticks=1000,max_history_values=5000,collect_diagnostics=False,footprint_cache=None):
+    def __init__(self,*,params,tick_size,max_active=100000,max_records_per_chunk=200000,max_chunk_ticks=100000,max_buffer_ticks=1000,max_history_values=5000,collect_diagnostics=False,footprint_cache=None,rolling_percentile=False):
         mod=_module('BT2A')
         if not isinstance(params,dict) or set(params)-set(mod.DEFAULTS):raise ValueError('unknown detector params')
         self.params=MappingProxyType({**mod.DEFAULTS,**params})
@@ -82,6 +95,7 @@ class BT2AStream:
         for v in (max_active,max_records_per_chunk,max_chunk_ticks,max_buffer_ticks,max_history_values):
             if type(v) is not int or v<1:raise ValueError('positive explicit stream limits')
         if type(collect_diagnostics) is not bool:raise ValueError('explicit diagnostic mode')
+        if type(rolling_percentile) is not bool:raise ValueError('explicit rolling percentile opt-in')
         if max(10,int(self.params['AbsorptionLookback']))>max_history_values:raise ValueError('native history exceeds budget; no shortening')
         self.window=max(2,int(self.params['TapeWindowTicks']))
         if self.window>max_buffer_ticks:raise ValueError('native tape window exceeds buffer budget; no shortening')
@@ -94,7 +108,12 @@ class BT2AStream:
             from .bt2a_footprint_cache import BucketFootprintCache
             if not isinstance(footprint_cache,BucketFootprintCache):raise ValueError('typed shared footprint memo')
             env['_shared_footprint']=footprint_cache.prepare
-        exec(_bucket_code(collect_diagnostics,footprint_cache is not None),env);self.flush,self.state_sizes=env['bucket_engine'](self.ticks,params=dict(self.params))
+        self.rolling_percentile=None
+        if rolling_percentile:
+            from .rolling_native_percentile import RollingNativePercentile
+            self.rolling_percentile=RollingNativePercentile(max(10,int(self.params['AbsorptionLookback'])))
+            env['_rolling_percentile']=self.rolling_percentile
+        exec(_bucket_code(collect_diagnostics,footprint_cache is not None,rolling_percentile),env);self.flush,self.state_sizes=env['bucket_engine'](self.ticks,params=dict(self.params))
     def _log(self,t_ns,kind,payload):
         # Ordered normalized native detector diagnostics, no FILL/order labels.
         self.log_hash.update(f'{kind}|{payload}\n'.encode());self.log_count+=1

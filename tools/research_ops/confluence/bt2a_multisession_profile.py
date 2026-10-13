@@ -36,9 +36,9 @@ def fingerprint(s):
  state={'closure':closure,'buffer':s.buffer,'session':s.session,'last_clock':s.last_clock,'last_session':s.last_session,'next_index':s.next_index,'total_buckets':s.total_buckets,'closed':s.closed,'poisoned':s.poisoned}
  return digest(normalized(state))
 
-def measure(tapes,configs,tick_size,schedule):
+def measure(tapes,configs,tick_size,schedule,*,rolling_percentile=False,collect_diagnostics=False):
  if schedule not in ('PROFILE_SEQUENTIAL','CHUNK_INTERLEAVED'):raise ValueError('closed scheduling comparison')
- cache=BucketFootprintCache();ss=[BT2AStream(params=c['params'],tick_size=tick_size,collect_diagnostics=False,footprint_cache=cache) for c in configs];hs=[hashlib.sha256() for s in ss];counts=[0]*len(ss);u=[0]*len(ss);snapshots=[];offset=0;started=time.monotonic();native_seconds=0.;fingerprint_seconds=0.
+ cache=BucketFootprintCache();ss=[BT2AStream(params=c['params'],tick_size=tick_size,collect_diagnostics=collect_diagnostics,footprint_cache=cache,rolling_percentile=rolling_percentile) for c in configs];hs=[hashlib.sha256() for s in ss];counts=[0]*len(ss);u=[0]*len(ss);snapshots=[];offset=0;started=time.monotonic();native_seconds=0.;fingerprint_seconds=0.
  def consume(k,d):
   u[k]+=d.unavailable_events
   for r in d.records:hs[k].update(repr(r).encode()+b'\n');counts[k]+=1
@@ -53,7 +53,15 @@ def measure(tapes,configs,tick_size,schedule):
   else:
    for j in range(0,len(t),1000):
     for k in range(len(ss)):push(k,j,min(j+1000,len(t)))
-  beg=time.monotonic();snapshots.append([fingerprint(s) for s in ss]);fingerprint_seconds+=time.monotonic()-beg;offset+=len(t)
+  beg=time.monotonic()
+  for s in ss:
+   if s.rolling_percentile is not None:
+    cells=dict(zip(s.flush.__code__.co_freevars,s.flush.__closure__))
+    history=cells['abs_ring'].cell_contents
+    exact=lambda vs:[float(v).hex() for v in vs]
+    if exact(history)!=exact(s.rolling_percentile.fifo) or exact(sorted(history))!=exact(s.rolling_percentile.ordered):
+     raise ValueError('rolling cache exact history/order binding')
+  snapshots.append([fingerprint(s) for s in ss]);fingerprint_seconds+=time.monotonic()-beg;offset+=len(t)
  for k,s in enumerate(ss):
   beg=time.monotonic();d=s.finish();native_seconds+=time.monotonic()-beg;consume(k,d)
  beg=time.monotonic();final=[fingerprint(s) for s in ss];fingerprint_seconds+=time.monotonic()-beg

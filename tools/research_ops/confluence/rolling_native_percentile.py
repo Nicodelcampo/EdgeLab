@@ -1,4 +1,4 @@
-"""Candidate-only stable rolling percentile; not wired into native detector."""
+"""Stable native interpolation; explicit experimental detector opt-in only."""
 from bisect import bisect_left,bisect_right
 from collections import deque
 import math
