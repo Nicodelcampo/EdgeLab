@@ -3,6 +3,7 @@ SITES={
  'tools.research_ops.confluence.market_pilot':'MARKET_RUNNER',
  'tools.research_ops.confluence.geometry_replay':'GEOMETRY_REPLAY',
  'tools.research_ops.confluence.episodes':'EPISODES',
+ 'tools.research_ops.confluence.geometry_counts':'GEOMETRY_COUNTS',
  'tools.research_ops.confluence.asof_intersections':'ASOF_JOIN',
  'tools.research_ops.confluence.racimo_asof':'RACIMO',
  'tools.research_ops.confluence.kaggle_session_reader':'SESSION_READER',

@@ -10,7 +10,7 @@ from .package_synthetic_notebook import SOURCE_FILES
 from .source_footer import validate_pin
 from .build_target_free_pilot import digest
 
-EXTRA=['tools/research_ops/confluence/'+n+'.py' for n in ('avz_stream','bt2_stream','bt2a_stream','session_primitives','kaggle_session_reader','geometry_replay','market_pilot','failure_telemetry')]+['docs/research/ops/MNQ_CONFLUENCE_MARKET_PILOT_PLAN.json','docs/research/ops/MNQ_CONFLUENCE_MARKET_PILOT_RETRY_PLAN.json','docs/research/ops/MNQ_CONFLUENCE_MARKET_DIAGNOSTIC_PLAN.json']
+EXTRA=['tools/research_ops/confluence/'+n+'.py' for n in ('avz_stream','bt2_stream','bt2a_stream','session_primitives','kaggle_session_reader','geometry_replay','market_pilot','failure_telemetry','geometry_counts')]+['docs/research/ops/MNQ_CONFLUENCE_MARKET_PILOT_PLAN.json','docs/research/ops/MNQ_CONFLUENCE_MARKET_PILOT_RETRY_PLAN.json','docs/research/ops/MNQ_CONFLUENCE_MARKET_DIAGNOSTIC_PLAN.json']
 BOOT='''import os,sys,json,pathlib,hashlib,base64,zlib,tempfile,subprocess,time,signal,resource,urllib.request
 os.environ.update(OPENBLAS_NUM_THREADS='1',OMP_NUM_THREADS='1',NUMBA_NUM_THREADS='1',PYTHONUNBUFFERED='1')
 URL=__URL__

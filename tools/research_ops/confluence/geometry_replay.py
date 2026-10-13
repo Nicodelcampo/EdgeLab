@@ -12,13 +12,19 @@ from . import racimo_asof
 from .build_target_free_pilot import digest
 
 class GeometryReplay:
-    def __init__(self,*,contract,tape_sha256,racimo_params=(),max_episodes=100000,max_known_zones=1000000,max_records_per_clock=100000):
+    def __init__(self,*,contract,tape_sha256,racimo_params=(),max_episodes=100000,max_known_zones=1000000,max_records_per_clock=100000,count_only=False):
         self.contract=contract;self.tape_sha=tape_sha256;self.params=racimo_params;self.max_episodes=max_episodes;self.max_known=max_known_zones;self.max_records=max_records_per_clock
+        if type(count_only) is not bool:raise ValueError('explicit geometry output mode')
+        self.count_only=count_only
         self.racimos={};self.born_scope={};self.retired=set();self.session=None;self.last=None
         self.source_hash=hashlib.sha256(Path(racimo_asof.__file__).read_bytes()).hexdigest()
     def begin_session(self,session):
         if self.session is not None and session<=self.session:raise ValueError('strict session scopes')
-        self.episodes=EpisodeStream(contract=self.contract,tape_sha256=self.tape_sha,trade_date=session,max_active=self.max_episodes,max_pairs=self.max_episodes,max_triples=self.max_episodes)
+        engine=EpisodeStream
+        if self.count_only:
+            from .geometry_counts import GeometryCountStream
+            engine=GeometryCountStream
+        self.episodes=engine(contract=self.contract,tape_sha256=self.tape_sha,trade_date=session,max_active=self.max_episodes,max_pairs=self.max_episodes,max_triples=self.max_episodes)
         self.session=session
     def apply(self,c,records,*,origin_date):
         if self.session is None:raise ValueError('declare session before capture')

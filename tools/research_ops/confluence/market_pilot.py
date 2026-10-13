@@ -64,6 +64,7 @@ class PrivateStore:
             yield Capture(kind,ZoneKey(family,c['config_sha256'],PINS[family],zid),Clock(ns,seq),idx,bar,lo,hi,side,tuple(tuple(x) for x in props),reason)
 
 def run_pilot(path,roster,plan,private_root,*,deadline_seconds=6600,partial_receipt_path=None):
+    if plan.get('geometry_engine','EPISODES') not in ('EPISODES','AFFECTED_COUNTS'):raise ValueError('closed geometry engine selection')
     if plan['scope']!='EXISTING_EXPLORATORY_TARGET_FREE_DENSITY_GEOMETRY' or plan['outcomes'] or plan['holdout_access']:raise ValueError('fixed target-free exploratory plan')
     configs=roster['configs']
     if len(configs)!=96 or any(sum(c['indicator']==v for c in configs)!=32 for v in NAMES.values()):raise ValueError('fixed 96 config roster')
@@ -123,7 +124,7 @@ def run_pilot(path,roster,plan,private_root,*,deadline_seconds=6600,partial_rece
     at=time.monotonic()
     for rank in range(32):
         guard();indices=[families[f][rank] for f in ('AVZP2','BT2','BT2A')]
-        actor=GeometryReplay(contract=plan['contract'],tape_sha256=plan['pin']['sha256'],racimo_params=params,max_episodes=50000,max_known_zones=300000)
+        actor=GeometryReplay(contract=plan['contract'],tape_sha256=plan['pin']['sha256'],racimo_params=params,max_episodes=50000,max_known_zones=300000,count_only=plan.get('geometry_engine','EPISODES')=='AFFECTED_COUNTS')
         counts=Counter();excluded=0;processed=0
         merged=heapq.merge(*(store.records(i) for i in indices),key=lambda x:x.clock)
         for c,group in groupby(merged,key=lambda x:x.clock):
@@ -133,9 +134,11 @@ def run_pilot(path,roster,plan,private_root,*,deadline_seconds=6600,partial_rece
             ev,ex=actor.apply(c,tuple(group),origin_date=origin);processed+=1
             if date==target:
                 excluded+=ex
-                for e in ev:
-                    signature='+'.join(sorted(s.key.family for s in e.episode.components))
-                    counts[e.action+':'+signature]+=1
+                if actor.count_only:counts.update(ev)
+                else:
+                    for e in ev:
+                        signature='+'.join(sorted(s.key.family for s in e.episode.components))
+                        counts[e.action+':'+signature]+=1
         triads.append({'aligned_triad_index':rank,'config_sha256':[configs[i]['config_sha256'] for i in indices],'target_geometry_counts':dict(counts),'scope_excluded_target_records':excluded,'capture_clocks_processed':processed})
         times['geometry_seconds']=time.monotonic()-at;partial('GEOMETRY_TRIAD_COMPLETE');print('GEOMETRY_TRIAD_COMPLETE',rank,flush=True)
     times['geometry_seconds']=time.monotonic()-at
