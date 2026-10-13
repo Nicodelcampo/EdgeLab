@@ -31,3 +31,18 @@ Nuevo parámetro `MinZoneBars` (por defecto 120): la zona se confirma, y `State`
 - Esa línea es una **tangente**: el precio queda por debajo (resistencia bajista) y casi nunca la cruza. El indicador anterior dibujaba la EMA desplazada por la distancia media, que atraviesa el precio por cualquier lado.
 - Por eso el indicador v3 dibuja una tangente (`fit_trendline`). Verificación real: sobre esa captura (digitalizada) el ajuste da pendiente 0,878 vs 0,877 de la línea del usuario, con 0 cruces, anclada en el máximo del inicio y con 3 toques. Parámetros estrictos: tolerancia de toque 0,2 ATR y ≤ 2 % de barras cruzando. Los parámetros más laxos (10 % de cruces) que se habían elegido usando las líneas del indicador viejo como si fueran del usuario quedaron **descartados**.
 - Validación: 1 línea, 1 captura. No se calibró nada más contra capturas.
+
+## EMAZ-3 — indicador v3 completo (tangente estricta + distancia constante) en la historia de NQ
+Réplica del indicador (`simulate_zones`) sobre NQ 25T, EMA 200, sesiones aprobadas 2025-07-01..2026-09-30 (6 contratos). Descriptivo, sin P&L. Tangente: toque 0,2 ATR, ≤ 2 % de barras cruzando, ≥ 3 toques; distancia constante: variación de los extremos de alejamiento/acercamiento ≤ umbral del preset. 68 minutos de cómputo (luego optimizado ~5×).
+
+| Preset (alejamiento/acercamiento máx.) | Tramos EMA | **Zonas confirmadas** | Por sesión | Largo mediano (p10–p90) | Recorrido mediano (pts) | Demora de confirmación mediana |
+|---|---:|---:|---:|---|---:|---:|
+| 1 Pocas (0,3 / 0,4) | 5.483 | 104 | 0,37 | 258 (228–368) barras | 31 | 199 barras |
+| 2 Normal (0,4 / 0,5) | 5.483 | 276 | 0,99 | 290 (228–480) | 47 | 217 |
+| 3 Muchas (0,6 / 0,7) | 11.477 | 987 | 3,55 | 292 (182–514) | 44 | 230 |
+
+- La mitad aprox. son alcistas y la mitad bajistas; todas tocan la tangente 3–4 veces (el mínimo exigido es 3).
+- **Advertencia importante — demora:** la zona se confirma ~200 barras después de su inicio (lo que tarda la ventana de detección). Del largo mediano (~260–290 barras) solo quedan ~60–90 barras *después* de confirmada. El inicio de la línea es retroactivo; como área de trading en tiempo real, la parte utilizable es la posterior a la confirmación.
+- 64–76 % de las zonas terminan por ruptura de la tangente (cierre a > 0,5 ATR), el resto cuando termina el tramo de la EMA.
+- **Deriva posterior a la confirmación** (ticks de 0,25 pt, a favor de la tendencia, media por zona; solapada y sin costos): Pocas +0,0/+0,9/+3,2 (50/100/200 barras), Normal −1,8/−3,0/−8,0, Muchas −0,3/−0,0/+2,8. Sin signo consistente: no hay evidencia de continuación; la pregunta del usuario requiere una medición pre-registrada específica.
+- Archivo: `EMAZ3_RESULTADOS.json`.

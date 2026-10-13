@@ -70,7 +70,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 
 				EmaPeriod        = 200;
 				AtrPeriod        = 100;
-				Preset           = 2;
+				Preset           = 3;
 				MinZoneBars      = 120;
 				MinMovePoints    = 0;
 				PivotBars        = 5;
