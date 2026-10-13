@@ -24,6 +24,22 @@ class RunLedger:
                         json.dumps(spec.__dict__, default=list), "RUNNING", time.time(), None, None, handle, None, None))
         self.event(spec.run_id, "launched", handle); self.db.commit()
 
+    def add_intent(self, spec) -> None:
+        """Escribe-antes-de-enviar: la intención queda en el libro ANTES de llamar al proveedor. Si el proceso cae durante el envío la corrida queda SEND_UNCERTAIN: nunca se reenvía sola."""
+        self.db.execute("INSERT INTO runs VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)", (spec.run_id, spec.spec_hash(), spec.family, spec.group, spec.kind,
+                        json.dumps(spec.__dict__, default=list), "SEND_UNCERTAIN", time.time(), None, None, None, None, None))
+        self.event(spec.run_id, "send_intent", ""); self.db.commit()
+
+    def confirm_send(self, run_id: str, handle: str) -> None:
+        self.db.execute("UPDATE runs SET status='RUNNING', handle=? WHERE run_id=?", (handle, run_id)); self.event(run_id, "launched", handle); self.db.commit()
+
+    def cancel_intent(self, run_id: str) -> None:
+        """Solo para rechazo explícito previo al envío: borra la intención (no hubo corrida) y deja constancia en eventos."""
+        self.db.execute("DELETE FROM runs WHERE run_id=? AND status='SEND_UNCERTAIN'", (run_id,)); self.event(run_id, "send_rejected", ""); self.db.commit()
+
+    def uncertain(self):
+        return [x[0] for x in self.db.execute("SELECT run_id FROM runs WHERE status='SEND_UNCERTAIN'")]
+
     def event(self, run_id, event, detail=""):
         self.db.execute("INSERT INTO events(run_id,ts,event,detail) VALUES(?,?,?,?)", (run_id, time.time(), event, str(detail))); self.db.commit()
 

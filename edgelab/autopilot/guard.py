@@ -41,12 +41,29 @@ def check_script_committed(spec: RunSpec, repo: Path = REPO) -> list:
     return []
 
 
+def _json_blocks(txt: str) -> list:
+    import re
+    out = []
+    for m in re.finditer(r"```[a-z]*\n(.*?)```", txt, re.S):
+        try: out.append(json.loads(m.group(1)))
+        except ValueError: pass
+    return out
+
+
 def check_env_in_prereg(spec: RunSpec, repo: Path = REPO) -> list:
-    """La configuración que llega al kernel (spec.env) debe estar escrita TEXTUALMENTE en el pre-registro ya committeado: no se puede lanzar una configuración distinta de la registrada."""
+    """La configuración que llega al kernel (spec.env) debe estar en el pre-registro ya committeado y ser IGUAL en estructura: si el valor es JSON, debe existir un bloque de código del
+    pre-registro que, parseado, sea idéntico (claves y valores); los valores no JSON se comparan como texto. No se puede lanzar una configuración distinta de la registrada."""
     if not spec.env: return []
     try: txt = (repo / spec.prereg).read_text(encoding="utf-8")
     except OSError: return []                                   # el error de pre-registro ya lo informa check_prereg_committed
-    return [f"env {k} no figura textualmente en el pre-registro" for k, v in spec.env.items() if str(v) not in txt]
+    blocks = _json_blocks(txt); bad = []
+    for k, v in spec.env.items():
+        try: want = json.loads(v)
+        except (TypeError, ValueError): want = None
+        if isinstance(want, (dict, list)):
+            if want not in blocks: bad.append(f"env {k}: ningún bloque JSON del pre-registro coincide estructuralmente con la configuración lanzada")
+        elif str(v) not in txt: bad.append(f"env {k} no figura textualmente en el pre-registro")
+    return bad
 
 
 def check_internet(spec: RunSpec, allow: set) -> list:

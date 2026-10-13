@@ -2,12 +2,14 @@
 candidata si hay cupo y presupuesto. Modo `propose` (por defecto) solo escribe qué lanzaría; `execute` exige además permiso explícito del humano en la configuración."""
 from __future__ import annotations
 
+import fcntl
 import json
 import time
 from pathlib import Path
 
 from . import analyze, guard, evidence
 from .fdr import AlphaInvesting
+from .executor import LaunchRejected
 from .ledger import RunLedger
 from .selector import rank
 from .spec import RunSpec
@@ -28,9 +30,23 @@ class Autopilot:
         return Path(self.cfg.get("kill_switch", self.root / "PAUSE")).exists()
 
     def tick(self, candidates: list, now: float | None = None) -> dict:
-        now = now or time.time(); rep = dict(closed=[], launched=None, proposed=None, blocked=[])
+        """Un solo controlador por directorio de estado: bloqueo exclusivo no bloqueante (cubre CLI, timer y generador que apunten al mismo estado)."""
         self.root.mkdir(parents=True, exist_ok=True)
-        (self.root / "heartbeat.json").write_text(json.dumps(dict(ts=now, wealth=self.fdr.wealth, running=[r["run_id"] for r in self.ledger.running()], mode=self.cfg.get("mode", "propose"))))
+        with open(self.root / ".lock", "a") as lk:
+            try: fcntl.flock(lk, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except OSError: return self._note(event="locked_by_other_controller")
+            return self._tick(candidates, now)
+
+    def _reconcile(self, rep: dict) -> None:
+        """Cierra apuestas de alfa que quedaron abiertas tras una caída entre pasos: corrida ya ANALYZED → se liquida con su resultado guardado; FAILED → se devuelve."""
+        for rid in list(self.fdr.state["open"]):
+            row = self.ledger.db.execute("SELECT status,result FROM runs WHERE run_id=?", (rid,)).fetchone()
+            if row and row[0] == "ANALYZED": self.fdr.settle(rid, int(json.loads(row[1]).get("rejections", 0))); rep.setdefault("reconciled", []).append((rid, "settled"))
+            elif row and row[0] == "FAILED": self.fdr.release(rid, "corrida fallida"); rep.setdefault("reconciled", []).append((rid, "released"))
+
+    def _tick(self, candidates: list, now: float | None = None) -> dict:
+        now = now or time.time(); rep = dict(closed=[], launched=None, proposed=None, blocked=[]); self.fdr.state = self.fdr._load(); self._reconcile(rep)
+        (self.root / "heartbeat.json").write_text(json.dumps(dict(ts=now, wealth=self.fdr.wealth, running=[r["run_id"] for r in self.ledger.running()], send_uncertain=self.ledger.uncertain(), mode=self.cfg.get("mode", "propose"))))
         if self._paused(): return self._note(event="paused", **rep)
         prot = self.cfg.get("protected")
         if prot and (bad := guard.check_protected(Path(prot), self.repo)):
@@ -45,13 +61,14 @@ class Autopilot:
                     res = self.ex.fetch(r["handle"], self.cfg["result_files"][spec.family])
                 except Exception as e:                                                 # error de configuración o de red: no tumba el ciclo, queda registrado y se reintenta
                     self.ledger.event(spec.run_id, "fetch_failed", repr(e)[:200]); rep["blocked"].append((spec.run_id, [f"no se pudo traer el resultado: {e!r}"[:200]])); continue
-                bid = self.fdr.state["open"][f"{spec.run_id}"]
+                bid = self.fdr.open_bid(spec.run_id)
+                if bid is None: rep["blocked"].append((spec.run_id, ["sin apuesta de alfa abierta: no se liquida"])); continue
                 d = analyze.decide(res, bid["alpha"], spec.n_tests_holm or spec.n_trials)
-                self.fdr.settle(spec.run_id, d["rejections"]); self.ledger.finish(spec.run_id, "ANALYZED", d); rep["closed"].append((spec.run_id, d["hit"]))
+                self.ledger.finish(spec.run_id, "ANALYZED", d); self.fdr.settle(spec.run_id, d["rejections"]); rep["closed"].append((spec.run_id, d["hit"]))     # primero el libro, luego la riqueza: si cae entre ambos, _reconcile liquida al reiniciar
                 if self.cfg.get("evidence_runtime"): evidence.record_outcome(Path(self.cfg["evidence_runtime"]), spec, d, evidence.current_states(Path(self.cfg["evidence_runtime"])), result=res)
                 if self.brain: self.brain(spec, d)
             elif st in ("error", "ERROR", "cancelAcknowledged"):
-                self.ledger.finish(r["run_id"], "FAILED", failure=f"estado {st}"); rep["closed"].append((r["run_id"], "FAILED"))
+                self.ledger.finish(r["run_id"], "FAILED", failure=f"estado {st}"); self.fdr.release(r["run_id"], f"estado {st}"); rep["closed"].append((r["run_id"], "FAILED"))
         running = self.ledger.running()                                              # 2) ¿cupo y presupuesto?
         if len(running) >= self.cfg.get("max_concurrent", 1):
             return self._note(event="tick_no_capacity", **rep)
@@ -68,17 +85,21 @@ class Autopilot:
             if spec.kind != "benchmark":
                 if self.registry: self.registry.ensure(f"autopilot/{spec.run_id}", spec.family, spec.n_trials, spec.notes or "autopilot")   # se cuenta ANTES de lanzar
                 self.fdr.bid(spec.run_id, spec.n_trials)
+            self.ledger.add_intent(spec)                                              # escribe-antes-de-enviar: una caída durante el envío deja SEND_UNCERTAIN y nunca se reenvía sola
             try:
                 handle = self.ex.launch(spec)
-            except Exception as e:
-                if spec.kind != "benchmark": self.fdr.settle(spec.run_id, 0)
+            except LaunchRejected as e:                                               # rechazo explícito: no hay corrida; se devuelve la apuesta y puede reintentarse
+                self.ledger.cancel_intent(spec.run_id)
+                if spec.kind != "benchmark": self.fdr.release(spec.run_id, "lanzamiento rechazado")
                 rep["blocked"].append((spec.run_id, [str(e)[:200]])); continue
-            self.ledger.add(spec, handle); rep["launched"] = (spec.run_id, why); break
+            except Exception as e:                                                    # tiempo agotado o error ambiguo: puede haber corrida remota → SEND_UNCERTAIN, apuesta abierta, sin reenvío; requiere conciliar a mano
+                rep["blocked"].append((spec.run_id, [f"envío incierto (se reconcilia a mano con el handle exacto, no se reenvía): {str(e)[:150]}"])); break
+            self.ledger.confirm_send(spec.run_id, handle); rep["launched"] = (spec.run_id, why); break
         return self._note(event="tick", **rep)
 
     def status(self) -> dict:
         led = self.ledger.db.execute("SELECT status, COUNT(*) FROM runs GROUP BY status").fetchall()
         last = [json.loads(l) for l in self.log.read_text().splitlines()[-5:]] if self.log.exists() else []
         hb = json.loads((self.root / "heartbeat.json").read_text()) if (self.root / "heartbeat.json").exists() else None
-        return dict(mode=self.cfg.get("mode", "propose"), paused=self._paused(), alpha_wealth=self.fdr.wealth, open_bids=list(self.fdr.state["open"]), runs=dict(led), running=self.ledger.running(),
+        return dict(mode=self.cfg.get("mode", "propose"), paused=self._paused(), alpha_wealth=self.fdr.wealth, open_bids=list(self.fdr.state["open"]), runs=dict(led), running=self.ledger.running(), send_uncertain=self.ledger.uncertain(),
                     heartbeat_age_s=None if not hb else round(time.time() - hb["ts"]), last_events=[{k: v for k, v in e.items() if k in ("event", "launched", "closed", "blocked")} for e in last])

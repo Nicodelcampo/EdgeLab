@@ -11,8 +11,7 @@ Group=edgelab
 WorkingDirectory=/opt/edgelab/EdgeLab
 Environment=HOME=/opt/edgelab
 EnvironmentFile=-/etc/edgelab/autopilot.env
-# código: solo fast-forward de la rama configurada (el estado vive en otro clon)
-ExecStartPre=/usr/bin/git -C /opt/edgelab/EdgeLab pull --ff-only -q
+# código FIJADO a una release: no se actualiza solo en cada ciclo (cambiar de versión es una acción explícita: deploy/debian/update.sh <sha>)
 ExecStart=/opt/edgelab/venv/bin/python -m edgelab.autopilot --root /var/lib/edgelab-autopilot/state/autopilot_runs --config /etc/edgelab/autopilot.json --candidates /etc/edgelab/candidates.json
 ExecStopPost=-/opt/edgelab/EdgeLab/deploy/debian/sync_state.sh
 TimeoutStartSec=900

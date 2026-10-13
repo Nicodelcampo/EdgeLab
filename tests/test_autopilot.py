@@ -129,7 +129,7 @@ def test_generator_scores_learns_and_drafts_match_env(repo, tmp_path):
     # el borrador contiene la configuración textual: el guard acepta el RunSpec una vez committeado
     rs = to_runspec(c); (repo / "docs/research/autopilot/drafts").mkdir(parents=True); (repo / rs["prereg"]).write_text(draft_prereg(c, lits)); (repo / "tools/study_slot_effect.py").write_text("x=1\n")
     _git(repo, "add", "-A"); _git(repo, "commit", "-qm", "d"); assert guard.all_checks(RunSpec.from_dict(rs), allow_internet={rs["script"]}, repo=repo) == []
-    bad = dict(rs, env={"STUDY_CFG": '{"otra": "config"}'}); assert any("no figura textualmente" in e for e in guard.all_checks(RunSpec.from_dict(bad), allow_internet={rs["script"]}, repo=repo))
+    bad = dict(rs, env={"STUDY_CFG": '{"otra": "config"}'}); assert any("estructuralmente" in e for e in guard.all_checks(RunSpec.from_dict(bad), allow_internet={rs["script"]}, repo=repo))
     assert research_gaps(c)["public_query_reviewed"] is False
     # evidencia viva: un fracaso degrada la pista y consume la muestra; la candidata deja de proponerse
     rt = tmp_path / "ev.jsonl"; spec_ = RunSpec.from_dict(rs); evidence.record_outcome(rt, spec_, dict(hit=False, rejections=0, top=[]), evidence.current_states(rt))
@@ -256,3 +256,57 @@ def test_pnl1_candidate_needs_futures_for_rules():
     from edgelab.autopilot.generate import generate, to_runspec
     c = next(x for x in generate([]) if x.cid == "PNL-1"); rs = to_runspec(c)
     assert {n.split(":")[0] for n in rs["needs"]} == {"GC", "ES"} and rs["n_trials"] == 5 and rs["n_tests_holm"] == 2 and rs["origin"]["PNL_EVAL_1"]["tests"] == ["pnl/"]
+
+
+# --- endurecimiento tras la revisión del otro agente (sondas sobre fdr/analyze/daemon/guard) ---
+def test_decide_rejects_nonfinite_and_out_of_range_p():
+    r = dict(results_flat=[dict(test="a", p=-0.5, evaluable=True), dict(test="b", p=float("nan"), evaluable=True), dict(test="c", p=1.7, evaluable=True), dict(test="d", p=0.3, evaluable=True)])
+    d = analyze.decide(r, 0.05, 4); assert d["hit"] is False and d["rejections"] == 0 and d["n_evaluable"] == 1 and d["n_planned"] == 4 and set(d["invalid_p_tests"]) == {"a", "b", "c"}
+    from edgelab.autopilot.fdr import holm_rejections
+    assert holm_rejections([-1.0, float("nan"), 0.001], 0.05, 3) == 1                                  # el p inválido no cuenta y el denominador planeado se mantiene
+
+
+def test_alpha_investing_two_stale_objects_cannot_overspend(tmp_path):
+    from edgelab.autopilot.fdr import AlphaInvesting
+    a, b = AlphaInvesting(tmp_path / "a.json"), AlphaInvesting(tmp_path / "a.json")                    # dos procesos con estado inicial obsoleto
+    a.bid("c1", 4); b.bid("c2", 4)
+    s = AlphaInvesting(tmp_path / "a.json"); assert set(s.state["open"]) == {"c1", "c2"}              # no se pierde ninguna reserva
+    cost = sum(x["alpha"] / (1 - x["alpha"]) for x in s.state["open"].values()); assert cost <= s.wealth + 1e-12
+    assert not (tmp_path / "a.json.tmp").exists()                                                       # escritura atómica: sin residuo
+    a.release("c1", "prueba"); assert "c1" not in AlphaInvesting(tmp_path / "a.json").state["open"] and AlphaInvesting(tmp_path / "a.json").wealth == 0.05
+
+
+def test_failed_run_releases_bid_and_crash_between_steps_is_reconciled(repo, tmp_path):
+    ex = FakeExecutor({}, fail={"r1"}); ap = Autopilot(tmp_path / "root", ex, _cfg(tmp_path), repo=repo, registry=Reg())
+    ap.tick([spec()]); assert "r1" in ap.fdr.state["open"]; ap.tick([spec("r2", grp="H")]); assert "r1" not in ap.fdr.state["open"] and ap.fdr.wealth == 0.05          # ERROR devuelve la apuesta
+    # caída entre «cerrar libro» y «liquidar alfa»: la corrida queda ANALYZED con apuesta abierta; el siguiente ciclo la liquida con el resultado guardado
+    ap.ledger.finish("r2", "ANALYZED", dict(hit=False, rejections=0)); assert "r2" in ap.fdr.state["open"]
+    t = ap.tick([]); assert ("r2", "settled") in t.get("reconciled", []) and "r2" not in ap.fdr.state["open"]
+
+
+def test_launch_write_ahead_and_uncertain_send_is_never_resent(repo, tmp_path):
+    from edgelab.autopilot.executor import LaunchRejected
+    class Boom(FakeExecutor):
+        def __init__(self, exc): super().__init__({}); self.exc = exc; self.calls = 0
+        def launch(self, s): self.calls += 1; raise self.exc
+    ex = Boom(TimeoutError("sin respuesta")); ap = Autopilot(tmp_path / "root", ex, _cfg(tmp_path), repo=repo, registry=Reg())
+    t = ap.tick([spec()]); assert ap.ledger.uncertain() == ["r1"] and "envío incierto" in t["blocked"][0][1][0] and "r1" in ap.fdr.state["open"]
+    ap.tick([spec()]); ap.tick([spec()]); assert ex.calls == 1                                         # ni reenvía ni libera la apuesta sola
+    ex2 = Boom(LaunchRejected("rechazado")); ap2 = Autopilot(tmp_path / "root2", ex2, _cfg(tmp_path), repo=repo, registry=Reg())
+    ap2.tick([spec()]); assert ap2.ledger.uncertain() == [] and "r1" not in ap2.fdr.state["open"]       # rechazo explícito: sin corrida, apuesta devuelta, puede reintentarse
+    ap2.tick([spec()]); assert ex2.calls == 2
+
+
+def test_only_one_controller_per_state_dir(repo, tmp_path):
+    import fcntl
+    ap = Autopilot(tmp_path / "root", FakeExecutor({}), _cfg(tmp_path), repo=repo, registry=Reg())
+    with open(tmp_path / "root" / ".lock", "a") as lk:
+        fcntl.flock(lk, fcntl.LOCK_EX); assert ap.tick([spec()])["event"] == "locked_by_other_controller"
+
+
+def test_env_binding_is_structural(repo):
+    import json as J
+    cfg = {"mode": "x", "D": [10, 20]}; (repo / "docs/pre.md").write_text("cfg:\n```\n" + J.dumps(cfg, sort_keys=True) + "\n```\n"); _git(repo, "add", "-A"); _git(repo, "commit", "-qm", "p")
+    ok = spec(env={"CFG": J.dumps({"D": [10, 20], "mode": "x"})}); assert guard.check_env_in_prereg(ok, repo) == []                         # mismo contenido, otro orden de claves
+    sneaky = spec(env={"CFG": J.dumps({"mode": "x", "D": [10, 20], "extra": 1})}); assert guard.check_env_in_prereg(sneaky, repo)           # antes pasaba por substring si el texto contenía los valores
+    sub = spec(env={"CFG": '"mode"'}); assert guard.check_env_in_prereg(sub, repo) == []                                                      # valores no JSON: texto

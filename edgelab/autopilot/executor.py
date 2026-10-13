@@ -10,6 +10,10 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[2]
 
 
+class LaunchRejected(RuntimeError):
+    """El proveedor (o la validación local previa al envío) rechazó EXPLÍCITAMENTE el lanzamiento: se sabe que no hay corrida. Cualquier otra excepción es un envío incierto."""
+
+
 class KaggleExecutor:
     def __init__(self, owner: str = "nicolasbuttaro"):
         self.owner = owner
@@ -23,7 +27,8 @@ class KaggleExecutor:
         cmd += (["--internet"] if spec.internet else []) + (["--gpu"] if spec.gpu else [])
         r = subprocess.run(cmd, cwd=REPO, capture_output=True, text=True, timeout=900)
         if '"hasError":false' not in r.stdout and '"error":""' not in r.stdout:
-            raise RuntimeError("lanzamiento rechazado: " + (r.stdout + r.stderr)[-400:])
+            if r.returncode != 0 and '"ref"' not in r.stdout: raise LaunchRejected("lanzamiento rechazado antes del envío: " + (r.stdout + r.stderr)[-400:])
+            raise LaunchRejected("lanzamiento rechazado: " + (r.stdout + r.stderr)[-400:])
         return slug
 
     def status(self, handle: str) -> str:
