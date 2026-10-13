@@ -1,5 +1,14 @@
 ## Latest: multiasset campaign terminal; three reviewed results, one support stop
 
+## Checkpoint actual — GC focal y benchmark TERMINALES
+
+Científico `138560454/v1` y benchmark `138560470/v1` COMPLETE. Leer `GC_FOCUSED_CLOSEOUT.md`, `GC_FOCUSED_RETURN_PROTOCOL.md`, `GC_FOCUSED_LAUNCH.json` y `GC_FOCUSED_KNOWLEDGE_PROPOSAL.json` antes de actuar. Resultado primario NO_SOSTENIDO:3.099 anclas/9 sesiones, llegada−control+1,1332 Brier×1000 por sesión,4/9 mejores; llegada−densidad+3,3401,1/9 mejores. No rescatar con cortes secundarios ni relanzar.
+
+Benchmark mismo-input1,0284× de un subpaso GC; capturas/logs/tamaños exactos, no pipeline completo ni paridadNT8. Intercalado no desplegado. Futuro empaquetador corrige flags inherited de outcomes del benchmark; recibo ejecutado original se conserva. Cuatro consultas consumidas, dos intents cerradas en journals `/data/operational-state/gc-focus-49bb3dd73468-{dispatch,watch}.sqlite`. Snapshots públicos NO sustituyen journals ni testigo externo de latestness. Si hay cambio de host, adoptar/reconciliar journals originales; nunca recrearlos para obtener presupuesto.
+
+922ResearchOps y18navegación PASS; test adicional del empaquetador futuro PASS después de esa regresión. Propuesta de conocimiento NO canónica, writer desconectado, sin deployment/24x7, merge, P&L ni holdout. Próximo: perfil BT2A acotado y equivalencia multis sesión antes de integrar; nueva hipótesis científica por mecanismo con densidad como control obligatorio. Lo que sigue abajo es historia, no permiso de reenvío.
+
+
 Start with `MULTIASSET_CLOSEOUT.md/.json`, `MULTIASSET_ANALYSIS.json`, `MULTIASSET_KNOWLEDGE_PROPOSAL.json` and all-pair/scenario CSVs. ES 138547864/v1 (original 2-second gap) has 0/18 full-model pair means below its base. GC 138553471/v1 (explicit 10-second sensitivity) has 7/18; euro 138553550/v1 has 0/18. ZB 138554477/v1 stopped at the first training session's min-100 support guard; it has no model results. All jobs in this campaign are terminal: 54 completed pairs / 438 representations. This does not attest to other jobs in the account.
 
 The gold AVZ25 dense × BT2 tick-200 observed return cut has 4,308 anchors in 12 sessions; arrival is below its capacity control in 10/12 sessions. This is a post-hoc exploratory lead, NOT an approved winner. Density explains much of the overall gold improvement: the full model beats density-only in just 1/18 pairs. No canonical Brain write, closed-holdout access, P&L, 100% NT8 parity certificate, merge or daemon deployment. Runtime source: 74203a6a for ES, a292e2cd for sensitivity. 918 ResearchOps and 18 navigation tests passed.
