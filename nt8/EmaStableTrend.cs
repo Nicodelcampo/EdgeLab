@@ -50,6 +50,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 		private int    peaks;
 		private double runStartClose;
 		private bool   lineValid, broken;
+		private int    fitStart;               // CurrentBar absoluto del inicio de la ventana de ajuste (runStart - ExtendBars)
 		private int    lineI, lastFitBar;      // lineI: indice del ancla relativo al inicio de la zona
 		private double lineSlope, lineH0;      // pendiente por barra y valor en el ancla (en el espacio h: High en baja, -Low en suba)
 
@@ -76,6 +77,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 				PivotBars        = 5;
 				TouchTolAtr      = 0.2;
 				ViolFraction     = 0.02;
+				ExtendBars       = 100;
 				MinExtentAtr     = 10;
 				MaxMeanDistAtr   = 4;
 				MaxDistAtr       = 8.5;
@@ -137,6 +139,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 			{
 				runStart = CurrentBar - pM + 1;                                     // inicio retroactivo: la ventana que la probo
 				runStartClose = Close[Math.Min(pM - 1, CurrentBar)];
+				fitStart = Math.Max(0, runStart - ExtendBars);                      // se busca el ancla tambien ANTES de la zona detectada: asi se marca todo el recorrido
 				segCounter++; curTag = "EST_" + segCounter.ToString(CultureInfo.InvariantCulture);
 				confirmed = false; peaks = 0; lineValid = false; broken = false; lastFitBar = -1000000;
 			}
@@ -146,12 +149,13 @@ namespace NinjaTrader.NinjaScript.Indicators
 			int length = CurrentBar - runStart + 1;
 			double move = Math.Abs(Close[0] - runStartClose);                               // puntos de precio
 			if (broken) return;
+			int nfit = CurrentBar - fitStart + 1;
 			if (length >= MinZoneBars && (CurrentBar - lastFitBar >= RefitBars || !lineValid))
 			{
 				lastFitBar = CurrentBar;
-				lineValid = FitTrendline(rawNow, length) && EnvelopeOk(rawNow, length);
+				lineValid = FitTrendline(rawNow, nfit) && EnvelopeOk(rawNow, nfit);
 			}
-			if (lineValid && BrokenLine(rawNow, length)) { broken = true; confirmed = false; return; }
+			if (lineValid && BrokenLine(rawNow, nfit)) { broken = true; confirmed = false; return; }
 
 			if (!confirmed && lineValid && length >= MinZoneBars && (MinMovePoints <= 0 || move >= MinMovePoints))
 				confirmed = true;
@@ -160,12 +164,12 @@ namespace NinjaTrader.NinjaScript.Indicators
 			if (confirmed)
 			{
 				Values[0][0] = rawNow;
-				Values[1][0] = length;
+				Values[1][0] = CurrentBar - (fitStart + lineI) + 1;                // largo desde el ancla (todo el recorrido marcado)
 				Values[2][0] = move;
 				double atr = rangeAvg[0];
 				Values[3][0] = atr > 0 ? (ema[0] - ema[Math.Min(pK, CurrentBar)]) / pK / atr : 0;
 				Values[4][0] = peaks;
-				DrawSegment(rawNow, length);
+				DrawSegment(rawNow, nfit);
 			}
 		}
 
@@ -317,7 +321,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 		private void DrawSegment(int dir, int n)
 		{
 			if (curTag == null || !lineValid) return;
-			int startAgo = CurrentBar - (runStart + lineI);
+			int startAgo = CurrentBar - (fitStart + lineI);
 			if (startAgo < 0 || startAgo > CurrentBar) return;
 			double y0 = dir < 0 ? lineH0 : -lineH0;
 			double l  = LineH(n);
@@ -356,6 +360,10 @@ namespace NinjaTrader.NinjaScript.Indicators
 		[NinjaScriptProperty] [Range(0.0, 10.0)]
 		[Display(Name = "Touch Tolerance (ATR)", Order = 4, GroupName = "2. Longitud de la zona", Description = "Un pivote 'toca' la linea si esta a menos de esta distancia (en ATR).")]
 		public double TouchTolAtr { get; set; }
+
+		[NinjaScriptProperty] [Range(0, 5000)]
+		[Display(Name = "Extend Bars (busqueda hacia atras)", Order = 12, GroupName = "2. Longitud de la zona", Description = "Barras antes del inicio detectado donde se busca el verdadero extremo de arranque de la linea (para marcar todo el recorrido).")]
+		public int ExtendBars { get; set; }
 
 		[NinjaScriptProperty] [Range(0.0, 1000.0)]
 		[Display(Name = "Min Extent (ATR)", Order = 9, GroupName = "2. Longitud de la zona", Description = "Desplazamiento minimo de la linea en ATR. Descarta lineas cortas o casi planas (capturas del usuario: buenas >= 12, malas <= 7).")]

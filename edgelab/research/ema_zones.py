@@ -192,25 +192,25 @@ def envelope_ok(env, max_far_cv, max_near_cv, min_pivots=2):
     return (max_far_cv is None or env["far_cv"] <= max_far_cv) and (max_near_cv is None or env["near_cv"] <= max_near_cv) and env["near_mean"] > 0
 
 
-def simulate_zones(P, high, low, st, M, atr_mult_tol=0.2, atr_mult_break=0.5, vmax=0.02, min_touches=3, pivot_p=5, refit=20, min_zone=120, tick=0.25, env_q=10, max_far_cv=None, max_near_cv=None, min_env_pivots=2, min_extent_atr=10.0, max_mean_dist_atr=4.0, max_dist_atr=8.5):
+def simulate_zones(P, high, low, st, M, atr_mult_tol=0.2, atr_mult_break=0.5, vmax=0.02, min_touches=3, pivot_p=5, refit=20, min_zone=120, tick=0.25, env_q=10, max_far_cv=None, max_near_cv=None, min_env_pivots=2, min_extent_atr=10.0, max_mean_dist_atr=4.0, max_dist_atr=8.5, extend=0):
     """Réplica del indicador: sobre cada tramo crudo de `st` (inicio retroactivo = detección − M + 1) ajusta la tangente cada `refit` barras; confirma la zona cuando hay recta válida y
     longitud ≥ min_zone; la zona termina cuando el cierre rompe la línea más de atr_mult_break·ATR (o cuando termina el tramo crudo). Devuelve una lista de dicts por tramo crudo."""
     c = P["c"]; atr = P["atr"]; n = len(c); out = []; ch = np.flatnonzero(np.r_[True, st[1:] != st[:-1], True])
     for a, b in zip(ch[:-1], ch[1:]):
         d = int(st[a])
         if d == 0: continue
-        t0, t1 = int(a), int(b - 1); rs = max(0, t0 - M + 1); rec = dict(start=rs, detect=t0, raw_end=t1, dir=d, confirmed=False); line = None; t = max(t0, rs + min_zone - 1)
+        t0, t1 = int(a), int(b - 1); rs = max(0, t0 - M + 1); rec = dict(start=rs, detect=t0, raw_end=t1, dir=d, confirmed=False); line = None; fs = max(0, rs - extend); t = max(t0, rs + min_zone - 1)       # fs: inicio de la ventana de ajuste (puede ir antes del inicio de la zona para hallar el verdadero extremo de arranque)
         while t <= t1:
             if line is None or (t - rec.get("last_fit", -10**9)) >= refit:
-                tol = atr_mult_tol * atr[t]; r = fit_trendline(high[rs:t + 1], low[rs:t + 1], d, p=pivot_p, tol=tol, vmax=vmax, min_touches=min_touches, atr=float(atr[t]), min_extent_atr=min_extent_atr, max_mean_dist_atr=max_mean_dist_atr, max_dist_atr=max_dist_atr); rec["last_fit"] = t
+                tol = atr_mult_tol * atr[t]; r = fit_trendline(high[fs:t + 1], low[fs:t + 1], d, p=pivot_p, tol=tol, vmax=vmax, min_touches=min_touches, atr=float(atr[t]), min_extent_atr=min_extent_atr, max_mean_dist_atr=max_mean_dist_atr, max_dist_atr=max_dist_atr); rec["last_fit"] = t
                 if r is not None:
-                    env = gap_envelope(c[rs:t + 1], P["e"][rs:t + 1], d, env_q); line = r if envelope_ok(env, max_far_cv, max_near_cv, min_env_pivots) else None; rec["env"] = env
+                    env = gap_envelope(c[fs:t + 1], P["e"][fs:t + 1], d, env_q); line = r if envelope_ok(env, max_far_cv, max_near_cv, min_env_pivots) else None; rec["env"] = env
                 else: line = None
             if line is not None:
-                k = t - rs; l = line["intercept"] + line["slope"] * k; price_line = l if d < 0 else -l; brk = (c[t] > price_line + atr_mult_break * atr[t]) if d < 0 else (c[t] < price_line - atr_mult_break * atr[t])
+                k = t - fs; l = line["intercept"] + line["slope"] * k; price_line = l if d < 0 else -l; brk = (c[t] > price_line + atr_mult_break * atr[t]) if d < 0 else (c[t] < price_line - atr_mult_break * atr[t])
                 run = bool(max_dist_atr) and (((price_line - c[t]) > max_dist_atr * atr[t]) if d < 0 else ((c[t] - price_line) > max_dist_atr * atr[t]))          # el precio se alejó demasiado de la línea: la tendencia quedó «deforme»
                 if brk or run: rec["broken_at"] = t; break
-                if not rec["confirmed"]: rec.update(confirmed=True, confirm_bar=t, touches=line["touches"], slope=line["slope"], anchor=rs + line["i"])
+                if not rec["confirmed"]: rec.update(confirmed=True, confirm_bar=t, touches=line["touches"], slope=line["slope"], anchor=fs + line["i"], start=fs + line["i"])
                 rec["end"] = t
             t += 1
         if rec["confirmed"]:
