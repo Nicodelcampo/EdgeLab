@@ -25,14 +25,19 @@ class CrossFamilyCollector:
         j=int(np.searchsorted(t.ts_ns,c.ns-20*10**9,side='right'))
         if j>=i:raise ValueError('observable prior endpoint')
         pc=Clock(int(t.ts_ns[j]),int(t.sequence[j]))
-        for k,groups in enumerate(self.events):
-            pos=self.cursor[k]
-            while pos<len(groups) and groups[pos][0]<=c:
-                ec,records=groups[pos];birth_i=int(np.searchsorted(t.sequence,ec.sequence))
-                if birth_i>=len(t.sequence) or (int(t.ts_ns[birth_i]),int(t.sequence[birth_i]))!=(ec.ns,ec.sequence):raise ValueError('native availability must bind actual current tape record')
-                for view in self.indexes:view[k].apply(ec,records,midpoint2=int(t.bid_ticks[birth_i])+int(t.ask_ticks[birth_i]))
-                pos+=1
-            self.cursor[k]=pos
+        def apply(k,ec,records):
+            if ec>c:raise ValueError('future streaming mutation cannot reach anchor')
+            birth_i=int(np.searchsorted(t.sequence,ec.sequence))
+            if birth_i>=len(t.sequence) or (int(t.ts_ns[birth_i]),int(t.sequence[birth_i]))!=(ec.ns,ec.sequence):raise ValueError('native availability must bind actual current tape record')
+            for view in self.indexes:view[k].apply(ec,records,midpoint2=int(t.bid_ticks[birth_i])+int(t.ask_ticks[birth_i]))
+            self.cursor[k]+=1
+        if hasattr(self.events,'advance'):
+            self.events.advance(c,apply)
+        else:
+            for k,groups in enumerate(self.events):
+                pos=self.cursor[k]
+                while pos<len(groups) and groups[pos][0]<=c:
+                    ec,records=groups[pos];apply(k,ec,records);pos+=1
         kw=dict(midpoint2=int(t.bid_ticks[i])+int(t.ask_ticks[i]),prior_clock=pc,prior_midpoint2=int(t.bid_ticks[j])+int(t.ask_ticks[j]),prior_print2=2*int(t.price_ticks[j]),print2=2*int(t.price_ticks[i]),radius_ticks=barrier,tape=t,anchor_index=int(i),prior_index=j,prints=self.prints)
         for v,view in enumerate(self.indexes):
             cached=[idx.observe(c,**kw) for idx in view]
@@ -51,6 +56,6 @@ class CrossFamilyCollector:
         if self.n!=n:raise ValueError('identical common anchor census across pairs and controls')
         z=self.buffer[:n]
         if not np.isfinite(z).all():raise ValueError('finite crossfamily context')
-        meta={'common_anchors':n,'pair_counts':[dict(c) for c in self.counts], 'profile_query_hits':sum(idx.hits for view in self.indexes for idx in view),'print_queries':self.prints.queries,'print_level_queries':self.prints.level_queries,'applied_profile_batches':sum(self.cursor),'post_last_common_anchor_batches':sum(len(g)-p for g,p in zip(self.events,self.cursor)),'profile_mutation_counts':[[dict(idx.counts) for idx in view] for view in self.indexes],'cached_profile_views_per_anchor':sum(map(len,self.indexes)),'primary_pair_count':len(self.pairs),'arrival_scope':'NEAREST_CURRENT_EXPOSURE_ONLY_POST_BIRTH_OBSERVED_PRINTS_NOT_PHYSICAL_PATH','mirrored_null_scope':'SAME_TRIGGER_REFLECTION_NOT_ZONE_FREE_INDEPENDENT_CREATOR'}
+        meta={'common_anchors':n,'pair_counts':[dict(c) for c in self.counts], 'profile_query_hits':sum(idx.hits for view in self.indexes for idx in view),'print_queries':self.prints.queries,'print_level_queries':self.prints.level_queries,'applied_profile_batches':sum(self.cursor),'post_last_common_anchor_batches':self.events.tail_batches if hasattr(self.events,'advance') else sum(len(g)-p for g,p in zip(self.events,self.cursor)),'profile_mutation_counts':[[dict(idx.counts) for idx in view] for view in self.indexes],'cached_profile_views_per_anchor':sum(map(len,self.indexes)),'primary_pair_count':len(self.pairs),'arrival_scope':'NEAREST_CURRENT_EXPOSURE_ONLY_POST_BIRTH_OBSERVED_PRINTS_NOT_PHYSICAL_PATH','mirrored_null_scope':'SAME_TRIGGER_REFLECTION_NOT_ZONE_FREE_INDEPENDENT_CREATOR'}
         if meta['profile_query_hits']>self.plan['max_session_context_query_hits']:raise ValueError('whole session profile hit cap')
         return z,meta

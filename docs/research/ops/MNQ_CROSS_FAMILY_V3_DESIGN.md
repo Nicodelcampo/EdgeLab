@@ -1,0 +1,13 @@
+## V3: acotación por prefijo causal, no por sesión completa
+
+V1 falló el 16 de junio al retener 400001 eventos, principalmente TOUCH. V2 eliminó esa retención diagnóstica pero volvió a fallar el 23 de junio: 204351 BIRTH y 195650 REMOVE del perfil BT2A denso superaron el mismo límite. Ninguno de los fallos produjo un resultado científico válido; el transporte verificado no es la causa observada. No son evidencia contra las combinaciones.
+
+La corrección V3 cambia la unidad de memoria: cada detector avanza sólo hasta el prefijo observado de cada ancla común; aplica y libera inmediatamente sus lotes BIRTH/REMOVE. El máximo de 400000 es ahora de mutaciones pendientes por lote, no un máximo acumulado de una sesión. No se descarta ninguna mutación requerida, configuración ni escenario. TOUCH/CLASSIFY siguen procesándose y contándose. Después de la última ancla se drena el resto de cada sesión para preservar historial, residuos de buckets y lookahead. Los límites nativos por lote/barra y los recursos de ejecución no cambian. El replay de referencia sigue disponible para pruebas.
+
+El experimento mantiene 9 configuraciones, 18 pares AVOLZONEPOI2×BigTrap2/BigTrap2Absorption, 146 representaciones, fechas/anclas/labels/calibración/regularización y controles idénticos. No es confirmación ni paridad NT8 certificada, ni habilita holdout/P&L/writer Brain. El control espejo sigue sin ser un creador independiente zone-free.
+
+Equivalencia: 24 sesiones sintéticas, historial nativo de 20 sesiones, clocks simultáneos y residuos, todos los conteos nativos de 9 perfiles, todas las matrices de 18 pares actual/espejo y coeficientes de 146 fits son exactamente iguales al replay anterior. Se comprueba además que más mutaciones acumuladas que la capacidad pendiente pasan sin pérdida, que un lote que supera su capacidad falla sin truncar y que no hay rewind ni cambio de sesión sin drenaje. Esto no mide paridad con NT8 ni velocidad real.
+
+Se agrega progress-receipt.json acotado: etapa/fecha/conteo de sesiones completas, sin scores, ticks, etiquetas ni modelos. Sirve para no confundir una corrida viva con un resultado válido. El cierre exitoso requiere estado COMPLETE, boot/source/version exactos, recibo científico y conciliación de todos los pares contra la población y baseline previos.
+
+Aprendizajes operativos: separar procesamiento de retención; dimensionar memoria por lote pendiente, no por intensidad acumulada; conservar conteos y causalidad al optimizar; no resolver fallos reduciendo densidad/escenarios; persistir fallos y usar una nueva identidad de build/intento, nunca resetear journals o reenviar ambiguamente. No estimar aceleración sin medición real. Estos aprendizajes son operativos, no hechos científicos canónicos.

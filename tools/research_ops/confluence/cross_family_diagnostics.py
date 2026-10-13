@@ -1,7 +1,7 @@
 """Finite public-code reason codes only; arbitrary exception text never exported."""
 import ast,hashlib
 from pathlib import Path
-MODULES=('cross_family_scene','session_primitives','bt2_stream','bt2a_stream','avz_stream','detector_capture','kaggle_session_reader')
+MODULES=('cross_family_scene','cross_family_streaming','cross_family_collector','cross_family_context','cross_family_pilot','observed_print_index','session_primitives','bt2_stream','bt2a_stream','avz_stream','detector_capture','kaggle_session_reader')
 SUBSTAGES=('READ_SESSION','CLASSIFY','BUILD_PRIMITIVES','NATIVE_AVZP2','NATIVE_BT2','NATIVE_BT2A','CAPTURE','GROUP_EVENTS','DONE')
 
 def reasons():
