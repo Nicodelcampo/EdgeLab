@@ -16,12 +16,22 @@ def upload_blob(path:Path,rel:str)->str:
     _curl(["-o","/dev/null","-X","PUT",r["createUrl"],"-H","Content-Type: application/octet-stream","--data-binary",f"@{path}"]);return r["token"]
 
 def main():
-    ap=argparse.ArgumentParser();sp=ap.add_subparsers(dest="cmd",required=True);v=sp.add_parser("version");v.add_argument("--slug",required=True);v.add_argument("--dir",required=True);v.add_argument("--notes",default="")
+    ap=argparse.ArgumentParser();sp=ap.add_subparsers(dest="cmd",required=True);v=sp.add_parser("version");v.add_argument("--slug",required=True);v.add_argument("--dir",required=True);v.add_argument("--notes",default="");c=sp.add_parser("create");c.add_argument("--slug",required=True);c.add_argument("--dir",required=True);c.add_argument("--title",default="");c.add_argument("--description",default="")
     a=ap.parse_args();owner,slug=a.slug.split("/");root=Path(a.dir);files=sorted(p for p in root.rglob("*") if p.is_file());toks=[]
     for p in files:
         rel=str(p.relative_to(root)).replace("/","__");toks.append({"token":upload_blob(p,rel)});print("subido",rel,p.stat().st_size,flush=True)
     import tempfile
-    with tempfile.NamedTemporaryFile("w",suffix=".json",delete=False) as tf:json.dump({"versionNotes":a.notes,"files":toks,"deleteOldVersions":False},tf);body=tf.name      # el cuerpo va por archivo: con cientos de archivos no cabe como argumento
+    with tempfile.NamedTemporaryFile("w",suffix=".json",delete=False) as tf:json.dump({"versionNotes":getattr(a,"notes",""),"files":toks,"deleteOldVersions":False},tf);body=tf.name      # el cuerpo va por archivo: con cientos de archivos no cabe como argumento
+    if a.cmd=="create":
+        import tempfile as _t
+        with _t.NamedTemporaryFile("w",suffix=".json",delete=False) as tf:json.dump({"ownerSlug":owner,"slug":slug,"title":a.title or slug,"subtitle":a.title or slug,"description":a.description or slug,"licenseName":"CC0-1.0","isPrivate":True,"files":toks,"convertToCsv":False,"categoryIds":[]},tf);cb=tf.name
+        out=None
+        for k in range(5):
+            try:out=json.loads(_curl(["-X","POST","https://www.kaggle.com/api/v1/datasets/create/new","-H","Content-Type: application/json","--data-binary",f"@{cb}"]));break
+            except SystemExit as e:print("reintento",k+1,str(e)[:100],flush=True);time.sleep(15*(k+1))
+        os.unlink(cb)
+        if out is None:raise SystemExit("no se pudo crear el dataset")
+        print(json.dumps({k:out.get(k) for k in("status","error","url","ref")}));return
     out=None
     for k in range(4):
         try:out=json.loads(_curl(["-X","POST",f"https://www.kaggle.com/api/v1/datasets/create/version/{owner}/{slug}","-H","Content-Type: application/json","--data-binary",f"@{body}"]));break

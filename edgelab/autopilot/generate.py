@@ -113,6 +113,14 @@ def rules(ev: dict, lits: dict) -> list:
             out.append(Candidate("WAIT-GC_LH_MOMENTUM", "Confirmación prospectiva de GC (último 30 min) con datos posteriores al 2026-09-30", "R6_NEW_LEAD_NEEDS_UNSEEN_DATA", "NO_PRIOR_EVIDENCE", ["GC_LH_MOMENTUM"], template=None, n_trials=1, power=0.5,
                                  est_seconds=600, group="BLOCKED", family="WAIT", owner="human-decision",
                                  why="La única muestra realmente independiente en el tiempo es posterior a 2026-09-30 (holdout cerrado). Requiere una decisión humana: pre-registro específico y apertura controlada, o esperar a que haya sesiones nuevas fuera del holdout formal."))
+    e = E.get("VIO_ZONES_MGC")
+    if e and "vio_1" in e["unused_samples"]:       # R11: hipótesis del usuario (inspección visual) convertida en prueba pre-registrada
+        out.append(Candidate("VIO-1", "Zonas violeta (lógica de aVolClusterPOI) sobre las zonas de aVolZonePOI2 en MGC 25 ticks: ¿el precio que vuelve a una distancia D de la zona llega más a la zona que a D más lejos? ¿hay un TP/SL con esperanza neta positiva?",
+                             "R11_USER_HYPOTHESIS", "NEW_MECHANISM", ["VIO_ZONES_MGC"], template="vio1",
+                             cfg=dict(mode="vio1", inst="MGC", bar_ticks=25, tick_usd=1.0, cost_ticks=6.8, D=[10, 16, 20, 30, 40, 60], split=0.6, nperm=10000, seed=20261018, n_planned=4, desde="2025-07-01", hasta="2026-09-30",
+                                      zone_params={"ob_away_heights": 6.0, "ob_max_inside_pct": 4.0, "racimo_min": 6, "racimo_bars": 500, "racimo_altura_ticks": 30}, violet_params={}),
+                             n_trials=36 + 3, power=0.35, est_seconds=2400, group="MGC", family="VIO_ZONES", utility_class="tradeable", consumes={"VIO_ZONES_MGC": "vio_1"}, lead_tests={"VIO_ZONES_MGC": ["vio/"]},
+                             why="Nico observó en el gráfico de MGC 12-26 (25 ticks) patrones del precio respecto de las zonas violeta de aVolClusterPOI. Esa lógica (alejarse rápido y lejos con poco volumen operado adentro) no tiene paridad verificada; se porta aquí y se aplica a las zonas de aVolZonePOI2, cuya paridad NT8 sí está verificada (25 ticks, MNQ). Se mide, a nivel de tick, la probabilidad de llegar a la zona frente a alejarse cuando el precio, ya alejado, vuelve a una distancia D, para 36 configuraciones de TP/SL."))
     e = E.get("PNL_EVAL_1")
     if e and "pnl_1" in e["unused_samples"]:       # R10: pistas en reserva → reglas operables con P&L neto (mandato: lo que importa es el neto, estable y combinable)
         out.append(Candidate("PNL-1", "P&L neto de reglas operables de las pistas en reserva: GC último 30 min (2 variantes) y celdas de SCAN-1 en GC y ES", "R10_RESERVE_LEADS_TO_NET_PNL", "NEW_MECHANISM", ["GC_LH_MOMENTUM", "UNIVERSE_SCAN_1", "PNL_EVAL_1"],
@@ -176,10 +184,22 @@ MODE_DEFS = {
 - Reglas, muestras y roles (cfg abajo): `discovery` = muestra donde se halló la pista (descriptiva); `oos` = muestra confirmatoria; `descriptive` = otras fuentes.
 - Prueba confirmatoria (solo `oos`): estadístico = media neta por operación; nulo = dirección aleatoria independiente por operación (20.000 sorteos); p unilateral; **p = 1 si la media neta ≤ 0**. Holm sobre 2 pruebas (GC_ROD_LH_ALL y GC_ROD_LH_BIG en el spot 2022-07 → 2025-06). Semilla 20261017.
 - Descriptivo (no es prueba): media neta, desvío, aciertos, P&L por trimestre, parte de los 5 mejores días, P&L total con costos × 1,5, drawdown, operaciones por mes, y el P&L diario (para simular challenges y el control sin ventaja fuera del kernel).''',
+ "vio1": '''Definiciones congeladas (script `tools/vio1_zones.py`; lógica violeta en `edgelab/research/violet_zones.py`, portada de `nt8/aVolClusterPOI_violet_v05.cs`):
+- Datos: MGC, sesiones aprobadas 2025-07-01 → 2026-09-30 (líder por sesión del resolver), sin la pausa CME 16:00-17:00 CT; barras de 25 ticks (trades); footprint total NT8 (`build_total_footprint_csr_nt8`).
+- Zonas: `edgelab.bridge.indicators.avolzonepoi2.run` con la configuración 25T de paridad verificada (detección por defecto 10/×2/gap 1/mín. 2/Suma/15 min/p95/20 sesiones/mín. 20; OB 6 alturas, 8 ticks, 4 %; racimo 6/500/30). Se usan TODAS las zonas detectadas.
+- Violeta (parámetros por defecto del .cs): dirección = signo del cierre de la barra de creación respecto de la zona (0 = adentro: no aplica); se alejó = separación máxima ≥ max(40 ticks, ⌈2 × ancho⌉) dentro de 30 barras; poco volumen = volumen operado dentro de la zona hasta ese momento / score ≤ umbral adaptativo causal (cuantil q = 20 % / proporción de zonas que se alejan; 0,35 mientras haya menos de 20 alejadas o 20 resueltas); invalidación por cierre de barra del lado equivocado; la decisión se fija una vez.
+- Evento (a nivel de TICK): tras la barra de decisión, el precio se aleja a más de D ticks de la zona y luego vuelve a D (entrada con orden límite en D). Ventana: hasta la invalidación de la zona o el fin de la sesión CME (16:00 CT). D ∈ {10, 16, 20, 30, 40, 60} ticks (MGC: 1 tick = 0,10 = USD 1).
+- Resultado por configuración (a, b) con a ∈ {D/2, D} ticks hacia la zona (TP; a = D llega al borde de la zona) y b ∈ {D/2, D, 2D} alejándose (SL): 36 configuraciones; sin barrera al fin de la ventana se sale a mercado. P&L en ticks; costo de ida y vuelta supuesto 6,8 ticks (USD 6,8 por contrato: comisión 4,80 + 2 ticks de deslizamiento; supuesto conservador).
+- Descubrimiento (60 % inicial de las sesiones): esperanza bruta por evento de cada configuración; nulo de MÁXIMO por cambio de signo por sesión (conjunto en las 36 configuraciones, 10.000 sorteos; H0 = esperanza bruta 0). Réplica (40 % final): las 3 mejores configuraciones del descubrimiento, con media neta (bruta − 6,8) > 0 exigida (p = 1 si ≤ 0), nulo de signo por sesión. Holm sobre 4 pruebas (1 máximo + 3 réplicas); el contador global recibe 39 (36 configuraciones + 3 réplicas). Semilla 20261018.
+- Descriptivo (no es prueba): para cada configuración, P(TP), P(SL), P(sin barrera), P(TP) de equilibrio b/(a+b), esperanza bruta en cada mitad, eventos por sesión; y el MISMO análisis para las zonas que se alejaron pero NO son violeta (control).''',
  "idm": "Ver docstring del script (modo `idm`): corr(resto del día, última media hora), unilateral positiva; diferencia por gamma bajo con permutación por bloques de 20.",
  "slot_corr": "Ver docstring del script (modo `slot_corr`): corr(retorno previo, siguiente) de `horizon_min` minutos en cada franja; unilateral negativa.",
 }
 TRANSPARENCY = {
+ "VIO-1": '''## Transparencia sobre lo ya mirado (antes de este pre-registro)
+- La hipótesis nace de la inspección visual de Nico del gráfico MGC 12-26 (25 ticks) con aVolClusterPOI (captura del 2026-10-12, que incluye fechas posteriores al 2026-09-30 que este estudio NO lee). Esas impresiones visuales pueden coincidir con períodos de la muestra: por eso se separa descubrimiento (60 % inicial) y réplica (40 % final); la muestra no es virgen.
+- La lógica violeta no tiene paridad verificada (solo el .cs); su portado a Python se prueba con casos sintéticos (`tests/test_violet_zones.py`) y se verificó que corre de punta a punta sobre un tramo de ES (sin resultados de MGC). Las zonas de aVolZonePOI2 sí tienen paridad NT8 verificada (MNQ 25T); su paridad en MGC no se verificó.
+- No se miró ningún resultado de MGC antes de este pre-registro.''',
  "PNL-1": '''## Transparencia sobre lo ya mirado (antes de este pre-registro)
 - `GC_ROD_LH_ALL` y `GC_ROD_LH_BIG`: la pista nació en el futuro de GC 2025-26 (`discovery`). En el spot 2022-2025 (`oos`) ya se miró antes la correlación del tercil de |ROD| alto (+0,026) y el P&L bruto medio de seguir el signo (+0,66 pb, por debajo del costo): se espera que no pasen; la prueba sirve para cerrar la pista en su forma operable.
 - Celdas de SCAN-1 (`GC_PREV15_1330_MOM`, `ES_PREV60_0730_REV`, `ES_PREV30_1230_MOM`): su muestra de réplica (futuros 2025-26) ya se consumió en SCAN-1 sin éxito: aquí son DESCRIPTIVAS, no confirmatorias.''',
@@ -223,12 +243,17 @@ Nulo de signo aleatorio / permutación por bloques según el modo; Holm sobre {c
 """
 
 
+TEMPLATES = {"vio1": dict(script="tools/vio1_zones.py", env="VIO_CFG", extra=["nicolasbuttaro/edgelab-code-zones"])}
+
+
 def to_runspec(c: Candidate) -> dict | None:
     if not c.template: return None
-    return dict(run_id=c.cid.lower(), kind="study", family=c.family, group=c.group, script="tools/study_slot_effect.py", prereg=f"docs/research/autopilot/drafts/{c.cid}.md", n_trials=c.n_trials, n_tests_holm=c.cfg.get("n_planned"),
-                needs=[f"{s}:2025-07-01:2026-09-30" for s in (c.cfg.get("sources") or sorted({x[k] for x in c.cfg.get("scans", []) for k in ("disc", "rep")} | {n for r in c.cfg.get("rules", []) for k in ("discovery", "oos", "descriptive") for n in r.get(k, [])})) + c.cfg.get("reference_sources", []) if s not in c.cfg.get("spot_ranges", {})], extra_datasets=[
-                    "nicolasbuttaro/edgelab-dukascopy-es-usa500"] + (["nicolasbuttaro/edgelab-dukascopy-xauusd-ticks-m1"] if any(k.startswith("GC_spot") for k in c.cfg.get("spot_ranges", {})) else []),
-                internet=c.internet, env={"STUDY_CFG": json.dumps(c.cfg, sort_keys=True)}, est_seconds=c.est_seconds, decision_rule="holm", notes=c.title, origin={k: dict(sample=v, tests=c.lead_tests.get(k)) for k, v in c.consumes.items()})
+    tm = TEMPLATES.get(c.template, dict(script="tools/study_slot_effect.py", env="STUDY_CFG", extra=None))
+    names = (c.cfg.get("sources") or sorted({x[k] for x in c.cfg.get("scans", []) for k in ("disc", "rep")} | {n for r in c.cfg.get("rules", []) for k in ("discovery", "oos", "descriptive") for n in r.get(k, [])})) + c.cfg.get("reference_sources", [])
+    needs = [f"{s}:2025-07-01:2026-09-30" for s in names if s not in c.cfg.get("spot_ranges", {})] if "inst" not in c.cfg else [f"{c.cfg['inst']}:{c.cfg.get('desde', '2025-07-01')}:{c.cfg.get('hasta', '2026-09-30')}"]
+    extra = tm["extra"] if tm["extra"] is not None else ["nicolasbuttaro/edgelab-dukascopy-es-usa500"] + (["nicolasbuttaro/edgelab-dukascopy-xauusd-ticks-m1"] if any(k.startswith("GC_spot") for k in c.cfg.get("spot_ranges", {})) else [])
+    return dict(run_id=c.cid.lower(), kind="study", family=c.family, group=c.group, script=tm["script"], prereg=f"docs/research/autopilot/drafts/{c.cid}.md", n_trials=c.n_trials, n_tests_holm=c.cfg.get("n_planned"),
+                needs=needs, extra_datasets=extra, internet=c.internet, env={tm["env"]: json.dumps(c.cfg, sort_keys=True)}, est_seconds=c.est_seconds, decision_rule="holm", notes=c.title, origin={k: dict(sample=v, tests=c.lead_tests.get(k)) for k, v in c.consumes.items()})
 
 
 def research_gaps(c: Candidate) -> dict:

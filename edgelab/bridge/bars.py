@@ -53,12 +53,18 @@ def _ohlc(ticks: TickSeries, starts, ends):
     lo = np.empty(n, np.int64); c = np.empty(n, np.int64)
     v = np.empty(n, np.float64)
     tbi = np.full(len(ticks), -1, np.int64)
-    for b in range(n):
-        i0, i1 = int(starts[b]), int(ends[b])
-        p = ticks.price_ticks[i0:i1]
-        o[b] = p[0]; c[b] = p[-1]; h[b] = p.max(); lo[b] = p.min()
-        v[b] = ticks.volume[i0:i1].sum()
-        tbi[i0:i1] = b
+    if n == 0:
+        return o, h, lo, c, v, tbi
+    # vectorizado con reduceat (mismo resultado que el bucle por barra; barras contiguas y no vacias)
+    st = np.asarray(starts, dtype=np.int64); en = np.asarray(ends, dtype=np.int64)
+    pr = np.asarray(ticks.price_ticks)
+    o[:] = pr[st]; c[:] = pr[en - 1]
+    h[:] = np.maximum.reduceat(pr, st); lo[:] = np.minimum.reduceat(pr, st)
+    v[:] = np.add.reduceat(np.asarray(ticks.volume, dtype=np.float64), st)
+    cover = np.zeros(len(ticks) + 1, np.int64)
+    np.add.at(cover, st, 1); np.add.at(cover, en, -1)
+    inside = np.cumsum(cover[:-1]) > 0
+    tbi[inside] = np.repeat(np.arange(n), en - st)
     return o, h, lo, c, v, tbi
 
 
@@ -83,13 +89,14 @@ def session_ids(ts_ns) -> np.ndarray:
     llamar `session_key` por tick sobre millones de ticks es inviable.
     """
     import pandas as pd
-    idx = pd.to_datetime(np.asarray(ts_ns, dtype="int64"), unit="ns", utc=True)\
-            .tz_convert("America/Chicago")
-    # trade-date: el día del CIERRE. Un tick a las >= 17:00 pertenece a la sesión
-    # que cierra al día siguiente.
-    # normalize() vuelve a medianoche LOCAL; el entero de dia sale de ahi.
+    ts = np.asarray(ts_ns, dtype="int64")
+    # Una vez por MINUTO unico y se expande: la frontera (17:00:00 CT) cae en el borde de un minuto, asi que todos
+    # los ticks de un mismo minuto tienen la misma sesion. Mismo resultado, mucho mas rapido.
+    um, inv = np.unique(ts // 60_000_000_000, return_inverse=True)
+    idx = pd.to_datetime(um * 60_000_000_000, unit="ns", utc=True).tz_convert("America/Chicago")
+    # trade-date: el dia del CIERRE. Un tick a las >= 17:00 pertenece a la sesion que cierra al dia siguiente.
     dias = np.asarray(idx.normalize().view("int64")) // 86_400_000_000_000
-    return dias + (np.asarray(idx.hour) >= 17).astype(np.int64)
+    return (dias + (np.asarray(idx.hour) >= 17).astype(np.int64))[inv]
 
 
 def build_tick_bars(ticks: TickSeries, ticks_per_bar: int,
@@ -219,8 +226,31 @@ class Footprints:
     has_quotes: bool
 
 
-def build_footprints(ticks: TickSeries, bars: BarSeries) -> Footprints:
+def build_footprints(ticks: TickSeries, bars: BarSeries, nt8_subseries: bool = False) -> Footprints:
+    """Footprint por barra. nt8_subseries=True replica cómo un indicador NT8 arma el perfil desde
+    AddDataSeries(Tick, 1) (medido 2026-10-05, aVolClusterPOI MNQ 12-26 50t, 99,35 % de barras idénticas):
+    un tick con timestamp IGUAL al cierre de una barra primaria se procesa después de ella y cae en la
+    barra SIGUIENTE; y al cerrar la barra se descartan los ticks fuera de [low, high] de esa barra."""
     nb = len(bars)
+    if nt8_subseries:
+        ends = np.asarray(bars.end_ns, dtype=np.int64)
+        ts_all = np.asarray(ticks.ts_ns, dtype=np.int64)
+        assign = np.searchsorted(ends, ts_all, side="right")
+        # Varias barras primarias que cierran en el MISMO timestamp T (barras de ticks en ráfaga): NT8 intercala
+        # P(T), S(T), P(T), S(T)... → el j-ésimo tick con timestamp T va a la barra L+1+j mientras queden barras en
+        # T; los demás, a la primera barra que cierra después de T (medido 2026-10-05, MNQ 12-26 50t, barras
+        # 175583-175587).
+        L = np.searchsorted(ends, ts_all, side="left")
+        multi = np.flatnonzero((assign - L) > 1)
+        if len(multi):
+            prev_t, j = None, 0
+            for i in multi:
+                t = ts_all[i]
+                j = j + 1 if t == prev_t else 0
+                prev_t = t
+                if j < assign[i] - L[i] - 1:
+                    assign[i] = L[i] + 1 + j
+        lo_t = np.asarray(bars.low_t); hi_t = np.asarray(bars.high_t)
     ask = [dict() for _ in range(nb)]
     bid = [dict() for _ in range(nb)]
     total = [dict() for _ in range(nb)]
@@ -230,10 +260,12 @@ def build_footprints(ticks: TickSeries, bars: BarSeries) -> Footprints:
     last_price = None
     last_dir = 0
     for i in range(len(ticks)):
-        b = int(bars.tick_bar_idx[i])
+        b = int(assign[i]) if nt8_subseries else int(bars.tick_bar_idx[i])
         if b < 0 or b >= nb:
             continue
         p = int(ticks.price_ticks[i])
+        if nt8_subseries and (p < lo_t[b] or p > hi_t[b]):
+            continue                                      # NT8: fuera del rango de la barra = descartado
         vol = float(ticks.volume[i])
         side, by_quote = 0, False
         if has_ba:
@@ -288,3 +320,54 @@ def p1a_gate(ticks: TickSeries, bars: BarSeries, fps: Footprints) -> dict:
     return dict(status=status, n_bars=len(bars), n_ticks=len(ticks),
                 n_quote=nq, n_rule=nr, quote_fraction=round(quote_fraction, 4),
                 footprint_mismatches=len(mism), diagnostics=diags)
+
+
+@dataclass
+class TotalFootprintCSR:
+    """Footprint TOTAL por barra en formato CSR (volumen por tick de precio), vectorizado con numpy.
+    `bar_cells(b)` -> (ticks, vols) de la barra b, ordenados por tick. Mismo contenido que `Footprints.total[b]`
+    construido con `build_footprints(..., nt8_subseries=True)` (ya filtrado al [low, high] de la barra), sin dicts:
+    decenas de veces más rápido y una fracción de la memoria en contratos de >100 M ticks."""
+    offsets: np.ndarray    # int64, len n_bars + 1
+    ticks: np.ndarray      # int64
+    vols: np.ndarray       # float64
+
+    def bar_cells(self, b):
+        a, z = self.offsets[b], self.offsets[b + 1]
+        return self.ticks[a:z], self.vols[a:z]
+
+
+def build_total_footprint_csr_nt8(ticks: TickSeries, bars: BarSeries) -> TotalFootprintCSR:
+    """Regla NT8 de subserie 1-tick (idéntica a build_footprints(nt8_subseries=True)): tick con timestamp igual al
+    cierre de una barra → barra siguiente; ráfaga de barras con el mismo cierre → intercalado P,S,P,S; fuera de
+    [low, high] de la barra asignada → descartado."""
+    ends = np.asarray(bars.end_ns, dtype=np.int64)
+    ts = np.asarray(ticks.ts_ns, dtype=np.int64)
+    nb = len(ends)
+    assign = np.searchsorted(ends, ts, side="right")
+    L = np.searchsorted(ends, ts, side="left")
+    multi = np.flatnonzero((assign - L) > 1)
+    if len(multi):                                   # rank del tick dentro de su timestamp (ticks ya ordenados por ts)
+        tm = ts[multi]
+        first = np.r_[True, tm[1:] != tm[:-1]]
+        grp_start = np.maximum.accumulate(np.where(first, np.arange(len(tm)), 0))
+        j = np.arange(len(tm)) - grp_start
+        lim = assign[multi] - L[multi] - 1
+        use = j < lim
+        assign[multi[use]] = L[multi[use]] + 1 + j[use]
+    ok = assign < nb
+    b = assign[ok]
+    p = np.asarray(ticks.price_ticks, dtype=np.int64)[ok]
+    v = np.asarray(ticks.volume, dtype=np.float64)[ok]
+    inr = (p >= np.asarray(bars.low_t, dtype=np.int64)[b]) & (p <= np.asarray(bars.high_t, dtype=np.int64)[b])
+    b, p, v = b[inr], p[inr], v[inr]
+    pmin = int(p.min()) if len(p) else 0
+    key = b * (int(p.max()) - pmin + 1 if len(p) else 1) + (p - pmin)
+    uk, inv = np.unique(key, return_inverse=True)
+    vol = np.bincount(inv, weights=v)
+    width = (int(p.max()) - pmin + 1) if len(p) else 1
+    ub = uk // width
+    ut = uk % width + pmin
+    offsets = np.zeros(nb + 1, dtype=np.int64)
+    np.add.at(offsets, ub + 1, 1)
+    return TotalFootprintCSR(np.cumsum(offsets), ut.astype(np.int64), vol)
