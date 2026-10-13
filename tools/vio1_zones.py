@@ -33,6 +33,25 @@ DESDE, HASTA = CFG.get("desde", "2025-07-01"), CFG.get("hasta", "2026-09-30"); S
 END_NS = pd.Timestamp("2026-09-30 22:00", tz="UTC").value
 
 
+def load_ticks(path, a, b, inst, label):
+    """Canónico F2 si el parquet lo es; si no, raw NT8 (last/bid/ask float) -> ticks enteros."""
+    import pyarrow.parquet as pq
+    cols = set(pq.ParquetFile(path).schema_arrow.names)
+    if "price_ticks" in cols:
+        return T.load_canonical_parquet(path, start_utc_ns=a, end_utc_ns=b)
+    spec = T.instrument_spec(inst)
+    t = pq.read_table(path, filters=[("ts_utc_ns", ">=", int(a)), ("ts_utc_ns", "<", int(b))])
+    if t.num_rows == 0:
+        raise ValueError("selección vacía " + label)
+    g = lambda n: t.column(n).to_numpy(zero_copy_only=False)
+    ts = g("ts_utc_ns").astype(np.int64)
+    o = np.argsort(ts, kind="stable") if (np.diff(ts) < 0).any() else slice(None)
+    r = lambda n: np.rint(g(n)[o] / spec.tick_size).astype(np.int64)
+    return T.TickSeries(ts_ns=ts[o], price_ticks=r("last"), volume=g("volume")[o].astype(np.float64),
+                        bid_ticks=r("bid"), ask_ticks=r("ask"), sequence=g("sequence")[o].astype(np.int64),
+                        tick_size=spec.tick_size, instrument=inst, contract=label, source=path)
+
+
 def configs(D):                                   # (a = ticks hacia la zona, b = ticks alejándose): a ∈ {D/2, D}, b ∈ {D/2, D, 2D}
     return [(a, b) for a in (D // 2, D) for b in (D // 2, D, 2 * D)]
 
@@ -120,7 +139,7 @@ def main():
     sess = ed.sessions(INST, DESDE, HASTA); print("sesiones aprobadas", len(sess), "contratos", sorted(sess.contract.unique()), flush=True); parts, cnts, errors = [], [], []
     for c in sorted(sess.contract.unique(), key=lambda x: (x[-2:], x[-5:-3])):
         try:
-            ds, fl, a, b, dates = contract_rows(c, sess); tk = T.load_canonical_parquet(str(ed._path(ds, fl)), start_utc_ns=a, end_utc_ns=b); ev, cnt = process_ticks(tk, dates, c); parts.append(ev); cnts.append(cnt); del tk; gc.collect()
+            ds, fl, a, b, dates = contract_rows(c, sess); tk = load_ticks(str(ed._path(ds, fl)), a, b, CFG.get('inst', 'MGC'), c); ev, cnt = process_ticks(tk, dates, c); parts.append(ev); cnts.append(cnt); del tk; gc.collect()
         except Exception:                                                              # un contrato que falla no tumba la corrida: queda registrado y la API de Kaggle devuelve la salida
             import traceback; errors.append(dict(contract=c, traceback=traceback.format_exc()[-3000:])); print("ERROR", c, errors[-1]["traceback"], flush=True); gc.collect()
     if not parts:
