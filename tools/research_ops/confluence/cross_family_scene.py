@@ -17,6 +17,7 @@ from .cross_family_context import FAMILY
 class CrossFamilyScene:
     def __init__(self,roster,plan,*,semantic_capture_only=False):
         if type(semantic_capture_only) is not bool:raise ValueError('explicit semantic capture policy')
+        if type(plan.get('rolling_bt2a_percentiles',False)) is not bool:raise ValueError('explicit scene rolling percentile opt-in')
         self.semantic_capture_only=semantic_capture_only
         self.configs=roster['configs'];self.plan=plan;self.started=time.monotonic();self.ticks=0
         self.primitives=SessionPrimitives(max_ticks=plan['max_session_ticks'],max_cells=plan['max_footprint_cells'])
@@ -28,7 +29,7 @@ class CrossFamilyScene:
         tick_size=plan.get('tick_size',.25)
         for c in self.configs:
             f=FAMILY[c['indicator']]
-            stream=AVZStream(params=c['params'],bar_spec=c['bar_spec']) if f=='AVZP2' else BT2Stream(params=c['params'],bar_spec=c['bar_spec'],tick_size=tick_size) if f=='BT2' else BT2AStream(params=c['params'],tick_size=tick_size,footprint_cache=self.footprint_cache)
+            stream=AVZStream(params=c['params'],bar_spec=c['bar_spec']) if f=='AVZP2' else BT2Stream(params=c['params'],bar_spec=c['bar_spec'],tick_size=tick_size) if f=='BT2' else BT2AStream(params=c['params'],tick_size=tick_size,footprint_cache=self.footprint_cache,rolling_percentile=plan.get('rolling_bt2a_percentiles',False))
             if stream.config!=c['config_sha256']:raise ValueError('nine native profile hashes')
             self.streams.append(stream)
     def guard(self):

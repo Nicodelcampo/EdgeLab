@@ -1,5 +1,14 @@
 ## Latest: multiasset campaign terminal; three reviewed results, one support stop
 
+## Checkpoint actual — rolling percentile BT2A TERMINAL /opt-in disponible
+
+Job `138574550/v1` COMPLETE, dos polls, una intención cerrada. Leer `GC_BT2A_ROLLING_CLOSEOUT.md`, `GC_BT2A_ROLLING_PLAN.json`, `GC_BT2A_ROLLING_LAUNCH.json`. BenchmarkBF9b95ed:470.027 ticksGC/4sesiones/3perfiles; mediana19,60397→13,27547s,1,47671×,−32,28171% duración nativa. Producción ydiagnósticos:estado/capturas/umbrales/logs exactos, no certificadoNT8 ni speedup de pipeline.
+
+`BT2AStream.rolling_percentile` y scene-plan `rolling_bt2a_percentiles` son opt-in, defaultFalse. Nuevos planes deben congelar SHA yregistrar flag/recibo, incluir módulo enbundle; no editar ni reenviar planes/kernels antiguos. Journals originales `/data/operational-state/gc-bt2a-rolling-c91b12d689ce-{dispatch,watch}.sqlite`, ya cerrados. No recrearlos para ganar presupuesto; snapshots públicos no sustituyen custodia.
+
+933regresiónPASS antes de reparaciónfinal dekwargs; después4focal+3compatPASS yforwarding5focalPASS. Errorlocal de edición atrapado/corregido antes de envíos, testcaller añadido. Próximo: nuevo plan explícito con opt-in ymediciónwalltotal; retomar diseñoA→E/E→A sinfiltrar estadosporlabels futuros. Sin nueva corrida científica, automaticpromotion,defaultchange,canonicalwriter,P&L,holdout,merge,Debiandeploy/24x7. Abajo es historia, no permiso de reenvío.
+
+
 ## Checkpoint actual — perfil BT2A multis sesión TERMINAL
 
 Job `138566248/v1` COMPLETE, dos polls, una intención cerrada. Leer `GC_BT2A_PROFILE_CLOSEOUT.md`, `GC_BT2A_PROFILE_LAUNCH.json` y `NEXT_MECHANISM_AFTER_GC_NEGATIVE.md`.470.027 ticks/4 sesiones; estado semántico y capturas exactos enABBA; intercalado sólo1,01224×. Percentiles~23,30% de tiempo acumulado del pase instrumentado, NO sumar con sorting. Journals originales: `/data/operational-state/gc-bt2a-profile-269f62b9991e-{dispatch,watch}.sqlite`; no recrear para obtener presupuesto.

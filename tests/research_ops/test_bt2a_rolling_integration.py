@@ -22,6 +22,12 @@ class IntegrationTests(unittest.TestCase):
   h=helper.StreamingTests();h.setUp();tapes=h.tapes(days=2);cs=[c for c in h.roster['configs'] if c['indicator']=='bigtrap2absorption']
   for diag in (False,True):
    a=measure(tapes,cs,.1,'PROFILE_SEQUENTIAL',rolling_percentile=False,collect_diagnostics=diag);b=measure(tapes,cs,.1,'PROFILE_SEQUENTIAL',rolling_percentile=True,collect_diagnostics=diag);self.assertEqual(a['profiles'],b['profiles']);self.assertEqual(a['session_state_sha256'],b['session_state_sha256'])
+ def test_future_scene_forwarding_only_explicit_opt_in(self):
+  from tools.research_ops.confluence.cross_family_streaming import StreamingScene
+  h=helper.StreamingTests();h.setUp();a=StreamingScene(h.roster,h.plan);b=StreamingScene(h.roster,{**h.plan,'rolling_bt2a_percentiles':True})
+  for c,s,t in zip(h.roster['configs'],a.streams,b.streams):
+   if c['indicator']=='bigtrap2absorption':self.assertIsNone(s.rolling_percentile);self.assertIsNotNone(t.rolling_percentile);self.assertEqual(s.config,t.config)
+  with self.assertRaises(ValueError):StreamingScene(h.roster,{**h.plan,'rolling_bt2a_percentiles':'yes'})
  def test_no_default_activation_or_silent_parameter_change(self):
   s=BT2AStream(params={},tick_size=.25);self.assertIsNone(s.rolling_percentile)
   with self.assertRaises(ValueError):BT2AStream(params={},tick_size=.25,rolling_percentile='yes')
