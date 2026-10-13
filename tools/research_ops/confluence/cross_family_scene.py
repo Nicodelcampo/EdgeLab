@@ -15,7 +15,9 @@ from .session_primitives import SessionPrimitives
 from .cross_family_context import FAMILY
 
 class CrossFamilyScene:
-    def __init__(self,roster,plan):
+    def __init__(self,roster,plan,*,semantic_capture_only=False):
+        if type(semantic_capture_only) is not bool:raise ValueError('explicit semantic capture policy')
+        self.semantic_capture_only=semantic_capture_only
         self.configs=roster['configs'];self.plan=plan;self.started=time.monotonic();self.ticks=0
         self.primitives=SessionPrimitives(max_ticks=plan['max_session_ticks'],max_cells=plan['max_footprint_cells'])
         self.streams=[];self.times=Counter();self.progress={}
@@ -37,6 +39,8 @@ class CrossFamilyScene:
             for r in delta.records:
                 counts[k][r.kind]+=1
                 if not retain:continue
+                if self.semantic_capture_only and r.kind not in ('BIRTH','REMOVE'):
+                    counts[k]['diagnostic_only_not_retained']+=1;continue
                 # Source range is immutable global row membership, not inferred from final object.
                 primary=st.first_index<=r.consumed_tick_index<st.first_index+len(st.ticks)
                 if not start<=r.clock.ns<end:counts[k]['outside_current_availability']+=1;continue

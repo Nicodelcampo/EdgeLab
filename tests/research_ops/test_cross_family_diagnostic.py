@@ -4,7 +4,7 @@ from unittest.mock import patch
 from tools.research_ops.confluence.cross_family_diagnostics import safe_failure,reasons
 from tools.research_ops.confluence.cross_family_diagnostic import validate,PLAN,run
 from tools.research_ops.confluence.package_crossfamily_diagnostic import build_request
-from tools.research_ops.confluence.cross_family_pilot import PLAN as SCIENCE_PLAN
+from tools.research_ops.confluence.cross_family_diagnostic import SCIENCE_PLAN
 ROOT=Path(__file__).resolve().parents[2]
 class DiagnosticTests(unittest.TestCase):
  def test_unknown_exception_never_exports_arbitrary_text(self):

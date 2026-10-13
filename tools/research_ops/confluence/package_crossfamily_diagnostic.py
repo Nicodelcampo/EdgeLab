@@ -3,8 +3,8 @@ import base64,hashlib,json,zlib
 from pathlib import Path
 from urllib.parse import urlsplit
 from .package_phenomena_model import BOOT as MODEL_BOOT, FILES as MODEL_FILES
-from .cross_family_diagnostic import PLAN,validate
-from .cross_family_pilot import PLAN as SCIENCE_PLAN,ROSTER
+from .cross_family_diagnostic import PLAN,SCIENCE_PLAN,validate
+from .cross_family_pilot import ROSTER
 from .build_target_free_pilot import digest
 
 FILES=MODEL_FILES+['tools/research_ops/confluence/'+n+'.py' for n in

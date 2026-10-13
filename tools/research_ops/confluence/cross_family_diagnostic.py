@@ -6,7 +6,8 @@ without fitting, labels, evaluation, market QA or private-log acquisition.
 import argparse,json,os,time
 from pathlib import Path
 from datetime import datetime,timezone
-from .cross_family_pilot import PLAN as SCIENCE_PLAN,ROSTER,validate_plan
+from .cross_family_pilot import ROSTER,validate_plan
+SCIENCE_PLAN='docs/research/ops/MNQ_CROSS_FAMILY_PLAN.json'
 from .cross_family_scene import CrossFamilyScene
 from .cross_family_diagnostics import safe_failure
 from .kaggle_session_reader import iter_sessions
@@ -19,7 +20,7 @@ def validate(p):
 
 def run(source,p):
  if not os.environ.get('KAGGLE_KERNEL_RUN_TYPE'):raise ValueError('diagnostic source remains Kaggle-only')
- validate(p);original=json.loads(Path(SCIENCE_PLAN).read_bytes());roster=json.loads(Path(ROSTER).read_bytes());validate_plan(original,roster)
+ validate(p);original=json.loads(Path(SCIENCE_PLAN).read_bytes());roster=json.loads(Path(ROSTER).read_bytes());validate_plan(original,roster,expected_sha=p['source_plan_sha256'])
  if digest(original)!=p['source_plan_sha256']:raise ValueError('original frozen scope')
  native={**original,'wall_seconds':p['wall_seconds']};scene=CrossFamilyScene(roster,native);selected=[];date=None;started=time.monotonic()
  result={'schema':'crossfamily_diagnostic_receipt_v1','plan_sha256':digest(p),'source_science_plan_sha256':digest(original),'outcomes_computed':False,'quality_audit':False,'holdout_opened':False,'pnl':False,'raw_exported':False,'canonical_brain_written':False,'retention_policy':p['retention_policy'],'failure_reproduced':False,'scientific_result':False}

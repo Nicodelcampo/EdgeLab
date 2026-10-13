@@ -15,14 +15,16 @@ from .phenomena_models import TRAIN,EVAL,verified_calibration,fit,predict,brier
 from .cross_family_design import MODELS,COUNTS,design
 from .cross_family_scene import CrossFamilyScene
 from .cross_family_collector import CrossFamilyCollector
-PLAN='docs/research/ops/MNQ_CROSS_FAMILY_PLAN.json'
+PLAN='docs/research/ops/MNQ_CROSS_FAMILY_PLAN_V2.json'
 ROSTER='docs/research/ops/MNQ_CROSS_FAMILY_PARAMETER_ROSTER.json'
-PLAN_SHA='db73695c1846de91c1dbd2fe5ba389f1b79c861cb0969611ac22dfd1f756c1ec'
+PLAN_SHA='cc147af7fdebc8b7b3f36ca8ef7b9e59503b3f074a6600ea3c83833cfb9665e1'
+PRIOR_PLAN_SHA='db73695c1846de91c1dbd2fe5ba389f1b79c861cb0969611ac22dfd1f756c1ec'
 STAGES=frozenset(('PREFLIGHT','READ_AND_DETECT','MEASURE_CONTEXT_AND_LABEL','FIT','SCORE','FINALIZE'))
 COMPARISONS=(('GEOMETRY','GEOMETRY_CC'),('ARRIVAL','ARRIVAL_CC'),('INTERACTION','INTERACTION_CC'),('DENSITY','CONTINUOUS'),('INTERACTION','MIRROR_FULL'))
 
-def validate_plan(p,roster):
-    if digest(p)!=PLAN_SHA:raise ValueError('immutable crossfamily development plan')
+def validate_plan(p,roster,*,expected_sha=None):
+    expected_sha=PLAN_SHA if expected_sha is None else expected_sha
+    if expected_sha not in (PLAN_SHA,PRIOR_PLAN_SHA) or digest(p)!=expected_sha:raise ValueError('immutable crossfamily development plan')
     if digest({k:v for k,v in roster.items() if k!='roster_sha256'})!=p['roster_sha256'] or roster['roster_sha256']!=p['roster_sha256']:raise ValueError('immutable nine profile18pair roster')
     if p['training_sessions']!=list(TRAIN) or p['evaluation_sessions']!=list(EVAL):raise ValueError('fixed inspected natural calendar')
     validate_pin(p['pin']);return p
@@ -59,10 +61,13 @@ def run(source,plan,private_root,cal,*,progress=None):
     root=Path(private_root).resolve()
     if root==Path('/kaggle/working') or Path('/kaggle/working') in root.parents:raise ValueError('private state outside outputs')
     roster=json.loads(Path(ROSTER).read_bytes());validate_plan(plan,roster);verified_calibration(cal)
-    started=time.monotonic();scene=CrossFamilyScene(roster,plan);train=[];tr=[];ev=[];seen=set();scan=hits=pq=pl=0;warmup_sessions=warmup_ticks=0;models=prior=None;fit_seconds=0.
+    started=time.monotonic();scene=CrossFamilyScene(roster,plan,semantic_capture_only=plan.get('capture_retention')=='CAUSAL_BIRTH_REMOVE_ONLY_NATIVE_TOUCH_CLASSIFY_STILL_PROCESSED_AND_COUNTED');train=[];tr=[];ev=[];seen=set();scan=hits=pq=pl=0;warmup_sessions=warmup_ticks=0;models=prior=None;fit_seconds=0.
     for st in iter_sessions(source,start_ns=plan['warmup_start_ns'],end_ns=plan['read_end_ns'],max_session_ticks=plan['max_session_ticks'],max_total_ticks=plan['max_total_ticks']):
         date=datetime.fromtimestamp(st.session_id*86400,timezone.utc).date().isoformat();selected=date in TRAIN+EVAL;progress.update(stage='READ_AND_DETECT',trade_date=date if selected else None)
-        events,diag=scene.session(st,date,retain=selected)
+        try:events,diag=scene.session(st,date,retain=selected)
+        except Exception as exc:
+            from .cross_family_diagnostics import safe_failure
+            progress['native_failure']=safe_failure(exc,scene.progress);raise
         if not selected:warmup_sessions+=1;warmup_ticks+=len(st.ticks);continue
         if date in seen:raise ValueError('duplicate selected session')
         seen.add(date);progress.update(stage='MEASURE_CONTEXT_AND_LABEL')
@@ -83,7 +88,7 @@ def run(source,plan,private_root,cal,*,progress=None):
     if not all(d in seen for d in TRAIN):raise ValueError('required training data unavailable')
     missing=[{'trade_date':d,'status':'SOURCE_EMPTY_NO_REPLACEMENT','replacement_selected':False} for d in EVAL if d not in seen]
     if len(ev)<plan['minimum_available_evaluation_sessions'] or len(ev)+len(missing)!=len(EVAL):raise ValueError('fixed evaluation calendar census')
-    result={'schema':'mnq_crossfamily_development_receipt_v1','status':'DEVELOPMENT_CROSSFAMILY_COMPLETE_NOT_EDGE','plan_sha256':digest(plan),'roster_sha256':roster['roster_sha256'],'calibration_sha256':cal['sha256'],'training_sessions':tr,'evaluation_sessions':ev,'requested_evaluation_sessions':list(EVAL),'unavailable_evaluation_sessions':missing,'available_evaluation_session_count':len(ev),'baseline_mean_session_brier':{name:float(np.mean([s['baseline_mean_brier'][name] for s in ev])) for name in ('PRIOR','CONTINUOUS')},'pairs':[{**identity,'mean_session_brier':{name:float(np.mean([s['pairs'][p]['scores']['mean_brier'][name] for s in ev])) for name in ('PRIOR','CONTINUOUS')+MODELS},'paired_delta_equal_session_mean':{a+'_MINUS_'+b:float(np.mean([s['pairs'][p]['paired_deltas'][a+'_MINUS_'+b] for s in ev])) for a,b in COMPARISONS}} for p,identity in enumerate(roster['pairs'])],'model_feature_counts':COUNTS,'models_including_shared_baselines':2+18*len(MODELS),'warmup_sessions':warmup_sessions,'warmup_ticks':warmup_ticks,'total_ticks':scene.ticks,'response_scanned_elements':scan,'context_query_hits':hits,'print_queries':pq,'print_level_queries':pl,'native_eof_diagnostics':eof,'native_stage_seconds':dict(scene.times),'fit_seconds':fit_seconds,'wall_seconds':time.monotonic()-started,'measured_runner_peak_rss_bytes':resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024,'rss_scope':'LINUX_RUNNER_PROCESS_NOT_CGROUP','read_once_continuous_source':True,'shared_bar_specs':plan['bar_specs'],'profile_views_per_anchor':18,'primary_pairs':18,'native_configs':9,'bt2a_bucket_preprocessing_shared':False,'retained_pair_graph':False,'rows_or_snapshots_persisted':False,'evaluation_outcomes_previously_inspected':True,'confirmation':False,'new_inference':False,'edge_claim':False,'holdout_opened':False,'pnl':False,'raw_exported':False,'canonical_brain_written':False,'automatic_model_selection':False,'overlapping_anchors_independent':False,'native_AVZ_liveness_measured':False,'physical_first_touch_measured':False,'zone_specific_attribution':False,'mirror_null_scope':plan['mirror_null_scope']}
+    result={'schema':'mnq_crossfamily_development_receipt_v1','status':'DEVELOPMENT_CROSSFAMILY_COMPLETE_NOT_EDGE','plan_sha256':digest(plan),'roster_sha256':roster['roster_sha256'],'calibration_sha256':cal['sha256'],'training_sessions':tr,'evaluation_sessions':ev,'requested_evaluation_sessions':list(EVAL),'unavailable_evaluation_sessions':missing,'available_evaluation_session_count':len(ev),'baseline_mean_session_brier':{name:float(np.mean([s['baseline_mean_brier'][name] for s in ev])) for name in ('PRIOR','CONTINUOUS')},'pairs':[{**identity,'mean_session_brier':{name:float(np.mean([s['pairs'][p]['scores']['mean_brier'][name] for s in ev])) for name in ('PRIOR','CONTINUOUS')+MODELS},'paired_delta_equal_session_mean':{a+'_MINUS_'+b:float(np.mean([s['pairs'][p]['paired_deltas'][a+'_MINUS_'+b] for s in ev])) for a,b in COMPARISONS}} for p,identity in enumerate(roster['pairs'])],'model_feature_counts':COUNTS,'models_including_shared_baselines':2+18*len(MODELS),'warmup_sessions':warmup_sessions,'warmup_ticks':warmup_ticks,'total_ticks':scene.ticks,'response_scanned_elements':scan,'context_query_hits':hits,'print_queries':pq,'print_level_queries':pl,'native_eof_diagnostics':eof,'native_stage_seconds':dict(scene.times),'fit_seconds':fit_seconds,'wall_seconds':time.monotonic()-started,'measured_runner_peak_rss_bytes':resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024,'rss_scope':'LINUX_RUNNER_PROCESS_NOT_CGROUP','read_once_continuous_source':True,'shared_bar_specs':plan['bar_specs'],'profile_views_per_anchor':18,'primary_pairs':18,'native_configs':9,'capture_retention':plan['capture_retention'],'full_native_event_counts_preserved':True,'bt2a_bucket_preprocessing_shared':False,'retained_pair_graph':False,'rows_or_snapshots_persisted':False,'evaluation_outcomes_previously_inspected':True,'confirmation':False,'new_inference':False,'edge_claim':False,'holdout_opened':False,'pnl':False,'raw_exported':False,'canonical_brain_written':False,'automatic_model_selection':False,'overlapping_anchors_independent':False,'native_AVZ_liveness_measured':False,'physical_first_touch_measured':False,'zone_specific_attribution':False,'mirror_null_scope':plan['mirror_null_scope']}
     if len((json.dumps(result,indent=2,allow_nan=False)+'\n').encode())>plan['max_aggregate_bytes']:raise ValueError('bounded aggregate output')
     return result
 
@@ -92,6 +97,6 @@ def main():
     try:
         r=run(a.source,json.loads(Path(a.plan).read_bytes()),a.private_root,json.loads(Path(CAL_PATH).read_bytes()),progress=progress);Path(a.receipt).write_text(json.dumps(r,indent=2,allow_nan=False)+'\n')
     except Exception as exc:
-        r={'schema':'crossfamily_failure_v1','status':'FAILED_NO_SCIENTIFIC_CLAIM','exception_type':type(exc).__name__ if type(exc) in (ValueError,TimeoutError,MemoryError) else 'UNCLASSIFIED_EXCEPTION','stage':progress.get('stage') if progress.get('stage') in STAGES else 'UNCLASSIFIED_STAGE','trade_date':progress.get('trade_date') if progress.get('trade_date') in TRAIN+EVAL else None,'partial_success':False,'raw_exported':False}
+        r={'schema':'crossfamily_failure_v1','status':'FAILED_NO_SCIENTIFIC_CLAIM','exception_type':type(exc).__name__ if type(exc) in (ValueError,TimeoutError,MemoryError) else 'UNCLASSIFIED_EXCEPTION','stage':progress.get('stage') if progress.get('stage') in STAGES else 'UNCLASSIFIED_STAGE','trade_date':progress.get('trade_date') if progress.get('trade_date') in TRAIN+EVAL else None,'partial_success':False,'raw_exported':False,'native_failure':progress.get('native_failure')}
         Path(a.receipt).with_name('runner-failure-receipt.json').write_text(json.dumps(r)+'\n');raise
 if __name__=='__main__':main()
