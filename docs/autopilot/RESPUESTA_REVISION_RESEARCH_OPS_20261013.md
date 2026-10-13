@@ -13,11 +13,12 @@ Fuente: `docs/research/ops/EXTERNAL_AGENT_ADVANCES_RECONCILIATION.md` y `DEBIAN_
 | 6 | Un solo controlador por estado | **Corregido.** `.lock` exclusivo no bloqueante por directorio de estado (`locked_by_other_controller`). |
 | 7 | `git pull --ff-only` en cada ciclo | **Corregido.** Quitado de la unit; el cambio de código es explícito: `deploy/debian/update.sh <sha>`. |
 | 8 | `git add -A` en `sync_state.sh` | **Corregido.** Lista blanca de archivos de estado. |
+| 0 | Manifiesto de protegidos | **Refrescado por el usuario (autorización explícita 2026-10-13)** para `guard.py` y `fdr.py` tras revisar este diff. |
 | 9 | Python 3.12 vs Debian 3.11 | **Abierto.** El autopilot corre en 3.10+; PR117 pide 3.12. Venv separado por componente, aprobado por el administrador. |
 | 10 | Doctor/endpoint no prueba acceso privado | **Abierto.** Verificar con una operación mínima autorizada en el host real. |
 
 ## Lo que sigue abierto (y no se aparenta resolver)
-- **Presupuesto global de cuenta** (cuota Kaggle, corridas manuales y de otros agentes): el autopilot solo ve sus propias corridas. Mientras no haya visibilidad común, mantener `max_per_day`/`max_concurrent` conservadores y no lanzar manualmente por fuera del libro. Ejemplo real: el 2026-10-13 un tick con `--root .` (estado nuevo, vacío) lanzó una corrida duplicada de `slot-1`; el lock por directorio no lo habría evitado. Falta un registro común de lanzamientos por cuenta (interfaz con `DispatchIntent` de PR117).
+- **Presupuesto global de cuenta — parcialmente resuelto.** `tools/kaggle_launch.py` (autopilot, humano o cualquier agente que lo use) registra cada lanzamiento en `docs/research/autopilot_runs/account_launches.jsonl` y el autopilot aplica `account_max_per_day` (12) sobre TODO lo registrado (`tick_account_cap`). No ve lanzamientos por la UI/API directa de Kaggle: es un tope de prudencia, no cuota real. Ejemplo real: el 2026-10-13 un tick con `--root .` (estado nuevo, vacío) lanzó una corrida duplicada de `slot-1`; el lock por directorio no lo habría evitado. Falta un registro común de lanzamientos por cuenta (interfaz con `DispatchIntent` de PR117).
 - **Alpha-investing no certifica FDR global** con pruebas dependientes/superpuestas (las campañas comparten muestras). Se usa como presupuesto de prioridad, no como garantía. OU-2 mostró un caso: se contó como acierto una re-medición de la misma muestra; ya corregido con `correction_of`.
 - **Integración con `DispatchIntent`, adquisición de agregados y semántica de PR117/118**: una responsabilidad por capa, un solo escritor; no se construyó un segundo daemon ni se mergearon ramas.
 - Sin prueba en Debian real (LEEME).

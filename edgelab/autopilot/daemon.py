@@ -7,7 +7,7 @@ import json
 import time
 from pathlib import Path
 
-from . import analyze, guard, evidence
+from . import account, analyze, guard, evidence
 from .fdr import AlphaInvesting
 from .executor import LaunchRejected
 from .ledger import RunLedger
@@ -74,6 +74,8 @@ class Autopilot:
             return self._note(event="tick_no_capacity", **rep)
         hyp_full = self.ledger.launched_since(now - 86400) >= self.cfg.get("max_per_day", 2); bm_full = self.ledger.launched_since(now - 86400, benchmark=True) >= self.cfg.get("max_benchmarks_per_day", 4)
         if hyp_full and bm_full: return self._note(event="tick_no_capacity", **rep)
+        if (cap := self.cfg.get("account_max_per_day")) and account.count_since(now - 86400, self.cfg.get("account_log")) >= cap:
+            return self._note(event="tick_account_cap", reason=f"la cuenta ya lanzó {cap} kernels en 24 h (autopilot + manuales + otros agentes)", **rep)
         ranked = rank(candidates, self.ledger.outcomes(), self.ledger, seed=int(now) // 3600)
         for score, spec, why in ranked:                                              # 3) la mejor que pase todas las guardas
             if (spec.kind == "benchmark" and bm_full) or (spec.kind != "benchmark" and hyp_full): continue      # los topes diarios son por tipo: hipótesis y benchmarks

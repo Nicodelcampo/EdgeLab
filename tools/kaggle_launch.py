@@ -65,5 +65,9 @@ def main():
     script_path=inject_manifest(a.script,manifest,dict(x.split('=',1) for x in a.env))
     cmd=[sys.executable,str(ROOT/"tools/kaggle_kernel.py"),"push","--slug",a.slug,"--title",a.title or a.slug.split("/")[1],"--script",script_path]+(["--gpu"] if a.gpu else [])+(["--internet"] if a.internet else [])
     for d in datasets:cmd+=["--dataset",d]
-    print(subprocess.run(cmd,capture_output=True,text=True).stdout)
+    out=subprocess.run(cmd,capture_output=True,text=True).stdout;print(out)
+    if '"hasError":false' in out or '"error":""' in out:                                     # registro común de lanzamientos de la cuenta (tope diario de prudencia)
+        try:
+            sys.path.insert(0,str(ROOT));from edgelab.autopilot import account;account.record(a.slug)
+        except Exception as e:print("AVISO: no se pudo registrar el lanzamiento en el registro de cuenta:",e)
 if __name__=="__main__":main()

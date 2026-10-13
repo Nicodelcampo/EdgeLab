@@ -310,3 +310,11 @@ def test_env_binding_is_structural(repo):
     ok = spec(env={"CFG": J.dumps({"D": [10, 20], "mode": "x"})}); assert guard.check_env_in_prereg(ok, repo) == []                         # mismo contenido, otro orden de claves
     sneaky = spec(env={"CFG": J.dumps({"mode": "x", "D": [10, 20], "extra": 1})}); assert guard.check_env_in_prereg(sneaky, repo)           # antes pasaba por substring si el texto contenía los valores
     sub = spec(env={"CFG": '"mode"'}); assert guard.check_env_in_prereg(sub, repo) == []                                                      # valores no JSON: texto
+
+
+def test_account_cap_counts_launches_from_any_source(repo, tmp_path):
+    from edgelab.autopilot import account
+    log = tmp_path / "acc.jsonl"; account.record("x/manual-1", "manual", log); account.record("y/agent", "otro-agente", log)
+    ap = Autopilot(tmp_path / "root", FakeExecutor({}), _cfg(tmp_path, account_max_per_day=2, account_log=str(log)), repo=repo, registry=Reg())
+    t = ap.tick([spec()]); assert t["event"] == "tick_account_cap" and ap.ledger.running() == [] and ap.ledger.uncertain() == []
+    ap2 = Autopilot(tmp_path / "root2", FakeExecutor({}), _cfg(tmp_path, account_max_per_day=3, account_log=str(log)), repo=repo, registry=Reg()); assert ap2.tick([spec()])["launched"][0] == "r1"

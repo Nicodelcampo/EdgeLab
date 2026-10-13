@@ -25,7 +25,7 @@ class KaggleExecutor:
         for d in spec.extra_datasets: cmd += ["--extra-dataset", d]
         for k, v in spec.env.items(): cmd += ["--env", f"{k}={v}"]
         cmd += (["--internet"] if spec.internet else []) + (["--gpu"] if spec.gpu else [])
-        r = subprocess.run(cmd, cwd=REPO, capture_output=True, text=True, timeout=900)
+        r = subprocess.run(cmd, cwd=REPO, capture_output=True, text=True, timeout=900, env={**__import__('os').environ, 'EDGELAB_LAUNCH_SOURCE': 'autopilot'})
         if '"hasError":false' not in r.stdout and '"error":""' not in r.stdout:
             if r.returncode != 0 and '"ref"' not in r.stdout: raise LaunchRejected("lanzamiento rechazado antes del envío: " + (r.stdout + r.stderr)[-400:])
             raise LaunchRejected("lanzamiento rechazado: " + (r.stdout + r.stderr)[-400:])
