@@ -1,3 +1,7 @@
+## Latest: multiasset ES running; GC stopped at insufficient training support
+
+Read MULTIASSET_CROSSFAMILY_LAUNCH.json and the original journals multiasset-1fc00c5ad2e4. ES138547864/v1 source74203a6a RUNNING, GC138547868/v1 ERROR; private CPU and exact source/Docker independently reconciled. GC transport pin passed, failure PUBLIC_CODE_e8117e8666be8584 = session common usable support below100; no substitution, first training date2026-08-03. No scientific success/partial promotion. Six-session calendar/minimum remain frozen. 6E/ZB packaged NOT SENT pending eligibility diagnosis; do not blindly replay or relax support. No ticks/private logs exported, holdout closed, canonical writer disconnected.
+
 ## Latest: four-asset exploratory campaign implemented, not yet dispatched
 
 Read MULTIASSET_CROSSFAMILY_PLAN/DESIGN.ES/GC/6E/ZB,72pairs,calibrationJuly31/sixtrainAug3–10/twelveevalAug11–26; own real tick sizes, no MNQthreshold substitution. Approximate parity explicitly accepted, not100%certificate. Shared immutable bounded BT2Afootprints preserve native config states and exact synthetic18pairfeatures/146fits. Check MULTIASSET_LAUNCH/CONTINUATION and original durable journals before any send. No active campaign yet; V3 remains terminalCOMPLETE. No raw/holdout/confirmation/P&L/Brainwriter/deploy.
