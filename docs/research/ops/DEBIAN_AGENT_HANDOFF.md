@@ -1,3 +1,9 @@
+# Estado más reciente: piloto manual de contexto RUNNING, no deployment
+
+Id138437923/v1 privadoCPU, source4319cc7, identidad exacta PASS. LAUNCH/REMOTE_IDENTITY_CHECK/WATCH_PENDING son la referencia actual: primerpollRUNNING,1/6reservas de nuevo batchsingle-attempt. Recuperar journals exactos originales; snapshots del repo no permiten reconstruir latestness ni presupuesto externo. No mandar otra versión, segundo daemon ni resetear batchv3/v4. Adquirir sólo agregados y revisar conciliación, no repetir QA de datasets. Sin resultadocientífico nuevo, writer Brain ni promoción autónoma. Read PLAN/DESIGN para scopes específicos: desarrollo de fechas inspeccionadas, no liveness/firsttouch/especificidad de zona.
+
+---
+
 # Complemento actual: runner de contexto de zonas preparado, sin despliegue
 
 Leer `MNQ_ZONE_CONTEXT_DESIGN.md`, PLAN/IMPLEMENTATION_RECEIPT. Piloto manual finito de desarrollo, no segundo daemon ni autorización para producir jobs autónomos. Reutiliza baseline/labels v4 y preserve nativehist; cambia experimento/paquete →nuevo single-attempt journal ligado al cierre anterior, nunca reset/retry ambiguo. Receipts no son writer canónico ni cuota global. Contexto reconocido por sesión, carry excluido de exposición primaria pero NO borrado del detector; UNKNOWN/cero reconocimientos no ausencia física. Antes de operar: recuperar latestremote y journals exactos, no snapshots históricos. No mergear/deploy/holdout/P&L ni promover ganador por Brier.

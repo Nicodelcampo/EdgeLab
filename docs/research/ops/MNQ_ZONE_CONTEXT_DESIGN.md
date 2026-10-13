@@ -1,6 +1,6 @@
 # Componentes continuos + contexto AVZP2/racimos — piloto de desarrollo
 
-Estado: protocolo fijo y runner implementado; sin envío ni resultados de mercado nuevos en este checkpoint. Plan `MNQ_ZONE_CONTEXT_PLAN.json`. No confundir preparación, ejecución y cierre.
+Estado del checkpoint de implementación4319cc7: protocolo fijo y runner implementado, entonces sin envío ni resultados nuevos. El estado operativo posterior se consulta en LAUNCH y WATCH_PENDING/TERMINAL, no en el status inmutable del plan. Plan `MNQ_ZONE_CONTEXT_PLAN.json`. No confundir preparación, ejecución y cierre.
 
 ## Pregunta que sí responde
 
