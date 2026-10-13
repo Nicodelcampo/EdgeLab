@@ -100,3 +100,8 @@ Benchmark138420049/v1ERROR antes de resultados: bundle omitió`source_footer.py`
 ## Benchmark v2: registrar causa segura, no interpretar silencio
 
 Tras reparar aislamiento, v2 main alcanzado pero ValueError sin guard/stage. Failure receipt con sólo tipo no permite arreglo fundado. Agregar mapa cerrado de guardas estáticas, etapas y fecha sólo del roster; nunca exception text libre ni traceback/filas. Sin aflojar calidad/censura/soporte. Pausar ante error desconocido, no gastar transportes y reruns ciegos. outcomes_computed en wrapper indica éxito COMPLETO, no conteo0de respuestas parciales. v2 no genera evidencia incremental del fenómeno ni escritura canónica.
+
+
+## Resultado útil v4: componentes sobre etiquetas
+
+10fechas calendario disponibles y2rangos vacíos sin reemplazo. ConfirmadoJune18sourceempty tras READSESSIONv3. Preregistro estricto12 falló; enmienda disponible publicada antes de v4. Usar observabilidad técnica no selection by outcomes. Componentes continuos Brier -7.124% vsprior10/10; AE no mejor(+0.000109566)2/10; Esola casi empate5/10, BOTH16. No físicos/noedge/no P&L ni writer. Seis modelos comparten primitives/labels:22.538Mticks,53.367srunner/62.355host. Priorizar componentes, contexto y control de geometría/densidad/llegada causal; no hacer más thresholds A/E por inercia. Ver closeout/analysis/proposal.

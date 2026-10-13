@@ -1,6 +1,6 @@
-# Entrada actual: benchmark v2 ERROR en runtime; causa ValueError no identificada
+# Entrada actual: benchmark v4 COMPLETE; componentes útiles, A/E no mejora
 
-Leer `MNQ_PHENOMENA_MODEL_V2_CLOSEOUT.md`, diagnosis, boot/failure y watch/dispatch terminales. Usuario autorizó segundo intento corregido, id138420049/v2 sourceeb3aeb3..., fuente exacta/privadoCPU PASS; terminalERROR tras una consulta. Main alcanzado, ValueError sin detalle. Causa NO conocida; no atribuir al soporte/feriado/datos. Sin resultado completo; labels parciales desconocidos. Nuevo diagnóstico seguro de guardas/etapas/fecha planificada añadido, no cambio científico. No v3 enviado: requiere autorización explícita nueva, nunca reset de journals. Entrada v1 y estados debajo históricos.
+Leer `MNQ_PHENOMENA_MODEL_V4_CLOSEOUT.md`, analysis/model/boot/launch/knowledge proposal y AVAILABLEplan/amendment. Kernel138420049/v4 sourceec12e334, exactsourceprivadoCPU PASS, boot/modelSHA y scorecrossfoot PASS.10/12 fechas disponibles; June18 yJuly2 vacías SIN reemplazo. Confirmada causa de rango vacíoJune18 que detenía stricthelper. Componentes Brier0.601465 vsprior0.647601 (-7.124%, mejor10/10); AE0.601574 (+0.000109566, mejor2/10), Esola casi empate5/10.70,544anclas superpuestas, BOTH16; no inferencia/edge/mecanismo/holdout/P&L.62.355s host/53.367s runner22.5Mticks. Batch resolución2intentos usados(v3ERROR/v4COMPLETE), dos consultas de seis; NO relanzar ni abrir otro por inercia. Journals exactos terminales preservados. Propuesta de conocimiento revisada, writer científico canónico NO conectado. Próximo sólo diseño componentes/contexto+geometría/llegada con baseline de densidad y réplica, no Cartesian grid gigante ni gates A/E automáticos.
 
 ---
 

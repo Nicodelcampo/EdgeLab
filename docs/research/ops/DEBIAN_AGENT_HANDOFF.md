@@ -1,3 +1,9 @@
+# Complemento actual: cierre v4 COMPLETE y resultados agregados revisados
+
+Leer `MNQ_PHENOMENA_MODEL_V4_CLOSEOUT.md` y la enmiendaAVAILABILITY. Benchmark manual finito cerrado id138420049/v4:10/12fechas originales, dos vacías reportadas/no reemplazo. Continuousbaseline mejor10/10 vsprior; AE sin mejora media. Ningún edge/gate/agent promotion autorizado. El controlador debe distinguir protocolo estricto y estimando disponible explícito, verificardatecensus yguardarEMPTY sin reemplazar/label0 ni soltar guardas de calidad/soporte. Proposal outcomes_inspected=true no es entradaoperationalblindfalse ni writer canónico autenticado. No segundo daemon/retry/merge/deploy. V3ERROR/v4COMPLETE terminales en batch2intents; snapshot no atestación global.
+
+---
+
 # Complemento actual: benchmark v2 ERROR, no resultado ni despliegue
 
 Leer `MNQ_PHENOMENA_MODEL_V2_CLOSEOUT.md`. v2 id138420049 alcanzó main pero terminó ValueError desconocido; boot/failure agregados guardados y journals cerrados. Nuevo diagnóstico closedstatic guard/stage/fecha mejora observabilidad sin filas privadas ni aflojar científico. No v3 autorizado/enviado; no segunda daemon ni retry por simpleERROR. Cierres fallidos no se promueven como resultados del Brain. El flag outcomes_computed=false de boot sólo indica ausencia de recibo completo, no ausencia de labels parciales.
