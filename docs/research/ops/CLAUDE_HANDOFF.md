@@ -1,6 +1,6 @@
-# Entrada actual: benchmark de representación RUNNING, intento único
+# Entrada actual: benchmark v1 ERROR; defecto de paquete corregido, sin retry
 
-Leer `MNQ_PHENOMENA_MODEL_DESIGN.md`, plan, calibración congelada, runner/modelos/package y pruebas. Ajuste June15/16 ya inspeccionado; evaluación12 fechas June17→July2 por calendario. Seis predictores compartiendo anclas/labels, ridge0.01, control de capacidad2 términos continuos, media Brier por sesión. Sin recalibrar estados, inferencia/holdout/zonas/P&L ni writer/deploy. Kaggle id138420049/v1 slug`edgelab-mnq-phenomena-model-benchmark`, sourcee6eff31a84eb0ed78b46cfe21c39f67f16bc240a, fuente exacta/privadoCPU verificada; última consulta RUNNING,1 de4 usada. Leer launch/package/identity y watch/dispatch nuevos; reserva antes de cada consulta. No convertir RUNNING histórico en liveness ni relanzar. Recibos por archivo individual boot/model agregados cuando terminal. Trabajo previo COMPLETE no relanzar.
+Leer `MNQ_PHENOMENA_MODEL_V1_CLOSEOUT.md`, terminal diagnosis, boot y watch/dispatch terminales. Kernel138420049/v1 sourcee6eff31 cerradoERROR, dos consultas; sin outcomes. Pin descargado correcto, hijo exit1 temprano. Paquete exacto aislado reproduce dependencia`source_footer.py`faltante; corregida y nueva prueba positiva/negativa fuera del repo. No traceback remoto leído. Protocolo científico/calibración/modelos intactos. No nuevo intento enviado; autorización explícita antes de nuevo batch, no reset ni relanzar v1. Código/protocolo de benchmark12 sesiones sigue siguiente hito, aún sin resultados nuevos. Estado RUNNING debajo es histórico, superado.
 
 ---
 

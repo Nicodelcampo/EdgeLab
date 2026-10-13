@@ -1,4 +1,4 @@
-import unittest,copy,json,math,tempfile,hashlib
+import unittest,copy,json,math,tempfile,hashlib,ast,base64,zlib,subprocess,os,sys
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
@@ -90,6 +90,21 @@ class ModelTests(unittest.TestCase):
  def test_source_change_rejected(self):
   p=plan();p['pin']['sha256']='a'*64
   with self.assertRaises(ValueError):P.validate_plan(p)
+ def test_exact_bundle_isolated_startup(self):
+  request,receipt=K.build_request(ROOT,url='https://storage.googleapis.com/kagglesdsdata/datasets/synthetic/MNQ/MNQ_09-26_ticks_ext.parquet',source_commit='a'*40)
+  tree=ast.parse(request['request']['text']);encoded=next(ast.literal_eval(t.value) for t in tree.body if isinstance(t,ast.Assign) and isinstance(t.targets[0],ast.Name) and t.targets[0].id=='DATA');bundle=json.loads(zlib.decompress(base64.b64decode(encoded)))
+  self.assertIn('tools/research_ops/confluence/source_footer.py',bundle)
+  with tempfile.TemporaryDirectory() as tmp:
+   root=Path(tmp)
+   for name,rec in bundle.items():
+    p=root/name;p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(base64.b64decode(rec['data']))
+   for pkg in ('tools','tools/research_ops','tools/research_ops/confluence'):(root/pkg/'__init__.py').touch()
+   env=dict(os.environ);env.pop('PYTHONPATH',None);env['OPENBLAS_NUM_THREADS']='1'
+   startup=subprocess.run([sys.executable,'-m','tools.research_ops.confluence.phenomena_model_pilot','--help'],cwd=root,env=env,text=True,capture_output=True,timeout=30)
+   self.assertEqual(startup.returncode,0,startup.stderr);self.assertIn('--receipt',startup.stdout)
+   (root/'tools/research_ops/confluence/source_footer.py').unlink()
+   broken=subprocess.run([sys.executable,'-m','tools.research_ops.confluence.phenomena_model_pilot','--help'],cwd=root,env=env,text=True,capture_output=True,timeout=30)
+   self.assertNotEqual(broken.returncode,0);self.assertIn("No module named 'tools.research_ops.confluence.source_footer'",broken.stderr)
  def test_kaggle_guard(self):
   with patch.dict('os.environ',{},clear=True):
    with self.assertRaises(ValueError):P.run('fake',plan(),'/tmp/private',frozen())

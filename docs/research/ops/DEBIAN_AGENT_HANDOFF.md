@@ -1,6 +1,6 @@
-# Complemento: benchmark de representación A/E RUNNING, sin deploy
+# Complemento: benchmark de representación A/E v1 ERROR, paquete corregido, sin deploy
 
-Leer `MNQ_PHENOMENA_MODEL_DESIGN.md` y `MNQ_PHENOMENA_MODEL_LAUNCH.json`: intento único id138420049/v1, fuente exacta verificada, última consulta RUNNING. Experimento manual finito Kaggle, no segundo daemon ni integración automática en autopilot. Fecha de ajuste ya inspeccionada,12 sesiones posteriores de investigación; no writer canónico/inferencia/holdout ni gates de release cumplidos por un score. Guardar datos privados dentro de Kaggle; adquirir sólo boot/model receipt agregados. No rerun tras send ambiguo ni reset de journals; recuperar job exacto.
+Leer `MNQ_PHENOMENA_MODEL_DESIGN.md` y `MNQ_PHENOMENA_MODEL_LAUNCH.json`: intento único id138420049/v1, fuente exacta verificada, terminalERROR; leer `MNQ_PHENOMENA_MODEL_V1_CLOSEOUT.md`. Sin outcomes, dependencia faltante reproducida y corregida; no retry ni nuevo intento enviado. Experimento manual finito Kaggle, no segundo daemon ni integración automática en autopilot. Fecha de ajuste ya inspeccionada,12 sesiones posteriores de investigación; no writer canónico/inferencia/holdout ni gates de release cumplidos por un score. Guardar datos privados dentro de Kaggle; adquirir sólo boot/model receipt agregados. No rerun tras send ambiguo ni reset de journals; recuperar job exacto.
 
 ---
 
