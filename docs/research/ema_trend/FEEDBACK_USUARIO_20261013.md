@@ -17,11 +17,22 @@ Etiquetas del usuario sobre líneas del indicador v2 (EMA desplazada) en NQ 12-2
 | 24 | **Muy deforme la tendencia** (aclaración: en momentos el precio está muy alejado de la línea) | 16,5 | 0,080 | 3,4 | **8,9** |
 | Última captura (sin etiqueta de texto): línea plana larga del indicador vs. línea empinada del usuario | la plana es la mala | | | | |
 
+## Segundo lote: líneas marcadas por el usuario (capturas 32–35, `feedback_lines_2.json`)
+| Captura | Línea | Desplazamiento (ATR) | Dist. media (ATR) | Dist. máxima (ATR) |
+|---|---|---:|---:|---:|
+| 32 | baja (empinada) | 14,4 | 1,1 | 3,6 |
+| 33 | baja «Aceptable» | 16,1 | 2,2 | 5,4 |
+| 33 | suba larga (500 barras) | ~15 | ~3,5 | ~8 (medida con una fusión de líneas en la digitalización; aproximado) |
+| 34 | baja | 12,6 | 2,1 | 5,4 |
+| 34 | suba | 12,1 | 3,2 | **8,1** |
+| 35 | baja (= 34 en otro tramo) | 12,6 | 2,1 | 5,4 |
+Estas líneas del usuario confirman el piso de desplazamiento (≥ 12) y muestran una buena con distancia máxima 8,1, muy cerca del valor de la «deforme» (8,9): el umbral de distancia máxima se subió a **8,5** (hueco muy angosto; con la incertidumbre de la medición del ATR conviene ajustarlo en NinjaTrader).
+
 ## Qué separa buenas de malas
 - **Desplazamiento de la línea ≥ ~10 ATR** (buenas ≥ 12; malas ≤ 7,4): descarta las «cortísimas» y las planas.
-- **Distancia máxima precio-línea ≤ ~8 ATR** (buenas ≤ 7,3; la «deforme» 8,9; la «muy mal» 10,6): descarta las deformes.
+- **Distancia máxima precio-línea ≤ ~8,5 ATR** (buenas ≤ 8,1; la «deforme» 8,9; la «muy mal» 10,6): descarta las deformes.
 - **Distancia media ≤ ~4 ATR** (buenas ≤ 3,4; planas largas ≥ 4,0, hasta 12): descarta líneas flojas que no abrazan el precio.
-Valores adoptados como defaults del indicador v3.1: `MinExtentAtr` 10, `MaxMeanDistAtr` 4, `MaxDistAtr` 8 (editables). Además, si en la zona viva el precio se aleja más de `MaxDistAtr` de la línea, la zona termina.
+Valores adoptados como defaults del indicador v3.1: `MinExtentAtr` 10, `MaxMeanDistAtr` 4, `MaxDistAtr` 8,5 (editables). Además, si en la zona viva el precio se aleja más de `MaxDistAtr` de la línea, la zona termina.
 
 ## Limitaciones
 - Muestra de ~12 líneas etiquetadas a ojo; los umbrales están en el medio del hueco entre buenas y malas, no son óptimos.

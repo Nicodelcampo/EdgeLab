@@ -181,7 +181,7 @@ def envelope_ok(env, max_far_cv, max_near_cv, min_pivots=2):
     return (max_far_cv is None or env["far_cv"] <= max_far_cv) and (max_near_cv is None or env["near_cv"] <= max_near_cv) and env["near_mean"] > 0
 
 
-def simulate_zones(P, high, low, st, M, atr_mult_tol=0.2, atr_mult_break=0.5, vmax=0.02, min_touches=3, pivot_p=5, refit=20, min_zone=120, tick=0.25, env_q=10, max_far_cv=None, max_near_cv=None, min_env_pivots=2, min_extent_atr=10.0, max_mean_dist_atr=4.0, max_dist_atr=8.0):
+def simulate_zones(P, high, low, st, M, atr_mult_tol=0.2, atr_mult_break=0.5, vmax=0.02, min_touches=3, pivot_p=5, refit=20, min_zone=120, tick=0.25, env_q=10, max_far_cv=None, max_near_cv=None, min_env_pivots=2, min_extent_atr=10.0, max_mean_dist_atr=4.0, max_dist_atr=8.5):
     """Réplica del indicador: sobre cada tramo crudo de `st` (inicio retroactivo = detección − M + 1) ajusta la tangente cada `refit` barras; confirma la zona cuando hay recta válida y
     longitud ≥ min_zone; la zona termina cuando el cierre rompe la línea más de atr_mult_break·ATR (o cuando termina el tramo crudo). Devuelve una lista de dicts por tramo crudo."""
     c = P["c"]; atr = P["atr"]; n = len(c); out = []; ch = np.flatnonzero(np.r_[True, st[1:] != st[:-1], True])

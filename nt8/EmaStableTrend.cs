@@ -78,7 +78,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 				ViolFraction     = 0.02;
 				MinExtentAtr     = 10;
 				MaxMeanDistAtr   = 4;
-				MaxDistAtr       = 8;
+				MaxDistAtr       = 8.5;
 				MinTouches       = 3;
 				BreakAtr         = 0.5;
 				RefitBars        = 10;
