@@ -61,7 +61,7 @@ def process(tk, dates, label):
         for H in HZ:
             ok = np.zeros(n, bool); ok[: n - H] = True; f = np.zeros(n); f[: n - H] = c[H:] - c[:-H]; sel = (st != 0) & ok & inset; base = (slope != 0) & ok & inset & (st == 0)
             fwd[H] = (float(np.sum(st[sel] * f[sel])), int(sel.sum()), float(np.sum(slope[base] * f[base])), int(base.sum()))
-        gap = np.abs(P["g"]) * tick; rows.append(dict(config=name, contract=label, bars=int(inset.sum()), flagged=int(((st != 0) & inset).sum()), runs=len(rs), dur=[b - a + 1 for a, b, d in rs], gap_pts_median=[float(np.median(gap[a:b + 1]) ) for a, b, d in rs], dirs=[d for a, b, d in rs],
+        gap = np.abs(P["g"]) * tick; rows.append(dict(config=name, contract=label, bars=int(inset.sum()), flagged=int(((st != 0) & inset).sum()), runs=len(rs), dur=[b - a + 1 for a, b, d in rs], gap_pts_median=[float(np.median(gap[a:b + 1]) ) for a, b, d in rs], disp_pts=[float(abs(c[b] - c[a]) * tick) for a, b, d in rs], dirs=[d for a, b, d in rs],
                                                          sessions=len(dates), fwd={str(k): v for k, v in fwd.items()}, tick=tick))
     print(label, "barras", int(inset.sum()), {r["config"]: r["runs"] for r in rows}, flush=True); del P; gc.collect(); return rows
 
@@ -69,11 +69,12 @@ def process(tk, dates, label):
 def summarize(rows):
     out = {}
     for name in CONFIGS:
-        R = [r for r in rows if r["config"] == name]; bars = sum(r["bars"] for r in R); ses = sum(r["sessions"] for r in R); dur = np.array([d for r in R for d in r["dur"]]); gap = np.array([g for r in R for g in r["gap_pts_median"]]); n_up = sum(1 for r in R for d in r["dirs"] if d > 0)
+        R = [r for r in rows if r["config"] == name]; bars = sum(r["bars"] for r in R); ses = sum(r["sessions"] for r in R); dur = np.array([d for r in R for d in r["dur"]]); gap = np.array([g for r in R for g in r["gap_pts_median"]]); disp = np.array([g for r in R for g in r["disp_pts"]]); long_ = dur >= 150; n_up = sum(1 for r in R for d in r["dirs"] if d > 0)
         per = {str(H): dict(zone_mean_ticks=float(sum(r["fwd"][str(H)][0] for r in R) / max(1, sum(r["fwd"][str(H)][1] for r in R))), zone_bars=int(sum(r["fwd"][str(H)][1] for r in R)),
                            slope_rule_mean_ticks=float(sum(r["fwd"][str(H)][2] for r in R) / max(1, sum(r["fwd"][str(H)][3] for r in R))), slope_rule_bars=int(sum(r["fwd"][str(H)][3] for r in R))) for H in HZ}
         out[name] = dict(params=CONFIGS[name], flagged_pct=round(100 * sum(r["flagged"] for r in R) / max(1, bars), 2), zones=int(len(dur)), zones_per_session=round(len(dur) / max(1, ses), 2), zones_up=int(n_up), zones_down=int(len(dur) - n_up),
                          duration_bars=dict(p10=float(np.percentile(dur, 10)), median=float(np.median(dur)), p90=float(np.percentile(dur, 90))) if len(dur) else None,
+                         long150=dict(zones_per_session=round(int(long_.sum()) / max(1, ses), 2), bars_pct=round(100 * float(dur[long_].sum()) / max(1, bars), 2)), disp_points=dict(p10=float(np.percentile(disp, 10)), median=float(np.median(disp)), p90=float(np.percentile(disp, 90))) if len(disp) else None,
                          gap_points=dict(p10=float(np.percentile(gap, 10)), median=float(np.median(gap)), p90=float(np.percentile(gap, 90))) if len(gap) else None, forward_drift_ticks_with_trend=per)
     return out
 
