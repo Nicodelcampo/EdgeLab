@@ -13,6 +13,7 @@ def review(r,p,asset):
  for k in ('confirmation','holdout_opened','pnl','edge_claim','raw_exported','canonical_brain_written','automatic_model_selection','overlapping_anchors_independent','near100_percent_NT8_parity_measured','detector_history_or_active_state_shared','native_AVZ_liveness_measured','physical_first_touch_measured','zone_specific_attribution'):
   if r[k] is not False:raise ValueError('no expanded asset claims')
  if r['approximate_parity_exploration_accepted'] is not True or r['bt2a_bucket_preprocessing_shared'] is not True or r['model_feature_counts']!=COUNTS or r['models_including_shared_baselines']!=146 or r['primary_pairs']!=18 or r['native_configs']!=9:raise ValueError('fixed exploratory representations')
+ if p['max_gap_ns']!=2000000000 and (r.get('observation_max_gap_ns')!=p['max_gap_ns'] or r.get('observation_gap_relaxed_vs_original') is not True):raise ValueError('explicit changed observation estimand')
  c=r['calibration']
  if c['training_trade_date']!=p['calibration_date'] or c['outcomes_used'] is not False or digest({k:v for k,v in c.items() if k!='sha256'})!=c['sha256'] or r['calibration_sha256']!=c['sha256']:raise ValueError('earlier asset only calibration')
  tr=r['training_sessions'];ev=r['evaluation_sessions'];dates=[s['trade_date'] for s in ev];missing=[s['trade_date'] for s in r['unavailable_evaluation_sessions']]

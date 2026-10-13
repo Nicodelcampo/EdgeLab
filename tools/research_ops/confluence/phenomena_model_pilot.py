@@ -43,8 +43,8 @@ def one_session(source,r,p):
         yield st
 
 def session_data(st,date,plan,cal,started,*,feature_callback=None):
-    t=st.ticks;m=ClockMeasurements(max_ticks=plan['max_session_ticks'],max_anchors=plan['max_anchors'],wall_seconds=plan['wall_seconds'])
-    response=SecondsResponse(t.ts_ns,t.sequence,t.bid_ticks,t.ask_ticks,max_ticks=plan['max_session_ticks'],max_anchors=plan['max_anchors'],max_scan_elements=plan['max_scan_elements_per_session'],wall_seconds=plan['wall_seconds'])
+    t=st.ticks;m=ClockMeasurements(max_ticks=plan['max_session_ticks'],max_anchors=plan['max_anchors'],wall_seconds=plan['wall_seconds'],max_gap_ns=plan.get('max_gap_ns',2000000000))
+    response=SecondsResponse(t.ts_ns,t.sequence,t.bid_ticks,t.ask_ticks,max_ticks=plan['max_session_ticks'],max_anchors=plan['max_anchors'],max_scan_elements=plan['max_scan_elements_per_session'],wall_seconds=plan['wall_seconds'],max_gap_ns=plan.get('max_gap_ns',2000000000))
     rows=m.measure(t.ts_ns,t.sequence,t.price_ticks,t.volume,t.bid_ticks,t.ask_ticks,trade_date=date)
     research_dates=plan.get('research_dates')
     xs=[];ccs=[];aes=[];ys=[];keys=[];states=[];census={};reasons={};labels={};anchors=0

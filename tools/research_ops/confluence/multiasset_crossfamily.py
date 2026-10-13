@@ -22,6 +22,9 @@ from .source_footer import HOLDOUT_OPEN_NS
 PLAN='docs/research/ops/MULTIASSET_CROSSFAMILY_PLAN.json'
 PLAN_SHA='1fc00c5ad2e4a5a2d01641f60726d1c56c41c512ef5fdbbca824e6bca8826dd2'
 
+GAP10_PLAN='docs/research/ops/MULTIASSET_CROSSFAMILY_GAP10_PLAN.json'
+GAP10_SHA='e18747ab0efc8c3a4ab9c8d620621f6617590c63cc6d7c42e5f1355b54e3d772'
+
 class AssetCalibration(Calibration):
  def __init__(self,date):super().__init__();self.date=date
  def add(self,row):
@@ -35,7 +38,7 @@ class AssetCalibration(Calibration):
   r=super().freeze();r['training_trade_date']=self.date;r['sha256']=digest({k:v for k,v in r.items() if k!='sha256'});return r
 
 def validate_plan(p,asset):
- if digest(p)!=PLAN_SHA or asset not in p['assets']:raise ValueError('exact frozen multiasset plan and member only')
+ if digest(p) not in (PLAN_SHA,GAP10_SHA) or asset not in p['assets']:raise ValueError('exact frozen multiasset plan and member only')
  if p['holdout'] is not False or p['raw_export'] is not False or p['confirmation'] is not False:raise ValueError('exploratory preholdout only')
  ds=[p['calibration_date']]+p['training_sessions']+p['evaluation_sessions']
  if ds!=sorted(set(ds)) or any(d>='2026-10-01' for d in ds):raise ValueError('causal fixed asset calendar')
@@ -96,7 +99,7 @@ def run(source,plan,asset,private_root,progress):
   events,diag=scene.session(st,date,retain=selected)
   if date==p['calibration_date']:
    if cal is not None:raise ValueError('one asset calibration session')
-   c=AssetCalibration(date);m=ClockMeasurements(max_ticks=p['max_session_ticks'],max_anchors=p['max_anchors'],wall_seconds=p['wall_seconds'])
+   c=AssetCalibration(date);m=ClockMeasurements(max_ticks=p['max_session_ticks'],max_anchors=p['max_anchors'],wall_seconds=p['wall_seconds'],max_gap_ns=p['max_gap_ns'])
    for row in m.measure(st.ticks.ts_ns,st.ticks.sequence,st.ticks.price_ticks,st.ticks.volume,st.ticks.bid_ticks,st.ticks.ask_ticks,trade_date=date):c.add(row)
    cal=c.freeze();progress.update(stage='CALIBRATION_FROZEN_NO_OUTCOMES',calibration_anchors=c.n)
   if not selected:warmup+=1;continue
@@ -122,7 +125,7 @@ def run(source,plan,asset,private_root,progress):
  eof=scene.finish()
  if [s['trade_date'] for s in tr]!=p['training_sessions'] or len(ev)<p['minimum_available_evaluation_sessions']:raise ValueError('insufficient fixed asset training or evaluation; no replacements')
  unavailable +=[{'trade_date':d,'status':'SOURCE_EMPTY_NO_REPLACEMENT','replacement_selected':False} for d in p['evaluation_sessions'] if d not in seen];unavailable.sort(key=lambda x:x['trade_date'])
- result={'schema':'multiasset_crossfamily_receipt_v1','status':'DEVELOPMENT_CROSSFAMILY_COMPLETE_NOT_EDGE','asset':asset,'instrument':a['instrument'],'contract':a['contract'],'tick_size':a['tick_size'],'plan_sha256':digest(plan),'roster_sha256':roster['roster_sha256'],'calibration':cal,'calibration_sha256':cal['sha256'],'training_sessions':tr,'evaluation_sessions':ev,'requested_evaluation_sessions':p['evaluation_sessions'],'unavailable_evaluation_sessions':unavailable,'available_evaluation_session_count':len(ev),'baseline_mean_session_brier':{n:float(np.mean([s['baseline_mean_brier'][n] for s in ev])) for n in ('PRIOR','CONTINUOUS')},'pairs':[{**identity,'mean_session_brier':{n:float(np.mean([s['pairs'][j]['scores']['mean_brier'][n] for s in ev])) for n in ('PRIOR','CONTINUOUS')+MODELS},'paired_delta_equal_session_mean':{x+'_MINUS_'+y:float(np.mean([s['pairs'][j]['paired_deltas'][x+'_MINUS_'+y] for s in ev])) for x,y in COMPARISONS}} for j,identity in enumerate(roster['pairs'])],'arrival_context_summaries':arrival_cuts.finish(p),'model_feature_counts':COUNTS,'models_including_shared_baselines':146,'primary_pairs':18,'native_configs':9,'warmup_sessions':warmup,'native_eof_diagnostics':eof,'native_stage_seconds':dict(scene.times),'fit_seconds':fitsec,'total_ticks':scene.ticks,'response_scanned_elements':scan,'context_query_hits':hits,'print_queries':pq,'print_level_queries':pl,'shared_footprint_cache':scene.footprint_cache.receipt(),'bt2a_bucket_preprocessing_shared':True,'detector_history_or_active_state_shared':False,'wall_seconds':time.monotonic()-start,'measured_runner_peak_rss_bytes':resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024,'near100_percent_NT8_parity_measured':False,'approximate_parity_exploration_accepted':True,'cash_phase_scope':'COMMON_US_CASH_CLOCK_NOT_ASSET_SPECIFIC_RTH_CERTIFICATE','native_AVZ_liveness_measured':False,'physical_first_touch_measured':False,'zone_specific_attribution':False,'overlapping_anchors_independent':False,'automatic_model_selection':False,'raw_exported':False,'canonical_brain_written':False,'confirmation':False,'holdout_opened':False,'pnl':False,'edge_claim':False,'mirror_null_scope':p['mirror_null_scope']}
+ result={'schema':'multiasset_crossfamily_receipt_v1','status':'DEVELOPMENT_CROSSFAMILY_COMPLETE_NOT_EDGE','asset':asset,'instrument':a['instrument'],'contract':a['contract'],'tick_size':a['tick_size'],'observation_max_gap_ns':p['max_gap_ns'],'observation_gap_relaxed_vs_original':p['max_gap_ns']!=2000000000,'plan_sha256':digest(plan),'roster_sha256':roster['roster_sha256'],'calibration':cal,'calibration_sha256':cal['sha256'],'training_sessions':tr,'evaluation_sessions':ev,'requested_evaluation_sessions':p['evaluation_sessions'],'unavailable_evaluation_sessions':unavailable,'available_evaluation_session_count':len(ev),'baseline_mean_session_brier':{n:float(np.mean([s['baseline_mean_brier'][n] for s in ev])) for n in ('PRIOR','CONTINUOUS')},'pairs':[{**identity,'mean_session_brier':{n:float(np.mean([s['pairs'][j]['scores']['mean_brier'][n] for s in ev])) for n in ('PRIOR','CONTINUOUS')+MODELS},'paired_delta_equal_session_mean':{x+'_MINUS_'+y:float(np.mean([s['pairs'][j]['paired_deltas'][x+'_MINUS_'+y] for s in ev])) for x,y in COMPARISONS}} for j,identity in enumerate(roster['pairs'])],'arrival_context_summaries':arrival_cuts.finish(p),'model_feature_counts':COUNTS,'models_including_shared_baselines':146,'primary_pairs':18,'native_configs':9,'warmup_sessions':warmup,'native_eof_diagnostics':eof,'native_stage_seconds':dict(scene.times),'fit_seconds':fitsec,'total_ticks':scene.ticks,'response_scanned_elements':scan,'context_query_hits':hits,'print_queries':pq,'print_level_queries':pl,'shared_footprint_cache':scene.footprint_cache.receipt(),'bt2a_bucket_preprocessing_shared':True,'detector_history_or_active_state_shared':False,'wall_seconds':time.monotonic()-start,'measured_runner_peak_rss_bytes':resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024,'near100_percent_NT8_parity_measured':False,'approximate_parity_exploration_accepted':True,'cash_phase_scope':'COMMON_US_CASH_CLOCK_NOT_ASSET_SPECIFIC_RTH_CERTIFICATE','native_AVZ_liveness_measured':False,'physical_first_touch_measured':False,'zone_specific_attribution':False,'overlapping_anchors_independent':False,'automatic_model_selection':False,'raw_exported':False,'canonical_brain_written':False,'confirmation':False,'holdout_opened':False,'pnl':False,'edge_claim':False,'mirror_null_scope':p['mirror_null_scope']}
  if len(json.dumps(result,separators=(',',':'),allow_nan=False).encode())>p['max_aggregate_bytes']:raise ValueError('asset bounded aggregate bytes')
  return result
 
