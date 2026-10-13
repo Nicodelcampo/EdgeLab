@@ -84,7 +84,7 @@ def rules(ev: dict, lits: dict) -> list:
     e = E.get("ZB_REV_5_15")
     if e and e["status"] == "ARTIFACT_SUSPECT" and "mid_price_version" in e["unused_samples"]:
         out.append(Candidate("OU-2", "Reversión de ZB a 5-15 min con precio medio bid/ask (descarta rebote bid-ask)", "R3_ARTIFACT_CHECK", "DATA_DEFINITION", ["ZB_REV_5_15"], pro=[], contra=lit("ZB_REV_5_15", ("contra_signal",)),
-                             template=None, n_trials=4, power=0.6, utility_class="info", est_seconds=3600, group="ZB", family="OU_MID", consumes={"ZB_REV_5_15": "mid_price_version"},
+                             template="ou2", cfg=dict(mode="ou2", inst="ZB", desde="2025-07-01", hasta="2026-09-30", cells=[[5, 60], [5, 240], [15, 240], [60, 240]], nperm=5000, seed=20261019, n_planned=4), lead_tests={"ZB_REV_5_15": ["ou2/"]}, n_trials=4, power=0.6, utility_class="info", est_seconds=3600, group="ZB", family="OU_MID", consumes={"ZB_REV_5_15": "mid_price_version"},
                              why="Si la reversión sobrevive con precio medio es de otra naturaleza; si desaparece, queda cerrado. Requiere un script que reconstruya mid desde bid_ticks/ask_ticks (no existe aún)."))
     e = E.get("GEX_AMPLITUDE")
     if e and e["status"] == "LEAD_INFO" and "nq_ym_spot" in e["unused_samples"]:
@@ -192,6 +192,12 @@ MODE_DEFS = {
 - Resultado por configuración (a, b) con a ∈ {D/2, D} ticks hacia la zona (TP; a = D llega al borde de la zona) y b ∈ {D/2, D, 2D} alejándose (SL): 36 configuraciones; sin barrera al fin de la ventana se sale a mercado. P&L en ticks; costo de ida y vuelta supuesto 6,8 ticks (USD 6,8 por contrato: comisión 4,80 + 2 ticks de deslizamiento; supuesto conservador).
 - Descubrimiento (60 % inicial de las sesiones): esperanza bruta por evento de cada configuración; nulo de MÁXIMO por cambio de signo por sesión (conjunto en las 36 configuraciones, 10.000 sorteos; H0 = esperanza bruta 0). Réplica (40 % final): las 3 mejores configuraciones del descubrimiento, con media neta (bruta − 6,8) > 0 exigida (p = 1 si ≤ 0), nulo de signo por sesión. Holm sobre 4 pruebas (1 máximo + 3 réplicas); el contador global recibe 39 (36 configuraciones + 3 réplicas). Semilla 20261018.
 - Descriptivo (no es prueba): para cada configuración, P(TP), P(SL), P(sin barrera), P(TP) de equilibrio b/(a+b), esperanza bruta en cada mitad, eventos por sesión; y el MISMO análisis para las zonas que se alejaron pero NO son violeta (control).''',
+ "ou2": '''Definiciones congeladas (script `tools/ou2_mid.py`):
+- Datos: ZB, sesiones aprobadas 2025-07-01 → 2026-09-30 (líder por sesión del resolver; fecha de sesión CME del catálogo). Mismas sesiones y celdas que OU-1 Parte A para ZB (misma muestra que originó la pista: es la prueba de DEFINICIÓN del precio, no de muestra nueva).
+- Por (sesión, minuto): «last» = último trade del minuto; «mid» = (bid+ask)/2 del último tick del minuto con libro válido (0 < bid ≤ ask). Los minutos sin libro válido se excluyen del análisis de «mid».
+- Estadístico (idéntico a OU-1): X_t = ln P_t − SMA_N(ln P_t) dentro de sesión sobre barras de s minutos (último valor de cada barra); b = pendiente agrupada de (X_{t+1} − X_t) sobre X_t; primera barra de sesión con retorno 0. Nulo: signo aleatorio independiente por retorno de barra (5.000 sorteos, semilla 20261019); z = (b − media_nulo)/sd_nulo, bilateral.
+- Pruebas (4, Holm 4) con «mid»: (barra, ventana) = (5,60), (5,240), (15,240), (60,240) minutos. «La reversión sobrevive» = z < 0 y p_Holm < 0,05 en la celda con «mid»; si «last» da reversión y «mid» no, el hallazgo de OU-1 era rebote bid-ask.
+- Descriptivo (no es prueba): «last» y «mid» sobre los mismos minutos, y por mitades de sesiones (cada mitad: z de «last» y «mid» en 3 celdas); cobertura de «mid».''',
  "idm": "Ver docstring del script (modo `idm`): corr(resto del día, última media hora), unilateral positiva; diferencia por gamma bajo con permutación por bloques de 20.",
  "slot_corr": "Ver docstring del script (modo `slot_corr`): corr(retorno previo, siguiente) de `horizon_min` minutos en cada franja; unilateral negativa.",
 }
@@ -200,6 +206,10 @@ TRANSPARENCY = {
 - La hipótesis nace de la inspección visual de Nico del gráfico MGC 12-26 (25 ticks) con aVolClusterPOI (captura del 2026-10-12, que incluye fechas posteriores al 2026-09-30 que este estudio NO lee). Esas impresiones visuales pueden coincidir con períodos de la muestra: por eso se separa descubrimiento (60 % inicial) y réplica (40 % final); la muestra no es virgen.
 - La lógica violeta no tiene paridad verificada (solo el .cs); su portado a Python se prueba con casos sintéticos (`tests/test_violet_zones.py`) y se verificó que corre de punta a punta sobre un tramo de ES (sin resultados de MGC). Las zonas de aVolZonePOI2 sí tienen paridad NT8 verificada (MNQ 25T); su paridad en MGC no se verificó.
 - No se miró ningún resultado de MGC antes de este pre-registro.''',
+ "OU-2": '''## Transparencia sobre lo ya mirado (antes de este pre-registro)
+- OU-1 ya midió ZB con precio de transacción (último trade del minuto): b y z en las 4 celdas (z = −14,05 / −7,68 / −3,28 / +0,06; Holm 36 = 0,0072 / 0,0072 / 0,0204 / 1). Esta corrida usa la MISMA muestra de sesiones con otra definición de precio.
+- El pipeline se probó solo en datos sintéticos (con y sin rebote bid-ask inyectado); no se miró ningún resultado de «mid» en ZB real.
+- Esto es información sobre el mecanismo, no una estrategia: aunque «mid» sobreviva, que sea operable es otra pregunta (spread, costos).''',
  "PNL-1": '''## Transparencia sobre lo ya mirado (antes de este pre-registro)
 - `GC_ROD_LH_ALL` y `GC_ROD_LH_BIG`: la pista nació en el futuro de GC 2025-26 (`discovery`). En el spot 2022-2025 (`oos`) ya se miró antes la correlación del tercil de |ROD| alto (+0,026) y el P&L bruto medio de seguir el signo (+0,66 pb, por debajo del costo): se espera que no pasen; la prueba sirve para cerrar la pista en su forma operable.
 - Celdas de SCAN-1 (`GC_PREV15_1330_MOM`, `ES_PREV60_0730_REV`, `ES_PREV30_1230_MOM`): su muestra de réplica (futuros 2025-26) ya se consumió en SCAN-1 sin éxito: aquí son DESCRIPTIVAS, no confirmatorias.''',
@@ -243,7 +253,8 @@ Nulo de signo aleatorio / permutación por bloques según el modo; Holm sobre {c
 """
 
 
-TEMPLATES = {"vio1": dict(script="tools/vio1_zones.py", env="VIO_CFG", extra=["nicolasbuttaro/edgelab-code-zones"])}
+TEMPLATES = {"vio1": dict(script="tools/vio1_zones.py", env="VIO_CFG", extra=["nicolasbuttaro/edgelab-code-zones"]),
+             "ou2": dict(script="tools/ou2_mid.py", env="OU2_CFG", extra=[])}
 
 
 def to_runspec(c: Candidate) -> dict | None:

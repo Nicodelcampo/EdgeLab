@@ -1,31 +1,29 @@
 [
  {
-  "run_id": "vio-1",
+  "run_id": "ou-2",
   "kind": "study",
-  "family": "VIO_ZONES",
-  "group": "MGC",
-  "script": "tools/vio1_zones.py",
-  "prereg": "docs/research/autopilot/drafts/VIO-1.md",
-  "n_trials": 39,
+  "family": "OU_MID",
+  "group": "ZB",
+  "script": "tools/ou2_mid.py",
+  "prereg": "docs/research/autopilot/drafts/OU-2.md",
+  "n_trials": 4,
   "n_tests_holm": 4,
   "needs": [
-   "MGC:2025-07-01:2026-09-30"
+   "ZB:2025-07-01:2026-09-30"
   ],
-  "extra_datasets": [
-   "nicolasbuttaro/edgelab-code-zones"
-  ],
+  "extra_datasets": [],
   "internet": false,
   "env": {
-   "VIO_CFG": "{\"D\": [10, 16, 20, 30, 40, 60], \"bar_ticks\": 25, \"cost_ticks\": 6.8, \"desde\": \"2025-07-01\", \"hasta\": \"2026-09-30\", \"inst\": \"MGC\", \"mode\": \"vio1\", \"n_planned\": 4, \"nperm\": 10000, \"seed\": 20261018, \"split\": 0.6, \"tick_usd\": 1.0, \"violet_params\": {}, \"zone_params\": {\"ob_away_heights\": 6.0, \"ob_max_inside_pct\": 4.0, \"racimo_altura_ticks\": 30, \"racimo_bars\": 500, \"racimo_min\": 6}}"
+   "OU2_CFG": "{\"cells\": [[5, 60], [5, 240], [15, 240], [60, 240]], \"desde\": \"2025-07-01\", \"hasta\": \"2026-09-30\", \"inst\": \"ZB\", \"mode\": \"ou2\", \"n_planned\": 4, \"nperm\": 5000, \"seed\": 20261019}"
   },
-  "est_seconds": 2400,
+  "est_seconds": 3600,
   "decision_rule": "holm",
-  "notes": "Zonas violeta (l\u00f3gica de aVolClusterPOI) sobre las zonas de aVolZonePOI2 en MGC 25 ticks: \u00bfel precio que vuelve a una distancia D de la zona llega m\u00e1s a la zona que a D m\u00e1s lejos? \u00bfhay un TP/SL con esperanza neta positiva?",
+  "notes": "Reversi\u00f3n de ZB a 5-15 min con precio medio bid/ask (descarta rebote bid-ask)",
   "origin": {
-   "VIO_ZONES_MGC": {
-    "sample": "vio_1",
+   "ZB_REV_5_15": {
+    "sample": "mid_price_version",
     "tests": [
-     "vio/"
+     "ou2/"
     ]
    }
   }
