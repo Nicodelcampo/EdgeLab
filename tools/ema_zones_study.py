@@ -69,7 +69,7 @@ def process(tk, dates, label):
             fwd[H] = (float(np.sum(st[sel] * f[sel])), int(sel.sum()), float(np.sum(slope[base] * f[base])), int(base.sum()))
         gap = np.abs(P["g"]) * tick; rows.append(dict(config=name, contract=label, bars=int(inset.sum()), flagged=int(((st != 0) & inset).sum()), runs=len(rs), dur=[b - a + 1 for a, b, d in rs], gap_pts_median=[float(np.median(gap[a:b + 1]) ) for a, b, d in rs], disp_pts=[float(abs(c[b] - c[a]) * tick) for a, b, d in rs], dirs=[d for a, b, d in rs],
                                                          sessions=len(dates), fwd={str(k): v for k, v in fwd.items()}, tick=tick))
-    print(label, "barras", int(inset.sum()), {r["config"]: r["runs"] for r in rows}, flush=True); del P; gc.collect(); return rows
+    print(label, "barras", int(inset.sum()), {r["config"]: r.get("runs", r.get("confirmed")) for r in rows[-len(CONFIGS):]}, flush=True); del P; gc.collect(); return rows
 
 
 def summarize_sim(rows):
