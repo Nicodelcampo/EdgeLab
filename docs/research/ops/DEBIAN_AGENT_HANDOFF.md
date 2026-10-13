@@ -1,3 +1,12 @@
+## Checkpoint actual — historia causal A/E implementada; nueva corrida NO lanzada
+
+Leer `AE_HISTORY_IMPLEMENTATION.md/.json`. Historia20/40/60/120s y StatePath avanzan sobre todos los anchors observados ANTES de labels/filtros; UNKNOWN conserva denominador. Cambio de dirección, gap>10s y sesión rompen transición: no mezclar mecanismos con orientación distinta. Catorce representaciones con controles iguales en dimensión, fit sólo training/equal-session/ridge0,01; sensibilidad60s antes de labels, grupos vacíos null.36tests focales PASS2,551s (tape sintético, no mercado).
+
+Faltan runner/calibraciónGC cronológicos, conexión de purga/embargo60s, congelación soporte/margen/MDE y auditor/package/journal nuevos. Helpers implementados no equivalen a guardias activas en Kaggle; Sept17–30 aún candidato, no lanzar por inferencia de este checkpoint. No nuevo kernel, datos fueraKaggle, Brainwriter, defaultactivation, holdout, P&L, merge o despliegueDebian. Rollingbenchmark anterior sigue terminalCOMPLETE y opt-in; no reenviar. CalibraciónGC existente SHA539b4ba2 verificada; borrador `GC_AE_HISTORY_DESIGN_DRAFT.json` conserva training original/diez fechasSept17–30 sin sustituciones. No requiere nueva calibración/datasetQA. 
+Regresión del snapshot actual:948ResearchOps PASS318,750s;18navegación PASS0,145s;catálogo PASS_NAVIGATION_ONLY (no autoridad científica). Código nuevo sin ningún envíoKaggle.
+
+Abajo: historia.
+
 ## Latest: multiasset campaign terminal; three reviewed results, one support stop
 
 ## Checkpoint actual — rolling percentile BT2A TERMINAL /opt-in disponible
