@@ -18,7 +18,7 @@ class CrossFamilyScene:
     def __init__(self,roster,plan):
         self.configs=roster['configs'];self.plan=plan;self.started=time.monotonic();self.ticks=0
         self.primitives=SessionPrimitives(max_ticks=plan['max_session_ticks'],max_cells=plan['max_footprint_cells'])
-        self.streams=[];self.times=Counter()
+        self.streams=[];self.times=Counter();self.progress={}
         for c in self.configs:
             f=FAMILY[c['indicator']]
             stream=AVZStream(params=c['params'],bar_spec=c['bar_spec']) if f=='AVZP2' else BT2Stream(params=c['params'],bar_spec=c['bar_spec'],tick_size=.25) if f=='BT2' else BT2AStream(params=c['params'],tick_size=.25)
@@ -27,7 +27,7 @@ class CrossFamilyScene:
     def guard(self):
         if time.monotonic()-self.started>self.plan['wall_seconds']:raise TimeoutError('crossfamily native wall')
     def session(self,st,date,*,retain):
-        self.guard();self.ticks+=len(st.ticks)
+        self.progress=dict(substage='READ_SESSION',profile_index=None,capture_records_retained=0,capture_records_by_kind={});self.guard();self.ticks+=len(st.ticks)
         if self.ticks>self.plan['max_total_ticks']:raise ValueError('crossfamily total ticks')
         end=int(datetime.fromisoformat(date+'T22:00:00+00:00').timestamp())*10**9;start=end-86400*10**9
         records=[[] for _ in self.configs];counts=[Counter() for _ in self.configs];stored=0
@@ -41,13 +41,16 @@ class CrossFamilyScene:
                 primary=st.first_index<=r.consumed_tick_index<st.first_index+len(st.ticks)
                 if not start<=r.clock.ns<end:counts[k]['outside_current_availability']+=1;continue
                 records[k].append((r,primary));stored+=1
+                self.progress['capture_records_retained']=stored
+                kinds=self.progress['capture_records_by_kind'];kinds[r.kind]=kinds.get(r.kind,0)+1
+                if stored>self.plan['max_session_capture_records']:self.progress.update(substage='CAPTURE',profile_index=k)
                 if stored>self.plan['max_session_capture_records']:raise ValueError('nine config capture capacity no truncation')
-        f=time.monotonic();self.primitives.begin(st);self.times['classify']+=time.monotonic()-f
+        self.progress.update(substage='CLASSIFY');f=time.monotonic();self.primitives.begin(st);self.times['classify']+=time.monotonic()-f
         for spec in self.plan['bar_specs']:
-            f=time.monotonic();bt,av=self.primitives.build(spec);self.times['primitives']+=time.monotonic()-f
+            self.progress.update(substage='BUILD_PRIMITIVES',profile_index=None);f=time.monotonic();bt,av=self.primitives.build(spec);self.times['primitives']+=time.monotonic()-f
             for k,c in enumerate(self.configs):
                 if c['bar_spec']!=spec:continue
-                f=time.monotonic();feeds=av if FAMILY[c['indicator']]=='AVZP2' else bt
+                self.progress.update(substage='NATIVE_'+FAMILY[c['indicator']],profile_index=k);f=time.monotonic();feeds=av if FAMILY[c['indicator']]=='AVZP2' else bt
                 for j,feed in enumerate(feeds):
                     if j%2000==0:self.guard()
                     capture(k,self.streams[k].push(feed))
@@ -59,8 +62,8 @@ class CrossFamilyScene:
             self.guard();z=min(j+100000,len(t));chunk=TickChunk(*(getattr(t,name)[j:z] for name in ('ts_ns','price_ticks','volume','bid_ticks','ask_ticks','sequence')),ids[j:z],st.first_index+j)
             for k,c in enumerate(self.configs):
                 if FAMILY[c['indicator']]!='BT2A':continue
-                f=time.monotonic();capture(k,self.streams[k].push(chunk));self.times['BT2A']+=time.monotonic()-f
-        self.primitives.end();events=[]
+                self.progress.update(substage='NATIVE_BT2A',profile_index=k);f=time.monotonic();capture(k,self.streams[k].push(chunk));self.times['BT2A']+=time.monotonic()-f
+        self.progress.update(substage='GROUP_EVENTS',profile_index=None);self.primitives.end();events=[]
         for rs in records:
             # Preserve same-clock native event order; sorting is stable, no reordering of tape.
             rs.sort(key=lambda x:x[0].clock);groups=[]
@@ -68,6 +71,7 @@ class CrossFamilyScene:
                 if not groups or groups[-1][0]!=r.clock:groups.append((r.clock,[]))
                 groups[-1][1].append((r,primary))
             events.append(groups)
+        self.progress.update(substage='DONE')
         return events,{'trade_date':date,'ticks':len(t),'capture_records_retained':stored,'config_counts':[dict(c) for c in counts]}
     def finish(self):
         """Flush only true EOF; diagnostics cannot become retroactive features."""
