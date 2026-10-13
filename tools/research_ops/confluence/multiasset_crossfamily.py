@@ -25,6 +25,9 @@ PLAN_SHA='1fc00c5ad2e4a5a2d01641f60726d1c56c41c512ef5fdbbca824e6bca8826dd2'
 GAP10_PLAN='docs/research/ops/MULTIASSET_CROSSFAMILY_GAP10_PLAN.json'
 GAP10_SHA='e18747ab0efc8c3a4ab9c8d620621f6617590c63cc6d7c42e5f1355b54e3d772'
 
+FOCUS_PLAN='docs/research/ops/GC_FOCUSED_RETURN_PLAN.json'
+FOCUS_SHA='49bb3dd734685d41fddfa619ae5393a9f2be9d4f2b91e9e16a229218cb27cbd4'
+
 class AssetCalibration(Calibration):
  def __init__(self,date):super().__init__();self.date=date
  def add(self,row):
@@ -38,7 +41,7 @@ class AssetCalibration(Calibration):
   r=super().freeze();r['training_trade_date']=self.date;r['sha256']=digest({k:v for k,v in r.items() if k!='sha256'});return r
 
 def validate_plan(p,asset):
- if digest(p) not in (PLAN_SHA,GAP10_SHA) or asset not in p['assets']:raise ValueError('exact frozen multiasset plan and member only')
+ if digest(p) not in (PLAN_SHA,GAP10_SHA,FOCUS_SHA) or asset not in p['assets']:raise ValueError('exact frozen multiasset plan and member only')
  if p['holdout'] is not False or p['raw_export'] is not False or p['confirmation'] is not False:raise ValueError('exploratory preholdout only')
  ds=[p['calibration_date']]+p['training_sessions']+p['evaluation_sessions']
  if ds!=sorted(set(ds)) or any(d>='2026-10-01' for d in ds):raise ValueError('causal fixed asset calendar')
@@ -46,6 +49,11 @@ def validate_plan(p,asset):
  if type(a['tick_size']) not in (int,float) or a['tick_size']<=0:raise ValueError('declared asset tick size')
  roster=json.loads(Path(ROSTER).read_bytes())
  if roster['roster_sha256']!=p['roster_sha256']:raise ValueError('exact nine configs eighteen pairs')
+ if digest(p)==FOCUS_SHA:
+  pairs=[x for x in roster['pairs'] if x['pair_sha256']==p['focus_pair_sha256']]
+  if len(pairs)!=1:raise ValueError('exact focused pair')
+  keys={pairs[0]['left_config_sha256'],pairs[0]['right_config_sha256']}
+  roster={**roster,'configs':[c for c in roster['configs'] if c['config_sha256'] in keys],'pairs':pairs}
  return a,roster
 
 def verify_transport(path,pin):
@@ -63,7 +71,7 @@ def verify_transport(path,pin):
 
 class ArrivalCuts:
  """Fixed pooled cuts; support by sessions, never IID or winner selection."""
- def __init__(self):self.groups=[{} for _ in range(18)]
+ def __init__(self,pair_count=18):self.groups=[{} for _ in range(pair_count)]
  def add(self,p,z,loss):
   a=z[:,25:32];b=z[:,32:39];inside=z[:,11]==1;masks={}
   for label,v in (('AVZ',a),('BIGTRAP',b)):
@@ -93,7 +101,10 @@ def run(source,plan,asset,private_root,progress):
  a,roster=validate_plan(plan,asset)
  import pyarrow.parquet as parquet
  if parquet.ParquetFile(source).metadata.num_rows!=a['pin']['rows']:raise ValueError('asset pinned footer rows')
- p={**plan,'tick_size':a['tick_size'],'research_dates':plan['training_sessions']+plan['evaluation_sessions']};start=time.monotonic();scene=StreamingScene(roster,p);training=[];tr=[];ev=[];seen=set();unavailable=[];cal=None;models=None;fitsec=0.;scan=hits=pq=pl=0;warmup=0;arrival_cuts=ArrivalCuts()
+ p={**plan,'tick_size':a['tick_size'],'research_dates':plan['training_sessions']+plan['evaluation_sessions']};start=time.monotonic();scene=StreamingScene(roster,p);training=[];tr=[];ev=[];seen=set();unavailable=[];cal=None;models=None;fitsec=0.;scan=hits=pq=pl=0;warmup=0;arrival_cuts=ArrivalCuts(len(roster['pairs']));focused=None
+ if digest(plan)==FOCUS_SHA:
+  from .gc_focused_summary import FocusedSummary
+  focused=FocusedSummary(p)
  for st in iter_sessions(source,start_ns=p['warmup_start_ns'],end_ns=p['read_end_ns'],contract=a['contract'],instrument=a['instrument'],tick_size=a['tick_size'],max_session_ticks=p['max_session_ticks'],max_total_ticks=p['max_total_ticks']):
   date=datetime.fromtimestamp(st.session_id*86400,timezone.utc).date().isoformat();selected=date in p['research_dates'];progress.update(stage='NATIVE_PREFIX',trade_date=date if selected or date==p['calibration_date'] else None)
   events,diag=scene.session(st,date,retain=selected)
@@ -119,13 +130,19 @@ def run(source,plan,asset,private_root,progress):
     progress.update(stage='FIT_ASSET_ONLY');f=time.monotonic();continuous,pairs,prior=fit_models(training);models=continuous,pairs;fitsec=time.monotonic()-f;training.clear()
   else:
    if models is None:raise ValueError('asset fit before scoring')
-   progress.update(stage='SCORE_ASSET');ev.append(score(data,z,models,prior,roster,extra_cuts=arrival_cuts.add))
+   progress.update(stage='SCORE_ASSET')
+   if focused is not None:focused.begin(date,collector.anchor_ns[:collector.n])
+   def collect(j,features,loss):
+    arrival_cuts.add(j,features,loss)
+    if focused is not None:focused.add(j,features,loss)
+   ev.append(score(data,z,models,prior,roster,extra_cuts=collect))
   progress.update(completed_selected_sessions=len(tr)+len(ev),last_completed_trade_date=date);del data,z,collector,events,st
   if time.monotonic()-start>p['wall_seconds']:raise TimeoutError('whole asset wall')
  eof=scene.finish()
  if [s['trade_date'] for s in tr]!=p['training_sessions'] or len(ev)<p['minimum_available_evaluation_sessions']:raise ValueError('insufficient fixed asset training or evaluation; no replacements')
  unavailable +=[{'trade_date':d,'status':'SOURCE_EMPTY_NO_REPLACEMENT','replacement_selected':False} for d in p['evaluation_sessions'] if d not in seen];unavailable.sort(key=lambda x:x['trade_date'])
- result={'schema':'multiasset_crossfamily_receipt_v1','status':'DEVELOPMENT_CROSSFAMILY_COMPLETE_NOT_EDGE','asset':asset,'instrument':a['instrument'],'contract':a['contract'],'tick_size':a['tick_size'],'observation_max_gap_ns':p['max_gap_ns'],'observation_gap_relaxed_vs_original':p['max_gap_ns']!=2000000000,'plan_sha256':digest(plan),'roster_sha256':roster['roster_sha256'],'calibration':cal,'calibration_sha256':cal['sha256'],'training_sessions':tr,'evaluation_sessions':ev,'requested_evaluation_sessions':p['evaluation_sessions'],'unavailable_evaluation_sessions':unavailable,'available_evaluation_session_count':len(ev),'baseline_mean_session_brier':{n:float(np.mean([s['baseline_mean_brier'][n] for s in ev])) for n in ('PRIOR','CONTINUOUS')},'pairs':[{**identity,'mean_session_brier':{n:float(np.mean([s['pairs'][j]['scores']['mean_brier'][n] for s in ev])) for n in ('PRIOR','CONTINUOUS')+MODELS},'paired_delta_equal_session_mean':{x+'_MINUS_'+y:float(np.mean([s['pairs'][j]['paired_deltas'][x+'_MINUS_'+y] for s in ev])) for x,y in COMPARISONS}} for j,identity in enumerate(roster['pairs'])],'arrival_context_summaries':arrival_cuts.finish(p),'model_feature_counts':COUNTS,'models_including_shared_baselines':146,'primary_pairs':18,'native_configs':9,'warmup_sessions':warmup,'native_eof_diagnostics':eof,'native_stage_seconds':dict(scene.times),'fit_seconds':fitsec,'total_ticks':scene.ticks,'response_scanned_elements':scan,'context_query_hits':hits,'print_queries':pq,'print_level_queries':pl,'shared_footprint_cache':scene.footprint_cache.receipt(),'bt2a_bucket_preprocessing_shared':True,'detector_history_or_active_state_shared':False,'wall_seconds':time.monotonic()-start,'measured_runner_peak_rss_bytes':resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024,'near100_percent_NT8_parity_measured':False,'approximate_parity_exploration_accepted':True,'cash_phase_scope':'COMMON_US_CASH_CLOCK_NOT_ASSET_SPECIFIC_RTH_CERTIFICATE','native_AVZ_liveness_measured':False,'physical_first_touch_measured':False,'zone_specific_attribution':False,'overlapping_anchors_independent':False,'automatic_model_selection':False,'raw_exported':False,'canonical_brain_written':False,'confirmation':False,'holdout_opened':False,'pnl':False,'edge_claim':False,'mirror_null_scope':p['mirror_null_scope']}
+ result={'schema':'multiasset_crossfamily_receipt_v1','status':'DEVELOPMENT_CROSSFAMILY_COMPLETE_NOT_EDGE','asset':asset,'instrument':a['instrument'],'contract':a['contract'],'tick_size':a['tick_size'],'observation_max_gap_ns':p['max_gap_ns'],'observation_gap_relaxed_vs_original':p['max_gap_ns']!=2000000000,'plan_sha256':digest(plan),'roster_sha256':roster['roster_sha256'],'calibration':cal,'calibration_sha256':cal['sha256'],'training_sessions':tr,'evaluation_sessions':ev,'requested_evaluation_sessions':p['evaluation_sessions'],'unavailable_evaluation_sessions':unavailable,'available_evaluation_session_count':len(ev),'baseline_mean_session_brier':{n:float(np.mean([s['baseline_mean_brier'][n] for s in ev])) for n in ('PRIOR','CONTINUOUS')},'pairs':[{**identity,'mean_session_brier':{n:float(np.mean([s['pairs'][j]['scores']['mean_brier'][n] for s in ev])) for n in ('PRIOR','CONTINUOUS')+MODELS},'paired_delta_equal_session_mean':{x+'_MINUS_'+y:float(np.mean([s['pairs'][j]['paired_deltas'][x+'_MINUS_'+y] for s in ev])) for x,y in COMPARISONS}} for j,identity in enumerate(roster['pairs'])],'arrival_context_summaries':arrival_cuts.finish(p),'model_feature_counts':COUNTS,'models_including_shared_baselines':2+len(roster['pairs'])*len(MODELS),'primary_pairs':len(roster['pairs']),'native_configs':len(roster['configs']),'warmup_sessions':warmup,'native_eof_diagnostics':eof,'native_stage_seconds':dict(scene.times),'fit_seconds':fitsec,'total_ticks':scene.ticks,'response_scanned_elements':scan,'context_query_hits':hits,'print_queries':pq,'print_level_queries':pl,'shared_footprint_cache':scene.footprint_cache.receipt(),'bt2a_bucket_preprocessing_shared':any(c['indicator']=='bigtrap2absorption' for c in roster['configs']),'detector_history_or_active_state_shared':False,'wall_seconds':time.monotonic()-start,'measured_runner_peak_rss_bytes':resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024,'near100_percent_NT8_parity_measured':False,'approximate_parity_exploration_accepted':True,'cash_phase_scope':'COMMON_US_CASH_CLOCK_NOT_ASSET_SPECIFIC_RTH_CERTIFICATE','native_AVZ_liveness_measured':False,'physical_first_touch_measured':False,'zone_specific_attribution':False,'overlapping_anchors_independent':False,'automatic_model_selection':False,'raw_exported':False,'canonical_brain_written':False,'confirmation':False,'holdout_opened':False,'pnl':False,'edge_claim':False,'mirror_null_scope':p['mirror_null_scope']}
+ if focused is not None:result['focused_return']=focused.finish()
  if len(json.dumps(result,separators=(',',':'),allow_nan=False).encode())>p['max_aggregate_bytes']:raise ValueError('asset bounded aggregate bytes')
  return result
 

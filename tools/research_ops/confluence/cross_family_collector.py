@@ -12,6 +12,7 @@ from .observed_print_index import ObservedPrintIndex
 class CrossFamilyCollector:
     def __init__(self,st,date,events,roster,plan):
         self.t=st.ticks;self.events=events;self.plan=plan;self.cursor=[0]*len(events)
+        self.anchor_ns=np.empty(plan['max_common_anchors_per_session'],dtype=np.int64)
         self.n=0;self.last=None;self.counts=[Counter() for _ in roster['pairs']]
         if len(events)!=len(roster['configs']):raise ValueError('nine aligned event streams')
         lookup={c['config_sha256']:k for k,c in enumerate(roster['configs'])}
@@ -51,7 +52,7 @@ class CrossFamilyCollector:
                         self.counts[p][side+':observed_leave_return']+=int(summary['arrival'][4]>0)
                         self.counts[p][side+':observed_gapthrough_without_inside_print']+=int(summary['arrival'][5]>0)
                         origin=summary['arrival'][6];old=summary['arrival'][1];self.counts[p][side+':prior_20s_origin:'+('FROM_ABOVE' if origin<0 else 'FROM_BELOW' if origin>0 else 'ALREADY_INSIDE' if old else 'UNKNOWN')]+=1
-        self.n+=1;self.last=c
+        self.anchor_ns[self.n]=c.ns;self.n+=1;self.last=c
     def finish(self,n):
         if self.n!=n:raise ValueError('identical common anchor census across pairs and controls')
         z=self.buffer[:n]

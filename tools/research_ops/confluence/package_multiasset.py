@@ -5,7 +5,7 @@ from urllib.parse import urlsplit
 from .package_crossfamily import BOOT as OLD_BOOT,FILES as OLD_FILES
 from .multiasset_crossfamily import PLAN,validate_plan
 from .build_target_free_pilot import digest
-FILES=list(dict.fromkeys(OLD_FILES+['tools/research_ops/confluence/bt2a_footprint_cache.py','tools/research_ops/confluence/multiasset_crossfamily.py',PLAN]))
+FILES=list(dict.fromkeys(OLD_FILES+['tools/research_ops/confluence/bt2a_footprint_cache.py','tools/research_ops/confluence/multiasset_crossfamily.py','tools/research_ops/confluence/gc_focused_summary.py','tools/research_ops/confluence/bt2a_schedule_benchmark.py',PLAN]))
 BOOT=OLD_BOOT.replace('crossfamily_boot_v1','multiasset_crossfamily_boot_v1').replace('confluence.cross_family_pilot','confluence.multiasset_crossfamily').replace("'--source',str(path)","'--asset',__ASSET__,'--source',str(path)").replace("'new_quality_audit':False", "'asset':__ASSET__,'new_quality_audit':False")
 BOOT=BOOT.replace("state.update(status='RUNNING_FIXED_CROSSFAMILY_BENCHMARK'", "import pyarrow.parquet as pq\n if pq.ParquetFile(path).metadata.num_rows!=PIN['rows']:raise ValueError('asset pinned row identity')\n state.update(status='RUNNING_FIXED_CROSSFAMILY_BENCHMARK'")
 

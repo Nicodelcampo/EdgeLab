@@ -30,11 +30,11 @@ class StreamingScene(CrossFamilyScene):
 
 class SessionCursor:
     def __init__(self,scene,st,date,feeds):
-        self.scene=scene;self.st=st;self.feeds=feeds;self.positions=[0]*9;self.tick_positions=[0]*9;self.closed=False;self.last=None;self.counts=[Counter() for _ in range(9)];self.mutations=0;self.peak=0;self.tail_batches=0
+        self.scene=scene;self.st=st;self.feeds=feeds;self.positions=[0]*len(scene.configs);self.tick_positions=[0]*len(scene.configs);self.closed=False;self.last=None;self.counts=[Counter() for _ in range(len(self.scene.configs))];self.mutations=0;self.peak=0;self.tail_batches=0
         self.ids=np.full(len(st.ticks),st.session_id,dtype=np.int64)
         end=int(datetime.fromisoformat(date+'T22:00:00+00:00').timestamp())*10**9;self.start=end-86400*10**9;self.end=end
         self.diag={'trade_date':date,'ticks':len(st.ticks),'capture_records_retained':0,'config_counts':[], 'whole_session_event_store':False,'peak_pending_mutation_records':0,'total_causal_mutations_processed':0,'post_last_anchor_mutation_batches':0}
-    def __len__(self):return 9
+    def __len__(self):return len(self.scene.configs)
     def _records(self,k,delta,consumer):
         counter=self.counts[k];counter['unobservable_eof']+=delta.unavailable_events;groups=[];pending=0
         for r in delta.records:
@@ -70,11 +70,11 @@ class SessionCursor:
             self.tick_positions[k]=pos
     def advance(self,clock,consumer):
         if self.closed or (self.last is not None and clock<=self.last):raise ValueError('strict requested streaming prefix')
-        for k in range(9):self._advance_profile(k,clock,consumer)
+        for k in range(len(self.scene.configs)):self._advance_profile(k,clock,consumer)
         self.last=clock
     def finish(self):
         if self.closed:raise ValueError('session drained once')
-        for k in range(9):self._advance_profile(k,None,None)
+        for k in range(len(self.scene.configs)):self._advance_profile(k,None,None)
         self.scene.primitives.end();self.closed=True;self.scene.open_session=None;self.feeds.clear();self.ids=None
         self.diag.update(config_counts=[dict(c) for c in self.counts],capture_records_retained=0,peak_pending_mutation_records=self.peak,total_causal_mutations_processed=self.mutations,post_last_anchor_mutation_batches=self.tail_batches)
         self.scene.progress.update(substage='DONE',profile_index=None)
