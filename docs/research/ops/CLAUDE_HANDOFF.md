@@ -1,3 +1,11 @@
+# Entrada actual: atlas multisesión preparado, aún no enviado
+
+Leer `MNQ_PHENOMENA_ATLAS_DESIGN.md`, plan e implementation receipt. Nuevo atlas target-free para June12/15/16 por calendario dentro del historial existente, mismo estimador/gates P0. Sin96detectores, estados/outcomes/holdout/P&L. Desglose exclusivo y joint de UNKNOWN, cuantiles exactos con soporte100, tabla6×6 presión×progreso; no fitted thresholds. Un intento manual previsto, sin retry.785ResearchOps+18nav PASS y34focales finales PASS; nota de orden en recibo. Publicar fuente antes de empaquetar/envío.
+
+P0 id138410298/v1 COMPLETE y V3 confluencias id138386707/v3 ERROR siguen cerrados/no relanzar. Handoff Debian vigente y sin deploy/writer Brain real. Secciones históricas debajo no indican liveness actual.
+
+---
+
 # Último estado: P0 fenómenos COMPLETE; V3 confluencias ERROR
 
 Leer `MNQ_PHENOMENA_P0_CLOSEOUT.md/.json` y recibos. P0 privadoCPU id138410298/v1, source3419122f0c571bc17b0cd96e539ff23dd068c7ef: medición completa en46,17s totalhost;16.536anclas, sin clasificación A/E/outcomes/inferencia. Identidad exacta y hash measurement verificados. No relanzar. Journal pre-send→ACK→COMPLETE y watch preservados; no equivalen a controlador24/7/custodia global.
