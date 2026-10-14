@@ -1,3 +1,9 @@
+## Corrida GC A/E ACTIVA — RUNNING, no reenviar
+
+Kernel138580854/v1 `edgelab-gc-ae-causal-history-v1` RUNNING;fuente24d8c461/bundle9ecfe10a/plan3abcfe6990fa exactos remoto/privadoCPU/Docker. LeerGC_AE_HISTORY_LAUNCH/PROTOCOL/PLAN/POWER_DISCLOSURE/PACKAGE.954ResearchOps+18navegaciónPASS;21focalPASS. Una intenciónACK,1pollconsumido/6máximo enjournals originales `/data/operational-state/gc-ae-history-3abcfe6990fa-{dispatch,watch}.sqlite`;no reset/reenvío, snapshots públicosno sustituyen custodia.
+
+DosprimariosA→E/E→A frenteHISTORY/CAPACITY en10fechasSept17–30;14representaciones/ridge0,01/calGCJul31reutilizada/sin nueva datasetQA. Todavía NO outcomes científicosrecuperados. NumericversionLabel1 devolvióNotFound en get_info;lectura latest sinlabel verificócurrent_version_number=1/sourceexacta; no notebookresubmit. Próximo:pollacotado reservado, outputsindividualesAEpilotboot/receipt agregados≤1MiB,nozip/raw/models/logs,auditorindependiente yregistrodetodosnegativos/soporte. Holdout/P&L/Brainwriter/merge/deploy cerrados. Abajo:historia,no permisos de replay.
+
 ## Envío GC A/E iniciado; ACK pendiente — NO reenviar
 
 954ResearchOpsPASS354,275s/18navegaciónPASS0,204s. Fuente24d8c461/bundle9ecfe10a/plan3abcfe6990fa;40archivosbyteexactos/startupaislado. Journals nuevos `gc-ae-history-3abcfe6990fa-{dispatch,watch}.sqlite`:1intención/1job/6polls. SEND_STARTED ya persistido, noreset ni replay si respuestaambigua; reconciliar identidadremotaexactaantesdeACK. LeerGC_AE_HISTORY_LAUNCH/IMPLEMENTATION/PACKAGE. Calibraciónreutilizada,holdoutcerrado,Brainwriterdesconectado. Abajo:historia.
