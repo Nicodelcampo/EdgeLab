@@ -16,7 +16,7 @@ import numpy as np
 import pandas as pd
 
 RELEASE = Path(os.environ.get("RELEASE_DIR", r"D:\edgelab_release_work\dl_check"))   # release canónica descargada de Kaggle (SHA verificado)
-OUT = Path(os.environ.get("AVCL_OUT", "D:/edgelab_release_work/avzp2_replica"))
+OUT = Path(os.environ.get("AVCL_OUT", "D:/edgelab_release_work/avzp2_replica_v2"))
 OUT.mkdir(parents=True, exist_ok=True)
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from scipy.stats import norm  # noqa: E402
@@ -207,7 +207,8 @@ def run_contract(c):
         return (c, kind, int(t0), int(L), int(H), int(H - L + 1), int(sdate[t0]), int(clock[t0]), occ(t0, L, H),
                 float(rng200[t0]) if t0 >= HPOST else np.nan, int(tr), pos, int(te), int(d), int(o2), int(o3a), int(o3b),
                 float(mx), float(np.log(te - t0)) if te > 0 else np.nan, exp,
-                float(cl[t0] - cl[max(0, t0 - TREND)]) / (H - L + 1), float(cl[t0] - cl[max(0, t0 - 100)]) / (H - L + 1))
+                float(cl[t0] - cl[max(0, t0 - TREND)]) / (H - L + 1), float(cl[t0] - cl[max(0, t0 - 100)]) / (H - L + 1),
+                int(end[te]) if te >= 0 else -1, int(end[t0]), int(cl[te]) if te >= 0 else -1)
 
     rows = []
     for (cm, cw, ca) in CELLS:
@@ -238,7 +239,7 @@ def run_contract(c):
                 if got >= NPSEUDO:
                     break
     t = pd.DataFrame(rows, columns=["cell", "contract", "kind", "t0", "L", "H", "h", "session", "clock", "occ", "amp", "trend", "pos",
-                                    "te", "dir", "o2", "o3a", "o3b", "mx_h", "o4", "o5", "trend_h", "mom100_h"])
+                                    "te", "dir", "o2", "o3a", "o3b", "mx_h", "o4", "o5", "trend_h", "mom100_h", "te_end_ns", "t0_end_ns", "close_te"])
     t.to_parquet(OUT / ("%s_%s%s_avzp2racgrid.parquet" % (INST, c.replace(" ", "_"), "" if SPEC == 25 else "_s%d" % SPEC)))
     print(c, "sesiones", len(dates), "evaluables", len(ok_dates), "velas", n, "zonas", len(r["zones"]), "filas", len(t),
           "%.0f s" % (time.time() - t0_), flush=True)
