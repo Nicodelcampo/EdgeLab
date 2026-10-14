@@ -31,7 +31,7 @@ read_asset = _rr.read_asset
 END_NS = pd.Timestamp("2026-09-30 22:00", tz="UTC").value
 CT = "America/Chicago"
 INST = os.environ.get("AVCL_INST", "ES")
-TICK_SIZE = {"ES": 0.25, "NQ": 0.25}[INST]
+TICK_SIZE = {"ES": 0.25, "NQ": 0.25, "MES": 0.25, "MNQ": 0.25}[INST]
 WARMUP_SESSIONS = 20
 TICKS_BAR = 50
 

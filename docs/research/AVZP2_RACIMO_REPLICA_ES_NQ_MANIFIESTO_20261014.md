@@ -31,3 +31,9 @@ Zonas: parámetros de la configuración de Nico (barras 25t, OB 100/6/8/4 %, det
 
 ## NO MEDIDO / no se hará acá
 P&L, costos, otras celdas, escalado por volatilidad, otros instrumentos (YM, RTY), interacción O1 × compresión.
+
+## Enmienda 1 (escrita antes de correr; resultados de ES y NQ ya conocidos) — MNQ y MES sobre la release canónica
+Se agregan dos corridas **con las mismas 7 celdas y el mismo criterio** (≥5/7 para O5, ≥4/6 para O1, mínimo 150 racimos):
+- **MNQ canónico:** los resultados originales de MNQ salieron de exports sin sanear (descubrimiento 09-25…06-26, confirmación 09-26/12-26). Esto verifica si **sobreviven a los datos saneados de la release** (control de integridad de datos, no evidencia nueva de mecanismo). Refutación: que O1 caiga a ≈ 0 o cambie de signo en ≥ 3 de las 6 celdas largas.
+- **MES:** réplica del mismo subyacente que ES con otro tamaño de contrato y otros participantes; **no cuenta como instrumento independiente de ES** en el criterio de réplica (se publica aparte).
+- Holm por instrumento, paisaje completo publicado. Ninguna decisión posterior depende de elegir entre estas corridas.
