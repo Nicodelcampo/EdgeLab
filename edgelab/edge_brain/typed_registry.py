@@ -7,8 +7,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Iterable
 
-import pyarrow as pa
-import pyarrow.parquet as pq
 
 from .registry import (
     LedgerIntegrityError,
@@ -136,6 +134,9 @@ def project_to_json(ledger_path: str | Path, out_path: str | Path) -> dict[str, 
 
 def project_to_parquet_zstd(ledger_path: str | Path, out_path: str | Path) -> dict[str, Any]:
     """Build a reconstructible Parquet projection compressed with ZSTD from the canonical ledger."""
+    import pyarrow as pa
+    import pyarrow.parquet as pq
+
     ledger_p = Path(ledger_path)
     out_p = Path(out_path)
     verification = verify_registry(ledger_p)
@@ -183,6 +184,8 @@ def project_to_parquet_zstd(ledger_path: str | Path, out_path: str | Path) -> di
 
 def read_parquet_projection(parquet_path: str | Path) -> list[dict[str, Any]]:
     """Read a Parquet projection and reconstruct the canonical records."""
+    import pyarrow.parquet as pq
+
     table = pq.read_table(str(parquet_path))
     records = []
     pydict = table.to_pydict()
