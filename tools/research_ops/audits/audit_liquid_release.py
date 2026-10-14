@@ -319,7 +319,7 @@ def download_inputs(root, manifest, sources):
     for relative, e in entries.items():
         url = sources["urls"][relative]
         u = urllib.parse.urlparse(url)
-        prefix = "/kagglesdsdata/datasets/12574934/20709574/"
+        prefix = "/kagglesdsdata/datasets/12574934/20729690/"
         if u.scheme != "https" or u.netloc != "storage.googleapis.com" or u.path != prefix + relative:
             raise AuditStop("unexpected transport destination")
         p = checked_path(root, relative)
