@@ -9,6 +9,7 @@ Precios en ticks (enteros). Convenciones:
 - TP (límite): se llena sólo si el precio CRUZA el nivel (last > nivel para long, < nivel para short): conservador, sin fill por toque. Fill al nivel.
 - SL (stop a mercado): se activa con last <= nivel (long) / >= nivel (short); fill al peor entre last y nivel, más `slip_stop` ticks adversos.
 - Salida por tiempo: primer tick con ts >= max_ns, a mercado (bid para long, ask para short), sin slippage adicional.
+- Barras consecutivas pueden compartir `end_ns` (≈1,5 % de las salidas en ES: ráfagas de ticks con el mismo timestamp); como la entrada es el primer tick con ts ESTRICTAMENTE posterior, la entrada se demora en esos casos: causal y conservador.
 - Costos: `comm_ticks` (round-turn) restados del neto. Sin ticks suficientes tras la entrada: `NO_DATA` (se cuenta, no se descarta en silencio).
 """
 from __future__ import annotations
