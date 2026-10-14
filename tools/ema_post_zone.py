@@ -43,10 +43,18 @@ def contract_rows(c, sess):
     return ds, fl, int(first.value), int(min(last.value, END_NS))
 
 
+def load_min(path, a, b):
+    """Carga solo ts, precio y volumen (el resto del esquema no se usa aquí): ~3× menos memoria que load_canonical_parquet."""
+    import pyarrow.parquet as pq
+    t = pq.read_table(path, columns=["ts_utc_ns", "price_ticks", "volume"], filters=[("ts_utc_ns", ">=", int(a)), ("ts_utc_ns", "<", int(b))])
+    ts = t.column("ts_utc_ns").to_numpy().astype(np.int64); px = t.column("price_ticks").to_numpy().astype(np.int64); vol = t.column("volume").to_numpy().astype(np.float64); del t
+    return T.TickSeries(ts_ns=ts, price_ticks=px, volume=vol, bid_ticks=None, ask_ticks=None, sequence=np.arange(len(ts), dtype=np.int64), tick_size=0.25, instrument=INST, contract="?", source=str(path))
+
+
 def process_contract(args):
     c, path, a, b, zones = args
     try:
-        tk = T.load_canonical_parquet(path, start_utc_ns=a, end_utc_ns=b); mod = ct_minute_of_day(tk.ts_ns); keep = np.asarray(~((mod >= 960) & (mod < 1020)))
+        tk = load_min(path, a, b); mod = ct_minute_of_day(tk.ts_ns); keep = np.asarray(~((mod >= 960) & (mod < 1020)))
         tk = dataclasses.replace(tk, **{f: (getattr(tk, f)[keep] if getattr(tk, f) is not None else None) for f in ("ts_ns", "price_ticks", "volume", "bid_ticks", "ask_ticks", "sequence")})
         bars = B.build_tick_bars(tk, SPEC); cc, hh, ll = (np.asarray(x, float) for x in (bars.close_t, bars.high_t, bars.low_t)); n = len(cc); sd = session_date_of(bars.end_ns)
         atr = Z.precompute(cc, hh, ll, ema_n=200, atr_n=100)["atr"]; bar_start = np.searchsorted(np.asarray(bars.tick_bar_idx), np.arange(n + 1))
@@ -65,7 +73,7 @@ def main():
     for c in sorted(sess.contract.unique(), key=lambda x: (x[-2:], x[-5:-3])):
         ds, fl, a, b = contract_rows(c, sess); zs = Zdf[Zdf.contract == c].to_dict("records")
         if zs: jobs.append((c, str(ed._path(ds, fl)), a, b, zs))
-    rows, errors = [], []; W = int(CFG.get("workers", 4))
+    rows, errors = [], []; W = int(CFG.get("workers", 2))
     with cf.ProcessPoolExecutor(max_workers=W, mp_context=mp.get_context("fork")) as ex:
         for c, rr, err in ex.map(process_contract, jobs):
             print(c, "zonas", len(rr), "error" if err else "ok", flush=True); rows += rr
