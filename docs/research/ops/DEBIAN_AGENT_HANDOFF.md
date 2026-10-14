@@ -1,3 +1,7 @@
+## Envío GC A/E iniciado; ACK pendiente — NO reenviar
+
+954ResearchOpsPASS354,275s/18navegaciónPASS0,204s. Fuente24d8c461/bundle9ecfe10a/plan3abcfe6990fa;40archivosbyteexactos/startupaislado. Journals nuevos `gc-ae-history-3abcfe6990fa-{dispatch,watch}.sqlite`:1intención/1job/6polls. SEND_STARTED ya persistido, noreset ni replay si respuestaambigua; reconciliar identidadremotaexactaantesdeACK. LeerGC_AE_HISTORY_LAUNCH/IMPLEMENTATION/PACKAGE. Calibraciónreutilizada,holdoutcerrado,Brainwriterdesconectado. Abajo:historia.
+
 ## Checkpoint — nuevo protocolo GC A/E listo; NO enviado todavía
 
 Leer GC_AE_HISTORY_PROTOCOL.md,PLAN.json,POWER_DISCLOSURE.json eIMPLEMENTATION.json. Runner ypurga/embargo unidos,calibraciónGC539b4ba2 reutilizada,14modelos/dosprimarios/10fechasSept17–30,ridge0,01,margen0,001desarrollo,soporte2000/6.21focalPASS3,435s;regresióncompletaencurso,no reclamarresultadoaún. No kernel enviado; faltaidentidadcommit/bundle exacta ynuevo journaldeunasolaintenciónantesdeSaveAndRunAll. No repetircalibración/datasetQA;ningúndefaultdetectorcambió. MDEreferencianormalmuyconservador enPOWER_DISCLOSURE,NO potenciaefectivani confirmación. Abajo eshistoria,no permiso dereenviarjobsanteriores.
