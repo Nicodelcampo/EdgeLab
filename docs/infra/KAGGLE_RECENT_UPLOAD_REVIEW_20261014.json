@@ -1,0 +1,162 @@
+{
+  "schema": "recent_kaggle_upload_review_v1",
+  "status": "USEFUL_ACCESS_IMPROVEMENTS_NOT_MARKET_DATA_REPAIR_OR_RESEARCH_CERTIFICATE",
+  "scope": "Live owned datasets sorted Updated; full reexport-v2 listing; catalog-v15/v16 first200 names/sizes; exact loader code; existing pinned audits. No fresh raw market audit or notebook launch.",
+  "latest_market_reexport_version": 2,
+  "latest_market_reexport_updated": "2026-10-05T20:04:52.993Z",
+  "catalog_version": 16,
+  "catalog_updated": "2026-10-12T21:50:04.583Z",
+  "code_zones_version": 13,
+  "code_zones_updated": "2026-10-14T01:29:29.723Z",
+  "code_zones_declared_base_commit": "ab071322ff3a08022a3a71994e09a28c97723bbe",
+  "code_zones_commit_marker_has_post_suffix": true,
+  "code_zones_scope": "Code bundle, not new market ticks; only declared COMMIT inspected, full bundle not certified",
+  "catalog_inventory_size_changes_first200": {
+    "edgelab_data.py": [
+      15945,
+      17928
+    ]
+  },
+  "catalog_inventory_hash_parity_not_claimed": true,
+  "published_loader_bytes": 17928,
+  "published_loader_sha256": "8f77f8f85be4d556198c994857e215c5e623d1b57652f9e3dbda368ffa12a8f5",
+  "published_loader_byte_exact_with_code_commit": true,
+  "legacy_loader_pin_must_not_be_replaced_silently": true,
+  "reexport_file_count": 70,
+  "reexport_parquet_count": 23,
+  "reexport_manifest_count": 23,
+  "reexport_sessions_count": 23,
+  "reexport_three_ES_NQ_contract_byte_pins_match_listing": true,
+  "fresh_market_payload_read": false,
+  "synthetic_market_data_only": true,
+  "historical_ES_NQ_structural_audit": {
+    "files": 18,
+    "rows": 546709478,
+    "status": "PASS_RAW_STRUCTURE_ONLY",
+    "research_allowed": false,
+    "source": "https://github.com/Nicodelcampo/EdgeLab/blob/4579f5512b150a440d0bd6ea3115a5032ec8d0f0/docs/infra/KAGGLE_FULL_RAW_AUDIT_20261010.md"
+  },
+  "historical_MNQ_evidence": {
+    "files": 6,
+    "rows": 485596960,
+    "status": "PASS_RAW_STRUCTURE_ONLY_SOURCE_REVIEW_OPEN",
+    "scope": "Canonical-v1 MNQ09-25/12-25/03-26 and reexport-v2 MNQ06-26/09-26/12-26"
+  },
+  "unresolved_blockers": [
+    {
+      "id": "ES_PREMATURE_ROLL_IN_CATALOG_V15",
+      "scope": "ES",
+      "required_resolution": "Rebuild selection from independently reviewed complete exchange sessions; compare all eligible contracts, then regenerate aggregates. Do not use Sunday micro-volume to advance the monotonic chain."
+    },
+    {
+      "id": "NQ_SOURCE_TIME_CONTENT_DISCREPANCY",
+      "scope": "nicolasbuttaro/edgelab-ticks-nq-preholdout/6:NQ_09-26_ticks.parquet",
+      "required_resolution": "Verify upstream timezone and exact differing events; publish a reviewed source/version, not automatic clipping or alternate substitution."
+    },
+    {
+      "id": "RETROSPECTIVE_ELIGIBILITY_MASK",
+      "scope": "catalog/15",
+      "required_resolution": "Replace full-sample/current-session thresholds with frozen causal rules based on the previous verified complete session."
+    },
+    {
+      "id": "UNREVIEWED_CALENDAR_AND_INTERVALS",
+      "scope": "ES,NQ",
+      "required_resolution": "Review every requested date and intraday absence against the relevant exchange calendar and upstream capture evidence; never infer zero from absence."
+    },
+    {
+      "id": "UNVERIFIED_LIQUIDITY_AND_PROVENANCE",
+      "scope": "ES,NQ",
+      "required_resolution": "Pin root-specific ex-ante liquidity limits and validate prior-session volume/spread plus quote/aggressor provenance."
+    }
+  ],
+  "synthetic_checks": [
+    {
+      "check": "exact_path_found",
+      "status": "PASS",
+      "kind": "functional_check"
+    },
+    {
+      "check": "missing_path_rejected",
+      "status": "PASS",
+      "kind": "functional_check"
+    },
+    {
+      "check": "ambiguous_basename_rejected_within_one_root",
+      "status": "PASS",
+      "kind": "functional_check"
+    },
+    {
+      "check": "exact_subdirectory_path_found",
+      "status": "PASS",
+      "kind": "functional_check"
+    },
+    {
+      "check": "wrong_requested_path_can_resolve_by_unique_basename",
+      "status": "PASS",
+      "kind": "documented_safety_limit"
+    },
+    {
+      "check": "matching_size_accepted",
+      "status": "PASS",
+      "kind": "functional_check"
+    },
+    {
+      "check": "wrong_size_rejected",
+      "status": "PASS",
+      "kind": "functional_check"
+    },
+    {
+      "check": "missing_manifest_file_rejected",
+      "status": "PASS",
+      "kind": "functional_check"
+    },
+    {
+      "check": "changed_content_same_size_not_rejected",
+      "status": "PASS",
+      "kind": "documented_safety_limit"
+    },
+    {
+      "check": "version_identity_not_verified_by_loader",
+      "status": "PASS",
+      "kind": "documented_safety_limit"
+    },
+    {
+      "check": "empty_file_manifest_is_noop",
+      "status": "PASS",
+      "kind": "documented_safety_limit"
+    },
+    {
+      "check": "missing_manifest_is_noop",
+      "status": "PASS",
+      "kind": "documented_safety_limit"
+    },
+    {
+      "check": "duplicate_exact_path_across_roots_first_root_wins",
+      "status": "PASS",
+      "kind": "documented_safety_limit"
+    }
+  ],
+  "synthetic_check_count": 13,
+  "static_code_findings": {
+    "load_ticks_calls_manifest_check": false,
+    "load_m1_calls_check_inputs": true,
+    "file_m1_reads_all_row_groups_then_load_m1_filters_session_dates": true,
+    "m1_cache_key_uses_file_size_not_content_sha256": true,
+    "interpretation": "Static risks, not proof that a real run read holdout or used stale data"
+  },
+  "recommendation": "Reuse already checked exact raw files/pins for scoped authorized exploration. Use v16 helper only as optional presence/size preflight, not integrity/version, causal eligibility or holdout gate. Require external hashes, exact mount/version binding and pre-payload holdout guard for autonomous jobs; do not replace frozen plans/catalog-v15 pins.",
+  "coverage_caveat": "All23 reexport files exist; this does not prove all23 rows correct. Historical full audit covers18 ES/NQ primaries, not all instruments. First200 catalog items have same names/sizes except loader; not proof of identical JSON contents or complete catalog scan.",
+  "profiler_resolution": "Nested raw JSON normalized to file/check tables without dropping data. Historical 18 records have16 basenames but18 unique hashes: never join on basename. PASS_RAW_STRUCTURE_ONLY/status constants expected, not certification. Created dates parsed for ordering, no byte-per-day rate analysis; profiler's daily-rate hint is not meaningful for upload inventory.",
+  "chart_disposition": "prose/table: categorical verification outcomes, not a numeric trend or comparative magnitude finding",
+  "source_urls": [
+    "https://www.kaggle.com/datasets/nicolasbuttaro/edgelab-data-catalog/versions/16",
+    "https://www.kaggle.com/datasets/nicolasbuttaro/edgelab-ticks-nt8-reexport-20261005/versions/2",
+    "https://www.kaggle.com/datasets/nicolasbuttaro/edgelab-code-zones/versions/13"
+  ],
+  "outcomes_computed": false,
+  "holdout_opened": false,
+  "raw_exported": false,
+  "datasets_modified": false,
+  "service_deployed": false,
+  "canonical_brain_written": false
+}
