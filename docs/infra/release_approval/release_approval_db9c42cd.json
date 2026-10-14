@@ -1,0 +1,23 @@
+{
+  "schema": "edgelab_release_approval_v1",
+  "manifest_sha256": "db9c42cdb714634b131fc8ff886cda67771bea6070d27c0e56e2d2fd6eb14ce5",
+  "release_id": "liquid_release_20261014_v4",
+  "approved_by": "Nico (delegado en chat 2026-10-14: 'se aprueba la release si es correcta'; verificacion hecha por Claude local)",
+  "approved_at": "2026-10-14",
+  "liquidity_policy_approved": true,
+  "calendar_approved": true,
+  "license_scope_approved": "uso privado de investigacion con datos de la suscripcion NT8 propia; sin redistribucion",
+  "evidence": [
+    "docs/infra/liquid_v4_audit_20261014/receipt.json",
+    "Kaggle: 31/31 archivos con tamano y SHA-256 iguales al manifiesto (tools/verify_kaggle_download.py)",
+    "53 tests del productor"
+  ],
+  "limits": [
+    "701 sesiones-contrato con conflicto de fuente tabuladas y no resueltas",
+    "309 sesiones P0 faltantes (docs/infra/MISSING_EXPORTS_20261014.md)",
+    "la ventana inicial de 80 sesiones de calibracion de la politica es in-sample: no se usa para evaluar prospectivamente",
+    "el calendario derivado usa contexto posterior; calendario oficial capturado solo para indices de renta variable",
+    "no redistribuir: si algun dato sale de la cuenta privada de Kaggle, revisar licencia CME antes",
+    "holdout trade_date >= 2026-10-01 excluido por construccion y no se lee"
+  ]
+}

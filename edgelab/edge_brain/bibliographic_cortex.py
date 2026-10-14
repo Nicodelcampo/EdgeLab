@@ -4,6 +4,7 @@ import hashlib
 import json
 import re
 import sqlite3
+from contextlib import closing
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
@@ -143,7 +144,7 @@ class SSRNBibliographicCortex:
         normalized_ids = {i for i in ids if self._document_path_unchecked(i).is_file()}
         extraction_ids = {i for i in ids if self.extraction_path(i, require=False).is_file()}
         db_uri = f"file:{self.root / 'Normalizado/chunks.sqlite'}?mode=ro"
-        with sqlite3.connect(db_uri, uri=True) as con:
+        with closing(sqlite3.connect(db_uri, uri=True)) as con:
             chunks = int(con.execute("SELECT COUNT(*) FROM chunks").fetchone()[0])
             passages = int(con.execute("SELECT COUNT(*) FROM passages").fetchone()[0])
         nodes = self.graph.get("nodos", []) if isinstance(self.graph, dict) else []
@@ -195,7 +196,7 @@ class SSRNBibliographicCortex:
                   FROM passages p JOIN chunks c ON c.id = p.chunk_id
                   WHERE {where} LIMIT 1000"""
         db_uri = f"file:{self.root / 'Normalizado/chunks.sqlite'}?mode=ro"
-        with sqlite3.connect(db_uri, uri=True) as con:
+        with closing(sqlite3.connect(db_uri, uri=True)) as con:
             rows = con.execute(sql, params).fetchall()
         hits = []
         for doc_id, title, source_file, passage in rows:
@@ -248,7 +249,7 @@ class SSRNBibliographicCortex:
         if not self.fts_path.is_file():
             return "MISSING"
         try:
-            with sqlite3.connect(f"file:{self.fts_path}?mode=ro", uri=True) as con:
+            with closing(sqlite3.connect(f"file:{self.fts_path}?mode=ro", uri=True)) as con:
                 row = con.execute("SELECT value FROM meta WHERE key='schema_version'").fetchone()
         except sqlite3.Error:
             return "STALE"
@@ -269,7 +270,7 @@ class SSRNBibliographicCortex:
         tmp = target.with_suffix(".tmp")
         tmp.unlink(missing_ok=True)
         src = f"file:{self.root / 'Normalizado/chunks.sqlite'}?mode=ro"
-        with sqlite3.connect(src, uri=True) as con:
+        with closing(sqlite3.connect(src, uri=True)) as con:
             rows = con.execute("""SELECT p.id, p.doc_id, c.doc_titulo, c.archivo_fuente, p.texto
                                   FROM passages p JOIN chunks c ON c.id = p.chunk_id ORDER BY p.id""").fetchall()
         tok = "tokenize='porter unicode61 remove_diacritics 2'"
@@ -314,7 +315,7 @@ class SSRNBibliographicCortex:
         return " OR ".join([f'"{p}"' for p in phrases] * 2 + [f'"{t}"' for t in terms])
 
     def _fts_rows(self, sql: str, params: tuple) -> list[tuple]:
-        with sqlite3.connect(f"file:{self.fts_path}?mode=ro", uri=True) as con:
+        with closing(sqlite3.connect(f"file:{self.fts_path}?mode=ro", uri=True)) as con:
             return con.execute(sql, params).fetchall()
 
     def search_passages_ranked(self, query: str, limit: int = 6, per_doc: int = 2,

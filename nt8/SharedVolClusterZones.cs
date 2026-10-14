@@ -2,6 +2,7 @@
 // SharedVolClusterZones.cs - Repositorio compartido de zonas de volumen
 // Permite que indicadores externos (ej. aVolMetaCluster) consuman las zonas
 // detectadas por aVolClusterPOI de forma desacoplada y con cero costo de CPU.
+// meta: version=0.5 (store compartido sin salida CSV; acompana a aVolClusterPOI v0.5)
 // ============================================================================
 
 using System;

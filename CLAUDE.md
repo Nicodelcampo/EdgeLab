@@ -5,7 +5,8 @@
 > marcador `SHA256-BODY-ABOVE`: `05df5c7c3ec4cf3a1f14f62bb8e2ade4b61dd29203b610a308964ac46995f421`
 > (no es el hash del archivo completo; el archivo se autocita a su propio pie,
 > ver `tests/test_north_star_hash.py`). Si hay conflicto, manda ese doc. Punto
-> de entrada operativo del día: `docs/ESTADO_2026-08-10_EMPEZAR_ACA.md`.
+> de entrada operativo vigente: `docs/research/HANDOFF_2026-10-14_DATOS_L2_Y_INTEGRACION.md`;
+> producto, módulos y protocolo de documentación: `docs/PRODUCT.md`, `docs/MODULES.md`, `docs/DOCUMENTATION_PROTOCOL.md`.
 
 ## NORTH STAR — referente rector (gobierna todo)
 
@@ -35,7 +36,14 @@ Recordatorios:
   probabilidad de detectar edges reales y rechazar falsos antes de arriesgar
   capital.
 
-## Estado vigente (2026-08-21)
+## Estado vigente (2026-10-14)
+
+> **Entrada operativa: `docs/research/HANDOFF_2026-10-14_DATOS_L2_Y_INTEGRACION.md`.** Producto y roadmap: `docs/PRODUCT.md`. Mapa de módulos (generado de `config/modules.json`, verificado por `tools/check_modules.py`): `docs/MODULES.md`. Dónde va cada documento y el encabezado `Estado:` obligatorio: `docs/DOCUMENTATION_PROTOCOL.md`. Índice: `docs/INDEX.md`.
+> **0 edges promovidos.** Release `liquid_tick_v1` v4 publicada, verificada y auditada, **no aprobada** para research. Fricción de ES ≈ 3,4–3,6 ticks por viaje (`docs/research/REFERENCIA_COSTOS_PROPS_BROKERS_20261014.md`).
+> **Una sola `CLAUDE.md` vigente: ésta (`foundation`).** Un árbol que cite otro hash de North Star está desactualizado: al 2026-10-14 `E:\EdgeLab` (rama `claude/focused-fermat-qjt805`) estaba 376 commits atrás de `foundation` y no incluía las enmiendas HOLDOUT-A1/A2/A3. Trabajar desde un árbol al día de `foundation`.
+> `main` **no** es baseline: tiene una línea paralela (78 commits). Ver `docs/research/INVENTARIO_LINEA_MAIN_20261014.md`.
+
+### Estado del 2026-08-21 (histórico)
 
 > **Punto de entrada operativo: `docs/research/HANDOFF_2026-08-21_ESTADO_COMPLETO.md`.**
 > Está escrito para continuar el proyecto **sin acceso a la conversación que lo produjo**.
@@ -277,7 +285,7 @@ práctica llevaban días divergiendo — la misma familia de falla que
 `docs/AVISO_DIVERGENCIA_DE_RAMAS_2026-08-06.md` describe. Ahora la declaración dice lo
 que efectivamente pasa.
 
-`main` = baseline original, no mergear.
+`main` = línea paralela (AVZVOL, funnel, compuerta de datos), **no** baseline; no mergear en bloque (29 conflictos). Ver `docs/research/INVENTARIO_LINEA_MAIN_20261014.md`.
 
 > La frase «Branch de trabajo:» de arriba **la parsea `tools/estado.py`**
 > (`rama_declarada()`, regex `Branch de trabajo:\s*\n?` + backticks). Si se

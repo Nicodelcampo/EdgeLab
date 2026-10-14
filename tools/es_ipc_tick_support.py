@@ -26,6 +26,13 @@ def functions(path, names, env):
 
 def stream_month(path, keep_bars):
     pf = pq.ParquetFile(path)
+    try:
+        return _stream_month(pf, keep_bars)
+    finally:
+        pf.close()          # en Windows un handle abierto impide borrar el archivo si el flujo aborta
+
+
+def _stream_month(pf, keep_bars):
     cols = ["ts_utc_ns","price_ticks","bid_ticks","ask_ticks"]
     chosen = []
     for i in range(pf.num_row_groups):
