@@ -1,8 +1,10 @@
 """Plan de la release: calendario derivado, política de liquidez propuesta, selección causal por activo y segmentos de escritura.
 
 Todo lo que sale de acá es PROPUESTA hasta que Nico apruebe la política (`approved_by`). Los límites se calibran de forma
-descriptiva sobre la muestra pre-holdout (volumen y ticks del líder diario, spread típico) y se congelan como constantes
-redondas: a partir de ahí la decisión de cada sesión depende sólo de D-1 y de esas constantes.
+descriptiva con las PRIMERAS `CALIBRATION_SESSIONS` sesiones de cada activo (volumen y ticks del líder diario, spread típico)
+y se congelan como constantes redondas: las sesiones posteriores a esa ventana se deciden con una política fijada sin
+mirarlas (auditoría LRA, 2026-10-14: antes se calibraba con toda la muestra pre-holdout). Las sesiones de la propia ventana de
+calibración sí son in-sample, y quedan declaradas en `notes`.
 """
 from __future__ import annotations
 
@@ -17,6 +19,7 @@ from edgelab.data.liquid_release.selection import LiquidityPolicy, OK, select_se
 EXCLUDED_NO_DATA = "EXCLUDED_SELECTED_CONTRACT_HAS_NO_DATA"
 POLICY_VERSION = "liquid_policy_proposal_v1_20261014"
 FLOOR_FRACTION = 0.10          # piso = 10 % de la mediana del líder diario (volumen y ticks)
+CALIBRATION_SESSIONS = 80      # ventana de calibración: primeras N sesiones de lunes a viernes de cada activo (prospectivo después)
 SPREAD_MULT = 3.0              # tope de spread típico = 3 x la mediana de la mediana diaria de spread del líder, mínimo 2 ticks
 
 
@@ -37,15 +40,18 @@ def asset_frame(chosen: pd.DataFrame, instrument: str) -> pd.DataFrame:
               "max_gap_reg_ns", "n_break", "n_dup_copy", "identical", "n_candidates"]]
 
 
-def propose_policy(chosen: pd.DataFrame, instrument: str) -> LiquidityPolicy:
+def propose_policy(chosen: pd.DataFrame, instrument: str, calibration_sessions: int | None = CALIBRATION_SESSIONS) -> LiquidityPolicy:
     c = chosen[(chosen["instrument"] == instrument) & (chosen["n_reg"] > 0)]
-    lead = c.sort_values("vol_reg", ascending=False).drop_duplicates("trade_date")
+    lead = c.sort_values("vol_reg", ascending=False).drop_duplicates("trade_date").sort_values("trade_date")
     wk = lead[pd.to_datetime(lead["trade_date"].astype(str)).dt.dayofweek < 5]
+    if calibration_sessions:
+        wk = wk.head(int(calibration_sessions))
     vol_floor = _round_nice(FLOOR_FRACTION * float(wk["vol_reg"].median()))
     n_floor = int(_round_nice(FLOOR_FRACTION * float(wk["n_reg"].median())))
     sp = max(2.0, float(np.ceil(SPREAD_MULT * float(wk["spread_p50"].median()))))
     return LiquidityPolicy(POLICY_VERSION, vol_floor, n_floor, sp, approved_by=None,
-                           notes=f"calibrada sobre {len(wk)} sesiones de líder diario pre-holdout; PROPUESTA sin aprobar")
+                           notes=(f"calibrada con las primeras {len(wk)} sesiones de líder diario (hasta {int(wk['trade_date'].max())}); prospectiva después; "
+                                f"las sesiones de la ventana son in-sample; PROPUESTA sin aprobar"))
 
 
 def derive_all_calendars(chosen: pd.DataFrame) -> pd.DataFrame:

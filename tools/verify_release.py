@@ -22,7 +22,7 @@ import pandas as pd
 import pyarrow.parquet as pq
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from edgelab.data.liquid_release.release_reader import load_manifest  # noqa: E402
+from edgelab.data.liquid_release.release_reader import load_manifest, preflight_footer  # noqa: E402
 
 CUTOFF_NS = 1_790_805_600_000_000_000
 
@@ -38,8 +38,9 @@ def expected_rows(inst, dec, chosen, ann):
 
 def verify_asset(inst, info, root, dec, chosen, ann):
     res = dict(instrument=inst, ok=True, problems=[])
-    exp_n, exp_c = expected_rows(inst, dec, chosen, ann)
     pf = pq.ParquetFile(Path(root) / info["file"])
+    preflight_footer(pf)            # STOP real ANTES de cualquier otra cosa y del primer row group: sin payload si un reloj reservado asoma
+    exp_n, exp_c = expected_rows(inst, dec, chosen, ann)
     names = pf.schema_arrow.names
     td_i = names.index("trade_date")
     per_td, contract_by_td, last_ts, last_regime, nonmono = {}, {}, -1, 0, 0
@@ -91,7 +92,7 @@ def main():
     ap.add_argument("--only", nargs="*")
     a = ap.parse_args()
     root = Path(a.release)
-    files = load_manifest(root, verify_hash=True)
+    files = load_manifest(root, verify_hash=True, purpose="audit")
     man = json.loads((root / "release_manifest.json").read_text(encoding="utf-8"))
     dec = pd.read_parquet(root / "metadata" / "selection_decisions.parquet")
     chosen = pd.read_parquet(Path(a.census) / "chosen_sources.parquet")

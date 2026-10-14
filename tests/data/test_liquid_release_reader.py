@@ -17,7 +17,10 @@ def _make_release(trade_dates, extra_group=None, tamper=False):
     p = root / "data" / "ES_ticks.parquet"
     w = None
     for td in trade_dates + ([extra_group] if extra_group else []):
-        t = pa.table({"trade_date": pa.array([td, td], pa.int32()), "price_ticks": pa.array([1, 2], pa.int64())})
+        # ts coherente con la fecha: antes del corte para fechas limpias; reservado para fechas >= 20261001
+        base = rr.HOLDOUT_FIRST_TS_NS + 1_000 if td >= rr.HOLDOUT_FIRST_TRADE_DATE else 1_700_000_000_000_000_000 + td
+        t = pa.table({"ts_utc_ns": pa.array([base, base + 1], pa.int64()), "trade_date": pa.array([td, td], pa.int32()),
+                      "price_ticks": pa.array([1, 2], pa.int64())})
         if w is None:
             w = pq.ParquetWriter(p, t.schema)
         w.write_table(t, row_group_size=2)
@@ -33,13 +36,13 @@ def _make_release(trade_dates, extra_group=None, tamper=False):
 class ReleaseReader(unittest.TestCase):
     def test_lee_solo_los_row_groups_del_rango(self):
         root = _make_release([20260105, 20260106, 20260107])
-        t = rr.read_asset(root, "ES", 20260106, 20260107)
+        t = rr.read_asset(root, "ES", 20260106, 20260107, purpose="audit")
         self.assertEqual(sorted(set(t["trade_date"].to_pylist())), [20260106, 20260107])
 
     def test_holdout_solicitado_es_stop(self):
         root = _make_release([20260105])
         with self.assertRaises(rr.ReleaseStop):
-            rr.read_asset(root, "ES", 20260105, 20261001)
+            rr.read_asset(root, "ES", 20260105, 20261001, purpose="audit")
 
     def test_row_group_reservado_nunca_se_lee(self):
         root = _make_release([20260105], extra_group=20261002)
@@ -49,18 +52,18 @@ class ReleaseReader(unittest.TestCase):
         with mock.patch.object(pf_cls, "read_row_groups", autospec=True,
                                side_effect=lambda self, groups, **k: (reads.append(list(groups)), orig(self, groups, **k))[1]):
             with self.assertRaises(rr.ReleaseStop):
-                rr.read_asset(root, "ES", 20260105, 20260105)
+                rr.read_asset(root, "ES", 20260105, 20260105, purpose="audit")
         self.assertEqual(reads, [])                        # STOP antes de deserializar nada
 
     def test_manifiesto_ausente_vacio_o_hash_distinto(self):
         root = Path(tempfile.mkdtemp())
         with self.assertRaises(rr.ReleaseStop):
-            rr.load_manifest(root)                          # ausente
+            rr.load_manifest(root, purpose="audit")                          # ausente
         (root / "release_manifest.json").write_text(json.dumps({"schema": rr.SCHEMA, "assets": {}}))
         with self.assertRaises(rr.ReleaseStop):
-            rr.load_manifest(root)                          # vacío
+            rr.load_manifest(root, purpose="audit")                          # vacío
         with self.assertRaises(rr.ReleaseStop):
-            rr.load_manifest(_make_release([20260105], tamper=True))   # hash distinto
+            rr.load_manifest(_make_release([20260105], tamper=True), purpose="audit")   # hash distinto
 
     def test_mismo_tamano_distinto_contenido_falla(self):
         root = _make_release([20260105])
@@ -69,7 +72,7 @@ class ReleaseReader(unittest.TestCase):
         b[-20] ^= 0xFF                                      # mismo tamaño, distinto contenido
         p.write_bytes(bytes(b))
         with self.assertRaises(rr.ReleaseStop):
-            rr.load_manifest(root)
+            rr.load_manifest(root, purpose="audit")
 
     def test_traversal_y_basename_no_se_aceptan(self):
         root = _make_release([20260105])
@@ -77,11 +80,11 @@ class ReleaseReader(unittest.TestCase):
         m["assets"]["ES"]["file"] = "../ES_ticks.parquet"
         (root / "release_manifest.json").write_text(json.dumps(m))
         with self.assertRaises(rr.ReleaseStop):
-            rr.load_manifest(root)
+            rr.load_manifest(root, purpose="audit")
         m["assets"]["ES"]["file"] = "ES_ticks.parquet"      # basename sin subcarpeta: no se busca
         (root / "release_manifest.json").write_text(json.dumps(m))
         with self.assertRaises(rr.ReleaseStop):
-            rr.load_manifest(root)
+            rr.load_manifest(root, purpose="audit")
 
     def test_cache_key_cambia_con_contenido_esquema_o_transformacion(self):
         k = rr.cache_key("a" * 64, "v1", "m1", "1")

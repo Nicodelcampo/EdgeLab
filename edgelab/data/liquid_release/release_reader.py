@@ -23,7 +23,9 @@ import pyarrow.parquet as pq
 
 SCHEMA = "edgelab_liquid_release_v1"
 HOLDOUT_FIRST_TRADE_DATE = 20261001
+HOLDOUT_FIRST_TS_NS = 1_790_805_600_000_000_000        # 2026-09-30T22:00:00Z: apertura CME de la sesión del 2026-10-01
 TRADE_DATE_COL = "trade_date"
+TS_COL = "ts_utc_ns"
 
 
 class ReleaseStop(RuntimeError):
@@ -57,7 +59,42 @@ def sha256_file(path: Path, chunk=16 << 20) -> str:
             h.update(b)
 
 
-def load_manifest(release_dir, *, verify_hash=True) -> dict[str, AssetFile]:
+PURPOSES = ("audit", "provisional_research", "research")
+APPROVAL_FILE = "release_approval.json"
+
+
+def _check_admission(root: Path, mpath: Path, m: dict, purpose, verify_hash) -> None:
+    """Integridad no es admisión (LRA-05). `audit` puede examinar una candidata; `provisional_research` también pero el llamador
+    debe rotular todo resultado como PROVISIONAL; `research` exige aprobación externa atada al hash exacto del manifiesto."""
+    if purpose not in PURPOSES:
+        raise ReleaseStop(f"declarar purpose en {PURPOSES}; recibido {purpose!r}")
+    if purpose == "research":
+        if verify_hash is not True:
+            raise ReleaseStop("purpose='research' exige verify_hash=True (sin atajos)")
+        ap = root / APPROVAL_FILE
+        if not ap.is_file():
+            raise ReleaseStop(f"release no aprobada para research: falta {APPROVAL_FILE} (aprobación externa de Nico)")
+        a = json.loads(ap.read_text(encoding="utf-8"))
+        if a.get("manifest_sha256") != sha256_file(mpath) or not a.get("approved_by") or a.get("liquidity_policy_approved") is not True:
+            raise ReleaseStop("aprobación ausente, sin aprobador, sin política aprobada o atada a otro manifiesto")
+        if not m.get("research_allowed", False):
+            raise ReleaseStop("el manifiesto no declara research_allowed=true")
+
+
+def _check_metadata_files(root: Path, m: dict, verify_hash: bool) -> None:
+    for rel, e in (m.get("metadata_files") or {}).items():
+        if os.path.isabs(rel) or ".." in Path(rel).parts:
+            raise ReleaseStop(f"metadata_files: ruta no relativa o con traversal: {rel}")
+        p = root / rel
+        if not p.is_file() or not _inside(root, p):
+            raise ReleaseStop(f"metadata_files: archivo listado ausente: {rel}")
+        if p.stat().st_size != int(e["bytes"]):
+            raise ReleaseStop(f"metadata_files: tamaño distinto en {rel}")
+        if verify_hash and sha256_file(p) != e["sha256"]:
+            raise ReleaseStop(f"metadata_files: SHA-256 distinto en {rel}")
+
+
+def load_manifest(release_dir, *, verify_hash=True, purpose=None) -> dict[str, AssetFile]:
     root = Path(release_dir)
     mpath = root / "release_manifest.json"
     if not mpath.is_file():
@@ -65,6 +102,8 @@ def load_manifest(release_dir, *, verify_hash=True) -> dict[str, AssetFile]:
     m = json.loads(mpath.read_text(encoding="utf-8"))
     if m.get("schema") != SCHEMA:
         raise ReleaseStop(f"esquema de manifiesto desconocido: {m.get('schema')!r}")
+    _check_admission(root, mpath, m, purpose, verify_hash)
+    _check_metadata_files(root, m, bool(verify_hash))
     files = m.get("assets") or {}
     if not files:
         raise ReleaseStop("manifiesto sin activos: no se lee nada")
@@ -86,13 +125,38 @@ def load_manifest(release_dir, *, verify_hash=True) -> dict[str, AssetFile]:
     return out
 
 
+def preflight_footer(pf: pq.ParquetFile) -> None:
+    """STOP de custodia ANTES de leer cualquier payload (LRA-04, LRA-06).
+
+    Verifica en el pie del archivo, para TODOS los row groups, los dos relojes: `trade_date` y `ts_utc_ns`. Rechaza esquema
+    sin alguna de las dos columnas, estadísticas ausentes o sin min/max, nulls, y cualquier fecha o timestamp reservados.
+    Es una guarda de footer: un footer falso no se detecta acá; la coherencia payload<->footer se comprueba después con el
+    verificador, sin usarla para justificar una lectura reservada."""
+    names = pf.schema_arrow.names
+    cols = {}
+    for col in (TRADE_DATE_COL, TS_COL):
+        if col not in names:
+            raise ReleaseStop(f"el archivo no tiene columna {col}")
+        cols[col] = names.index(col)
+    for g in range(pf.metadata.num_row_groups):
+        rg = pf.metadata.row_group(g)
+        for col, ci in cols.items():
+            st = rg.column(ci).statistics
+            if st is None or not st.has_min_max:
+                raise ReleaseStop(f"row group {g} sin estadísticas de {col}")
+            if st.null_count:
+                raise ReleaseStop(f"row group {g} con nulls en {col}")
+            limit = HOLDOUT_FIRST_TRADE_DATE if col == TRADE_DATE_COL else HOLDOUT_FIRST_TS_NS
+            if int(st.max) >= limit:
+                raise ReleaseStop(f"row group {g} contiene {col} reservado (max {int(st.max)} >= {limit}): STOP")
+
+
 def select_row_groups(pf: pq.ParquetFile, start: int, end: int) -> list[int]:
     """Row groups con trade_date dentro de [start, end] por estadísticas. STOP ante estadísticas ausentes o grupos mixtos."""
     if end >= HOLDOUT_FIRST_TRADE_DATE:
         raise ReleaseStop(f"rango solicitado alcanza el holdout (>= {HOLDOUT_FIRST_TRADE_DATE}): {start}..{end}")
+    preflight_footer(pf)
     names = pf.schema_arrow.names
-    if TRADE_DATE_COL not in names:
-        raise ReleaseStop("el archivo no tiene columna trade_date")
     ci = names.index(TRADE_DATE_COL)
     keep = []
     for g in range(pf.metadata.num_row_groups):
@@ -110,8 +174,8 @@ def select_row_groups(pf: pq.ParquetFile, start: int, end: int) -> list[int]:
     return keep
 
 
-def read_asset(release_dir, asset, start_trade_date: int, end_trade_date: int, *, columns=None, verify_hash=True):
-    files = load_manifest(release_dir, verify_hash=verify_hash)
+def read_asset(release_dir, asset, start_trade_date: int, end_trade_date: int, *, columns=None, verify_hash=True, purpose=None):
+    files = load_manifest(release_dir, verify_hash=verify_hash, purpose=purpose)
     if asset not in files:
         raise ReleaseStop(f"activo {asset!r} no figura en el manifiesto")
     pf = pq.ParquetFile(files[asset].path)

@@ -85,7 +85,7 @@ def main():
         dl = Path(a.verify_download)
         dl.mkdir(parents=True, exist_ok=True)
         sh("kaggle", "datasets", "download", SLUG, "-p", str(dl), "--unzip")
-        files = load_manifest(dl, verify_hash=True)       # tamaño + SHA-256 de cada Parquet publicado
+        files = load_manifest(dl, verify_hash=True, purpose="audit")       # tamaño + SHA-256 de cada Parquet publicado
         print("lector seguro sobre lo publicado: OK,", len(files), "activos verificados por SHA-256")
     sys.exit(0 if ok else 1)
 
