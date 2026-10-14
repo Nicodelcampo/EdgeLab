@@ -45,9 +45,11 @@ def main():
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
     # mejor fuente local por (contrato, fecha): la de más ticks, y se conservan todas para el contraste
-    src = cd.pivot_table(index=["contract", "trade_date"], columns="group", values="n", aggfunc="sum")
-    best = cd.sort_values("n", ascending=False).drop_duplicates(["contract", "trade_date"])[["contract", "trade_date", "group", "n", "vol"]]
-    best = best.rename(columns={"group": "best_group", "n": "src_n", "vol": "src_vol"})
+    cd = cd[cd["n_all"] > 0]
+    best = cd.sort_values("n_all", ascending=False).drop_duplicates(["contract", "trade_date"])[["contract", "trade_date", "group", "n_all", "n_break"]]
+    best = best.rename(columns={"group": "best_group", "n_all": "src_n", "n_break": "src_n_break"})
+    nsrc = cd.groupby(["contract", "trade_date"]).size().rename("n_sources").reset_index()
+    best = best.merge(nsrc, on=["contract", "trade_date"])
     m = k.merge(best, on=["contract", "trade_date"], how="outer", indicator=True)
     ext = k.groupby(["dataset", "file", "contract"]).trade_date.agg(["min", "max"]).reset_index()
     m = m.merge(ext, left_on=["dataset", "file", "contract"], right_on=["dataset", "file", "contract"], how="left")
