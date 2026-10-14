@@ -1,6 +1,7 @@
 import hashlib
 import json
 from pathlib import Path
+import subprocess
 import tempfile
 import unittest
 
@@ -14,6 +15,7 @@ from tools.kaggle_drive_bridge import (
     sanitize_request_id,
     split_file_into_drive_chunks,
     watch_bridge_directory,
+    check_patch,
 )
 
 
@@ -130,7 +132,7 @@ class TestKaggleDriveBridge(unittest.TestCase):
                 },
             }
             (bdir / "inbox" / "job_001.json").write_text(json.dumps(req), encoding="utf-8")
-            watch_bridge_directory(bdir, _FakeKaggleClient(), max_loops=1, policy=BridgePolicy(allow_data_download=True))
+            watch_bridge_directory(bdir, _FakeKaggleClient(), max_loops=1, policy=BridgePolicy(allow_data_download=True, allowed_source_owners=("nicolasbuttaro",)))
 
             resp_path = bdir / "outbox" / "job_001.response.json"
             self.assertTrue(resp_path.is_file())
@@ -235,6 +237,75 @@ class TestHardening(unittest.TestCase):
             (root / "chunks" / "x.manifest.json").write_text(json.dumps(m), encoding="utf-8")
             with self.assertRaises(KaggleBridgeError):
                 reassemble_drive_chunks(root / "chunks" / "x.manifest.json", root / "salida.bin")
+
+
+def _git_repo(root: Path) -> Path:
+    repo = root / "repo"
+    repo.mkdir()
+    def g(*a):
+        subprocess.run(["git", "-C", str(repo), "-c", "user.name=t", "-c", "user.email=t@t", *a], check=True, capture_output=True)
+    g("init", "-q")
+    (repo / "a.txt").write_text("uno\n", encoding="utf-8")
+    g("add", "."); g("commit", "-q", "-m", "c1")
+    (repo / "a.txt").write_text("uno\ndos\n", encoding="utf-8")
+    (repo / "datos.parquet").write_bytes(b"PAR1" * 100)
+    (repo / "data").mkdir()
+    (repo / "data" / "x.csv").write_text("1,2\n", encoding="utf-8")
+    g("add", "."); g("commit", "-q", "-m", "c2")
+    return repo
+
+
+class TestAccionesAmpliadas(unittest.TestCase):
+    def test_git_head_info_solo_lectura(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = _git_repo(Path(tmp))
+            pol = BridgePolicy(repos={"main": str(repo)})
+            r = process_bridge_request({"request_id": "g1", "action": "git_head_info", "params": {"repo": "main"}}, _FakeKaggleClient(), Path(tmp) / "b", policy=pol)
+            self.assertEqual(len(r["result"]["log"]), 2)
+            self.assertFalse(r["result"]["dirty"])
+            with self.assertRaises(KaggleBridgeError):
+                process_bridge_request({"request_id": "g2", "action": "git_head_info", "params": {"repo": "otro"}}, _FakeKaggleClient(), Path(tmp), policy=pol)
+
+    def test_export_delta_excluye_parquet_y_data_y_rechaza_refs_con_opciones(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = _git_repo(Path(tmp))
+            pol = BridgePolicy(repos={"main": str(repo)})
+            bdir = Path(tmp) / "b"
+            r = process_bridge_request({"request_id": "g3", "action": "git_export_delta", "params": {"repo": "main", "base": "HEAD~1", "head": "HEAD"}}, _FakeKaggleClient(), bdir, policy=pol)
+            patch = (bdir / "artifacts" / "g3" / "delta.patch").read_text(encoding="utf-8")
+            self.assertIn("a.txt", patch)
+            self.assertNotIn("datos.parquet", patch)
+            self.assertNotIn("data/x.csv", patch)
+            self.assertEqual(r["result"]["commits"], 1)
+            for bad in ("--output=/tmp/x", "-n1", "a..b", "HEAD;rm"):
+                with self.assertRaises(KaggleBridgeError):
+                    process_bridge_request({"request_id": "g4", "action": "git_export_delta", "params": {"repo": "main", "base": bad, "head": "HEAD"}}, _FakeKaggleClient(), bdir, policy=pol)
+
+    def test_check_patch_no_aplica_ni_ejecuta(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = _git_repo(Path(tmp))
+            bdir = Path(tmp) / "b"
+            (bdir / "patches_for_review").mkdir(parents=True)
+            ok = subprocess.run(["git", "-C", str(repo), "diff", "HEAD~1", "HEAD", "--", "a.txt"], capture_output=True).stdout
+            subprocess.run(["git", "-C", str(repo), "checkout", "-q", "HEAD~1"], check=True, capture_output=True)
+            (bdir / "patches_for_review" / "bueno.patch").write_bytes(ok)
+            (bdir / "patches_for_review" / "malo.patch").write_text("esto no es un parche", encoding="utf-8")
+            self.assertTrue(check_patch(repo, bdir, "bueno.patch")["applies_cleanly"])
+            self.assertFalse(check_patch(repo, bdir, "malo.patch")["applies_cleanly"])
+            self.assertEqual((repo / "a.txt").read_text(encoding="utf-8"), "uno\n")        # no se aplicó
+            for bad in ("../x.patch", "a/b.patch", "x.sh", ".patch"):
+                with self.assertRaises(KaggleBridgeError):
+                    check_patch(repo, bdir, bad)
+
+    def test_descarga_de_datos_encendida_solo_de_owners_declarados(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            pol = BridgePolicy(allow_data_download=True, allowed_source_owners=("nicolasbuttaro",))
+            ok = process_bridge_request({"request_id": "d9", "action": "download_file_chunked",
+                                         "params": {"dataset": "nicolasbuttaro/x", "file": "data/ES_ticks.parquet"}}, _FakeKaggleClient(), Path(tmp), policy=pol)
+            self.assertEqual(ok["status"], "OK")
+            with self.assertRaises(KaggleBridgeError):
+                process_bridge_request({"request_id": "d10", "action": "download_file_chunked",
+                                        "params": {"dataset": "extrano/x", "file": "a.parquet"}}, _FakeKaggleClient(), Path(tmp), policy=pol)
 
 
 if __name__ == "__main__":

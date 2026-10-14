@@ -60,7 +60,7 @@ def load_contract(c):
     """Ticks del contrato c desde la release (sólo sus sesiones seleccionadas) sin la pausa CME 16:00-17:00 CT."""
     si = pd.read_parquet(RELEASE / "metadata" / "session_index.parquet")
     d_ = si[(si.instrument == INST) & (si.contract == c) & (si.status == "SELECTED")].trade_date
-    t = read_asset(RELEASE, INST, int(d_.min()), int(d_.max()), verify_hash=False,
+    t = read_asset(RELEASE, INST, int(d_.min()), int(d_.max()), verify_hash=False, purpose="provisional_research",
                    columns=["ts_utc_ns", "price_ticks", "volume", "bid_ticks", "ask_ticks", "contract", "trade_date"])
     import pyarrow.compute as pc
     m = pc.equal(t.column("contract").cast("string"), c).to_numpy(zero_copy_only=False)

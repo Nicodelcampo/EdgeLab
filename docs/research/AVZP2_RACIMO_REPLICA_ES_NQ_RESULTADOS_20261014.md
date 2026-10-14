@@ -6,6 +6,13 @@ parámetros de la config de Nico. Etapa 1: `tools/avzp2_racimo_replica_stage1.py
 Salidas completas: `avzp2_replica_20261014/` (`salida_ES.txt`, `salida_NQ.txt`, JSON). **Información, no P&L.**
 Procedencia: el árbol de research estaba limpio al correr; semillas por `crc32`. Holdout no leído (la release lo excluye).
 
+> **ESTADO: PROVISIONAL.** Todo lo de esta acta se calculó sobre la release `liquid_tick_v1` v3, que está marcada
+> `CANDIDATE_NOT_RESEARCH_APPROVED` (política de liquidez, licencia y calendario sin aprobar). La auditoría independiente del
+> 2026-10-14 (`docs/infra/LIQUID_RELEASE_INDEPENDENT_AUDIT_20261014.md`) halló defectos de código en el productor de la release;
+> medidos, no cambian ninguna sesión ni contrato seleccionados (ver `docs/infra/LIQUID_RELEASE_AUDIT_RESPONSE_20261014.md`),
+> pero hasta que la release se apruebe para research estos resultados se conservan como **provisionales** y no se promueven.
+> Control a favor: MNQ sobre la release saneada reproduce sus resultados originales (calculados sobre datos sin sanear).
+
 ## Veredicto por criterio pre-registrado
 | | ES | NQ |
 |---|---|---|

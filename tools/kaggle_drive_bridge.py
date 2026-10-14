@@ -30,6 +30,7 @@ import os
 from pathlib import Path
 import re
 import shutil
+import subprocess
 import sys
 import tempfile
 import time
@@ -45,6 +46,11 @@ BRIDGE_SCHEMA = "edgelab_kaggle_drive_bridge_v1"
 MAX_REQUEST_BYTES = 1_000_000
 _REQ_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$")
 _SLUG_RE = re.compile(r"^[a-z0-9][a-z0-9-]{2,49}$")
+_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_./~^-]{0,99}$")          # nunca empieza con "-" (no se cuelan opciones de git)
+_PATCH_NAME_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]{0,99}\.(patch|diff)$")
+MAX_PATCH_BYTES = 5_000_000
+MAX_DELTA_BYTES = 20_000_000
+DELTA_EXCLUDES = (":(exclude)data", ":(exclude)*.parquet", ":(exclude)*.parq", ":(exclude)*.bundle", ":(exclude)oracles")
 
 
 class KaggleBridgeError(RuntimeError):
@@ -59,6 +65,7 @@ class BridgePolicy:
     max_download_bytes: int = 50_000_000
     text_suffixes: tuple = (".json", ".md", ".csv", ".txt", ".html")
     allowed_source_owners: tuple = field(default_factory=tuple)
+    repos: dict = field(default_factory=dict)       # nombre lógico -> ruta local de un repo git (acciones git_*)
 
 
 def sanitize_request_id(value: Any) -> str:
@@ -507,8 +514,11 @@ def lookup_pinned_discovery_entry(discovery_json_path: Path, version_ref: str, r
     raise KaggleBridgeError(f"File {relative_path!r} under {version_ref!r} not found in discovery.json")
 
 
-def _check_download_allowed(file_name: str, policy: BridgePolicy) -> None:
+def _check_download_allowed(dataset: str, file_name: str, policy: BridgePolicy) -> None:
     if policy.allow_data_download:
+        owner = dataset.split("/")[0]
+        if owner not in policy.allowed_source_owners:       # con descarga de datos encendida sólo se baja de owners declarados
+            raise KaggleBridgeError(f"descarga de datos: owner {owner!r} no permitido (--allow-source-owner)")
         return
     if not file_name.lower().endswith(tuple(policy.text_suffixes)):
         raise KaggleBridgeError(
@@ -532,6 +542,68 @@ def _check_push_allowed(params: Mapping[str, Any], policy: BridgePolicy) -> dict
             raise KaggleBridgeError(f"dataset_source {s!r}: owner no permitido (--allow-source-owner)")
     return dict(slug=slug, title=str(params["title"])[:100], script_text=str(params["script"]),
                 accelerator=str(params.get("accelerator", "cpu")), dataset_sources=sources, enable_internet=False)
+
+
+def _git(repo: Path, *args: str, timeout: int = 120) -> str:
+    """Ejecuta git SIN shell y con argumentos ya validados. Devuelve stdout (texto)."""
+    r = subprocess.run(["git", "-C", str(repo), *args], capture_output=True, timeout=timeout)
+    if r.returncode != 0:
+        raise KaggleBridgeError("git falló: " + (r.stderr or r.stdout).decode("utf-8", errors="replace")[:400])
+    return r.stdout.decode("utf-8", errors="replace")
+
+
+def _resolve_repo(params: Mapping[str, Any], policy: BridgePolicy) -> Path:
+    name = str(params.get("repo", ""))
+    if name not in policy.repos:
+        raise KaggleBridgeError(f"repo {name!r} no registrado; disponibles: {sorted(policy.repos)}")
+    return Path(policy.repos[name])
+
+
+def _check_ref(ref: Any) -> str:
+    ref = str(ref)
+    if not _REF_RE.match(ref) or ".." in ref:
+        raise KaggleBridgeError(f"ref inválida: {ref!r}")
+    return ref
+
+
+def git_head_info(repo: Path) -> dict[str, Any]:
+    """Sólo lectura: rama, HEAD, ramas locales, estado (nombres, sin contenido) y últimos commits."""
+    status = [l for l in _git(repo, "status", "--porcelain").splitlines() if l.strip()]
+    refs = _git(repo, "for-each-ref", "--format=%(refname:short)\t%(objectname:short)", "refs/heads").splitlines()[:50]
+    log = _git(repo, "log", "-n", "15", "--date=iso", "--format=%H\t%an\t%ad\t%s").splitlines()
+    return {"branch": _git(repo, "rev-parse", "--abbrev-ref", "HEAD").strip(), "head": _git(repo, "rev-parse", "HEAD").strip(),
+            "dirty": bool(status), "status_count": len(status), "status_sample": status[:50],
+            "branches": [r.split("\t") for r in refs], "log": [l.split("\t", 3) for l in log]}
+
+
+def git_export_delta(repo: Path, base: str, head: str, artifact_dir: Path) -> dict[str, Any]:
+    """Exporta los commits base..head como parche (format-patch), sin rutas de datos ni binarios de mercado, con tope de tamaño."""
+    base, head = _check_ref(base), _check_ref(head)
+    text = _git(repo, "format-patch", "--stdout", f"{base}..{head}", "--", ".", *DELTA_EXCLUDES, timeout=300)
+    raw = text.encode("utf-8")
+    if len(raw) > MAX_DELTA_BYTES:
+        raise KaggleBridgeError(f"delta de {len(raw)} bytes supera el tope de {MAX_DELTA_BYTES}")
+    artifact_dir.mkdir(parents=True, exist_ok=True)
+    out = artifact_dir / "delta.patch"
+    out.write_bytes(raw)
+    manifest = split_file_into_drive_chunks(out, artifact_dir / "chunks") if len(raw) > DEFAULT_CHUNK_BYTES else None
+    return {"repo_range": f"{base}..{head}", "bytes": len(raw), "sha256": _sha256_bytes(raw), "file": "delta.patch",
+            "commits": len([l for l in text.splitlines() if l.startswith("From ")]), "chunk_manifest": manifest}
+
+
+def check_patch(repo: Path, bridge_dir: Path, name: str) -> dict[str, Any]:
+    """`git apply --check` de un parche dejado en patches_for_review/. No aplica ni ejecuta nada."""
+    if not _PATCH_NAME_RE.match(str(name)):
+        raise KaggleBridgeError("nombre de parche inválido (letras, números, _ . - y extensión .patch/.diff)")
+    path = bridge_dir / "patches_for_review" / name
+    if not path.is_file():
+        raise KaggleBridgeError(f"no existe patches_for_review/{name}")
+    if path.stat().st_size > MAX_PATCH_BYTES:
+        raise KaggleBridgeError("parche demasiado grande")
+    r = subprocess.run(["git", "-C", str(repo), "apply", "--check", "--verbose", str(path)], capture_output=True, timeout=120)
+    return {"patch": name, "sha256": _sha256_file(path), "applies_cleanly": r.returncode == 0,
+            "detail": (r.stderr or r.stdout).decode("utf-8", errors="replace")[:1500],
+            "note": "NO se aplicó. La revisión del diff y la aplicación son humanas o del agente local tras revisión; nunca automáticas."}
 
 
 def process_bridge_request(
@@ -580,7 +652,7 @@ def process_bridge_request(
     elif action == "download_file_chunked":
         dataset = str(params["dataset"])
         file_name = str(params["file"])
-        _check_download_allowed(file_name, policy)
+        _check_download_allowed(dataset, file_name, policy)
         expected_sha = params.get("expected_sha256")
         expected_size = params.get("expected_size_bytes")
         if params.get("require_discovery_pin", False):
@@ -612,6 +684,13 @@ def process_bridge_request(
         }
     elif action == "push_kernel":
         result = client.push_kernel(**_check_push_allowed(params, policy))
+    elif action == "git_head_info":
+        result = git_head_info(_resolve_repo(params, policy))
+    elif action == "git_export_delta":
+        result = git_export_delta(_resolve_repo(params, policy), params.get("base"), params.get("head"), bridge_dir / "artifacts" / req_id)
+        result["artifact_dir"] = f"artifacts/{req_id}"
+    elif action == "check_patch":
+        result = check_patch(_resolve_repo(params, policy), bridge_dir, str(params.get("patch", "")))
     elif action == "get_kernel_status":
         result = client.get_kernel_status(
             owner=str(params["owner"]),
@@ -645,12 +724,14 @@ def watch_bridge_directory(
     outbox = bridge_dir / "outbox"
     processed = bridge_dir / "processed"
     artifacts = bridge_dir / "artifacts"
-    for d in (inbox, outbox, processed, artifacts):
+    for d in (inbox, outbox, processed, artifacts, bridge_dir / "patches_for_review"):
         d.mkdir(parents=True, exist_ok=True)
 
     status_file = bridge_dir / "bridge_status.json"
     actions = ["ping", "search_datasets", "list_my_datasets", "list_dataset_files", "inspect_dataset",
                "read_dataset_file_preview", "download_file_chunked", "get_kernel_status"]
+    if policy.repos:
+        actions += ["git_head_info", "git_export_delta", "check_patch"]
     if policy.allow_push:
         actions.append("push_kernel")
     status_file.write_text(
@@ -661,7 +742,9 @@ def watch_bridge_directory(
                 "started_at_utc": _utc_now_iso(),
                 "chunk_limit_bytes": DEFAULT_CHUNK_BYTES,
                 "policy": {"allow_push": policy.allow_push, "allow_data_download": policy.allow_data_download,
-                           "max_download_bytes": policy.max_download_bytes},
+                           "max_download_bytes": policy.max_download_bytes, "repos": sorted(policy.repos),
+                           "allowed_source_owners": list(policy.allowed_source_owners),
+                           "patches": "se dejan en patches_for_review/; nunca se aplican ni ejecutan automaticamente"},
                 "supported_actions": actions,
             },
             indent=2,
@@ -712,6 +795,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--allow-push", action="store_true", help="Habilita push_kernel (ejecuta código en Kaggle con tu cuenta). Apagado por defecto.")
     parser.add_argument("--allow-source-owner", action="append", default=[], help="Owner de Kaggle permitido como dataset_source en push_kernel (repetible)")
     parser.add_argument("--allow-data-download", action="store_true", help="Habilita descargar archivos binarios/de datos a Drive. Apagado por defecto (licencia CME).")
+    parser.add_argument("--repo", action="append", default=[], metavar="NOMBRE=RUTA", help="Registra un repo git local para git_head_info / git_export_delta / check_patch (repetible)")
     args = parser.parse_args(argv)
 
     if args.chunk_file:
@@ -730,8 +814,14 @@ def main(argv: list[str] | None = None) -> int:
     headers = load_kaggle_auth_headers()
     client = KaggleClient(headers)
     default_discovery = Path(__file__).resolve().parent.parent / "edgelab" / "kaggle" / "discovery.json"
+    repos = {}
+    for item in args.repo:
+        name, _, path = item.partition("=")
+        if not name or not path or not Path(path, ".git").exists():
+            parser.error(f"--repo debe ser NOMBRE=RUTA a un repo git: {item!r}")
+        repos[name] = path
     policy = BridgePolicy(allow_push=args.allow_push, allow_data_download=args.allow_data_download,
-                          allowed_source_owners=tuple(args.allow_source_owner))
+                          allowed_source_owners=tuple(args.allow_source_owner), repos=repos)
 
     if args.list_my_datasets:
         print(json.dumps(client.list_my_datasets(), indent=2))
