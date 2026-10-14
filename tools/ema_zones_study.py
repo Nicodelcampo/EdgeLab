@@ -59,7 +59,8 @@ def process(tk, dates, label):
     if CFG.get("desc"):                                                          # estadística descriptiva por zona (sin hipótesis sobre el precio)
         name, kw = next(iter(CONFIGS.items())); kw = dict(kw); M = kw["M"]; ex = {k: kw.pop(k) for k in ("max_far_cv", "max_near_cv", "extend", "anchors", "atr_mult_break", "max_dist_atr", "atr_mult_tol", "vmax", "min_extent_atr", "max_mean_dist_atr", "min_zone") if k in kw}; en = kw.pop("ema_n", EMA_N)
         PP = P if en == EMA_N else Z.precompute(c, h, l, ema_n=en, atr_n=100); st = np.where(inset, Z.state(PP, **kw), 0); sim = Z.simulate_zones(PP, h, l, st, M, tick=tick, **{**CFG.get("sim_params", {}), **ex})
-        ct = pd.to_datetime(np.asarray(bars.end_ns), utc=True).tz_convert(CT); out = ZD.zone_rows(sim, c, h, l, PP["e"], PP["atr"], np.asarray(bars.end_ns), np.asarray(bars.volume, float), sd, ct.hour.to_numpy(), ct.minute.to_numpy(), tick, label, inset)
+        ct = pd.to_datetime(np.asarray(bars.end_ns), utc=True).tz_convert(CT); bar_start = np.searchsorted(np.asarray(bars.tick_bar_idx), np.arange(n + 1)); post = dict(bar_start=bar_start, price=np.asarray(tk.price_ticks, np.int64), vol=np.asarray(tk.volume, float), rng=np.random.default_rng(int(CFG.get("seed", 20261020)) + len(label)))
+        out = ZD.zone_rows(sim, c, h, l, PP["e"], PP["atr"], np.asarray(bars.end_ns), np.asarray(bars.volume, float), sd, ct.hour.to_numpy(), ct.minute.to_numpy(), tick, label, inset, post=post)
         print(label, "zonas", len(out), flush=True); del P; gc.collect(); return out
     for name, kw in CONFIGS.items():
         if CFG.get("sim"):                                                      # réplica del indicador con tangente: zonas confirmadas
@@ -113,7 +114,7 @@ def main():
         except Exception:
             import traceback; errors.append(dict(contract=c, tb=traceback.format_exc()[-2500:])); print("ERROR", c, errors[-1]["tb"], flush=True)
     if not rows: (OUT / "ERROR.json").write_text(json.dumps(dict(errors=errors), indent=1)); return
-    if CFG.get("desc"): pd.DataFrame(rows).to_csv(OUT / "zones_table_PRIVADA.csv", index=False)               # tabla por zona: privada, no se publica
+    if CFG.get("desc"): pd.DataFrame([{k: v for k, v in r.items() if k not in ("post", "ctrl")} for r in rows]).to_csv(OUT / "zones_table_PRIVADA.csv", index=False)               # tabla por zona: privada, no se publica
     (OUT / "STUDY_RESULTS.json").write_text(json.dumps(dict(campaign="EMAZ-D1" if CFG.get("desc") else "EMAZ-1", note="descriptivo, no es una prueba de hipótesis; sin P&L", cfg=CFG, summary=summarize(rows), errors=errors, seconds=round(time.time() - t0)), indent=1)); print("listo", round(time.time() - t0), "s")
 
 

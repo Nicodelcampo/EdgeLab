@@ -4,10 +4,11 @@ from __future__ import annotations
 
 import numpy as np
 
+FRACS = (0.25, 0.5, 0.75, 1.0); NS = (50, 100, 200, 400)
 FEATS = ["len", "move_atr", "slope_atr_bar", "touches", "gap_mean_atr", "near_far_ratio", "atr_pts", "activity"]
 
 
-def zone_rows(zones, c, h, l, e, atr, end_ns, volume, sd, hour_ct, minute_ct, tick, contract, inset):
+def zone_rows(zones, c, h, l, e, atr, end_ns, volume, sd, hour_ct, minute_ct, tick, contract, inset, post=None):
     """Atributos por zona confirmada. Todas las medidas son geométricas/temporales de la propia zona."""
     n = len(c); rows = []
     smax = np.maximum.accumulate; import pandas as pd
@@ -24,7 +25,62 @@ def zone_rows(zones, c, h, l, e, atr, end_ns, volume, sd, hour_ct, minute_ct, ti
                          far_cv=float(env.get("far_cv", np.nan)), near_cv=float(env.get("near_cv", np.nan)), atr_pts=float(at * tick), activity=float(L / max(mins, 1e-9)), rth_frac=round(rth, 2),
                          bars_last_touch_to_end=int(b - z["last_touch"]), end_reason=z["end_reason"], range_pos_start=float((c[a] - run_min[a]) / rng) if rng > 0 else np.nan,
                          start_bar=int(a), end_bar=int(b)))
+        if post is not None: rows[-1].update(post_one(z, a, b, c, h, l, sd, post, [(zz["start"], zz["end"]) for zz in zones if zz.get("confirmed")]))
     return rows
+
+
+def _window_stats(R, hb, d, b, N, bar_start, price, vol, h, l, sd, n):
+    """Volumen (a nivel de tick) en las N barras siguientes a b, en la franja «más allá» (desde R en el sentido d) y en la franja «adentro» (hacia atrás), ambas de altura hb en ticks; y si el precio llegó a los bordes."""
+    if b + N >= n or sd[b + N] != sd[b]: return None
+    i0, i1 = bar_start[b + 1], bar_start[b + N + 1]; p = price[i0:i1]; v = vol[i0:i1]
+    if d > 0: beyond = (p > R) & (p <= R + hb); inside = (p <= R) & (p > R - hb); rb = float(h[b + 1:b + N + 1].max() >= R + hb); ri = float(l[b + 1:b + N + 1].min() <= R - hb)
+    else: beyond = (p < R) & (p >= R - hb); inside = (p >= R) & (p < R + hb); rb = float(l[b + 1:b + N + 1].min() <= R - hb); ri = float(h[b + 1:b + N + 1].max() >= R + hb)
+    return [float(v[beyond].sum()), float(v[inside].sum()), rb, ri, float(v.sum())]
+
+
+def post_one(z, a, b, c, h, l, sd, post, intervals):
+    """Para una zona: estadísticas de volumen post-fin por (fracción, N) y el mismo cálculo en una barra al azar fuera de las zonas (control con la misma altura y dirección)."""
+    n = len(c); H = float(h[a:b + 1].max() - l[a:b + 1].min()); d = int(z["dir"]); rng = post["rng"]; out = dict(H_ticks=H, post={}, ctrl={})
+    r = None
+    for _ in range(50):
+        cand = int(rng.integers(300, n - max(NS) - 2))
+        if all(not (s0 - 5 <= cand <= e0 + max(NS)) for s0, e0 in intervals): r = cand; break
+    for f in FRACS:
+        hb = f * H
+        for N in NS:
+            key = f"f{f}_N{N}"; w = _window_stats(float(c[b]), hb, d, b, N, post["bar_start"], post["price"], post["vol"], h, l, sd, n); out["post"][key] = w
+            out["ctrl"][key] = None if r is None else _window_stats(float(c[r]), hb, d, r, N, post["bar_start"], post["price"], post["vol"], h, l, sd, n)
+    return out
+
+
+def summarize_post(rows):
+    """Resumen: por (fracción, N) compara el volumen «más allá» vs «adentro» tras el fin de la zona, contra el control al azar. share = más_allá / (más_allá + adentro)."""
+    res = {}
+    def agg(items):
+        it = [w for w in items if w is not None and (w[0] + w[1]) > 0]
+        if not it: return None
+        sh = np.array([w[0] / (w[0] + w[1]) for w in it]); return dict(n=len(it), share_beyond_mean=round(float(sh.mean()), 4), share_beyond_median=round(float(np.median(sh)), 4), frac_beyond_gt_inside=round(float((sh > 0.5).mean()), 4),
+                                                                 p_reach_beyond=round(float(np.mean([w[2] for w in it])), 4), p_reach_inside=round(float(np.mean([w[3] for w in it])), 4), band_volume_share_of_window=round(float(np.mean([(w[0] + w[1]) / w[4] if w[4] > 0 else np.nan for w in it])), 4))
+    for f in FRACS:
+        for N in NS:
+            k = f"f{f}_N{N}"; z = agg([r["post"][k] for r in rows if "post" in r]); c = agg([r["ctrl"][k] for r in rows if "ctrl" in r and r["ctrl"].get(k) is not None])
+            pairs = [(r["session"], r["post"][k], r["ctrl"][k]) for r in rows if "post" in r and r["post"].get(k) is not None and r["ctrl"].get(k) is not None and (r["post"][k][0] + r["post"][k][1]) > 0 and (r["ctrl"][k][0] + r["ctrl"][k][1]) > 0]
+            pd_ = None
+            if len(pairs) >= 20:                                                       # diferencia apareada zona − control, error estándar agrupado por sesión (las zonas de una sesión no son independientes)
+                bys = {}
+                for ss, w, cw in pairs: bys.setdefault(ss, []).append(w[0] / (w[0] + w[1]) - cw[0] / (cw[0] + cw[1]))
+                m_ = np.array([np.mean(v) for v in bys.values()]); allv = np.array([x for v in bys.values() for x in v]); pd_ = dict(n_pairs=len(pairs), n_sessions=len(bys), mean_diff=round(float(allv.mean()), 4), se_cluster_session=round(float(m_.std(ddof=1) / np.sqrt(len(m_))), 4) if len(m_) > 1 else None)
+            res[k] = dict(zonas=z, control_azar=c, diferencia_share=None if not z or not c else round(z["share_beyond_mean"] - c["share_beyond_mean"], 4), diferencia_apareada=pd_)
+    ctx = {}
+    keyf = "f0.5_N200"
+    def sub(name, mask):
+        idx = [r for r, m in zip(rows, mask) if m]
+        if len(idx) >= 20: ctx[name] = dict(zonas=agg([r["post"][keyf] for r in idx]), control_azar=agg([r["ctrl"][keyf] for r in idx if r["ctrl"].get(keyf) is not None]))
+    slope = np.array([r["slope_atr_bar"] for r in rows]); lens = np.array([r["len"] for r in rows]); hrs = np.array([r["start_hour"] for r in rows]); dirs = np.array([r["dir"] for r in rows]); ses = sorted({r["session"] for r in rows}); first = np.array([r["session"] in set(ses[:len(ses) // 2]) for r in rows])
+    t1, t2 = np.percentile(slope, [33.3, 66.7]); l1, l2 = np.percentile(lens, [33.3, 66.7])
+    for name, mask in (("alcista", dirs > 0), ("bajista", dirs < 0), ("pendiente_baja", slope <= t1), ("pendiente_media", (slope > t1) & (slope <= t2)), ("pendiente_alta", slope > t2), ("largo_corto", lens <= l1), ("largo_medio", (lens > l1) & (lens <= l2)), ("largo_largo", lens > l2),
+                       ("inicio_8_10_CT", (hrs >= 8) & (hrs <= 10)), ("inicio_otras_horas", (hrs < 8) | (hrs > 10)), ("primera_mitad", first), ("segunda_mitad", ~first)): sub(name, mask)
+    return dict(definicion="franja = fraccion × altura de la zona (rango de precio); «más allá» desde el cierre del fin de zona en el sentido de la tendencia, «adentro» igual altura hacia atrás; volumen por tick en las N barras siguientes (misma sesión)", por_fraccion_y_N=res, por_contexto_f0_5_N200=ctx)
 
 
 def _q(a):
@@ -50,7 +106,9 @@ def kmeans(X, k, seed=0, iters=60):
 
 def summarize(rows, k=4, seed=0):
     if not rows: return {}
-    out = dict(n_zones=len(rows), n_sessions=len({(r["contract"], r["session"]) for r in rows})); A = {f: np.array([r[f] for r in rows], float) for f in FEATS + ["move_pts", "minutes", "rth_frac", "bars_last_touch_to_end", "range_pos_start", "far_cv", "near_cv", "touch_per_100"]}
+    out = dict(n_zones=len(rows), n_sessions=len({(r["contract"], r["session"]) for r in rows}));
+    if rows and "post" in rows[0]: out["volumen_post_fin"] = summarize_post(rows)
+    A = {f: np.array([r[f] for r in rows], float) for f in FEATS + ["move_pts", "minutes", "rth_frac", "bars_last_touch_to_end", "range_pos_start", "far_cv", "near_cv", "touch_per_100"]}
     out["distributions"] = {f: _q(v) for f, v in A.items()}
     dirs = np.array([r["dir"] for r in rows]); out["direction"] = dict(up=int((dirs > 0).sum()), down=int((dirs < 0).sum()))
     out["end_reason"] = {k_: int(sum(1 for r in rows if r["end_reason"] == k_)) for k_ in sorted({r["end_reason"] for r in rows})}

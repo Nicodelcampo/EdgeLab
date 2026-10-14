@@ -18,3 +18,11 @@ def test_summarize_recovers_planted_types_and_is_json_safe():
     assert s["n_zones"] == 120 and s["direction"]["up"] + s["direction"]["down"] == 120 and sum(t["n"] for t in s["typology_kmeans"]["types"].values()) == 120
     lens = sorted(t["len_median"] for t in s["typology_kmeans"]["types"].values()); assert lens[0] < 200 < lens[1] < 400 < lens[2]                                 # recupera los 3 tipos sembrados
     assert 0 <= s["sequence"]["same_direction_share"] <= 1 and s["distributions"]["len"]["n"] == 120
+
+
+def test_window_stats_bands_and_reach():
+    n = 50; c = np.arange(n, dtype=float); h = c + 1; l = c - 1; sd = np.array(["d"] * n); bar_start = np.arange(n + 1) * 2
+    price = np.repeat(np.arange(n * 2 // 2, dtype=float), 2)[: n * 2]; vol = np.ones(len(price))                                             # 2 ticks por barra, precio = índice de barra
+    w = D._window_stats(10.0, 4.0, +1, 10, 20, bar_start, price, vol, h, l, sd, n)
+    assert w is not None and w[2] == 1.0 and w[3] == 0.0                                                                                       # tendencia alcista: llegó más allá, no volvió adentro
+    assert w[0] > 0 and w[1] == 0 and D._window_stats(10.0, 4.0, +1, 45, 20, bar_start, price, vol, h, l, sd, n) is None                       # sin barras suficientes → None
