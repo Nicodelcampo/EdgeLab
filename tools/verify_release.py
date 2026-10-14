@@ -19,6 +19,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import pyarrow.compute as pc
 import pyarrow.parquet as pq
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -59,7 +60,7 @@ def verify_asset(inst, info, root, dec, chosen, ann):
         bad["quote"] += int(((b > 0) & (a_ > 0) & (a_ < b)).sum())
         td = int(t["trade_date"][0].as_py())
         per_td[td] = per_td.get(td, 0) + len(ts)
-        contract_by_td.setdefault(td, set()).update(t["contract"].to_pylist())
+        contract_by_td.setdefault(td, set()).update(pc.unique(t["contract"]).to_pylist())     # único por row group, sin materializar cada fila en Python
         rg = t["regime_id"].to_numpy()
         if len(rg):
             bad["regime_back"] += int(rg.min() < last_regime)
@@ -90,10 +91,20 @@ def main():
     ap.add_argument("--release", required=True)
     ap.add_argument("--census", required=True)
     ap.add_argument("--only", nargs="*")
+    ap.add_argument("--prior-release", help="release anterior ya verificada: un activo con el MISMO SHA-256 hereda su resultado (queda marcado inherited_from)")
+    ap.add_argument("--results-out", help="JSON de salida (por defecto metadata/verification.json); útil para correr varios procesos en paralelo")
     a = ap.parse_args()
     root = Path(a.release)
-    files = load_manifest(root, verify_hash=True, purpose="audit")
+    files = load_manifest(root, verify_hash=True, purpose="audit")      # SHA-256 de TODOS los archivos, también de los heredados
     man = json.loads((root / "release_manifest.json").read_text(encoding="utf-8"))
+    inherit = {}
+    if a.prior_release:
+        pr = Path(a.prior_release)
+        pman = json.loads((pr / "release_manifest.json").read_text(encoding="utf-8"))
+        pver = {r["instrument"]: r for r in json.loads((pr / "metadata" / "verification.json").read_text(encoding="utf-8"))}
+        for inst, info in man["assets"].items():
+            if inst in pman["assets"] and pman["assets"][inst]["sha256"] == info["sha256"] and pver.get(inst, {}).get("ok"):
+                inherit[inst] = dict(pver[inst], inherited_from=pman.get("release_id"), problems=[])
     dec = pd.read_parquet(root / "metadata" / "selection_decisions.parquet")
     chosen = pd.read_parquet(Path(a.census) / "chosen_sources.parquet")
     ann = pd.read_parquet(Path(a.census) / "annotated_bins.parquet", columns=["group", "trade_date", "dup_copy", "instrument", "n"])
@@ -101,12 +112,18 @@ def main():
     for inst, info in man["assets"].items():
         if a.only and inst not in a.only:
             continue
+        if inst in inherit:
+            r = inherit[inst]
+            out.append(r)
+            print(f"{inst}: OK (heredado de {r['inherited_from']}: mismo SHA-256) filas={r['rows']:,} sesiones={r['sessions']} row_groups={r['row_groups']}", flush=True)
+            continue
         r = verify_asset(inst, info, root, dec, chosen, ann)
         out.append(r)
         print(f"{inst}: {'OK' if r['ok'] else 'FALLA'} filas={r['rows']:,} sesiones={r['sessions']} row_groups={r['row_groups']}", flush=True)
         for p in r["problems"]:
             print("   -", p)
-    (root / "metadata" / "verification.json").write_text(json.dumps(out, indent=1), encoding="utf-8")
+    dest = Path(a.results_out) if a.results_out else root / "metadata" / "verification.json"
+    dest.write_text(json.dumps(out, indent=1), encoding="utf-8")
     sys.exit(0 if all(r["ok"] for r in out) else 1)
 
 
