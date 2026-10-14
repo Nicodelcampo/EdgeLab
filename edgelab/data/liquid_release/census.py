@@ -99,14 +99,15 @@ def session_census(ann: pd.DataFrame) -> pd.DataFrame:
     semana y los bloques copiados se cuentan aparte (n_break, n_dup_copy) para que sean visibles."""
     a = ann.copy()
     use = (~a["in_break"]) & (~a["dup_copy"])
-    for c in SUM_COLS:
+    for c in SUM_COLS + [x for x in ("fp_ts", "fp_px", "fp_bid", "fp_ask") if x in a.columns]:
         a[c + "_reg"] = np.where(use, a[c], 0)
+    FPS = [x for x in ("fp_ts", "fp_px", "fp_bid", "fp_ask") if x in a.columns]
     a["n_break"] = np.where(a["in_break"], a["n"], 0)
     a["n_dup_copy"] = np.where(a["dup_copy"] & ~a["in_break"], a["n"], 0)
     a["gap_reg"] = np.where(use, a["max_gap_ns"], 0)
     keys = ["group", "contract", "instrument", "kind", "trade_date", "utc_offset_h", "tz_verdict"]
     g = a.groupby(keys, as_index=False).agg(
-        **{c + "_reg": (c + "_reg", "sum") for c in SUM_COLS}, n_break=("n_break", "sum"), n_dup_copy=("n_dup_copy", "sum"),
+        **{c + "_reg": (c + "_reg", "sum") for c in SUM_COLS + FPS}, n_break=("n_break", "sum"), n_dup_copy=("n_dup_copy", "sum"),
         n_all=("n", "sum"), max_gap_reg_ns=("gap_reg", "max"), first_ts=("first_ts", "min"), last_ts=("last_ts", "max"))
     H = np.array(a["spread_hist"].tolist(), dtype=np.int64)
     kid = a.groupby(keys, sort=True).ngroup().to_numpy()
@@ -115,3 +116,28 @@ def session_census(ann: pd.DataFrame) -> pd.DataFrame:
     order = a.groupby(keys, sort=True).size().index.to_frame(index=False)
     sp = order.assign(spread_p50=[_p(h, 0.5) for h in Hr], spread_p99=[_p(h, 0.99) for h in Hr], spread_n=Hr.sum(1))
     return g.merge(sp, on=keys, how="left")
+
+
+KIND_PRIORITY = {"B": 3, "A2": 2, "A": 2, "P": 1}
+BAD_TZ = ("NOT_VERIFIED",)
+
+
+def adjudicate_sources(cen: pd.DataFrame):
+    """Una fuente por (contrato, fecha de trading). Regla FIJA, sin mirar resultados:
+       1) se descartan grupos con huso NOT_VERIFIED;
+       2) gana el de más minutos activos en horario regular; 3) luego el de menor hueco máximo; 4) luego prioridad B > A2 = A > P.
+    Devuelve (elegidos, conflictos). `identical` = todas las fuentes candidatas tienen huellas idénticas en la sesión."""
+    c = cen[(cen["n_reg"] > 0) & (~cen["tz_verdict"].isin(BAD_TZ))].copy()
+    c["prio"] = c["kind"].map(KIND_PRIORITY).fillna(0)
+    c = c.sort_values(["contract", "trade_date", "n_min_reg", "max_gap_reg_ns", "prio"], ascending=[True, True, False, True, False])
+    fpc = [x for x in ("n_reg", "vol_reg", "fp_ts_reg", "fp_px_reg", "fp_bid_reg", "fp_ask_reg") if x in c.columns]
+    g = c.groupby(["contract", "trade_date"], sort=False)
+    chosen = g.head(1).copy()
+    cnt = g.size().rename("n_candidates").reset_index()
+    ident = g[fpc].apply(lambda d: len(d.drop_duplicates()) == 1).rename("identical").reset_index()
+    chosen = chosen.merge(cnt, on=["contract", "trade_date"]).merge(ident, on=["contract", "trade_date"])
+    chosen["assurance"] = np.where(chosen["kind"] == "P", "PARQUET_DERIVED_ORIGINAL_NOT_AVAILABLE", "TEXT_ORIGINAL_SHA_VERIFIED")
+    multi = c.merge(chosen[["contract", "trade_date", "group"]].rename(columns={"group": "chosen_group"}), on=["contract", "trade_date"])
+    multi = multi[multi.groupby(["contract", "trade_date"])["group"].transform("nunique") > 1]
+    conflicts = multi.merge(chosen[["contract", "trade_date", "identical"]], on=["contract", "trade_date"])
+    return chosen, conflicts[~conflicts["identical"]]

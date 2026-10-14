@@ -79,5 +79,32 @@ class Aggressor(unittest.TestCase):
         self.assertEqual(aggressor(last, bid, ask).tolist(), [0, 0, 0, 1])
 
 
+class ParquetSource(unittest.TestCase):
+    def test_parquet_de_respaldo_y_row_group_reservado_no_se_lee(self):
+        import pyarrow as pa
+        import pyarrow.parquet as pq
+        ts_ok = 1782763200 * 10**9                       # 2026-06-29T20:00:00Z
+        ts_hold = 1790805600 * 10**9 + 10**9            # 2026-09-30T22:00:01Z (reservado)
+
+        def tbl(ts):
+            n = len(ts)
+            return pa.table({"ts_utc_ns": pa.array(ts, pa.int64()), "price_ticks": pa.array([400] * n, pa.int64()),
+                             "bid_ticks": pa.array([399] * n, pa.int64()), "ask_ticks": pa.array([400] * n, pa.int64()),
+                             "volume": pa.array([2] * n, pa.int64()), "tick_type": pa.array(["trade"] * n)})
+        p = Path(tempfile.mkdtemp()) / "ES_09-26_ticks_ext.parquet"
+        w = pq.ParquetWriter(p, tbl([ts_ok]).schema)
+        w.write_table(tbl([ts_ok, ts_ok + 10**9]), row_group_size=2)
+        w.write_table(tbl([ts_hold]), row_group_size=1)
+        w.close()
+        seg = Segment("ES 09-26", 1, [SourceFile(str(p), 9, 0, "P", None, "parquet")], {20260629}, LOOKUP)
+        out = Path(tempfile.mkdtemp()) / "ES_ticks.parquet"
+        _, rows = write_asset(out, [seg], 0.25)
+        self.assertEqual(rows, 2)                       # el row group reservado no entró
+        t = pq.read_table(out)
+        self.assertEqual(t["price_ticks"].to_pylist(), [400, 400])
+        self.assertEqual(t["aggressor"].to_pylist(), [1, 1])    # last (100.0) >= ask (100.0)? px=400*0.25=100 == ask -> compra
+        self.assertEqual(t["source_id"].to_pylist(), [9, 9])
+
+
 if __name__ == "__main__":
     unittest.main()

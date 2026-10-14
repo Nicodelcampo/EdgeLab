@@ -5,12 +5,12 @@ import pandas as pd
 from edgelab.data.liquid_release.selection import (NO_ELIGIBLE, OK, SELECTED, UNDETERMINED, UNKNOWN, LiquidityPolicy,
                                                    contract_rank, select_sessions)
 
-POL = LiquidityPolicy("t1", min_prev_volume=1000, min_prev_ticks=100, max_prev_spread_p99_ticks=4)
+POL = LiquidityPolicy("t1", min_prev_volume=1000, min_prev_ticks=100, max_prev_spread_p50_ticks=4)
 DAYS = [20260105, 20260106, 20260107, 20260108, 20260109]
 
 
 def census(rows):
-    return pd.DataFrame(rows, columns=["contract", "trade_date", "vol", "n", "spread_p99", "coverage"])
+    return pd.DataFrame(rows, columns=["contract", "trade_date", "vol", "n", "spread_p50", "coverage"])
 
 
 def both(d, a, b, cov="OK"):
@@ -51,6 +51,19 @@ class Selection(unittest.TestCase):
         rows += [("ES 06-26", 20260107, 100, 500, 1, OK), ("ES 03-26", 20260107, 5000, 500, 1, OK)]
         r = select_sessions(census(rows), DAYS[:4], POL).set_index("trade_date")
         self.assertEqual(r.loc[20260107, "status"], UNDETERMINED)      # D-1 = 06 sin ES 06-26 (existe antes y después)
+
+    def test_competidor_lejano_sin_dato_no_bloquea_pero_deja_la_suposicion_escrita(self):
+        rows = [("ES 03-26", d, 5000, 500, 1, OK) for d in DAYS[:3]]
+        rows += [("ES 06-26", 20260105, 10, 5, 1, OK), ("ES 06-26", 20260107, 10, 5, 1, OK)]    # sin fila el 06; vol reciente 10 << 1 % de 5000
+        r = select_sessions(census(rows), DAYS[:3], POL).set_index("trade_date")
+        self.assertEqual(r.loc[20260107, "status"], SELECTED)
+        self.assertIn("ES 06-26", r.loc[20260107, "assumptions"])
+
+    def test_competidor_con_volumen_reciente_alto_sin_dato_si_bloquea(self):
+        rows = [("ES 03-26", d, 5000, 500, 1, OK) for d in DAYS[:3]]
+        rows += [("ES 06-26", 20260105, 4000, 500, 1, OK), ("ES 06-26", 20260107, 4000, 500, 1, OK)]
+        r = select_sessions(census(rows), DAYS[:3], POL).set_index("trade_date")
+        self.assertEqual(r.loc[20260107, "status"], UNDETERMINED)
 
     def test_sin_elegible_no_hay_fallback(self):
         rows = both(20260105, 10, 10) + both(20260106, 10, 10)
