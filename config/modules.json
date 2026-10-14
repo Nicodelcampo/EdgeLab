@@ -135,7 +135,7 @@
       "name": "Release liquida de ticks",
       "layer": 2,
       "status": "core",
-      "function": "Construye, verifica, audita y publica la release canonica liquid_tick_v1: un contrato liquido por sesion, doble reloj, sin holdout, con manifiesto y SHA-256. Lector con preflight de ambos relojes.",
+      "function": "Construye, verifica, audita y publica la release canonica liquid_tick_v1: un contrato liquido por sesion, doble reloj, sin holdout, con manifiesto y SHA-256. Lector con preflight de ambos relojes. Incluye el auditor independiente de contenido (originado en el agente de Notion, commit 5aac8bb3) que corre dentro de Kaggle y emite un recibo agregado.",
       "paths": [
         "edgelab/data/liquid_release",
         "tools/build_release.py",
@@ -145,7 +145,8 @@
         "tools/refresh_decisions.py",
         "tools/missing_exports_report.py",
         "tools/make_agent_readme.py",
-        "tools/make_release_report.py"
+        "tools/make_release_report.py",
+        "tools/research_ops/audits/audit_liquid_release.py"
       ],
       "inputs": [
         "exports NT8 por contrato",
@@ -163,7 +164,8 @@
       ],
       "doc": "docs/infra/LIQUID_RELEASE_20261014.md",
       "tests": [
-        "tests/data"
+        "tests/data",
+        "tests/test_liquid_release_payload_audit.py"
       ]
     },
     {

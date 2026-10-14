@@ -63,7 +63,7 @@ Problemas encontrados (y qué se hizo / falta):
 0. **Ramas:** registro actualizado en `docs/BRANCH_REGISTRY_20261014.md` (61 ramas ya integradas, 112 con trabajo propio).
 0. **Línea `main`: INTEGRADA** (merge real el 2026-10-14, `docs/DECISIONES_20261014.md`). Lo que sigue es histórico del relevamiento.
 1. **Rama `data/liquid-release-20261014`** (217 commits, 1.155 archivos): lo útil ya está en `foundation`; el resto es una línea paralela de `research_ops`, `edge_brain`, `bridge` que conflictúa (add/add). No mergear en bloque.
-2. **Auditor de Notion** (`Nicodelcampo/EdgeLab@feat/research-ops-supervisor-mvp`): se usó embebido en un kernel; falta traerlo al repo con tests.
+2. **Auditor de Notion**: INTEGRADO (`tools/research_ops/audits/audit_liquid_release.py` + 16 pruebas en `tests/test_liquid_release_payload_audit.py`; compatible con Windows).
 3. **`E:\EdgeLab` (rama `claude/focused-fermat-qjt805`)**: ≈ 46 archivos sin commitear (oráculos `data/nt8_oracles/*`, scripts de visor `tools/apply_viewer_*`, `EdgeReplica.cs`, catálogos de regímenes). Decidir qué se versiona, qué se archiva y qué se descarta.
 4. **Puente Drive↔Kaggle** (`tools/kaggle_drive_bridge.py`): corre a mano en `--watch`; sin servicio persistente ni hook post-commit del snapshot. Los entregables de Gemini son parches a revisar, no código aplicado.
 5. **Parches 06/07 de Gemini**: estrategias de subasta con ancla de IB errónea (primer tick del archivo, no 08:30 CT) y tick fijo 0,25. No aplicar.
