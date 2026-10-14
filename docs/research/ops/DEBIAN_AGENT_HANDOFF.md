@@ -1,3 +1,9 @@
+## Checkpoint actual — GC A/E TERMINAL COMPLETE;primarios INCONCLUSOS sin soporte
+
+LeerGC_AE_HISTORY_CLOSEOUT.md,ANALYSIS.json,REVIEW.json,KNOWLEDGE_PROPOSAL.json. Kernel138580854/v1 COMPLETE;9/10eval(Sept24vacío),6train,1.664.049ticks,53.844anclas comunes/101.082observadas. ProxyA_ONLY sólo2evaly2train;cero transicionesdirectasambos sentidos enambasfases. Noausenciafísica/edge negativo;no recontarNEITHERintermedio como primario. Estado/duración/combinadoNO mejoran media vsHISTORY/CAPACITY;combinado mejora5/9sesiones sin media favorable. Runner68,95s/host78,62s;no ratio contra otra carga.
+
+Auditoragregado PASS/receiptSHA199d036e;fuente24d8c461/bundle9ecfe10a/plan3abcfe6990fa.21focal+954ResearchOps+18navegación PASS previos. Journals originales `gc-ae-history-3abcfe6990fa-{dispatch,watch}.sqlite`,COMPLETE/2polls/1intencióncerrada,noreset/replay. Próximo:diagnóstico científico target-free delsoporte/conjuntosA sobretrainingoriginalsinoutcomes (no datasetQA),luego nueva definicióncontinua ytrayectorias intermedias explícitas bajo nuevoplan. Noauto-relajarcalibración/thresholds o cambiargrilla para rescatar. Aprendizajes PROPOSED_NOT_CANONICAL,holdout/P&L/Brainwriter/merge/deploy cerrados. Nojobactivo ENESTACAMPAÑA, no afirmación globaldecuenta. Abajo:historia.
+
 ## Corrida GC A/E ACTIVA — RUNNING, no reenviar
 
 Kernel138580854/v1 `edgelab-gc-ae-causal-history-v1` RUNNING;fuente24d8c461/bundle9ecfe10a/plan3abcfe6990fa exactos remoto/privadoCPU/Docker. LeerGC_AE_HISTORY_LAUNCH/PROTOCOL/PLAN/POWER_DISCLOSURE/PACKAGE.954ResearchOps+18navegaciónPASS;21focalPASS. Una intenciónACK,1pollconsumido/6máximo enjournals originales `/data/operational-state/gc-ae-history-3abcfe6990fa-{dispatch,watch}.sqlite`;no reset/reenvío, snapshots públicosno sustituyen custodia.
