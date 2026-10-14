@@ -22,6 +22,7 @@ else:
 OUT.mkdir(parents=True, exist_ok=True); os.environ.setdefault("EDGELAB_ALLOW_MISSING", "1")
 from edgelab.bridge import bars as B, ticks as T      # noqa: E402
 from edgelab.research import ema_zones as Z            # noqa: E402
+from edgelab.research import ema_zone_desc as ZD       # noqa: E402
 
 CFG = json.loads(os.environ.get("EMAZ_CFG", "{}")); INST = CFG.get("inst", "NQ"); DESDE, HASTA = CFG.get("desde", "2025-07-01"), CFG.get("hasta", "2026-09-30")
 EMA_N = int(CFG.get("ema_n", 200)); SPEC = int(CFG.get("bar_ticks", 25)); CONFIGS = CFG["configs"]; CT = "America/Chicago"; END_NS = pd.Timestamp("2026-09-30 22:00", tz="UTC").value
@@ -55,6 +56,11 @@ def process(tk, dates, label):
     bars = B.build_tick_bars(tk, SPEC); c, h, l = (np.asarray(x, float) for x in (bars.close_t, bars.high_t, bars.low_t)); sd = session_date_of(bars.end_ns); inset = np.isin(sd, list(dates)); n = len(c)
     P = Z.precompute(c, h, l, ema_n=EMA_N, atr_n=100); PCACHE = {}; tick = float(tk.tick_size); rows = []
     slope = np.sign(np.r_[np.zeros(100), P["e"][100:] - P["e"][:-100]])
+    if CFG.get("desc"):                                                          # estadística descriptiva por zona (sin hipótesis sobre el precio)
+        name, kw = next(iter(CONFIGS.items())); kw = dict(kw); M = kw["M"]; ex = {k: kw.pop(k) for k in ("max_far_cv", "max_near_cv", "extend", "anchors", "atr_mult_break", "max_dist_atr", "atr_mult_tol", "vmax", "min_extent_atr", "max_mean_dist_atr", "min_zone") if k in kw}; en = kw.pop("ema_n", EMA_N)
+        PP = P if en == EMA_N else Z.precompute(c, h, l, ema_n=en, atr_n=100); st = np.where(inset, Z.state(PP, **kw), 0); sim = Z.simulate_zones(PP, h, l, st, M, tick=tick, **{**CFG.get("sim_params", {}), **ex})
+        ct = pd.to_datetime(np.asarray(bars.end_ns), utc=True).tz_convert(CT); out = ZD.zone_rows(sim, c, h, l, PP["e"], PP["atr"], np.asarray(bars.end_ns), np.asarray(bars.volume, float), sd, ct.hour.to_numpy(), ct.minute.to_numpy(), tick, label, inset)
+        print(label, "zonas", len(out), flush=True); del P; gc.collect(); return out
     for name, kw in CONFIGS.items():
         if CFG.get("sim"):                                                      # réplica del indicador con tangente: zonas confirmadas
             kw = dict(kw); M = kw["M"]; ex = {k: kw.pop(k) for k in ("max_far_cv", "max_near_cv", "extend", "anchors", "atr_mult_break", "max_dist_atr", "atr_mult_tol", "vmax", "min_extent_atr", "max_mean_dist_atr", "min_zone") if k in kw}; en = kw.pop("ema_n", EMA_N); PP = PCACHE[en] if en in PCACHE else PCACHE.setdefault(en, P if en == EMA_N else Z.precompute(c, h, l, ema_n=en, atr_n=100)); st = Z.state(PP, **kw); st = np.where(inset, st, 0); sim = Z.simulate_zones(PP, h, l, st, M, tick=tick, **{**CFG.get("sim_params", {}), **ex}); cf = [z for z in sim if z["confirmed"] and inset[z["detect"]]]; fw = {}
@@ -84,6 +90,7 @@ def summarize_sim(rows):
 
 
 def summarize(rows):
+    if CFG.get("desc"): return ZD.summarize(rows, k=int(CFG.get("k", 4)))
     if CFG.get("sim"): return summarize_sim(rows)
     out = {}
     for name in CONFIGS:
@@ -106,7 +113,8 @@ def main():
         except Exception:
             import traceback; errors.append(dict(contract=c, tb=traceback.format_exc()[-2500:])); print("ERROR", c, errors[-1]["tb"], flush=True)
     if not rows: (OUT / "ERROR.json").write_text(json.dumps(dict(errors=errors), indent=1)); return
-    (OUT / "STUDY_RESULTS.json").write_text(json.dumps(dict(campaign="EMAZ-1", note="descriptivo, no es una prueba de hipótesis; sin P&L", cfg=CFG, summary=summarize(rows), errors=errors, seconds=round(time.time() - t0)), indent=1)); print("listo", round(time.time() - t0), "s")
+    if CFG.get("desc"): pd.DataFrame(rows).to_csv(OUT / "zones_table_PRIVADA.csv", index=False)               # tabla por zona: privada, no se publica
+    (OUT / "STUDY_RESULTS.json").write_text(json.dumps(dict(campaign="EMAZ-D1" if CFG.get("desc") else "EMAZ-1", note="descriptivo, no es una prueba de hipótesis; sin P&L", cfg=CFG, summary=summarize(rows), errors=errors, seconds=round(time.time() - t0)), indent=1)); print("listo", round(time.time() - t0), "s")
 
 
 if __name__ == "__main__":

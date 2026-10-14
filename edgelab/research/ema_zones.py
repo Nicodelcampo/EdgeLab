@@ -209,11 +209,11 @@ def simulate_zones(P, high, low, st, M, atr_mult_tol=0.2, atr_mult_break=0.5, vm
             if line is not None:
                 k = t - fs; l = line["intercept"] + line["slope"] * k; price_line = l if d < 0 else -l; brk = (c[t] > price_line + atr_mult_break * atr[t]) if d < 0 else (c[t] < price_line - atr_mult_break * atr[t])
                 run = bool(max_dist_atr) and (((price_line - c[t]) > max_dist_atr * atr[t]) if d < 0 else ((c[t] - price_line) > max_dist_atr * atr[t]))          # el precio se alejó demasiado de la línea: la tendencia quedó «deforme»
-                if brk or run: rec["broken_at"] = t; break
+                if brk or run: rec["broken_at"] = t; rec["end_reason"] = "ruptura" if brk else "alejamiento"; break
                 if not rec["confirmed"]: rec.update(confirmed=True, confirm_bar=t, touches=line["touches"], slope=line["slope"], anchor=fs + line["i"], start=fs + line["i"])
-                rec["end"] = t
+                rec["end"] = t; rec["line"] = line; rec["fs"] = fs
             t += 1
         if rec["confirmed"]:
-            rec["length"] = rec["end"] - rec["start"] + 1; rec["move_pts"] = float(abs(c[rec["end"]] - c[rec["start"]]) * tick); rec["delay"] = rec["confirm_bar"] - rec["start"]
+            rec.setdefault("end_reason", "fin_del_tramo_EMA"); rec["last_touch"] = rec["fs"] + rec["line"]["i"] + rec["line"]["span"]; rec["length"] = rec["end"] - rec["start"] + 1; rec["move_pts"] = float(abs(c[rec["end"]] - c[rec["start"]]) * tick); rec["delay"] = rec["confirm_bar"] - rec["start"]
         out.append(rec)
     return out
