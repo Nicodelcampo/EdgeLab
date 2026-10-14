@@ -26,8 +26,8 @@ La fricción **no** es el obstáculo geométrico en índices y metales: el recor
 | 6E | 4.16 | 3 / >100 % | 5 / 92 % | 7 / 80 % | 10 / 71 % |
 | 6B | 3.88 | 2 / >100 % | 3 / >100 % | 5 / 89 % | 7 / 78 % |
 | 6J | 3.90 | 2 / >100 % | 3 / >100 % | 4 / 99 % | 6 / 82 % |
-| MBT | 10.49 | 16 / 83 % | 27 / 69 % | 38 / 64 % | 53 / 60 % |
-| ZB | 3.19 | 1 / >100 % | 1 / >100 % | 2 / >100 % | 2 / >100 % |
+| MBT | 11.69 | 16 / 87 % | 27 / 72 % | 38 / 65 % | 53 / 61 % |
+| ZB | 3.10 | 1 / >100 % | 1 / >100 % | 2 / >100 % | 2 / >100 % |
 
 (Cada celda: mediana de `|D|` en ticks / acierto mínimo para cubrir `F`.)
 
@@ -35,7 +35,7 @@ La fricción **no** es el obstáculo geométrico en índices y metales: el recor
 - **NQ/MNQ, YM, RTY, ES/MES, GC/MGC:** a 15–60 min bastan aciertos de ~52–62 % para cubrir la fricción. **NQ es el más favorable en proporción** (fricción ≈ 7 % de la mediana de `|D|` a 15 min; ES ≈ 22 %), aunque su fricción en ticks sea mayor: el movimiento en ticks es mucho mayor.
 - **A 1–5 min** el acierto necesario sube a 70 % o más en ES/MES/GC: el microscalping sigue sin pagar, coherente con el MFE mediano de 3 ticks medido en AVZP2.
 - **FX (6E/6B/6J) y ZB:** a ≤ 30 min el movimiento mediano es menor que la fricción (acierto > 80–100 %). Cerrados para intradía corto con esta fricción; sólo 60 min en 6E llega a 71 %.
-- **MBT:** fricción alta (≈ 10,5 ticks); requiere ≥ 60 % a 60 min.
+- **MBT:** fricción alta (≈ 11,7 ticks con comisión de las tablas de Topstep y MFFU); requiere ≥ 60 % a 60 min.
 - Esto es un **techo**, no un resultado: un sistema real con stops y salidas captura menos de `|D|`, y el acierto de 52–60 % sostenido y neto es justamente lo que ninguna medición previa del repo ha encontrado.
 
 ## Qué cierra y qué abre
@@ -43,4 +43,4 @@ La fricción **no** es el obstáculo geométrico en índices y metales: el recor
 - **Abre** (sin promover nada): el espacio de campañas de **dirección a 15–60 min en índices (NQ primero) y metales**, que requiere manifiesto, N efectivo de hipótesis y OK de Nico antes de usar retornos.
 
 ## Salvedades
-Precios de trade con rebote bid/ask inflan `R` a 1 min. Comisión aproximada en 6B, 6J, RTY, YM, MYM, MGC, MBT, ZB (sin tabla directa). Un solo régimen de volatilidad (2025-08 a 2026-09). Spread medido sólo en sesión regular.
+Precios de trade con rebote bid/ask inflan `R` a 1 min. Comisión tomada de las tablas oficiales de Topstep/Lucid/MFFU para todos los activos salvo ZB (sólo Topstep, 2,76 USD RT) y MBT (Topstep y MFFU, sin Lucid). Un solo régimen de volatilidad (2025-08 a 2026-09). Spread medido sólo en sesión regular.

@@ -24,10 +24,10 @@ QS = (10, 25, 50, 75, 90, 99)
 RTH_MIN = 390                      # 08:30-15:00 CT
 SLIPPAGE_RT = 2.0                  # declarado por Nico (1 tick por lado)
 # comision round-turn en ticks (min, max) entre las firmas que admiten algoritmos: REFERENCIA_COSTOS_PROPS_BROKERS_20261014.md
-COMM = {"ES": (0.28, 0.46), "NQ": (0.70, 1.15), "MES": (0.80, 1.52), "MNQ": (2.00, 3.80), "GC": (0.43, 0.62), "MGC": (1.50, 2.20),
+COMM = {"ES": (0.28, 0.46), "NQ": (0.70, 1.15), "MES": (0.80, 1.52), "MNQ": (2.00, 3.80), "GC": (0.43, 0.62), "MGC": (1.60, 2.20),
         "6E": (0.68, 0.82), "6B": (0.68, 0.82), "6J": (0.68, 0.82), "YM": (0.70, 1.15), "MYM": (2.00, 3.80), "RTY": (0.70, 0.94),
-        "MBT": (4.6, 5.8), "ZB": (0.14, 0.19)}
-APROX = {"MBT", "ZB", "6B", "6J", "RTY", "YM", "MYM", "MGC"}      # comision aproximada (sin tabla directa de las props)
+        "MBT": (5.64, 7.00), "ZB": (0.09, 0.09)}
+APROX = {"ZB"}      # ZB: una sola fuente (Topstep 2,76 USD RT); MBT: Topstep y MFFU; el resto: tres tablas de props (REFERENCIA_COSTOS_PROPS_BROKERS_20261014.md)
 
 
 def spreads(root: Path) -> dict:

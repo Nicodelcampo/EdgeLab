@@ -59,3 +59,14 @@ La cifra es un techo conservador por el slippage declarado; una ejecución pasiv
 - Falta un dato de Nico: la cuenta real donde se operará y su tarifa efectiva. Hasta entonces, se reportan siempre ambos extremos del rango.
 - Si el recorrido bruto utilizable en ES no supera claramente ~3,5–4 ticks por viaje, la hipótesis muere sin gastar presupuesto de P&L (paso A3 del plan).
 - Limitaciones: tarifas de terceros pueden cambiar; slippage real sin medir; sin evidencia de fills pasivos; instrumentos con spread medido solo en horario regular.
+
+## 7. Activos complementarios (relevado en las mismas tablas, 2026-10-14)
+Comisión round-turn all-in en USD y en ticks (tick: 6B/6J 6,25 · MGC 1,00 · MBT 0,50 · ZB 31,25):
+| Producto | Topstep | Lucid | MFFU | Rango en ticks |
+|---|---|---|---|---|
+| 6B / 6J | 4,22 | 4,80 | 5,12 | 0,68 – 0,82 |
+| MGC | 1,92 | 1,60 | 2,20 | 1,60 – 2,20 |
+| MBT | 2,82 | no figura | 3,50 | 5,64 – 7,00 |
+| ZB | 2,76 | no figura | no figura | 0,09 (una sola fuente) |
+Las tarifas de YM, MYM y RTY ya estaban en §2. Con esto ningún activo del R2 usa una comisión aproximada salvo ZB (fuente única).
+
