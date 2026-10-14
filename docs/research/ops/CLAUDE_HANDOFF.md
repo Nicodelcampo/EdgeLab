@@ -1,3 +1,7 @@
+## Próximo hito — diagnóstico científico A preparado, NO enviado
+
+LeerGC_A_SUPPORT_PROTOCOL/PLAN/IMPLEMENTATION. SólotrainingoriginalGC3–10ago;calibración539b4ba2sin cambios;32máscaras/cada condición/omisión deuna/quantilesdecomponentes,no evaluación,outcomes,fit o nuevasthresholds.11focalPASS4,186s;regresiónencursoNOreclamada. La corrida A/E anterior kernel138580854 estáterminalCOMPLETE/primariosinconclusos;censo aquí explica soporte, no rescata efectos. Necesita paquete exacto nuevo/journal1intenciónantesdeenviar. Todo debe quedar guardado;propuestasNOcanónicas,holdout/P&L/merge/deploy cerrados. Abajo:historia.
+
 ## Checkpoint actual — GC A/E TERMINAL COMPLETE;primarios INCONCLUSOS sin soporte
 
 LeerGC_AE_HISTORY_CLOSEOUT.md,ANALYSIS.json,REVIEW.json,KNOWLEDGE_PROPOSAL.json. Kernel138580854/v1 COMPLETE;9/10eval(Sept24vacío),6train,1.664.049ticks,53.844anclas comunes/101.082observadas. ProxyA_ONLY sólo2evaly2train;cero transicionesdirectasambos sentidos enambasfases. Noausenciafísica/edge negativo;no recontarNEITHERintermedio como primario. Estado/duración/combinadoNO mejoran media vsHISTORY/CAPACITY;combinado mejora5/9sesiones sin media favorable. Runner68,95s/host78,62s;no ratio contra otra carga.
