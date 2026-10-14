@@ -185,6 +185,12 @@ class TestHardening(unittest.TestCase):
             ok = process_bridge_request({"request_id": "p2", "action": "push_kernel", "params": base}, cli, Path(tmp), policy=pol)
             self.assertEqual(ok["status"], "OK")
             self.assertFalse(cli.pushed[-1]["enable_internet"])
+            self.assertEqual(cli.pushed[-1]["slug"], "nicolasbuttaro/mi-kernel")
+            ok2 = process_bridge_request({"request_id": "p2b", "action": "push_kernel", "params": {**base, "slug": "nicolasbuttaro/mi-kernel"}}, cli, Path(tmp), policy=pol)
+            self.assertEqual(ok2["status"], "OK")
+            self.assertEqual(cli.pushed[-1]["slug"], "nicolasbuttaro/mi-kernel")
+            with self.assertRaises(KaggleBridgeError):
+                process_bridge_request({"request_id": "p2c", "action": "push_kernel", "params": {**base, "slug": "otro/mi-kernel"}}, cli, Path(tmp), policy=pol)
             with self.assertRaises(KaggleBridgeError):
                 process_bridge_request({"request_id": "p3", "action": "push_kernel", "params": {**base, "enable_internet": True}}, cli, Path(tmp), policy=pol)
             with self.assertRaises(KaggleBridgeError):

@@ -538,9 +538,16 @@ def _check_download_allowed(dataset: str, file_name: str, policy: BridgePolicy) 
 def _check_push_allowed(params: Mapping[str, Any], policy: BridgePolicy) -> dict[str, Any]:
     if not policy.allow_push:
         raise KaggleBridgeError("push_kernel deshabilitado (ejecuta código en Kaggle con tu cuenta). Encender con --allow-push.")
-    slug = str(params["slug"])
-    if not _SLUG_RE.match(slug):
-        raise KaggleBridgeError("slug inválido")
+    raw_slug = str(params["slug"]).strip()
+    if "/" in raw_slug:
+        owner, kslug = raw_slug.split("/", 1)
+        if not policy.allowed_source_owners or owner not in policy.allowed_source_owners or not _SLUG_RE.match(kslug):
+            raise KaggleBridgeError("slug inválido")
+        slug = f"{owner}/{kslug}"
+    else:
+        if not _SLUG_RE.match(raw_slug):
+            raise KaggleBridgeError("slug inválido")
+        slug = f"{policy.allowed_source_owners[0]}/{raw_slug}" if policy.allowed_source_owners else raw_slug
     if bool(params.get("enable_internet", False)):
         raise KaggleBridgeError("enable_internet=True no está permitido por el puente (evita exfiltrar datos privados)")
     sources = [str(s).strip() for s in (params.get("dataset_sources") or []) if str(s).strip()]
