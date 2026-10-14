@@ -2,6 +2,8 @@
 
 ## Estado actual: ninguno
 
+> Verificado 2026-10-14: sigue **0 edges promovidos**. Efectos descriptivos reales sin expectativa neta: compresión de rango tras racimo (O5) en ES/MES/MNQ; O1 no sobrevive al nulo espejo; presión/progreso en GC es de décimas de tick. Ver `docs/research/HFT_ZONAS_ES_MEDIDO_Y_NO_MEDIDO.md`.
+
 No existe hoy un edge promovido que cumpla la cadena completa de validez técnica, estadística, económica, OOS y aplicabilidad.
 
 ### H1 / BigTrap2 T=34

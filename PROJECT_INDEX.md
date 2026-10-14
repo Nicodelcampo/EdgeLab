@@ -6,6 +6,7 @@ Este índice ordena el repositorio sin mover, mergear ni borrar historia. Autori
 
 ## Lectura corta
 
+0. `docs/research/HANDOFF_2026-10-14_DATOS_L2_Y_INTEGRACION.md` — **entrada vigente (2026-10-14)**: datos, L2, integración y prioridades. Lo de abajo es el corte del 2026-09-02.
 1. `docs/CURRENT.md` — estado vivo y bloqueo actual.
 2. `docs/OPEN_IDEAS_INDEX_2026-09-02.md` — ideas, investigaciones y condiciones de reentrada.
 3. `docs/PROJECT_CHRONOLOGY_2026-09-02.md` — cronología desde la baseline hasta P-68.
