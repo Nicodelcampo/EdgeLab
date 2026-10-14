@@ -1,3 +1,7 @@
+## GC A soporte — SEND_STARTED, ACK pendiente; NO reenviar
+
+959ResearchOpsPASS363,302s/18navegaciónPASS0,182s/11focalPASS. Fuente1e86c07d/bundleb4eca447/plan0201ee0951f6,33archivosbyteexactos. Journalsnuevos `gc-a-support-0201ee0951f6-{dispatch,watch}.sqlite`:1intención/1job/6polls,SEND_STARTEDpersistidoantesdeprovider. Sólotraining,nooutcomes/noevaluación/nofit/nuevosthresholds;previoGC-AEterminalsinsoporteintacto. Anteambigüedad,reconciliarremoto,noreset/reenvío. LeerGC_A_SUPPORT_LAUNCH/IMPLEMENTATION/PROTOCOL. Abajo:historia.
+
 ## Próximo hito — diagnóstico científico A preparado, NO enviado
 
 LeerGC_A_SUPPORT_PROTOCOL/PLAN/IMPLEMENTATION. SólotrainingoriginalGC3–10ago;calibración539b4ba2sin cambios;32máscaras/cada condición/omisión deuna/quantilesdecomponentes,no evaluación,outcomes,fit o nuevasthresholds.11focalPASS4,186s;regresiónencursoNOreclamada. La corrida A/E anterior kernel138580854 estáterminalCOMPLETE/primariosinconclusos;censo aquí explica soporte, no rescata efectos. Necesita paquete exacto nuevo/journal1intenciónantesdeenviar. Todo debe quedar guardado;propuestasNOcanónicas,holdout/P&L/merge/deploy cerrados. Abajo:historia.
