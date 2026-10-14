@@ -61,6 +61,16 @@ def sha256_file(path: Path, chunk=16 << 20) -> str:
 
 PURPOSES = ("audit", "provisional_research", "research")
 APPROVAL_FILE = "release_approval.json"
+EXTERNAL_APPROVAL_DIR = "docs/infra/release_approval"      # aprobaciones versionadas en el repo, nombradas release_approval_<sha8>.json
+
+
+def _load_approval(root: Path, mpath: Path):
+    """Aprobacion dentro de la release o, si no esta, la externa del repo atada al SHA del manifiesto."""
+    ap = root / APPROVAL_FILE
+    if ap.is_file():
+        return json.loads(ap.read_text(encoding="utf-8"))
+    ext = Path(__file__).resolve().parents[3] / EXTERNAL_APPROVAL_DIR / f"release_approval_{sha256_file(mpath)[:8]}.json"
+    return json.loads(ext.read_text(encoding="utf-8")) if ext.is_file() else None
 
 
 def _check_admission(root: Path, mpath: Path, m: dict, purpose, verify_hash) -> None:
@@ -71,14 +81,15 @@ def _check_admission(root: Path, mpath: Path, m: dict, purpose, verify_hash) -> 
     if purpose == "research":
         if verify_hash is not True:
             raise ReleaseStop("purpose='research' exige verify_hash=True (sin atajos)")
-        ap = root / APPROVAL_FILE
-        if not ap.is_file():
-            raise ReleaseStop(f"release no aprobada para research: falta {APPROVAL_FILE} (aprobación externa de Nico)")
-        a = json.loads(ap.read_text(encoding="utf-8"))
+        a = _load_approval(root, mpath)
+        if a is None:
+            raise ReleaseStop(f"release no aprobada para research: falta {APPROVAL_FILE} (en la release o en {EXTERNAL_APPROVAL_DIR}/) con la aprobacion de Nico")
         if a.get("manifest_sha256") != sha256_file(mpath) or not a.get("approved_by") or a.get("liquidity_policy_approved") is not True:
             raise ReleaseStop("aprobación ausente, sin aprobador, sin política aprobada o atada a otro manifiesto")
-        if not m.get("research_allowed", False):
-            raise ReleaseStop("el manifiesto no declara research_allowed=true")
+        # El manifiesto es inmutable (cambiarlo cambia su SHA): una aprobacion POSTERIOR no puede reescribirlo. La aprobacion externa,
+        # atada al SHA exacto y versionada en git, es la forma de levantar `research_allowed=false` del momento de construccion.
+        if not m.get("research_allowed", False) and a.get("supersedes_manifest_research_allowed") is not True:
+            raise ReleaseStop("el manifiesto no declara research_allowed=true y la aprobacion no lo levanta explicitamente")
 
 
 def _check_metadata_files(root: Path, m: dict, verify_hash: bool) -> None:

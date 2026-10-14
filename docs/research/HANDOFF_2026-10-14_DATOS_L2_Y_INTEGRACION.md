@@ -14,7 +14,7 @@ Procedencia: relevamiento hecho el 2026-10-14 sobre esta PC (E:, D:), Kaggle (`k
 | Descarga desde Kaggle vs manifiesto | 31/31 archivos con tamaño y SHA-256 correctos |
 | Auditoría independiente de contenido (auditor de Notion, corrida en Kaggle) | `CONTENT_CHECKS_PASS_NOT_RESEARCH_APPROVED`, 0 fallas, filas = footer. Recibo: `docs/infra/liquid_v4_audit_20261014/receipt.json` |
 | Código de la release en la rama de trabajo | **Portado hoy a `foundation/f0b-compatibility-probe`** (antes sólo vivía en `data/liquid-release-20261014`, que diverge 217 commits y no se puede mergear). 53 tests pasan |
-| Aprobación de la release | **SÍ (2026-10-14, delegada por Nico):** `docs/infra/RELEASE_APPROVAL_20261014.md`. El lector estricto `purpose='research'` aún exige `research_allowed=true` en el manifiesto: v5 de sólo metadatos pendiente; mientras tanto `provisional_research` |
+| Aprobación de la release | **SÍ (2026-10-14, delegada por Nico):** `docs/infra/RELEASE_APPROVAL_20261014.md`. El lector estricto `purpose='research'` admite la release por aprobación externa versionada (sin v5), ver `docs/infra/RELEASE_APPROVAL_20261014.md` |
 | Sesiones faltantes | P0: 158 tramos / 309 sesiones (`docs/infra/MISSING_EXPORTS_20261014.md`); P1: sólo parquet derivado en RTY, MYM, MES, MNQ |
 | 701 sesiones-contrato con conflicto de fuente (tabuladas, no resueltas) | Abierto |
 | `sequence` no es secuencia del exchange (P-28) | Sigue limitando la microestructura de ticks |

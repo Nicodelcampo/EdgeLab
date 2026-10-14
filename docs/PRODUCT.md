@@ -52,8 +52,8 @@ Cada fase tiene un criterio de salida verificable. El orden sigue la jerarquía 
 |---|---|---|---|
 | **R0 Datos cerrados** | Release aprobada, faltantes P0 resueltos o acotados, respaldo, captura continua | Aprobación de Nico; manifiesto v-final; respaldo con hashes; captura diaria automática | release aprobada (`docs/infra/RELEASE_APPROVAL_20261014.md`); faltan P0, respaldo y captura continua |
 | **R1 Un producto, una línea** | Unificar `main` y `foundation`, reconciliar `CLAUDE.md`, módulos registrados, documentación con protocolo e índice | `tools/check_modules.py` y `tools/docs_index.py --check` verdes en CI; una sola rama viva; entrada única | **hecho (2026-10-14)** |
-| **R2 Viabilidad económica target-free** | Medir cuántos ticks de recorrido existen frente a la fricción real, por activo, hora y régimen | Tabla publicada con MDE; ideas que no pagan fricción, cerradas | **siguiente** |
-| **R3 Campañas de información** | Familias registradas con N efectivo, multiplicidad y refutación | Manifiestos aprobados; actas MEDIDO/NO MEDIDO al día | bloqueada hasta R2 + OK |
+| **R2 Viabilidad económica target-free** | Medir cuántos ticks de recorrido existen frente a la fricción real, por activo, hora y régimen | Tabla publicada con MDE; ideas que no pagan fricción, cerradas | **hecho (2026-10-14, provisional)**: `docs/research/R2_RECORRIDO_VS_FRICCION_RESULTADOS_20261014.md`. Siguiente: R3 (manifiesto de dirección a 15–60 min en índices, requiere OK de Nico) |
+| **R3 Campañas de información** | Familias registradas con N efectivo, multiplicidad y refutación | Manifiestos aprobados; actas MEDIDO/NO MEDIDO al día | desbloqueada por R2; falta manifiesto y OK de Nico |
 | **R4 Edge neto** | P&L bajo manifiesto con costos de la cuenta elegida; G0–G5 | Un candidato que supera costos, OOS, MCPT/PBO/SPA y holdout | sin candidato |
 | **R5 Ejecutabilidad** | Feed vivo, slippage y fills reales, kill switch, paper/sim | Brecha research↔live medida y acotada | sin empezar |
 | **R6 Portafolio y operación** | Varias apuestas descorrelacionadas, monitoreo, cerebro recursivo 24/7 | Cartera con riesgo acotado y control en operación | sin empezar |

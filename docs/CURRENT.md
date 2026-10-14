@@ -17,7 +17,7 @@ el head real que ve el PR — confuso para cualquiera que solo tenga acceso al r
 - **Datos:** release `liquid_tick_v1` v4 publicada, verificada y auditada, **aprobada** el 2026-10-14 (`docs/infra/RELEASE_APPROVAL_20261014.md`; uso privado, límites declarados). Recibo de auditoría: `docs/infra/liquid_v4_audit_20261014/receipt.json`.
 - **Edges promovidos: 0.** Medido y refutado/acotado: HFTZones, BigTrap2 imán, AVZP2 O1; O5 real pero sin expectativa neta; GC presión/progreso de décimas de tick (`docs/research/HFT_ZONAS_ES_MEDIDO_Y_NO_MEDIDO.md`).
 - **Costos de referencia:** `docs/research/REFERENCIA_COSTOS_PROPS_BROKERS_20261014.md`. Fricción de ES ≈ 3,4–3,6 ticks por viaje.
-- **Próximo paso (R2):** medir el recorrido bruto frente a la fricción por activo, hora y régimen, target-free. P&L y holdout siguen bloqueados hasta OK de Nico (`docs/PRODUCT.md` §5).
+- **R2 hecho (provisional):** el recorrido a 15–60 min supera con holgura la fricción en índices y metales; el acierto direccional mínimo ronda 52–61 %; FX y ZB no cubren la fricción a ≤ 30 min (`docs/research/R2_RECORRIDO_VS_FRICCION_RESULTADOS_20261014.md`). **Próximo paso (R3):** manifiesto de dirección a 15–60 min en índices (NQ primero), con N efectivo de hipótesis; requiere OK de Nico. P&L y holdout siguen bloqueados hasta ese OK.
 
 > Lo que sigue es el corte del 2026-09-26, conservado como histórico. Si contradice lo de arriba, manda lo de arriba.
 

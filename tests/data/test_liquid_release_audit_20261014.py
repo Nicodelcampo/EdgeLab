@@ -202,6 +202,29 @@ class Admision(unittest.TestCase):
             with self.assertRaises(rr.ReleaseStop):
                 rr.load_manifest(root, purpose="research", verify_hash=False)       # sin atajos para research
 
+    def test_aprobacion_externa_versionada_levanta_research_allowed_solo_si_lo_declara(self):
+        """El manifiesto es inmutable: una aprobacion posterior vive en el repo, atada al SHA exacto, y debe levantar research_allowed de forma explicita."""
+        with tempfile.TemporaryDirectory() as tmp, tempfile.TemporaryDirectory() as ext:
+            root = self._root(tmp, research_allowed=False)
+            sha = rr.sha256_file(root / "release_manifest.json")
+            old = rr.EXTERNAL_APPROVAL_DIR
+            rr.EXTERNAL_APPROVAL_DIR = ext                                          # absoluta: reemplaza la ruta del repo
+            try:
+                with self.assertRaises(rr.ReleaseStop):
+                    rr.load_manifest(root, purpose="research")                      # sin aprobacion en ningun lado
+                ap = Path(ext) / f"release_approval_{sha[:8]}.json"
+                base = dict(manifest_sha256=sha, approved_by="Nico", liquidity_policy_approved=True)
+                ap.write_text(json.dumps(base), encoding="utf-8")
+                with self.assertRaises(rr.ReleaseStop):
+                    rr.load_manifest(root, purpose="research")                      # no levanta research_allowed explicitamente
+                ap.write_text(json.dumps(dict(base, supersedes_manifest_research_allowed=True)), encoding="utf-8")
+                self.assertEqual(len(rr.load_manifest(root, purpose="research")), 1)
+                ap.write_text(json.dumps(dict(base, manifest_sha256="0" * 64, supersedes_manifest_research_allowed=True)), encoding="utf-8")
+                with self.assertRaises(rr.ReleaseStop):
+                    rr.load_manifest(root, purpose="research")                      # atada a otro manifiesto
+            finally:
+                rr.EXTERNAL_APPROVAL_DIR = old
+
     def test_metadata_files_listados_pero_ausentes_o_alterados_detienen(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = self._root(tmp, metadata_files={"metadata/fantasma.json": {"sha256": "0" * 64, "bytes": 3}})
