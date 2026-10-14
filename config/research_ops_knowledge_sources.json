@@ -1,0 +1,77 @@
+{
+  "schema": "research_ops_knowledge_sources_v1",
+  "edge_brain": {
+    "interfaces": [
+      "edgelab.edge_brain.hippocampus_store.DurableHippocampus",
+      "edgelab.edge_brain.retrieval.LedgerIndex",
+      "edgelab.edge_brain.typed_registry"
+    ],
+    "role": "canonical memory of episodes, failures, negatives, invalidations and dependencies",
+    "read_adapter": "tools.research_ops.anchored_recall.recall_anchored_snapshot",
+    "ledger_path": "artifacts/hippocampus/kaggle_aggregates_20261009.jsonl",
+    "expected_file_sha256": "94e673c09ac546b9bda62b6aa2d1239ac06579e09c97a3a52d8da3d4e1f02327",
+    "expected_external_tip": "4c2cc7ff6b9968312aecf2d9e3e4d9ff8b641c303274e0c181ecadacbb4b6684",
+    "status": "EXISTING_OPERATIONAL_REPOSITORY_SNAPSHOT_BOUND_READ_ONLY",
+    "snapshot_binding_path": "config/research_ops_operational_snapshot.json",
+    "snapshot_binding_sha256": "e148203f349c0f24ee228990c22e2364805e1f29cc7a6dcfe3da92801c7933cd",
+    "scope": "TARGET_FREE_AGGREGATE_OPERATIONS_ONLY",
+    "snapshot_records": 10,
+    "live_destination_bound": false,
+    "remote_latest_verified": false,
+    "scientific_trial_history_complete": false
+  },
+  "articles": {
+    "canonical_component": "SSRN Bibliographic Cortex and EdgeBrainMemory",
+    "existing_pull_request": "https://github.com/Nicodelcampo/EdgeLab/pull/67",
+    "producer_commit": "5c10da451b164c54133bdb9a4674de43d6fa2d22",
+    "interfaces": [
+      "SSRNBibliographicCortex.context_pack",
+      "EdgeBrainMemory.recall",
+      "EdgeBrainMemory.consult",
+      "EdgeBrainMemory.cite"
+    ],
+    "snapshot_adapter": "tools.research_ops.knowledge.recall_literature",
+    "corpus_path": null,
+    "context_pack_path": null,
+    "expected_context_pack_sha256": null,
+    "status": "CANONICAL_PACK_ADAPTER_IMPLEMENTED_FULL_CORPUS_INTEGRATION_PENDING",
+    "authority_ceiling": "LITERATURE_CLAIM_UNVERIFIED",
+    "claims_are_evidence": false,
+    "known_integration_debt": [
+      "PR67 not merged into main",
+      "canonical ledger digest discrepancy documented by PR67",
+      "off-topic paper and missing titles documented by PR67",
+      "canonical ranked retrieval may build a derived FTS index; do not call it as strictly read-only without prepared/sandboxed index"
+    ]
+  },
+  "research_when_needed": {
+    "planner": "tools.research_ops.research_cycle.plan_research",
+    "triggers": [
+      "NO_PRIOR_EVIDENCE",
+      "MISSING_METHOD",
+      "CONFLICTING_EVIDENCE",
+      "STALE_SOURCE",
+      "NEW_MECHANISM",
+      "DATA_DEFINITION",
+      "EXECUTION_BLOCKER"
+    ],
+    "priority": [
+      "verified EdgeBrain",
+      "existing canonical literature",
+      "repository and internal approved sources",
+      "public external research with separately reviewed public question"
+    ],
+    "read_only_tool_candidates": [
+      "GitHub get_file_contents",
+      "Notion search_notion_search/notion_load_page",
+      "web_search/web_load_page"
+    ],
+    "tool_runtime_attached": false,
+    "max_paid_api_spend": 0,
+    "status": "FINITE_PLANNER_IMPLEMENTED_NETWORK_DISPATCH_PENDING"
+  },
+  "market_execution_allowed": false,
+  "holdout_allowed": false,
+  "promotion_allowed": false,
+  "parallel_canonical_memory_created": false
+}

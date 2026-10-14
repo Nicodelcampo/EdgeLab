@@ -1,0 +1,185 @@
+{
+  "schema": "mnq_performance_investigation_v1",
+  "provenance": {
+    "input_sha256": "b86a859c493952402299f92d977c7bce78e949b0fd723c1c20a5ec035d996238",
+    "grain": "one nonoverlapping outer-log stage per completed job, including residual",
+    "missing": "MNQ12-25 matrix has no recovered timing-evidence file; focal09-26 still active and excluded",
+    "limitations": "stage clocks not CPU profiles; elapsed includes allocation/download/unassigned overhead; different contracts/host contention not paired benchmarks; no RSS evidence available",
+    "profile_warnings": "no duplicates or nulls; seconds is not an identifier; actual key is bundle+stage; repeated total_seconds is used once per bundle, never summed per row"
+  },
+  "summary": {
+    "focal": {
+      "completed_bundles_with_available_timing": 4,
+      "bundles": [
+        "MNQ_03-26-focal",
+        "MNQ_06-26-focal",
+        "MNQ_09-25-focal",
+        "MNQ_12-25-focal"
+      ],
+      "total_seconds_summed_not_campaign_elapsed": 26389.404089647,
+      "range_minutes": [
+        66.58849998051667,
+        144.64455977636666
+      ],
+      "stage_seconds": {
+        "focal-registration": 0.514747715000027,
+        "test_engine": 18.265262579000023,
+        "test_cache": 22.978579871000022,
+        "test_schema": 0.41365125700002636,
+        "test_matrix": 10.230225345999997,
+        "test_matrix_batch": 35.95109231700005,
+        "test_gates": 1.6702784100000088,
+        "source-preflight": 66.48166783900001,
+        "longevity": 19546.46870816,
+        "primary-analysis": 4469.683555733,
+        "incremental-diagnostic": 4.237124251000296,
+        "focal": 788.0141782990008,
+        "independent-review": 13.445371769998474,
+        "fixed-bank": 30.776754592001907,
+        "censor-envelopes": 34.427586263999274,
+        "absolute-and-control": 313.07521551300033,
+        "unassigned_outer_time": 1032.7700897309987
+      },
+      "priority_stage_share_percent": 91.00680023811123,
+      "per_bundle": {
+        "MNQ_03-26-focal": {
+          "minutes": 144.64455977636666,
+          "priority_share_percent": 92.97202952961598
+        },
+        "MNQ_06-26-focal": {
+          "minutes": 87.72649343958332,
+          "priority_share_percent": 88.89683870394886
+        },
+        "MNQ_09-25-focal": {
+          "minutes": 66.58849998051667,
+          "priority_share_percent": 86.06930708420998
+        },
+        "MNQ_12-25-focal": {
+          "minutes": 140.86384829764998,
+          "priority_share_percent": 92.63688536294966
+        }
+      }
+    },
+    "matrix": {
+      "completed_bundles_with_available_timing": 4,
+      "bundles": [
+        "MNQ_03-26-matrix",
+        "MNQ_06-26-matrix",
+        "MNQ_09-25-matrix",
+        "MNQ_09-26-matrix"
+      ],
+      "total_seconds_summed_not_campaign_elapsed": 8638.072640253,
+      "range_minutes": [
+        17.766910652700002,
+        42.592334259750004
+      ],
+      "stage_seconds": {
+        "focal-registration": 0.5353388429999484,
+        "test_engine": 17.922987143,
+        "test_cache": 26.640282162000005,
+        "test_schema": 0.49261411100002306,
+        "test_matrix": 11.339625283999993,
+        "test_matrix_batch": 39.98195170600002,
+        "test_gates": 1.8120096309999667,
+        "source-preflight": 82.17808779699999,
+        "market-cache-prepare": 150.03046118399993,
+        "full-matrix": 6976.91158728,
+        "matrix-coverage": 182.68226317500012,
+        "matrix-support": 179.23777703999974,
+        "unassigned_outer_time": 968.3076548970009
+      },
+      "priority_stage_share_percent": 80.76930905591058,
+      "per_bundle": {
+        "MNQ_03-26-matrix": {
+          "minutes": 42.53963520021667,
+          "priority_share_percent": 78.66086934790225
+        },
+        "MNQ_06-26-matrix": {
+          "minutes": 41.06899722488333,
+          "priority_share_percent": 83.7748984761852
+        },
+        "MNQ_09-25-matrix": {
+          "minutes": 17.766910652700002,
+          "priority_share_percent": 69.5291086636159
+        },
+        "MNQ_09-26-matrix": {
+          "minutes": 42.592334259750004,
+          "priority_share_percent": 84.66576956770514
+        }
+      }
+    }
+  },
+  "comparison_plan": [
+    {
+      "grain": "stage across four completed focal jobs",
+      "population": [
+        "MNQ_03-26-focal",
+        "MNQ_06-26-focal",
+        "MNQ_09-25-focal",
+        "MNQ_12-25-focal"
+      ],
+      "unit": "percent of summed observed outer wall seconds",
+      "finding": "longevity and primary-analysis dominate measured focal wall time",
+      "derivation": "sum(stage seconds)/sum(each job total once)*100",
+      "disposition": "chart",
+      "reason": "directly identifies acceleration priority without attributing job-runtime differences to code"
+    },
+    {
+      "grain": "four completed matrices with timing",
+      "population": [
+        "MNQ_03-26-matrix",
+        "MNQ_06-26-matrix",
+        "MNQ_09-25-matrix",
+        "MNQ_09-26-matrix"
+      ],
+      "unit": "percent of summed observed outer wall seconds",
+      "finding": "full-matrix is dominant",
+      "disposition": "prose",
+      "reason": "supporting scope; not a cross-host speedup comparison"
+    }
+  ],
+  "chart_values": {
+    "labels": [
+      "Longevidad",
+      "An\u00e1lisis primario",
+      "Barrido focal",
+      "Otros pasos medidos",
+      "Tiempo exterior sin asignar"
+    ],
+    "percent": [
+      74.06938270284171,
+      16.93741753526951,
+      2.986100692619095,
+      2.0935203987449746,
+      3.913578670524703
+    ]
+  },
+  "amdahl_not_forecast": {
+    "primary_analysis_fraction": 0.16937417535269508,
+    "whole_job_upper_bound_if_primary_removed": 1.2039115210806426,
+    "illustrative_whole_job_speedup_if_entire_primary_stage_4x": 1.1455155657235805,
+    "caveat": "microbenchmark covers one substep only; applying its gain to full primary stage is not justified"
+  },
+  "source_inspection": {
+    "frozen_scientific_commit_declared": "9125197dc6098100459f36a3d90a5c7b7aa4f9c0",
+    "source_origin": "scientific files decoded from existing current-focal-driver payload without execution; secret URLs excluded",
+    "files": [
+      {
+        "basename": "analyze.py",
+        "sha256": "105409aa01bda7c3029419d11d730ae7c6b8a804ab53b4c51ed5f5c4ec9ff651"
+      },
+      {
+        "basename": "matrix_engine.py",
+        "sha256": "fa99996c2b6aa10da05719b3ebd086a0623dd1eb1516c78d0128529a5619c456"
+      },
+      {
+        "basename": "engine.py",
+        "sha256": "33e9921053d939e5f6804b220f925fd473cbe84c52e12d81ee6064231cae747f"
+      },
+      {
+        "basename": "expanded_passage.py",
+        "sha256": "e0f228bece76395f5a501ad9ff9b8f0ec5166747a08c128b9ffd06d2563288c1"
+      }
+    ]
+  }
+}

@@ -1,0 +1,35 @@
+name: Research Ops synthetic prototype
+on:
+  pull_request:
+    paths:
+      - 'tools/research_ops/**'
+      - 'tests/research_ops/**'
+      - 'tests/synthetic_selection_evidence.py'
+      - 'edgelab/data/research_data_gate.py'
+      - 'edgelab/data/contract_regime.py'
+      - 'config/component_registry.json'
+      - 'config/research_ops_knowledge_sources.json'
+      - 'edgelab/edge_brain/**'
+      - 'docs/research/ops/**'
+      - '.github/workflows/research-ops.yml'
+      - 'requirements/research-ops-authority.txt'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  synthetic:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.12', '3.13']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install packaged Brain core schema dependency
+        run: python -m pip install -r requirements/research-ops-authority.txt
+      - name: Synthetic queue, guards, receipts and draft tests only
+        run: python -m unittest discover -s tests/research_ops -v
+      - name: Navigation only, not research certification
+        run: python tools/edgelab_catalog.py check --json

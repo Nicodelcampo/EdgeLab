@@ -1,0 +1,239 @@
+{
+  "schema": "gc_ae_history_design_draft_v1",
+  "status": "DRAFT_NOT_FROZEN_NOT_AUTHORIZED_FOR_DISPATCH",
+  "asset": "GC",
+  "source": {
+    "instrument": "GC",
+    "contract": "GC_12-26",
+    "tick_size": 0.1,
+    "pin": {
+      "contract": "GC_12-26",
+      "file": "GC_12-26_ticks_ext.parquet",
+      "path_in_dataset": "GC/GC_12-26_ticks_ext.parquet",
+      "dataset": "nicolasbuttaro/edgelab-ticks-nt8-reexport-20261005",
+      "version": 2,
+      "sha256": "3a9686bf35f3311fff5e5736fedf63bb95bb009cd4a3a7ae8d668280c2fde734",
+      "bytes": 90315786,
+      "rows": 4889460
+    },
+    "manifest_sha256": "ad6ba8c93be98f2117820d62bfa4e00449ea2f2f6e5e69aa06af67a5791094a1"
+  },
+  "calibration": {
+    "path": "docs/research/ops/GC_FOCUSED_RETURN_RECEIPT.json",
+    "key": "calibration",
+    "training_date": "2026-07-31",
+    "sha256": "539b4ba21975510eafeac107c48b415618ba502802283d8860218631b058573d",
+    "outcomes_used": false,
+    "recalibration_requested": false
+  },
+  "training_sessions": [
+    "2026-08-03",
+    "2026-08-04",
+    "2026-08-05",
+    "2026-08-06",
+    "2026-08-07",
+    "2026-08-10"
+  ],
+  "evaluation_sessions": [
+    "2026-09-17",
+    "2026-09-18",
+    "2026-09-21",
+    "2026-09-22",
+    "2026-09-23",
+    "2026-09-24",
+    "2026-09-25",
+    "2026-09-28",
+    "2026-09-29",
+    "2026-09-30"
+  ],
+  "research_dates": [
+    "2026-08-03",
+    "2026-08-04",
+    "2026-08-05",
+    "2026-08-06",
+    "2026-08-07",
+    "2026-08-10",
+    "2026-09-17",
+    "2026-09-18",
+    "2026-09-21",
+    "2026-09-22",
+    "2026-09-23",
+    "2026-09-24",
+    "2026-09-25",
+    "2026-09-28",
+    "2026-09-29",
+    "2026-09-30"
+  ],
+  "session_ranges": [
+    {
+      "trade_date": "2026-08-03",
+      "start_ns": 1785708000000000000,
+      "end_ns": 1785794400000000000
+    },
+    {
+      "trade_date": "2026-08-04",
+      "start_ns": 1785794400000000000,
+      "end_ns": 1785880800000000000
+    },
+    {
+      "trade_date": "2026-08-05",
+      "start_ns": 1785880800000000000,
+      "end_ns": 1785967200000000000
+    },
+    {
+      "trade_date": "2026-08-06",
+      "start_ns": 1785967200000000000,
+      "end_ns": 1786053600000000000
+    },
+    {
+      "trade_date": "2026-08-07",
+      "start_ns": 1786053600000000000,
+      "end_ns": 1786140000000000000
+    },
+    {
+      "trade_date": "2026-08-10",
+      "start_ns": 1786312800000000000,
+      "end_ns": 1786399200000000000
+    },
+    {
+      "trade_date": "2026-09-17",
+      "start_ns": 1789596000000000000,
+      "end_ns": 1789682400000000000
+    },
+    {
+      "trade_date": "2026-09-18",
+      "start_ns": 1789682400000000000,
+      "end_ns": 1789768800000000000
+    },
+    {
+      "trade_date": "2026-09-21",
+      "start_ns": 1789941600000000000,
+      "end_ns": 1790028000000000000
+    },
+    {
+      "trade_date": "2026-09-22",
+      "start_ns": 1790028000000000000,
+      "end_ns": 1790114400000000000
+    },
+    {
+      "trade_date": "2026-09-23",
+      "start_ns": 1790114400000000000,
+      "end_ns": 1790200800000000000
+    },
+    {
+      "trade_date": "2026-09-24",
+      "start_ns": 1790200800000000000,
+      "end_ns": 1790287200000000000
+    },
+    {
+      "trade_date": "2026-09-25",
+      "start_ns": 1790287200000000000,
+      "end_ns": 1790373600000000000
+    },
+    {
+      "trade_date": "2026-09-28",
+      "start_ns": 1790546400000000000,
+      "end_ns": 1790632800000000000
+    },
+    {
+      "trade_date": "2026-09-29",
+      "start_ns": 1790632800000000000,
+      "end_ns": 1790719200000000000
+    },
+    {
+      "trade_date": "2026-09-30",
+      "start_ns": 1790719200000000000,
+      "end_ns": 1790805600000000000
+    }
+  ],
+  "models": [
+    "PRIOR",
+    "HISTORY",
+    "PROXY:STATE",
+    "CAPACITY:STATE",
+    "PROXY:DURATION",
+    "CAPACITY:DURATION",
+    "PROXY:A_TO_E",
+    "CAPACITY:A_TO_E",
+    "PROXY:E_TO_A",
+    "CAPACITY:E_TO_A",
+    "PROXY:TRANSITIONS",
+    "CAPACITY:TRANSITIONS",
+    "PROXY:ALL",
+    "CAPACITY:ALL"
+  ],
+  "primary_families": [
+    "A_TO_E",
+    "E_TO_A"
+  ],
+  "primary_subset": "RECENT_OBSERVED_TRANSITION_WITHIN_120S_AND_COMMON_USABLE_OUTCOME",
+  "comparators": [
+    "SAME_CONTINUOUS_HISTORY",
+    "SAME_DIMENSION_FIXED_SMOOTH_CAPACITY"
+  ],
+  "history_lags_seconds": [
+    20,
+    40,
+    60,
+    120
+  ],
+  "lag_staleness_seconds": 5,
+  "transition_cap_seconds": 120,
+  "max_gap_ns": 10000000000,
+  "direction_change_resets_transition": true,
+  "all_observed_anchors_advance_history_before_labels": true,
+  "response_horizon_ns": 60000000000,
+  "purge_ns": 60000000000,
+  "embargo_ns": 60000000000,
+  "barrier_min_ticks": 4,
+  "barrier_trailing_range_multiplier": 0.5,
+  "grid_seconds": 5,
+  "window_seconds": 20,
+  "context_seconds": 60,
+  "minimum_signed_volume_coverage": 0.8,
+  "ridge_lambda": 0.01,
+  "training_equal_session_weights": true,
+  "minimum_training_usable_anchors_per_session": 100,
+  "minimum_available_evaluation_sessions": 6,
+  "minimum_primary_subset_anchors": 2000,
+  "minimum_primary_subset_sessions": 6,
+  "practical_improvement_brier": 0.001,
+  "practical_margin_status": "DRAFT_SCIENTIFIC_CHOICE_NOT_EMPIRICALLY_CALIBRATED",
+  "MDE_power_status": "NOT_COMPUTED_NO_POWER_OR_CONFIRMATION_CLAIM",
+  "session_bootstrap_draws": 2000,
+  "session_bootstrap_seed": 19413,
+  "session_bootstrap_scope": "DESCRIPTIVE_ONLY_TWO_PRIMARY_CONTRASTS_NO_IID_ANCHOR_INFERENCE",
+  "thin_60s_before_label_filter": true,
+  "missing_session_policy": "REPORT_EMPTY_NO_REPLACEMENT;TRAIN_REQUIRED;NO_SUPPORT_IS_INCONCLUSIVE",
+  "max_session_ticks": 8000000,
+  "max_total_ticks": 100000000,
+  "max_anchors": 250000,
+  "max_scan_elements_per_session": 150000000,
+  "max_scan_elements_total": 1800000000,
+  "max_aggregate_bytes": 1048576,
+  "wall_seconds": 1800,
+  "cpu_seconds": 1800,
+  "rss_bytes": 4294967296,
+  "address_space_bytes": 6442450944,
+  "transport_wall_seconds": 600,
+  "parent_wall_seconds": 2700,
+  "requested_notebook_timeout_seconds": 3600,
+  "native_zone_detectors": false,
+  "rolling_bt2a_percentiles": "NOT_APPLICABLE_NO_BT2A_DETECTOR_IN_THIS_MECHANISM_TEST",
+  "prior_source_audit_repeated": false,
+  "prior_outcomes_inspected": true,
+  "selected_after_prior_gc_negative": true,
+  "confirmation": false,
+  "holdout": false,
+  "pnl": false,
+  "raw_export": false,
+  "canonical_brain_write": false,
+  "automatic_model_selection": false,
+  "kaggle_submit_authorized_by_this_draft": false,
+  "blocking_remaining": [
+    "runner exact-calendar/purge/embargo/calibration binding",
+    "review and freeze practical margin/MDE disclosure/support",
+    "aggregate receipt auditor",
+    "exact package + distinct durable one-shot dispatch"
+  ]
+}

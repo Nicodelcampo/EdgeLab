@@ -22,6 +22,7 @@ Fuente de esta tabla: [registro JSON](../config/component_registry.json). Para c
 | `propfirm` | Modelar condiciones de evaluación y EV del participante. | experimental | other_branch | `edgelab/propfirm` · [PR 48](https://github.com/Nicodelcampo/EdgeLab/pull/48) · [foundation](https://github.com/Nicodelcampo/EdgeLab/tree/foundation/f0b-compatibility-probe) |
 | `context` | Representar información contextual y propuestas de regímenes. | experimental | other_branch | `edgelab/context`, `edgelab/gex`, `edgelab/regimes` · [foundation](https://github.com/Nicodelcampo/EdgeLab/tree/foundation/f0b-compatibility-probe) |
 | `history` | Preservar procedencia y versiones retiradas sin activarlas. | historical | other_branch | `archive` · [foundation](https://github.com/Nicodelcampo/EdgeLab/tree/foundation/f0b-compatibility-probe) |
+| `research-ops-prototype` | Cola durable, lectura Brain/artículos y planner de research condicional; sin ejecución de mercado. | experimental | local | [prototipo](research/ops/RESEARCH_OPS_MVP.md), [CLI](../tools/research_ops/cli.py), [tests](../tests/research_ops/test_ops.py); ejecutor sintético; [conocimiento y límites](research/ops/KNOWLEDGE_FIRST_RESEARCH.md), no agente24/7 desplegado |
 | `agent-coordination` | Reservar el límite de integración para agentes interactivos y futuros procesos autónomos. | planned | not_pushed | Pendiente de push; fuera de alcance actual |
 
 ## Interfaces disponibles

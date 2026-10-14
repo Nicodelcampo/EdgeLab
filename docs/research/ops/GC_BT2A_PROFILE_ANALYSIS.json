@@ -1,0 +1,54 @@
+{
+  "ticks": 470027,
+  "sessions": [
+    "2026-08-03",
+    "2026-08-04",
+    "2026-08-05",
+    "2026-08-06"
+  ],
+  "native_median_seconds_sequential": 19.821449497499955,
+  "native_median_seconds_interleaved": 19.581723415500363,
+  "speedup": 1.0122423382719128,
+  "duration_reduction_percent": 1.2094276053314257,
+  "percentile_cumulative_fraction_percent": 23.29738784099044,
+  "profile_total_seconds": 28.39252481499999,
+  "self_time_chart": [
+    {
+      "label": "<built-in method builtins.sorted>",
+      "seconds": 6.2998646350000005
+    },
+    {
+      "label": "flush_block",
+      "seconds": 6.170780613000001
+    },
+    {
+      "label": "prepare",
+      "seconds": 5.662006034
+    },
+    {
+      "label": "Resto e instrumentaci\u00f3n",
+      "seconds": 10.25987353299999
+    }
+  ],
+  "numeric_checks_passed": true,
+  "profile_not_unprofiled_time_allocation": true,
+  "cumulative_times_overlap_not_additive": true,
+  "comparison_plan": [
+    {
+      "grain": "FUNCTION_SELF_SECONDS_ONE_INSTRUMENTED_PASS",
+      "population": "same470027ticks4sessions",
+      "unit": "seconds",
+      "finding": "Sorting, native bucket body and cache are largest self-time costs",
+      "disposition": "chart",
+      "reason": "Choose optimization by measured cost without summing nested cumulative times"
+    },
+    {
+      "grain": "ABBA_PRODUCTION_MODE_MULTISESSION",
+      "population": "same470027ticks",
+      "unit": "seconds",
+      "finding": "Only1.0122x; state exact",
+      "disposition": "prose",
+      "reason": "Single speed comparison not main distribution"
+    }
+  ]
+}

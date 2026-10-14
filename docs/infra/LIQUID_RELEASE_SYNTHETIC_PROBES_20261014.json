@@ -1,0 +1,76 @@
+{
+  "schema": "liquid_release_synthetic_probes_v1",
+  "source_commit": "705229bc67d6eb4ff3e0762b0bbd2d80da6bd8d9",
+  "market_data_read": false,
+  "published_release_impact_measured": false,
+  "source_sha256": {
+    "edgelab/data/liquid_release/selection.py": "38325b988185109d02c35ee00d648e5e85d609683779a4a4a6052d1c541f30e2",
+    "edgelab/data/liquid_release/release_reader.py": "a9123cf5bca7c323549b975dbaba15b230dc01b154656f66907f2f9987b8d7b4",
+    "tools/verify_release.py": "d142a137ca986470b9f389723631aa5c82ee7e5e1cd2b83c711c0aa49a935cb9"
+  },
+  "probes": [
+    {
+      "id": "LRA-01",
+      "observed": true,
+      "before": "SELECTED",
+      "after": "UNDETERMINED",
+      "meaning": "Adding only a future candidate row changes an earlier decision."
+    },
+    {
+      "id": "CONTROL-FUTURE-VALUES",
+      "observed": true,
+      "meaning": "Mutating future volumes alone does not change these earlier choices."
+    },
+    {
+      "id": "LRA-02-None",
+      "observed": true,
+      "meaning": "Candidate with unknown spread passes the absolute spread gate."
+    },
+    {
+      "id": "LRA-02-NaN",
+      "observed": true,
+      "meaning": "Candidate with unknown spread passes the absolute spread gate."
+    },
+    {
+      "id": "CONTROL-HIGH-SPREAD",
+      "observed": true,
+      "meaning": "Known high spread correctly fails."
+    },
+    {
+      "id": "LRA-03-UNKNOWN",
+      "observed": true,
+      "status": "UNDETERMINED",
+      "meaning": "MISSING does not block like UNKNOWN. Production asset_frame assigns OK; live reachability unmeasured."
+    },
+    {
+      "id": "LRA-03-MISSING",
+      "observed": true,
+      "status": "SELECTED",
+      "meaning": "MISSING does not block like UNKNOWN. Production asset_frame assigns OK; live reachability unmeasured."
+    },
+    {
+      "id": "LRA-04",
+      "observed": true,
+      "payload_reads": 1,
+      "meaning": "Reserved timestamp with pre-holdout trade_date is read; timestamp footer is not checked."
+    },
+    {
+      "id": "LRA-05",
+      "observed": true,
+      "meaning": "Reader admits a candidate manifest and ignores absent/hash-listed metadata; external admission gate is required."
+    },
+    {
+      "id": "CONTROL-TAMPER",
+      "observed": true,
+      "meaning": "Default content hash validation correctly rejects a mismatch."
+    },
+    {
+      "id": "LRA-06",
+      "observed": true,
+      "payload_reads": 1,
+      "subsequently_rejected": true,
+      "meaning": "Verifier reads reserved row-group payload, then flags holdout; post-read rejection is too late."
+    }
+  ],
+  "assertions_passed": true
+}
