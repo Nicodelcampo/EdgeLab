@@ -26,7 +26,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 551 |
+| `docs/research` | 552 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 11 |
@@ -36,7 +36,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | Familia | Docs | Ultimo | Fecha | Estado |
 |---|---:|---|---|---|
 | REFERENCIA | 1 | `REFERENCIA_COSTOS_PROPS_BROKERS_20261014.md` | 2026-10-14 | referencia, no medición. Sin P&L, sin retornos. Insumo para el ledger de costos  |
-| R2 | 1 | `R2_RECORRIDO_VS_FRICCION_MANIFIESTO_20261014.md` | 2026-10-14 | VIGENTE (congelado antes de medir) |
+| R2 | 2 | `R2_RECORRIDO_VS_FRICCION_RESULTADOS_20261014.md` | 2026-10-14 | PROVISIONAL (descriptivo, target-free; release v4 aprobada, purpose=provisional_ |
 | PLAN | 13 | `PLAN_HACIA_EDGE_NETO_20261014.md` | 2026-10-14 | PROPUESTA |
 | INVENTARIO | 1 | `INVENTARIO_LINEA_MAIN_20261014.md` | 2026-10-14 | VIGENTE (unificación ejecutada el 2026-10-14; ver docs/DECISIONES_20261014.md) |
 | HANDOFF | 14 | `HANDOFF_2026-10-14_DATOS_L2_Y_INTEGRACION.md` | 2026-10-14 | VIGENTE |

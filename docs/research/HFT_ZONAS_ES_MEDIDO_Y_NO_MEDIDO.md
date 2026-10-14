@@ -958,3 +958,8 @@ Criterios: O5 ≥ 5/7 celdas, O1 ≥ 4/6.
 - O5 (compresión tras racimo): replica en ES, MNQ y MES con efecto ≈ −0,07 y p ≈ 0; **no replica en NQ** (3/7).
 - O1 (continuación): con el nulo primario (espejo) **no replica en ningún instrumento**. El 6/6 con el nulo legacy es el artefacto que H-03 identificó.
 - Todo PROVISIONAL (purpose=provisional_research). Esto no es un edge: O5 es un estimand de rango, no direccional ni de P&L.
+
+## R2 — recorrido bruto vs fricción — 14/10/2026 (PROVISIONAL)
+- MEDIDO (target-free, 14 activos, 3.838 sesiones, release v4): el recorrido (`R`) y el desplazamiento neto (`|D|`) a 5–60 min superan la fricción de viaje redondo con holgura en ES/MES/NQ/MNQ/YM/RTY/GC/MGC; a 15 min la mediana de `|D|` es 16 ticks en ES (F≈3,6) y 83 en NQ (F≈6,2). El acierto direccional mínimo para cubrir la fricción es ≈ 61 % (ES 15 m), ≈ 54 % (NQ 15 m), ≈ 52–56 % a 60 min. FX y ZB: el movimiento ≤ 30 min no cubre la fricción. Acta `R2_RECORRIDO_VS_FRICCION_RESULTADOS_20261014.md`.
+- NO MEDIDO: dirección/predictibilidad (ninguna señal), P&L, efecto de stops, slippage real, fills pasivos, comisión real de la cuenta elegida.
+
