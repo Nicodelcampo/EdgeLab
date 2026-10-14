@@ -147,3 +147,30 @@ def summarize(rows, k=4, seed=0):
     h1, h2 = ~np.zeros(len(rows), bool) & first, ~first
     out["halves"] = {n: dict(n=int(m.sum()), len_median=float(np.median(A["len"][m])) if m.any() else None, move_atr_median=float(np.median(A["move_atr"][m])) if m.any() else None, slope_median=float(np.median(A["slope_atr_bar"][m])) if m.any() else None) for n, m in (("primera_mitad", h1), ("segunda_mitad", h2))}
     return out
+
+
+def post_break_rows(zones, c, h, l, atr, sd, bar_start, price, vol, seed=0, k_near=5, tol_atr=0.75, lookback=20, min_bar=300):
+    """Corrección del sesgo de fin de zona: la referencia es la barra de RUPTURA (kb = fin + 1, lo único conocido en tiempo real) y el control se empareja por el contramovimiento previo
+    (cierre anterior→ruptura y desplazamiento de `lookback` barras, en ATR) en el mismo sentido, en barras fuera de las zonas. `zones`: lista de dicts con dir, start_bar, end_bar, end_reason, H_ticks, session."""
+    n = len(c); rng = np.random.default_rng(seed); Nmax = max(NS); atr = np.where(atr > 0, atr, np.nan)
+    t = np.arange(n); cm1 = np.r_[c[0], c[:-1]]; cml = np.r_[np.full(lookback, c[0]), c[:-lookback]]
+    X = {s: (s * (cm1 - c) / atr, s * (cml - c) / atr) for s in (1, -1)}
+    blocked = np.zeros(n, bool)
+    for z in zones: blocked[max(z["start_bar"] - 5, 0):min(z["end_bar"] + Nmax + 2, n)] = True
+    ok = (~blocked) & (t >= min_bar) & (t < n - Nmax - 2) & np.isfinite(atr)
+    rows = []
+    for z in zones:
+        if z["end_reason"] not in ("ruptura", "alejamiento"): continue
+        b = int(z["end_bar"]) + 1; d = int(z["dir"])
+        if b + Nmax + 2 >= n or b < lookback: continue
+        x1, x20 = X[d][0][b], X[d][1][b]; H = float(z["H_ticks"]); out = dict(session=z["session"], end_reason=z["end_reason"], dir=d, start_bar=int(z["start_bar"]), end_bar=int(z["end_bar"]), len=int(z["len"]) if "len" in z else None,
+                                                                                     slope_atr_bar=float(z.get("slope_atr_bar", np.nan)), start_hour=int(z.get("start_hour", -1)), x_counter_1bar_atr=float(x1), x_counter_20bar_atr=float(x20), post={}, ctrl={})
+        dist = (X[d][0] - x1) ** 2 + (X[d][1] - x20) ** 2; dist = np.where(ok, dist, np.inf); idx = np.argpartition(dist, k_near)[:k_near]; idx = idx[np.isfinite(dist[idx])]
+        r = int(rng.choice(idx)) if len(idx) and np.sqrt(dist[idx].min()) <= tol_atr else None; out["match_dist_atr"] = None if r is None else float(np.sqrt(dist[r]))
+        for f in FRACS:
+            hb = f * H
+            for N in NS:
+                key = f"f{f}_N{N}"; out["post"][key] = _window_stats(float(c[b]), hb, d, b, N, bar_start, price, vol, h, l, sd, n)
+                out["ctrl"][key] = None if r is None else _window_stats(float(c[r]), hb, d, r, N, bar_start, price, vol, h, l, sd, n)
+        rows.append(out)
+    return rows
