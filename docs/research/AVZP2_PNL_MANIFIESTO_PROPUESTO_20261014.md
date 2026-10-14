@@ -22,7 +22,7 @@ Expectativa neta por operación con límite inferior del IC (bootstrap estaciona
   **análisis separado declarado**, no como celda adicional libre.
 
 ## Costos (propios de ES, sin transportar de otros instrumentos)
-- Spread: medido en la release por tick (bid/ask) en el momento del fill.
+- Spread: medido en la release por tick (bid/ask) en el momento del fill. **Medición previa (ES, horario regular, 31,9 M ticks de 1/10 de los row groups): spread = 1 tick en 93,4 % de los ticks, media 1,11, p90 1, p99 3 ticks.** Entrada a mercado ≈ 1 tick de fricción + comisión ≈ 0,3–0,4 tick por vuelta; con MFE mediana de 3 ticks el margen es estrecho, no inexistente.
 - Comisión + fees por lado: **DATO FALTANTE — lo debe dar Nico** (broker/plan reales). Mientras tanto se reporta con $2,50 y $4,50 round-turn como sensibilidad.
 - Slippage: 0 ticks en límites favorables, 1 tick adicional en stops.
 
