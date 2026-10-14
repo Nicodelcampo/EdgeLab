@@ -60,6 +60,7 @@ Problemas encontrados (y qué se hizo / falta):
 - **Nueve copias del repo en esta PC** (`E:\EdgeLab`, `-gex`, `-data`, `-integ`, `-port`, más `-multiasset`, `-mym`, `-unified-viewer`, `-brain-review` y `E:\ProyectosQuant\EdgeLab-sync-desktop`). → Deprecar con inventario; una sola rama de integración.
 
 ## 5. Qué queda suelto (a integrar o descartar)
+0. **Ramas:** registro actualizado en `docs/BRANCH_REGISTRY_20261014.md` (61 ramas ya integradas, 112 con trabajo propio).
 0. **Línea `main`: INTEGRADA** (merge real el 2026-10-14, `docs/DECISIONES_20261014.md`). Lo que sigue es histórico del relevamiento.
 1. **Rama `data/liquid-release-20261014`** (217 commits, 1.155 archivos): lo útil ya está en `foundation`; el resto es una línea paralela de `research_ops`, `edge_brain`, `bridge` que conflictúa (add/add). No mergear en bloque.
 2. **Auditor de Notion** (`Nicodelcampo/EdgeLab@feat/research-ops-supervisor-mvp`): se usó embebido en un kernel; falta traerlo al repo con tests.
