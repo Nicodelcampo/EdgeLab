@@ -1,13 +1,25 @@
 # CURRENT — estado vivo
 
-**Fecha:** 2026-09-26  
-**Corte:** 2026-09-26  
+**Fecha:** 2026-10-14  
+**Estado:** VIGENTE (L0, se actualiza en cada cambio de estado)  
+**Corte:** 2026-10-14  
 **Rama del PR #48 (head real, la que ve GitHub):** `feat/unified-nt8-viewer-20260920`.
 **Rama de trabajo local (se empuja como fast-forward sobre la de arriba):** `feat/unified-viewer-canonical-20260921`.
 Hallazgo de auditoría 2026-09-21: esta sección llamaba "rama viva" solo a la de trabajo local, sin nombrar cuál es
 el head real que ve el PR — confuso para cualquiera que solo tenga acceso al repo remoto. Corregido acá.  
 **Traspaso de la sesión en la nube del 26/09 (TBZX-R3, IVC, IVC-L; rama `claude/focused-fermat-qjt805`, PR #59):** `docs/research/HANDOFF_2026-09-26_SESION_NUBE.md`.  
 **Referente:** `docs/NORTH_STAR.md` · sha256 del cuerpo `ed4293b5587bb38b3070dba739b2b5f93a949402be0428c98e05ef385593a5f8`
+
+## Estado al 2026-10-14 (leer primero)
+
+- **Entrada vigente:** `docs/research/HANDOFF_2026-10-14_DATOS_L2_Y_INTEGRACION.md`. Producto, capas y roadmap: `docs/PRODUCT.md`; módulos: `docs/MODULES.md`; protocolo de documentación: `docs/DOCUMENTATION_PROTOCOL.md`; índice: `docs/INDEX.md`.
+- **Rama viva:** `foundation/f0b-compatibility-probe`. `main` **no** es baseline: tiene 78 commits propios (línea AVZVOL, funnel, compuerta de datos); ver `docs/research/INVENTARIO_LINEA_MAIN_20261014.md`. Unificación pendiente de decisión de Nico.
+- **Datos:** release `liquid_tick_v1` v4 publicada, verificada y auditada, **no aprobada** para research (licencia, política de liquidez, calendario). Recibo de auditoría: `docs/infra/liquid_v4_audit_20261014/receipt.json`.
+- **Edges promovidos: 0.** Medido y refutado/acotado: HFTZones, BigTrap2 imán, AVZP2 O1; O5 real pero sin expectativa neta; GC presión/progreso de décimas de tick (`docs/research/HFT_ZONAS_ES_MEDIDO_Y_NO_MEDIDO.md`).
+- **Costos de referencia:** `docs/research/REFERENCIA_COSTOS_PROPS_BROKERS_20261014.md`. Fricción de ES ≈ 3,4–3,6 ticks por viaje.
+- **Próximo paso (R2):** medir el recorrido bruto frente a la fricción por activo, hora y régimen, target-free. P&L y holdout siguen bloqueados hasta OK de Nico (`docs/PRODUCT.md` §5).
+
+> Lo que sigue es el corte del 2026-09-26, conservado como histórico. Si contradice lo de arriba, manda lo de arriba.
 
 ## Decisiones vigentes de Nico (2026-09-21)
 

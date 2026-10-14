@@ -1,0 +1,646 @@
+{
+  "schema": "edgelab_modules_v1",
+  "purpose": "Registro canonico de modulos de EdgeLab: que es cada uno, que funcion cumple, de que depende y donde esta su documento y sus tests. Lo valida tools/check_modules.py (corre en CI). Si agregas un paquete en edgelab/, tenes que registrarlo aca.",
+  "layers": {
+    "0": "Fuentes externas y captura",
+    "1": "Configuracion, instrumentos y sesiones",
+    "2": "Datos y custodia",
+    "3": "Indicadores y kernels",
+    "4": "Contexto, estadistica y busqueda",
+    "5": "Ejecucion y validacion",
+    "6": "Memoria y gobernanza",
+    "7": "Operacion e interfaces"
+  },
+  "status_values": [
+    "core",
+    "experimental",
+    "legacy",
+    "planned",
+    "other-branch"
+  ],
+  "modules": [
+    {
+      "id": "config-core",
+      "name": "Configuracion e instrumentos",
+      "layer": 1,
+      "status": "core",
+      "function": "Rutas portables, especificaciones de contrato (tick, valor, comisiones) y configuracion unica. Punto unico de verdad para parametros de instrumento.",
+      "paths": [
+        "edgelab/config.py",
+        "edgelab/instruments.py",
+        "config/default.toml",
+        "config/local.toml.example"
+      ],
+      "inputs": [
+        "config/*.toml"
+      ],
+      "outputs": [
+        "Config",
+        "especificaciones de instrumento"
+      ],
+      "depends_on": [],
+      "doc": "docs/research/HANDOFF_2026-10-14_DATOS_L2_Y_INTEGRACION.md",
+      "tests": [
+        "tests/foundation"
+      ]
+    },
+    {
+      "id": "sessions",
+      "name": "Sesiones y regimenes",
+      "layer": 1,
+      "status": "core",
+      "function": "Ventanas intradia, matrices de sesion y estado de regimen causal.",
+      "paths": [
+        "edgelab/sessions.py",
+        "edgelab/regimes"
+      ],
+      "inputs": [
+        "calendario de sesiones",
+        "precios"
+      ],
+      "outputs": [
+        "matrices de sesion",
+        "estado de regimen"
+      ],
+      "depends_on": [
+        "config-core"
+      ],
+      "doc": "docs/research/cme_equity_index_calendar_20260902",
+      "tests": [
+        "tests/data"
+      ]
+    },
+    {
+      "id": "nt8-capture",
+      "name": "Captura NT8",
+      "layer": 0,
+      "status": "core",
+      "function": "Indicadores y AddOns C# que exportan ticks, barras, zonas y L2 desde NinjaTrader 8; lectores de exports.",
+      "paths": [
+        "nt8",
+        "edgelab/data/nt8_reader.py",
+        "edgelab/data/nt8_contract.py",
+        "edgelab/data/nt8_timezone.py",
+        "edgelab/data/capture_tsv.py"
+      ],
+      "inputs": [
+        "NinjaTrader 8"
+      ],
+      "outputs": [
+        "exports de ticks",
+        "CSV de oraculo",
+        "L2 CSV"
+      ],
+      "depends_on": [],
+      "doc": "docs/nt8_bridge.md",
+      "tests": [
+        "tests/data"
+      ]
+    },
+    {
+      "id": "data-custody",
+      "name": "Datos y custodia",
+      "layer": 2,
+      "status": "core",
+      "function": "Contratos continuos, regimen de contrato, calendario CME, compuertas de sesion y de datos de research (fail-closed), identidad de eventos, L2.",
+      "paths": [
+        "edgelab/data/continuous_contract.py",
+        "edgelab/data/contract_regime.py",
+        "edgelab/data/contract_session_gate.py",
+        "edgelab/data/nq_session_gate.py",
+        "edgelab/data/cme_equity_index_calendar.py",
+        "edgelab/data/event_identity.py",
+        "edgelab/data/l2.py"
+      ],
+      "inputs": [
+        "exports NT8",
+        "calendario oficial CME"
+      ],
+      "outputs": [
+        "series de contrato",
+        "decisiones de sesion",
+        "gates de datos"
+      ],
+      "depends_on": [
+        "config-core",
+        "sessions",
+        "nt8-capture"
+      ],
+      "doc": "docs/nt8_bridge.md",
+      "tests": [
+        "tests/data"
+      ]
+    },
+    {
+      "id": "liquid-release",
+      "name": "Release liquida de ticks",
+      "layer": 2,
+      "status": "core",
+      "function": "Construye, verifica, audita y publica la release canonica liquid_tick_v1: un contrato liquido por sesion, doble reloj, sin holdout, con manifiesto y SHA-256. Lector con preflight de ambos relojes.",
+      "paths": [
+        "edgelab/data/liquid_release",
+        "tools/build_release.py",
+        "tools/finalize_release.py",
+        "tools/verify_release.py",
+        "tools/verify_kaggle_download.py",
+        "tools/refresh_decisions.py",
+        "tools/missing_exports_report.py",
+        "tools/make_agent_readme.py",
+        "tools/make_release_report.py"
+      ],
+      "inputs": [
+        "exports NT8 por contrato",
+        "calendario"
+      ],
+      "outputs": [
+        "release_manifest.json",
+        "Parquet por activo",
+        "metadata/*"
+      ],
+      "depends_on": [
+        "data-custody",
+        "sessions",
+        "kaggle-custody"
+      ],
+      "doc": "docs/infra/LIQUID_RELEASE_20261014.md",
+      "tests": [
+        "tests/data"
+      ]
+    },
+    {
+      "id": "kaggle-custody",
+      "name": "Custodia y ejecucion en Kaggle",
+      "layer": 2,
+      "status": "core",
+      "function": "Identidad, integridad, inventario, sellado y lectura en streaming de datasets Kaggle; publicacion y etiquetado del espacio.",
+      "paths": [
+        "edgelab/kaggle",
+        "tools/kaggle_publish_release.py",
+        "tools/kaggle_space_index.py",
+        "tools/kaggle_space_label.py"
+      ],
+      "inputs": [
+        "datasets Kaggle"
+      ],
+      "outputs": [
+        "inventarios",
+        "sellos",
+        "indice del espacio"
+      ],
+      "depends_on": [
+        "config-core"
+      ],
+      "doc": "docs/infra/KAGGLE_BORRADO_CANDIDATOS_20261014.md",
+      "tests": [
+        "tests/data"
+      ]
+    },
+    {
+      "id": "bridge-kernels",
+      "name": "Barras, footprint e indicadores (paridad con NT8)",
+      "layer": 3,
+      "status": "core",
+      "function": "Construye barras y footprint canonicos, kernels de indicadores en Python y verifica paridad contra los oraculos de NT8.",
+      "paths": [
+        "edgelab/bridge",
+        "oracles",
+        "tools/paridad_oraculo.py"
+      ],
+      "inputs": [
+        "ticks",
+        "oraculos NT8"
+      ],
+      "outputs": [
+        "barras",
+        "zonas",
+        "reportes de paridad"
+      ],
+      "depends_on": [
+        "data-custody",
+        "sessions"
+      ],
+      "doc": "docs/nt8_indicator_parity_contract.md",
+      "tests": [
+        "tests/bridge"
+      ]
+    },
+    {
+      "id": "context",
+      "name": "Contexto causal",
+      "layer": 4,
+      "status": "experimental",
+      "function": "Constructores de contexto target-free (HMM, compuerta L2) para condicionar mediciones.",
+      "paths": [
+        "edgelab/context"
+      ],
+      "inputs": [
+        "barras",
+        "L2"
+      ],
+      "outputs": [
+        "etiquetas de contexto"
+      ],
+      "depends_on": [
+        "bridge-kernels",
+        "data-custody"
+      ],
+      "doc": "docs/research/PROTOCOLO_CONTEXTOS_L2_NQ_20260928.md",
+      "tests": [
+        "tests/research"
+      ]
+    },
+    {
+      "id": "stats",
+      "name": "Estadistica de validacion",
+      "layer": 4,
+      "status": "core",
+      "function": "Bootstrap estacionario, estimand por cluster/sesion, efecto minimo detectable y primitivos de auditoria estadistica (DSR, MCPT, PBO).",
+      "paths": [
+        "edgelab/stats",
+        "edgelab/audit.py"
+      ],
+      "inputs": [
+        "series de resultados"
+      ],
+      "outputs": [
+        "IC",
+        "p-valores",
+        "MDE"
+      ],
+      "depends_on": [],
+      "doc": "docs/edge_validation_contract.md",
+      "tests": [
+        "tests/stats"
+      ]
+    },
+    {
+      "id": "research",
+      "name": "Embudo de investigacion",
+      "layer": 4,
+      "status": "core",
+      "function": "Campanas de medicion pre-registradas: nulos, geometria de zonas, embudos por familia, costos, potencia. Produce actas; no promueve edges por si mismo.",
+      "paths": [
+        "edgelab/research"
+      ],
+      "inputs": [
+        "release de ticks",
+        "manifiestos de campana"
+      ],
+      "outputs": [
+        "actas MEDIDO/NO MEDIDO",
+        "landscapes target-free"
+      ],
+      "depends_on": [
+        "data-custody",
+        "bridge-kernels",
+        "stats",
+        "context"
+      ],
+      "doc": "docs/research_funnel_playbook.md",
+      "tests": [
+        "tests/research"
+      ]
+    },
+    {
+      "id": "external-models",
+      "name": "Modelos externos",
+      "layer": 4,
+      "status": "experimental",
+      "function": "Features de modelos preentrenados (Kronos y sucesores) con causalidad y almacen point-in-time.",
+      "paths": [
+        "edgelab/external"
+      ],
+      "inputs": [
+        "series"
+      ],
+      "outputs": [
+        "features PIT"
+      ],
+      "depends_on": [
+        "data-custody"
+      ],
+      "doc": "docs/external_model_contract.md",
+      "tests": [
+        "tests/external"
+      ]
+    },
+    {
+      "id": "gex",
+      "name": "GEX (exposicion gamma)",
+      "layer": 4,
+      "status": "experimental",
+      "function": "Reconstruccion diaria de niveles de gamma para condicionar regimenes.",
+      "paths": [
+        "edgelab/gex"
+      ],
+      "inputs": [
+        "cadenas de opciones"
+      ],
+      "outputs": [
+        "niveles GEX diarios"
+      ],
+      "depends_on": [
+        "data-custody"
+      ],
+      "doc": "docs/research/GEX_FUENTES_Y_GATES_2026-08-13.md",
+      "tests": []
+    },
+    {
+      "id": "execution-engine",
+      "name": "Motor de ejecucion tick",
+      "layer": 5,
+      "status": "core",
+      "function": "Motor compartido de fills a nivel tick (entrada al tick siguiente, ask/bid, TP con trade-through, costos). Se escribe una vez; las estrategias solo emiten senales.",
+      "paths": [
+        "edgelab/engine.py"
+      ],
+      "inputs": [
+        "senales (idx, dirs)",
+        "ticks con bid/ask"
+      ],
+      "outputs": [
+        "ledger de trades"
+      ],
+      "depends_on": [
+        "config-core"
+      ],
+      "doc": "CONTRATO_LLM.md",
+      "tests": [
+        "tests/foundation"
+      ]
+    },
+    {
+      "id": "validation",
+      "name": "Validacion de estrategias",
+      "layer": 5,
+      "status": "core",
+      "function": "Arnes de auditoria: prefix_check (sin lookahead), mirror_check (simetria), MCPT, PBO, SPA y walk-forward sobre senales puras.",
+      "paths": [
+        "validation",
+        "strategies"
+      ],
+      "inputs": [
+        "funciones de senal"
+      ],
+      "outputs": [
+        "veredicto de preflight y de robustez"
+      ],
+      "depends_on": [
+        "execution-engine",
+        "stats"
+      ],
+      "doc": "docs/edge_validation_contract.md",
+      "tests": [
+        "tests/foundation"
+      ]
+    },
+    {
+      "id": "propfirm",
+      "name": "Prop firms y costos de cuenta",
+      "layer": 5,
+      "status": "experimental",
+      "function": "Reglas de props como datos, simulador del ciclo evaluacion-fondeo-retiro y esperanza matematica; referencia de comisiones.",
+      "paths": [
+        "edgelab/propfirm",
+        "config/propfirms"
+      ],
+      "inputs": [
+        "reglas scrapeadas",
+        "resultados de estrategia"
+      ],
+      "outputs": [
+        "EV por cuenta",
+        "filtros de admisibilidad"
+      ],
+      "depends_on": [
+        "config-core",
+        "execution-engine"
+      ],
+      "doc": "docs/research/REFERENCIA_COSTOS_PROPS_BROKERS_20261014.md",
+      "tests": [
+        "tests/propfirm"
+      ]
+    },
+    {
+      "id": "edge-brain",
+      "name": "Memoria de investigacion (Edge Brain)",
+      "layer": 6,
+      "status": "experimental",
+      "function": "Hipocampo, ledger de resultados, invalidaciones, elegibilidad, cobertura y memoria de episodios: evita repetir lo muerto y conserva el linaje.",
+      "paths": [
+        "edgelab/edge_brain",
+        "schemas/edge_brain",
+        "config/edge_brain"
+      ],
+      "inputs": [
+        "actas",
+        "resultados"
+      ],
+      "outputs": [
+        "linaje",
+        "invalidaciones",
+        "elegibilidad"
+      ],
+      "depends_on": [
+        "research"
+      ],
+      "doc": "docs/research/HFT_ZONAS_ES_MEDIDO_Y_NO_MEDIDO.md",
+      "tests": [
+        "tests"
+      ]
+    },
+    {
+      "id": "edge-factory",
+      "name": "Fabrica de hipotesis",
+      "layer": 6,
+      "status": "experimental",
+      "function": "Orquestador y esquemas para generar y registrar hipotesis con justificacion economica y condicion de refutacion.",
+      "paths": [
+        "edgelab/edge_factory",
+        "schemas/edge_factory"
+      ],
+      "inputs": [
+        "ideas",
+        "especificaciones de instrumento"
+      ],
+      "outputs": [
+        "hipotesis registradas"
+      ],
+      "depends_on": [
+        "edge-brain",
+        "config-core"
+      ],
+      "doc": "docs/HIPOTESIS_PENDIENTES.md",
+      "tests": [
+        "tests"
+      ]
+    },
+    {
+      "id": "governance",
+      "name": "Gobernanza y documentacion",
+      "layer": 6,
+      "status": "core",
+      "function": "North Star, protocolo de documentacion, registro de edges, canal auditor, contratos de validacion y compuertas de holdout. Define las reglas; ningun modulo las sobrescribe.",
+      "paths": [
+        "docs/NORTH_STAR.md",
+        "docs/DOCUMENTATION_PROTOCOL.md",
+        "docs/PRODUCT.md",
+        "EDGES_DISCOVERED.md",
+        "PENDIENTE.md",
+        "CLAUDE.md",
+        "AGENTS.md"
+      ],
+      "inputs": [
+        "decisiones de Nico"
+      ],
+      "outputs": [
+        "reglas",
+        "estado vivo"
+      ],
+      "depends_on": [],
+      "doc": "docs/DOCUMENTATION_PROTOCOL.md",
+      "tests": [
+        "tests/test_north_star_hash.py"
+      ]
+    },
+    {
+      "id": "viewer",
+      "name": "Visor",
+      "layer": 7,
+      "status": "experimental",
+      "function": "Visualizacion de barras, zonas y L2 para inspeccion humana.",
+      "paths": [
+        "viewer"
+      ],
+      "inputs": [
+        "bundles de barras y zonas"
+      ],
+      "outputs": [
+        "vistas HTML"
+      ],
+      "depends_on": [
+        "bridge-kernels"
+      ],
+      "doc": "docs/research/VIEWER_UNIFICATION_PROPOSAL_20260921.md",
+      "tests": []
+    },
+    {
+      "id": "agent-bridge",
+      "name": "Puente multi-IA (Drive/Kaggle)",
+      "layer": 7,
+      "status": "experimental",
+      "function": "Permite que agentes sin red o sin datos (Gemini, Notion) pidan lecturas y kernels a la PC local por una carpeta de Drive, con politica de acciones permitidas y parches solo para revision.",
+      "paths": [
+        "tools/kaggle_drive_bridge.py",
+        "tools/export_head_snapshot.py",
+        "tools/estado.py"
+      ],
+      "inputs": [
+        "pedidos JSON"
+      ],
+      "outputs": [
+        "respuestas JSON",
+        "snapshots de codigo"
+      ],
+      "depends_on": [
+        "kaggle-custody"
+      ],
+      "doc": "docs/research/HANDOFF_2026-10-14_DATOS_L2_Y_INTEGRACION.md",
+      "tests": [
+        "tests/bridge"
+      ]
+    },
+    {
+      "id": "funnel",
+      "name": "Funnel exploratorio CPU (linea main)",
+      "layer": 4,
+      "status": "other-branch",
+      "branch": "main",
+      "function": "Screening exploratorio de CPU con separacion de etapas D0/D1; paridad GPU pendiente. Vive solo en main (PR #63-#106, linea AVZVOL).",
+      "paths": [
+        "edgelab/funnel",
+        "tools/run_funnel_arrays.py"
+      ],
+      "inputs": [
+        "tablas de eventos"
+      ],
+      "outputs": [
+        "screens exploratorios"
+      ],
+      "depends_on": [
+        "stats"
+      ],
+      "doc": "docs/research/INVENTARIO_LINEA_MAIN_20261014.md",
+      "tests": []
+    },
+    {
+      "id": "research-data-gate",
+      "name": "Compuerta de datos de research (linea main)",
+      "layer": 2,
+      "status": "other-branch",
+      "branch": "main",
+      "function": "Compuerta opt-in fail-closed para lectores de datos de research y guard de acceso Kaggle; los lectores legacy aun no estan cableados. Vive solo en main.",
+      "paths": [
+        "edgelab/data/research_data_gate.py",
+        "edgelab/kaggle/research_access.py",
+        "docs/DATA_CONSUMER_MATRIX.md"
+      ],
+      "inputs": [
+        "pines SHA-256",
+        "manifiestos de campana"
+      ],
+      "outputs": [
+        "admision de lectura"
+      ],
+      "depends_on": [
+        "data-custody"
+      ],
+      "doc": "docs/research/INVENTARIO_LINEA_MAIN_20261014.md",
+      "tests": []
+    },
+    {
+      "id": "component-registry",
+      "name": "Registro de componentes (linea main)",
+      "layer": 6,
+      "status": "other-branch",
+      "branch": "main",
+      "function": "Catalogo de 17 componentes del repo y chequeo de navegacion offline. Este modulo (config/modules.json) lo reemplaza como registro canonico en foundation.",
+      "paths": [
+        "config/component_registry.json",
+        "tools/edgelab_catalog.py"
+      ],
+      "inputs": [
+        "arbol del repo"
+      ],
+      "outputs": [
+        "PASS_NAVIGATION_ONLY"
+      ],
+      "depends_on": [],
+      "doc": "docs/research/INVENTARIO_LINEA_MAIN_20261014.md",
+      "tests": []
+    },
+    {
+      "id": "notion-workers",
+      "name": "Workers de Notion (linea main)",
+      "layer": 7,
+      "status": "other-branch",
+      "branch": "main",
+      "function": "Integraciones de Notion (auditor y operaciones de investigacion). Vive solo en main y en la rama feat/research-ops-supervisor-mvp.",
+      "paths": [
+        "integrations/notion-workers"
+      ],
+      "inputs": [
+        "paginas de Notion"
+      ],
+      "outputs": [
+        "auditorias"
+      ],
+      "depends_on": [],
+      "doc": "docs/research/INVENTARIO_LINEA_MAIN_20261014.md",
+      "tests": []
+    }
+  ],
+  "unowned_ok": [
+    "edgelab/__init__.py"
+  ]
+}

@@ -1,5 +1,8 @@
 # Candidatos a borrar en Kaggle (2026-10-14) — NO se borró nada
 
+Estado: PROPUESTA (nada se borró; decide Nico)  
+Fecha: 2026-10-14
+
 Yo no puedo borrar datasets de forma permanente; esta lista y los comandos son para que los ejecutes vos. Un borrado en Kaggle **no se puede deshacer**.
 Antes de borrar: la release `edgelab-liquid-ticks-20261014` (v4) debe estar publicada y verificada, y conviene guardar la copia local comprimida (ver limpieza de la PC).
 

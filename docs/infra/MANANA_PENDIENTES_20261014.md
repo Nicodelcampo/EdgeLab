@@ -1,5 +1,8 @@
 # Pendientes para Nico — release `liquid_tick_v1` (2026-10-14)
 
+Estado: SUPERADO por docs/research/HANDOFF_2026-10-14_DATOS_L2_Y_INTEGRACION.md  
+Fecha: 2026-10-14
+
 ## Estado
 - Publicado (PRIVADO): `nicolasbuttaro/edgelab-liquid-ticks-20261014`, estado `CANDIDATE_NOT_RESEARCH_APPROVED`.
   14 activos, un Parquet por activo (`data/<ACTIVO>_ticks.parquet`), contrato líquido causal por sesión, sin holdout

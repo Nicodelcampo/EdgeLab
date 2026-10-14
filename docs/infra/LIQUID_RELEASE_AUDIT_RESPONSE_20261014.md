@@ -1,5 +1,8 @@
 # Respuesta a la auditoría independiente de la release líquida (2026-10-14)
 
+Estado: VIGENTE  
+Fecha: 2026-10-14
+
 Auditoría: `docs/infra/LIQUID_RELEASE_INDEPENDENT_AUDIT_20261014.md` (rama `feat/research-ops-supervisor-mvp`, commit `2ae9e23`).
 Productor auditado: `705229bc`. Corrección: commit `0f68fe28` (rama `data/liquid-release-20261014`), con 15 pruebas de regresión nuevas
 (53 pruebas en `tests/data/test_liquid_release_*.py`).

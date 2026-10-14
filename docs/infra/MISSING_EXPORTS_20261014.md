@@ -1,5 +1,8 @@
 # Exports que faltan (generado por `tools/missing_exports_report.py`)
 
+Estado: VIGENTE (generado; se regenera, no se edita)
+Fecha: 2026-10-14
+
 P0 = excluye o bloquea sesiones de la release. P1 = mejora la garantía de procedencia (hoy sólo hay parquet derivado).
 Cada fila es un rango de fechas de trading CME por contrato. Se exportan con el AddOn `EdgeLabTickHistory` (un archivo por día NT-local, UTC).
 

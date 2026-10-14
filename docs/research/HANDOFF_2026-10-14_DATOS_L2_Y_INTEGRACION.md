@@ -1,5 +1,8 @@
 # Handoff 2026-10-14 — cierre de datos, L2, integración y prioridades
 
+Estado: VIGENTE  
+Fecha: 2026-10-14
+
 Punto de entrada para continuar sin la conversación. Se lee con `CLAUDE.md`, `docs/research/HFT_ZONAS_ES_MEDIDO_Y_NO_MEDIDO.md`, `docs/research/PLAN_HACIA_EDGE_NETO_20261014.md` y `docs/research/REFERENCIA_COSTOS_PROPS_BROKERS_20261014.md`.
 Procedencia: relevamiento hecho el 2026-10-14 sobre esta PC (E:, D:), Kaggle (`kaggle datasets/kernels`) y el repo. Nada se borró.
 

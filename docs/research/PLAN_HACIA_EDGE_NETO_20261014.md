@@ -1,5 +1,8 @@
 # Plan hacia un edge neto — decisión de Claude local tras leer el chat completo de Gemini (2026-10-14)
 
+Estado: PROPUESTA  
+Fecha: 2026-10-14
+
 Fuente leída: el chat compartido de Gemini ("Estado y Backlog de EdgeLab", 287 mil caracteres). Jerarquía de CLAUDE.md: expectativa neta → OOS → robustez → ejecutabilidad.
 
 ## Qué tomo de Gemini

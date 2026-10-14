@@ -79,7 +79,7 @@ def main():
     df = df.sort_values(["priority", "instrument", "contract", "first_trade_date"]).reset_index(drop=True)
     out = Path(a.out)
     df.to_csv(out / "missing_exports.csv", index=False)
-    L = ["# Exports que faltan (generado por `tools/missing_exports_report.py`)", "",
+    L = ["# Exports que faltan (generado por `tools/missing_exports_report.py`)", "", "Estado: VIGENTE (generado; se regenera, no se edita)", "Fecha: 2026-10-14", "",
          "P0 = excluye o bloquea sesiones de la release. P1 = mejora la garantía de procedencia (hoy sólo hay parquet derivado).",
          "Cada fila es un rango de fechas de trading CME por contrato. Se exportan con el AddOn `EdgeLabTickHistory` (un archivo por día NT-local, UTC).", ""]
     for pr in ("P0", "P1"):
