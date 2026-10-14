@@ -49,7 +49,7 @@ Se mantiene la clasificación de `docs/infra/KAGGLE_BORRADO_CANDIDATOS_20261014.
 | **Contexto L2** | `edgelab-nq-nt8-2026q3-l2ctx`, `edgelab-l2-gc-bookmap-audit-20260921` | **Conservar** (única copia en la nube; el auditor de Notion pide lo mismo) |
 | **Spot/CFD Dukascopy** (11,9 GB, 7 datasets) | otro mercado, no CME | Conservar hasta decidir si ARB/FX spot sigue vivo; no se usan para ES/NQ/GC |
 | **Vigentes** | `edgelab-liquid-ticks-20261014`, `edgelab-data-catalog`, 4 de código, 10 de archivo | Conservar |
-El mapa dataset → kernels (248 kernels históricos) está en `D:\edgelab_release_work\kernel_deps.csv` cuando termine el barrido; no se borra ningún dataset con dependientes sin decisión de Nico.
+**Mapa dataset → kernels (completado, 248 kernels; `docs/infra/KAGGLE_KERNEL_DEPENDENCIES_20261014.csv`):** `edgelab-ticks-nt8-reexport-20261005` lo leen 95 kernels, `edgelab-ticks-nt8-canonical` 80, `edgelab-nt8-historical-missing-20261001` 63, **`edgelab-ticks-nq-preholdout` (el defectuoso) 58**, `edgelab-ticks-es-nq-2026q3-ext` 58, `edgelab-mgc-nt8-raw-parquet` 38, `edgelab-es-nq-aggregates-20261009` 1. Borrar cualquiera deja sin poder reejecutarse a esos kernels; sus resultados siguen en las actas del repo. **No existe ningún dataset reemplazado sin dependientes**: por eso la propuesta pasa a ser *etiquetar y congelar* (prefijo de estado, ya aplicado) y borrar sólo con decisión explícita de Nico y respaldo local verificado.
 
 ## 4. Documentación: encontrable, correcta, útil
 Problemas encontrados (y qué se hizo / falta):
