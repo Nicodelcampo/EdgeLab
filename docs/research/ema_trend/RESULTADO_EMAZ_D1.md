@@ -41,3 +41,19 @@ Los cuatro tipos aparecen sobre todo en la apertura (8–10 h CT). La agrupació
 
 ## Para las próximas preguntas (antes de cualquier hipótesis sobre el precio)
 Normalizar la hora por barras disponibles; medir largo en minutos además de barras; ver si los tipos 1 y 3 (los de mayor recorrido) se concentran en ciertos días/horas; relacionar los toques con volumen/delta; comparar con las zonas de aVolZonePOI2; repetir en ES/YM/GC/MGC.
+
+# EMAZ-D2 — volumen tras el fin de la zona: franja «más allá» vs «adentro» (descriptivo)
+Definición: al terminar la zona (cierre de la última barra válida, R), dos franjas de igual altura (fracción de la altura de la zona = rango de precio): «más allá» (desde R, en el sentido de la tendencia) y «adentro» (desde R hacia atrás); volumen a nivel de tick en las N barras siguientes (misma sesión). `share` = más_allá / (más_allá + adentro). Control: la misma medida en una barra al azar fuera de las zonas con igual altura y dirección. 1.571 zonas, 264 sesiones; diferencia apareada con error estándar agrupado por sesión. Datos: `EMAZD2_RESULTADOS.json`.
+
+| Franja (× altura) | N barras | share más allá (zonas) | control | diferencia apareada ± EE | P(llega a más allá / a adentro) | control |
+|---|---:|---:|---:|---|---|---|
+| 0,5 (la del usuario) | 50 | 0,407 | 0,503 | −0,095 ± 0,015 | 0,02 / 0,05 | 0,08 / 0,08 |
+| 0,5 | 100 | 0,436 | 0,503 | −0,066 ± 0,014 | 0,08 / 0,14 | 0,18 / 0,15 |
+| 0,5 | 200 | 0,459 | 0,505 | −0,046 ± 0,013 | 0,22 / 0,30 | 0,31 / 0,28 |
+| 0,5 | 400 | 0,475 | 0,508 | −0,032 ± 0,012 | 0,39 / 0,45 | 0,42 / 0,41 |
+| 0,25 | 100 | 0,431 | 0,500 | −0,068 ± 0,013 | 0,36 / 0,48 | 0,43 / 0,42 |
+| 1,0 | 200 | 0,460 | 0,505 | −0,044 ± 0,014 | 0,02 / 0,04 | 0,08 / 0,08 |
+- Tras el fin de la zona, **hay menos volumen en la franja «más allá» que en la franja «adentro»** (≈ 41 % a 50 barras, 46–48 % a 200–400 barras, contra 50 % del control). Consistente en las 4 alturas, en las 4 ventanas y en todos los contextos probados (alcistas/bajistas, pendiente, largo, hora de inicio, mitades de la muestra: 44–47 % contra ~50 % del control).
+- El precio llega menos a menudo a extenderse una distancia h más allá que a volver una distancia h hacia adentro (0,22 contra 0,30 con franja 0,5 y 200 barras), mientras que el control es simétrico.
+- **Advertencia sobre cómo se mide:** el 82 % de las zonas termina porque el precio rompe la línea en contra de la tendencia. Las barras inmediatamente posteriores empiezan con ese movimiento contrario, así que parte de este resultado es **mecánico** (selección por cómo se define el fin), y el control al azar no tiene ese condicionamiento. No debe leerse como una propiedad del mercado todavía.
+- Próximo paso para quitar el sesgo: medir desde la barra de ruptura (lo único conocido en tiempo real), separar por motivo de fin (ruptura/alejamiento/EMA) y usar un control condicionado a un movimiento contrario de igual tamaño justo antes.
