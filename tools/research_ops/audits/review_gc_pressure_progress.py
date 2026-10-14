@@ -1,7 +1,7 @@
 """Review aggregate atlas custody/crossfoot, never reads market payload.
 Verification of aggregate arithmetic is not independent reconstruction of tape.
 """
-import hashlib,math
+import hashlib,math,json
 from ..confluence.gc_pressure_progress import validate,CAL_SHA,METRICS,CORRELATIONS,STATES
 from ..confluence.build_target_free_pilot import digest
 
@@ -41,6 +41,7 @@ def check_census(x):
 
 def review(boot,r,p,c,pkg,raw,previous):
  validate(p,c)
+ if json.loads(raw)!=r:raise ValueError('parsed receipt must equal hash-bound bytes')
  if r['status']!='TARGET_FREE_PRESSURE_PROGRESS_COMPLETE_NOT_EDGE' or boot['status']!=r['status'] or boot['exit_code']!=0 or boot['stop_reason'] is not None:raise ValueError('terminal complete science/boot')
  if any(boot[k]!=pkg[k] for k in ('source_commit','bundle_sha256','plan_sha256')) or r['plan_sha256']!=digest(p) or r['calibration_sha256']!=CAL_SHA:raise ValueError('package plan custody')
  if hashlib.sha256(raw).hexdigest()!=boot['pressure_progress_receipt_sha256'] or len(raw)>p['max_aggregate_bytes'] or boot['transport_pin_verified'] is not True:raise ValueError('exact pinned aggregate')

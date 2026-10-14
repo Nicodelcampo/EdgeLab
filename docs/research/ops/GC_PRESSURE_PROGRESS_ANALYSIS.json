@@ -1,0 +1,215 @@
+{
+  "schema": "gc_pressure_progress_analysis_v1",
+  "status": "EXPLORATORY_DESCRIPTIVE_SUPPORT_NOT_EDGE",
+  "receipt_sha256": "3886162c19d2a03d535c0cee53d7dda84ad4e186c48f61bcaf3e903936646f84",
+  "observed_anchors": 76284,
+  "eligible_anchors": 44374,
+  "unknown_anchors": 31910,
+  "nonoverlap_windows": 6581,
+  "states_unchanged": {
+    "A_ONLY": 2,
+    "E_ONLY": 2656,
+    "BOTH": 0,
+    "NEITHER": 41716,
+    "UNKNOWN": 31910
+  },
+  "support_readiness": {
+    "descriptive_population_sufficient": true,
+    "dates_with_30_nonoverlap_windows": 6,
+    "supported_cells": [
+      "OTHER:-1",
+      "OTHER:1",
+      "RTH:-1",
+      "RTH:1"
+    ],
+    "evaluation_authorized": false,
+    "independent_episodes_claimed": false
+  },
+  "support_descriptors": {
+    "anchors": {
+      "pressure_at_least_q80_and_small_net": 1324,
+      "prior_progress_at_least_4_ticks_trajectories": {
+        "CURRENT_OPPOSITE_LT_MINUS2": 8948,
+        "CURRENT_SMALL_NET_MINUS2_TO_LT2": 4115,
+        "CURRENT_SAME_DIRECTION_GE2": 8880
+      },
+      "prior_progress_at_least_4_total": 21943
+    },
+    "nonoverlap": {
+      "pressure_at_least_q80_and_small_net": 166,
+      "prior_progress_at_least_4_ticks_trajectories": {
+        "CURRENT_OPPOSITE_LT_MINUS2": 1292,
+        "CURRENT_SMALL_NET_MINUS2_TO_LT2": 637,
+        "CURRENT_SAME_DIRECTION_GE2": 1251
+      },
+      "prior_progress_at_least_4_total": 3180
+    }
+  },
+  "sessions": [
+    {
+      "trade_date": "2026-08-03",
+      "nonoverlap_windows": 845,
+      "eligible_anchors": 5077,
+      "trajectories_nonoverlap": [
+        153,
+        73,
+        166
+      ],
+      "high_pressure_small_net_nonoverlap": 10
+    },
+    {
+      "trade_date": "2026-08-04",
+      "nonoverlap_windows": 861,
+      "eligible_anchors": 5428,
+      "trajectories_nonoverlap": [
+        131,
+        106,
+        135
+      ],
+      "high_pressure_small_net_nonoverlap": 21
+    },
+    {
+      "trade_date": "2026-08-05",
+      "nonoverlap_windows": 1324,
+      "eligible_anchors": 9519,
+      "trajectories_nonoverlap": [
+        258,
+        132,
+        253
+      ],
+      "high_pressure_small_net_nonoverlap": 49
+    },
+    {
+      "trade_date": "2026-08-06",
+      "nonoverlap_windows": 1225,
+      "eligible_anchors": 8376,
+      "trajectories_nonoverlap": [
+        262,
+        110,
+        258
+      ],
+      "high_pressure_small_net_nonoverlap": 27
+    },
+    {
+      "trade_date": "2026-08-07",
+      "nonoverlap_windows": 1233,
+      "eligible_anchors": 8757,
+      "trajectories_nonoverlap": [
+        257,
+        115,
+        242
+      ],
+      "high_pressure_small_net_nonoverlap": 40
+    },
+    {
+      "trade_date": "2026-08-10",
+      "nonoverlap_windows": 1093,
+      "eligible_anchors": 7217,
+      "trajectories_nonoverlap": [
+        231,
+        101,
+        197
+      ],
+      "high_pressure_small_net_nonoverlap": 19
+    }
+  ],
+  "correlation_descriptors": {
+    "pressure_normalized:abs_progress_ticks": {
+      "minimum_over_date_cells": 0.2542630062817071,
+      "maximum_over_date_cells": 0.6662088645627139,
+      "positive_cells": 24,
+      "negative_cells": 0,
+      "available_date_cells": 24,
+      "pooled_by_cell": {
+        "OTHER:-1": 0.5005815949965449,
+        "OTHER:1": 0.4365823430923011,
+        "RTH:-1": 0.3935786593632326,
+        "RTH:1": 0.48079170686306577
+      }
+    },
+    "pressure_normalized:directed_progress_ticks": {
+      "minimum_over_date_cells": -0.2625023568987832,
+      "maximum_over_date_cells": 0.5324517536820909,
+      "positive_cells": 21,
+      "negative_cells": 3,
+      "available_date_cells": 24,
+      "pooled_by_cell": {
+        "OTHER:-1": 0.01279257226205885,
+        "OTHER:1": 0.35617388077498124,
+        "RTH:-1": 0.18456665959309068,
+        "RTH:1": 0.2095151374117064
+      }
+    },
+    "pressure_ratio:directed_progress_ticks": {
+      "minimum_over_date_cells": -0.16528034729446017,
+      "maximum_over_date_cells": 0.4006964803526402,
+      "positive_cells": 22,
+      "negative_cells": 2,
+      "available_date_cells": 24,
+      "pooled_by_cell": {
+        "OTHER:-1": 0.12449607602106515,
+        "OTHER:1": 0.26836115429944807,
+        "RTH:-1": 0.1355266752232041,
+        "RTH:1": 0.14540313039250205
+      }
+    }
+  },
+  "runner_seconds": 24.258298910000008,
+  "boot_seconds": 28.08568671400002,
+  "comparison_plan": [
+    {
+      "grain": "all six original dates, past-window trajectory; disjoint current-progress buckets",
+      "population": "greedy 40sec-nonoverlap eligible pairs with prior directed progress>=4 ticks",
+      "unit": "count of window pairs, not independent episodes",
+      "finding": "Different past-to-present trajectories have observed support; no future response measured",
+      "derivation": "sum matrix row4 across phase/direction; group current columns(0,1),(2),(3,4); crosscheck per date",
+      "disposition": "chart",
+      "reason": "Show the support of three mutually exclusive trajectories on the same conditioned population"
+    },
+    {
+      "grain": "date and phase/direction",
+      "population": "all eligible anchors plus declared nonoverlap sample",
+      "unit": "counts/correlation descriptors separately",
+      "finding": "Coverage and descriptive correlations must not be mistaken for future predictive effects",
+      "derivation": "read exact per-date aggregates; no pooled mean of quantiles",
+      "disposition": "table",
+      "reason": "Retain all dates and direction/phase exceptions in CSV and closeout; no inference"
+    }
+  ],
+  "profiler_resolution": "Nested receipt cannot be profiled directly; normalized CSVs profiled. Repeated dates/cells/buckets are expected components of unique composite keys. POOLED is not summed with dates. Constant/negative correlation is valid, missing values remain undefined. BOTH is constant zero, as prior census; undefined_if_constant is consistently False for this receipt, not imputed. Pearson values are not record keys.",
+  "outcomes_computed": false,
+  "holdout_opened": false,
+  "canonical_brain_written": false,
+  "independent_episodes_claimed": false,
+  "negative_date_cell_correlations": {
+    "pressure_normalized:directed_progress_ticks": [
+      {
+        "trade_date": "2026-08-03",
+        "cell": "RTH:1",
+        "pearson_descriptive": -0.002650691219493664
+      },
+      {
+        "trade_date": "2026-08-04",
+        "cell": "OTHER:-1",
+        "pearson_descriptive": -0.11923833792511945
+      },
+      {
+        "trade_date": "2026-08-07",
+        "cell": "OTHER:-1",
+        "pearson_descriptive": -0.2625023568987832
+      }
+    ],
+    "pressure_ratio:directed_progress_ticks": [
+      {
+        "trade_date": "2026-08-04",
+        "cell": "OTHER:-1",
+        "pearson_descriptive": -0.10804585205363623
+      },
+      {
+        "trade_date": "2026-08-10",
+        "cell": "RTH:1",
+        "pearson_descriptive": -0.16528034729446017
+      }
+    ]
+  }
+}

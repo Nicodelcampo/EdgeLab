@@ -25,6 +25,8 @@ class AtlasTests(unittest.TestCase):
   for k,v in [('outcomes_computed',True),('evaluation_read',True),('total_ticks',1)]:
    x=copy.deepcopy(r);x[k]=v
    with self.assertRaises(ValueError):review(boot,x,plan(),cal(),pkg,raw,previous)
+  x=copy.deepcopy(r);next(iter(x['total_training']['cells'].values()))['continuous_metrics']['pressure_normalized']['mean']+=1
+  with self.assertRaises(ValueError):review(boot,x,plan(),cal(),pkg,raw,previous)
   x=copy.deepcopy(r);next(iter(x['total_training']['cells'].values()))['pressure_progress_counts'][0][0]+=1
   with self.assertRaises(ValueError):check_census(x['total_training'])
  def test_fixed_grid_all_cells_and_nonoverlap_selection(self):

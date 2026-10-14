@@ -1,3 +1,11 @@
+## Entrada actual — GC presión/avance TERMINAL COMPLETE, soporte descriptivo
+
+Kernel138608300/v1 `edgelab-gc-pressure-progress-atlas-v1`: COMPLETE; 1 intención/1 job/1 poll. Fuente5877f658/bundled641f6aa/plan95a9012d/receipt3886162c. Leer GC_PRESSURE_PROGRESS_CLOSEOUT/RECEIPT/BOOT/REVIEW/ANALYSIS/KNOWLEDGE_PROPOSAL/NEXT_DECISION y RESULTS_TO_REFERENT_NEXT_MILESTONES.
+
+44.374 elegibles/6.581 pares sin solapamiento/6 fechas; censo anterior exacto A_ONLY=2/BOTH=0. Previo≥4ticks:1.292retroceso/637netopequeño/1.251avance en 3.180pares; no absorción física/edge/outcomes. Presión alta+netopequeño sólo166pares. Correlación absoluta positiva24/24, dirigida negativa3/24; describir excepciones, no inferencia. Runner24,258s/boot28,086s, no speedup.15focales/969ResearchOps/18nav PASS prelaunch.
+
+Próximo: linaje completo y nuevo protocolo disjunto baseline/capacidad antes de outcomes. PropuestaNOcanónica, dataset causal/roll/timezone requieren reporte del agente local; no certificar por pin. Journals originales `/data/operational-state/gc-pressure-progress-95a9012db0b4-{dispatch,watch}.sqlite`, no reset/replay/reconstrucción JSON. Sin Brainwriter/holdout/P&L/merge/deploy/24x7. No nuevo job activo EN ESTA CAMPAÑA, no estado global de cuenta. Debajo historia, no autorización de reenviar.
+
 ## Estado actual — GC A soporte TERMINAL COMPLETE, diagnóstico registrado
 
 Kernel138584908/v1 `edgelab-gc-a-support-diagnostic-v1`: COMPLETE, 1 intención cerrada/1 job/1 poll. Fuente1e86c07d/bundleb4eca447/plan0201ee0951f6; recibo4886936d byteexacto, auditor PASS. LeerGC_A_SUPPORT_CLOSEOUT/RECEIPT/BOOT/REVIEW/ANALYSIS/KNOWLEDGE_PROPOSAL/LAUNCH.
