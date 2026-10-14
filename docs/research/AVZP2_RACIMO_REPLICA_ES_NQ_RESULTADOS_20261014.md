@@ -25,6 +25,15 @@ Procedencia: el árbol de research estaba limpio al correr; semillas por `crc32`
 - NQ tiene 3–5× menos racimos que ES porque la misma altura en ticks cubre menos precio relativo: la misma definición en ticks no es la misma geometría.
   **NQ no refuta nada: la falla formal de O5 es de potencia (n 48–1.478).** Tampoco replica con holgura: es consistente en signo, no concluyente.
 
+## Enmienda 1: MNQ canónico y MES (misma corrida, mismo criterio; manifiesto enmendado antes de correr)
+| | racimos (celdas largas) | O5 compresión | O1 con control |
+|---|---|---|---|
+| **MNQ canónico** | 1.140 – 9.056 | **7/7**, −5,9 a −8,2 % (Holm ≤ 0,0012) | **6/6**, +4,6 a +7,9 pp (Holm ≤ 0,0004) |
+| MES (mismo subyacente que ES, no cuenta como independiente) | 3.560 – 5.805 | 7/7, −3,9 a −5,6 % | 6/6, +6,1 a +8,8 pp |
+- **Control de integridad de datos:** los resultados originales de MNQ (compresión −4 a −10 %, O1 +4 a +8,5 pp) se obtuvieron con exports sin sanear. **Sobreviven sobre la release saneada, con las mismas magnitudes.** Los hallazgos no eran un artefacto de duplicados de huso ni de contratos mezclados.
+- La config de Nico (6/500/30) en MNQ canónico queda con 346 racimos (antes 454, por las 20 sesiones de warm-up por contrato) y compresión −7,3 % (Holm 0,0012).
+- Con esto, **tres instrumentos con potencia (MNQ, ES, MES; ES y MES comparten subyacente)** replican compresión y continuación; NQ queda sin potencia por geometría de barra.
+
 ## Qué cambia
 1. **La compresión y la continuación a favor de la tendencia previa dejan de ser una rareza de MNQ**: replican en un segundo instrumento (ES) con potencia, y van en el mismo signo en un tercero (NQ).
 2. **La lectura "pausa con inventario" gana evidencia independiente** (otro instrumento, otro año de datos canónicos). Sigue sin ser un edge: nada de esto tiene P&L.

@@ -931,3 +931,4 @@ resultados `docs/research/GEX1_RESULTADOS_20261006.{json,md}`. Sólo informació
   - **NQ**: O1 4 de 5 celdas evaluables significativas (+5,6 a +7,3 pp; cumple el umbral sin margen); compresión 4 de 5 evaluables → **no cumple formalmente el criterio (≥5 de 7)** por potencia (n 48–1.478).
   - NO MEDIDO: P&L; escalado por volatilidad; otros instrumentos (YM, RTY); interacción O1 × compresión.
   - Acta `AVZP2_RACIMO_REPLICA_ES_NQ_RESULTADOS_20261014.md`; manifiesto previo `AVZP2_RACIMO_REPLICA_ES_NQ_MANIFIESTO_20261014.md`.
+  - Enmienda 1 (14/10/2026): **MNQ sobre la release saneada replica sus propios resultados** (O5 7/7 −5,9 a −8,2 %; O1 6/6 +4,6 a +7,9 pp): los hallazgos originales no eran artefacto de datos sin sanear. MES (mismo subyacente que ES): O5 7/7, O1 6/6.
