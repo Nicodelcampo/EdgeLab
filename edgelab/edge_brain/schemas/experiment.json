@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://edgelab.local/schemas/edge_brain/experiment.json",
+  "title": "EdgeLab Experiment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "experiment_id",
+    "hypothesis_id",
+    "measurement_contract_id",
+    "parameters",
+    "run_by",
+    "code_commit",
+    "status",
+    "created_at_utc"
+  ],
+  "properties": {
+    "experiment_id": {
+      "type": "string",
+      "pattern": "^EXP-RUN-[A-Za-z0-9._:-]+$"
+    },
+    "hypothesis_id": {
+      "type": "string"
+    },
+    "measurement_contract_id": {
+      "type": "string"
+    },
+    "parameters": {
+      "type": "object"
+    },
+    "run_by": {
+      "type": "string",
+      "minLength": 1
+    },
+    "code_commit": {
+      "type": "string",
+      "minLength": 7
+    },
+    "status": {
+      "enum": [
+        "CONFIGURED",
+        "RUNNING",
+        "COMPLETED",
+        "ABORTED"
+      ]
+    },
+    "created_at_utc": {
+      "type": "string"
+    }
+  }
+}

@@ -1,0 +1,264 @@
+# AVZVOL — siguiente etapa: información incremental antes de P&L
+
+**Estado: diseño y código sintético; ejecución de mercado BLOQUEADA.**
+El pedido «Dale con todo» autoriza avanzar con esta preparación. No subsana
+lineage/calidad ni convierte un diseño incompleto en autorización de datos.
+[Diseño legible por agentes](../../specs/research/avzvol_incremental_design_v1.json).
+
+## Las cuatro propuestas originales siguen vigentes
+
+[Estado legible por agentes](../../config/research/avzvol_followup_proposals_v1.json).
+La auditoría de datos prepara el estudio; no sustituye ninguna de estas propuestas.
+**Instrucción vigente del usuario: no buscar outcomes económicos.** P4 queda sólo
+documentada y bloqueada; no se ejecuta P&L ni se convierte QA en autorización.
+
+| Propuesta | Objetivo | Correspondencia en este protocolo |
+|---|---|---|
+| P1 | Procedencia y revisión metodológica: pares, pesos, reutilización, solapamientos, bins y soporte | A; calidad/consumo histórico siguen abiertos aunque pase QA técnica |
+| P2 | Emparejamiento real contra consolidaciones sin racimo y controles contra su propio censo | B; helper sintético no equivale a censo/match científico ejecutado |
+| P3 | Conservar O5 y separar recorrido en barras de respuesta en tiempo de reloj | C; endpoints, censura, potencia y presupuesto pendientes |
+| P4 | Si sobrevive, un único uso económico ya congelado con/sin contexto, neto de costos | E; no implementado ni autorizado |
+
+La fase D — réplica nueva con datos certificados y exposición declarada — es una
+**condición antes de P4**, no una quinta propuesta que borra las cuatro originales.
+Ninguna corrida técnica habilita la próxima fase ni permite elegir criterios por
+outcomes. Conservar las cuatro identidades, el orden y sus bloqueos explícitos.
+
+## Pregunta y alcance
+
+¿El racimo aporta información sobre compresión posterior respecto de una
+consolidación SIN racimo comparable en geometría, ocupación y actividad previa?
+La ruta es: **custodia → comparación válida → duración/reloj → réplica → utilidad
+operativa**. No se busca una celda ganadora ni se implementa ccbus/autonomía.
+
+### Qué ya sabemos y qué no
+
+El [informe publicado](https://github.com/Nicodelcampo/EdgeLab/blob/f397a318be8b0acf68789070fe8064d83e172f7d/docs/research/AVZP2_RACIMO_GRILLA_VOL_RESULTADOS_20261009.md)
+reporta O5 controlado negativo en las 23 celdas evaluables. Debilita una rival,
+no demuestra causalidad ni rentabilidad. Los contratos de confirmación ya fueron
+vistos; una corrección es revisión de desarrollo, no nueva confirmación ciega.
+La [auditoría técnica](../infra/AVZVOL_AUDIT_20261010.md) reprodujo el baseline
+publicado sin control, NO volvió a validar todos los efectos controlados.
+Halló bins sensibles al orden, pesos/pares no reconstruibles y raw lineage pendiente.
+O5 es un ratio de rangos en barras de 25 ticks: no volatilidad genérica a tiempo fijo.
+
+## A. Procedencia y revisión del método, antes de outcomes nuevos
+
+Cerrar por cada archivo MNQ realmente consumido: dataset/version/file/SHA,
+resolver, code bundle, calendario completo, continuidad, reloj independiente,
+selección de contratos líquidos y transformación de quotes/sentinelas.
+No inferir consumo desde attachments ni aplicar automáticamente fallos de ES/NQ a MNQ.
+
+Avance documental: [recuperación de candidatos de procedencia](../infra/AVZVOL_LINEAGE_RECOVERY_20261010.md).
+Los artefactos recuperados son coherentes, pero no prueban el montaje histórico.
+`reviewed_input_pins` permanece vacío y la revisión incluye los 45 días de warmup.
+La [revisión documental de calidad MNQ](../infra/AVZVOL_MNQ_METADATA_QUALITY_20261010.md)
+no cierra calidad: detector previo a la máscara y reglas de selección sin as-of
+acreditado requieren revisión antes de contraste. Ningún parámetro se eligió por outcomes.
+
+La [QA física de seis fuentes MNQ](../infra/AVZVOL_MNQ_RAW_QUALITY_20261010.md)
+completó hashes/filas/estructura y reconcilió la definición de gaps; no cierra
+calendario, reloj, liquidez, warmup ni consumo histórico. `reviewed_input_pins`
+sigue vacío. P1 no se da por terminada; P4 continúa prohibida.
+
+Conservar el original. La revisión tiene identidad de método nueva y debe explicar
+cada diferencia: bins por cutpoints externos congelados (`assign_frozen_bins`),
+referencia baseline obligatoria, pares, reutilización y pesos. No completar pseudo
+faltantes ni deduplicarlos retrospectivamente. No se ejecuta esta revisión con
+precios en este lote; sólo fixtures sintéticos.
+
+## B. Comparación incremental con control sin racimo
+
+**Roster antes de outcomes:** censo completo declarado de racimos y consolidaciones
+candidatas sin racimo. La regla de enumeración/selección debe congelarse; «no está en
+el censo de racimos» no prueba por sí solo ausencia de racimo. La clasificación debe
+provenir del detector causal revisado, no del resultado futuro.
+
+- Mismos contrato natural, sesión, celda, franja y signo de tendencia.
+- Calipers y escalas externos: ocupación, amplitud, magnitud de tendencia,
+  momentum, volumen y duración de ventanas 500/100 previas (incluido t0 conforme
+  definición original). Nada aprendido de futuros outcomes ni de confirmación.
+- No usar el conocimiento de si sale/rebota para construir el candidato.
+- Match por suma de distancias absolutas en escalas congeladas; empate por ID.
+  Esta distancia es una propuesta de diseño, no un método ya validado.
+- Mínimo/máximo de controles explícitos. Sin soporte: registrar evento y motivo;
+  no ampliar calipers ni relajar mínimos para lograr un resultado.
+- Un contraste por real soportado; peso igual de cada real, promedio de sus
+  controles. Reutilización entre reales permitida y declarada, no independencia.
+- IDs por par ligados al digest de política y de las declaraciones de ambos censos
+  (hash autoconsistente, no prueba de verdad/calidad upstream). No duplicar controles dentro del set.
+- Diagnosticar soporte por estrato, distribuciones/balance y sensibilidad de
+  población, antes de calcular contraste. El matching devuelve gap medio; el
+  diagnóstico descriptivo agrega gaps absolutos y ECDF ponderadas. NO calcula
+  SMD, inferencia de outcomes ni aceptación de balance.
+- Medir controles contra su propio censo para detectar sesgo de selección.
+  Ese segundo contraste todavía NO está implementado; exige endpoints/budget.
+
+Inferencia futura debe respetar sesión, reutilización, solapamiento y dependencias
+entre celdas. La muestra de filas evento×celda no es N independiente. Mantener
+las 23 celdas previas como paisaje de desarrollo, no 23 réplicas independientes.
+El universo formal, potencia, efecto mínimo útil y corrección conjunta se congelan
+antes de la nueva ejecución; el helper no calcula p, IC, MDE ni P&L.
+
+## C. Duración, tiempo físico y selección por salida
+
+Conservar O5 original como endpoint de revisión: rango de 200 barras posteriores
+a la salida dividido por rango de 200 barras ANTERIORES A LA PRIMERA ZONA del
+racimo, no anteriores a t0. La ventana pasada queda fuera del evento. No reemplazar
+ese denominador ni elegir el endpoint que salga mejor. Agregar, con protocolo aprobado, horizontes físicos y curva acotada para
+separar menor recorrido de distinta velocidad de negociación. No dar por constante
+el tiempo ni el volumen de una barra de 25 transacciones.
+
+O5 es condicional a una salida y horizonte posterior observables. Enumerar también
+sin salida, sin horizonte completo y cierres de sesión; no seleccionar silenciosamente
+sólo casos completos. Publicar la población condicional y límites. No imputar
+outcomes ni cruzar sesiones para rellenar. La regla exacta de censura aún está pendiente.
+Menor rango medio no prueba menores colas ni reversión operable; diagnósticos de
+colas y comparabilidad deben estar en el presupuesto antes de mirarlos.
+
+## D. Réplica nueva, sólo con fuentes certificadas
+
+Identificar exposición histórica por dataset/ventana/endpoint. Fechas no usadas en
+esta campaña no son automáticamente vírgenes en todo EdgeLab. No abrir holdout
+ni cambiar su inicio por documentos más recientes. Una futura prueba NQ con MNQ
+no son dos mercados independientes (comparten subyacente). ES sería transferencia
+a otro subyacente, no confirmación automática; ES/NQ actuales siguen bloqueados.
+No seleccionar la celda de réplica por el mejor resultado histórico.
+
+## E. Un uso económico, después de B–D
+
+Primero evaluar si la variable mejora información/predicción frente al benchmark
+fuera de muestra. Sólo después: una regla existente congelada, con/sin contexto,
+misma población/intents y costos/quotes/latencia revisados. Evitar diseñar a la vez
+entrada, salida, stop y objetivo. No se implementa ningún replay económico aquí.
+Si el match explica O5, archivar atribución al racimo; actividad/consolidación queda
+como explicación candidata, no como edge validado por descarte. No detectar
+un efecto no prueba ausencia: exigir precisión respecto del efecto mínimo útil
+y declarar insuficiencia de potencia cuando corresponda.
+
+## Literatura y memoria que motivan, no certifican
+
+- [Lección BigTrap2](https://github.com/Nicodelcampo/EdgeLab/blob/f397a318be8b0acf68789070fe8064d83e172f7d/artifacts/hippocampus/research_history_ledger.jsonl):
+  exigir control sin zona con geometría equivalente. Registrada PROPOSED/LOW.
+- [Lección selección del control](https://github.com/Nicodelcampo/EdgeLab/blob/f397a318be8b0acf68789070fe8064d83e172f7d/artifacts/hippocampus/ipc_20260926.jsonl):
+  comprobar el control en su propio censo; PROPOSED/LOW, no axioma certificado.
+- Duong, Fang, Kalev, [Order Imbalance, Order Book Slope and the Volume-Volatility
+  Relation](https://ssrn.com/abstract=1716874): separar número de trades/tamaño;
+  futuros ASX, no prueba transferida a MNQ.
+- Muravyev/Picard, [Does Trade Clustering Reduce Trading Costs?](https://ssrn.com/abstract=2496669):
+  periodicidades en acciones no autorizan asumir mejora de liquidez/costos en MNQ.
+- Malyshkin/Bakhramov, [Market Dynamics vs. Statistics](https://ssrn.com/abstract=2748679):
+  discusión de excitación/relajación y ambigüedad soporte/atractor; profundidad de
+  libro NASDAQ no equivale a nuestros racimos de volumen ejecutado.
+
+No incorporar mecánicamente claims extraídos por LLM. Se observó incluso un nombre
+de archivo que no coincide con el título del texto (`0063`); verificar identidad,
+mercado, datos y pasaje antes de usar una referencia. No se audita todo SSRN aquí.
+
+## Qué corre hoy sin token ni mercado
+
+Con el wheel del lote instalado conforme a [ENVIRONMENT](../ENVIRONMENT.md):
+
+```bash
+python tools/avzvol_design_smoke.py
+python tools/avzvol_design_smoke.py --purpose research
+python -m pytest -q tests/test_avzvol_design.py
+```
+
+El primero usa sólo datos inventados y umbrales de fixture, NO parámetros de mercado.
+El segundo devuelve STOP (exit 2) antes de cargar incluso el fixture. No acepta
+archivos externos, genera kernels ni descarga/abre mounts. El API puro acepta
+covariables declaradas, no autentica fechas/pins/calidad ni autoriza construirlas.
+Su comprobación de fechas es conservadora, no un firewall de sesiones CME.
+
+Resultado del helper: `DESIGN_ONLY_UNADJUDICATED`; calidad, aprobación, balance,
+censo completo, inferencia y sesgo siguen falsos/no verificados. Población:
+**reales soportados**, nunca todos los reales por omisión. IDs de todo el censo
+suministrado quedan enumerados, incluso si no fueron seleccionados.
+
+[Propuesta de episodio](../../config/research/avzvol_design_episode_20261010.json):
+PROPOSED/LOW, **no ingresada al ledger**. No modificar memoria histórica para
+promover una hipótesis. La integración futura exige episodio autenticado y artefactos.
+
+## Condiciones para pasar a mercado
+
+El JSON mantiene `null` en pins, política/calipers, aceptación de soporte/balance,
+horizontes, censura, presupuesto y autoridad. Son bloqueos, no defaults implícitos.
+Se debe aprobar y fijar una spec ejecutable nueva con evidencia independiente.
+Este diseño NO implementa un runner ni garantiza bloqueo de scripts legacy.
+
+## Refuerzo técnico de selección; no cierre de P1
+
+[Revisión D-1 de competidores](../infra/AVZVOL_CAUSAL_SELECTION_REVIEW_20261010.md):
+el gate exige matriz completa, disponibilidad as-of y comparación causal del
+líder. No certifica datos, warmup ni consumo histórico. P2/P3 conservan sus bloqueos;
+P4 continúa prohibida. Las referencias candidatas no rellenan reviewed_input_pins.
+
+## Diagnósticos descriptivos de P2; no cierre científico
+
+[Control frente a su censo](AVZVOL_CONTROL_CENSUS_DIAGNOSTICS_20261010.md):
+soporte por estrato, reutilización/pesos, diferencias absolutas y ECDF ponderadas
+sobre covariables pre-anchor. Sólo fixtures sintéticos; no SMD/test/ESS, aceptación
+ni benchmark de outcomes. P2 sigue bloqueada por censo real, política y protocolo;
+P4 sigue prohibida. No se ejecutaron nuevos trials ni se ingresó evidencia al ledger.
+
+## Causalidad de zonas y del censo
+
+[Revisión de fuente y ejemplos sintéticos](AVZVOL_ZONE_CAUSAL_REVIEW_20261010.md):
+pseudo histórico no exige ausencia de racimo/igual sesión; reconocimiento del
+racimo y pertenencia final no son el nacimiento de su primera zona. El censo
+nuevo requiere clasificación as-of, snapshot y política entre sesiones aprobados.
+Sin medición de contaminación real ni nuevo contraste; P1/P2 siguen abiertos.
+
+## Uso acotado de datos disponibles, solicitado posteriormente
+
+[Revisión descriptiva de O5 expuesto](AVZVOL_EXPOSED_O5_REVIEW_20261010.md): se reutilizaron los seis
+exports existentes con hashes y faltantes explícitos. No es réplica ciega,
+contraste incremental zone-free, certificación de raw ni promoción. No se
+alteran los gates/pins pendientes de P1–P3; P4 permanece prohibida.
+
+## Cinta causal de clasificación negativa propuesta
+
+[Contrato y helper probado](AVZVOL_ZONE_NEGATIVE_TAPE_20261010.md): distingue cero zonas con calibración de
+UNKNOWN por bloques/calibración/as-of faltantes. Sin zona en una ventana no
+acredita ausencia de racimo ni consolidación. Sólo fixtures inventados; el censo
+real, protocolo y calidad siguen pendientes. No libera gates ni P4.
+
+## Productor de cinta y riesgo de ventana O5
+
+[API, reproducción y auditoría](AVZVOL_DETECTOR_TAPE_AND_O5_BOUNDARY_20261010.md): productor del detector histórico
+instrumentado, sin loaders ni estados finales. Censo real pendiente. Desfase
+de una barra en el guard O5 documentado; QA acotada de etiquetas existentes no
+lo descarta. No outcomes nuevos ni certificación; P4 sigue prohibida.
+
+
+## Robustez descriptiva posterior
+
+[Corrida sobre O5 existente](AVZVOL_O5_ROBUSTNESS_20261010.md): no depende del signo
+de un solo contrato/fecha, pero la selección por extremos anotados tiene cobertura
+3,61%, pierde nueve celdas y exhibe una reversión. Es revisión expuesta; no cumple
+P2/P3 ni libera P1/P4. Próximos pasos por propuesta y Kaggle en el informe.
+
+
+## Filtros justificables, no búsqueda del máximo efecto
+
+[Auditoría y política de revisión](AVZVOL_FILTROS_Y_VENTANAS_20261011.md):
+calidad por evidencia y comparabilidad previa al ancla; censura/postcompletitud
+no son features as-of. No quitar celdas/contratos por signo ni barrer ganadores.
+0 ventanas totalmente anotadas en exports; mapas y fuentes siguen pendientes.
+
+## Mapa candidato completo y prioridad de continuidad
+
+[Resultado y decisión](AVZVOL_MAPA_Y_DECISION_20261011.md): 27 cruces candidatos entre 539.759 O5 finitos; excluirlos cambia -6,4807893% a -6,4803799%, sin pérdida de grupos soportados ni cambios de signo por celda. El defecto puntual no explica materialmente el patrón bajo esta reconstrucción. Prioridad: procedencia/preventana y censo as-of con controles comparables; no filtros guiados por efecto. No certificación de fuentes, causalidad, nuevos outcomes de precios, económicos ni holdout.
+
+## Dirección y continuación ya expuestas
+
+[Revisión descriptiva](AVZVOL_DIRECCION_Y_CONTINUACION_20261011.md): O2 real−pseudo -0,3630 pp; acuerdo tendencia previa–salida +2,4804 pp, con excepción MNQ_06-26. Diagnóstico de soporte horario/tendencia: poblaciones cambian y el signo de O2 puede cambiar por composición. No señal de zona validada, comparación causal, resultados económicos ni nuevo acceso a mercado/holdout.
+
+## Comparabilidad de controles, sin outcomes
+
+[Auditoría de covariables](AVZVOL_CONTROLES_COMPARABILIDAD_20261011.md): soporte exacto para81,1514% de filas reales y41,7939% pseudo;412 pseudo también anclas reales en misma celda. Residual SMD de log volumen100 +0,1203 en panel30celdas. No certifica negativos/censo/as-of, no explica por sí solo el efecto ni habilita nuevos outcomes. Prioridad P1/P2; no calipers guiados por efecto, P4/holdout prohibidos.
+
+## Evidencia para hipótesis de entradas, no backtest
+
+[Retest y lógica de investigación](AVZVOL_LOGICAS_DE_ENTRADA_20261011.md): anclas inicialmente dentro de banda, retest98,6008% real vs98,9030% pseudo; rebote geométrico resuelto49,0022% vs49,6734%. Retest solo no distingue; estudiar confirmación observable de rechazo/aceptación y reentrada como rival. Tres hipótesis propuestas, no reglas rentables ni permiso P4; controles/censo/as-of pendientes.

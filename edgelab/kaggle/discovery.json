@@ -1,0 +1,301 @@
+{
+  "schema": "edgelab_kaggle_discovery_v1",
+  "snapshot_date": "2026-10-10",
+  "entrypoint": "nicolasbuttaro/edgelab-data-catalog",
+  "status": "BLOCKED_FOR_RESEARCH",
+  "research_allowed": false,
+  "promotion_allowed": false,
+  "allowed_purposes": [
+    "discovery",
+    "structural_qa"
+  ],
+  "privacy": "PRIVATE_ABSTAIN_LICENSE",
+  "holdout": {
+    "first_trade_date": "2026-10-01",
+    "first_timestamp_utc": "2026-09-30T22:00:00Z",
+    "timezone": "America/Chicago",
+    "payload_read_allowed": false
+  },
+  "requested_coverage": {
+    "start": "2025-07-01",
+    "end": "2026-09-30",
+    "complete": false
+  },
+  "materialized_sessions": {
+    "ES": 243,
+    "NQ": 278
+  },
+  "mount_policy": {
+    "exact_versions_required": true,
+    "content_hashes_required": true,
+    "basename_fallback_allowed": false,
+    "alternative_source_fallback_allowed": false,
+    "missing_inputs_allowed": false
+  },
+  "datasets": [
+    {
+      "role": "catalog",
+      "version_ref": "nicolasbuttaro/edgelab-data-catalog/15",
+      "files": [
+        {
+          "path": "RESOLVER.json",
+          "bytes": 860164,
+          "sha256": "9b21eeff751d4397465fcc6831ea615b7dd401a5605a5997f52c8bfd9248117c"
+        },
+        {
+          "path": "catalog.json",
+          "bytes": 304259,
+          "sha256": "dc00e09b440e58d5e8be0918bd3b9de6fdb3da8a748df03f106234d218559efd"
+        },
+        {
+          "path": "edgelab_data.py",
+          "bytes": 15945,
+          "sha256": "0211e190f64437e20e5cdee3523fc86b155240b3613d7ed48767da73982cb3e8"
+        }
+      ]
+    },
+    {
+      "role": "aggregates",
+      "version_ref": "nicolasbuttaro/edgelab-es-nq-aggregates-20261009/1",
+      "files": [
+        {
+          "path": "manifest.json",
+          "bytes": 1386,
+          "sha256": "71862f0d2201cddc69db4ee7ba2cb45cb2b65a69980f99377500b54137e1e2c2"
+        },
+        {
+          "bytes": 448348814,
+          "path": "ES__1s.parquet",
+          "sha256": "863847cc3a66a25bd5cb7c02d7c8651fbc997220b578f790e1c82581e1d242c7"
+        },
+        {
+          "bytes": 31348170,
+          "path": "ES__30s.parquet",
+          "sha256": "1c6779fef83b47e18106d55f42fde48a9b0e444d8cae280c7ead49c0de3b0530"
+        },
+        {
+          "bytes": 16535661,
+          "path": "ES__60s.parquet",
+          "sha256": "8c2ce15c850b9da05f060a61921308935600145396ab487ecfadc0e3f9283bbf"
+        },
+        {
+          "bytes": 590015776,
+          "path": "NQ__1s.parquet",
+          "sha256": "b481e59869dc2618e961a9d3ab80a7e92e9c0b7386e995a1ac6d615d994e4a7f"
+        },
+        {
+          "bytes": 37205288,
+          "path": "NQ__30s.parquet",
+          "sha256": "963226d28f9fd9a133941bbf9ef5671fb838a1e541125a3ef7fe50d80b59cb14"
+        },
+        {
+          "bytes": 19692035,
+          "path": "NQ__60s.parquet",
+          "sha256": "11c64abaf56ad13a7b9d6a41a431d9a147590e3a0b99640cc92d22fc194b50b2"
+        },
+        {
+          "bytes": 249,
+          "path": "attestation.json",
+          "sha256": "eef3aa1abeb85dc032c488159d761561e03ef6a5d6d70f7177819da1dce6bd14"
+        },
+        {
+          "bytes": 120091,
+          "path": "plan.json",
+          "sha256": "da86057aded384eec730919a1caedab1e983d0441917d78f01ec94049debb017"
+        },
+        {
+          "bytes": 524,
+          "path": "results.json",
+          "sha256": "a0ed09b9d3bfbca0ed30255049352589b60688b5ec92c978001bc50a131995e8"
+        }
+      ]
+    },
+    {
+      "role": "raw_qa",
+      "version_ref": "nicolasbuttaro/edgelab-nt8-historical-missing-20261001/1",
+      "files": [
+        {
+          "path": "ES_03-26_ticks_ext.parquet",
+          "bytes": 135122666,
+          "rows": 68386643,
+          "sha256": "ccce03df093b96d381814076ae74c94346320f7ae79883bf5a0f345660a15952",
+          "structure_status": "PASS_RAW_STRUCTURE_ONLY"
+        },
+        {
+          "path": "ES_06-26_ticks_ext.parquet",
+          "bytes": 148443767,
+          "rows": 73575928,
+          "sha256": "a249e5c32bed899351e75053189fc04630fe591168cf1241045fe3268d57da7d",
+          "structure_status": "PASS_RAW_STRUCTURE_ONLY"
+        },
+        {
+          "path": "ES_09-25_ticks_ext.parquet",
+          "bytes": 61813959,
+          "rows": 35045129,
+          "sha256": "d571b1682ba1b3c878c7e92993af9073b7a4a58cf65ad258dcf1246a9065781a",
+          "structure_status": "PASS_RAW_STRUCTURE_ONLY"
+        },
+        {
+          "path": "ES_09-26_ticks_ext.parquet",
+          "bytes": 28541101,
+          "rows": 12986371,
+          "sha256": "60867b1008ff86a1c1d39ba6c7bc6648bae9d4ffc0b4ff09242a7126630264a6",
+          "structure_status": "PASS_RAW_STRUCTURE_ONLY"
+        },
+        {
+          "path": "ES_12-25_ticks_ext.parquet",
+          "bytes": 131163094,
+          "rows": 73446951,
+          "sha256": "f0b0c9ca5661585ce2387914a5ede314d6d46dbf76ac49268eefd4737ceedf20",
+          "structure_status": "PASS_RAW_STRUCTURE_ONLY"
+        },
+        {
+          "path": "NQ_03-26_ticks_ext.parquet",
+          "bytes": 113231861,
+          "rows": 30844285,
+          "sha256": "72d62e5ef2e4888c82e5a39b63760111c71101e8aa13269a85b69a69891721a5",
+          "structure_status": "PASS_RAW_STRUCTURE_ONLY"
+        },
+        {
+          "path": "NQ_09-26_ticks_ext.parquet",
+          "bytes": 24457515,
+          "rows": 5773916,
+          "sha256": "47abd842096f2106c7879e010a22c142b0a0450f786777beaa91f74b50b264ea",
+          "structure_status": "PASS_RAW_STRUCTURE_ONLY"
+        },
+        {
+          "path": "NQ_12-25_ticks_ext.parquet",
+          "bytes": 120674248,
+          "rows": 34249725,
+          "sha256": "6d01622be39a4fbf6fb1254a26b8995676942a6283d0c1c50e83070f5b7e641e",
+          "structure_status": "PASS_RAW_STRUCTURE_ONLY"
+        }
+      ]
+    },
+    {
+      "role": "raw_qa",
+      "version_ref": "nicolasbuttaro/edgelab-ticks-es-nq-2026q3-ext/1",
+      "files": [
+        {
+          "path": "ES_parquet/ES_12-26_ticks_ext.parquet",
+          "bytes": 117285842,
+          "rows": 7965244,
+          "sha256": "16ef4a2c32a3a8e3568b8722bcbb101e014f8ec48d7d3161efffd51944e2710e",
+          "structure_status": "PASS_RAW_STRUCTURE_ONLY"
+        },
+        {
+          "path": "NQ_parquet/NQ_09-26_ticks_ext.parquet",
+          "bytes": 552322055,
+          "rows": 25096699,
+          "sha256": "0010c079b73597288fb19f88a09f4edf8c9858c561d2e98e1888b3c295ffed49",
+          "structure_status": "PASS_RAW_STRUCTURE_ONLY"
+        },
+        {
+          "path": "NQ_parquet/NQ_12-26_ticks_ext.parquet",
+          "bytes": 78757041,
+          "rows": 3620624,
+          "sha256": "615d489952e4fc41c117466226d65ae814fa4e387941c2ab2e9a12dfa19d7ee5",
+          "structure_status": "PASS_RAW_STRUCTURE_ONLY"
+        }
+      ]
+    },
+    {
+      "role": "raw_qa",
+      "version_ref": "nicolasbuttaro/edgelab-ticks-nq-preholdout/6",
+      "files": [
+        {
+          "path": "NQ_06-26_ticks.parquet",
+          "bytes": 675240935,
+          "rows": 34203535,
+          "sha256": "3de249b9b8d8ada01c5b485aa893ccdf1315ae3f7bbebcaf72024de12e1b25f6",
+          "structure_status": "PASS_RAW_STRUCTURE_ONLY"
+        },
+        {
+          "path": "NQ_09-25_ticks.parquet",
+          "bytes": 258443344,
+          "rows": 13624675,
+          "sha256": "b0ea15f34ffd4158dbcddccd784d0cce88323f5893727522ffbd9af913014ccb",
+          "structure_status": "PASS_RAW_STRUCTURE_ONLY"
+        },
+        {
+          "path": "NQ_09-26_ticks.parquet",
+          "bytes": 152697147,
+          "rows": 6235464,
+          "sha256": "b95222a399de9081ccdff3d442152340ad35421037d5d710727f20483df4cbf6",
+          "structure_status": "PASS_RAW_STRUCTURE_ONLY"
+        },
+        {
+          "path": "NQ_12-25_ticks.parquet",
+          "bytes": 657714147,
+          "rows": 34264511,
+          "sha256": "6e0cea584fbe88ebf64451cac2601e55bb5cf289ff199b7cd4bd6d42e8a45da5",
+          "structure_status": "PASS_RAW_STRUCTURE_ONLY"
+        }
+      ]
+    },
+    {
+      "role": "raw_qa",
+      "version_ref": "nicolasbuttaro/edgelab-ticks-nt8-reexport-20261005/2",
+      "files": [
+        {
+          "path": "ES/ES_09-26_ticks_ext.parquet",
+          "bytes": 417129385,
+          "rows": 49008939,
+          "sha256": "15a6afe95308a406e152637d321c32c9bd3f1d03f228b167192e2bf6fe634cbd",
+          "structure_status": "PASS_RAW_STRUCTURE_ONLY"
+        },
+        {
+          "path": "NQ/NQ_06-26_ticks_ext.parquet",
+          "bytes": 438999044,
+          "rows": 33199816,
+          "sha256": "4a804bd9b061e02b9c3bf06132b8eaab90ac19d66dabd4c5bb79e2b1b8ccc153",
+          "structure_status": "PASS_RAW_STRUCTURE_ONLY"
+        },
+        {
+          "path": "NQ/NQ_09-25_ticks_ext.parquet",
+          "bytes": 65282532,
+          "rows": 5181023,
+          "sha256": "f2ba7d3a55a0541858e4be350a15bcaabd2777eee2792781627835f56e67a7ec",
+          "structure_status": "PASS_RAW_STRUCTURE_ONLY"
+        }
+      ]
+    }
+  ],
+  "blockers": [
+    {
+      "id": "ES_PREMATURE_ROLL_IN_CATALOG_V15",
+      "scope": "ES",
+      "required_resolution": "Rebuild selection from independently reviewed complete exchange sessions; compare all eligible contracts, then regenerate aggregates. Do not use Sunday micro-volume to advance the monotonic chain."
+    },
+    {
+      "id": "NQ_SOURCE_TIME_CONTENT_DISCREPANCY",
+      "scope": "nicolasbuttaro/edgelab-ticks-nq-preholdout/6:NQ_09-26_ticks.parquet",
+      "required_resolution": "Verify upstream timezone and exact differing events; publish a reviewed source/version, not automatic clipping or alternate substitution."
+    },
+    {
+      "id": "RETROSPECTIVE_ELIGIBILITY_MASK",
+      "scope": "catalog/15",
+      "required_resolution": "Replace full-sample/current-session thresholds with frozen causal rules based on the previous verified complete session."
+    },
+    {
+      "id": "UNREVIEWED_CALENDAR_AND_INTERVALS",
+      "scope": "ES,NQ",
+      "required_resolution": "Review every requested date and intraday absence against the relevant exchange calendar and upstream capture evidence; never infer zero from absence."
+    },
+    {
+      "id": "UNVERIFIED_LIQUIDITY_AND_PROVENANCE",
+      "scope": "ES,NQ",
+      "required_resolution": "Pin root-specific ex-ante liquidity limits and validate prior-session volume/spread plus quote/aggressor provenance."
+    }
+  ],
+  "consumer": {
+    "research_api": "edgelab.kaggle.research_access.load_research_bars",
+    "legacy_catalog_loader_use": "STRUCTURAL_QA_ONLY_NOT_A_RESEARCH_GATE",
+    "readiness_rule": "All blockers resolved in new reviewed pinned artifacts; discovery and structural PASS cannot authorize research."
+  },
+  "evidence": [
+    "docs/infra/KAGGLE_FULL_RAW_AUDIT_20261010.md",
+    "docs/infra/KAGGLE_ROLL_SELECTION_20261010.md",
+    "docs/infra/KAGGLE_COVERAGE_RAW_20261010.md"
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://edgelab.local/schemas/edge_brain/methodological_learning.json",
+  "title": "EdgeLab Methodological Learning",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["learning_id", "topic", "intended_measurement", "actual_measurement", "semantic_gap", "error_discovered", "why_it_failed", "affected_experiments", "affected_dependent_claims", "prevention_rule", "required_invariant", "required_test", "valid_scope", "known_exceptions", "status"],
+  "properties": {
+    "learning_id": {"type": "string", "pattern": "^METH-[A-Za-z0-9._:-]+$"},
+    "topic": {"type": "string", "minLength": 1},
+    "intended_measurement": {"type": "string", "minLength": 1},
+    "actual_measurement": {"type": "string", "minLength": 1},
+    "semantic_gap": {"type": "string", "minLength": 1},
+    "error_discovered": {"enum": ["MEASUREMENT_SEMANTICS_FAILURE", "SCALE_DISTORTION", "DATA_SNOOPING", "ARTEFACT_COUPLING", "TEMPORAL_LEAKAGE", "CUSTODY_FAILURE", "OTHER"]},
+    "why_it_failed": {"type": "string", "minLength": 1},
+    "affected_experiments": {"type": "array", "items": {"type": "string"}},
+    "affected_dependent_claims": {"type": "array", "items": {"type": "string"}},
+    "prevention_rule": {"type": "string", "minLength": 1},
+    "required_invariant": {"type": "string", "minLength": 1},
+    "required_test": {"type": "string", "minLength": 1},
+    "valid_scope": {"type": "string", "minLength": 1},
+    "known_exceptions": {"type": "array", "items": {"type": "string"}},
+    "status": {"enum": ["PROPOSED", "ACTIVE_GUARDRAIL", "SUPERSEDED"]}
+  }
+}

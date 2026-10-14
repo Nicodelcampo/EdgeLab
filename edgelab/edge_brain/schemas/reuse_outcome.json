@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://edgelab.local/schemas/edge_brain/reuse_outcome.json",
+  "title": "EdgeLab Reuse Outcome",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "outcome_id",
+    "reuse_id",
+    "transferred_successfully",
+    "verdict",
+    "recorded_at_utc"
+  ],
+  "properties": {
+    "outcome_id": {
+      "type": "string",
+      "pattern": "^REUSE-OUT-[A-Za-z0-9._:-]+$"
+    },
+    "reuse_id": {
+      "type": "string"
+    },
+    "transferred_successfully": {
+      "type": "boolean"
+    },
+    "failure_mode": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "verdict": {
+      "enum": [
+        "HELPED",
+        "HARMED",
+        "NEUTRAL",
+        "INAPPLICABLE"
+      ]
+    },
+    "recorded_at_utc": {
+      "type": "string"
+    }
+  }
+}

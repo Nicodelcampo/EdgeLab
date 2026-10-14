@@ -1,0 +1,60 @@
+name: CPU base and installed wheel (no research)
+on:
+  push:
+    paths: ['specs/kaggle/**', 'specs/research/avzvol_incremental_design_v1.json', 'config/research/avzvol_*.json', 'tools/avzvol_design_smoke.py', 'tools/avzvol_reaction_smoke.py', 'tools/avzvol_response_smoke.py', 'tools/avzvol_detector_tape_smoke.py', 'tools/audit_avzvol_o5_boundary_exports.py', 'tools/audit_avzvol_o5_postwindow_labels.py', 'tools/reconstruct_avzvol_candidate_bar_map.py', 'tools/review_avzvol_candidate_boundary_effect.py', 'tools/review_avzvol_exposed_direction.py', 'tools/review_avzvol_control_comparability.py', 'tools/review_avzvol_entry_hypotheses.py', 'tools/review_avzvol_indicator_screen.py', 'tools/review_avzvol_entry_distance.py', 'tools/audit_avzvol_trigger_observability.py', 'tools/review_avzvol_expiry_metadata.py', 'tools/trace_avzvol_postexpiry_identities.py', 'tools/review_avzvol_exposed_o5.py', 'tools/review_avzvol_o5_robustness.py', 'edgelab/**', 'validation/**', 'tests/**', 'pyproject.toml', 'requirements/cpu-dev-py312.lock', 'requirements/core-py312.lock', 'tools/check_installed_runtime.py', 'tools/check_installed_core.py', 'tools/kaggle_spec_v2.py', 'tools/kaggle_hippocampus_ingest.py', 'tools/audit_kaggle_aggregates.py', 'tools/audit_avzvol_outputs.py', 'tools/audit_avzvol_mnq_metadata.py', 'tools/check_research_data_gate.py', 'tools/run_funnel_arrays.py', 'tools/verify_funnel_cpu_gpu.py', 'config/component_registry.json', 'docs/COMPONENTS.md', '.github/workflows/cpu-runtime.yml']
+  pull_request:
+    paths: ['specs/kaggle/**', 'specs/research/avzvol_incremental_design_v1.json', 'config/research/avzvol_*.json', 'tools/avzvol_design_smoke.py', 'tools/avzvol_reaction_smoke.py', 'tools/avzvol_response_smoke.py', 'tools/avzvol_detector_tape_smoke.py', 'tools/audit_avzvol_o5_boundary_exports.py', 'tools/audit_avzvol_o5_postwindow_labels.py', 'tools/reconstruct_avzvol_candidate_bar_map.py', 'tools/review_avzvol_candidate_boundary_effect.py', 'tools/review_avzvol_exposed_direction.py', 'tools/review_avzvol_control_comparability.py', 'tools/review_avzvol_entry_hypotheses.py', 'tools/review_avzvol_indicator_screen.py', 'tools/review_avzvol_entry_distance.py', 'tools/audit_avzvol_trigger_observability.py', 'tools/review_avzvol_expiry_metadata.py', 'tools/trace_avzvol_postexpiry_identities.py', 'tools/review_avzvol_exposed_o5.py', 'tools/review_avzvol_o5_robustness.py', 'edgelab/**', 'validation/**', 'tests/**', 'pyproject.toml', 'requirements/cpu-dev-py312.lock', 'requirements/core-py312.lock', 'tools/check_installed_runtime.py', 'tools/check_installed_core.py', 'tools/kaggle_spec_v2.py', 'tools/kaggle_hippocampus_ingest.py', 'tools/audit_kaggle_aggregates.py', 'tools/audit_avzvol_outputs.py', 'tools/audit_avzvol_mnq_metadata.py', 'tools/check_research_data_gate.py', 'tools/run_funnel_arrays.py', 'tools/verify_funnel_cpu_gpu.py', 'config/component_registry.json', 'docs/COMPONENTS.md', '.github/workflows/cpu-runtime.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  cpu-base:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: requirements/cpu-dev-py312.lock
+      - name: Install locked CPU dependencies
+        run: python -m pip install --require-hashes -r requirements/cpu-dev-py312.lock
+      - name: Build wheel without data or credentials
+        run: python -m build --wheel --no-isolation
+      - name: Check independent CPU oracle (never CUDA PASS)
+        run: python tools/verify_funnel_cpu_gpu.py --cpu-only --out cpu_oracle.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: funnel-cpu-oracle
+          path: cpu_oracle.json
+      - name: Install and run current-base synthetic suite
+        run: |
+          python -m pip install --no-deps dist/*.whl
+          python -m pytest -q
+      - name: Verify wheel outside checkout in a fresh environment
+        shell: bash
+        run: |
+          python -m venv "$RUNNER_TEMP/wheel-env"
+          "$RUNNER_TEMP/wheel-env/bin/python" -m pip install --require-hashes -r requirements/cpu-dev-py312.lock
+          "$RUNNER_TEMP/wheel-env/bin/python" -m pip install --no-deps dist/*.whl
+          mkdir -p "$RUNNER_TEMP/installed-smoke"
+          cp tools/check_installed_runtime.py tools/check_installed_kaggle_quality.py tools/avzvol_detector_tape_smoke.py tools/avzvol_reaction_smoke.py tools/avzvol_response_smoke.py "$RUNNER_TEMP/installed-smoke/"
+          cd "$RUNNER_TEMP/installed-smoke"
+          unset PYTHONPATH
+          "$RUNNER_TEMP/wheel-env/bin/python" check_installed_runtime.py
+          "$RUNNER_TEMP/wheel-env/bin/python" check_installed_kaggle_quality.py
+          "$RUNNER_TEMP/wheel-env/bin/python" avzvol_detector_tape_smoke.py
+          "$RUNNER_TEMP/wheel-env/bin/python" avzvol_reaction_smoke.py
+          "$RUNNER_TEMP/wheel-env/bin/python" avzvol_response_smoke.py
+      - name: Verify core API without optional dependencies
+        shell: bash
+        run: |
+          python -m venv "$RUNNER_TEMP/core-env"
+          "$RUNNER_TEMP/core-env/bin/python" -m pip install --require-hashes -r requirements/core-py312.lock
+          "$RUNNER_TEMP/core-env/bin/python" -m pip install --no-deps dist/*.whl
+          mkdir -p "$RUNNER_TEMP/core-smoke"
+          cp tools/check_installed_core.py "$RUNNER_TEMP/core-smoke/"
+          cd "$RUNNER_TEMP/core-smoke"
+          unset PYTHONPATH
+          "$RUNNER_TEMP/core-env/bin/python" check_installed_core.py

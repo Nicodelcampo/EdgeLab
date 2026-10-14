@@ -27,8 +27,15 @@ research-vectorbt = ["vectorbt>=1.1,<2"]
 # databuild/, data/, planes, CSV ni parquets. El paquete NO se instala (editable) en
 # F0B: el layout plano no permite un editable limpio (ver ENVIRONMENT.md). Las deps se
 # gestionan vía lockfiles; la migración de layout es tarea futura separada.
-[tool.setuptools]
-packages = ["edgelab"]
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["edgelab*", "validation*"]
+namespaces = true
+
+[tool.setuptools.package-data]
+"edgelab.kaggle" = ["discovery.json", "*.py.txt"]
+"edgelab.bridge.indicators" = ["*.json"]
+"edgelab.edge_brain" = ["schemas/*.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

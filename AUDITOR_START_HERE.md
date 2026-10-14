@@ -1,5 +1,7 @@
 # AUDITOR START HERE — EdgeLab
 
+Estado: SUPERADO parcialmente por `docs/research/HANDOFF_2026-10-14_DATOS_L2_Y_INTEGRACION.md` (entrada vigente 2026-10-14); este documento conserva el protocolo del auditor.
+
 > **Punto de entrada operativo actualizado al 2026-09-17.**  
 > Rama de continuidad / integración: `fix/hft-parity-corridor-viewer-complete-v1-20260916` (sincronizada en `foundation/f0b-compatibility-probe`).  
 > Resolver el HEAD remoto al comenzar; no copiar un hash desde un handoff.

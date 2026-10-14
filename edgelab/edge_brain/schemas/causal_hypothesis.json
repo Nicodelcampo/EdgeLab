@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://edgelab.local/schemas/edge_brain/causal_hypothesis.json",
+  "title": "EdgeLab Causal Hypothesis",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "hypothesis_id",
+    "statement",
+    "source_type",
+    "is_proposal_not_evidence",
+    "proposed_by",
+    "mechanism",
+    "falsification_condition",
+    "status",
+    "created_at_utc"
+  ],
+  "properties": {
+    "hypothesis_id": {
+      "type": "string",
+      "pattern": "^HYP-[A-Za-z0-9._:-]+$"
+    },
+    "statement": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_type": {
+      "enum": [
+        "LLM_PROPOSAL",
+        "HUMAN_ANALYST",
+        "EMPIRICAL_DERIVATION"
+      ]
+    },
+    "is_proposal_not_evidence": {
+      "const": true
+    },
+    "proposed_by": {
+      "type": "string",
+      "minLength": 1
+    },
+    "mechanism": {
+      "type": "string",
+      "minLength": 1
+    },
+    "falsification_condition": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "enum": [
+        "PROPOSED",
+        "UNDER_TEST",
+        "CORROBORATED",
+        "FALSIFIED",
+        "SUPERSEDED"
+      ]
+    },
+    "created_at_utc": {
+      "type": "string"
+    }
+  }
+}

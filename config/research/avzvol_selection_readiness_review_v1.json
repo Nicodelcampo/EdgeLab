@@ -1,0 +1,57 @@
+{
+  "schema": "edgelab_avzvol_selection_readiness_review_v1",
+  "status": "BLOCKED_PENDING_EXTERNAL_SELECTION_EVIDENCE",
+  "base_commit": "f35246944d3d8e9847e71002ae982d149936aeaa",
+  "scope": "AVZVOL next-stage source/method preparation; shared metadata-only gate hardening, no scientific audits of other campaigns",
+  "catalog_reference": "nicolasbuttaro/edgelab-data-catalog/15",
+  "metadata_pins": {
+    "catalog.json": "dc00e09b440e58d5e8be0918bd3b9de6fdb3da8a748df03f106234d218559efd",
+    "RESOLVER.json": "9b21eeff751d4397465fcc6831ea615b7dd401a5605a5997f52c8bfd9248117c"
+  },
+  "approved_candidate_sessions_metadata_reconfirmed": 261,
+  "roll_declarations_reconfirmed": 5,
+  "catalog_has_required_causal_policy_id": false,
+  "producer_profile_note": "Generic dataframe profiler cannot represent nested heterogeneous documents; native JSON shape/date/count checks and exact earlier pins used. Profiling failures are not source corruption findings.",
+  "source_grain": "resolver date label / catalog contract/roll declarations, not independently certified exchange sessions",
+  "synthetic_gate_limit_reproduced_before_fix": {
+    "schema": "synthetic_challenger_gap_reproduction_v1",
+    "base": "f35246944d3d8e9847e71002ae982d149936aeaa",
+    "selected_only_gate_accepts_resealed_inconsistent_synthetic_leader": true,
+    "fixtures_invented": true,
+    "no_market_data_read": true,
+    "not_an_authentication_or_market_bias_claim": true
+  },
+  "new_guard": "research_data_gate._require_prior_challengers called by require_research_eligibility before any market source opens",
+  "required_external_certificate_field": "selection_review / edgelab_reviewed_prior_challengers_v1",
+  "guard_contract": [
+    "pinned externally reviewed root-specific universe, calendar and as-of assertions",
+    "root contract metadata digest and availability before decision cutoff",
+    "all covered D-1 challenger rows, explicit reviewed zero allowed; missing is not zero",
+    "complete-session assertions, volume quantity, available-at timestamps and evidence references for every challenger",
+    "reviewed prior close <= availability <= cutoff <= target open",
+    "causal initialization/strict forward roll/keep-current tie; no backward roll",
+    "compare selected/leader/current and leader volumes with witnessed D-1 matrix",
+    "no invented liquidity floor, rolling median, calendar or source certificates"
+  ],
+  "guard_is_authentication_or_upstream_verification": false,
+  "existing_legacy_readers_rewired": false,
+  "new_market_trials": 0,
+  "price_payload_read": false,
+  "economic_outcomes_computed": false,
+  "research_authorized": false,
+  "promotion_allowed": false,
+  "raw_source_quality_certified": false,
+  "historical_bias_adjudicated": false,
+  "historical_consumption_verified": false,
+  "warmup_liquidity_certified": false,
+  "original_outputs_or_data_modified": false,
+  "four_original_proposals_preserved": true,
+  "economic_scope_requires_new_explicit_user_authorization": true,
+  "remaining_blockers": [
+    "independent source clock/quote/aggressor/calendar/continuity evidence",
+    "complete audited D-1 matrix for every known challenger, not old/new volume declarations only",
+    "historical builder and as-of eligibility/warmup; observed coverage endpoints are not listing or historical availability proof",
+    "historical raw/code consumption; method pairs/weights/overlap and reviewed matching census",
+    "separate research review/authority/exposure; P4 forbidden by user"
+  ]
+}

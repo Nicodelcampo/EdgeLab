@@ -14,7 +14,7 @@ Procedencia: relevamiento hecho el 2026-10-14 sobre esta PC (E:, D:), Kaggle (`k
 | Descarga desde Kaggle vs manifiesto | 31/31 archivos con tamaño y SHA-256 correctos |
 | Auditoría independiente de contenido (auditor de Notion, corrida en Kaggle) | `CONTENT_CHECKS_PASS_NOT_RESEARCH_APPROVED`, 0 fallas, filas = footer. Recibo: `docs/infra/liquid_v4_audit_20261014/receipt.json` |
 | Código de la release en la rama de trabajo | **Portado hoy a `foundation/f0b-compatibility-probe`** (antes sólo vivía en `data/liquid-release-20261014`, que diverge 217 commits y no se puede mergear). 53 tests pasan |
-| Aprobación para research (`research_allowed`) | **NO.** Falta: licencia CME, política de liquidez, calendario oficial por producto |
+| Aprobación de la release | **SÍ (2026-10-14, delegada por Nico):** `docs/infra/RELEASE_APPROVAL_20261014.md`. El lector estricto `purpose='research'` aún exige `research_allowed=true` en el manifiesto: v5 de sólo metadatos pendiente; mientras tanto `provisional_research` |
 | Sesiones faltantes | P0: 158 tramos / 309 sesiones (`docs/infra/MISSING_EXPORTS_20261014.md`); P1: sólo parquet derivado en RTY, MYM, MES, MNQ |
 | 701 sesiones-contrato con conflicto de fuente (tabuladas, no resueltas) | Abierto |
 | `sequence` no es secuencia del exchange (P-28) | Sigue limitando la microestructura de ticks |
@@ -60,6 +60,7 @@ Problemas encontrados (y qué se hizo / falta):
 - **Nueve copias del repo en esta PC** (`E:\EdgeLab`, `-gex`, `-data`, `-integ`, `-port`, más `-multiasset`, `-mym`, `-unified-viewer`, `-brain-review` y `E:\ProyectosQuant\EdgeLab-sync-desktop`). → Deprecar con inventario; una sola rama de integración.
 
 ## 5. Qué queda suelto (a integrar o descartar)
+0. **Línea `main`: INTEGRADA** (merge real el 2026-10-14, `docs/DECISIONES_20261014.md`). Lo que sigue es histórico del relevamiento.
 1. **Rama `data/liquid-release-20261014`** (217 commits, 1.155 archivos): lo útil ya está en `foundation`; el resto es una línea paralela de `research_ops`, `edge_brain`, `bridge` que conflictúa (add/add). No mergear en bloque.
 2. **Auditor de Notion** (`Nicodelcampo/EdgeLab@feat/research-ops-supervisor-mvp`): se usó embebido en un kernel; falta traerlo al repo con tests.
 3. **`E:\EdgeLab` (rama `claude/focused-fermat-qjt805`)**: ≈ 46 archivos sin commitear (oráculos `data/nt8_oracles/*`, scripts de visor `tools/apply_viewer_*`, `EdgeReplica.cs`, catálogos de regímenes). Decidir qué se versiona, qué se archiva y qué se descarta.

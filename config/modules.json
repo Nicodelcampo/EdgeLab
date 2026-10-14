@@ -15,8 +15,7 @@
     "core",
     "experimental",
     "legacy",
-    "planned",
-    "other-branch"
+    "planned"
   ],
   "modules": [
     {
@@ -554,9 +553,8 @@
       "id": "funnel",
       "name": "Funnel exploratorio CPU (linea main)",
       "layer": 4,
-      "status": "other-branch",
-      "branch": "main",
-      "function": "Screening exploratorio de CPU con separacion de etapas D0/D1; paridad GPU pendiente. Vive solo en main (PR #63-#106, linea AVZVOL).",
+      "status": "experimental",
+      "function": "Screening exploratorio de CPU con separacion de etapas D0/D1; paridad GPU pendiente. Traído de main el 2026-10-14 (PR #63-#106, linea AVZVOL).",
       "paths": [
         "edgelab/funnel",
         "tools/run_funnel_arrays.py"
@@ -577,13 +575,13 @@
       "id": "research-data-gate",
       "name": "Compuerta de datos de research (linea main)",
       "layer": 2,
-      "status": "other-branch",
-      "branch": "main",
-      "function": "Compuerta opt-in fail-closed para lectores de datos de research y guard de acceso Kaggle; los lectores legacy aun no estan cableados. Vive solo en main.",
+      "status": "core",
+      "function": "Compuerta opt-in fail-closed para lectores de datos de research y guard de acceso Kaggle; los lectores legacy aun no estan cableados. Traído de main el 2026-10-14.",
       "paths": [
         "edgelab/data/research_data_gate.py",
         "edgelab/kaggle/research_access.py",
-        "docs/DATA_CONSUMER_MATRIX.md"
+        "docs/DATA_CONSUMER_MATRIX.md",
+        "edgelab/data/research_session.py"
       ],
       "inputs": [
         "pines SHA-256",
@@ -602,9 +600,8 @@
       "id": "component-registry",
       "name": "Registro de componentes (linea main)",
       "layer": 6,
-      "status": "other-branch",
-      "branch": "main",
-      "function": "Catalogo de 17 componentes del repo y chequeo de navegacion offline. Este modulo (config/modules.json) lo reemplaza como registro canonico en foundation.",
+      "status": "legacy",
+      "function": "Catalogo previo de 17 componentes con chequeo de navegacion offline (PASS_NAVIGATION_ONLY). Lo supera config/modules.json como registro canonico; se conserva por sus pruebas de navegacion.",
       "paths": [
         "config/component_registry.json",
         "tools/edgelab_catalog.py"
@@ -623,9 +620,8 @@
       "id": "notion-workers",
       "name": "Workers de Notion (linea main)",
       "layer": 7,
-      "status": "other-branch",
-      "branch": "main",
-      "function": "Integraciones de Notion (auditor y operaciones de investigacion). Vive solo en main y en la rama feat/research-ops-supervisor-mvp.",
+      "status": "experimental",
+      "function": "Integraciones de Notion (auditor y operaciones de investigacion). Traidos de main el 2026-10-14; el auditor de datos vive ademas en la rama feat/research-ops-supervisor-mvp.",
       "paths": [
         "integrations/notion-workers"
       ],

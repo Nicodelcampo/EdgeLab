@@ -1,10 +1,16 @@
 # Force LF line endings for specs and markdown docs to ensure SHA-256 hash stability across Windows and Linux
 * text=auto
 
-specs/*.json text eol=lf
-docs/*.md text eol=lf
+specs/docs/*.md text eol=lf
 docs/**/*.md text eol=lf
 *.md text eol=lf
 artifacts/hippocampus/*.jsonl -text
 # Corpus SSRN in-repo: byte-exact (los hashes de custodia son sobre bytes)
 corpus/ssrn/** -text
+
+# archivos con pin SHA-256 byte a byte: sin conversion de fin de linea (el pin falla en Windows con autocrlf)
+*.py.txt -text
+docs/infra/*.json -text
+config/research/*.json -text
+specs/research/*.json -text
+docs/research/avzvol_*/** -text

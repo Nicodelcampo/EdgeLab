@@ -13,8 +13,8 @@ el head real que ve el PR — confuso para cualquiera que solo tenga acceso al r
 ## Estado al 2026-10-14 (leer primero)
 
 - **Entrada vigente:** `docs/research/HANDOFF_2026-10-14_DATOS_L2_Y_INTEGRACION.md`. Producto, capas y roadmap: `docs/PRODUCT.md`; módulos: `docs/MODULES.md`; protocolo de documentación: `docs/DOCUMENTATION_PROTOCOL.md`; índice: `docs/INDEX.md`.
-- **Rama viva:** `foundation/f0b-compatibility-probe`. `main` **no** es baseline: tiene 78 commits propios (línea AVZVOL, funnel, compuerta de datos); ver `docs/research/INVENTARIO_LINEA_MAIN_20261014.md`. Unificación pendiente de decisión de Nico.
-- **Datos:** release `liquid_tick_v1` v4 publicada, verificada y auditada, **no aprobada** para research (licencia, política de liquidez, calendario). Recibo de auditoría: `docs/infra/liquid_v4_audit_20261014/receipt.json`.
+- **Rama viva:** `foundation/f0b-compatibility-probe`. `main` se **integró** en `foundation` (merge real, 2026-10-14; línea AVZVOL, funnel y compuerta de datos incluidos): `docs/DECISIONES_20261014.md`, `docs/research/INVENTARIO_LINEA_MAIN_20261014.md`.
+- **Datos:** release `liquid_tick_v1` v4 publicada, verificada y auditada, **aprobada** el 2026-10-14 (`docs/infra/RELEASE_APPROVAL_20261014.md`; uso privado, límites declarados). Recibo de auditoría: `docs/infra/liquid_v4_audit_20261014/receipt.json`.
 - **Edges promovidos: 0.** Medido y refutado/acotado: HFTZones, BigTrap2 imán, AVZP2 O1; O5 real pero sin expectativa neta; GC presión/progreso de décimas de tick (`docs/research/HFT_ZONAS_ES_MEDIDO_Y_NO_MEDIDO.md`).
 - **Costos de referencia:** `docs/research/REFERENCIA_COSTOS_PROPS_BROKERS_20261014.md`. Fricción de ES ≈ 3,4–3,6 ticks por viaje.
 - **Próximo paso (R2):** medir el recorrido bruto frente a la fricción por activo, hora y régimen, target-free. P&L y holdout siguen bloqueados hasta OK de Nico (`docs/PRODUCT.md` §5).

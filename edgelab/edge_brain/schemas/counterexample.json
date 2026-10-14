@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://edgelab.local/schemas/edge_brain/counterexample.json",
+  "title": "EdgeLab Counterexample",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "counterexample_id",
+    "target_claim_or_rule_id",
+    "context",
+    "observed_behavior",
+    "why_it_violates",
+    "evidence_ref",
+    "status",
+    "recorded_at_utc"
+  ],
+  "properties": {
+    "counterexample_id": {
+      "type": "string",
+      "pattern": "^COUNTER-[A-Za-z0-9._:-]+$"
+    },
+    "target_claim_or_rule_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "context": {
+      "type": "string",
+      "minLength": 1
+    },
+    "observed_behavior": {
+      "type": "string",
+      "minLength": 1
+    },
+    "why_it_violates": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "enum": [
+        "CONFIRMED",
+        "UNDER_REVIEW",
+        "DISMISSED"
+      ]
+    },
+    "recorded_at_utc": {
+      "type": "string"
+    }
+  }
+}

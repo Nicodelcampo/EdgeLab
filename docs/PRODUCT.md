@@ -38,21 +38,21 @@ Cada salto necesita su propio manifiesto, N efectivo de hipótesis y OK de Nico 
 ## 4. Estado a 2026-10-14
 | Pieza | Estado |
 |---|---|
-| Datos de ticks | Release v4 publicada, verificada y auditada; **no aprobada** (licencia, política de liquidez, calendario) |
+| Datos de ticks | Release v4 publicada, verificada, auditada y **aprobada** (2026-10-14, uso privado); límites en `docs/infra/RELEASE_APPROVAL_20261014.md` |
 | L2 | ≈62 GB en una PC, 34–60 sesiones por producto; sin respaldo; poco poder |
 | Mediciones | HFTZones: 5 mediciones, ninguna positiva. BigTrap2 imán: cerrado. AVZP2: O5 real (no edge), O1 refutado. GC presión/progreso: décimas de tick |
 | Fricción ES | ≈3,4–3,6 ticks por viaje (spread medido + comisión + slippage declarado) |
-| Pruebas | 2.181 pasan; **15 fallan de forma preexistente** en `foundation` (`test_ulp_sweep` 2, `test_bigtrap2_distance_matched_null` 3, `test_es_ipc_tick_support` 1, `test_unified_viewer_manifest` 1, `test_edge_brain_bibliographic_cortex` 3, `test_edge_brain_literature_bridge` 5). Deuda de R1: causa raíz de cada una, sin relajar pruebas |
-| Código | Dos líneas vivas (`foundation` y `main`) con 29 conflictos: ver `docs/research/INVENTARIO_LINEA_MAIN_20261014.md` |
+| Pruebas | Suite completa (`pytest tests -m "not vectorbt"`) en verde tras la unificación; ver `docs/DECISIONES_20261014.md` |
+| Código | Una sola línea: `main` se integró en `foundation` con merge real (2026-10-14) |
 
 ## 5. Roadmap
 Cada fase tiene un criterio de salida verificable. El orden sigue la jerarquía del North Star.
 
 | Fase | Objetivo | Criterio de salida | Estado |
 |---|---|---|---|
-| **R0 Datos cerrados** | Release aprobada, faltantes P0 resueltos o acotados, respaldo, captura continua | Aprobación de Nico; manifiesto v-final; respaldo con hashes; captura diaria automática | ~80 % |
-| **R1 Un producto, una línea** | Unificar `main` y `foundation`, reconciliar `CLAUDE.md`, módulos registrados, documentación con protocolo e índice | `tools/check_modules.py` y `tools/docs_index.py --check` verdes en CI; una sola rama viva; entrada única | **en curso** |
-| **R2 Viabilidad económica target-free** | Medir cuántos ticks de recorrido existen frente a la fricción real, por activo, hora y régimen | Tabla publicada con MDE; ideas que no pagan fricción, cerradas | siguiente |
+| **R0 Datos cerrados** | Release aprobada, faltantes P0 resueltos o acotados, respaldo, captura continua | Aprobación de Nico; manifiesto v-final; respaldo con hashes; captura diaria automática | release aprobada (`docs/infra/RELEASE_APPROVAL_20261014.md`); faltan P0, respaldo y captura continua |
+| **R1 Un producto, una línea** | Unificar `main` y `foundation`, reconciliar `CLAUDE.md`, módulos registrados, documentación con protocolo e índice | `tools/check_modules.py` y `tools/docs_index.py --check` verdes en CI; una sola rama viva; entrada única | **hecho (2026-10-14)** |
+| **R2 Viabilidad económica target-free** | Medir cuántos ticks de recorrido existen frente a la fricción real, por activo, hora y régimen | Tabla publicada con MDE; ideas que no pagan fricción, cerradas | **siguiente** |
 | **R3 Campañas de información** | Familias registradas con N efectivo, multiplicidad y refutación | Manifiestos aprobados; actas MEDIDO/NO MEDIDO al día | bloqueada hasta R2 + OK |
 | **R4 Edge neto** | P&L bajo manifiesto con costos de la cuenta elegida; G0–G5 | Un candidato que supera costos, OOS, MCPT/PBO/SPA y holdout | sin candidato |
 | **R5 Ejecutabilidad** | Feed vivo, slippage y fills reales, kill switch, paper/sim | Brecha research↔live medida y acotada | sin empezar |

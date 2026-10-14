@@ -1,6 +1,6 @@
 # Inventario de la línea `main` (2026-10-14)
 
-Estado: PROVISIONAL (unificación de líneas pendiente de decisión de Nico)  
+Estado: VIGENTE (unificación ejecutada el 2026-10-14; ver docs/DECISIONES_20261014.md)  
 Fecha: 2026-10-14
 
 **Hallazgo.** `main` ya no es "baseline original": tiene **78 commits (PR #63–#106, todos de `Nicodelcampo`, 2026-10-02 a 2026-10-11)** que `foundation/f0b-compatibility-probe` no tiene, y `foundation` tiene 1.742 commits que `main` no tiene. Son **dos líneas vivas del mismo proyecto**. `CLAUDE.md` seguía diciendo "main = baseline, no mergear".
@@ -26,3 +26,6 @@ No se mergea, no se resuelve ningún conflicto y no se toca semántica de valida
 3. **Congelar `main`** como archivo de la línea AVZVOL y declarar sólo `foundation` viva. Pierde la compuerta de datos y el funnel hasta reescribirlos.
 
 Hasta que se decida, `config/modules.json` registra estos módulos con `status: other-branch` para que el mapa del producto sea verdadero.
+
+## Resolución (2026-10-14)
+Nico delegó la decisión («lo más completo o reciente»). Se ejecutó un **merge real** de `origin/main` en `foundation` resolviendo cada uno de los 29 conflictos por verificación con la suite. Criterio y lista archivo por archivo: `docs/DECISIONES_20261014.md`. `main` queda como ancestro de `foundation`; ya no hay dos líneas.

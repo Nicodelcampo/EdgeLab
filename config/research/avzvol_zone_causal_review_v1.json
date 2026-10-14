@@ -1,0 +1,77 @@
+{
+  "schema": "edgelab_avzvol_zone_causal_review_v1",
+  "status": "STATIC_AND_SYNTHETIC_CHARACTERIZATION_NOT_MARKET_ADJUDICATION",
+  "base_commit": "cb612a58ac3afc361c44e5028931e3309af671d7",
+  "notebook_ref": "nicolasbuttaro/edgelab-avzvol-k1",
+  "notebook_version": 1,
+  "recovered_notebook_sha256": "58e81f5cf440921a88f164ae3e974709f7296d130f22ecb9271c06fb369ad310",
+  "declared_git_commit": "4e1e26930f9778f974a4dd4946977ac48b1725d8",
+  "equivalence": [
+    {
+      "function": "_racimo",
+      "notebook_line_start": 248,
+      "notebook_line_end": 285,
+      "AST_equal_to_pinned_Git": true
+    },
+    {
+      "function": "racimos_de",
+      "notebook_line_start": 295,
+      "notebook_line_end": 303,
+      "AST_equal_to_pinned_Git": true
+    },
+    {
+      "function": "run_contract",
+      "notebook_line_start": 372,
+      "notebook_line_end": 459,
+      "AST_equal_to_pinned_Git": true
+    }
+  ],
+  "fixture_path": "tests/fixtures/avzvol_legacy_racimo_source.py.txt",
+  "fixture_sha256": "346d4dc03309616e8bd8b4f963a6739aae916eff55a4ddaa293d90c1aa7cb5c2",
+  "fixture_scope": "only exact pure _racimo and racimos_de; no imports/loaders/outcomes/notebook execution",
+  "findings": [
+    {
+      "id": "Z1",
+      "fact": "pseudo pool requires approved bar and clock; no same-session or detector-negative filter",
+      "meaning": "historical activity-control result cannot be relabeled as verified zone-free incremental comparison"
+    },
+    {
+      "id": "Z2",
+      "fact": "_racimo assigns older zones racimo_bar at the later formation bar",
+      "meaning": "post-run membership cannot be backdated as known at original zone creation"
+    },
+    {
+      "id": "Z3",
+      "fact": "cluster start/low/high can expand; start0/low0/high0/bar retain formation snapshot",
+      "meaning": "use declared as-of formation snapshot; later extents are not available at initial anchor"
+    },
+    {
+      "id": "Z4",
+      "fact": "racimos_de discards session identity and _racimo uses bar distance without session filter",
+      "meaning": "cross-session cluster is possible in a synthetic example; actual prevalence and impact not measured"
+    },
+    {
+      "id": "Z5",
+      "fact": "occ/activity/trend/pre-range use global bar windows; removing session gap duration is not ensuring same-session prewindow",
+      "meaning": "future protocol must declare same-session vs carried history and audit window completeness"
+    }
+  ],
+  "method_changed": false,
+  "production_detector_modified": false,
+  "historical_runtime_consumption_verified": false,
+  "historical_bias_adjudicated": false,
+  "observed_market_contamination_measured": false,
+  "source_quality_certified": false,
+  "zone_free_census_verified": false,
+  "research_authorized": false,
+  "outcomes_read": false,
+  "economic_outcomes_computed": false,
+  "new_market_trials": 0,
+  "original_outputs_modified": false,
+  "software_validation": {
+    "cpu_tests_passed": 580,
+    "subtests_passed": 25,
+    "navigation_tests_passed": 18,
+    "kind": "synthetic_characterization_and_software_only_not_scientific_evidence"
+  }
+}

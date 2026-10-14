@@ -1,0 +1,240 @@
+{
+  "date": "2026-10-09",
+  "base_commit": "617064e0b86fd2490f2834b5da731cd26aaa23ea",
+  "scope": "infrastructure_only",
+  "local_tests": {
+    "passed": 25,
+    "command": "python -m pytest tests/infra/test_kaggle_spec_v2.py -q"
+  },
+  "kaggle_synthetic": {
+    "url": "https://www.kaggle.com/code/nicolasbuttaro/edgelab-framework-v2-synthetic-20261009",
+    "version": 2,
+    "kernel_id": 137934067,
+    "execution_id": 356877935,
+    "session_status": "COMPLETE",
+    "results": {
+      "status": "PASS_SYNTHETIC_ONLY",
+      "returncode": 0,
+      "stdout": ".........................                                                [100%]\n25 passed in 4.24s\n",
+      "real_market_data_read": false
+    }
+  },
+  "mount_probe": {
+    "url": "https://www.kaggle.com/code/nicolasbuttaro/edgelab-mount-verified-20261009",
+    "version": 3,
+    "kernel_id": 137933628,
+    "execution_id": 356878011,
+    "requested_sources": [
+      "nicolasbuttaro/edgelab-data-catalog/15"
+    ],
+    "session_status": "ERROR",
+    "report": {
+      "catalog_mounts": [],
+      "catalog_sha256": [],
+      "inputs": []
+    },
+    "conclusion": "MCP save accepted but no dataset mount observed; root cause not established"
+  },
+  "real_data_smoke": {
+    "status": "PASS_INTEGRITY_NOT_EDGE",
+    "selected_sessions": 2,
+    "date": "2026-01-05",
+    "merged_store_verified": true,
+    "consumer_checks_passed": 6,
+    "shards": [
+      {
+        "id": "k01",
+        "instrument": "ES",
+        "url": "https://www.kaggle.com/code/nicolasbuttaro/edgelab-aggregates-smoke-20261009-k01",
+        "kernel_id": 137935802,
+        "execution_id": 356881769,
+        "version": 2,
+        "session_status": "COMPLETE",
+        "output_zip_sha256": "da4dbc1a690ea797241553c82374634332e16ec1da83353882e2db5ec8ee2faf",
+        "results": {
+          "bars": [
+            {
+              "file": "ES__edgelab-nt8-historical-missing-20261001__ES_03-26_ticks_ext__1s.parquet",
+              "instrument": "ES",
+              "rows": 42043,
+              "seconds": 1,
+              "sessions": [
+                "2026-01-05"
+              ],
+              "tick_size": 0.25,
+              "units": "price_ticks"
+            },
+            {
+              "file": "ES__edgelab-nt8-historical-missing-20261001__ES_03-26_ticks_ext__30s.parquet",
+              "instrument": "ES",
+              "rows": 2756,
+              "seconds": 30,
+              "sessions": [
+                "2026-01-05"
+              ],
+              "tick_size": 0.25,
+              "units": "price_ticks"
+            },
+            {
+              "file": "ES__edgelab-nt8-historical-missing-20261001__ES_03-26_ticks_ext__60s.parquet",
+              "instrument": "ES",
+              "rows": 1380,
+              "seconds": 60,
+              "sessions": [
+                "2026-01-05"
+              ],
+              "tick_size": 0.25,
+              "units": "price_ticks"
+            }
+          ],
+          "shard_id": "k01",
+          "sources": [
+            {
+              "bytes": 135122666,
+              "dataset": "edgelab-nt8-historical-missing-20261001",
+              "file": "ES_03-26_ticks_ext.parquet",
+              "identity": "dataset_version_pin; raw_file_sha256_not_computed",
+              "read_row_groups": [
+                80,
+                81,
+                82,
+                83,
+                84,
+                85,
+                86,
+                87
+              ],
+              "selected_totals": {
+                "2026-01-05": {
+                  "trades": 832580,
+                  "volume": 1195973
+                }
+              },
+              "version_ref": "nicolasbuttaro/edgelab-nt8-historical-missing-20261001/1"
+            }
+          ],
+          "status": "PASS_INTEGRITY_NOT_EDGE"
+        },
+        "attestation": {
+          "base_commit": "617064e0b86fd2490f2834b5da731cd26aaa23ea",
+          "first_touch_accessed": false,
+          "future_price_path_accessed": false,
+          "holdout_touched": false,
+          "measurement_started": true,
+          "pnl_accessed": false,
+          "runner_sha256": "5c8ddadf8e147b237e88ce2ea2a4d0d14c4af68d6c5dfb22e60f7e6e0d064a10",
+          "schema": "edgelab_kaggle_spec_v2",
+          "scope": "infrastructure_only"
+        }
+      },
+      {
+        "id": "k02",
+        "instrument": "NQ",
+        "url": "https://www.kaggle.com/code/nicolasbuttaro/edgelab-aggregates-smoke-20261009-k02",
+        "kernel_id": 137935806,
+        "execution_id": 356881572,
+        "version": 2,
+        "session_status": "COMPLETE",
+        "output_zip_sha256": "263a5257016535288566ff50117f0e955c09028fabb0c46d85a12e7fae66a718",
+        "results": {
+          "bars": [
+            {
+              "file": "NQ__edgelab-nt8-historical-missing-20261001__NQ_03-26_ticks_ext__1s.parquet",
+              "instrument": "NQ",
+              "rows": 45476,
+              "seconds": 1,
+              "sessions": [
+                "2026-01-05"
+              ],
+              "tick_size": 0.25,
+              "units": "price_ticks"
+            },
+            {
+              "file": "NQ__edgelab-nt8-historical-missing-20261001__NQ_03-26_ticks_ext__30s.parquet",
+              "instrument": "NQ",
+              "rows": 2759,
+              "seconds": 30,
+              "sessions": [
+                "2026-01-05"
+              ],
+              "tick_size": 0.25,
+              "units": "price_ticks"
+            },
+            {
+              "file": "NQ__edgelab-nt8-historical-missing-20261001__NQ_03-26_ticks_ext__60s.parquet",
+              "instrument": "NQ",
+              "rows": 1380,
+              "seconds": 60,
+              "sessions": [
+                "2026-01-05"
+              ],
+              "tick_size": 0.25,
+              "units": "price_ticks"
+            }
+          ],
+          "shard_id": "k02",
+          "sources": [
+            {
+              "bytes": 113231861,
+              "dataset": "edgelab-nt8-historical-missing-20261001",
+              "file": "NQ_03-26_ticks_ext.parquet",
+              "identity": "dataset_version_pin; raw_file_sha256_not_computed",
+              "read_row_groups": [
+                37,
+                38,
+                39,
+                40
+              ],
+              "selected_totals": {
+                "2026-01-05": {
+                  "trades": 421020,
+                  "volume": 453961
+                }
+              },
+              "version_ref": "nicolasbuttaro/edgelab-nt8-historical-missing-20261001/1"
+            }
+          ],
+          "status": "PASS_INTEGRITY_NOT_EDGE"
+        },
+        "attestation": {
+          "base_commit": "617064e0b86fd2490f2834b5da731cd26aaa23ea",
+          "first_touch_accessed": false,
+          "future_price_path_accessed": false,
+          "holdout_touched": false,
+          "measurement_started": true,
+          "pnl_accessed": false,
+          "runner_sha256": "5c8ddadf8e147b237e88ce2ea2a4d0d14c4af68d6c5dfb22e60f7e6e0d064a10",
+          "schema": "edgelab_kaggle_spec_v2",
+          "scope": "infrastructure_only"
+        }
+      }
+    ],
+    "merged_archive_sha256": "103f2d8ec6767d32b237b6eef036bd74eefb956ff90772036e69522f65618a80"
+  },
+  "aggregates_dataset_published": false,
+  "hippocampus_ingestion_performed": false,
+  "real_holdout_data_read": false,
+  "file_sha256": {
+    "tools/kaggle_spec_v2.py": "5c8ddadf8e147b237e88ce2ea2a4d0d14c4af68d6c5dfb22e60f7e6e0d064a10",
+    "tests/infra/test_kaggle_spec_v2.py": "9b66d7a8bc28b21fc373ea3b99c3137308f7bd66c75516cd0296ea9db7aa80fc",
+    "specs/kaggle/aggregates_smoke_v2_20261009.json": "8c5c5d849b04f214796cb65faae02265bcc91dbe0af46c932e01cdf04b93f7ae"
+  },
+  "mount_resolution": {
+    "status": "BROWSER_WORKAROUND_VERIFIED_MCP_ATTACHMENT_UNRESOLVED",
+    "version": 4,
+    "execution_id": 356880651,
+    "session_status": "COMPLETE",
+    "report": {
+      "catalog_mounts": [
+        "/kaggle/input/datasets/nicolasbuttaro/edgelab-data-catalog/edgelab_data.py"
+      ],
+      "catalog_sha256": [
+        "0211e190f64437e20e5cdee3523fc86b155240b3613d7ed48767da73982cb3e8"
+      ],
+      "inputs": [
+        "/kaggle/input/datasets"
+      ]
+    },
+    "network_fallback_used": false
+  }
+}

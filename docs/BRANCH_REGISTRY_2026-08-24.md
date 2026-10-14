@@ -1,5 +1,7 @@
 # Registro de ramas remotas — 2026-08-24
 
+Estado: SUPERADO por `git branch -r` y por docs/research/INVENTARIO_LINEA_MAIN_20261014.md (2026-10-14: `main` integrada en `foundation`).
+
 > **Corte:** 2026-08-24 18:31 UTC  
 > **Rama primaria:** `foundation/f0b-compatibility-probe@bd4ebd1ed1053ab62a5871b83f8a1d59193634d8`  
 > **Base científica auditada:** `9b23c307cb112cdd6392d98673e8ead2e8bc4698`  

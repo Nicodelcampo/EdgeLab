@@ -12,21 +12,21 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 
 | Area | Documentos |
 |---|---:|
-| `docs` | 87 |
+| `docs` | 101 |
 | `docs/amendments` | 6 |
 | `docs/audit` | 4 |
-| `docs/audits` | 62 |
+| `docs/audits` | 63 |
 | `docs/bridge` | 1 |
 | `docs/campaigns` | 9 |
 | `docs/foundation` | 2 |
 | `docs/incidents` | 15 |
-| `docs/infra` | 6 |
+| `docs/infra` | 17 |
 | `docs/notion` | 2 |
 | `docs/parity` | 5 |
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 523 |
+| `docs/research` | 550 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 11 |
@@ -37,10 +37,11 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 |---|---:|---|---|---|
 | REFERENCIA | 1 | `REFERENCIA_COSTOS_PROPS_BROKERS_20261014.md` | 2026-10-14 | referencia, no medición. Sin P&L, sin retornos. Insumo para el ledger de costos  |
 | PLAN | 13 | `PLAN_HACIA_EDGE_NETO_20261014.md` | 2026-10-14 | PROPUESTA |
-| INVENTARIO | 1 | `INVENTARIO_LINEA_MAIN_20261014.md` | 2026-10-14 | PROVISIONAL (unificación de líneas pendiente de decisión de Nico) |
+| INVENTARIO | 1 | `INVENTARIO_LINEA_MAIN_20261014.md` | 2026-10-14 | VIGENTE (unificación ejecutada el 2026-10-14; ver docs/DECISIONES_20261014.md) |
 | HANDOFF | 14 | `HANDOFF_2026-10-14_DATOS_L2_Y_INTEGRACION.md` | 2026-10-14 | VIGENTE |
 | GC | 1 | `GC_PRESSURE_PROGRESS_V2_MANIFIESTO_20261014.md` | 2026-10-14 | fase RTH (08:30–15:00 CT) / OTHER, y dirección del flujo previo (±1). Celdas fas |
 | AVZP2 | 10 | `AVZP2_RACIMO_REPLICA_ES_NQ_RESULTADOS_20261014.md` | 2026-10-14 | PROVISIONAL. Todo lo de esta acta se calculó sobre la release liquid_tick_v1 v3, |
+| AVZVOL | 21 | `AVZVOL_VENCIMIENTOS_Y_FUENTE_20261011.md` | 2026-10-11 | - |
 | LITCHECK | 1 | `LITCHECK_SSRN_20261009.md` | 2026-10-09 | PRE_REGISTERED_EXPLORATORY (hipótesis, métricas y reglas fijadas en |
 | KAGGLE | 4 | `KAGGLE_RUN_HARNESS_GAPS_20261009.md` | 2026-10-09 | GAPS_IDENTIFIED → se actualiza al final (sección 4) con lo que se implementó. |
 | EMASEP | 3 | `EMASEP_RESULTADOS_20261007.md` | 2026-10-07 | - |
@@ -55,6 +56,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | ESTADOS | 1 | `ESTADOS_MERCADO_LITERATURA_Y_DISENO_20261006.md` | 2026-10-06 | - |
 | EDGEREPLICA | 1 | `EDGEREPLICA_OOS_POST_PUBLICACION_PROTOCOLO_20261006.md` | 2026-10-06 | SUPERADO 2026-10-06. Nico decidió tratar esto como exploración, sin custodia de  |
 | AVCL | 25 | `AVCL_VOL3_ROBUSTEZ_MANIFIESTO_20261006.md` | 2026-10-06 | - |
+| CANONICAL | 1 | `CANONICAL_DATA_AUDIT_20261004.md` | 2026-10-04 | - |
 | RESULTADO | 38 | `RESULTADO_MNQ_L2_V2_PRIMERA_SESION_TARGETFREE_20260930.md` | 2026-09-30 | - |
 | PREPARACION | 2 | `PREPARACION_MNQ_ESCALONADAS_L2_20260930.md` | 2026-09-30 | PREPARADO / NO MEDIDO EN MNQ REAL. R02/I-3; no rescate de climas. |
 | MANIFIESTO | 34 | `MANIFIESTO_MNQ_ESCALONADAS_ESCALAS_20260930.md` | 2026-09-30 | - |
@@ -93,11 +95,12 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | EDGE | 17 | `EDGE_BRAIN_AUDITORIA_Y_DIRECCION_20260923.md` | 2026-09-23 | - |
 | CAMPANA | 1 | `CAMPANA_TICKS_MULTI_RESULTADOS_20260923.md` | 2026-09-23 | - |
 | STOP | 1 | `STOP_PAQUETE_PROXIMA_CAMPANA_20260922.md` | 2026-09-22 | propuesta para decisión de Nico. No se corrió nada sobre retornos. Regla CLAUDE. |
-| SOLAPAMIENTO | 1 | `SOLAPAMIENTO_FRONTERA_SESIONES_L2_20260922.md` | 2026-09-22 | - |
-| RESOLUCION | 1 | `RESOLUCION_RELOJ_GC_L2_20260922.md` | 2026-09-22 | NT8_WALL_CLOCK_RESOLVED_ART_UTC-3 |
 
-## Superados (4)
+## Superados (7)
 
+- `AUDITOR_START_HERE.md` — SUPERADO parcialmente por docs/research/HANDOFF_2026-10-14_DATOS_L2_Y_INTEGRACIO
+- `docs/BRANCH_REGISTRY_2026-08-24.md` — SUPERADO por git branch -r y por docs/research/INVENTARIO_LINEA_MAIN_20261014.md
+- `docs/BRANCH_REGISTRY_2026-09-02.md` — SUPERADO por git branch -r y por docs/research/INVENTARIO_LINEA_MAIN_20261014.md
 - `docs/infra/MANANA_PENDIENTES_20261014.md` — SUPERADO por docs/research/HANDOFF_2026-10-14_DATOS_L2_Y_INTEGRACION.md
 - `docs/research/EDGELAB_VIEWER_UNIFICATION_PLAN_20260920.md` — SUPERADO
 - `docs/research/EDGEREPLICA_OOS_POST_PUBLICACION_PROTOCOLO_20261006.md` — SUPERADO 2026-10-06. Nico decidió tratar esto como exploración, sin custodia de 

@@ -4,7 +4,8 @@
 > **Arranque del auditor:** `AUDITOR_START_HERE.md`.  
 > **Estado vivo:** `docs/CURRENT.md`.  
 > **Ramas:** `docs/BRANCH_REGISTRY_2026-09-02.md`.  
-> **Rama viva:** `foundation/f0b-compatibility-probe`.
+> **Rama viva:** `foundation/f0b-compatibility-probe`.  
+> **Entrada 2026-10-14:** `docs/research/HANDOFF_2026-10-14_DATOS_L2_Y_INTEGRACION.md` · producto y roadmap `docs/PRODUCT.md` · módulos `docs/MODULES.md` · protocolo `docs/DOCUMENTATION_PROTOCOL.md` · estado Kaggle/repo `docs/ESTADO_Y_PENDIENTES.md`.
 
 El referente canónico es `docs/NORTH_STAR.md`; sha256 del cuerpo anterior al marcador: `d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1`. Si Notion, memoria del chat y repo divergen, manda el repo. Un spec o manifest congelado manda sobre un resumen general para el objeto que gobierna.
 

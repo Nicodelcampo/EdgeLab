@@ -1,0 +1,44 @@
+{
+  "scope": "FOOTER_ONLY_EXPOSED_EXPORT_OBSERVABILITY_NOT_STATE_REPLAY",
+  "payload_columns_read": [],
+  "critical_field_groups": {
+    "causal_band_identity": [
+      "band_snapshot_id",
+      "band_known_utc_ns",
+      "band_known_sequence"
+    ],
+    "retest_observation": [
+      "retest_bar_id",
+      "retest_available_utc_ns"
+    ],
+    "confirmation_decision": [
+      "decision_bar_id",
+      "decision_available_utc_ns",
+      "trigger_policy_id"
+    ],
+    "decision_close": [
+      "close_ticks",
+      "bar_available_utc_ns"
+    ],
+    "decision_context_identity": [
+      "context_snapshot_id",
+      "context_available_utc_ns"
+    ],
+    "independent_control_identity": [
+      "own_census_id",
+      "negative_classification_asof_id"
+    ]
+  },
+  "selection": "all six originally pinned exposed exports, all rows retained",
+  "missingness": "schema-wide unavailable field, NOT row null or invalid historical outcome",
+  "independent_count_check": "sum row-group footer counts vs file footer vs original pin",
+  "decision": "cannot directly evaluate a new H2 confirmation from legacy export schema",
+  "scientific_policy_chosen": false,
+  "comparison_plan": [
+    {
+      "grain": "schema availability across pinned files",
+      "disposition": "prose",
+      "reason": "uniform absence of event trace; no effect, rate or temporal chart"
+    }
+  ]
+}

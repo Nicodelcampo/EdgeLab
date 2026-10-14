@@ -26,4 +26,6 @@ def test_corridor_definition_is_decided_and_points_at_the_reference():
 
 def test_no_hay_paginas_competidoras_en_el_visor():
     html = sorted(p.name for p in VIEWER.glob("*.html"))
-    assert html == ["index.html", "index_invariant.html", "spec_review.html", "store_viewer.html"], html
+    # Herramientas de juicio ciego de Nico (espejo), anteriores a esta regla y todavia en uso: se declaran explicitamente como excepcion
+# (decision 2026-10-14, ver docs/DECISIONES_20261014.md). Cualquier otra pagina nueva sigue siendo una pagina competidora.
+    assert html == ["blind_espejo.html", "espejo_triads.html", "index.html", "index_invariant.html", "spec_review.html", "store_viewer.html"], html

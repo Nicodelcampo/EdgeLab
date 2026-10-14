@@ -1,0 +1,3680 @@
+{
+  "scope": "DESCRIPTIVE_EXISTING_EXCURSION_LABEL_NOT_ENTRY_PNL_OR_NEW_PRICE_OUTCOME",
+  "plan": {
+    "scope": "DESCRIPTIVE_EXISTING_EXCURSION_LABEL_NOT_ENTRY_PNL_OR_NEW_PRICE_OUTCOME",
+    "question": "How much observed excursion supports the prior exit-context hypothesis, and how sensitive is optimistic margin to an assumed later entry price?",
+    "population": "same pos=0 observed exits with resolved O2, all cells and six pinned exports, same3 test blocks and old training-only mechanism thresholds; both cohorts separate",
+    "historical_exposure": "already inspected, not fresh blind validation",
+    "context_selection": "reuse delay_x_range_band from prior exploration; no new model fit, no winning contract/bucket/target selection",
+    "distance_thresholds_h": [
+      0.1,
+      0.25,
+      0.5,
+      0.75,
+      1,
+      1.5,
+      2
+    ],
+    "assumed_entry_offsets_h": [
+      0,
+      0.1,
+      0.25,
+      0.5,
+      0.75
+    ],
+    "scenario_remaining_targets_h": [
+      0.25,
+      0.5,
+      1
+    ],
+    "scenario_definition": "optimistic upper bound: full-window mx_h >= assumed offset + remaining target; maximum may precede the hypothetical entry, no fill/time/order or adverse move available; NOT a measured entry win rate",
+    "primary_contexts": [
+      "ALL",
+      "0:2",
+      "2:0"
+    ],
+    "all_nine_context_buckets_retained": true,
+    "weights": "identical published session/contract/anchor/row weights restricted to subgroup, no relabelled independence",
+    "censoring": "bounded observed mx_h up to same-session/2000bar limit, not full future path; unresolved O2 excluded only to match earlier scoring population and separately counted",
+    "pins": [
+      {
+        "basename": "MNQ_09-25_avzp2racgrid.parquet",
+        "sha256": "7ac25b72e7012481ef96ff27f638b187362f9eddc4cf15a055600052ca5cfc62",
+        "rows": 56638
+      },
+      {
+        "basename": "MNQ_12-25_avzp2racgrid.parquet",
+        "sha256": "bf56c2330b10d5e9e988f31a6dc7e56f6a8f5c488d07c1d67b09870ff5baaf85",
+        "rows": 107098
+      },
+      {
+        "basename": "MNQ_03-26_avzp2racgrid.parquet",
+        "sha256": "5472c2c681ab831e5fef72908e83ff8cf83ab61a41a6538cd7bf9ac37ac2682f",
+        "rows": 94166
+      },
+      {
+        "basename": "MNQ_06-26_avzp2racgrid.parquet",
+        "sha256": "8a6344477175a82fd3616a225dc68c2de884cc07b0798db2a16aad9a3c075936",
+        "rows": 103585
+      },
+      {
+        "basename": "MNQ_09-26_avzp2racgrid.parquet",
+        "sha256": "290e18b63e7eaf737633654bb8394fb537a1a5c81e44a4b4c639408a82e7e694",
+        "rows": 148429
+      },
+      {
+        "basename": "MNQ_12-26_avzp2racgrid.parquet",
+        "sha256": "4bdf9ea8901292dc069591944b3547cce4d9411e859f33efdc9f855d1151a6f3",
+        "rows": 34615
+      }
+    ],
+    "columns": [
+      "contract",
+      "cell",
+      "kind",
+      "session",
+      "t0",
+      "te",
+      "pos",
+      "o2",
+      "amp",
+      "h",
+      "mx_h",
+      "o3a",
+      "o3b"
+    ],
+    "fixed_prior_evidence_commit": "cb89b70310f260d09fd6028f58cfb3d742e6f2a6",
+    "raw_prices_loaded": false,
+    "holdout_loaded": false,
+    "economic_outcomes_created": false,
+    "source_asof_certified": false,
+    "operational_filter_or_target_selected": false,
+    "return_or_peak_path_available": false,
+    "absolute_distance_thresholds_ticks": [
+      5,
+      10,
+      20,
+      40
+    ],
+    "absolute_distance_question": "Check whether normalized-band advantage also implies more fixed-tick movement, rather than easier geometry targets only",
+    "scenario_entry_timing": "hypothetical entry after completed exit bar only; mx_h excludes exit bar",
+    "prior_artifacts": [
+      {
+        "path": "tools/review_avzvol_indicator_screen.py",
+        "sha256": "bc7afb05237644991dfcb1221d189f9f92e3a9520e0c818c9df95091e45805f9"
+      },
+      {
+        "path": "docs/research/avzvol_indicator_screen_20261011/evidence.json",
+        "sha256": "6a09e0a9aa85e7f4a42845aad07798f3e87703ea5ee30dab41b5808614ed6be4"
+      },
+      {
+        "path": "docs/research/avzvol_indicator_screen_20261011/test-bucket-metrics.csv",
+        "sha256": "f6f48e5dd031f00bb65af30f1c059b94d0e7e9035365486695d431550a981681"
+      }
+    ],
+    "scenario_denominator": "all favorable-context resolved test cases, NOT actual filled entries; cases not covering the assumed entry offset remain in the denominator"
+  },
+  "prior_evidence_sha256": "6a09e0a9aa85e7f4a42845aad07798f3e87703ea5ee30dab41b5808614ed6be4",
+  "ledger": [
+    {
+      "cohort": "real",
+      "inside_rows": 74711,
+      "no_exit": 81,
+      "unresolved_o2_after_exit": 7
+    },
+    {
+      "cohort": "pseudo",
+      "inside_rows": 345995,
+      "no_exit": 192,
+      "unresolved_o2_after_exit": 118
+    }
+  ],
+  "folds": [
+    {
+      "fold": 1,
+      "training_first": 20250804,
+      "training_last": 20260108,
+      "embargo_session": 20260109,
+      "test_first": 20260112,
+      "test_last": 20260402,
+      "training_global_sessions": 103,
+      "test_global_sessions": 53
+    },
+    {
+      "fold": 2,
+      "training_first": 20250804,
+      "training_last": 20260331,
+      "embargo_session": 20260402,
+      "test_first": 20260406,
+      "test_last": 20260625,
+      "training_global_sessions": 156,
+      "test_global_sessions": 52
+    },
+    {
+      "fold": 3,
+      "training_first": 20250804,
+      "training_last": 20260623,
+      "embargo_session": 20260625,
+      "test_first": 20260626,
+      "test_last": 20260930,
+      "training_global_sessions": 208,
+      "test_global_sessions": 52
+    }
+  ],
+  "support": [
+    {
+      "fold": 1,
+      "cohort": "real",
+      "bucket": "ALL",
+      "rows": 10761,
+      "anchor_keys": 3767,
+      "sessions": 53,
+      "weight_mass": 53.0,
+      "coverage": 1.0,
+      "training_edges": {
+        "exit_delay_bars": [
+          5.0,
+          18.0
+        ],
+        "range_over_band": [
+          1.763157894736842,
+          2.5384615384615383
+        ]
+      }
+    },
+    {
+      "fold": 1,
+      "cohort": "real",
+      "bucket": "0:0",
+      "rows": 659,
+      "anchor_keys": 278,
+      "sessions": 46,
+      "weight_mass": 3.0939973271670147,
+      "coverage": 0.058377308059754995,
+      "training_edges": {
+        "exit_delay_bars": [
+          5.0,
+          18.0
+        ],
+        "range_over_band": [
+          1.763157894736842,
+          2.5384615384615383
+        ]
+      }
+    },
+    {
+      "fold": 1,
+      "cohort": "real",
+      "bucket": "0:1",
+      "rows": 1004,
+      "anchor_keys": 459,
+      "sessions": 52,
+      "weight_mass": 4.689423074699101,
+      "coverage": 0.08847968065470002,
+      "training_edges": {
+        "exit_delay_bars": [
+          5.0,
+          18.0
+        ],
+        "range_over_band": [
+          1.763157894736842,
+          2.5384615384615383
+        ]
+      }
+    },
+    {
+      "fold": 1,
+      "cohort": "real",
+      "bucket": "0:2",
+      "rows": 2083,
+      "anchor_keys": 835,
+      "sessions": 52,
+      "weight_mass": 9.205038286402969,
+      "coverage": 0.17367996766798055,
+      "training_edges": {
+        "exit_delay_bars": [
+          5.0,
+          18.0
+        ],
+        "range_over_band": [
+          1.763157894736842,
+          2.5384615384615383
+        ]
+      }
+    },
+    {
+      "fold": 1,
+      "cohort": "real",
+      "bucket": "1:0",
+      "rows": 726,
+      "anchor_keys": 340,
+      "sessions": 47,
+      "weight_mass": 3.3668777211809324,
+      "coverage": 0.06352599473926288,
+      "training_edges": {
+        "exit_delay_bars": [
+          5.0,
+          18.0
+        ],
+        "range_over_band": [
+          1.763157894736842,
+          2.5384615384615383
+        ]
+      }
+    },
+    {
+      "fold": 1,
+      "cohort": "real",
+      "bucket": "1:1",
+      "rows": 1325,
+      "anchor_keys": 654,
+      "sessions": 52,
+      "weight_mass": 7.255346417570562,
+      "coverage": 0.13689332863340684,
+      "training_edges": {
+        "exit_delay_bars": [
+          5.0,
+          18.0
+        ],
+        "range_over_band": [
+          1.763157894736842,
+          2.5384615384615383
+        ]
+      }
+    },
+    {
+      "fold": 1,
+      "cohort": "real",
+      "bucket": "1:2",
+      "rows": 2201,
+      "anchor_keys": 890,
+      "sessions": 52,
+      "weight_mass": 10.081247030940046,
+      "coverage": 0.19021220813094428,
+      "training_edges": {
+        "exit_delay_bars": [
+          5.0,
+          18.0
+        ],
+        "range_over_band": [
+          1.763157894736842,
+          2.5384615384615383
+        ]
+      }
+    },
+    {
+      "fold": 1,
+      "cohort": "real",
+      "bucket": "2:0",
+      "rows": 1004,
+      "anchor_keys": 492,
+      "sessions": 48,
+      "weight_mass": 4.565989940542354,
+      "coverage": 0.08615075359513875,
+      "training_edges": {
+        "exit_delay_bars": [
+          5.0,
+          18.0
+        ],
+        "range_over_band": [
+          1.763157894736842,
+          2.5384615384615383
+        ]
+      }
+    },
+    {
+      "fold": 1,
+      "cohort": "real",
+      "bucket": "2:1",
+      "rows": 1069,
+      "anchor_keys": 554,
+      "sessions": 51,
+      "weight_mass": 7.055779509645768,
+      "coverage": 0.13312791527633525,
+      "training_edges": {
+        "exit_delay_bars": [
+          5.0,
+          18.0
+        ],
+        "range_over_band": [
+          1.763157894736842,
+          2.5384615384615383
+        ]
+      }
+    },
+    {
+      "fold": 1,
+      "cohort": "real",
+      "bucket": "2:2",
+      "rows": 690,
+      "anchor_keys": 339,
+      "sessions": 51,
+      "weight_mass": 3.6863006918512515,
+      "coverage": 0.06955284324247644,
+      "training_edges": {
+        "exit_delay_bars": [
+          5.0,
+          18.0
+        ],
+        "range_over_band": [
+          1.763157894736842,
+          2.5384615384615383
+        ]
+      }
+    },
+    {
+      "fold": 1,
+      "cohort": "pseudo",
+      "bucket": "ALL",
+      "rows": 55988,
+      "anchor_keys": 55047,
+      "sessions": 53,
+      "weight_mass": 53.0,
+      "coverage": 1.0,
+      "training_edges": {
+        "exit_delay_bars": [
+          4.0,
+          15.0
+        ],
+        "range_over_band": [
+          1.8372093023255813,
+          2.7560975609756095
+        ]
+      }
+    },
+    {
+      "fold": 1,
+      "cohort": "pseudo",
+      "bucket": "0:0",
+      "rows": 2616,
+      "anchor_keys": 2597,
+      "sessions": 53,
+      "weight_mass": 2.3353777403213107,
+      "coverage": 0.044063730949458695,
+      "training_edges": {
+        "exit_delay_bars": [
+          4.0,
+          15.0
+        ],
+        "range_over_band": [
+          1.8372093023255813,
+          2.7560975609756095
+        ]
+      }
+    },
+    {
+      "fold": 1,
+      "cohort": "pseudo",
+      "bucket": "0:1",
+      "rows": 5381,
+      "anchor_keys": 5361,
+      "sessions": 53,
+      "weight_mass": 5.071149629042914,
+      "coverage": 0.0956820684725078,
+      "training_edges": {
+        "exit_delay_bars": [
+          4.0,
+          15.0
+        ],
+        "range_over_band": [
+          1.8372093023255813,
+          2.7560975609756095
+        ]
+      }
+    },
+    {
+      "fold": 1,
+      "cohort": "pseudo",
+      "bucket": "0:2",
+      "rows": 10153,
+      "anchor_keys": 10104,
+      "sessions": 53,
+      "weight_mass": 10.138784943871721,
+      "coverage": 0.19129782912965512,
+      "training_edges": {
+        "exit_delay_bars": [
+          4.0,
+          15.0
+        ],
+        "range_over_band": [
+          1.8372093023255813,
+          2.7560975609756095
+        ]
+      }
+    },
+    {
+      "fold": 1,
+      "cohort": "pseudo",
+      "bucket": "1:0",
+      "rows": 3525,
+      "anchor_keys": 3513,
+      "sessions": 53,
+      "weight_mass": 3.133389551215957,
+      "coverage": 0.0591205575701124,
+      "training_edges": {
+        "exit_delay_bars": [
+          4.0,
+          15.0
+        ],
+        "range_over_band": [
+          1.8372093023255813,
+          2.7560975609756095
+        ]
+      }
+    },
+    {
+      "fold": 1,
+      "cohort": "pseudo",
+      "bucket": "1:1",
+      "rows": 7293,
+      "anchor_keys": 7262,
+      "sessions": 53,
+      "weight_mass": 6.803759328824081,
+      "coverage": 0.12837281752498267,
+      "training_edges": {
+        "exit_delay_bars": [
+          4.0,
+          15.0
+        ],
+        "range_over_band": [
+          1.8372093023255813,
+          2.7560975609756095
+        ]
+      }
+    },
+    {
+      "fold": 1,
+      "cohort": "pseudo",
+      "bucket": "1:2",
+      "rows": 11205,
+      "anchor_keys": 11142,
+      "sessions": 53,
+      "weight_mass": 10.972386133285525,
+      "coverage": 0.20702615345821745,
+      "training_edges": {
+        "exit_delay_bars": [
+          4.0,
+          15.0
+        ],
+        "range_over_band": [
+          1.8372093023255813,
+          2.7560975609756095
+        ]
+      }
+    },
+    {
+      "fold": 1,
+      "cohort": "pseudo",
+      "bucket": "2:0",
+      "rows": 5382,
+      "anchor_keys": 5352,
+      "sessions": 53,
+      "weight_mass": 4.743148611859509,
+      "coverage": 0.08949337003508509,
+      "training_edges": {
+        "exit_delay_bars": [
+          4.0,
+          15.0
+        ],
+        "range_over_band": [
+          1.8372093023255813,
+          2.7560975609756095
+        ]
+      }
+    },
+    {
+      "fold": 1,
+      "cohort": "pseudo",
+      "bucket": "2:1",
+      "rows": 6511,
+      "anchor_keys": 6488,
+      "sessions": 53,
+      "weight_mass": 6.033442569366061,
+      "coverage": 0.11383853904464265,
+      "training_edges": {
+        "exit_delay_bars": [
+          4.0,
+          15.0
+        ],
+        "range_over_band": [
+          1.8372093023255813,
+          2.7560975609756095
+        ]
+      }
+    },
+    {
+      "fold": 1,
+      "cohort": "pseudo",
+      "bucket": "2:2",
+      "rows": 3922,
+      "anchor_keys": 3911,
+      "sessions": 53,
+      "weight_mass": 3.768561492212919,
+      "coverage": 0.0711049338153381,
+      "training_edges": {
+        "exit_delay_bars": [
+          4.0,
+          15.0
+        ],
+        "range_over_band": [
+          1.8372093023255813,
+          2.7560975609756095
+        ]
+      }
+    },
+    {
+      "fold": 2,
+      "cohort": "real",
+      "bucket": "ALL",
+      "rows": 13950,
+      "anchor_keys": 4570,
+      "sessions": 52,
+      "weight_mass": 52.0,
+      "coverage": 1.0,
+      "training_edges": {
+        "exit_delay_bars": [
+          5.0,
+          17.0
+        ],
+        "range_over_band": [
+          1.8409090909090908,
+          2.641025641025641
+        ]
+      }
+    },
+    {
+      "fold": 2,
+      "cohort": "real",
+      "bucket": "0:0",
+      "rows": 1069,
+      "anchor_keys": 454,
+      "sessions": 45,
+      "weight_mass": 3.747882204959887,
+      "coverage": 0.07207465778769014,
+      "training_edges": {
+        "exit_delay_bars": [
+          5.0,
+          17.0
+        ],
+        "range_over_band": [
+          1.8409090909090908,
+          2.641025641025641
+        ]
+      }
+    },
+    {
+      "fold": 2,
+      "cohort": "real",
+      "bucket": "0:1",
+      "rows": 1367,
+      "anchor_keys": 613,
+      "sessions": 48,
+      "weight_mass": 5.402560819741667,
+      "coverage": 0.10389540037964744,
+      "training_edges": {
+        "exit_delay_bars": [
+          5.0,
+          17.0
+        ],
+        "range_over_band": [
+          1.8409090909090908,
+          2.641025641025641
+        ]
+      }
+    },
+    {
+      "fold": 2,
+      "cohort": "real",
+      "bucket": "0:2",
+      "rows": 2214,
+      "anchor_keys": 877,
+      "sessions": 52,
+      "weight_mass": 9.323295840371111,
+      "coverage": 0.1792941507763675,
+      "training_edges": {
+        "exit_delay_bars": [
+          5.0,
+          17.0
+        ],
+        "range_over_band": [
+          1.8409090909090908,
+          2.641025641025641
+        ]
+      }
+    },
+    {
+      "fold": 2,
+      "cohort": "real",
+      "bucket": "1:0",
+      "rows": 1140,
+      "anchor_keys": 513,
+      "sessions": 46,
+      "weight_mass": 3.8684468163995467,
+      "coverage": 0.07439320800768359,
+      "training_edges": {
+        "exit_delay_bars": [
+          5.0,
+          17.0
+        ],
+        "range_over_band": [
+          1.8409090909090908,
+          2.641025641025641
+        ]
+      }
+    },
+    {
+      "fold": 2,
+      "cohort": "real",
+      "bucket": "1:1",
+      "rows": 1733,
+      "anchor_keys": 780,
+      "sessions": 50,
+      "weight_mass": 6.216273500051066,
+      "coverage": 0.11954372115482818,
+      "training_edges": {
+        "exit_delay_bars": [
+          5.0,
+          17.0
+        ],
+        "range_over_band": [
+          1.8409090909090908,
+          2.641025641025641
+        ]
+      }
+    },
+    {
+      "fold": 2,
+      "cohort": "real",
+      "bucket": "1:2",
+      "rows": 2289,
+      "anchor_keys": 961,
+      "sessions": 51,
+      "weight_mass": 8.530958832668732,
+      "coverage": 0.16405690062824485,
+      "training_edges": {
+        "exit_delay_bars": [
+          5.0,
+          17.0
+        ],
+        "range_over_band": [
+          1.8409090909090908,
+          2.641025641025641
+        ]
+      }
+    },
+    {
+      "fold": 2,
+      "cohort": "real",
+      "bucket": "2:0",
+      "rows": 1650,
+      "anchor_keys": 746,
+      "sessions": 45,
+      "weight_mass": 5.579950431884146,
+      "coverage": 0.10730673907469512,
+      "training_edges": {
+        "exit_delay_bars": [
+          5.0,
+          17.0
+        ],
+        "range_over_band": [
+          1.8409090909090908,
+          2.641025641025641
+        ]
+      }
+    },
+    {
+      "fold": 2,
+      "cohort": "real",
+      "bucket": "2:1",
+      "rows": 1610,
+      "anchor_keys": 773,
+      "sessions": 47,
+      "weight_mass": 5.670828848482327,
+      "coverage": 0.10905440093235244,
+      "training_edges": {
+        "exit_delay_bars": [
+          5.0,
+          17.0
+        ],
+        "range_over_band": [
+          1.8409090909090908,
+          2.641025641025641
+        ]
+      }
+    },
+    {
+      "fold": 2,
+      "cohort": "real",
+      "bucket": "2:2",
+      "rows": 878,
+      "anchor_keys": 433,
+      "sessions": 50,
+      "weight_mass": 3.659802705441516,
+      "coverage": 0.07038082125849068,
+      "training_edges": {
+        "exit_delay_bars": [
+          5.0,
+          17.0
+        ],
+        "range_over_band": [
+          1.8409090909090908,
+          2.641025641025641
+        ]
+      }
+    },
+    {
+      "fold": 2,
+      "cohort": "pseudo",
+      "bucket": "ALL",
+      "rows": 64893,
+      "anchor_keys": 63726,
+      "sessions": 52,
+      "weight_mass": 52.0,
+      "coverage": 1.0,
+      "training_edges": {
+        "exit_delay_bars": [
+          4.0,
+          14.0
+        ],
+        "range_over_band": [
+          1.945945945945946,
+          2.923076923076923
+        ]
+      }
+    },
+    {
+      "fold": 2,
+      "cohort": "pseudo",
+      "bucket": "0:0",
+      "rows": 3909,
+      "anchor_keys": 3895,
+      "sessions": 52,
+      "weight_mass": 3.0443510199164314,
+      "coverage": 0.05854521192146984,
+      "training_edges": {
+        "exit_delay_bars": [
+          4.0,
+          14.0
+        ],
+        "range_over_band": [
+          1.945945945945946,
+          2.923076923076923
+        ]
+      }
+    },
+    {
+      "fold": 2,
+      "cohort": "pseudo",
+      "bucket": "0:1",
+      "rows": 6380,
+      "anchor_keys": 6359,
+      "sessions": 52,
+      "weight_mass": 5.0524830189721275,
+      "coverage": 0.09716313498023323,
+      "training_edges": {
+        "exit_delay_bars": [
+          4.0,
+          14.0
+        ],
+        "range_over_band": [
+          1.945945945945946,
+          2.923076923076923
+        ]
+      }
+    },
+    {
+      "fold": 2,
+      "cohort": "pseudo",
+      "bucket": "0:2",
+      "rows": 10400,
+      "anchor_keys": 10357,
+      "sessions": 52,
+      "weight_mass": 8.693246837370808,
+      "coverage": 0.16717782379559246,
+      "training_edges": {
+        "exit_delay_bars": [
+          4.0,
+          14.0
+        ],
+        "range_over_band": [
+          1.945945945945946,
+          2.923076923076923
+        ]
+      }
+    },
+    {
+      "fold": 2,
+      "cohort": "pseudo",
+      "bucket": "1:0",
+      "rows": 4952,
+      "anchor_keys": 4922,
+      "sessions": 51,
+      "weight_mass": 3.8551594147779777,
+      "coverage": 0.07413768105342265,
+      "training_edges": {
+        "exit_delay_bars": [
+          4.0,
+          14.0
+        ],
+        "range_over_band": [
+          1.945945945945946,
+          2.923076923076923
+        ]
+      }
+    },
+    {
+      "fold": 2,
+      "cohort": "pseudo",
+      "bucket": "1:1",
+      "rows": 8209,
+      "anchor_keys": 8174,
+      "sessions": 52,
+      "weight_mass": 6.463659348787785,
+      "coverage": 0.12430114132284202,
+      "training_edges": {
+        "exit_delay_bars": [
+          4.0,
+          14.0
+        ],
+        "range_over_band": [
+          1.945945945945946,
+          2.923076923076923
+        ]
+      }
+    },
+    {
+      "fold": 2,
+      "cohort": "pseudo",
+      "bucket": "1:2",
+      "rows": 11108,
+      "anchor_keys": 11066,
+      "sessions": 52,
+      "weight_mass": 9.198888014414054,
+      "coverage": 0.17690169258488567,
+      "training_edges": {
+        "exit_delay_bars": [
+          4.0,
+          14.0
+        ],
+        "range_over_band": [
+          1.945945945945946,
+          2.923076923076923
+        ]
+      }
+    },
+    {
+      "fold": 2,
+      "cohort": "pseudo",
+      "bucket": "2:0",
+      "rows": 8020,
+      "anchor_keys": 7963,
+      "sessions": 52,
+      "weight_mass": 6.253771228224018,
+      "coverage": 0.12026483131200034,
+      "training_edges": {
+        "exit_delay_bars": [
+          4.0,
+          14.0
+        ],
+        "range_over_band": [
+          1.945945945945946,
+          2.923076923076923
+        ]
+      }
+    },
+    {
+      "fold": 2,
+      "cohort": "pseudo",
+      "bucket": "2:1",
+      "rows": 7754,
+      "anchor_keys": 7724,
+      "sessions": 52,
+      "weight_mass": 6.09415355368738,
+      "coverage": 0.11719526064783423,
+      "training_edges": {
+        "exit_delay_bars": [
+          4.0,
+          14.0
+        ],
+        "range_over_band": [
+          1.945945945945946,
+          2.923076923076923
+        ]
+      }
+    },
+    {
+      "fold": 2,
+      "cohort": "pseudo",
+      "bucket": "2:2",
+      "rows": 4161,
+      "anchor_keys": 4149,
+      "sessions": 52,
+      "weight_mass": 3.344287563849418,
+      "coverage": 0.06431322238171958,
+      "training_edges": {
+        "exit_delay_bars": [
+          4.0,
+          14.0
+        ],
+        "range_over_band": [
+          1.945945945945946,
+          2.923076923076923
+        ]
+      }
+    },
+    {
+      "fold": 3,
+      "cohort": "real",
+      "bucket": "ALL",
+      "rows": 22939,
+      "anchor_keys": 7192,
+      "sessions": 52,
+      "weight_mass": 52.0,
+      "coverage": 1.0,
+      "training_edges": {
+        "exit_delay_bars": [
+          5.0,
+          16.0
+        ],
+        "range_over_band": [
+          1.8837209302325582,
+          2.7111111111111112
+        ]
+      }
+    },
+    {
+      "fold": 3,
+      "cohort": "real",
+      "bucket": "0:0",
+      "rows": 1874,
+      "anchor_keys": 788,
+      "sessions": 50,
+      "weight_mass": 3.7825348485892993,
+      "coverage": 0.07274105478056345,
+      "training_edges": {
+        "exit_delay_bars": [
+          5.0,
+          16.0
+        ],
+        "range_over_band": [
+          1.8837209302325582,
+          2.7111111111111112
+        ]
+      }
+    },
+    {
+      "fold": 3,
+      "cohort": "real",
+      "bucket": "0:1",
+      "rows": 2343,
+      "anchor_keys": 1056,
+      "sessions": 51,
+      "weight_mass": 5.568634416798423,
+      "coverage": 0.10708912339996966,
+      "training_edges": {
+        "exit_delay_bars": [
+          5.0,
+          16.0
+        ],
+        "range_over_band": [
+          1.8837209302325582,
+          2.7111111111111112
+        ]
+      }
+    },
+    {
+      "fold": 3,
+      "cohort": "real",
+      "bucket": "0:2",
+      "rows": 3432,
+      "anchor_keys": 1353,
+      "sessions": 52,
+      "weight_mass": 8.113503643210626,
+      "coverage": 0.15602891621558895,
+      "training_edges": {
+        "exit_delay_bars": [
+          5.0,
+          16.0
+        ],
+        "range_over_band": [
+          1.8837209302325582,
+          2.7111111111111112
+        ]
+      }
+    },
+    {
+      "fold": 3,
+      "cohort": "real",
+      "bucket": "1:0",
+      "rows": 2008,
+      "anchor_keys": 866,
+      "sessions": 51,
+      "weight_mass": 4.131064027492465,
+      "coverage": 0.0794435389902397,
+      "training_edges": {
+        "exit_delay_bars": [
+          5.0,
+          16.0
+        ],
+        "range_over_band": [
+          1.8837209302325582,
+          2.7111111111111112
+        ]
+      }
+    },
+    {
+      "fold": 3,
+      "cohort": "real",
+      "bucket": "1:1",
+      "rows": 2523,
+      "anchor_keys": 1148,
+      "sessions": 52,
+      "weight_mass": 6.021405903617194,
+      "coverage": 0.11579626737725374,
+      "training_edges": {
+        "exit_delay_bars": [
+          5.0,
+          16.0
+        ],
+        "range_over_band": [
+          1.8837209302325582,
+          2.7111111111111112
+        ]
+      }
+    },
+    {
+      "fold": 3,
+      "cohort": "real",
+      "bucket": "1:2",
+      "rows": 3119,
+      "anchor_keys": 1287,
+      "sessions": 52,
+      "weight_mass": 7.3973751697354375,
+      "coverage": 0.14225721480260456,
+      "training_edges": {
+        "exit_delay_bars": [
+          5.0,
+          16.0
+        ],
+        "range_over_band": [
+          1.8837209302325582,
+          2.7111111111111112
+        ]
+      }
+    },
+    {
+      "fold": 3,
+      "cohort": "real",
+      "bucket": "2:0",
+      "rows": 3445,
+      "anchor_keys": 1497,
+      "sessions": 50,
+      "weight_mass": 6.636697235311329,
+      "coverage": 0.12762879298675633,
+      "training_edges": {
+        "exit_delay_bars": [
+          5.0,
+          16.0
+        ],
+        "range_over_band": [
+          1.8837209302325582,
+          2.7111111111111112
+        ]
+      }
+    },
+    {
+      "fold": 3,
+      "cohort": "real",
+      "bucket": "2:1",
+      "rows": 2552,
+      "anchor_keys": 1217,
+      "sessions": 51,
+      "weight_mass": 6.209439002301149,
+      "coverage": 0.11941228850579133,
+      "training_edges": {
+        "exit_delay_bars": [
+          5.0,
+          16.0
+        ],
+        "range_over_band": [
+          1.8837209302325582,
+          2.7111111111111112
+        ]
+      }
+    },
+    {
+      "fold": 3,
+      "cohort": "real",
+      "bucket": "2:2",
+      "rows": 1643,
+      "anchor_keys": 748,
+      "sessions": 52,
+      "weight_mass": 4.139345752944078,
+      "coverage": 0.07960280294123227,
+      "training_edges": {
+        "exit_delay_bars": [
+          5.0,
+          16.0
+        ],
+        "range_over_band": [
+          1.8837209302325582,
+          2.7111111111111112
+        ]
+      }
+    },
+    {
+      "fold": 3,
+      "cohort": "pseudo",
+      "bucket": "ALL",
+      "rows": 107646,
+      "anchor_keys": 104711,
+      "sessions": 52,
+      "weight_mass": 52.0,
+      "coverage": 1.0,
+      "training_edges": {
+        "exit_delay_bars": [
+          4.0,
+          13.0
+        ],
+        "range_over_band": [
+          2.0,
+          3.0
+        ]
+      }
+    },
+    {
+      "fold": 3,
+      "cohort": "pseudo",
+      "bucket": "0:0",
+      "rows": 8012,
+      "anchor_keys": 7945,
+      "sessions": 52,
+      "weight_mass": 3.755829020897957,
+      "coverage": 0.07222748117111456,
+      "training_edges": {
+        "exit_delay_bars": [
+          4.0,
+          13.0
+        ],
+        "range_over_band": [
+          2.0,
+          3.0
+        ]
+      }
+    },
+    {
+      "fold": 3,
+      "cohort": "pseudo",
+      "bucket": "0:1",
+      "rows": 10446,
+      "anchor_keys": 10387,
+      "sessions": 52,
+      "weight_mass": 5.099711916180098,
+      "coverage": 0.09807138300346342,
+      "training_edges": {
+        "exit_delay_bars": [
+          4.0,
+          13.0
+        ],
+        "range_over_band": [
+          2.0,
+          3.0
+        ]
+      }
+    },
+    {
+      "fold": 3,
+      "cohort": "pseudo",
+      "bucket": "0:2",
+      "rows": 14402,
+      "anchor_keys": 14314,
+      "sessions": 52,
+      "weight_mass": 7.2337903771411005,
+      "coverage": 0.1391113534065596,
+      "training_edges": {
+        "exit_delay_bars": [
+          4.0,
+          13.0
+        ],
+        "range_over_band": [
+          2.0,
+          3.0
+        ]
+      }
+    },
+    {
+      "fold": 3,
+      "cohort": "pseudo",
+      "bucket": "1:0",
+      "rows": 9260,
+      "anchor_keys": 9180,
+      "sessions": 52,
+      "weight_mass": 4.315980927177105,
+      "coverage": 0.08299963321494432,
+      "training_edges": {
+        "exit_delay_bars": [
+          4.0,
+          13.0
+        ],
+        "range_over_band": [
+          2.0,
+          3.0
+        ]
+      }
+    },
+    {
+      "fold": 3,
+      "cohort": "pseudo",
+      "bucket": "1:1",
+      "rows": 12864,
+      "anchor_keys": 12794,
+      "sessions": 52,
+      "weight_mass": 6.235999707196613,
+      "coverage": 0.11992307129224256,
+      "training_edges": {
+        "exit_delay_bars": [
+          4.0,
+          13.0
+        ],
+        "range_over_band": [
+          2.0,
+          3.0
+        ]
+      }
+    },
+    {
+      "fold": 3,
+      "cohort": "pseudo",
+      "bucket": "1:2",
+      "rows": 14775,
+      "anchor_keys": 14678,
+      "sessions": 52,
+      "weight_mass": 7.3771817163061755,
+      "coverage": 0.14186887915973415,
+      "training_edges": {
+        "exit_delay_bars": [
+          4.0,
+          13.0
+        ],
+        "range_over_band": [
+          2.0,
+          3.0
+        ]
+      }
+    },
+    {
+      "fold": 3,
+      "cohort": "pseudo",
+      "bucket": "2:0",
+      "rows": 17335,
+      "anchor_keys": 17137,
+      "sessions": 52,
+      "weight_mass": 8.003702686152993,
+      "coverage": 0.153917359349096,
+      "training_edges": {
+        "exit_delay_bars": [
+          4.0,
+          13.0
+        ],
+        "range_over_band": [
+          2.0,
+          3.0
+        ]
+      }
+    },
+    {
+      "fold": 3,
+      "cohort": "pseudo",
+      "bucket": "2:1",
+      "rows": 13559,
+      "anchor_keys": 13487,
+      "sessions": 52,
+      "weight_mass": 6.520935118390647,
+      "coverage": 0.12540259843058937,
+      "training_edges": {
+        "exit_delay_bars": [
+          4.0,
+          13.0
+        ],
+        "range_over_band": [
+          2.0,
+          3.0
+        ]
+      }
+    },
+    {
+      "fold": 3,
+      "cohort": "pseudo",
+      "bucket": "2:2",
+      "rows": 6993,
+      "anchor_keys": 6965,
+      "sessions": 52,
+      "weight_mass": 3.456868530557312,
+      "coverage": 0.06647824097225599,
+      "training_edges": {
+        "exit_delay_bars": [
+          4.0,
+          13.0
+        ],
+        "range_over_band": [
+          2.0,
+          3.0
+        ]
+      }
+    }
+  ],
+  "summaries": [
+    {
+      "cohort": "real",
+      "bucket": "ALL",
+      "unit": "h",
+      "distance": 0.1,
+      "mean_rate": 0.7687880174108151,
+      "min_fold_rate": 0.766554526139346,
+      "max_fold_rate": 0.7717671413217813,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "ALL",
+      "unit": "h",
+      "distance": 0.25,
+      "mean_rate": 0.46827851138279025,
+      "min_fold_rate": 0.45922270153909805,
+      "max_fold_rate": 0.47770164137761806,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "ALL",
+      "unit": "h",
+      "distance": 0.5,
+      "mean_rate": 0.275112810779157,
+      "min_fold_rate": 0.26769561254447666,
+      "max_fold_rate": 0.28846945104340843,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "ALL",
+      "unit": "h",
+      "distance": 0.75,
+      "mean_rate": 0.19427468199892792,
+      "min_fold_rate": 0.18619350183356465,
+      "max_fold_rate": 0.2024039159207948,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "ALL",
+      "unit": "h",
+      "distance": 1.0,
+      "mean_rate": 0.15146109045034858,
+      "min_fold_rate": 0.1432863578240442,
+      "max_fold_rate": 0.1626978406995156,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "ALL",
+      "unit": "h",
+      "distance": 1.5,
+      "mean_rate": 0.10076344978869385,
+      "min_fold_rate": 0.09103427334984496,
+      "max_fold_rate": 0.1073353602947979,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "ALL",
+      "unit": "h",
+      "distance": 2.0,
+      "mean_rate": 0.07405053622260711,
+      "min_fold_rate": 0.07131320332622616,
+      "max_fold_rate": 0.07713677037468725,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "ALL",
+      "unit": "ticks",
+      "distance": 5.0,
+      "mean_rate": 0.6711215154111856,
+      "min_fold_rate": 0.6668549257871936,
+      "max_fold_rate": 0.6767516916935311,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "ALL",
+      "unit": "ticks",
+      "distance": 10.0,
+      "mean_rate": 0.4154920061839971,
+      "min_fold_rate": 0.41104905172903156,
+      "max_fold_rate": 0.42354792595438207,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "ALL",
+      "unit": "ticks",
+      "distance": 20.0,
+      "mean_rate": 0.22610257336827164,
+      "min_fold_rate": 0.21331804895101628,
+      "max_fold_rate": 0.23610510934856882,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "ALL",
+      "unit": "ticks",
+      "distance": 40.0,
+      "mean_rate": 0.1226944192442428,
+      "min_fold_rate": 0.11039934621416657,
+      "max_fold_rate": 0.13573768181911575,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "0:0",
+      "unit": "h",
+      "distance": 0.1,
+      "mean_rate": 0.715776985994243,
+      "min_fold_rate": 0.6548944455549358,
+      "max_fold_rate": 0.776258541636644,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "0:0",
+      "unit": "h",
+      "distance": 0.25,
+      "mean_rate": 0.372395948720827,
+      "min_fold_rate": 0.34753155852308953,
+      "max_fold_rate": 0.4067770123402647,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "0:0",
+      "unit": "h",
+      "distance": 0.5,
+      "mean_rate": 0.20916996841356997,
+      "min_fold_rate": 0.1937592441870125,
+      "max_fold_rate": 0.23101332464175867,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "0:0",
+      "unit": "h",
+      "distance": 0.75,
+      "mean_rate": 0.15545068017337912,
+      "min_fold_rate": 0.14404624571526753,
+      "max_fold_rate": 0.17005327200819093,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "0:0",
+      "unit": "h",
+      "distance": 1.0,
+      "mean_rate": 0.11324972427727797,
+      "min_fold_rate": 0.09426199886979662,
+      "max_fold_rate": 0.12681680899130018,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "0:0",
+      "unit": "h",
+      "distance": 1.5,
+      "mean_rate": 0.0787438617596915,
+      "min_fold_rate": 0.06627452014100331,
+      "max_fold_rate": 0.09388952725622414,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "0:0",
+      "unit": "h",
+      "distance": 2.0,
+      "mean_rate": 0.05505637495634602,
+      "min_fold_rate": 0.04127951316776385,
+      "max_fold_rate": 0.07049775409415188,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "0:0",
+      "unit": "ticks",
+      "distance": 5.0,
+      "mean_rate": 0.6532159004182639,
+      "min_fold_rate": 0.6143318307243401,
+      "max_fold_rate": 0.6878829097866562,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "0:0",
+      "unit": "ticks",
+      "distance": 10.0,
+      "mean_rate": 0.3815513877472239,
+      "min_fold_rate": 0.35132226603443945,
+      "max_fold_rate": 0.4186842429923974,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "0:0",
+      "unit": "ticks",
+      "distance": 20.0,
+      "mean_rate": 0.2014374748654378,
+      "min_fold_rate": 0.18988131779470627,
+      "max_fold_rate": 0.22025109271077736,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "0:0",
+      "unit": "ticks",
+      "distance": 40.0,
+      "mean_rate": 0.10848761756244267,
+      "min_fold_rate": 0.08884585518438694,
+      "max_fold_rate": 0.1190893363398828,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "0:1",
+      "unit": "h",
+      "distance": 0.1,
+      "mean_rate": 0.7468166623930744,
+      "min_fold_rate": 0.7409191733781304,
+      "max_fold_rate": 0.7500950107295989,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "0:1",
+      "unit": "h",
+      "distance": 0.25,
+      "mean_rate": 0.43462856944117606,
+      "min_fold_rate": 0.412106700784907,
+      "max_fold_rate": 0.4483389353768333,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "0:1",
+      "unit": "h",
+      "distance": 0.5,
+      "mean_rate": 0.24185645914854756,
+      "min_fold_rate": 0.2331809711894572,
+      "max_fold_rate": 0.2566480454048409,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "0:1",
+      "unit": "h",
+      "distance": 0.75,
+      "mean_rate": 0.17924596538608029,
+      "min_fold_rate": 0.15464504085248842,
+      "max_fold_rate": 0.20963280272842677,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "0:1",
+      "unit": "h",
+      "distance": 1.0,
+      "mean_rate": 0.1431258075588831,
+      "min_fold_rate": 0.12583193051111968,
+      "max_fold_rate": 0.15475618449832018,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "0:1",
+      "unit": "h",
+      "distance": 1.5,
+      "mean_rate": 0.083786513242439,
+      "min_fold_rate": 0.07544415420723265,
+      "max_fold_rate": 0.09035928224006196,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "0:1",
+      "unit": "h",
+      "distance": 2.0,
+      "mean_rate": 0.06503592670503855,
+      "min_fold_rate": 0.06365824829532976,
+      "max_fold_rate": 0.0671634375609627,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "0:1",
+      "unit": "ticks",
+      "distance": 5.0,
+      "mean_rate": 0.6677250331356791,
+      "min_fold_rate": 0.65780557317913,
+      "max_fold_rate": 0.6728419728610266,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "0:1",
+      "unit": "ticks",
+      "distance": 10.0,
+      "mean_rate": 0.40158965795881785,
+      "min_fold_rate": 0.3854438003343394,
+      "max_fold_rate": 0.4122651057714135,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "0:1",
+      "unit": "ticks",
+      "distance": 20.0,
+      "mean_rate": 0.2218034086150015,
+      "min_fold_rate": 0.20335233467206437,
+      "max_fold_rate": 0.2426744377348086,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "0:1",
+      "unit": "ticks",
+      "distance": 40.0,
+      "mean_rate": 0.1247660657014928,
+      "min_fold_rate": 0.10737491362713256,
+      "max_fold_rate": 0.13559539792449807,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "0:2",
+      "unit": "h",
+      "distance": 0.1,
+      "mean_rate": 0.8804336873911941,
+      "min_fold_rate": 0.8462578202464008,
+      "max_fold_rate": 0.9032916459388837,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "0:2",
+      "unit": "h",
+      "distance": 0.25,
+      "mean_rate": 0.6345419261064934,
+      "min_fold_rate": 0.5819548970530245,
+      "max_fold_rate": 0.6761935338621314,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "0:2",
+      "unit": "h",
+      "distance": 0.5,
+      "mean_rate": 0.41915590593546764,
+      "min_fold_rate": 0.36730820316756513,
+      "max_fold_rate": 0.48191622956511776,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "0:2",
+      "unit": "h",
+      "distance": 0.75,
+      "mean_rate": 0.30376961342367326,
+      "min_fold_rate": 0.26162380366364196,
+      "max_fold_rate": 0.35869041351241576,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "0:2",
+      "unit": "h",
+      "distance": 1.0,
+      "mean_rate": 0.2385260908022715,
+      "min_fold_rate": 0.2136934966535193,
+      "max_fold_rate": 0.28321894053852636,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "0:2",
+      "unit": "h",
+      "distance": 1.5,
+      "mean_rate": 0.15766227137604946,
+      "min_fold_rate": 0.13899878185029765,
+      "max_fold_rate": 0.18187606833182976,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "0:2",
+      "unit": "h",
+      "distance": 2.0,
+      "mean_rate": 0.10562068838870055,
+      "min_fold_rate": 0.10222525658301747,
+      "max_fold_rate": 0.10978956956482928,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "0:2",
+      "unit": "ticks",
+      "distance": 5.0,
+      "mean_rate": 0.7468754236951556,
+      "min_fold_rate": 0.7100920413263214,
+      "max_fold_rate": 0.7828295029019894,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "0:2",
+      "unit": "ticks",
+      "distance": 10.0,
+      "mean_rate": 0.5131417768467558,
+      "min_fold_rate": 0.4690965460778008,
+      "max_fold_rate": 0.5649474788232653,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "0:2",
+      "unit": "ticks",
+      "distance": 20.0,
+      "mean_rate": 0.2947065528849802,
+      "min_fold_rate": 0.2518322554032143,
+      "max_fold_rate": 0.37061754262010316,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "0:2",
+      "unit": "ticks",
+      "distance": 40.0,
+      "mean_rate": 0.16242204923653233,
+      "min_fold_rate": 0.13317976383759167,
+      "max_fold_rate": 0.21982431936146948,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "1:0",
+      "unit": "h",
+      "distance": 0.1,
+      "mean_rate": 0.7186760217063437,
+      "min_fold_rate": 0.7062708093716044,
+      "max_fold_rate": 0.7370789260702342,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "1:0",
+      "unit": "h",
+      "distance": 0.25,
+      "mean_rate": 0.3616185978049757,
+      "min_fold_rate": 0.32399807997524055,
+      "max_fold_rate": 0.3851347274621418,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "1:0",
+      "unit": "h",
+      "distance": 0.5,
+      "mean_rate": 0.18452182604826683,
+      "min_fold_rate": 0.15067199464745623,
+      "max_fold_rate": 0.2184548375993117,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "1:0",
+      "unit": "h",
+      "distance": 0.75,
+      "mean_rate": 0.12468838498808014,
+      "min_fold_rate": 0.1028484589071108,
+      "max_fold_rate": 0.15499722495961896,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "1:0",
+      "unit": "h",
+      "distance": 1.0,
+      "mean_rate": 0.09522245323479996,
+      "min_fold_rate": 0.0839551894951168,
+      "max_fold_rate": 0.11109598721003579,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "1:0",
+      "unit": "h",
+      "distance": 1.5,
+      "mean_rate": 0.06096886960373852,
+      "min_fold_rate": 0.05349357998454233,
+      "max_fold_rate": 0.06918123743093167,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "1:0",
+      "unit": "h",
+      "distance": 2.0,
+      "mean_rate": 0.04490435980559457,
+      "min_fold_rate": 0.038917096006116786,
+      "max_fold_rate": 0.04992596952786619,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "1:0",
+      "unit": "ticks",
+      "distance": 5.0,
+      "mean_rate": 0.6405915501729504,
+      "min_fold_rate": 0.6246328107784777,
+      "max_fold_rate": 0.6522454639060316,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "1:0",
+      "unit": "ticks",
+      "distance": 10.0,
+      "mean_rate": 0.36815039248310466,
+      "min_fold_rate": 0.3259414686348836,
+      "max_fold_rate": 0.39128189824204535,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "1:0",
+      "unit": "ticks",
+      "distance": 20.0,
+      "mean_rate": 0.18223305473137552,
+      "min_fold_rate": 0.16158709331806811,
+      "max_fold_rate": 0.21255455329514358,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "1:0",
+      "unit": "ticks",
+      "distance": 40.0,
+      "mean_rate": 0.08749743330911475,
+      "min_fold_rate": 0.08155765533081308,
+      "max_fold_rate": 0.09602879858393927,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "1:1",
+      "unit": "h",
+      "distance": 0.1,
+      "mean_rate": 0.7696568355149128,
+      "min_fold_rate": 0.7537257744131911,
+      "max_fold_rate": 0.7898077816446858,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "1:1",
+      "unit": "h",
+      "distance": 0.25,
+      "mean_rate": 0.4592980593476617,
+      "min_fold_rate": 0.4462166223706615,
+      "max_fold_rate": 0.47934988419404667,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "1:1",
+      "unit": "h",
+      "distance": 0.5,
+      "mean_rate": 0.2572623346307447,
+      "min_fold_rate": 0.2410124631283779,
+      "max_fold_rate": 0.2741713820719971,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "1:1",
+      "unit": "h",
+      "distance": 0.75,
+      "mean_rate": 0.1828584043525825,
+      "min_fold_rate": 0.17210601847430876,
+      "max_fold_rate": 0.18836828613240117,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "1:1",
+      "unit": "h",
+      "distance": 1.0,
+      "mean_rate": 0.14787468875606646,
+      "min_fold_rate": 0.1425276461567482,
+      "max_fold_rate": 0.15090750834450734,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "1:1",
+      "unit": "h",
+      "distance": 1.5,
+      "mean_rate": 0.08866900613688389,
+      "min_fold_rate": 0.07592831836151481,
+      "max_fold_rate": 0.10864315938737619,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "1:1",
+      "unit": "h",
+      "distance": 2.0,
+      "mean_rate": 0.062328961573814595,
+      "min_fold_rate": 0.04670886982521721,
+      "max_fold_rate": 0.07702874407177147,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "1:1",
+      "unit": "ticks",
+      "distance": 5.0,
+      "mean_rate": 0.681796629273439,
+      "min_fold_rate": 0.6716555157363091,
+      "max_fold_rate": 0.6931593287173858,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "1:1",
+      "unit": "ticks",
+      "distance": 10.0,
+      "mean_rate": 0.4232991312203224,
+      "min_fold_rate": 0.4085745956988197,
+      "max_fold_rate": 0.43222749707831404,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "1:1",
+      "unit": "ticks",
+      "distance": 20.0,
+      "mean_rate": 0.2281786235456341,
+      "min_fold_rate": 0.2113160412687405,
+      "max_fold_rate": 0.2459304294752311,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "1:1",
+      "unit": "ticks",
+      "distance": 40.0,
+      "mean_rate": 0.12628295189866998,
+      "min_fold_rate": 0.11704182302649192,
+      "max_fold_rate": 0.13582459296112454,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "1:2",
+      "unit": "h",
+      "distance": 0.1,
+      "mean_rate": 0.8446479060757094,
+      "min_fold_rate": 0.8392073419363772,
+      "max_fold_rate": 0.8490761239776721,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "1:2",
+      "unit": "h",
+      "distance": 0.25,
+      "mean_rate": 0.5713685876832569,
+      "min_fold_rate": 0.5478753062563112,
+      "max_fold_rate": 0.5950538569543711,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "1:2",
+      "unit": "h",
+      "distance": 0.5,
+      "mean_rate": 0.3416700298493061,
+      "min_fold_rate": 0.31440445476760176,
+      "max_fold_rate": 0.36228255647968743,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "1:2",
+      "unit": "h",
+      "distance": 0.75,
+      "mean_rate": 0.2338059620313615,
+      "min_fold_rate": 0.21881149462553523,
+      "max_fold_rate": 0.24404161042830427,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "1:2",
+      "unit": "h",
+      "distance": 1.0,
+      "mean_rate": 0.182552350592693,
+      "min_fold_rate": 0.163256456726764,
+      "max_fold_rate": 0.19404809571138418,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "1:2",
+      "unit": "h",
+      "distance": 1.5,
+      "mean_rate": 0.13110308754362032,
+      "min_fold_rate": 0.12249369415497194,
+      "max_fold_rate": 0.13664775590495468,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "1:2",
+      "unit": "h",
+      "distance": 2.0,
+      "mean_rate": 0.09876419880916104,
+      "min_fold_rate": 0.0902061217856989,
+      "max_fold_rate": 0.10705011382496385,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "1:2",
+      "unit": "ticks",
+      "distance": 5.0,
+      "mean_rate": 0.7093335651963647,
+      "min_fold_rate": 0.6858678432635785,
+      "max_fold_rate": 0.7237903175251056,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "1:2",
+      "unit": "ticks",
+      "distance": 10.0,
+      "mean_rate": 0.45873429891509426,
+      "min_fold_rate": 0.44422479393594344,
+      "max_fold_rate": 0.48528656692695615,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "1:2",
+      "unit": "ticks",
+      "distance": 20.0,
+      "mean_rate": 0.24070634719838033,
+      "min_fold_rate": 0.2381936567337713,
+      "max_fold_rate": 0.24304179815039517,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "1:2",
+      "unit": "ticks",
+      "distance": 40.0,
+      "mean_rate": 0.13368142125330562,
+      "min_fold_rate": 0.12227528034973442,
+      "max_fold_rate": 0.14845394286699085,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "2:0",
+      "unit": "h",
+      "distance": 0.1,
+      "mean_rate": 0.6314554481420633,
+      "min_fold_rate": 0.5968599416111715,
+      "max_fold_rate": 0.678007406359327,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "2:0",
+      "unit": "h",
+      "distance": 0.25,
+      "mean_rate": 0.30166832443573494,
+      "min_fold_rate": 0.28123692564907293,
+      "max_fold_rate": 0.3175517338731561,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "2:0",
+      "unit": "h",
+      "distance": 0.5,
+      "mean_rate": 0.16348671778501508,
+      "min_fold_rate": 0.1478242301587267,
+      "max_fold_rate": 0.17808944433550414,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "2:0",
+      "unit": "h",
+      "distance": 0.75,
+      "mean_rate": 0.10993923840885877,
+      "min_fold_rate": 0.08699554573494801,
+      "max_fold_rate": 0.12971879782199355,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "2:0",
+      "unit": "h",
+      "distance": 1.0,
+      "mean_rate": 0.08674326491641242,
+      "min_fold_rate": 0.07613413521625097,
+      "max_fold_rate": 0.09232469860584727,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "2:0",
+      "unit": "h",
+      "distance": 1.5,
+      "mean_rate": 0.05803799124174064,
+      "min_fold_rate": 0.05032157753566758,
+      "max_fold_rate": 0.06232202793881675,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "2:0",
+      "unit": "h",
+      "distance": 2.0,
+      "mean_rate": 0.04390922603443273,
+      "min_fold_rate": 0.032397072815095816,
+      "max_fold_rate": 0.050435916829074195,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "2:0",
+      "unit": "ticks",
+      "distance": 5.0,
+      "mean_rate": 0.567578439792732,
+      "min_fold_rate": 0.5409183605678182,
+      "max_fold_rate": 0.5945259098472546,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "2:0",
+      "unit": "ticks",
+      "distance": 10.0,
+      "mean_rate": 0.31036795013924817,
+      "min_fold_rate": 0.2796319438969656,
+      "max_fold_rate": 0.3260817864019422,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "2:0",
+      "unit": "ticks",
+      "distance": 20.0,
+      "mean_rate": 0.16793266911996127,
+      "min_fold_rate": 0.1528494458586971,
+      "max_fold_rate": 0.18878713833482974,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "2:0",
+      "unit": "ticks",
+      "distance": 40.0,
+      "mean_rate": 0.08881318156872393,
+      "min_fold_rate": 0.07226358185154275,
+      "max_fold_rate": 0.0996602352192823,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "2:1",
+      "unit": "h",
+      "distance": 0.1,
+      "mean_rate": 0.7023946354847502,
+      "min_fold_rate": 0.6415749245681615,
+      "max_fold_rate": 0.7371497474633778,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "2:1",
+      "unit": "h",
+      "distance": 0.25,
+      "mean_rate": 0.39382103013395225,
+      "min_fold_rate": 0.34162499567857446,
+      "max_fold_rate": 0.42674861341414244,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "2:1",
+      "unit": "h",
+      "distance": 0.5,
+      "mean_rate": 0.21366654347690509,
+      "min_fold_rate": 0.1826926964760516,
+      "max_fold_rate": 0.23964944538538974,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "2:1",
+      "unit": "h",
+      "distance": 0.75,
+      "mean_rate": 0.14986336213099707,
+      "min_fold_rate": 0.1250624456485481,
+      "max_fold_rate": 0.16771307586981452,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "2:1",
+      "unit": "h",
+      "distance": 1.0,
+      "mean_rate": 0.11370883301148171,
+      "min_fold_rate": 0.0970008062093464,
+      "max_fold_rate": 0.12502456724409078,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "2:1",
+      "unit": "h",
+      "distance": 1.5,
+      "mean_rate": 0.07955358499937928,
+      "min_fold_rate": 0.06356829608425717,
+      "max_fold_rate": 0.10019318893281044,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "2:1",
+      "unit": "h",
+      "distance": 2.0,
+      "mean_rate": 0.06604446685598833,
+      "min_fold_rate": 0.05679482157339365,
+      "max_fold_rate": 0.08175988648006537,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "2:1",
+      "unit": "ticks",
+      "distance": 5.0,
+      "mean_rate": 0.6320249195195352,
+      "min_fold_rate": 0.5837563545902075,
+      "max_fold_rate": 0.6682287148181512,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "2:1",
+      "unit": "ticks",
+      "distance": 10.0,
+      "mean_rate": 0.3697339186942185,
+      "min_fold_rate": 0.32598743907013467,
+      "max_fold_rate": 0.39816667126747013,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "2:1",
+      "unit": "ticks",
+      "distance": 20.0,
+      "mean_rate": 0.19835910974748128,
+      "min_fold_rate": 0.1780406048049438,
+      "max_fold_rate": 0.21435865932373094,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "2:1",
+      "unit": "ticks",
+      "distance": 40.0,
+      "mean_rate": 0.10436011109646641,
+      "min_fold_rate": 0.09779517804745651,
+      "max_fold_rate": 0.11083388194260013,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "2:2",
+      "unit": "h",
+      "distance": 0.1,
+      "mean_rate": 0.7928572612685909,
+      "min_fold_rate": 0.7623264977120163,
+      "max_fold_rate": 0.8327085780943632,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "2:2",
+      "unit": "h",
+      "distance": 0.25,
+      "mean_rate": 0.4851346051307543,
+      "min_fold_rate": 0.4682331812693736,
+      "max_fold_rate": 0.5126904409505225,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "2:2",
+      "unit": "h",
+      "distance": 0.5,
+      "mean_rate": 0.2928162718330556,
+      "min_fold_rate": 0.271286462862712,
+      "max_fold_rate": 0.3093629647276412,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "2:2",
+      "unit": "h",
+      "distance": 0.75,
+      "mean_rate": 0.20210073157901073,
+      "min_fold_rate": 0.18627868277231524,
+      "max_fold_rate": 0.21955844354509998,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "2:2",
+      "unit": "h",
+      "distance": 1.0,
+      "mean_rate": 0.14979511426915246,
+      "min_fold_rate": 0.13449945931885365,
+      "max_fold_rate": 0.15855449838812524,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "2:2",
+      "unit": "h",
+      "distance": 1.5,
+      "mean_rate": 0.10311682431968006,
+      "min_fold_rate": 0.08520238300209576,
+      "max_fold_rate": 0.11682283328667772,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "2:2",
+      "unit": "h",
+      "distance": 2.0,
+      "mean_rate": 0.0855440668234383,
+      "min_fold_rate": 0.06738260216536611,
+      "max_fold_rate": 0.09774031509421324,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "2:2",
+      "unit": "ticks",
+      "distance": 5.0,
+      "mean_rate": 0.6632604793536826,
+      "min_fold_rate": 0.6418988867516123,
+      "max_fold_rate": 0.6928440657266978,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "2:2",
+      "unit": "ticks",
+      "distance": 10.0,
+      "mean_rate": 0.41101085752899147,
+      "min_fold_rate": 0.3753106443280297,
+      "max_fold_rate": 0.436989622330874,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "2:2",
+      "unit": "ticks",
+      "distance": 20.0,
+      "mean_rate": 0.23769868346763445,
+      "min_fold_rate": 0.2185850418601631,
+      "max_fold_rate": 0.2568208299708113,
+      "folds": 3
+    },
+    {
+      "cohort": "real",
+      "bucket": "2:2",
+      "unit": "ticks",
+      "distance": 40.0,
+      "mean_rate": 0.12547758274240442,
+      "min_fold_rate": 0.10196851430720273,
+      "max_fold_rate": 0.1482166730514106,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "ALL",
+      "unit": "h",
+      "distance": 0.1,
+      "mean_rate": 0.8000339729635139,
+      "min_fold_rate": 0.789810635239557,
+      "max_fold_rate": 0.807662832661221,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "ALL",
+      "unit": "h",
+      "distance": 0.25,
+      "mean_rate": 0.5163762533082539,
+      "min_fold_rate": 0.499558308599686,
+      "max_fold_rate": 0.5275735640048737,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "ALL",
+      "unit": "h",
+      "distance": 0.5,
+      "mean_rate": 0.31247915900174733,
+      "min_fold_rate": 0.29814682601967873,
+      "max_fold_rate": 0.32153254212393795,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "ALL",
+      "unit": "h",
+      "distance": 0.75,
+      "mean_rate": 0.2185086312973323,
+      "min_fold_rate": 0.2061338268222734,
+      "max_fold_rate": 0.22494029723466583,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "ALL",
+      "unit": "h",
+      "distance": 1.0,
+      "mean_rate": 0.17131429508508597,
+      "min_fold_rate": 0.16092030488460538,
+      "max_fold_rate": 0.17714222302990842,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "ALL",
+      "unit": "h",
+      "distance": 1.5,
+      "mean_rate": 0.11660012561106807,
+      "min_fold_rate": 0.10944756461443907,
+      "max_fold_rate": 0.12084889378863722,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "ALL",
+      "unit": "h",
+      "distance": 2.0,
+      "mean_rate": 0.08897041173169608,
+      "min_fold_rate": 0.0823740302583731,
+      "max_fold_rate": 0.09282041762553886,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "ALL",
+      "unit": "ticks",
+      "distance": 5.0,
+      "mean_rate": 0.6851131226780197,
+      "min_fold_rate": 0.6685766918960797,
+      "max_fold_rate": 0.6966493877292462,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "ALL",
+      "unit": "ticks",
+      "distance": 10.0,
+      "mean_rate": 0.42980594519998494,
+      "min_fold_rate": 0.41075245673565774,
+      "max_fold_rate": 0.4415811671775384,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "ALL",
+      "unit": "ticks",
+      "distance": 20.0,
+      "mean_rate": 0.2370229636087973,
+      "min_fold_rate": 0.22348149499137782,
+      "max_fold_rate": 0.24423215011090443,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "ALL",
+      "unit": "ticks",
+      "distance": 40.0,
+      "mean_rate": 0.1242557792188323,
+      "min_fold_rate": 0.11591860533335044,
+      "max_fold_rate": 0.1290517087896104,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "0:0",
+      "unit": "h",
+      "distance": 0.1,
+      "mean_rate": 0.7118460907410609,
+      "min_fold_rate": 0.7111162484575463,
+      "max_fold_rate": 0.7124059213645343,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "0:0",
+      "unit": "h",
+      "distance": 0.25,
+      "mean_rate": 0.39962738955639415,
+      "min_fold_rate": 0.39613226248789174,
+      "max_fold_rate": 0.40468459560016573,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "0:0",
+      "unit": "h",
+      "distance": 0.5,
+      "mean_rate": 0.22399494649774357,
+      "min_fold_rate": 0.22241326420848284,
+      "max_fold_rate": 0.22548672898762162,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "0:0",
+      "unit": "h",
+      "distance": 0.75,
+      "mean_rate": 0.15323264851360657,
+      "min_fold_rate": 0.14983482319589092,
+      "max_fold_rate": 0.15545306253705518,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "0:0",
+      "unit": "h",
+      "distance": 1.0,
+      "mean_rate": 0.11946425167200371,
+      "min_fold_rate": 0.11459193073247832,
+      "max_fold_rate": 0.12414874477895718,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "0:0",
+      "unit": "h",
+      "distance": 1.5,
+      "mean_rate": 0.08205205006277443,
+      "min_fold_rate": 0.07784480166653783,
+      "max_fold_rate": 0.08510771994815022,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "0:0",
+      "unit": "h",
+      "distance": 2.0,
+      "mean_rate": 0.059966348613384464,
+      "min_fold_rate": 0.05758064662706586,
+      "max_fold_rate": 0.06396982009799186,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "0:0",
+      "unit": "ticks",
+      "distance": 5.0,
+      "mean_rate": 0.6552529190023659,
+      "min_fold_rate": 0.6513068143491479,
+      "max_fold_rate": 0.6611609035053319,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "0:0",
+      "unit": "ticks",
+      "distance": 10.0,
+      "mean_rate": 0.39543408079353776,
+      "min_fold_rate": 0.39222307724159977,
+      "max_fold_rate": 0.39873805184100525,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "0:0",
+      "unit": "ticks",
+      "distance": 20.0,
+      "mean_rate": 0.21641853299642325,
+      "min_fold_rate": 0.21607898434180664,
+      "max_fold_rate": 0.21668073278343788,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "0:0",
+      "unit": "ticks",
+      "distance": 40.0,
+      "mean_rate": 0.11434784158421842,
+      "min_fold_rate": 0.11123967512772226,
+      "max_fold_rate": 0.11730664342832677,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "0:1",
+      "unit": "h",
+      "distance": 0.1,
+      "mean_rate": 0.8116589201839971,
+      "min_fold_rate": 0.80355091256912,
+      "max_fold_rate": 0.8177585947040902,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "0:1",
+      "unit": "h",
+      "distance": 0.25,
+      "mean_rate": 0.5046975269235293,
+      "min_fold_rate": 0.4952752401792852,
+      "max_fold_rate": 0.5118895573011497,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "0:1",
+      "unit": "h",
+      "distance": 0.5,
+      "mean_rate": 0.2970786830439159,
+      "min_fold_rate": 0.2920795474319064,
+      "max_fold_rate": 0.3024884986014349,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "0:1",
+      "unit": "h",
+      "distance": 0.75,
+      "mean_rate": 0.20474561625125476,
+      "min_fold_rate": 0.1990199739807561,
+      "max_fold_rate": 0.20855513853700938,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "0:1",
+      "unit": "h",
+      "distance": 1.0,
+      "mean_rate": 0.15899404069957235,
+      "min_fold_rate": 0.15459777182576526,
+      "max_fold_rate": 0.16369235762114673,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "0:1",
+      "unit": "h",
+      "distance": 1.5,
+      "mean_rate": 0.10569331793005575,
+      "min_fold_rate": 0.10067289348079977,
+      "max_fold_rate": 0.11094782208699545,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "0:1",
+      "unit": "h",
+      "distance": 2.0,
+      "mean_rate": 0.0808817345749392,
+      "min_fold_rate": 0.07584099920541312,
+      "max_fold_rate": 0.08661980541459871,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "0:1",
+      "unit": "ticks",
+      "distance": 5.0,
+      "mean_rate": 0.7037654365440322,
+      "min_fold_rate": 0.6922076496236029,
+      "max_fold_rate": 0.7126806736967884,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "0:1",
+      "unit": "ticks",
+      "distance": 10.0,
+      "mean_rate": 0.44783526969853377,
+      "min_fold_rate": 0.4307983269840777,
+      "max_fold_rate": 0.45687054835262814,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "0:1",
+      "unit": "ticks",
+      "distance": 20.0,
+      "mean_rate": 0.24717536593893638,
+      "min_fold_rate": 0.23773002626651488,
+      "max_fold_rate": 0.2526818089315096,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "0:1",
+      "unit": "ticks",
+      "distance": 40.0,
+      "mean_rate": 0.12913919276667227,
+      "min_fold_rate": 0.12458390922864764,
+      "max_fold_rate": 0.13414293945038527,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "0:2",
+      "unit": "h",
+      "distance": 0.1,
+      "mean_rate": 0.9022689980352562,
+      "min_fold_rate": 0.8972242213838728,
+      "max_fold_rate": 0.906266356145146,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "0:2",
+      "unit": "h",
+      "distance": 0.25,
+      "mean_rate": 0.6845212154379835,
+      "min_fold_rate": 0.6786470072428041,
+      "max_fold_rate": 0.6920088136710093,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "0:2",
+      "unit": "h",
+      "distance": 0.5,
+      "mean_rate": 0.4564624172354483,
+      "min_fold_rate": 0.4495883553516782,
+      "max_fold_rate": 0.46639694047144864,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "0:2",
+      "unit": "h",
+      "distance": 0.75,
+      "mean_rate": 0.3282411820460603,
+      "min_fold_rate": 0.3230427763182552,
+      "max_fold_rate": 0.3374055012374054,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "0:2",
+      "unit": "h",
+      "distance": 1.0,
+      "mean_rate": 0.2632906884426642,
+      "min_fold_rate": 0.2576803515748267,
+      "max_fold_rate": 0.2728744324508716,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "0:2",
+      "unit": "h",
+      "distance": 1.5,
+      "mean_rate": 0.18317473041101673,
+      "min_fold_rate": 0.17872980802155614,
+      "max_fold_rate": 0.18934811129729856,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "0:2",
+      "unit": "h",
+      "distance": 2.0,
+      "mean_rate": 0.14143223842980743,
+      "min_fold_rate": 0.13582405717353463,
+      "max_fold_rate": 0.14777839858096153,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "0:2",
+      "unit": "ticks",
+      "distance": 5.0,
+      "mean_rate": 0.7499384581503078,
+      "min_fold_rate": 0.7371745035945405,
+      "max_fold_rate": 0.7596378131625249,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "0:2",
+      "unit": "ticks",
+      "distance": 10.0,
+      "mean_rate": 0.5054024856159045,
+      "min_fold_rate": 0.4844748522959268,
+      "max_fold_rate": 0.5220413081619066,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "0:2",
+      "unit": "ticks",
+      "distance": 20.0,
+      "mean_rate": 0.28957513697855325,
+      "min_fold_rate": 0.2737221802639912,
+      "max_fold_rate": 0.30237018392038006,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "0:2",
+      "unit": "ticks",
+      "distance": 40.0,
+      "mean_rate": 0.1527313556958518,
+      "min_fold_rate": 0.14344781946317098,
+      "max_fold_rate": 0.15838340655735794,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "1:0",
+      "unit": "h",
+      "distance": 0.1,
+      "mean_rate": 0.696266965187978,
+      "min_fold_rate": 0.6923398606145573,
+      "max_fold_rate": 0.7027905136489584,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "1:0",
+      "unit": "h",
+      "distance": 0.25,
+      "mean_rate": 0.3828394866539528,
+      "min_fold_rate": 0.3773713327135867,
+      "max_fold_rate": 0.39247211288732936,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "1:0",
+      "unit": "h",
+      "distance": 0.5,
+      "mean_rate": 0.2101893541507819,
+      "min_fold_rate": 0.2049338765178439,
+      "max_fold_rate": 0.21567220317174898,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "1:0",
+      "unit": "h",
+      "distance": 0.75,
+      "mean_rate": 0.146219862335815,
+      "min_fold_rate": 0.13967670779609045,
+      "max_fold_rate": 0.15669576214099082,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "1:0",
+      "unit": "h",
+      "distance": 1.0,
+      "mean_rate": 0.11361424232390897,
+      "min_fold_rate": 0.10820526211623838,
+      "max_fold_rate": 0.12257290324683712,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "1:0",
+      "unit": "h",
+      "distance": 1.5,
+      "mean_rate": 0.07418108683391382,
+      "min_fold_rate": 0.06882610790473677,
+      "max_fold_rate": 0.08085117533154777,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "1:0",
+      "unit": "h",
+      "distance": 2.0,
+      "mean_rate": 0.05437184841406186,
+      "min_fold_rate": 0.051000027012716206,
+      "max_fold_rate": 0.0602286410596029,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "1:0",
+      "unit": "ticks",
+      "distance": 5.0,
+      "mean_rate": 0.6301393431144957,
+      "min_fold_rate": 0.6261535513342907,
+      "max_fold_rate": 0.6327168697669032,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "1:0",
+      "unit": "ticks",
+      "distance": 10.0,
+      "mean_rate": 0.37599104792757165,
+      "min_fold_rate": 0.3696673344321175,
+      "max_fold_rate": 0.38362242472023267,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "1:0",
+      "unit": "ticks",
+      "distance": 20.0,
+      "mean_rate": 0.20051181855744848,
+      "min_fold_rate": 0.18917351550851758,
+      "max_fold_rate": 0.20818427422625946,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "1:0",
+      "unit": "ticks",
+      "distance": 40.0,
+      "mean_rate": 0.10699186669937921,
+      "min_fold_rate": 0.10112552910147017,
+      "max_fold_rate": 0.11469732282393678,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "1:1",
+      "unit": "h",
+      "distance": 0.1,
+      "mean_rate": 0.802226659634762,
+      "min_fold_rate": 0.7985583905896163,
+      "max_fold_rate": 0.8043891862408514,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "1:1",
+      "unit": "h",
+      "distance": 0.25,
+      "mean_rate": 0.4927783139777571,
+      "min_fold_rate": 0.48767788295885295,
+      "max_fold_rate": 0.4957541101260141,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "1:1",
+      "unit": "h",
+      "distance": 0.5,
+      "mean_rate": 0.2829294660486583,
+      "min_fold_rate": 0.2753244968693998,
+      "max_fold_rate": 0.2899156327384122,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "1:1",
+      "unit": "h",
+      "distance": 0.75,
+      "mean_rate": 0.19648349546496272,
+      "min_fold_rate": 0.19439346565048546,
+      "max_fold_rate": 0.19792535626379226,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "1:1",
+      "unit": "h",
+      "distance": 1.0,
+      "mean_rate": 0.15184168106299364,
+      "min_fold_rate": 0.14796470488209731,
+      "max_fold_rate": 0.15637046782388378,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "1:1",
+      "unit": "h",
+      "distance": 1.5,
+      "mean_rate": 0.10250508847528632,
+      "min_fold_rate": 0.09910126848674872,
+      "max_fold_rate": 0.10691736262580175,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "1:1",
+      "unit": "h",
+      "distance": 2.0,
+      "mean_rate": 0.07889202885252987,
+      "min_fold_rate": 0.07734856868706372,
+      "max_fold_rate": 0.08139421960502229,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "1:1",
+      "unit": "ticks",
+      "distance": 5.0,
+      "mean_rate": 0.687140911581858,
+      "min_fold_rate": 0.6739856245181985,
+      "max_fold_rate": 0.6957584533395329,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "1:1",
+      "unit": "ticks",
+      "distance": 10.0,
+      "mean_rate": 0.42619283604271113,
+      "min_fold_rate": 0.4177345053227848,
+      "max_fold_rate": 0.4342408400200917,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "1:1",
+      "unit": "ticks",
+      "distance": 20.0,
+      "mean_rate": 0.23336396890249644,
+      "min_fold_rate": 0.22924152401274273,
+      "max_fold_rate": 0.2369836646411653,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "1:1",
+      "unit": "ticks",
+      "distance": 40.0,
+      "mean_rate": 0.1231683535311096,
+      "min_fold_rate": 0.11716328755217793,
+      "max_fold_rate": 0.1268445631000061,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "1:2",
+      "unit": "h",
+      "distance": 0.1,
+      "mean_rate": 0.8873343436411073,
+      "min_fold_rate": 0.8853074871716377,
+      "max_fold_rate": 0.8891833589645578,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "1:2",
+      "unit": "h",
+      "distance": 0.25,
+      "mean_rate": 0.642885041560486,
+      "min_fold_rate": 0.6323589176101931,
+      "max_fold_rate": 0.6488831164874884,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "1:2",
+      "unit": "h",
+      "distance": 0.5,
+      "mean_rate": 0.4095081053678902,
+      "min_fold_rate": 0.40068836694752247,
+      "max_fold_rate": 0.4175129065136373,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "1:2",
+      "unit": "h",
+      "distance": 0.75,
+      "mean_rate": 0.2884927648563332,
+      "min_fold_rate": 0.2839729290445802,
+      "max_fold_rate": 0.297221843897579,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "1:2",
+      "unit": "h",
+      "distance": 1.0,
+      "mean_rate": 0.22784455870172418,
+      "min_fold_rate": 0.22363856171778843,
+      "max_fold_rate": 0.23476125172325632,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "1:2",
+      "unit": "h",
+      "distance": 1.5,
+      "mean_rate": 0.15431527604513334,
+      "min_fold_rate": 0.15174450723107732,
+      "max_fold_rate": 0.15798061887723738,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "1:2",
+      "unit": "h",
+      "distance": 2.0,
+      "mean_rate": 0.11873826674009226,
+      "min_fold_rate": 0.11717050307011255,
+      "max_fold_rate": 0.12100044671564944,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "1:2",
+      "unit": "ticks",
+      "distance": 5.0,
+      "mean_rate": 0.7279546626221175,
+      "min_fold_rate": 0.7198271124795471,
+      "max_fold_rate": 0.7346639028999893,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "1:2",
+      "unit": "ticks",
+      "distance": 10.0,
+      "mean_rate": 0.47148520536779853,
+      "min_fold_rate": 0.4567374216291355,
+      "max_fold_rate": 0.4818728301908815,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "1:2",
+      "unit": "ticks",
+      "distance": 20.0,
+      "mean_rate": 0.26259469493643367,
+      "min_fold_rate": 0.2498711264732581,
+      "max_fold_rate": 0.274754956916361,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "1:2",
+      "unit": "ticks",
+      "distance": 40.0,
+      "mean_rate": 0.13837929480199793,
+      "min_fold_rate": 0.13085373935647085,
+      "max_fold_rate": 0.14526520877230975,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "2:0",
+      "unit": "h",
+      "distance": 0.1,
+      "mean_rate": 0.6434528202024641,
+      "min_fold_rate": 0.6359513468358061,
+      "max_fold_rate": 0.6505884645473965,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "2:0",
+      "unit": "h",
+      "distance": 0.25,
+      "mean_rate": 0.3309526217631275,
+      "min_fold_rate": 0.3286253268390853,
+      "max_fold_rate": 0.33437461327129164,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "2:0",
+      "unit": "h",
+      "distance": 0.5,
+      "mean_rate": 0.17688620248417922,
+      "min_fold_rate": 0.17390971845829176,
+      "max_fold_rate": 0.18065649449761814,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "2:0",
+      "unit": "h",
+      "distance": 0.75,
+      "mean_rate": 0.11940380566699664,
+      "min_fold_rate": 0.1140820147725905,
+      "max_fold_rate": 0.12462241477280865,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "2:0",
+      "unit": "h",
+      "distance": 1.0,
+      "mean_rate": 0.09109247031231894,
+      "min_fold_rate": 0.08627543072187145,
+      "max_fold_rate": 0.09577252393400634,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "2:0",
+      "unit": "h",
+      "distance": 1.5,
+      "mean_rate": 0.06107196304788087,
+      "min_fold_rate": 0.05911886077218467,
+      "max_fold_rate": 0.06414693220588681,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "2:0",
+      "unit": "h",
+      "distance": 2.0,
+      "mean_rate": 0.044722444855148834,
+      "min_fold_rate": 0.04397522642551945,
+      "max_fold_rate": 0.04592427310818781,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "2:0",
+      "unit": "ticks",
+      "distance": 5.0,
+      "mean_rate": 0.5832834090660733,
+      "min_fold_rate": 0.5819781311210429,
+      "max_fold_rate": 0.5850262574850458,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "2:0",
+      "unit": "ticks",
+      "distance": 10.0,
+      "mean_rate": 0.33219828875932195,
+      "min_fold_rate": 0.3277159544814011,
+      "max_fold_rate": 0.3374026629674066,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "2:0",
+      "unit": "ticks",
+      "distance": 20.0,
+      "mean_rate": 0.17320770029802598,
+      "min_fold_rate": 0.16945066089042188,
+      "max_fold_rate": 0.17820866722424347,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "2:0",
+      "unit": "ticks",
+      "distance": 40.0,
+      "mean_rate": 0.08815432908369707,
+      "min_fold_rate": 0.0835023946573153,
+      "max_fold_rate": 0.09338217089155466,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "2:1",
+      "unit": "h",
+      "distance": 0.1,
+      "mean_rate": 0.7563705403110834,
+      "min_fold_rate": 0.7440534025675416,
+      "max_fold_rate": 0.7654267999624357,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "2:1",
+      "unit": "h",
+      "distance": 0.25,
+      "mean_rate": 0.4371020866403323,
+      "min_fold_rate": 0.43271424526706254,
+      "max_fold_rate": 0.44217977433884537,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "2:1",
+      "unit": "h",
+      "distance": 0.5,
+      "mean_rate": 0.2462623191029044,
+      "min_fold_rate": 0.23950018330747191,
+      "max_fold_rate": 0.24978681434687025,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "2:1",
+      "unit": "h",
+      "distance": 0.75,
+      "mean_rate": 0.16666285592155386,
+      "min_fold_rate": 0.1581194451403531,
+      "max_fold_rate": 0.17341037511718652,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "2:1",
+      "unit": "h",
+      "distance": 1.0,
+      "mean_rate": 0.12781072975973384,
+      "min_fold_rate": 0.11945914228560003,
+      "max_fold_rate": 0.13285504848339647,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "2:1",
+      "unit": "h",
+      "distance": 1.5,
+      "mean_rate": 0.08837868656296827,
+      "min_fold_rate": 0.08420247041349223,
+      "max_fold_rate": 0.09360564105832984,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "2:1",
+      "unit": "h",
+      "distance": 2.0,
+      "mean_rate": 0.06706918028404156,
+      "min_fold_rate": 0.064353576543804,
+      "max_fold_rate": 0.07138766621214868,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "2:1",
+      "unit": "ticks",
+      "distance": 5.0,
+      "mean_rate": 0.6553296227795079,
+      "min_fold_rate": 0.6490191465549422,
+      "max_fold_rate": 0.6639163660072754,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "2:1",
+      "unit": "ticks",
+      "distance": 10.0,
+      "mean_rate": 0.39177883190723506,
+      "min_fold_rate": 0.38259953920492723,
+      "max_fold_rate": 0.39960107672336803,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "2:1",
+      "unit": "ticks",
+      "distance": 20.0,
+      "mean_rate": 0.2126665713646696,
+      "min_fold_rate": 0.20698607322378718,
+      "max_fold_rate": 0.21684877409120176,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "2:1",
+      "unit": "ticks",
+      "distance": 40.0,
+      "mean_rate": 0.11039616820655163,
+      "min_fold_rate": 0.10512759862374117,
+      "max_fold_rate": 0.11726192761479015,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "2:2",
+      "unit": "h",
+      "distance": 0.1,
+      "mean_rate": 0.844927211893065,
+      "min_fold_rate": 0.8354865552649569,
+      "max_fold_rate": 0.8568956840199345,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "2:2",
+      "unit": "h",
+      "distance": 0.25,
+      "mean_rate": 0.5530835380390463,
+      "min_fold_rate": 0.5401407547032269,
+      "max_fold_rate": 0.5676173314011396,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "2:2",
+      "unit": "h",
+      "distance": 0.5,
+      "mean_rate": 0.3312343587653855,
+      "min_fold_rate": 0.32217830479336024,
+      "max_fold_rate": 0.33790803364641675,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "2:2",
+      "unit": "h",
+      "distance": 0.75,
+      "mean_rate": 0.23126140095288208,
+      "min_fold_rate": 0.2234471825571199,
+      "max_fold_rate": 0.23613078461443496,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "2:2",
+      "unit": "h",
+      "distance": 1.0,
+      "mean_rate": 0.1799893763539333,
+      "min_fold_rate": 0.1752498095924907,
+      "max_fold_rate": 0.18277506834577648,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "2:2",
+      "unit": "h",
+      "distance": 1.5,
+      "mean_rate": 0.12111979518300485,
+      "min_fold_rate": 0.11530391856222058,
+      "max_fold_rate": 0.12626075232305708,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "2:2",
+      "unit": "h",
+      "distance": 2.0,
+      "mean_rate": 0.09283878559913777,
+      "min_fold_rate": 0.08838166817003344,
+      "max_fold_rate": 0.09758208235576815,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "2:2",
+      "unit": "ticks",
+      "distance": 5.0,
+      "mean_rate": 0.7009004464640386,
+      "min_fold_rate": 0.6781549801185983,
+      "max_fold_rate": 0.7134551980747724,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "2:2",
+      "unit": "ticks",
+      "distance": 10.0,
+      "mean_rate": 0.44027773501087064,
+      "min_fold_rate": 0.42958099627142393,
+      "max_fold_rate": 0.44799714592178835,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "2:2",
+      "unit": "ticks",
+      "distance": 20.0,
+      "mean_rate": 0.2453478951614887,
+      "min_fold_rate": 0.23725900019835644,
+      "max_fold_rate": 0.2503508374332978,
+      "folds": 3
+    },
+    {
+      "cohort": "pseudo",
+      "bucket": "2:2",
+      "unit": "ticks",
+      "distance": 40.0,
+      "mean_rate": 0.12701899374638417,
+      "min_fold_rate": 0.11990757725106024,
+      "max_fold_rate": 0.13366422721779636,
+      "folds": 3
+    }
+  ],
+  "checks": [
+    {
+      "fold": 1,
+      "cohort": "real",
+      "weights_oracle_matches": true,
+      "all_prior_bucket_rates_and_rows_reproduced": true
+    },
+    {
+      "fold": 1,
+      "cohort": "pseudo",
+      "weights_oracle_matches": true,
+      "all_prior_bucket_rates_and_rows_reproduced": true
+    },
+    {
+      "fold": 2,
+      "cohort": "real",
+      "weights_oracle_matches": true,
+      "all_prior_bucket_rates_and_rows_reproduced": true
+    },
+    {
+      "fold": 2,
+      "cohort": "pseudo",
+      "weights_oracle_matches": true,
+      "all_prior_bucket_rates_and_rows_reproduced": true
+    },
+    {
+      "fold": 3,
+      "cohort": "real",
+      "weights_oracle_matches": true,
+      "all_prior_bucket_rates_and_rows_reproduced": true
+    },
+    {
+      "fold": 3,
+      "cohort": "pseudo",
+      "weights_oracle_matches": true,
+      "all_prior_bucket_rates_and_rows_reproduced": true
+    }
+  ],
+  "integer_excursion_reconstruction_verified": true,
+  "one_h_reach_equals_existing_o2_verified": true,
+  "independent_numerator_and_weights_verified": true,
+  "operational_entry_target_or_profit_estimated": false,
+  "new_price_outcomes_created": false,
+  "return_path_or_peaks_measured": false,
+  "blind_confirmation": false,
+  "claims": {
+    "fixed_tick_context_gap_positive_every_fold_and_threshold": true,
+    "fixed_tick_gap_positive_in_each_contract_mean": true,
+    "max_filtered_real_vs_pseudo_gap_pp": 0.9690693540680501,
+    "favorable_weighted_coverage_range": [
+      0.15602891621558895,
+      0.1792941507763675
+    ],
+    "quarter_h_target_optimistic_offsets": {
+      "0.0": 0.6345419261064934,
+      "0.1": 0.527160848058352,
+      "0.25": 0.41915590593546764,
+      "0.5": 0.3037696134236732,
+      "0.75": 0.2385260908022715
+    },
+    "first_half_band_chase_bound_drop_pp": 33.07723126828202,
+    "positive_in_every_supported_real_contract_block_and_predeclared_distance": true,
+    "offset_bounds_are_joint_geometric_coverage_not_conditional_trade_success": true
+  },
+  "comparison_plan": [
+    {
+      "question": "Is the normalized advantage also actual fixed-tick movement?",
+      "grain": "cohort x prior mechanism context x distance",
+      "population": "same resolved O2 forward-test exits; filter nested within all",
+      "unit": "observed excursion reach percent",
+      "derivation": "same weighted reach rates, mean of3block rates",
+      "finding": "Filtered fixed-tick reach exceeds all real exits across all4 thresholds and3blocks; filtered pseudo rates within1pp of real",
+      "disposition": "chart",
+      "reason": "Single ordered profile answers geometry vs movement and preserves controls; no stacked or summed nested groups"
+    },
+    {
+      "question": "How stable across dates and contracts?",
+      "grain": "block and contract x fixed tick threshold",
+      "population": "same real test subsets; contract metrics equal session weights within contract",
+      "unit": "percentage-point gap vs all",
+      "finding": "All examined differences positive, variable strength; MNQ_12-26 low support",
+      "disposition": "table",
+      "reason": "Complete short period and contract lookup retains dispersion; no opposing sign hidden by pooling"
+    },
+    {
+      "question": "What happens with a later assumed entry price?",
+      "grain": "block x hypothetical entry offset x fixed remaining target",
+      "population": "favorable resolved test exits",
+      "unit": "optimistic full-window reach upper bound percent",
+      "finding": "Bound for .25h remaining target drops sharply with larger assumed offset",
+      "disposition": "table",
+      "reason": "Only illustrative modeled bound, no actual entry time/price/fill/adverse move; full grid retained"
+    },
+    {
+      "question": "Which triggers and peaks validate an entry?",
+      "grain": "real path after executable entry",
+      "population": "unavailable in this export",
+      "unit": "unavailable",
+      "finding": "No return path, as-of geometry certification, fills/costs or peak-confirmation data",
+      "disposition": "prose",
+      "reason": "Keep proposed hypotheses separate from observed excursion"
+    }
+  ],
+  "qa": {
+    "helper_tests_passed": 4,
+    "full_synthetic_suite_passed": 822,
+    "subtests_passed": 25,
+    "chart_canonical_static_preflight_passed": true,
+    "chart_uploaded": false,
+    "chart_delivery_blocker": "Native file upload failed nonretryably; no fake attachment URI or alternative plotting used",
+    "no_profitability_proof_from_tests": true
+  }
+}

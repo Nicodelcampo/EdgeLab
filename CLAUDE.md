@@ -251,7 +251,8 @@ selecciona por P&L máximo aislado.
 - `docs/NORTH_STAR.md` — referente canónico (fuente de verdad).
 - `docs/infra/LIQUID_RELEASE_20261014.md` + `docs/infra/MANANA_PENDIENTES_20261014.md` — **datos canónicos** (release `liquid_tick_v1`, 14 activos, un Parquet por activo, Kaggle privado `nicolasbuttaro/edgelab-liquid-ticks-20261014`, CANDIDATE_NOT_RESEARCH_APPROVED; lector seguro `edgelab/data/liquid_release/release_reader.py`; rama `data/liquid-release-20261014`). Exports faltantes: `docs/infra/MISSING_EXPORTS_20261014.md`.
 - `docs/research/AVZP2_RACIMO_REPLICA_ES_NQ_RESULTADOS_20261014.md` — racimos de aVolZonePOI2 replican en ES (compresión 7/7, continuación a favor de tendencia 6/6); manifiesto de P&L **propuesto, bajo STOP**: `docs/research/AVZP2_PNL_MANIFIESTO_PROPUESTO_20261014.md`.
-- `docs/research/HANDOFF_2026-08-21_ESTADO_COMPLETO.md` — **punto de entrada operativo vigente**.
+- `docs/research/HANDOFF_2026-10-14_DATOS_L2_Y_INTEGRACION.md` — **punto de entrada operativo vigente**; `docs/PRODUCT.md`, `docs/MODULES.md`, `docs/DOCUMENTATION_PROTOCOL.md`, `docs/INDEX.md`.
+- `docs/research/HANDOFF_2026-08-21_ESTADO_COMPLETO.md` — histórico (2026-08-21), superado por el de arriba.
 - `docs/research/HANDOFF_AVZP2_RACIMOS_20261008.md` — familia aVolZonePOI2 (zonas, OB, racimos): indicador, paridad, estudios, pipeline Kaggle, NO MEDIDO y siguiente paso.
 - `docs/research/HFT_ZONAS_ES_MEDIDO_Y_NO_MEDIDO.md` — registro vivo MEDIDO / NO MEDIDO.
 - `docs/research_funnel_playbook.md` — prácticas transversales ATJ-01…ATJ-16.

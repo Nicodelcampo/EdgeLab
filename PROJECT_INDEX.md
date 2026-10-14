@@ -1,6 +1,6 @@
 # EdgeLab — índice canónico del proyecto
 
-Corte: 2026-09-02. Rama de integración: `foundation/f0b-compatibility-probe`. Resolver el HEAD remoto al entrar.
+Corte del índice: 2026-09-02 (la entrada vigente es el handoff del 2026-10-14, arriba). Rama de integración: `foundation/f0b-compatibility-probe`. Resolver el HEAD remoto al entrar.
 
 Este índice ordena el repositorio sin mover, mergear ni borrar historia. Autoridad: spec/manifest congelado del objeto > `PENDIENTE.md` > `docs/CURRENT.md` > estos índices > resúmenes históricos.
 

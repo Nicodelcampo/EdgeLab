@@ -1494,6 +1494,10 @@ def _instalar_pipeline_cli_fake(monkeypatch, fx, archivo, *, dirty_start, dirty_
     esconder un caso no considerado."""
     # el ticks_mod falso no lee disco: la ruta solo se arma; no exigir un `data/` real (CI no lo tiene)
     monkeypatch.setattr(m, "data_root", lambda: Path("/fake/data"))
+    # La campana F1.1 esta congelada al cuerpo del North Star de su epoca (NORTH_STAR_BODY_SHA256_EXPECTED); el North Star vigente
+    # avanzo con las enmiendas HOLDOUT-A1/A2/A3 y re-correrla hoy abortaria por diseno. Este test prueba el ensamblado de main(),
+    # no el pin: se aisla del North Star real.
+    monkeypatch.setattr(m, "north_star_body_sha256", lambda: m.NORTH_STAR_BODY_SHA256_EXPECTED)
     class _FakeTk:
         sequence = np.arange(10, dtype=np.int64)
         tick_size = fx["tick_size"]

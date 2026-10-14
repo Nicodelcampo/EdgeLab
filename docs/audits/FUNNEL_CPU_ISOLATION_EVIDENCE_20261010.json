@@ -1,0 +1,100 @@
+{
+  "scope": "Synthetic CPU integration only; no market data, promotion or general holdout integrity claim",
+  "base_main": "c6bd8a8be9bd6c18e60b4cef5927a3256ad39c38",
+  "suite": {
+    "passed": 178,
+    "subtests_passed": 8,
+    "failed": 0,
+    "skipped": 0
+  },
+  "oracle": {
+    "schema_version": "funnel_parity_v1",
+    "status": "CPU_ONLY_PASS_GPU_PENDING",
+    "market_data_read": false,
+    "holdout_opened": false,
+    "asserts_edge": false,
+    "gpu_tested": false,
+    "python": "3.12.15",
+    "numpy": "2.5.3",
+    "cases": [
+      {
+        "case": "known_paths",
+        "shape": [
+          3,
+          1
+        ],
+        "cpu_oracle": "PASS"
+      },
+      {
+        "case": "stop_first_tie",
+        "shape": [
+          1,
+          1
+        ],
+        "cpu_oracle": "PASS"
+      },
+      {
+        "case": "target_touch_not_fill",
+        "shape": [
+          1,
+          1
+        ],
+        "cpu_oracle": "PASS"
+      },
+      {
+        "case": "random_hold_0",
+        "shape": [
+          73,
+          4
+        ],
+        "cpu_oracle": "PASS"
+      },
+      {
+        "case": "random_hold_1",
+        "shape": [
+          73,
+          4
+        ],
+        "cpu_oracle": "PASS"
+      },
+      {
+        "case": "random_hold_17",
+        "shape": [
+          73,
+          4
+        ],
+        "cpu_oracle": "PASS"
+      },
+      {
+        "case": "random_hold_200",
+        "shape": [
+          73,
+          4
+        ],
+        "cpu_oracle": "PASS"
+      },
+      {
+        "case": "empty_signals",
+        "shape": [
+          0,
+          1
+        ],
+        "cpu_oracle": "PASS"
+      }
+    ],
+    "numba": "0.68.0",
+    "sources_sha256": {
+      "edgelab/funnel/screen.py": "9184e166aa21a2a1b37479f646711bbee1f876c57396fcfa26abfdb3ed3bb5b4",
+      "edgelab/funnel/device.py": "c20a1e389d22fccab2687bb67711a65f96212061c9d2eef85242035cf93a8039",
+      "tools/verify_funnel_cpu_gpu.py": "84fa0752111381cf0d7365ef45fddc490d14010c6d1179dffaae75df76eef410"
+    }
+  },
+  "installed_wheel_imports": 16,
+  "installed_wheel_runner": true,
+  "d2_poison_invariance": true,
+  "real_parquet_and_local_ledger_verified": true,
+  "gpu_end_to_end_tested": false,
+  "features_and_input_file_firewall_audited": false,
+  "market_data_read": false,
+  "promotion_allowed": false
+}

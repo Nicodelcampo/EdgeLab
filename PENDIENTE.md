@@ -1,5 +1,7 @@
 # PENDIENTE — decisiones abiertas
 
+> **2026-10-14:** entrada vigente `docs/research/HANDOFF_2026-10-14_DATOS_L2_Y_INTEGRACION.md`; decisiones delegadas por Nico ese día en `docs/DECISIONES_20261014.md`. Las P-NN de abajo son el board histórico y vigente hasta que se cierren.
+
 Registro de decisiones que el código señala explícitamente como "pendientes de
 Nico/auditor". Ninguna de estas se toma unilateralmente en una implementación.
 Cada entrada nombra el punto exacto del código que la referencia.

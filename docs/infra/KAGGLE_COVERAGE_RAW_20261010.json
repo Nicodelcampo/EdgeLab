@@ -1,0 +1,234 @@
+{
+  "schema": "edgelab_coverage_raw_evidence_v1",
+  "integration_base_commit": "f116947d5dddf93556052b6bf28f5af4b12aa63f",
+  "coverage": {
+    "schema": "edgelab_coverage_diagnostic_v1",
+    "status": "BLOCKED_UNREVIEWED_CALENDAR_RAW_AND_LIQUIDITY",
+    "research_allowed": false,
+    "promotion_allowed": false,
+    "calendar_reviewed": false,
+    "raw_ticks_audited": false,
+    "liquidity_certified": false,
+    "manifest_sha256": "71862f0d2201cddc69db4ee7ba2cb45cb2b65a69980f99377500b54137e1e2c2",
+    "resolver_sha256": "9b21eeff751d4397465fcc6831ea615b7dd401a5605a5997f52c8bfd9248117c",
+    "catalog_sha256": "dc00e09b440e58d5e8be0918bd3b9de6fdb3da8a748df03f106234d218559efd",
+    "holdout_first_trade_date": "2026-10-01",
+    "requests": [
+      {
+        "end": "2026-09-30",
+        "instrument": "ES",
+        "start": "2025-07-01"
+      },
+      {
+        "end": "2026-09-30",
+        "instrument": "NQ",
+        "start": "2025-07-01"
+      }
+    ],
+    "files": [
+      {
+        "file": "ES__1s.parquet",
+        "sha256": "863847cc3a66a25bd5cb7c02d7c8651fbc997220b578f790e1c82581e1d242c7",
+        "identity_timestamp_rows_read": 11604740,
+        "payload_columns": [
+          "session_date",
+          "contract",
+          "bucket_utc_ns"
+        ],
+        "price_payload_columns_read": 0
+      },
+      {
+        "file": "NQ__1s.parquet",
+        "sha256": "b481e59869dc2618e961a9d3ab80a7e92e9c0b7386e995a1ac6d615d994e4a7f",
+        "identity_timestamp_rows_read": 14238435,
+        "payload_columns": [
+          "session_date",
+          "contract",
+          "bucket_utc_ns"
+        ],
+        "price_payload_columns_read": 0
+      }
+    ],
+    "instruments": {
+      "ES": {
+        "requested_dates": 457,
+        "states": {
+          "NOT_OBSERVED_CALENDAR_UNVERIFIED": 118,
+          "MATERIALIZED_NOT_CERTIFIED": 243,
+          "EXCLUDED_BY_CATALOG": 91,
+          "REJECTED_BY_RESOLVER": 5
+        },
+        "unobserved_calendar_unverified_weekdays": 19,
+        "outside_catalog_span_dates": 22,
+        "materialized_source_caveat_sessions": 58,
+        "observed_minutes_in_16_to_17_chicago_clock_band": 7,
+        "sessions_with_observations_in_16_to_17_chicago_clock_band": 4,
+        "nominal_label_minutes": 349920,
+        "minutes_with_observations": 334478,
+        "minutes_without_observations_unknown_activity": 15442,
+        "unobserved_intervals": 285,
+        "longest_unobserved_interval_minutes": 300,
+        "first_materialized_date": "2025-07-18",
+        "last_materialized_date": "2026-09-25"
+      },
+      "NQ": {
+        "requested_dates": 457,
+        "states": {
+          "NOT_OBSERVED_CALENDAR_UNVERIFIED": 124,
+          "EXCLUDED_BY_CATALOG": 55,
+          "MATERIALIZED_NOT_CERTIFIED": 278
+        },
+        "unobserved_calendar_unverified_weekdays": 27,
+        "outside_catalog_span_dates": 36,
+        "materialized_source_caveat_sessions": 91,
+        "observed_minutes_in_16_to_17_chicago_clock_band": 547,
+        "sessions_with_observations_in_16_to_17_chicago_clock_band": 16,
+        "nominal_label_minutes": 400320,
+        "minutes_with_observations": 383930,
+        "minutes_without_observations_unknown_activity": 16390,
+        "unobserved_intervals": 283,
+        "longest_unobserved_interval_minutes": 244,
+        "first_materialized_date": "2025-08-04",
+        "last_materialized_date": "2026-09-25"
+      }
+    },
+    "interpretation": "Nominal 17:00 Chicago trade-date label windows are NOT expected trading calendars; absent intervals remain UNKNOWN, including possible maintenance/holidays. No zero filling."
+  },
+  "raw_lot": {
+    "scope": "two selected raw files, publisher-manifest hash reconciliation; no independent approval authority",
+    "dataset_ref": "nicolasbuttaro/edgelab-nt8-historical-missing-20261001/1",
+    "publisher_manifest_sha256": "b86e8e0dcf1367c13a30993fe4c9c6bfd08d9ab42a731fc556ab7e7c8ebd9565",
+    "publisher_checksum_file_sha256": "f1dd9820ef7bdde964211a983bd3ee47f3441e47fde30a5b0dab7ec575931d21",
+    "catalog_sha256": "dc00e09b440e58d5e8be0918bd3b9de6fdb3da8a748df03f106234d218559efd",
+    "research_allowed": false,
+    "liquidity_certified": false,
+    "files": [
+      {
+        "schema": "edgelab_canonical_tick_structural_audit_v1",
+        "file": "ES_09-26_ticks_ext.parquet",
+        "sha256": "60867b1008ff86a1c1d39ba6c7bc6648bae9d4ffc0b4ff09242a7126630264a6",
+        "bytes": 28541101,
+        "rows": 12986371,
+        "instrument": "ES",
+        "contract": "ES 09-26",
+        "status": "PASS_RAW_STRUCTURE_ONLY",
+        "errors": {
+          "null_required_rows": 0,
+          "backward_timestamps": 0,
+          "nonincreasing_local_sequence": 0,
+          "invalid_timestamp_precision": 0,
+          "nonpositive_price_or_quote": 0,
+          "crossed_book": 0,
+          "nonpositive_trade_volume": 0,
+          "wrong_identity": 0,
+          "invalid_aggressor": 0,
+          "duplicate_source_identity": 0
+        },
+        "warnings": {
+          "repeated_timestamps_legitimate": 9565330,
+          "local_sequence_discontinuities_not_upstream_proof": 0,
+          "locked_book": 37,
+          "unclassified_or_unknown_aggressor": 5
+        },
+        "aggressor_counts": {
+          "sell": 6496623,
+          "buy": 6489743,
+          "unclassified": 5
+        },
+        "source_identity_files": 94,
+        "identity_bitmap_bytes": 2007040,
+        "first_trade_date": "2026-03-13",
+        "last_trade_date": "2026-06-30",
+        "observed_trade_dates": 79,
+        "footer_preflight_passed": true,
+        "utc_minus_local_ns_counts": {
+          "0": 12986371
+        },
+        "timezone_independently_verified": false,
+        "quote_aggressor_provenance_verified": false,
+        "exchange_continuity_verified": false,
+        "calendar_completeness_verified": false,
+        "liquidity_certified": false,
+        "research_allowed": false,
+        "promotion_allowed": false,
+        "price_outcomes_computed": false,
+        "deduplicated_or_rewritten": false,
+        "selected_primary_sessions_reconciled": 8,
+        "selected_primary_catalog_totals_mismatches": 0
+      },
+      {
+        "schema": "edgelab_canonical_tick_structural_audit_v1",
+        "file": "NQ_09-26_ticks_ext.parquet",
+        "sha256": "47abd842096f2106c7879e010a22c142b0a0450f786777beaa91f74b50b264ea",
+        "bytes": 24457515,
+        "rows": 5773916,
+        "instrument": "NQ",
+        "contract": "NQ 09-26",
+        "status": "PASS_RAW_STRUCTURE_ONLY",
+        "errors": {
+          "null_required_rows": 0,
+          "backward_timestamps": 0,
+          "nonincreasing_local_sequence": 0,
+          "invalid_timestamp_precision": 0,
+          "nonpositive_price_or_quote": 0,
+          "crossed_book": 0,
+          "nonpositive_trade_volume": 0,
+          "wrong_identity": 0,
+          "invalid_aggressor": 0,
+          "duplicate_source_identity": 0
+        },
+        "warnings": {
+          "repeated_timestamps_legitimate": 2735827,
+          "local_sequence_discontinuities_not_upstream_proof": 0,
+          "locked_book": 29,
+          "unclassified_or_unknown_aggressor": 2
+        },
+        "aggressor_counts": {
+          "sell": 2894952,
+          "buy": 2878962,
+          "unclassified": 2
+        },
+        "source_identity_files": 86,
+        "identity_bitmap_bytes": 1073152,
+        "first_trade_date": "2026-03-13",
+        "last_trade_date": "2026-06-30",
+        "observed_trade_dates": 75,
+        "footer_preflight_passed": true,
+        "utc_minus_local_ns_counts": {
+          "0": 5773916
+        },
+        "timezone_independently_verified": false,
+        "quote_aggressor_provenance_verified": false,
+        "exchange_continuity_verified": false,
+        "calendar_completeness_verified": false,
+        "liquidity_certified": false,
+        "research_allowed": false,
+        "promotion_allowed": false,
+        "price_outcomes_computed": false,
+        "deduplicated_or_rewritten": false,
+        "selected_primary_sessions_reconciled": 1,
+        "selected_primary_catalog_totals_mismatches": 0
+      }
+    ]
+  },
+  "raw_primary_files_audited": 2,
+  "raw_primary_files_remaining": 16,
+  "validation": {
+    "cpu_tests_passed": 368,
+    "subtests_passed": 8,
+    "failed": 0,
+    "skipped": 0,
+    "installed_full_imports": 22,
+    "installed_core_imports": 17,
+    "installed_synthetic_qa": "PASS",
+    "generic_profiler": "previous generic profiler could not parse nested JSON/Parquet; explicit Arrow footer/batches and metadata reconciliation used"
+  },
+  "limitations": [
+    "No reviewed full ES/NQ 2025/26 exchange calendar or closure/zero-activity evidence.",
+    "16 remaining primary files, source conflicts and all-contract prior-session liquidity/roll evidence unreviewed.",
+    "16:00-17:00 Chicago observation band is a diagnostic requiring exchange-hours/timezone/source review, NOT proven corruption.",
+    "Raw publisher checksum manifests bind bytes only; not independent authentication/approval.",
+    "Local sequence/source identity does not prove upstream completeness.",
+    "Opt-in consumer protected; legacy loaders not globally rewired; no autonomous-agent work, trials or holdout access."
+  ]
+}

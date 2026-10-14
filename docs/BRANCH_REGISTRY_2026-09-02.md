@@ -1,5 +1,7 @@
 # EdgeLab — registro de ramas remotas 2026-09-02
 
+Estado: SUPERADO por `git branch -r` y por docs/research/INVENTARIO_LINEA_MAIN_20261014.md (2026-10-14: `main` integrada en `foundation`).
+
 Corte observado: 2026-09-02 01:42 ART. Cobertura: 60/60 ramas devueltas por GitHub. Protección: 0/60. PR abiertas observadas: 17. La rama primaria es móvil; tip observado inmediatamente antes de esta actualización: `40982ea1`.
 
 Este registro no autoriza merges, cierres ni borrados. `Clase` describe función y riesgo; no prueba ancestry ni patch-equivalence.

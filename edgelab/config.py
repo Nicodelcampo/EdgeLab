@@ -1,7 +1,7 @@
 """Configuración PORTABLE de EdgeLab — punto ÚNICO de verdad para rutas.
 
 Precedencia (gana el primero): config/local.toml  >  variables EDGELAB_*  >
-config/default.toml  >  defaults derivados de la raíz del repo.
+config/default.toml  >  defaults derivados del workspace (cwd).
 
 Resuelve rutas; NO crea directorios al importar (el código que los use los crea
 on-demand con ensure_dir). Validado con pydantic. Las fuentes externas del
@@ -16,16 +16,17 @@ from typing import Optional
 
 from pydantic import BaseModel, ConfigDict
 
-# Raíz del repo derivada de la ubicación de ESTE archivo (portable, sin hardcode).
-ROOT = Path(__file__).resolve().parents[1]
+# Workspace independiente de site-packages; fijar EDGELAB_ROOT para operaciones de datos.
+_WORKSPACE_ROOT = Path.cwd().resolve()
+ROOT = _WORKSPACE_ROOT
 CONFIG_DIR = ROOT / "config"
 
 # clave lógica -> variable de entorno
 _ENV = {
     "root": "EDGELAB_ROOT",
-    "data_dir": "EDGELAB_DATA_ROOT",
+    "data_dir": ("EDGELAB_DATA_ROOT", "EDGELAB_DATA_DIR"),
     "artifacts_dir": "EDGELAB_ARTIFACTS_ROOT",
-    "runs_dir": "EDGELAB_RUNS_ROOT",
+    "runs_dir": ("EDGELAB_RUNS_ROOT", "EDGELAB_RUNS_DIR"),
     "cache_dir": "EDGELAB_CACHE_ROOT",
     "manifests_dir": "EDGELAB_MANIFESTS_ROOT",
     "parity_dir": "EDGELAB_PARITY_ROOT",
@@ -33,8 +34,13 @@ _ENV = {
     "nt8_export_root": "EDGELAB_NT8_EXPORT_ROOT",
     "cerebro_root": "EDGELAB_CEREBRO_ROOT",
     "vectorbt_ecosystem_root": "EDGELAB_VECTORBT_ROOT",
-    "nq_raw_dir": "EDGELAB_NQ_RAW_ROOT",
+    "nq_raw_dir": ("EDGELAB_NQ_RAW_ROOT", "EDGELAB_NQ_RAW_DIR"),
     "eurusd_ticks_raw": "EDGELAB_EURUSD_TICKS_RAW",
+    "es_ticks": "EDGELAB_ES_TICKS",
+    "es_m1": "EDGELAB_ES_M1",
+    "nq_ticks_clean": "EDGELAB_NQ_TICKS_CLEAN",
+    "nq_m1_clean": "EDGELAB_NQ_M1_CLEAN",
+    "eurusd_ticks": "EDGELAB_EURUSD_TICKS",
 }
 
 
@@ -54,6 +60,11 @@ class EdgeLabPaths(BaseModel):
     vectorbt_ecosystem_root: Optional[Path] = None
     nq_raw_dir: Optional[Path] = None
     eurusd_ticks_raw: Optional[Path] = None
+    es_ticks: Optional[Path] = None
+    es_m1: Optional[Path] = None
+    nq_ticks_clean: Optional[Path] = None
+    nq_m1_clean: Optional[Path] = None
+    eurusd_ticks: Optional[Path] = None
 
 
 def _load_toml(path: Optional[Path]) -> dict:
@@ -61,16 +72,32 @@ def _load_toml(path: Optional[Path]) -> dict:
         return {}
     with open(path, "rb") as fh:
         data = tomllib.load(fh)
-    return data.get("paths", data)  # acepta [paths] o claves top-level
+    values = data.get("paths", data)  # acepta [paths] o claves top-level
+    if not isinstance(values, dict):
+        raise ValueError("Configuration paths must be a table")
+    unknown = set(values) - set(EdgeLabPaths.model_fields)
+    if unknown:
+        raise ValueError("Unknown configuration path keys: " + ", ".join(sorted(unknown)))
+    return values
 
 
 def _pick(key: str, local: dict, env: dict, default: dict):
     """Precedencia: local.toml > EDGELAB_* env > default.toml. None si nada aplica."""
     if local.get(key) not in (None, ""):
         return local[key]
-    ev = _ENV.get(key)
-    if ev and env.get(ev) not in (None, ""):
-        return env[ev]
+    names = _ENV.get(key)
+    names = (names,) if isinstance(names, str) else (names or ())
+    values = []
+    for name in names:
+        if name in env:
+            value = env[name]
+            if not str(value).strip():
+                raise ValueError(f"{name} must not be empty")
+            values.append(str(value))
+    if len(set(values)) > 1:
+        raise ValueError(f"Conflicting environment aliases for {key}")
+    if values:
+        return values[0]
     if default.get(key) not in (None, ""):
         return default[key]
     return None
@@ -81,10 +108,11 @@ def resolve_settings(env: Optional[dict] = None, default_toml: Optional[Path] = 
     """Resuelve las rutas aplicando la precedencia. `default_toml`/`local_toml`
     por defecto apuntan a config/. Rutas inexistentes se tratan como vacío."""
     env = os.environ if env is None else env
-    default = _load_toml(default_toml if default_toml is not None else CONFIG_DIR / "default.toml")
-    local = _load_toml(local_toml if local_toml is not None else CONFIG_DIR / "local.toml")
+    config_root = Path(env.get("EDGELAB_ROOT") or _WORKSPACE_ROOT) / "config"
+    default = _load_toml(default_toml if default_toml is not None else config_root / "default.toml")
+    local = _load_toml(local_toml if local_toml is not None else config_root / "local.toml")
 
-    root = Path(_pick("root", local, env, default) or ROOT)
+    root = Path(_pick("root", local, env, default) or _WORKSPACE_ROOT).expanduser()
 
     def _dir(key: str, fallback: str) -> Path:      # dir interno, default root-relativo
         v = _pick(key, local, env, default)
@@ -108,6 +136,9 @@ def resolve_settings(env: Optional[dict] = None, default_toml: Optional[Path] = 
         vectorbt_ecosystem_root=_ext("vectorbt_ecosystem_root"),
         nq_raw_dir=_ext("nq_raw_dir"),
         eurusd_ticks_raw=_ext("eurusd_ticks_raw"),
+        es_ticks=_ext("es_ticks"), es_m1=_ext("es_m1"),
+        nq_ticks_clean=_ext("nq_ticks_clean"), nq_m1_clean=_ext("nq_m1_clean"),
+        eurusd_ticks=_ext("eurusd_ticks"),
     )
 
 
@@ -135,8 +166,8 @@ CEREBRO_ROOT = SETTINGS.cerebro_root
 
 # --- fuentes del ecosistema (read-only) — opcionales; None si no se configura el root ---
 _VBT = SETTINGS.vectorbt_ecosystem_root
-ES_TICKS = (_VBT / "ES_ticks.parquet") if _VBT else None            # 148.8M ticks, bid/ask
-ES_M1 = (_VBT / "data" / "es_m1_candles.parquet") if _VBT else None  # velas M1, indice ns
+ES_TICKS = SETTINGS.es_ticks or ((_VBT / "ES_ticks.parquet") if _VBT else None)            # 148.8M ticks, bid/ask
+ES_M1 = SETTINGS.es_m1 or ((_VBT / "data" / "es_m1_candles.parquet") if _VBT else None)  # velas M1, indice ns
 
 # --- fuentes crudas NQ (exports por contrato, NT8, orden cronologico) ---
 NQ_RAW_DIR = SETTINGS.nq_raw_dir
@@ -144,10 +175,10 @@ NQ_CONTRACTS = ["NQ 09-25.Last.txt", "NQ 12-25.Last.txt", "NQ 03-26.Last.txt",
                 "NQ 06-26.Last.txt", "NQ 09-26.Last.txt"]
 
 # --- artefactos propios (ROOT-relativos, portables) ---
-NQ_TICKS_CLEAN = DATA_DIR / "nq_ticks_clean.parquet"
-NQ_M1_CLEAN = DATA_DIR / "nq_m1_clean.parquet"
+NQ_TICKS_CLEAN = SETTINGS.nq_ticks_clean or DATA_DIR / "nq_ticks_clean.parquet"
+NQ_M1_CLEAN = SETTINGS.nq_m1_clean or DATA_DIR / "nq_m1_clean.parquet"
 EURUSD_TICKS_RAW = SETTINGS.eurusd_ticks_raw
-EURUSD_TICKS = DATA_DIR / "eurusd_ticks.parquet"
+EURUSD_TICKS = SETTINGS.eurusd_ticks or DATA_DIR / "eurusd_ticks.parquet"
 
 # --- VENTANAS ENVENENADAS de ES_ticks.parquet (hallazgo EXP-044) ---
 # En las semanas de roll la cinta entrelaza DOS contratos (~55 pts aparte,
@@ -171,3 +202,9 @@ def poison_mask(times_ms, windows=None):
         b_ms = int(pd.Timestamp(b).value // 10**6)
         out |= (t >= a_ms) & (t < b_ms)
     return out
+
+
+def prepare_workspace():
+    """Compatibility helper; creates only data/runs, never reads source data."""
+    ensure_dir(DATA_DIR)
+    ensure_dir(RUNS_DIR)
