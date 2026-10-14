@@ -6,11 +6,13 @@ from typing import Any
 
 import jsonschema
 
-SCHEMA_DIR = Path(__file__).resolve().parents[2] / "schemas" / "edge_brain"
+SCHEMA_DIR = Path(__file__).with_name("schemas")
 _SCHEMA_CACHE: dict[str, dict[str, Any]] = {}
 
 
 def get_schema(schema_name: str) -> dict[str, Any]:
+    if not isinstance(schema_name, str) or schema_name not in {p.stem for p in SCHEMA_DIR.glob("*.json")}:
+        raise FileNotFoundError("Unknown packaged brain schema")
     if schema_name not in _SCHEMA_CACHE:
         path = SCHEMA_DIR / f"{schema_name}.json"
         if not path.is_file():
