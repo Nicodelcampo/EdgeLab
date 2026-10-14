@@ -21,10 +21,10 @@ BOOT = BOOT.replace("multiasset_crossfamily_boot_v1", "gc_a_support_boot_v1")
 BOOT = BOOT.replace("'outcomes_requested':True", "'outcomes_requested':False").replace("state['outcomes_computed']=True", "state['outcomes_computed']=False")
 
 
-def dependency_files(root):
+def dependency_files(root, entry="tools/research_ops/confluence/gc_a_support_diagnostic.py"):
     """Static transitive LOCAL imports; isolated startup test remains required."""
     root = Path(root)
-    pending = ["tools/research_ops/confluence/gc_a_support_diagnostic.py"]
+    pending = [entry]
     seen = set()
     def add_module(module):
         for path in (module.replace(".", "/")+".py", module.replace(".", "/")+"/__init__.py"):
