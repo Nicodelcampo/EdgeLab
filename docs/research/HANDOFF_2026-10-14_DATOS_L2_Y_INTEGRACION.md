@@ -27,7 +27,7 @@ Para considerar cerrado: (1) Nico aprueba licencia/política/calendario, (2) se 
 **Esta PC (única copia conocida):**
 | Ubicación | Contenido | Tamaño aprox. |
 |---|---|---|
-| `E:\l2_parquet\<ACTIVO>_<contrato>\{l2_depth,l1_quotes,manifests}` | L2 (MBP-10) + L1 en Parquet, 25-jun a 27-sep-2026, 25 contratos de 13 productos (6B, 6E, 6J, ES, GC, MBT, MES, MNQ, MYM, NQ, RTY, YM, ZB) | ≈ 62 GB (MNQ 20,6; NQ 11,5; ES 5,4; MES 5,5; el resto 0,6–3) |
+| `E:\l2_parquet\<ACTIVO>_<contrato>\{l2_depth,l1_quotes,manifests}` | L2 (MBP-10) + L1 en Parquet, 25-jun a 27-sep-2026, 25 contratos de 13 productos (6B, 6E, 6J, ES, GC, MBT, MES, MNQ, MYM, NQ, RTY, YM, ZB) | ≈ 70 GB (MNQ 20,6; NQ 11,5; ES 5,4; MES 5,5; el resto 0,6–3) |
 | `E:\l2_contexts\{ES,MES,MNQ,NQ}` | contextos L2 derivados (96–120 archivos c/u) | 0,07 GB |
 | `E:\l2\6E 09-26` | L2 crudo 8–16-jun | 1,2 GB |
 | `E:\DatosNT8\replay.csv`, `replay_gc0826_raw_csv`, `gc_aug26_canonical_parquets` | L2 de GC (CSV + Parquet), mayo–ago 2026, 26 sesiones con manifiesto | ≈ 5 GB |
