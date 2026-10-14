@@ -1,0 +1,90 @@
+{
+  "schema": "confluence_storage_microbenchmark_v1",
+  "status": "SYNTHETIC_PARITY_ONLY_NOT_ADOPTED",
+  "records_per_variant": 100000,
+  "configs": 96,
+  "paired_fresh_databases": 3,
+  "measurements": [
+    {
+      "pair": 0,
+      "variant": "baseline",
+      "write_index_seconds": 0.8890180450000571,
+      "read_reconstruct_seconds": 1.7813491639999484,
+      "total_seconds": 2.6703672090000055,
+      "database_bytes": 13152256,
+      "logical_replay_sha256": "04477701469cfd30b3ea42f46e2240fb2e7bb99e7450e0fe74d53b421406a2de"
+    },
+    {
+      "pair": 0,
+      "variant": "clustered",
+      "write_index_seconds": 0.9814297259999876,
+      "read_reconstruct_seconds": 1.6730426930000704,
+      "total_seconds": 2.654472419000058,
+      "database_bytes": 11567104,
+      "logical_replay_sha256": "04477701469cfd30b3ea42f46e2240fb2e7bb99e7450e0fe74d53b421406a2de"
+    },
+    {
+      "pair": 1,
+      "variant": "clustered",
+      "write_index_seconds": 1.0190977620000012,
+      "read_reconstruct_seconds": 1.8513770619999832,
+      "total_seconds": 2.8704748239999844,
+      "database_bytes": 11567104,
+      "logical_replay_sha256": "04477701469cfd30b3ea42f46e2240fb2e7bb99e7450e0fe74d53b421406a2de"
+    },
+    {
+      "pair": 1,
+      "variant": "baseline",
+      "write_index_seconds": 0.9644977279999694,
+      "read_reconstruct_seconds": 1.795444476999819,
+      "total_seconds": 2.7599422049997884,
+      "database_bytes": 13152256,
+      "logical_replay_sha256": "04477701469cfd30b3ea42f46e2240fb2e7bb99e7450e0fe74d53b421406a2de"
+    },
+    {
+      "pair": 2,
+      "variant": "baseline",
+      "write_index_seconds": 0.8577665719999459,
+      "read_reconstruct_seconds": 1.9542718640000203,
+      "total_seconds": 2.812038435999966,
+      "database_bytes": 13152256,
+      "logical_replay_sha256": "04477701469cfd30b3ea42f46e2240fb2e7bb99e7450e0fe74d53b421406a2de"
+    },
+    {
+      "pair": 2,
+      "variant": "clustered",
+      "write_index_seconds": 0.9776355720000538,
+      "read_reconstruct_seconds": 1.5919609150000724,
+      "total_seconds": 2.569596487000126,
+      "database_bytes": 11567104,
+      "logical_replay_sha256": "04477701469cfd30b3ea42f46e2240fb2e7bb99e7450e0fe74d53b421406a2de"
+    }
+  ],
+  "medians": {
+    "baseline": {
+      "write_index_seconds": 0.8890180450000571,
+      "read_reconstruct_seconds": 1.795444476999819,
+      "total_seconds": 2.7599422049997884,
+      "database_bytes": 13152256
+    },
+    "clustered": {
+      "write_index_seconds": 0.9814297259999876,
+      "read_reconstruct_seconds": 1.6730426930000704,
+      "total_seconds": 2.654472419000058,
+      "database_bytes": 11567104
+    }
+  },
+  "baseline_over_candidate_total_ratio": 1.039732861884269,
+  "candidate_over_baseline_bytes_ratio": 0.8794767985051386,
+  "all_ordered_outputs_equal": true,
+  "cold_warm_os_cache_controlled": false,
+  "whole_job_or_peak_rss_measured": false,
+  "market_data_read": false,
+  "full_pipeline_speedup_measured": false,
+  "candidate_activated": false,
+  "source_sha256": {
+    "tools/research_ops/confluence/market_pilot.py": "6a51a2b44d1ab1bc12e9eeb8c21e915d71dab2c2b5fa2f502ba7c32f19490924",
+    "tools/research_ops/confluence/compact_store.py": "74fd6d35840df1681616b851e315466d6bf65e792182d6420682dd9bb2989f1d",
+    "tools/research_ops/benchmarks/confluence_storage.py": "714de96cfccb0c373efe9a2788f1f50faeca655c3b736a07c4c0018c462702b7"
+  }
+}

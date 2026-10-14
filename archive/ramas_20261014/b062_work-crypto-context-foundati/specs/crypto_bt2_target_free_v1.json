@@ -1,0 +1,70 @@
+{
+  "schema": "edgelab.crypto.bt2_target_free/1.0.0",
+  "status": "FROZEN_PENDING_INPUTS",
+  "frozen_at_utc": "2026-08-24T18:30:00Z",
+  "objective": "Preparar y ejecutar sólo controles de integridad, censo de microestructura y sensibilidad de unidad para BigTrap2/BigTrap2Absorption sobre Binance USD-M, sin variables de respuesta.",
+  "firewall": {
+    "outcomes_accessed": false,
+    "returns_accessed": false,
+    "pnl_accessed": false,
+    "holdout_accessed": false,
+    "response_columns": []
+  },
+  "source_contract": {
+    "venue": "BINANCE",
+    "product": "USD-M_PERPETUAL",
+    "inputs": ["trades", "bookTicker"],
+    "join": "bookTicker.transaction_time < trade.time",
+    "event_identity": ["trade_time_ns", "trade_id"],
+    "ordering": ["trade_time_ns", "trade_id"],
+    "checksums_recorded": true,
+    "full_join_coverage_required": true,
+    "duplicate_trade_ids_allowed": false,
+    "crossed_book_allowed": false
+  },
+  "quantity_unit": {
+    "reference_required": true,
+    "reference_source": "user-supplied exchange/instrument metadata; never inherited from CME and never inferred from outcomes",
+    "sensitivity_multipliers": ["0.5", "1", "2"]
+  },
+  "stages": [
+    {
+      "order": 1,
+      "symbol": "BTCUSDT",
+      "minimum_distinct_utc_days": 2,
+      "purpose": "schema, causal join, gaps, ordering and unit sensitivity"
+    },
+    {
+      "order": 2,
+      "symbol": "ETHUSDT",
+      "minimum_distinct_utc_days": 2,
+      "purpose": "replicate target-free integrity and scale diagnostics"
+    },
+    {
+      "order": 3,
+      "symbol": "SOLUSDT",
+      "minimum_distinct_utc_days": 2,
+      "purpose": "replicate target-free integrity and scale diagnostics"
+    }
+  ],
+  "allowed_metrics": [
+    "row counts and UTC coverage",
+    "duplicate/gap counts",
+    "strict-prior join coverage and book age",
+    "same-timestamp frequency resolved by sequence",
+    "spread and activity distributions",
+    "maker/quote classification agreement",
+    "event counts and geometry by preregistered configuration",
+    "sensitivity to declared quantity unit"
+  ],
+  "stop_conditions": [
+    "missing or unverifiable input hash",
+    "unknown input schema or timestamp unit",
+    "duplicate trade identity",
+    "non-causal or partial join unless a separate partial-coverage diagnostic is explicitly invoked",
+    "crossed book",
+    "missing tick size or user-supplied reference quantity unit",
+    "attempt to load returns, P&L, labels, holdout or any response column"
+  ],
+  "next_gate": "Inputs may be attached as parquets or raw/oracle exports. Validate hash and schema first; remain target-free until a separate written preregistration authorizes C4 outcomes."
+}

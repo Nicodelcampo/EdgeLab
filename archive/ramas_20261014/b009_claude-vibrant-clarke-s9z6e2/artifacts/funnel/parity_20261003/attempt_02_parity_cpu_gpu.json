@@ -1,0 +1,92 @@
+{
+  "schema_version": "funnel_parity_v1",
+  "status": "CPU_GPU_PARITY_PASS",
+  "market_data_read": false,
+  "holdout_opened": false,
+  "asserts_edge": false,
+  "gpu_tested": true,
+  "python": "3.13.15",
+  "numpy": "2.1.3",
+  "cases": [
+    {
+      "case": "known_paths",
+      "shape": [
+        3,
+        1
+      ],
+      "cpu_oracle": "PASS",
+      "gpu_oracle": "PASS"
+    },
+    {
+      "case": "stop_first_tie",
+      "shape": [
+        1,
+        1
+      ],
+      "cpu_oracle": "PASS",
+      "gpu_oracle": "PASS"
+    },
+    {
+      "case": "target_touch_not_fill",
+      "shape": [
+        1,
+        1
+      ],
+      "cpu_oracle": "PASS",
+      "gpu_oracle": "PASS"
+    },
+    {
+      "case": "random_hold_0",
+      "shape": [
+        73,
+        4
+      ],
+      "cpu_oracle": "PASS",
+      "gpu_oracle": "PASS"
+    },
+    {
+      "case": "random_hold_1",
+      "shape": [
+        73,
+        4
+      ],
+      "cpu_oracle": "PASS",
+      "gpu_oracle": "PASS"
+    },
+    {
+      "case": "random_hold_17",
+      "shape": [
+        73,
+        4
+      ],
+      "cpu_oracle": "PASS",
+      "gpu_oracle": "PASS"
+    },
+    {
+      "case": "random_hold_200",
+      "shape": [
+        73,
+        4
+      ],
+      "cpu_oracle": "PASS",
+      "gpu_oracle": "PASS"
+    },
+    {
+      "case": "empty_signals",
+      "shape": [
+        0,
+        1
+      ],
+      "cpu_oracle": "PASS"
+    }
+  ],
+  "numba": "0.61.2",
+  "cupy": "14.0.1",
+  "cuda_runtime": 12090,
+  "gpu_name": "b'Tesla T4'",
+  "sources_sha256": {
+    "edgelab/funnel/screen.py": "e35155b5033231bdd161b4480785a7c6661e48025be521d4ad324d4647a92289",
+    "edgelab/funnel/device.py": "c20a1e389d22fccab2687bb67711a65f96212061c9d2eef85242035cf93a8039",
+    "tools/verify_funnel_cpu_gpu.py": "84fa0752111381cf0d7365ef45fddc490d14010c6d1179dffaae75df76eef410"
+  }
+}

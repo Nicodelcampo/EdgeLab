@@ -1,0 +1,41 @@
+{
+  "receipt_sha256": "e700ca0ac75480985f3422db28866bd50c131590db60b68f753655c415871ca4",
+  "ticks": 470027,
+  "sessions": [
+    "2026-08-03",
+    "2026-08-04",
+    "2026-08-05",
+    "2026-08-06"
+  ],
+  "original_native_seconds": [
+    19.42210859199986,
+    19.785831708000387
+  ],
+  "rolling_native_seconds": [
+    13.061067266000066,
+    13.489879272000167
+  ],
+  "original_median_seconds": 19.603970150000123,
+  "rolling_median_seconds": 13.275473269000116,
+  "speedup": 1.476705933774718,
+  "duration_reduction_percent": 32.28171045241041,
+  "production_and_diagnostic_exact": true,
+  "both_rolling_runs_faster_than_both_original_runs": true,
+  "full_pipeline_speedup_measured": false,
+  "comparison_plan": [
+    {
+      "question": "Did rolling percentiles reduce the same native work?",
+      "grain": "ABBA_REPEAT_SAME_TAPE_NOT_INDEPENDENT_SESSIONS",
+      "population": "470027ticks_4GCsessions_3configs",
+      "unit": "NATIVE_PUSH_FINISH_SECONDS",
+      "finding": "Both rolling timings below both original timings;1.4767x medians",
+      "disposition": "chart",
+      "reason": "Show measured repeat variation without including instrumentation/diagnostics"
+    }
+  ],
+  "profile_review": {
+    "repeat_number_is_key": "PER_ALGORITHM",
+    "same_tape_ticks_not_additive": true,
+    "constant_protocol_metadata_not_missing": true
+  }
+}

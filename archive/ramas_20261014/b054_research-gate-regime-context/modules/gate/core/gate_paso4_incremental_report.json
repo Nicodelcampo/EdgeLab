@@ -1,0 +1,91 @@
+{
+  "schema": "gate_incremental_v1",
+  "outcomes_accessed": false,
+  "note": "Demo sint\u00e9tica. En lab real y_session = estimando de la familia por sesi\u00f3n.",
+  "scenario_B_gate_matters": {
+    "status": "OK",
+    "delta_r2": 0.2101766967402775,
+    "r2_reduced": 0.2625216487610228,
+    "r2_full": 0.4726983455013003,
+    "partial_F": 22.320990114557976,
+    "df": [
+      1,
+      56
+    ],
+    "p_value_F": 1.5922980296898297e-05,
+    "LR_stat": 20.127836959159623,
+    "p_value_LR_chi2": 7.24347223062322e-06,
+    "delta_AIC": -18.127836959159623,
+    "beta_full": [
+      0.10897161439061888,
+      0.28082079066379545,
+      1.3103691611727475,
+      1.1710263178407012
+    ],
+    "verdict": "INCREMENTAL_YES",
+    "n_sessions": 60,
+    "question": "Incremental: does GATE cell add fit beyond pct_rv cell? (not relative ranking of GATE vs pct_rv alone)",
+    "method": "nested OLS partial-F + LR; H0: gate coefs = 0 | pct_rv"
+  },
+  "scenario_A_only_pctrv": {
+    "status": "OK",
+    "delta_r2": 0.0038288797738923463,
+    "r2_reduced": 0.27741476043118707,
+    "r2_full": 0.2812436402050794,
+    "partial_F": 0.2983170366647614,
+    "df": [
+      1,
+      56
+    ],
+    "p_value_F": 0.5871089253080861,
+    "LR_stat": 0.31877707121236654,
+    "p_value_LR_chi2": 0.5723435088255169,
+    "delta_AIC": 1.6812229287876335,
+    "beta_full": [
+      0.04088483436656397,
+      0.4081259951176059,
+      1.280319959543389,
+      0.12368918180772727
+    ],
+    "verdict": "INCREMENTAL_NO",
+    "n_sessions": 60,
+    "question": "Incremental: does GATE cell add fit beyond pct_rv cell? (not relative ranking of GATE vs pct_rv alone)",
+    "method": "nested OLS partial-F + LR; H0: gate coefs = 0 | pct_rv"
+  },
+  "scenario_C_noise": {
+    "status": "OK",
+    "delta_r2": 0.0004800017618326047,
+    "r2_reduced": 0.08062587470549543,
+    "r2_full": 0.08110587646732803,
+    "partial_F": 0.029252661404867316,
+    "df": [
+      1,
+      56
+    ],
+    "p_value_F": 0.8648134567537143,
+    "LR_stat": 0.031333953989417296,
+    "p_value_LR_chi2": 0.8594973977188393,
+    "delta_AIC": 1.9686660460105827,
+    "beta_full": [
+      -0.35119018964499554,
+      0.1725326786392918,
+      0.6707059643475634,
+      0.04423872720968663
+    ],
+    "verdict": "INCREMENTAL_NO",
+    "n_sessions": 60,
+    "question": "Incremental: does GATE cell add fit beyond pct_rv cell? (not relative ranking of GATE vs pct_rv alone)",
+    "method": "nested OLS partial-F + LR; H0: gate coefs = 0 | pct_rv"
+  },
+  "interpretation": {
+    "INCREMENTAL_YES": "GATE aporta fit m\u00e1s all\u00e1 de pct_rv (p<0.05 y \u0394R\u00b2>0.01)",
+    "INCREMENTAL_WEAK": "Significativo pero \u0394R\u00b2 peque\u00f1o \u2014 cautela pr\u00e1ctica",
+    "INCREMENTAL_NO": "No se rechaza H0: coefs GATE = 0 | pct_rv"
+  },
+  "literature": {
+    "incremental_vs_relative": "Biddle, Seow, Siegel (1995)",
+    "nested_LR_partial_F": "standard nested model comparison",
+    "H0_no_improvement": "equivalent to coef(Y|X)=0 in risk model (Pepe et al.)",
+    "forecast_encompassing": "Clark-McCracken / Clark-West (reference for nested forecasts)"
+  }
+}

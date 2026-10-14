@@ -1,0 +1,182 @@
+{
+  "schema": "edgelab_kaggle_space_map_v1",
+  "date": "2026-10-14",
+  "release_slug": "nicolasbuttaro/edgelab-liquid-ticks-20261014",
+  "tags": {
+    "ENTRADA": "Punto de descubrimiento para agentes. Leer primero.",
+    "ACTIVO-CANDIDATO": "Release vigente (CANDIDATE_NOT_RESEARCH_APPROVED).",
+    "REEMPLAZADO": "Tick data NT8/CME sustituido por la release líquida. No usar para research nuevo; se conserva por inmutabilidad de campañas históricas.",
+    "CUARENTENA": "Fuente con defecto comprobado. Bloqueada.",
+    "DERIVADO-BLOQUEADO": "Derivado de un resolver/selección bloqueado. Regenerar desde la release.",
+    "CONTEXTO-L2": "Contexto de libro (L2). Los ticks que contiene los reemplaza la release.",
+    "SPOT": "Spot/CFD Dukascopy: cotizaciones, NO futuros CME.",
+    "CODIGO": "Paquetes de código para kernels.",
+    "ARCHIVO": "Artefactos de investigación históricos. Verificar procedencia antes de reutilizar."
+  },
+  "datasets": {
+    "edgelab-data-catalog": {
+      "tag": "ENTRADA",
+      "note": "Catálogo y resolver históricos (v15/v16, BLOQUEADO para research causal). La release vigente está en edgelab-liquid-ticks-20261014."
+    },
+    "edgelab-ticks-nt8-canonical": {
+      "tag": "REEMPLAZADO",
+      "note": "MES/MNQ/MYM/RTY/YM (+ES/NQ/YM en partes). Incompleto en MNQ 12-26 (falta 17-sep y corta el 28-sep). Sin selección causal."
+    },
+    "edgelab-ticks-nt8-reexport-20261005": {
+      "tag": "REEMPLAZADO",
+      "note": "Re-export 23 contratos jul-sep 2026. Sin selección causal de contrato ni calendario verificado."
+    },
+    "edgelab-nt8-historical-missing-20261001": {
+      "tag": "REEMPLAZADO",
+      "note": "ES/NQ/6B/6E/6J/ZB parquet-only. Contiene el roll ES prematuro (domingo 2025-10-05) y huecos del export nativo."
+    },
+    "edgelab-ticks-es-nq-2026q3-ext": {
+      "tag": "REEMPLAZADO",
+      "note": "ES/NQ jul-sep 2026. NQ_09-26 hereda bloques duplicados +3h del export nativo (17-jun a 2-jul)."
+    },
+    "edgelab-mgc-nt8-raw-parquet-20261002": {
+      "tag": "REEMPLAZADO",
+      "note": "MGC en bruto (precios decimales, sin agresor). MGC saneado y líquido está en la release."
+    },
+    "edgelab-ticks-es-preholdout": {
+      "tag": "REEMPLAZADO",
+      "note": "Rebanadas parciales por contrato; corte 2026-06-30."
+    },
+    "edgelab-ticks-nq-preholdout": {
+      "tag": "CUARENTENA",
+      "note": "NQ_09-26_ticks.parquet (v6): 363.601 trades dentro de la pausa 16-17 CT. Causa raíz: bloques del export nativo copiados con +3 h exactas (2026-06-17 a 07-02). Ver docs/infra/LIQUID_RELEASE_20261014.md."
+    },
+    "edgelab-ticks-mnq-preholdout": {
+      "tag": "REEMPLAZADO",
+      "note": "Rebanadas parciales por contrato; corte 2026-06-30."
+    },
+    "edgelab-ticks-mes-preholdout": {
+      "tag": "REEMPLAZADO",
+      "note": "Rebanadas parciales por contrato; corte 2026-06-30."
+    },
+    "edgelab-ticks-gc-preholdout": {
+      "tag": "REEMPLAZADO",
+      "note": "Rebanadas parciales por contrato; corte 2026-06-30."
+    },
+    "edgelab-ticks-ym-preholdout": {
+      "tag": "REEMPLAZADO",
+      "note": "Rebanadas parciales por contrato; corte 2026-06-30."
+    },
+    "edgelab-ticks-zb-preholdout": {
+      "tag": "REEMPLAZADO",
+      "note": "Rebanadas parciales por contrato; corte 2026-06-30."
+    },
+    "edgelab-ticks-mbt-preholdout": {
+      "tag": "REEMPLAZADO",
+      "note": "Rebanadas parciales por contrato; corte 2026-06-30."
+    },
+    "edgelab-ticks-6e-preholdout": {
+      "tag": "REEMPLAZADO",
+      "note": "Rebanadas parciales por contrato; corte 2026-06-30."
+    },
+    "edgelab-ticks-6b-preholdout": {
+      "tag": "REEMPLAZADO",
+      "note": "Rebanadas parciales por contrato; corte 2026-06-30."
+    },
+    "edgelab-ticks-6j-preholdout": {
+      "tag": "REEMPLAZADO",
+      "note": "Rebanadas parciales por contrato; corte 2026-06-30."
+    },
+    "edgelab-es-nq-aggregates-20261009": {
+      "tag": "DERIVADO-BLOQUEADO",
+      "note": "Barras 1/30/60 s construidas con el resolver v15 (roll ES prematuro, máscara retrospectiva). Regenerar desde la release."
+    },
+    "edgelab-nq-nt8-2026q3-l2ctx": {
+      "tag": "CONTEXTO-L2",
+      "note": "Contextos L2 de NQ. Los NQ_*_ticks_ext que contiene los reemplaza la release."
+    },
+    "edgelab-l2-gc-bookmap-audit-20260921": {
+      "tag": "CONTEXTO-L2",
+      "note": "Auditoría L2 de GC 08-26 (2 sesiones)."
+    },
+    "edgelab-dukascopy-6b-gbpusd": {
+      "tag": "SPOT",
+      "note": "GBPUSD spot. No es 6B de CME."
+    },
+    "edgelab-dukascopy-6e-eurusd": {
+      "tag": "SPOT",
+      "note": "EURUSD spot. No es 6E de CME."
+    },
+    "edgelab-dukascopy-6j-usdjpy": {
+      "tag": "SPOT",
+      "note": "USDJPY spot. No es 6J de CME."
+    },
+    "edgelab-dukascopy-es-usa500": {
+      "tag": "SPOT",
+      "note": "USA500 CFD. No es ES de CME."
+    },
+    "edgelab-dukascopy-nq-usatech": {
+      "tag": "SPOT",
+      "note": "USATECH CFD. No es NQ de CME."
+    },
+    "edgelab-dukascopy-ym-usa30": {
+      "tag": "SPOT",
+      "note": "USA30 CFD. No es YM de CME."
+    },
+    "edgelab-dukascopy-xauusd-ticks-m1": {
+      "tag": "SPOT",
+      "note": "XAUUSD spot. No es GC de CME."
+    },
+    "edgelab-code-20260928": {
+      "tag": "CODIGO",
+      "note": "Paquete edgelab 2026-09-28."
+    },
+    "edgelab-code-avcl-fast": {
+      "tag": "CODIGO",
+      "note": "edgelab @ 9926785a (run_full_fast, bars vectorizado). No incluye avolzonepoi2."
+    },
+    "edgelab-code-avcl-vol1": {
+      "tag": "CODIGO",
+      "note": "Código de la campaña AVCL-VOL-1."
+    },
+    "edgelab-code-zones": {
+      "tag": "CODIGO",
+      "note": "Código VIO-1 (bridge con paridad AVZP2 y lógica violeta)."
+    },
+    "edgelab-avolcluster-nq-oracle": {
+      "tag": "ARCHIVO",
+      "note": "Oráculo aVolClusterPOI NQ 120t."
+    },
+    "edgelab-bt2-v2-nq-artifacts": {
+      "tag": "ARCHIVO",
+      "note": "Coordenadas y resultado BT2 V2 NQ."
+    },
+    "edgelab-bt2a-nq-event-store": {
+      "tag": "ARCHIVO",
+      "note": "Event store BT2A NQ."
+    },
+    "edgelab-tickbar-diag-nq0626": {
+      "tag": "ARCHIVO",
+      "note": "Diagnóstico de barras de ticks NQ 06-26 120t."
+    },
+    "edgelab-nq-informal-all5-coordinates": {
+      "tag": "ARCHIVO",
+      "note": "Coordenadas informales NQ (all5)."
+    },
+    "edgelab-nq-selection-checkpoints": {
+      "tag": "ARCHIVO",
+      "note": "Checkpoints de selección NQ. Un archivo no se pudo bajar en el inventario del catálogo."
+    },
+    "edgelab-edge-factory-audit-evidence-20260919": {
+      "tag": "ARCHIVO",
+      "note": "Evidencia de auditoría del Edge Factory 2026-09-19."
+    },
+    "edgelab-edge-factory-target-free-audited": {
+      "tag": "ARCHIVO",
+      "note": "Store target-free auditado del Edge Factory."
+    },
+    "edgelab-discovery-cache": {
+      "tag": "ARCHIVO",
+      "note": "Barras 1 min y filas de ejecución derivadas de ticks CME; derivado de fuentes sin sanear."
+    },
+    "edgelab-ema-zones-d2": {
+      "tag": "ARCHIVO",
+      "note": "Tabla por zona de EMAZ-D2 (derivada de ticks; creada 2026-10-14)."
+    }
+  }
+}

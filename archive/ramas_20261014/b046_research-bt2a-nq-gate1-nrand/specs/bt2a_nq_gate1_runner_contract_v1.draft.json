@@ -1,0 +1,137 @@
+{
+  "arms": {
+    "comparators": [
+      "K_BT2",
+      "N_RAND",
+      "K_ABS_SHUFFLE"
+    ],
+    "n_rand_matching": [
+      "contract",
+      "cme_session_id",
+      "coarse_phase",
+      "availability",
+      "local_volatility_bin"
+    ],
+    "primary": "K_ABS",
+    "shuffle_policy": "WITHIN_CONTRACT_SESSION_AND_COARSE_PHASE_PRESERVE_EVENT_COUNT"
+  },
+  "authorization": {
+    "active_token": null,
+    "implementation_token_label": "AUTHORIZE_IMPLEMENT_BT2A_NQ_GATE1_16CELL_V1",
+    "run_token_label": "AUTHORIZE_RUN_BT2A_NQ_GATE1_V1"
+  },
+  "checkpointing": {
+    "atomic": true,
+    "partition": "contract_session",
+    "resume_requires_exact_spec_code_and_input_hashes": true
+  },
+  "contrast_roles": {
+    "K_ABS_MINUS_K_ABS_SHUFFLE": "SECONDARY_SPECIFICITY_NON_TRIGGERING",
+    "K_ABS_MINUS_K_BT2": "SECONDARY_BENCHMARK_NON_TRIGGERING",
+    "K_ABS_MINUS_N_RAND": "SOLE_CONFIRMATORY_PRIMARY",
+    "secondary_contrasts_may_trigger_supported_label": false
+  },
+  "estimand_definition": {
+    "event_cell_value_ticks": {
+      "bounded_range": "[-barrier_ticks, +barrier_ticks] by construction, since each term (MFE, MAE) is independently capped at barrier_ticks before the subtraction",
+      "cap_semantics": "Non-absorbing observation window: the barrier caps the REPORTED magnitude for that cell only, it does not stop or resample the underlying path early. The same one price path per event yields all 16 cell readouts.",
+      "definition": "min(MFE_ticks_at_horizon, barrier_ticks) - min(MAE_ticks_at_horizon, barrier_ticks)",
+      "incomplete_path": "EXCLUDE_WITH_REASON (cache.eligible[idx] is False: insufficient future ticks within the session to complete the horizon_observations window for that cell)",
+      "mfe_mae_source": "edgelab.research.bt2_gate1_outcomes.directional_excursions over a PathCache from build_path_cache(tick_cap=horizon_observations, clock_cap_seconds=a very large constant so the tick cap always governs) -- the same primitives already validated for GC Gate 1 (COMPLETE_GATE1_ALL5_POST_OUTCOME_REPLICATION), reused unmodified. No new tick-decode logic.",
+      "same_observation_tie": "N/A_FOR_PRIMARY -- the magnitude estimand has no first-passage race between favorable and adverse; this rule now governs only the SECONDARY TIME_TO_FIRST_PASSAGE estimand, unchanged"
+    },
+    "minimum_effect_interpretation": "One signed NQ tick; mechanistic only, not PnL",
+    "primary_session_contrast": "session_mean(K_ABS) - session_mean(N_RAND)",
+    "session_arm_value": "Arithmetic mean of eligible event_cell_value_ticks within arm, CME session and cell",
+    "session_weighting": "EQUAL_SESSION_WEIGHT"
+  },
+  "estimand_resolution_required_before_implementation": {
+    "multiplicity_scope_across_three_comparators": "HOLM_16_PRIMARY_ONLY; SECONDARY_COMPARATORS_NON_TRIGGERING",
+    "paired_session_variance_definition": "UNBIASED_SAMPLE_VARIANCE_OF_EQUAL_WEIGHT_SESSION_CONTRASTS",
+    "primary_contrast": "K_ABS_MINUS_N_RAND_MATCHED_WITHIN_CME_SESSION",
+    "primary_outcome_encoding": "SIGNED_EXCURSION_MAGNITUDE_CAPPED_BY_BARRIER",
+    "resolved_by": "Nico, chat authorization 2026-08-30 18:35-18:39 ART, recorded in docs/research/DECISION_NICO_ESTIMAND_MAGNITUDE_2026-08-30.md (commit 74860a5). Multiplicity scope confirmed as 16 cells intact with Holm, superseding the single-primary-cell alternative that was presented.",
+    "status": "RESOLVED"
+  },
+  "execution_authorized": false,
+  "family": {
+    "barriers_ticks": [
+      5,
+      9,
+      18,
+      30
+    ],
+    "cells": 16,
+    "evaluate_full_family": true,
+    "horizons_observations": [
+      25,
+      50,
+      100,
+      250
+    ],
+    "incomplete_path_policy": "EXCLUDE_WITH_REASON",
+    "same_observation_tie": "N/A_FOR_PRIMARY -- see estimand_definition.event_cell_value_ticks; governs only the secondary TIME_TO_FIRST_PASSAGE estimand"
+  },
+  "firewall": {
+    "edge_declared": false,
+    "holdout_touched": false,
+    "pnl_accessed": false,
+    "promotion_eligible": false,
+    "runner_file_must_not_exist_while_blocked": true,
+    "winner_selected": false
+  },
+  "implementation_authorized": false,
+  "implementation_gate": "PASS_READY_FOR_GATE1_FREEZE plus explicit implementation decision",
+  "inputs": {
+    "K_ABS": "hash-bound BT2A NQ creation Event Store",
+    "K_BT2": "hash-bound creation-only V2 comparator coordinates",
+    "all_dependencies_hash_bound": true,
+    "gate1_spec": "specs/bt2a_nq_gate1_v1.draft.json",
+    "macro_policy": "identity-only; no filtering",
+    "market_data": "physically pre-holdout package only"
+  },
+  "multiplicity": {
+    "primary_family": "16 barrier-by-horizon cells for K_ABS minus N_RAND",
+    "primary_method": "HOLM_STEP_DOWN_TWO_SIDED_ALPHA_0_05",
+    "secondary_adjustments_share_primary_alpha": false,
+    "secondary_families": "Report raw and separately Holm-adjusted values within each 16-cell comparator family",
+    "winner_selection_allowed": false
+  },
+  "n_rand_matching_definitions": {
+    "amendment_id": "bt2a_nq_gate1_nrand_strata_definitions_v1",
+    "availability": "Event-level flag: the forward window of the maximum horizon (250 observations) fits completely within the event's CME session, making the event evaluable in all 16 cells. Aligned with incomplete_path_policy=EXCLUDE_WITH_REASON: N_RAND anchors are drawn from the same pool of fully evaluable positions as K_ABS.",
+    "coarse_phase": "Chicago-time 4-hour block from the 17:00 session open: phase = floor(chicago_minutes_since_17:00 / 240) within the CME session, 6 phases (with ~23h of trading, 17:00 to 16:00 next day, the last phase covers 3h). Deliberate coarsening of GC's chicago_30_minute_bin for stratum capacity: with ~652 events/session in NQ, 30-minute bins crossed with volatility bins would leave ~1.8 events/stratum/session, too sparse for without-replacement N_RAND sampling; 4-hour blocks leave ~109 events/phase/session at the median before crossing.",
+    "corrigendum": {
+      "field": "coarse_phase",
+      "issue": "The signed text literally said '2-hour blocks, 6 phases', but 2h x 6 = 12h does not cover a ~23h CME trading session, and the other two signed figures (6 phases, ~109 events/phase/session at ~652 events/session) are mutually consistent only with 4-hour blocks (652/6 = 108.7; 652/12 = 54.3).",
+      "ratification_channel": "Notion AI survey, recorded in docs/DECISIONES_NICO_2026-08-30.md (D6 corrigendum)",
+      "ratified_at": "2026-08-30T22:00-03:00",
+      "ratified_by": "Nicolas Buttaro",
+      "resolution": "Corrected to 4-hour blocks per the self-consistent signed figures. Found by Claude (canal entry 012), confirmed by independent auditor recomputation (canal entry 013), ratified by Nico."
+    },
+    "local_volatility_bin": "Per-contract quintile of pre-anchor local volatility: median absolute tick delta over the 500 ticks strictly preceding the event; quintile edges computed over all pre-holdout events of the contract. Events with fewer than 500 prior ticks in the session fall into their own visible stratum INSUFFICIENT_HISTORY, never a silent exclusion.",
+    "signature_channel": "Notion AI survey, recorded in docs/DECISIONES_NICO_2026-08-30.md (D6)",
+    "signed_at": "2026-08-30T19:56-03:00",
+    "signed_by": "Nicolas Buttaro",
+    "target_free_note": "availability and local_volatility_bin are computed from the session registry and strictly pre-anchor ticks on Kaggle; nothing post-event is touched, so this adds no outcome access."
+  },
+  "north_star_sha256": "d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1",
+  "paired_session_variance": {
+    "cell_specific_variance_report_required": true,
+    "definition": "Unbiased sample variance (ddof=1) of session-level paired contrasts among sessions eligible in both arms for that cell",
+    "event_level_rows_as_independent_replicates": false,
+    "n_rand_replicates": "Average all preregistered matched N_RAND replicates inside each session before forming one paired contrast",
+    "pseudoreplication_forbidden": true
+  },
+  "payload_sha256": "320f6867da0c535bb81d3f7bfe75b162e61a6ed2edd74cdb322be5ce198016e7",
+  "required_outputs": [
+    "per-session arm/cell sufficient statistics",
+    "exclusion reasons",
+    "Holm family table",
+    "coverage",
+    "attestation",
+    "manifest"
+  ],
+  "schema_version": "bt2a_nq_gate1_runner_contract_v1",
+  "status": "DRAFT_DECISIONS_RESOLVED_PREFLIGHT_BLOCKED"
+}

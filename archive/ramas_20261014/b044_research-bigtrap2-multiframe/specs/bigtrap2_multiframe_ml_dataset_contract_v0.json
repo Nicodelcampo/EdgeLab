@@ -1,0 +1,147 @@
+{
+  "schema_version": "bigtrap2_multiframe_ml_dataset_contract_v0",
+  "status": "DRAFT_NON_EXECUTABLE",
+  "dataset_visibility": "private",
+  "raw_ticks_included": false,
+  "holdout_included": false,
+  "secrets_allowed": false,
+  "local_paths_allowed": false,
+  "required_artifacts": [
+    "dataset_manifest.json",
+    "hashes.sha256",
+    "events_long.parquet",
+    "windows_ml.parquet",
+    "folds.parquet",
+    "feature_dictionary.json",
+    "target_dictionary.json",
+    "build_report.json"
+  ],
+  "identity": {
+    "required_fields": [
+      "dataset_id",
+      "dataset_schema_version",
+      "source_dataset_sha256",
+      "code_commit",
+      "code_dirty",
+      "builder_id",
+      "feature_set_id",
+      "target_set_id",
+      "fold_plan_id",
+      "created_at_utc"
+    ],
+    "dataset_id_policy": "content_addressed"
+  },
+  "events_long": {
+    "primary_key": ["instrument", "contract", "session_id", "bar_key", "zone_id", "event_id"],
+    "required_columns": {
+      "instrument": "string",
+      "contract": "string",
+      "session_id": "string",
+      "event_id": "string",
+      "zone_id": "string",
+      "bar_key": "string",
+      "ticks_per_bar": "int32_nullable",
+      "event_type": "string",
+      "side": "string_nullable",
+      "event_time_ns": "int64",
+      "available_at_ns": "int64",
+      "bar_end_ns": "int64",
+      "anchor_price_tick": "int64",
+      "zone_lo_tick": "int64",
+      "zone_hi_tick": "int64",
+      "relative_lo_tick": "int32",
+      "relative_hi_tick": "int32",
+      "strength": "float32_nullable",
+      "aggressive_volume": "float32_nullable",
+      "bar_volume": "float32_nullable",
+      "touch_count_prior": "int32_nullable",
+      "zone_age_native_bars": "int32_nullable",
+      "oracle_parity_status": "string",
+      "source_run_id": "string"
+    }
+  },
+  "windows_ml": {
+    "primary_key": ["instrument", "contract", "session_id", "cutoff_ns", "window_spec_id"],
+    "required_columns": {
+      "instrument": "string",
+      "contract": "string",
+      "session_id": "string",
+      "cutoff_ns": "int64",
+      "window_spec_id": "string",
+      "retrospective_window_seconds": "int32",
+      "active_frame_count": "int16",
+      "active_frame_set": "json_string",
+      "same_side_count": "int16",
+      "opposite_side_count": "int16",
+      "temporal_dispersion_ms": "float32_nullable",
+      "overlap_ticks": "float32_nullable",
+      "containment_ratio": "float32_nullable",
+      "strength_sum": "float32_nullable",
+      "strength_max": "float32_nullable",
+      "volume_sum": "float32_nullable",
+      "distance_to_price_ticks": "float32_nullable",
+      "realized_volatility": "float32_nullable",
+      "volume_regime": "string_nullable",
+      "time_of_session_minute": "int16",
+      "fold_id": "string"
+    },
+    "dynamic_feature_prefixes": [
+      "frame__",
+      "pair__",
+      "triple__",
+      "regime__",
+      "history__",
+      "quality__",
+      "target__"
+    ]
+  },
+  "folds": {
+    "primary_key": ["session_id", "fold_plan_id"],
+    "required_columns": {
+      "session_id": "string",
+      "fold_plan_id": "string",
+      "outer_fold": "int16",
+      "inner_fold": "int16_nullable",
+      "partition": "string",
+      "purged": "bool",
+      "embargoed": "bool"
+    },
+    "allowed_partition_values": ["discovery", "estimation", "validation"],
+    "forbidden_partition_values": ["holdout"]
+  },
+  "causality_invariants": [
+    "available_at_ns <= cutoff_ns",
+    "bar_end_ns <= cutoff_ns",
+    "target_start_ns > cutoff_ns",
+    "all_normalizers_fit_on_training_fold_only",
+    "all_feature_selection_fit_on_training_fold_only"
+  ],
+  "session_invariants": [
+    "tick_bars_do_not_cross_session",
+    "folds_do_not_split_a_session",
+    "label_overlap_is_purged",
+    "embargo_covers_maximum_label_horizon"
+  ],
+  "quality_gates": {
+    "duplicate_primary_keys": 0,
+    "causality_violations": 0,
+    "holdout_rows": 0,
+    "unmanifested_columns": 0,
+    "missing_dataset_hashes": 0,
+    "dirty_code_allowed": false
+  },
+  "kaggle_layout": {
+    "input_is_read_only": true,
+    "expected_root": "/kaggle/input/edgelab-bigtrap2-multiframe-research",
+    "working_root": "/kaggle/working",
+    "outputs": [
+      "run_manifest.json",
+      "oof_predictions.parquet",
+      "metric_landscape.parquet",
+      "model_cards/",
+      "candidate_cards/",
+      "figures/",
+      "audit_report.json"
+    ]
+  }
+}

@@ -1,0 +1,113 @@
+{
+  "arm_density": {
+    "K_ABS": {
+      "events": 152695,
+      "events_per_session": 652.542735042735,
+      "measurement_class": "CREATION_ONLY_PREHOLDOUT",
+      "sessions": 234,
+      "source_manifest_file_sha256": "b3177b51892298fc75a8bc6ab156d15525473aef52d71e4c717da148501ba544",
+      "source_parquet_sha256": "96281e880d7949f9dfcf3364091d9ce7696f778e59e6f2e2243995becdd38808"
+    },
+    "K_ABS_SHUFFLE_preserves_count": true,
+    "K_BT2": {
+      "cfg_id": "tick_25_IMB30_VOL10",
+      "events": 516971,
+      "events_per_session": 2209.277777777778,
+      "measurement_class": "CREATION_ONLY_PREHOLDOUT",
+      "sessions": 234,
+      "source_file": "docs/research/bigtrap2_nq_tickframes_sweep_v2_result.json",
+      "source_file_sha256": "e162a0e0a51198b45cb0a444d9853f646deec18370d378333f25a58ae6999571"
+    },
+    "N_RAND_capacity_ok": true,
+    "nrand_capacity_evidence": {
+      "kernel_id": "nicolasbuttaro/bt2a-nq-n-rand-capacity-check-t2",
+      "kernel_version": 3,
+      "report_file": "docs/research/bt2a_nq_gate1_nrand_capacity_report.json",
+      "report_sha256": "f1777c66a530586c484daf0a07e49ec6c526d4e568a59c4cf3631c7e06ce2736",
+      "run_commit": "6a3893f959c3f623ff0a5d79065ab6837b8fe5ff"
+    },
+    "source_files": [
+      {
+        "file_sha256": "b3177b51892298fc75a8bc6ab156d15525473aef52d71e4c717da148501ba544",
+        "payload_sha256": "983d54a0519fc476c2ae51a34a54e71033793dfdce2bdd359f03ecbabd2489a7",
+        "role": "K_ABS_EVENT_STORE_MANIFEST"
+      },
+      {
+        "file_sha256": "96281e880d7949f9dfcf3364091d9ce7696f778e59e6f2e2243995becdd38808",
+        "role": "K_ABS_EVENT_STORE_PARQUET"
+      }
+    ]
+  },
+  "authorization": {
+    "active_token": "APPROVE_FREEZE_BT2A_NQ_GATE1_POWER_V1",
+    "freeze_token_label": "APPROVE_FREEZE_BT2A_NQ_GATE1_POWER_V1",
+    "review_required": true
+  },
+  "cluster_design": {
+    "cluster_unit": "CME_SESSION",
+    "design_effect": null,
+    "events_assumed_iid": false,
+    "icc": null,
+    "icc_retired_reason": "Within-session pairing cancels the shared session effect, so the session-level SD already embeds clustering. Retired by estimand amendment v1 (ratified by Nico 2026-08-30, docs/DECISIONES_NICO_2026-08-30.md D1). The prior conservative assumption (0.2) is superseded; the GC bootstrap CI95 [0.0254, 0.5317] was too wide to use.",
+    "icc_status": "RETIRED_BY_ESTIMAND_AMENDMENT_V1",
+    "mean_events_per_session": 652.542735042735,
+    "primary_weighting": "EQUAL_SESSION_WEIGHT"
+  },
+  "constraints": {
+    "cross_instrument_variance_transfer_requires_written_justification": true,
+    "mde_icc_sd_must_be_frozen_before_outcomes": true,
+    "minimum_event_count_is_not_power_proof": true
+  },
+  "coverage": {
+    "effective_sessions_available": 234.0,
+    "effective_sessions_method": "KISH_ON_PREREGISTERED_SESSION_WEIGHTS",
+    "effective_sessions_required": 228,
+    "effective_sessions_source": "All 234 pre-holdout CME sessions have K_ABS creation events; equal session weights imply Kish effective sessions = 234 before cell-specific exclusions",
+    "minimum_effective_sessions": 40,
+    "sessions_total_preholdout": 234
+  },
+  "effect_design": {
+    "alpha_family": 0.05,
+    "estimand": "MAGNITUDE_WITHIN_CELL",
+    "mde_justification": "RATIFIED_BY_NICO_2026-08-30 (docs/DECISIONES_NICO_2026-08-30.md D1): adopted MDE 2.90 ticks. The authorized 2.861 was the exact MDE@234 knife edge (235 required > 234 available, not implementable as written); 2.90 is a weaker claim, hence conservative, and stays below 3.360, the GC CI95 lower bound.",
+    "mde_ticks": 2.9,
+    "mde_ticks_knife_edge_rejected": 2.8614,
+    "paired_session_sd_source": "GC_TRANSFER_PRE_OUTCOME: paired session-level contrast SD 11.528529 ticks measured on GC Gate 1 all-5 (result payload sha256 a307a12c441d82877590a20c59aa1079d590de2cdbb6d55180caaec21622ca53), an upper bound for NQ under the same estimand (NQ cell caps 5-30 ticks / 25-250 obs bind tighter than GC tick_cap 2000 / clock_cap 900s; 652.54 vs 72.39 events per session). Pairing cancels the shared session effect (rho = 0.5617, variance reduction 48.06%). Replaces the earlier finite-support Popoviciu bound (SD <= 60), which was valid but too conservative to authorize.",
+    "paired_session_sd_ticks": 11.528529,
+    "target_power": 0.8
+  },
+  "family": {
+    "barriers_ticks": [
+      5,
+      9,
+      18,
+      30
+    ],
+    "cells": 16,
+    "horizons_observations": [
+      25,
+      50,
+      100,
+      250
+    ],
+    "planning_correction": "BONFERRONI_16_CONSERVATIVE_FOR_HOLM_FAMILY"
+  },
+  "freeze_record": {
+    "freeze_channel": "Notion AI chat, verbatim token message",
+    "frozen_at": "2026-08-30T23:49-03:00",
+    "frozen_by": "Nicolas Buttaro",
+    "note": "Freeze of Gate 1 NQ power inputs after all pre-execution power requirements closed: MDE 2.90 (D1), paired SD 11.528529 (GC transfer), 228/234 effective sessions, N_RAND capacity verified (report f1777c66a530586c484daf0a07e49ec6c526d4e568a59c4cf3631c7e06ce2736, 2359 strata, 0 failing). No outcome, PnL, first-passage or holdout access was opened to get here.",
+    "token": "APPROVE_FREEZE_BT2A_NQ_GATE1_POWER_V1"
+  },
+  "north_star_sha256": "d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1",
+  "outcomes_accessed": false,
+  "payload_sha256": "285e5fb1d2438e3defc5dce49698cb4c4a92cc28ccf715ea3827a79825e2a246",
+  "planning_assessment": {
+    "available_sessions_meet_conservative_bound": true,
+    "conservative_required_sessions": 228,
+    "external_fields_still_required": [],
+    "interpretation": "Power inputs closed and FROZEN 2026-08-30 (Nico token APPROVE_FREEZE_BT2A_NQ_GATE1_POWER_V1): 228 required <= 234 available (margin 6 sessions); N_RAND stratum capacity verified true on the real event store (report sha256 f1777c66a530586c484daf0a07e49ec6c526d4e568a59c4cf3631c7e06ce2736, 2359 strata, 0 failing). No open power inputs remain."
+  },
+  "schema_version": "bt2a_nq_gate1_power_design_v1",
+  "status": "FROZEN_POWER_INPUTS"
+}

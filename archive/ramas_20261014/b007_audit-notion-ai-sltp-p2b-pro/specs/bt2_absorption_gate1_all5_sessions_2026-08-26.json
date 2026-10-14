@@ -1,0 +1,43 @@
+{
+  "schema": "bt2a_gate1_all5_compact_session_registry_v1",
+  "status": "FROZEN_FOR_POST_OUTCOME_REPLICATION",
+  "generated_utc": "2026-08-26T04:10:56.690374+00:00",
+  "campaign_outcomes_opened": true,
+  "frozen_before_this_rerun": true,
+  "confirmatory_eligible": false,
+  "edge_declared": false,
+  "preexisting_outcome_exposure": "YES_MIXED_AND_WIDESPREAD",
+  "selection": {
+    "contracts": ["GC 12-25", "GC 02-26", "GC 04-26", "GC 06-26", "GC 08-26"],
+    "n_sessions": 234,
+    "policy": "non-overlapping left-censored GC contract chain; all Monday-Friday CME session labels in fixed contract windows; exclude weekend ghost labels and the partial left-edge GC 12-25 session 20250801",
+    "window_start": "20250804",
+    "window_end": "20260630",
+    "contract_windows": {
+      "GC 12-25": {"start": "20250804", "end": "20251125"},
+      "GC 02-26": {"start": "20251126", "end": "20260128"},
+      "GC 04-26": {"start": "20260129", "end": "20260327"},
+      "GC 06-26": {"start": "20260330", "end": "20260527"},
+      "GC 08-26": {"start": "20260528", "end": "20260630"}
+    },
+    "left_censoring": "GC 12-25 begins at first complete weekday session available; predecessor GC 08-25 is unavailable, so the left boundary is availability-anchored rather than a verified volume crossover",
+    "exclusions": {
+      "20250801": "partial left-edge session: only 3,515 rows and one hour of tape",
+      "weekend_labels": "technical ghost labels with 1-6 rows; not valid CME trade-date sessions"
+    }
+  },
+  "partition_digest": {
+    "algorithm": "sha256",
+    "columns": ["ts_utc_ns", "source_row", "sequence", "price_ticks", "bid_ticks", "ask_ticks", "volume"],
+    "encoding": "little-endian int64 row-major",
+    "row_order": "physical parquet order"
+  },
+  "registry_payload_sha256": "7cae5ab6f029499ce329201ee74b7c690bf60000f73396efb0fe6c7f44101b5e",
+  "expanded_schema": "bt2a_gate1_all5_session_registry_v1",
+  "contract_session_counts": {"GC 12-25": 82, "GC 02-26": 44, "GC 04-26": 42, "GC 06-26": 42, "GC 08-26": 24},
+  "initial_warmup_session": {"GC 12-25": "20250801", "GC 02-26": "20251125", "GC 04-26": "20260128", "GC 06-26": "20260327", "GC 08-26": "20260527"},
+  "closed_weekday_exclusions": {"GC 12-25": [], "GC 02-26": ["20251225", "20260101"], "GC 04-26": [], "GC 06-26": ["20260403"], "GC 08-26": []},
+  "expansion_rule": "enumerate Monday-Friday dates in each fixed contract window, remove closed_weekday_exclusions, and use the previous emitted date as warmup after the contract-specific initial warmup",
+  "expanded_registry_payload_sha256": "7cae5ab6f029499ce329201ee74b7c690bf60000f73396efb0fe6c7f44101b5e",
+  "compact_payload_sha256": "80c72068f50c6394ebb1d133b130745a9844009df44ad1b7aaaa6ad11a29a474"
+}

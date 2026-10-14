@@ -1,0 +1,72 @@
+{
+  "schema": "mnq_resampling_technical_replay_interpretation_v1",
+  "raw_aggregate_sha256": "c252315533868abfd75339bb5eff9c5f855bbeb24eefe5dc61547f95a119d03f",
+  "kernel_id": 138361151,
+  "version": 1,
+  "execution_output_id": 357734641,
+  "url": "https://www.kaggle.com/code/nicolasbuttaro/edgelab-mnq-0926-resampling-technical-replay",
+  "source_checkpoint": "4e3ecb3cdd2b005272547c3cec94b47de548e9c8",
+  "observed_status": "COMPLETE",
+  "exact_result_digest": "2f93e2e8fda1ddf2a9516fdd48f33c6b4fc0592a6489573042ca56373f079478",
+  "cells": 60,
+  "nonempty_cells": 40,
+  "sessions": 46,
+  "draws": 10000,
+  "private_input_rows": 68499,
+  "medians_seconds": {
+    "cold": {
+      "baseline": 0.7586488010000494,
+      "candidate": 0.22438575599994692
+    },
+    "warm": {
+      "baseline": 0.7510157450000179,
+      "candidate": 0.22221041299997069
+    }
+  },
+  "ratio_of_medians": {
+    "cold": 3.381002495542671,
+    "warm": 3.379750457509464
+  },
+  "paired_speedup_range": {
+    "cold": [
+      3.2137176884776544,
+      3.8849634156672974
+    ],
+    "warm": [
+      3.296946247409811,
+      3.5234409683497563
+    ]
+  },
+  "outer_seconds": 13.630552588,
+  "prepare_seconds": 4.31245409600001,
+  "worker_ru_maxrss_bytes": [
+    150224896,
+    150224896
+  ],
+  "rss_caveat": "Self-reported Linux isolated-process high-water counter includes process creation/import/load, potentially inherited pre-exec footprint. Identical counters provide no memory-improvement evidence. Not historical whole-job telemetry or authenticated custody.",
+  "population": "Prespecified primary-geometry session resampling only; 60 cells including20 empty; 3pairs cold/warm. No CI or full-pipeline speedup inference.",
+  "full_pipeline_parity": false,
+  "adoption_authorized": false,
+  "validated_edge": false,
+  "holdout_opened": false,
+  "pnl_computed": false,
+  "comparison_plan": [
+    {
+      "grain": "first/second compute pass",
+      "population": "fixed60cells per fresh worker",
+      "unit": "seconds median across3pairs",
+      "finding": "Candidate 3.38x cold / 3.38x warm on this resampling substep only",
+      "derivation": "separate per-method median; ratio of medians",
+      "disposition": "chart",
+      "reason": "Same input/output digest, same units and fixed scope"
+    },
+    {
+      "grain": "worker",
+      "population": "six fresh processes",
+      "unit": "bytes Linux ru_maxrss",
+      "finding": "identical counters; no memory-improvement evidence",
+      "disposition": "prose",
+      "reason": "inherited highwater caveat; not an optimization measure"
+    }
+  ]
+}

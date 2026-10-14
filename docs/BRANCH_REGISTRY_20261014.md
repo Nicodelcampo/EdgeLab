@@ -6,6 +6,7 @@ Fecha: 2026-10-14
 Generado con `git rev-list --count origin/foundation/f0b-compatibility-probe..<rama>` sobre 174 refs de `origin`. **Ahead = commits que la rama tiene y `foundation` no.** `main` ya está integrada (ahead 0).
 
 - Ramas totales: 173; **integradas por completo (ahead 0): 61**; con trabajo propio sin integrar: 112.
+- **Por contenido (`git cherry`):** de las 112 ramas con commits propios, 10 no tienen ningún parche único (equivalentes ya en `foundation`) y 102 tienen 2.491 parches únicos. Los **archivos** que esas ramas tienen y `foundation` no (2.417 rutas, ~38 MB) se integraron como archivo histórico en `archive/ramas_20261014/` (índice `archive/ramas_20261014/INDEX.md`); el código y los parches de esas ramas siguen sólo en el remoto.
 - Regla (`CLAUDE.md`): rama auxiliar → se mergea de vuelta el mismo día. Estas ramas de investigación (bt2a, avolcluster, audit/*) son líneas congeladas de mediciones ya cerradas o instrumentos de auditoría; **no se mergean en bloque**. Para rescatar algo: checkout por ruta + pruebas, como la release líquida.
 
 | Rama | Ahead | Último commit | Asunto |

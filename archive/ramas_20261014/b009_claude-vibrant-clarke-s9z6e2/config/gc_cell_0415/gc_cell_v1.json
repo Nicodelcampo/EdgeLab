@@ -1,0 +1,38 @@
+{
+  "schema_version": "gc_cell_v1",
+  "name": "GC 04:15 CT, corto tras subida de 15 minutos",
+  "status": "EXPLORATORIO: no es un edge validado. Ver docs/research/barrido_horario_20261004/",
+  "origin": "Encontrada por barrido propio (etapa A, 1.152 celdas) sobre GC del 2025-08-01 al 2026-06-30; no proviene de la estrategia del proveedor",
+  "instrument": {"root": "GC", "tick_size": 0.1, "tick_value_usd": 10.0, "spot_equivalent": "XAU/USD, 1 tick de GC = USD 0,10"},
+  "entry": {
+    "weekdays": "lunes a viernes",
+    "slot_chicago": "04:15",
+    "signal_bar_close": "slot + 1 minuto",
+    "condition": "cierre(barra que termina en slot+1min) - cierre(barra que termina 15 minutos antes) > 0",
+    "direction": "short",
+    "fill": "primer tick con sello >= slot + 2 minutos; vende al bid"
+  },
+  "exit": {
+    "type": "time",
+    "hold_minutes": 15,
+    "fill": "primer tick con sello >= entrada de referencia + 15 minutos; compra al ask",
+    "stop_ticks": null,
+    "target_ticks": null,
+    "note": "Sin stop ni objetivo: el RR nominal no está definido; ver rr_realized"
+  },
+  "costs": {"round_trip_commission_usd": 4.5, "round_trip_commission_ticks": 0.45, "spread": "incluido por ejecución de libro (mediana de 3 ticks en COMEX; USD 0,58 en spot)"},
+  "eligibility": {"min_session_volume_vs_contract_median": 0.5, "spot_min_quotes_in_trade_window": 50, "spot_min_quotes_in_prior_15min": 50},
+  "evidence_discovery": {
+    "sessions": 225, "trades": 128, "mean_net_ticks": 21.32, "median_net_ticks": 14.55, "win_rate": 0.648,
+    "rr_realized": {"avg_win_ticks": 51.8, "avg_loss_ticks": -34.9, "payoff_ratio": 1.48, "best_trade_ticks": 322.6, "worst_trade_ticks": -265.4,
+                    "first_70pct": {"trades": 89, "payoff_ratio": 1.69}, "last_30pct": {"trades": 39, "payoff_ratio": 1.10}},
+    "stage_a": {"p_max": 0.0157, "replication_holm_p": 0.031},
+    "stage_b": {"R1_to_R4": "cumple", "exit_grid_variants": 2100, "improvement_over_base": "ninguna comprobable"}
+  },
+  "exit_grid_tested_stage_b": {
+    "slots": ["04:00", "04:15", "04:30", "04:45"], "prior_move_min_ticks": [1, 10, 20], "hold_minutes": [5, 10, 15, 20, 30, 45, 60],
+    "stop_ticks": [null, 10, 20, 30, 50], "target_ticks": [null, 10, 20, 30, 50],
+    "nominal_rr_with_both_levels": {"mean": 1.40, "min": 0.2, "max": 5.0}
+  },
+  "oos_pending": "Etapa C en oro spot de Dukascopy, ventana completa 2026-07-01 a 2026-09-30; decisión pre-registrada en docs/research/barrido_horario_20261004/PREREGISTRO_ETAPA_C_GC_SPOT.md"
+}

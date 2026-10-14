@@ -1,0 +1,233 @@
+{
+  "nota": "Overlay del triaje CYCLE-001 (2026-09-22): sella las 57 expresiones nuevas del wave #46 sin reescribir el baseline historico del 2026-07-26. Merged por tools/ulp_sweep.py.",
+  "triaje": {
+    "AVolZonePOI_P.cs :: decision == \"CREATE\" ? lo.ToString(CultureInfo.InvariantCulture) : \"\",": {
+      "veredicto": "NO_ES_PRECIO",
+      "evidencia": "Falso positivo del detector por nombre: formateo de log CSV (decision es string; lo se convierte a texto). No hay comparacion de precios."
+    },
+    "AVolZoneSimple.cs :: if (_dxAtPrice != null) { _dxAtPrice.Dispose(); _dxAtPrice = null; }": {
+      "veredicto": "FUERA_DE_ALCANCE",
+      "evidencia": "Capa visual (DX brush dispose); no portada a Python: no puede romper paridad. Si se porta, reabrir triaje."
+    },
+    "AVolZoneSimple.cs :: : z.Side == \"RESISTANCE\" ? _dxResistance : _dxAtPrice;": {
+      "veredicto": "NO_ES_PRECIO",
+      "evidencia": "Comparacion de string para elegir brush visual; no hay comparacion de precios."
+    },
+    "BigTrap2Absorption.cs :: if (askQ > 0 && bidQ > 0 && askQ >= bidQ)": {
+      "veredicto": "INMUNE_MONOTONO",
+      "evidencia": "askQ/bidQ son GetAsk/GetBid (mejores precios de grilla del feed) llevados sin aritmetica; la comparacion preserva orden y empates."
+    },
+    "BigTrap2Absorption.cs :: if (price >= askQ) { side = 1; byQuote = true; }": {
+      "veredicto": "INMUNE_MONOTONO",
+      "evidencia": "price y askQ son precios de grilla del mismo snapshot del feed, sin aritmetica; orden y empates preservados."
+    },
+    "BigTrap2Absorption.cs :: else if (price <= bidQ) { side = -1; byQuote = true; }": {
+      "veredicto": "INMUNE_MONOTONO",
+      "evidencia": "price y bidQ son precios de grilla del mismo snapshot del feed, sin aritmetica; orden y empates preservados."
+    },
+    "BigTrap2Absorption.cs :: if (price > lastTickPrice) side = 1;": {
+      "veredicto": "INMUNE_MONOTONO",
+      "evidencia": "price y lastTickPrice son precios crudos del feed sin aritmetica; orden y empates preservados."
+    },
+    "BigTrap2Absorption.cs :: else if (price < lastTickPrice) side = -1;": {
+      "veredicto": "INMUNE_MONOTONO",
+      "evidencia": "price y lastTickPrice son precios crudos del feed sin aritmetica; orden y empates preservados."
+    },
+    "BigTrap2Absorption.cs :: && (!UseWickFilter || (range > 0 && rowPrice >= wickHiFloor));": {
+      "veredicto": "EXPUESTO_PENDIENTE",
+      "evidencia": "Umbral intrinsecamente fraccionario: hi - range*(WickZonePct/100). Exposicion NO medida aun con ulp_exposure (requiere decision de diseno sobre el porcentaje); WickFilter es opt-in (UseWickFilter). Pendiente decision de Nico: espejo bit a bit o conversion a enteros."
+    },
+    "BigTrap2Absorption.cs :: && (!UseWickFilter || (range > 0 && rowPrice <= wickLoCeil));": {
+      "veredicto": "EXPUESTO_PENDIENTE",
+      "evidencia": "Umbral intrinsecamente fraccionario: lo + range*(WickZonePct/100). Exposicion NO medida aun; WickFilter es opt-in. Pendiente decision de Nico."
+    },
+    "BigTrap2Absorption.cs :: bool touched = hi >= zLo && lo <= zHi;": {
+      "veredicto": "INMUNE_MEDIOTICK",
+      "evidencia": "zLo/zHi = LoTick*TickSize - TickSize/2 y HiTick*TickSize + TickSize/2 (medio tick fuera de la grilla): ningun precio negociable cae exactamente encima."
+    },
+    "BigTrap2Absorption.cs :: bool adverse = z.IsBull ? close > zHi : close < zLo;": {
+      "veredicto": "INMUNE_MEDIOTICK",
+      "evidencia": "zHi/zLo viven a medio tick de la grilla; empate con precio negociable imposible."
+    },
+    "BigTrap2Absorption.cs :: if (lo < 0) lo = 0;": {
+      "veredicto": "NO_ES_PRECIO",
+      "evidencia": "Indices de array en el helper de percentil (lo/hi son ints); falso positivo por nombre."
+    },
+    "BigTrap2Absorption.cs :: if (hi >= n) hi = n - 1;": {
+      "veredicto": "NO_ES_PRECIO",
+      "evidencia": "Indices de array en el helper de percentil; falso positivo por nombre."
+    },
+    "BigTrap2Absorption.cs :: if (lo == hi) return tmp[lo];": {
+      "veredicto": "NO_ES_PRECIO",
+      "evidencia": "Indices de array en el helper de percentil; falso positivo por nombre."
+    },
+    "BigTrap2UniversalEdge.cs :: if (askQ > 0 && bidQ > 0 && askQ >= bidQ)": {
+      "veredicto": "INMUNE_MONOTONO",
+      "evidencia": "askQ/bidQ son mejores precios de grilla del feed sin aritmetica; orden y empates preservados."
+    },
+    "BigTrap2UniversalEdge.cs :: if (price >= askQ) { side = 1; byQuote = true; }": {
+      "veredicto": "INMUNE_MONOTONO",
+      "evidencia": "price y askQ son precios de grilla del mismo snapshot del feed, sin aritmetica."
+    },
+    "BigTrap2UniversalEdge.cs :: else if (price <= bidQ) { side = -1; byQuote = true; }": {
+      "veredicto": "INMUNE_MONOTONO",
+      "evidencia": "price y bidQ son precios de grilla del mismo snapshot del feed, sin aritmetica."
+    },
+    "BigTrap2UniversalEdge.cs :: if (price > lastTickPrice) side = 1;": {
+      "veredicto": "INMUNE_MONOTONO",
+      "evidencia": "price y lastTickPrice son precios crudos del feed sin aritmetica."
+    },
+    "BigTrap2UniversalEdge.cs :: else if (price < lastTickPrice) side = -1;": {
+      "veredicto": "INMUNE_MONOTONO",
+      "evidencia": "price y lastTickPrice son precios crudos del feed sin aritmetica."
+    },
+    "BigTrap2UniversalEdge.cs :: && (!UseWickFilter || (range > 0 && rowPrice >= wickHiFloor)))": {
+      "veredicto": "EXPUESTO_PENDIENTE",
+      "evidencia": "Umbral intrinsecamente fraccionario (pct del rango); exposicion no medida; WickFilter opt-in; pendiente decision de diseno de Nico."
+    },
+    "BigTrap2UniversalEdge.cs :: && (!UseWickFilter || (range > 0 && rowPrice <= wickLoCeil)))": {
+      "veredicto": "EXPUESTO_PENDIENTE",
+      "evidencia": "Umbral intrinsecamente fraccionario (pct del rango); exposicion no medida; WickFilter opt-in; pendiente decision de diseno de Nico."
+    },
+    "BigTrap2UniversalEdge.cs :: bool touched = hi >= zLo && lo <= zHi;": {
+      "veredicto": "INMUNE_MEDIOTICK",
+      "evidencia": "zLo/zHi a medio tick de la grilla (LoTick/HiTick*TickSize +/- TickSize/2); empate imposible."
+    },
+    "BigTrap2UniversalEdge.cs :: bool adverse = z.IsBull ? close > zHi : close < zLo;": {
+      "veredicto": "INMUNE_MEDIOTICK",
+      "evidencia": "zHi/zLo a medio tick de la grilla; empate imposible."
+    },
+    "BigTrap2UniversalFill.cs :: if (askQ > 0 && bidQ > 0 && askQ >= bidQ)": {
+      "veredicto": "INMUNE_MONOTONO",
+      "evidencia": "askQ/bidQ son mejores precios de grilla del feed sin aritmetica; orden y empates preservados."
+    },
+    "BigTrap2UniversalFill.cs :: if (price >= askQ) { side = 1; byQuote = true; }": {
+      "veredicto": "INMUNE_MONOTONO",
+      "evidencia": "price y askQ son precios de grilla del mismo snapshot del feed, sin aritmetica."
+    },
+    "BigTrap2UniversalFill.cs :: else if (price <= bidQ) { side = -1; byQuote = true; }": {
+      "veredicto": "INMUNE_MONOTONO",
+      "evidencia": "price y bidQ son precios de grilla del mismo snapshot del feed, sin aritmetica."
+    },
+    "BigTrap2UniversalFill.cs :: if (price > lastTickPrice) side = 1;": {
+      "veredicto": "INMUNE_MONOTONO",
+      "evidencia": "price y lastTickPrice son precios crudos del feed sin aritmetica."
+    },
+    "BigTrap2UniversalFill.cs :: else if (price < lastTickPrice) side = -1;": {
+      "veredicto": "INMUNE_MONOTONO",
+      "evidencia": "price y lastTickPrice son precios crudos del feed sin aritmetica."
+    },
+    "BigTrap2UniversalFill.cs :: && (!UseWickFilter || (range > 0 && rowPrice >= wickHiFloor)))": {
+      "veredicto": "EXPUESTO_PENDIENTE",
+      "evidencia": "Umbral intrinsecamente fraccionario (pct del rango); exposicion no medida; WickFilter opt-in; pendiente decision de diseno de Nico."
+    },
+    "BigTrap2UniversalFill.cs :: && (!UseWickFilter || (range > 0 && rowPrice <= wickLoCeil)))": {
+      "veredicto": "EXPUESTO_PENDIENTE",
+      "evidencia": "Umbral intrinsecamente fraccionario (pct del rango); exposicion no medida; WickFilter opt-in; pendiente decision de diseno de Nico."
+    },
+    "BigTrap2UniversalFill.cs :: bool touched = hi >= zLo && lo <= zHi;": {
+      "veredicto": "INMUNE_MEDIOTICK",
+      "evidencia": "zLo/zHi a medio tick de la grilla; empate imposible."
+    },
+    "BigTrap2UniversalFill.cs :: bool adverse = z.IsBull ? close > zHi : close < zLo;": {
+      "veredicto": "INMUNE_MEDIOTICK",
+      "evidencia": "zHi/zLo a medio tick de la grilla; empate imposible."
+    },
+    "Gaps2.cs :: g.IsBullish = curPrice > prevPrice;": {
+      "veredicto": "INMUNE_MONOTONO",
+      "evidencia": "curPrice/prevPrice son precios crudos del feed sin aritmetica; orden y empates preservados."
+    },
+    "Gaps2.cs :: bool inside = price > g.Bottom && price < g.Top;": {
+      "veredicto": "INMUNE_MONOTONO",
+      "evidencia": "g.Top/g.Bottom son Max/Min de precios crudos del feed; comparacion sin aritmetica."
+    },
+    "Gaps2.cs :: ? price <= g.Bottom - ReversalConfirmTicks * TickSize": {
+      "veredicto": "INMUNE_MONOTONO",
+      "evidencia": "El umbral es Bottom menos ticks enteros*TickSize (monotono en indice de tick); price es precio crudo del feed."
+    },
+    "Gaps2.cs :: : price >= g.Top + ReversalConfirmTicks * TickSize;": {
+      "veredicto": "INMUNE_MONOTONO",
+      "evidencia": "El umbral es Top mas ticks enteros*TickSize (monotono en indice de tick); price es precio crudo del feed."
+    },
+    "Gaps2.cs :: bool backThroughProximal = g.IsBullish ? price >= g.Top : price <= g.Bottom;": {
+      "veredicto": "INMUNE_MONOTONO",
+      "evidencia": "price vs Top/Bottom (Max/Min de precios crudos), sin aritmetica."
+    },
+    "Gaps2.cs :: double px = (CurrentBars != null && CurrentBars.Length > 0 && CurrentBars[0] >= 0) ? Close[0] : 0;": {
+      "veredicto": "NO_ES_PRECIO",
+      "evidencia": "Guardas de null/length/indice; la seleccion condicional no compara precios."
+    },
+    "HFTZonesNQPureV4.cs :: private readonly List<double> priceList = new List<double>();": {
+      "veredicto": "NO_ES_PRECIO",
+      "evidencia": "Declaracion de coleccion; no hay comparacion. Falso positivo por nombre."
+    },
+    "HFTZonesNQPureV4.cs :: for (int i = 0; i < priceList.Count; i++)": {
+      "veredicto": "NO_ES_PRECIO",
+      "evidencia": "Indice int vs Count int; falso positivo por el nombre priceList."
+    },
+    "HFTZonesNQPureV4.cs :: double tY = z.Direction == 1 ? z.Lower - (TickSize * 4) : z.Upper + (TickSize * 4);": {
+      "veredicto": "FUERA_DE_ALCANCE",
+      "evidencia": "Coordenada Y de Draw.Text (capa visual, no portada a Python); no decide geometria."
+    },
+    "HFTZonesNQPureV4.cs :: if (zHi >= cLower && zLo <= cUpper)": {
+      "veredicto": "INMUNE_MEDIOTICK",
+      "evidencia": "zLo/zHi y cLower/cUpper son bordes a medio tick de la grilla (tick*TickSize +/- TickSize/2 o *0.5); ningun precio negociable cae exactamente encima."
+    },
+    "HFTZonesNQPureV4.cs :: if (L < lo) lo = L;": {
+      "veredicto": "INMUNE_MONOTONO",
+      "evidencia": "Envolvente de precios crudos del feed sin aritmetica; orden y empates preservados."
+    },
+    "HFTZonesNQPureV4.cs :: if (H > hi) hi = H;": {
+      "veredicto": "INMUNE_MONOTONO",
+      "evidencia": "Envolvente de precios crudos del feed sin aritmetica; orden y empates preservados."
+    },
+    "HFTZonesNQPureV4.cs :: if (hi <= lo) return;": {
+      "veredicto": "INMUNE_MONOTONO",
+      "evidencia": "Guarda de rango degenerado sobre la envolvente ya calculada (precios crudos sin aritmetica)."
+    },
+    "HFTZonesNQPureV4.cs :: if (price > fH) fH = price;": {
+      "veredicto": "INMUNE_MONOTONO",
+      "evidencia": "Maximo corriente de precios crudos del feed sin aritmetica."
+    },
+    "HFTZonesNQPureV4.cs :: if (price < fL) fL = price;": {
+      "veredicto": "INMUNE_MONOTONO",
+      "evidencia": "Minimo corriente de precios crudos del feed sin aritmetica."
+    },
+    "HFTZonesNQPureV4_V2.cs :: private readonly List<double> priceList = new List<double>();": {
+      "veredicto": "NO_ES_PRECIO",
+      "evidencia": "Declaracion de coleccion; falso positivo por nombre."
+    },
+    "HFTZonesNQPureV4_V2.cs :: for (int i = 0; i < priceList.Count; i++)": {
+      "veredicto": "NO_ES_PRECIO",
+      "evidencia": "Indice int vs Count int; falso positivo por nombre."
+    },
+    "HFTZonesNQPureV4_V2.cs :: double tY = z.Direction == 1 ? z.Lower - (TickSize * 4) : z.Upper + (TickSize * 4);": {
+      "veredicto": "FUERA_DE_ALCANCE",
+      "evidencia": "Coordenada Y de Draw.Text (capa visual, no portada a Python)."
+    },
+    "HFTZonesNQPureV4_V2.cs :: if (zHi >= cLower && zLo <= cUpper)": {
+      "veredicto": "INMUNE_MEDIOTICK",
+      "evidencia": "Bordes a medio tick de la grilla en ambos lados; empate con precio negociable imposible."
+    },
+    "HFTZonesNQPureV4_V2.cs :: if (L < lo) lo = L;": {
+      "veredicto": "INMUNE_MONOTONO",
+      "evidencia": "Envolvente de precios crudos del feed sin aritmetica."
+    },
+    "HFTZonesNQPureV4_V2.cs :: if (H > hi) hi = H;": {
+      "veredicto": "INMUNE_MONOTONO",
+      "evidencia": "Envolvente de precios crudos del feed sin aritmetica."
+    },
+    "HFTZonesNQPureV4_V2.cs :: if (hi <= lo) return;": {
+      "veredicto": "INMUNE_MONOTONO",
+      "evidencia": "Guarda de rango degenerado sobre envolvente de precios crudos."
+    },
+    "HFTZonesNQPureV4_V2.cs :: if (price > fH) fH = price;": {
+      "veredicto": "INMUNE_MONOTONO",
+      "evidencia": "Maximo corriente de precios crudos del feed sin aritmetica."
+    },
+    "HFTZonesNQPureV4_V2.cs :: if (price < fL) fL = price;": {
+      "veredicto": "INMUNE_MONOTONO",
+      "evidencia": "Minimo corriente de precios crudos del feed sin aritmetica."
+    }
+  }
+}

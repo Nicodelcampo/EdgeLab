@@ -1,0 +1,138 @@
+{
+  "version": 1,
+  "form": "paired-panels",
+  "title": "Δ Brier ×1000: contexto sin mejora media",
+  "aside": "10/12fechas; positivo = peor; fases no son réplica independiente",
+  "colorMap": {
+    "Geometría −control igualado": "blue",
+    "Llegada −control igualado": "orange"
+  },
+  "panels": [
+    {
+      "form": "categorical-bars",
+      "title": "Geometría empeora en las10sesiones",
+      "aside": "Media de cada sesión; positivo = peor Brier;2fechas vacías",
+      "labels": [
+        "06-17",
+        "06-18",
+        "06-19",
+        "06-22",
+        "06-23",
+        "06-24",
+        "06-25",
+        "06-26",
+        "06-29",
+        "06-30",
+        "07-01",
+        "07-02"
+      ],
+      "tooltipLabels": [
+        "2026-06-17",
+        "2026-06-18",
+        "2026-06-19",
+        "2026-06-22",
+        "2026-06-23",
+        "2026-06-24",
+        "2026-06-25",
+        "2026-06-26",
+        "2026-06-29",
+        "2026-06-30",
+        "2026-07-01",
+        "2026-07-02"
+      ],
+      "mode": "grouped",
+      "orientation": "vertical",
+      "axis": {
+        "zero": true
+      },
+      "series": [
+        {
+          "label": "Geometría −control igualado",
+          "valueKind": "number",
+          "role": "subject",
+          "derived": true,
+          "derivationReason": "Media de pérdidas pareadas por sesión menos control igualado, por1000",
+          "data": [
+            6.731538663237663,
+            null,
+            2.633190076450918,
+            0.989000305162606,
+            1.3567484968879737,
+            1.1638798769654053,
+            0.6900233464152791,
+            2.2607884736257993,
+            0.11508435341569291,
+            1.2101351477760538,
+            1.6607152962721414,
+            null
+          ]
+        },
+        {
+          "label": "Llegada −control igualado",
+          "valueKind": "number",
+          "role": "aux",
+          "derived": true,
+          "derivationReason": "Media de pérdidas pareadas por sesión menos control igualado, por1000",
+          "data": [
+            1.315275780810165,
+            null,
+            0.2282618667397357,
+            -0.004971362244513734,
+            0.2585627248565316,
+            -0.2344358835283647,
+            0.42593853412579463,
+            0.0570722484853154,
+            0.25105860731267954,
+            -0.15549558767006313,
+            -0.3331493084089731,
+            null
+          ]
+        }
+      ]
+    },
+    {
+      "form": "categorical-bars",
+      "title": "Pequeña excepción geométrica en RTH/flujo−",
+      "aside": "Pooled ponderado por anclas; no misma media por sesión",
+      "labels": [
+        "Fuera RTH/−",
+        "Fuera RTH/+",
+        "RTH/−",
+        "RTH/+"
+      ],
+      "mode": "grouped",
+      "orientation": "vertical",
+      "axis": {
+        "zero": true
+      },
+      "series": [
+        {
+          "label": "Geometría −control igualado",
+          "valueKind": "number",
+          "role": "subject",
+          "derived": true,
+          "derivationReason": "Brier ponderado por anclas dentro de cada fase/dirección previa menos su control igualado, por1000",
+          "data": [
+            2.0689648564494734,
+            2.453641282948116,
+            -0.13474776097499586,
+            0.05461710378973361
+          ]
+        },
+        {
+          "label": "Llegada −control igualado",
+          "valueKind": "number",
+          "role": "aux",
+          "derived": true,
+          "derivationReason": "Brier ponderado por anclas dentro de cada fase/dirección previa menos su control igualado, por1000",
+          "data": [
+            0.022595387068058415,
+            0.3030149254202863,
+            0.07242656852091134,
+            0.036734583840680735
+          ]
+        }
+      ]
+    }
+  ]
+}

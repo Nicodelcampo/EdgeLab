@@ -1,0 +1,131 @@
+{
+  "study": "CROSS_MORE_AND_MOMENTUM_MULTI_ASSET_V1_20261001",
+  "authorization": "Nico explicitly asks less restrictive EMA-cross filters, severalassets, deepermomentum; newexploratoryhypothesis, notrewriteoldscreen",
+  "assets": [
+    "MNQ",
+    "YM",
+    "RTY"
+  ],
+  "days": [
+    "20251007",
+    "20251008",
+    "20251009",
+    "20251010",
+    "20251013",
+    "20251014",
+    "20251015",
+    "20251016",
+    "20251017",
+    "20251020",
+    "20251021",
+    "20251022",
+    "20251023",
+    "20251024",
+    "20251027",
+    "20251028",
+    "20251029",
+    "20251030",
+    "20251031",
+    "20251103",
+    "20251104",
+    "20251105",
+    "20251106",
+    "20251107",
+    "20251110",
+    "20251111",
+    "20251112",
+    "20251113",
+    "20251114",
+    "20251117",
+    "20251118",
+    "20251119",
+    "20251120",
+    "20251121",
+    "20251124",
+    "20251125",
+    "20251126",
+    "20251201",
+    "20251202",
+    "20251203",
+    "20251204",
+    "20251205",
+    "20251208",
+    "20251209",
+    "20251210",
+    "20251211",
+    "20251212",
+    "20251217",
+    "20251218",
+    "20251219",
+    "20251222",
+    "20251229",
+    "20251230",
+    "20251231"
+  ],
+  "window": "54commoncanonicalCMEdates20251007–20251231; complete54date list inmanifest",
+  "source_repo": "391314907dec889599493c4a38282171d94a2f25",
+  "north_star_sha": "ffd0fe3ae52eefafe29485fa4a0966813abcbfd1f50f73c76231e5a1c1516afb",
+  "source_dataset": "private nicolasbuttaro/edgelab-ticks-nt8-canonical v1",
+  "cross": {
+    "timeframes_min": [
+      1,
+      5
+    ],
+    "periods": [
+      20,
+      50,
+      200
+    ],
+    "event": "completed EMA20/50 crossover, no obligatory close-vsEMA200 gate",
+    "filters": {
+      "BASE": "all cross slots",
+      "SOFT200": "direction*(current completed close-EMA200)>=-0.5previousATR14, mild trend tolerance",
+      "ADX15": "strictly previous WilderADX14>=15, no direction assertion"
+    },
+    "holding_min": 30,
+    "window": "completed decisions10:01/10:05 through14:45ET",
+    "U": "strictly previous WilderATR14 pertimeframe",
+    "goal": "atleast100executedquote-trades and20activedates/cell; no rescheduleafterfilteredrejection"
+  },
+  "momentum": {
+    "timeframes_min": [
+      5,
+      15
+    ],
+    "event": "absolute completedclosechange over60min >=previous20barSMA TrueRange; follow sign",
+    "holding_min": 120,
+    "window": "completed decisions10:05/10:15 through13:45ET",
+    "U": "strictly previous20barSMA TrueRange; requires20consecutivepreviousbars",
+    "goal": "atleast50executedquote-trades and20activedates/cell",
+    "comparison_to_old_RTY": "old56dates=>54commondates; oldRTHfullbarsgate=>canonicalcatalog andconsecutiveindicator/ROC history; correctedentry/exitavailability;newnormalizedprimary,notexactreplica",
+    "descriptive_only": [
+      "clock10-11:30,11:30-12:30,12:30+",
+      "priorROC/ATRstrength1-2,2-4,4+",
+      "extra1tick/sidefriction",
+      "net excluding5bestdates as hindsight fragility,NOTtradablefilter",
+      "winrate,gross/netticks"
+    ]
+  },
+  "cells": "18cross=3assetsx2TFx3filters;6momentum=3assetsx2TF;total24;48primaryendpoints",
+  "execution": "firstvalidexportedquoteafterclose+250mswithin30s; firstvalidquoteafteractualentry+holdinguntil16ET;anyunknownexitABSTAIN; noexitlag1scensor; noactualfill/quote-agecertification",
+  "scheduling": "BASEfixedslots hold+60s reserve; filtersuseidenticalslot subsets; norescheduling; nooverlapwithinasset/family,notjointportfolio",
+  "costs": {
+    "MNQ": "USD1.20 roundtrip assumed /USD0.50tick =2.4ticks",
+    "YM": "USD4.50 assumed /USD5tick =0.9ticks",
+    "RTY": "USD4.50 assumed /USD5tick =0.9ticks",
+    "slippage": "1tick/side; extra1tick/side adverse only descriptive"
+  },
+  "inference": "20k dateclusterbootstrap,54commondatesincludingzeroactivity,seed20261002+cellindex;Bonferroni48onesided;netUanddirectionmidalphaUlower>0;MDE80approximate; noformalfilterincrementality",
+  "warmup": "Percontract up to7calendar days before earliest chosen session; past price history only; min600real observed5minbars",
+  "boundaries": "No outcomes outside Oct–Dec2025. No automatic Jan–Mar validation. Julyholdout and otherreserves closed",
+  "known_exposure": "Development already exposed in otherresearch, especially RTY; 3equityindexassetscorrelated, not independentreplications",
+  "stop": "freezeallrulesbeforeoutcomes; writecensusbeforequotereplay; norescuegrids,newparamchangesormanifestafteroutcomes; noautomaticvalidation",
+  "prior_study": "EMA3v1zero/24passes,14small-sample;RTYMOM60priorpositive meanbutnetcorrectedbound<=0 andtechnicalcensor;explicitlynotvalidated",
+  "research_sources": {
+    "EMA": "https://www.fidelity.com/learning-center/trading-investing/technical-analysis/technical-indicator-guide/ema",
+    "ADX": "https://www.fidelity.com/viewpoints/active-investor/average-directional-index-ADX",
+    "confirmation": "https://www.schwab.com/learn/story/understanding-simple-moving-average-crossovers",
+    "ATR": "https://www.schwab.com/learn/story/average-true-range-indicator-and-volatility",
+    "volume": "https://www.schwab.com/learn/story/ways-volume-can-help-confirm-price-trends"
+  }
+}

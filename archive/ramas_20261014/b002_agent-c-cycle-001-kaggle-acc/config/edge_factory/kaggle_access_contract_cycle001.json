@@ -1,0 +1,47 @@
+{
+  "contract_id": "KAGGLE-ACCESS-CERTIFICATION-V1",
+  "work_id": "CYCLE-001-C-KAGGLE-ACCESS-001",
+  "mode": "TARGET_FREE_FAIL_CLOSED",
+  "credential_value_access": "FORBIDDEN",
+  "hosted_execution": "BLOCKED_PENDING_WORKER_ADJUDICATION",
+  "worker_inventory": {
+    "observed_count": 3,
+    "canonical_worker_id_per_agent_a": "01a0c47e-c7f9-7fe0-ab70-7f90204f3188",
+    "canonical_capability": "checkKaggleAccess",
+    "duplicate_worker_id": "01a0c47c-fd21-78ac-ad94-a0e04209ca61",
+    "quarantined_worker_id": "01a0c0eb-ab1c-7942-b223-0384016535b3",
+    "canonical_status": "HOSTED_BLOCKED",
+    "duplicate_status": "SUPERSEDED_NO_USE",
+    "quarantined_status": "QUARANTINED_NO_USE",
+    "status": "ADJUDICATED_BLOCKED_NO_EXECUTION"
+  },
+  "success": {
+    "http_status": 200,
+    "endpoint_id": "kaggle.datasets.list.v1",
+    "shape_validation": "INTERNAL_ENDPOINT_SCHEMA",
+    "caller_supplied_shape_boolean": "UNTRUSTED_AND_NON_AUTHORITATIVE",
+    "verdict": "AUTHENTICATED_ENDPOINT_ONLY"
+  },
+  "abstentions": {
+    "400_401_403": "ABSTAIN_AUTH_OR_ENDPOINT",
+    "network_error": "ABSTAIN_NETWORK",
+    "invalid_json_shape": "ABSTAIN_RESPONSE_SHAPE_UNVERIFIED",
+    "other": "ABSTAIN_UNCLASSIFIED"
+  },
+  "non_claims": [
+    "API authentication does not verify any dataset",
+    "API authentication does not verify file hashes",
+    "A listed remote object is not REMOTE_VERIFIED",
+    "No outcome or holdout access is authorized",
+    "Raw network exception text is never durable",
+    "Caller-supplied shape booleans cannot authenticate"
+  ],
+  "gates": {
+    "PREEXISTING_OUTCOME_EXPOSURE": "YES",
+    "HOLDOUT_CONTAMINATED_FOR_THIS_HYPOTHESIS": "YES",
+    "holdout_enabled": false,
+    "outcomes_inspected": false,
+    "promotion_ceiling": "LESSON_CANDIDATE"
+  },
+  "reviewer": "D"
+}

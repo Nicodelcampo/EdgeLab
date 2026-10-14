@@ -1,0 +1,31 @@
+## /data/analysis/gc-a-support/sessions.csv
+
+- Shape: 6 rows x 9 columns
+- Duplicate rows: 0
+- Candidate key columns (distinct == rows): trade_date, ticks, observed_anchors, eligible_anchors, E_ONLY
+
+| column | type | non-null | distinct | values |
+| --- | --- | --- | --- | --- |
+| trade_date | date-text | 100% | 6 | 2026-08-03 → 2026-08-10 |
+| ticks | number | 100% | 6 | 76,117 → 167,950, mean 1.179e+05 |
+| observed_anchors | number | 100% | 6 | 11,536 → 13,774, mean 12,714 |
+| eligible_anchors | number | 100% | 6 | 5,077 → 9,519, mean 7,396 |
+| A_ONLY | number | 100% | 2 | 0 → 1, mean 0.3333 |
+| E_ONLY | number | 100% | 6 | 239 → 643, mean 442.7 |
+| BOTH | number | 100% | 1 | 0 → 0, mean 0 |
+| NEITHER | number | 100% | 6 | 4,837 → 8,875, mean 6,953 |
+| UNKNOWN | number | 100% | 6 | 4,255 → 6,529, mean 5,318 |
+
+**Warnings:**
+
+- ⚠️ `trade_date` looks like dates stored as text; parse before time analysis
+- ⚠️ `BOTH` is constant
+
+### Plausibility
+
+- rate hint: `ticks` sums to 707,465 across 8 days ≈ 88,433/day (meaningful only if this column is additive)
+- rate hint: `observed_anchors` sums to 76,284 across 8 days ≈ 9,536/day (meaningful only if this column is additive)
+- rate hint: `eligible_anchors` sums to 44,374 across 8 days ≈ 5,547/day (meaningful only if this column is additive)
+- rate hint: `NEITHER` sums to 41,716 across 8 days ≈ 5,214/day (meaningful only if this column is additive)
+- rate hint: `UNKNOWN` sums to 31,910 across 8 days ≈ 3,989/day (meaningful only if this column is additive)
+

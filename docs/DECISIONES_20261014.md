@@ -19,4 +19,6 @@ P&L, manifiestos de campaña y holdout **siguen requiriendo OK explícito** (no 
 8. **`origin/main` no se mueve.** Es la rama por defecto con 27 PR abiertos; ya es ancestro de `foundation` (nada se pierde) y la rama viva declarada es `foundation/f0b-compatibility-probe`. Igualar `main` a `foundation` es un fast-forward sin riesgo que se hace sólo si Nico lo pide.
 9. **Ramas auxiliares:** 112 ramas con trabajo propio no se mergean en bloque; quedan registradas en `docs/BRANCH_REGISTRY_20261014.md` y se rescatan por ruta con pruebas cuando una campaña lo necesite.
 10. **R2 ejecutado** (target-free, provisional): `docs/research/R2_RECORRIDO_VS_FRICCION_RESULTADOS_20261014.md`. R3 (dirección a 15–60 min) queda bloqueada hasta el OK de Nico.
-
+11. **Contenido de las ramas auxiliares:** las rutas que sólo existían en ramas remotas (2.417 archivos, ~38 MB, 65 ramas) se archivaron en `archive/ramas_20261014/<bNNN_rama>/` con índice de procedencia: la información deja de depender de que esas ramas sigan existiendo. Es archivo, no vigente.
+12. **Comisiones:** los 14 activos del R2 usan ahora tablas oficiales de Topstep/Lucid/MFFU (sólo ZB tiene una fuente).
+13. **`ulp_exposure.py`** sólo mide los kernels HFTZones2, BigTrap2, VolTicksPOC2 y aVolCellPOI2 (sin exposición a 0,25 y 0,1 de tick); no cubre las 12 expresiones de `HFTZonesNQPureV4`/`aVolClusterPOISim`/`aVolZonePOI*`, que siguen clasificadas por lectura de código.

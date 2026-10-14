@@ -1,0 +1,95 @@
+{
+  "schema": "bt2a_gate_l2_context_v2",
+  "status": "PROPOSED_TARGET_FREE_NOT_FROZEN",
+  "created_date": "2026-08-26",
+  "implementation_source": {
+    "branch": "work/futures-l2-context-foundation-20260825",
+    "implementation_commit": "a9f85db83455d7b85257f3dc4c49e2fedda26550",
+    "claimed_real_run_commit": "ced33dd4235da2882f5e334c87c84b7f3249dc7d",
+    "formal_real_run_verified": false
+  },
+  "firewall": {
+    "outcomes_opened": false,
+    "edge_declared": false,
+    "requires_explicit_authorization": true,
+    "context_training_target_free": true
+  },
+  "model": {
+    "base_states": ["calm", "normal", "volatile"],
+    "overlay_state": "toxic",
+    "inference": "FORWARD_FILTER_ONLY",
+    "smoothing_allowed": false,
+    "groups": {
+      "G-operable": ["calm", "normal"],
+      "G-stress": ["volatile", "toxic"]
+    },
+    "toxic_is_vpin": false
+  },
+  "join": {
+    "keys": ["contract", "cme_session"],
+    "ordering_key": "source_row",
+    "rule": "available_source_row < event_source_row",
+    "approximate_timestamp_join_allowed": false,
+    "external_last_parquet_join_allowed": false
+  },
+  "features_existing": [
+    "ofi_bbo_normalized",
+    "log_depth_top5",
+    "spread_ticks_close",
+    "l2_add_rate",
+    "l2_remove_rate",
+    "replenishment_rate",
+    "depth_depletion_ratio",
+    "tape_imbalance",
+    "event_rate_per_second",
+    "rv_ticks_15m",
+    "efficiency_ratio_10m"
+  ],
+  "features_proposed_additive": [
+    "queue_imbalance_l1",
+    "depth_imbalance_top3",
+    "depth_imbalance_top5",
+    "microprice_minus_mid_ticks",
+    "add_intensity_bid",
+    "add_intensity_ask",
+    "cancel_intensity_bid",
+    "cancel_intensity_ask",
+    "replenishment_after_depletion",
+    "book_age_or_time_since_resync"
+  ],
+  "target_free_gates": {
+    "context_coverage_min": 0.99,
+    "minimum_sessions_per_primary_cell": 40,
+    "max_abs_corr_context_zone_width": 0.2,
+    "prefix_invariance_required": true,
+    "state_occupancy_required": true,
+    "persistence_and_flip_rate_required": true,
+    "book_failure_report_required": true,
+    "multi_initialization_stability_required": true,
+    "clean_hash_qualified_run_required": true
+  },
+  "primary_trial": {
+    "requires_gate2_estimand_frozen": true,
+    "estimand": "((K_ABS-N_RAND)|G-operable)-((K_ABS-N_RAND)|G-stress)",
+    "alternative": "TWO_SIDED",
+    "unit": "CME_SESSION",
+    "multiple_subgroup_significance_is_interaction_test": false
+  },
+  "secondary_trials": [
+    "((K_ABS-K_ABS_SHUFFLE)|G-operable)-((K_ABS-K_ABS_SHUFFLE)|G-stress)",
+    "((K_ABS-K_BT2)|G-operable)-((K_ABS-K_BT2)|G-stress)",
+    "WITHIN_SESSION_CONTEXT_LABEL_SHUFFLE"
+  ],
+  "parameter_sweep": {
+    "headline_only_for_primary_context_trial": true,
+    "other_configs": "TARGET_FREE_SENSITIVITY_ONLY",
+    "select_best_config_context_pair_allowed": false
+  },
+  "allowed_labels": [
+    "CONTEXT_HETEROGENEITY_SUPPORTED",
+    "CONTEXT_HETEROGENEITY_NOT_SUPPORTED",
+    "CONTEXT_INCONCLUSIVE_LOW_POWER",
+    "ABSTAIN_CONTEXT_DATA"
+  ],
+  "forbidden_labels": ["EDGE_DECLARED", "PROMOTED"]
+}

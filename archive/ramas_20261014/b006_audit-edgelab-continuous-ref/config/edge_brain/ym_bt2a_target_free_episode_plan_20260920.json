@@ -1,0 +1,67 @@
+{
+  "schema_version": "1.0.0",
+  "episode": {
+    "episode_id": "EPISODE-YM-BT2A-RETEST-TARGETFREE-20260920",
+    "goal": "Compare target-free entry-population definitions after causal BT2A availability",
+    "status": "PLANNING",
+    "outcomes_inspected": false,
+    "holdout_inspected": false,
+    "context_pack_id": "CONTEXT-YM-BT2A-RETEST-20260920",
+    "promotion_ceiling": "LESSON_CANDIDATE"
+  },
+  "contamination": {
+    "preexisting_outcome_exposure": true,
+    "holdout_contaminated_for_this_hypothesis": true,
+    "origin": "YM SEP26 screenshot around 2026-07-24",
+    "rule": "SCREENSHOT_MAY_ORIGINATE_HYPOTHESIS_BUT_NOT_TUNE_OR_CONFIRM"
+  },
+  "gates": [
+    "CUSTODY_SCOPE_FROZEN",
+    "FORMATION_SPEC_EXPLICIT",
+    "PRODUCER_TO_EXPORTER_INTEGRATION_PASS",
+    "ZERO_HOLDOUT_ROWS_DECODED",
+    "CODE_AND_DATA_HASHES_RECORDED",
+    "NO_SYNTHETIC_FILL"
+  ],
+  "policies": {
+    "immediate": ["FIRST_TICK_STRICTLY_AFTER_AVAILABLE_AT"],
+    "fixed_wait_ticks": [25, 100],
+    "retest_grid": {
+      "departure_ticks": [2, 4],
+      "depth": [0.0, 0.5, 1.0],
+      "max_wait_ticks": [250, 1000]
+    },
+    "total_policy_count": 15,
+    "missing_retest": "NO_ENTRY_CENSORED"
+  },
+  "allowed_outputs": [
+    "COUNTS",
+    "COVERAGE",
+    "DEPARTURE",
+    "FIRST_RETEST",
+    "DEPTH",
+    "WAIT",
+    "INVALIDATION",
+    "EXPIRY",
+    "SESSION_END",
+    "CENSORING"
+  ],
+  "forbidden_outputs": [
+    "PNL",
+    "RETURNS",
+    "MFE",
+    "MAE",
+    "STOPS",
+    "TARGETS",
+    "WINNER_SELECTION"
+  ],
+  "steps": [
+    "FREEZE_PREHOLDOUT_YM_CONTRACT_SCOPE",
+    "CERTIFY_BT2A_FORMATION_AND_AVAILABILITY",
+    "MATERIALIZE_TARGET_FREE_EVENTS",
+    "APPLY_15_FROZEN_POLICIES",
+    "AUDIT_CENSORING_AND_COVERAGE",
+    "WRITE_LEDGER_RECORDS",
+    "ADJUDICATE_LESSON_CANDIDATE_OR_REJECT"
+  ]
+}

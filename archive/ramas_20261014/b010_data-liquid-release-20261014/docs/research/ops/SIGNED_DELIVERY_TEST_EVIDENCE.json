@@ -1,0 +1,97 @@
+{
+  "schema": "research_ops_signed_delivery_test_evidence_v1",
+  "recorded_utc": "2026-10-12T16:33:45.371945+00:00",
+  "base_system_commit": "c90b50cfc0e188bb0edae389552d278c6a600470",
+  "scientific_evidence_commit": "eca53ec2277536b89f3b68cc39770c19dcba2483",
+  "local_python": "3.13.14 (main, Jul 15 2026, 00:00:00) [GCC 11.5.0 20240719 (Red Hat 11.5.0-5)]",
+  "source_sha256": {
+    ".github/workflows/research-ops.yml": "e0c7d82f44314750524ca903a6fc7487f841863e1d5c34eaefc3226d32e2ce73",
+    "requirements/research-ops-authority.txt": "05abb8909b3432889039d298f85bc3cf13014a7516d8e51d45916f071a83da97",
+    "tests/research_ops/test_authenticated_closeout.py": "3a426b60127e9d0c2220d3e56c20de40c31eb06775399012000e5e56104ef0ff",
+    "tests/research_ops/test_experiment_charter.py": "60ab726d1eacc267fccc5000307d517690481f01e2188563417eb5d5117fa2f2",
+    "tests/research_ops/test_signed_delivery.py": "99738603343046a6b6b9be00875ab532459267a41a20d97c29b041e7d912c19d",
+    "tests/research_ops/test_stage_profile.py": "6f4431bfdfb8a81c4ae5ad7dccc021bbc60892fdcc48fb97081429b55a035c4c",
+    "tools/research_ops/authenticated_closeout.py": "486c00f1f5900daafbe9d60555098ecb7b4b907de788087340503dfffe6c6a3d",
+    "tools/research_ops/benchmarks/profile_instrumentation_demo.py": "6ab20c4a2f51bddb3108d0b276b2c8d296c2f67cbd012b05a7f7371a0604563f",
+    "tools/research_ops/canonical_delivery.py": "a8c8e4a3464fe23ece4e8033e4f2962537c286ce5622f0c425a9e749117ac972",
+    "tools/research_ops/experiment_charter.py": "1cc3520b4fdea13054676bf0dfc14ffdf82cd7a4d3d1e297b28e686449e68732",
+    "tools/research_ops/learning_outbox.py": "ef0c91298257ffd85e084800544039d8c022e81ec01160f5e253e1234c92771d",
+    "tools/research_ops/signed_authority.py": "59208c182b0e5ce1270764d92522329b44e4fbec91d170da497dc368765c3ba5",
+    "tools/research_ops/stage_profile.py": "92ec79415e4f4bd4dc86a3ea21bb51bfec35112314791a2c830bb84e506d4d69"
+  },
+  "research_ops": {
+    "tests": 418,
+    "status": "PASS",
+    "log_sha256": "eebe7c17ab79ee71b2511a114c09b043d366eb9b1aad7ad8c318628b46b6149e"
+  },
+  "navigation": {
+    "tests": 18,
+    "status": "PASS",
+    "log_sha256": "354fe2ffdc3f6d040b55a23a6f7de759df2896bc8a2cf095620bccb25a10bb2f"
+  },
+  "canonical_store": {
+    "tests": 19,
+    "status": "PASS",
+    "log_sha256": "ce209d0ea6c942fedd6fc9941b363697170e2436e5c299f0cbd1b2247a6ec5ac"
+  },
+  "catalog": "PASS_NAVIGATION_ONLY",
+  "synthetic_profile": {
+    "schema": "research_ops_serial_stage_profile_v1",
+    "wall_seconds": 0.0025308710000899737,
+    "stage_seconds": {
+      "prepare": 0.00023075299998254195,
+      "features": 0.0011007150000068577,
+      "serialization": 0.00031582700000853947
+    },
+    "unassigned_seconds": 0.0008835760000920345,
+    "memory": {
+      "schema": "research_ops_memory_measurement_v1",
+      "identity_sha256": "aa7d61339865b6c746bbeec95d17ff22ee7348f8f260db6e787b12e74d189fd2",
+      "code_commit": "0000000000000000000000000000000000000000",
+      "measurement": "LINUX_SINGLE_PROCESS_RUSAGE_SELF_HIGH_WATER_RSS",
+      "peak_rss_bytes": 21389312,
+      "children_seen": false,
+      "workload_complete": true
+    },
+    "execution_allowed": false,
+    "source_certified": false,
+    "qualification": "Self RSS high-water includes imports/pre-profiler allocations; isolated fresh process and fixed full-workload driver required. This API does not enforce timeout, source access or coverage.",
+    "status": "SYNTHETIC_PROFILE_INSTRUMENTATION_PASS_NOT_MNQ_PARITY",
+    "expected_units": 4096,
+    "completed_units": 4096,
+    "output_sha256": "081137d2f50c04334d458a041ed9fa4166d7bdc822bb6be6af22e5a9f221e07c",
+    "input_sha256": "b77b900422384628f298a375c0d53934c54b0108592000f866688b0f6ace2bd8",
+    "baseline_adopted": false
+  },
+  "new_tests": 88,
+  "remote_ci_verified": false,
+  "full_repository_suite_claimed": false,
+  "real_signed_custody_receipts_received": 0,
+  "real_canonical_writes": 0,
+  "real_mnq_profile_executed": false,
+  "earlier_attempts": [
+    {
+      "tests": 410,
+      "errors": 19,
+      "status": "FAILED",
+      "causes": [
+        "Canonical dependency API exposed missing jsonschema in the fresh sandbox; installed required dependency in isolated venv.",
+        "Profiler fixture used numeric 1 rather than platform RUSAGE_CHILDREN constant; fixture corrected, no gate weakened."
+      ]
+    },
+    {
+      "tests": 410,
+      "status": "PASS_INTERMEDIATE"
+    },
+    {
+      "tests": 415,
+      "status": "PASS_INTERMEDIATE"
+    }
+  ],
+  "qualifications": [
+    "Tests use ephemeral fixture signing keys only.",
+    "Process exit after destination write/before ack recovered without duplicate destination records.",
+    "Synthetic profile proves instrumentation plumbing and independent synthetic output parity only.",
+    "No baseline/candidate real workload speedup measured or adopted."
+  ]
+}

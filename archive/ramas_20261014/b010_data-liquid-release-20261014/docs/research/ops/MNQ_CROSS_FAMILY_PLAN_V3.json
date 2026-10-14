@@ -1,0 +1,208 @@
+{
+  "schema": "mnq_crossfamily_development_plan_v3",
+  "status": "PREPARED_NOT_LAUNCHED",
+  "pin": {
+    "contract": "MNQ_09-26",
+    "file": "MNQ_09-26_ticks_ext.parquet",
+    "dataset": "nicolasbuttaro/edgelab-ticks-nt8-reexport-20261005",
+    "version": 2,
+    "sha256": "5b234b0f94888c44ba5e68fb0aaf2b52138c70d9485daa2875fa028f8ab24b77",
+    "bytes": 1251646827,
+    "rows": 110632331,
+    "max_ns": 1789738200000000000
+  },
+  "training_sessions": [
+    "2026-06-15",
+    "2026-06-16"
+  ],
+  "evaluation_sessions": [
+    "2026-06-17",
+    "2026-06-18",
+    "2026-06-19",
+    "2026-06-22",
+    "2026-06-23",
+    "2026-06-24",
+    "2026-06-25",
+    "2026-06-26",
+    "2026-06-29",
+    "2026-06-30",
+    "2026-07-01",
+    "2026-07-02"
+  ],
+  "calibration_sha256": "3f88b2b5f12a9ac528e2b433cb36002b0f7df49135993fc73be151bc75717bc9",
+  "ridge_lambda": 0.01,
+  "models": [
+    "PRIOR",
+    "CONTINUOUS",
+    "DENSITY",
+    "GEOMETRY_CC",
+    "GEOMETRY",
+    "ARRIVAL_CC",
+    "ARRIVAL",
+    "INTERACTION_CC",
+    "INTERACTION",
+    "MIRROR_FULL"
+  ],
+  "max_session_ticks": 8000000,
+  "max_total_ticks": 100000000,
+  "max_anchors": 250000,
+  "max_scan_elements_per_session": 150000000,
+  "max_scan_elements_total": 1800000000,
+  "max_aggregate_bytes": 4194304,
+  "wall_seconds": 3600,
+  "cpu_seconds": 3600,
+  "rss_bytes": 4294967296,
+  "address_space_bytes": 6442450944,
+  "transport_wall_seconds": 600,
+  "parent_wall_seconds": 4500,
+  "requested_notebook_timeout_seconds": 5400,
+  "window_seconds": 20,
+  "context_seconds": 60,
+  "grid_seconds": 5,
+  "max_gap_ns": 2000000000,
+  "response_horizon_ns": 60000000000,
+  "barrier_min_ticks": 4,
+  "barrier_trailing_range_multiplier": 0.5,
+  "minimum_signed_volume_coverage": 0.8,
+  "holdout": false,
+  "pnl": false,
+  "inference": false,
+  "confirmation": false,
+  "zone_detectors": true,
+  "raw_export": false,
+  "canonical_brain_write": false,
+  "private_rows_persisted": false,
+  "fitting_outcomes_previously_inspected": true,
+  "scope_extension": "FIRST_12_WEEKDAY_RESEARCH_TRADE_DATES_AFTER_JUNE16_INCLUDING_JUNE19_HOLIDAY_NO_REPLACEMENT",
+  "metric": "SUM_THREE_CLASS_BRIER_EQUAL_SESSION_MEAN",
+  "feature_standardization": "TRAIN_ONLY_EQUAL_SESSION_WEIGHTS",
+  "capacity_control": "17_GEOMETRY_14_ARRIVAL_4_FLOW_INTERACTION_FIXED_CONTINUOUS_SMOOTH_BASES",
+  "session_ranges": [
+    {
+      "trade_date": "2026-06-15",
+      "start_ns": 1781474400000000000,
+      "end_ns": 1781560800000000000
+    },
+    {
+      "trade_date": "2026-06-16",
+      "start_ns": 1781560800000000000,
+      "end_ns": 1781647200000000000
+    },
+    {
+      "trade_date": "2026-06-17",
+      "start_ns": 1781647200000000000,
+      "end_ns": 1781733600000000000
+    },
+    {
+      "trade_date": "2026-06-18",
+      "start_ns": 1781733600000000000,
+      "end_ns": 1781820000000000000
+    },
+    {
+      "trade_date": "2026-06-19",
+      "start_ns": 1781820000000000000,
+      "end_ns": 1781906400000000000
+    },
+    {
+      "trade_date": "2026-06-22",
+      "start_ns": 1782079200000000000,
+      "end_ns": 1782165600000000000
+    },
+    {
+      "trade_date": "2026-06-23",
+      "start_ns": 1782165600000000000,
+      "end_ns": 1782252000000000000
+    },
+    {
+      "trade_date": "2026-06-24",
+      "start_ns": 1782252000000000000,
+      "end_ns": 1782338400000000000
+    },
+    {
+      "trade_date": "2026-06-25",
+      "start_ns": 1782338400000000000,
+      "end_ns": 1782424800000000000
+    },
+    {
+      "trade_date": "2026-06-26",
+      "start_ns": 1782424800000000000,
+      "end_ns": 1782511200000000000
+    },
+    {
+      "trade_date": "2026-06-29",
+      "start_ns": 1782684000000000000,
+      "end_ns": 1782770400000000000
+    },
+    {
+      "trade_date": "2026-06-30",
+      "start_ns": 1782770400000000000,
+      "end_ns": 1782856800000000000
+    },
+    {
+      "trade_date": "2026-07-01",
+      "start_ns": 1782856800000000000,
+      "end_ns": 1782943200000000000
+    },
+    {
+      "trade_date": "2026-07-02",
+      "start_ns": 1782943200000000000,
+      "end_ns": 1783029600000000000
+    }
+  ],
+  "missing_session_policy": "REPORT_SOURCE_EMPTY_NO_REPLACEMENT_NO_OUTCOME_BASED_EXCLUSION",
+  "minimum_available_evaluation_sessions": 6,
+  "evaluation_outcomes_previously_inspected": true,
+  "warmup_start_ns": 1777698000000000000,
+  "warmup_policy": "ALL_OBSERVED_NATURAL_SESSIONS_IN_EXISTING_EXISTING_READ_START_BEFORE_TRAINING; NATIVE_HISTORY_NOT_SHORTENED",
+  "read_end_ns": 1783029600000000000,
+  "max_footprint_cells": 3000000,
+  "max_active_context": 20000,
+  "max_seen_context": 200000,
+  "max_query_hits": 20000,
+  "occupancy_unit": "CLOSED_INTEGER_HALF_TICK_CELLS_WITHIN_MIDQUOTE_PLUS_MINUS_CAUSAL_RESPONSE_BARRIER",
+  "primary_comparisons": [
+    "GEOMETRY_MINUS_GEOMETRY_CC",
+    "ARRIVAL_MINUS_ARRIVAL_CC",
+    "INTERACTION_MINUS_INTERACTION_CC"
+  ],
+  "secondary_comparisons": [
+    "DENSITY_MINUS_CONTINUOUS",
+    "INTERACTION_MINUS_MIRROR_FULL"
+  ],
+  "baseline_population": "IDENTICAL_PREVIOUS_ZONE_AND_MODEL_V4_USABLE_ANCHORS",
+  "touch_only_population": false,
+  "full_cartesian_coverage": false,
+  "automatic_model_selection": false,
+  "rows_or_snapshots_persisted": false,
+  "max_session_context_query_hits": 20000000,
+  "max_total_context_query_hits": 250000000,
+  "zone_specific_attribution": false,
+  "roster_sha256": "f9a20961ced1e474ab9c3e56a94f7c38ca6fd610d5d17e3807a40a94315085e1",
+  "max_common_anchors_per_session": 18000,
+  "max_session_capture_records": 400000,
+  "bar_specs": [
+    "tick:25",
+    "tick:200"
+  ],
+  "max_session_print_queries": 700000,
+  "max_session_print_level_queries": 50000000,
+  "max_total_print_queries": 10000000,
+  "max_total_print_level_queries": 600000000,
+  "scope": "SAME_SESSION_PRIMARY_BIRTHS_WITHIN_600S_NATIVE_BIGTRAP_REMOVALS_AVZ_RECOGNITION_NOT_LIVENESS",
+  "arrival_scope": "POST_BIRTH_OBSERVED_PRINTS_OF_CURRENT_NEAREST_EXPOSURE_NOT_FULL_PHYSICAL_PATH",
+  "mirror_null_scope": "SAME_TRIGGER_BIRTH_AVAILABILITY_MIDQUOTE_REFLECTION_NOT_ZONE_FREE_INDEPENDENT_CREATOR",
+  "exposure_age_seconds": 600,
+  "model_count_including_shared_baselines": 146,
+  "private_context_tensor_dtype": "float64",
+  "bt2a_bucket_preprocessing_shared": false,
+  "optimization": "2_SHARED_BAR_SPECS_ONE_PRINT_INDEX_18_PROFILE_VIEWS_REUSED_FOR18PAIRS_SHARED_LABELS_BASELINES_NO_PAIR_GRAPH",
+  "max_aggregate_scope": "ONE_BOUNDED_JSON_NO_ROWS_MODELS_SNAPSHOTS_OR_LOG_EXPORT",
+  "prior_failed_plan_sha256": "db73695c1846de91c1dbd2fe5ba389f1b79c861cb0969611ac22dfd1f756c1ec",
+  "prior_failed_kernel_id": 138532718,
+  "capture_retention": "BOUNDED_CAUSAL_MUTATION_BATCH_REPLAY_NO_WHOLE_SESSION_EVENT_STORE",
+  "retention_equivalence": "DENSE_INVENTED_FULL_SESSION_REFERENCE_VS_STREAMING_ACTUAL_MIRROR_FEATURES_AND_SCORES_EXACT",
+  "prior_v2_failed_plan_sha256": "cc147af7fdebc8b7b3f36ca8ef7b9e59503b3f074a6600ea3c83833cfb9665e1",
+  "prior_v2_failed_kernel_id": 138536395,
+  "max_pending_mutation_records": 400000,
+  "streaming_native_prefix": true
+}

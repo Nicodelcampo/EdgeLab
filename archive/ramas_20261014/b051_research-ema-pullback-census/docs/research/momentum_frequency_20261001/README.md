@@ -1,0 +1,5 @@
+# Reproduction boundary
+
+census.py calls past_price_producer.py with the exact frozen past-price functions and private catalog/expected hashes. Public past_price_producer_functions.py exposes these functions without embedding the full private dataset metadata. To reproduce exactSHA, obtain original frozen source from private Kaggle v2 or authorized private delivery; partial public module is NOT an exact hash substitute. Baseline_EVENTS_PRIVATE.json contains only original signalidentity/direction/U; not published. No raw/quotes/PnL ledgers/transport URLs here. Aggregateoutputs are auditable; full replication requires theseprivate dependencies. Native tools fixed to foundation3913149 loaded under repo/; their hashes in manifest. Sourceavailablein canonicalrepo, no newduplicatebook/statsengine.
+
+All36profiles are reservedintents, not executions. frequency_table.csv key=(asset,TFmin,K,Hmin), zero missing and zero duplicate rows. profile_table.txt mean values are unweighted diagnostic across distinct profiles, not portfolioPnL or pooled independenttrades.

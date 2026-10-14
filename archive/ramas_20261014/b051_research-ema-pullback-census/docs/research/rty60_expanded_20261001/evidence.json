@@ -1,0 +1,117 @@
+{
+  "population_rows": [
+    {
+      "population": "Original54",
+      "sessions": 54,
+      "trades": 243,
+      "mean_trades_per_session": 4.5,
+      "median_trades_per_session": 4.5,
+      "net_usd_per_trade": 69.20370370370371,
+      "net_U_per_trade": 0.3352842769099956
+    },
+    {
+      "population": "Adicional121",
+      "sessions": 121,
+      "trades": 535,
+      "mean_trades_per_session": 4.421487603305785,
+      "median_trades_per_session": 4.0,
+      "net_usd_per_trade": -20.135514018691595,
+      "net_U_per_trade": -0.09801514636704463
+    },
+    {
+      "population": "Full175",
+      "sessions": 175,
+      "trades": 778,
+      "mean_trades_per_session": 4.445714285714286,
+      "median_trades_per_session": 4.0,
+      "net_usd_per_trade": 7.768637532133669,
+      "net_U_per_trade": 0.03732130589043706
+    }
+  ],
+  "visual_plan": {
+    "finding": "The positive pilot mean falls sharply in expanded development; laterquarter/contract losses invalidate stability",
+    "comparisons": [
+      {
+        "grain": "disjoint original54/additional121; full175 aggregate",
+        "population": "complete778quotedtrades; no missing exits",
+        "unit": "USD/trade and trades/session",
+        "disposition": "table",
+        "reason": "answers frequency/net value without treating pooled sample as independent confirmation"
+      },
+      {
+        "grain": "chronological175eligible dates",
+        "population": "onecontract frozen RTY60 ledger",
+        "unit": "cumulative netUSD at closedtrades, NOT marktomarket",
+        "disposition": "chart",
+        "reason": "preserve gains, turningpoint and drawdown hidden by aggregate"
+      },
+      {
+        "grain": "naturalcontract fourfolds",
+        "population": "same175dates, unequal47/58/60/10 sessions",
+        "unit": "netUSD/trade",
+        "disposition": "chart",
+        "reason": "contract03biggerwindowpositive but06/09negative and12dominant; cannot carry forward old03subset claim"
+      },
+      {
+        "grain": "quarters3",
+        "population": "same175dates",
+        "unit": "netUSD/trade",
+        "disposition": "table",
+        "reason": "temporal declineQ4positive,Q1flat,Q2negative contextual lookup alongside trajectory"
+      }
+    ],
+    "no_portfolio": true,
+    "net_mean_inference_not_positive": true
+  },
+  "audit": {
+    "ledger_rows": 778,
+    "original54_trades_exact_signal_quote_PNL_parity": 243,
+    "additional121_trades": 535,
+    "175_dates_crossfoot": true,
+    "12_prefix_checks": true,
+    "independent_scalar_raw_samples": [
+      {
+        "contract": "RTY 06-26",
+        "signal_day": "20260317",
+        "scalar_bar_and_first_quote_selection_pass": true
+      },
+      {
+        "contract": "RTY 06-26",
+        "signal_day": "20260429",
+        "scalar_bar_and_first_quote_selection_pass": true
+      },
+      {
+        "contract": "RTY 06-26",
+        "signal_day": "20260612",
+        "scalar_bar_and_first_quote_selection_pass": true
+      },
+      {
+        "contract": "RTY 09-26",
+        "signal_day": "20260616",
+        "scalar_bar_and_first_quote_selection_pass": true
+      },
+      {
+        "contract": "RTY 09-26",
+        "signal_day": "20260624",
+        "scalar_bar_and_first_quote_selection_pass": true
+      },
+      {
+        "contract": "RTY 09-26",
+        "signal_day": "20260630",
+        "scalar_bar_and_first_quote_selection_pass": true
+      }
+    ],
+    "scope": "six raw samples, not exhaustive independent quote replay; recorded arithmetic all778",
+    "ledger_sha256": "c264448c8bdbbcfcfd1c7a99f000680e593875bd1f6d827ca3fa29b7b34caa86",
+    "results_full_private_sha256": "7212b45dffd361d818ece3f6c253643645deb6463b1311ca4d3a92f820b0e8ac",
+    "clock_quote_age_fills_parity_NOT_certified": true,
+    "holdout_outcomes_opened": false
+  },
+  "findings": {
+    "frequency_full": 4.445714285714286,
+    "net_full_USD": 7.768637532133669,
+    "net_additional_USD": -20.135514018691595,
+    "without_best5_total_USD": -4023.5,
+    "studentized_lower_netU": -0.19410665883470327
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "study": "RTY_NO_L2_SCREEN_6_20260930",
+  "scope": "Exploratory transport screen, not strategy confirmation",
+  "authorization": "Nico: choose asset/timeframe and run several Kaggle analyses without L2; no protected reserves opened",
+  "source": "nicolasbuttaro/edgelab-ticks-nt8-canonical/1",
+  "source_repo_commit": "391314907dec889599493c4a38282171d94a2f25",
+  "north_star_body_declared_sha": "05df5c7c3ec4cf3a1f14f62bb8e2ade4b61dd29203b610a308964ac46995f421",
+  "north_star_file_sha": "ffd0fe3ae52eefafe29485fa4a0966813abcbfd1f50f73c76231e5a1c1516afb",
+  "catalog_sha": "cc3f1c4d87267e75e8b43e0e96bf1b6f332ed3022a68edd87c7a53e5f28ddc73",
+  "catalog_semantic_equal_to_repo": true,
+  "catalog_repo_bytes_sha": "c990dbb3fd74ae0bf4dfb7fb25b939f42127df11f3da21913a30a882ffdb9306",
+  "catalog_byte_difference": "formatting only, parsed objects equal",
+  "asset": "RTY",
+  "timeframes_minutes": [
+    5,
+    15
+  ],
+  "families": {
+    "MOM60": "60-minute close change >= prior ATR20; follow sign",
+    "VWAP2": "Close >=2 prior ATR20 from RTH cumulative traded-volume VWAP; oppose sign",
+    "ORFAIL30": "First close >=1 tick outside 09:30–10:00 ET range, then inside within30min; oppose breakout"
+  },
+  "decision": "Completed-bar close, start >=10:00 ET and close <=13:45 ET",
+  "entry": "First tick strictly after signal+250ms, within1s; observed bid/ask aggressive side",
+  "exit": "First tick >=entry+2h, within1s; observed opposite bid/ask side",
+  "no_overlap": "7201s blocked per cell; ORFAIL first attempt only",
+  "costs": {
+    "roundtrip_commission_usd_assumed": 4.5,
+    "tick_value_usd": 5,
+    "slippage_ticks_per_side": 1,
+    "extra_adverse_ticks_roundtrip": 2
+  },
+  "partitions": {
+    "discovery": "Included CME dates <=20251231, 56 sessions",
+    "internal_validation": "Jan–Mar2026,60 sessions, only discovery survivors; not virgin nor holdout",
+    "closed": "April onward; July holdout not decoded"
+  },
+  "population": "Canonical prior-session contract catalog; complete RTH5/15min grid; max RTH interprint gap60s; technical entry/exit/quote failures censored and counted",
+  "budget": "6 cells, 2 primary endpoints each =12 Bonferroni one-sided bounds; no threshold search",
+  "endpoints": [
+    "Net ticks/trade under assumed costs",
+    "Signed midpoint change vs randomized direction at identical selected decision/exit times"
+  ],
+  "inference": "20,000 session bootstrap seed20260930; minimum30trades and20active sessions; both adjusted lower bounds >0 to screen-pass; survivor validation multiplicity2*n",
+  "power": "MDE80 normal approximation from clustered bootstrap SE; not certified prospective power",
+  "provenance": "Compressed file hashes verified against AUDIT_MANIFEST and files.sha256. Original manifests carry pre-recompression hashes, recorded separately",
+  "brain_lessons": [
+    "No rescue of saturated historical grids",
+    "Same as-of event times for directional control",
+    "Avoid geometry-biased IPC controls",
+    "Minimum sample and session-clustered uncertainty"
+  ],
+  "rejected_before_outcomes": {
+    "ZB": "regime manifest0eligible; no bypass",
+    "6J": "regime manifest0eligible; no bypass"
+  },
+  "limits": [
+    "No L2",
+    "No actual fills or quote-age certification",
+    "Assumed tariffs",
+    "Development previously exposed",
+    "No live or holdout confirmation"
+  ]
+}

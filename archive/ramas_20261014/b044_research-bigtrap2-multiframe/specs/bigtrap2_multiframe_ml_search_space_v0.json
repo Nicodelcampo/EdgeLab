@@ -1,0 +1,402 @@
+{
+  "schema_version": "bigtrap2_multiframe_ml_search_space_v0",
+  "status": "DRAFT_NON_EXECUTABLE",
+  "created_at": "2026-08-11",
+  "branch": "research/bigtrap2-multiframe-ml",
+  "execution": {
+    "execution_authorized": false,
+    "outcomes_accessed": false,
+    "pnl_accessed": false,
+    "holdout_opened": false,
+    "authorized_now": [
+      "documentation",
+      "scaffolding",
+      "static_validation",
+      "target_free_performance_benchmarks"
+    ]
+  },
+  "north_star": {
+    "principle": "explore_wide_validate_narrow_deploy_only_net_of_costs",
+    "objective": "find_a_reproducible_statistically_valid_economically_viable_and_realtime_implementable_edge",
+    "non_objectives": [
+      "maximize_in_sample_metric",
+      "select_best_single_cell",
+      "treat_feature_importance_as_evidence",
+      "optimize_on_holdout"
+    ]
+  },
+  "partitions": {
+    "research_end": "2026-06-30",
+    "holdout_start": "2026-07-01",
+    "holdout_end": "2026-12-31",
+    "group_unit": "session_id",
+    "holdout_policy": "physically_absent_from_exploratory_kaggle_dataset",
+    "future_partitions": [
+      "discovery",
+      "estimation",
+      "locked_holdout",
+      "forward_paper"
+    ]
+  },
+  "search_strategy": {
+    "mode": "hierarchical_families_not_one_flat_cartesian_product",
+    "order": [
+      "single_frame_landscape",
+      "multiframe_operators",
+      "feature_families",
+      "model_families",
+      "indicator_parameter_families",
+      "economic_gate",
+      "locked_confirmation"
+    ],
+    "selection_rule": "stable_plateau_and_out_of_fold_incremental_value",
+    "experiment_ledger_required": true,
+    "failed_and_null_runs_retained": true
+  },
+  "data_scope": {
+    "initial_instrument": "6E",
+    "initial_contract_policy": "research_only_pre_holdout",
+    "future_instruments": ["ES", "NQ", "YM"],
+    "canonical_unit": "tick",
+    "analysis_units": [
+      "tick",
+      "bar",
+      "footprint",
+      "absorption_event",
+      "zone",
+      "causal_window",
+      "session",
+      "contract",
+      "regime"
+    ],
+    "raw_ticks_on_kaggle": false,
+    "raw_tick_upload_gate": "verify_data_vendor_license"
+  },
+  "bar_specs": {
+    "baseline": ["time:1"],
+    "tick_frames_catalog": [5, 8, 10, 13, 16, 21, 25, 32, 40, 50, 64, 75, 100, 128, 150, 200, 256],
+    "tick_1_initially_excluded": true,
+    "representative_nt8_parity_candidates": [5, 10, 25, 50, 100, 200],
+    "future_families_catalog": [
+      {"family": "time", "status": "reference_only"},
+      {"family": "volume", "status": "backlog_separate_protocol"},
+      {"family": "dollar", "status": "backlog_separate_protocol"},
+      {"family": "event", "status": "backlog_separate_protocol"}
+    ]
+  },
+  "retrospective_windows_seconds_catalog": [5, 10, 15, 30, 60, 90, 120, 300],
+  "multiframe_operators_catalog": [
+    "coexistence",
+    "same_side_consensus",
+    "opposite_side_divergence",
+    "price_overlap",
+    "fine_zone_inside_coarse_zone",
+    "temporal_confirmation",
+    "cross_scale_persistence",
+    "ordered_context_zone_trigger",
+    "frame_count",
+    "specific_frame_identity",
+    "marginal_frame_contribution"
+  ],
+  "causality": {
+    "required": [
+      "event.available_at_ns <= cutoff_ns",
+      "bar.end_ns <= cutoff_ns",
+      "target_start_ns > cutoff_ns"
+    ],
+    "open_coarse_bars_forbidden": true,
+    "backward_asof_join_only": true,
+    "max_label_horizon_drives_embargo": true
+  },
+  "indicator_parameter_families_catalog": {
+    "footprint": [
+      "ticks_per_row",
+      "aggressor_classification_policy"
+    ],
+    "detection": [
+      "imbalance_mode",
+      "imbalance_ratio",
+      "use_wick_filter",
+      "wick_zone_pct",
+      "min_delta_filter",
+      "min_trap_volume",
+      "min_export_volume"
+    ],
+    "lifecycle": [
+      "invalidation_mode",
+      "max_age_bars",
+      "max_touches"
+    ],
+    "excluded_visual": [
+      "colors",
+      "opacity",
+      "labels",
+      "dashboard",
+      "render_limits"
+    ],
+    "policy": "vary_one_parameter_family_at_a_time_after_tickframe_landscape"
+  },
+  "feature_families_catalog": {
+    "event": [
+      "side",
+      "strength",
+      "aggressive_volume",
+      "bar_volume",
+      "delta",
+      "price_levels",
+      "event_age"
+    ],
+    "geometry": [
+      "height_ticks",
+      "distance_to_price_ticks",
+      "relative_lo_ticks",
+      "relative_hi_ticks",
+      "overlap_ticks",
+      "containment_ratio"
+    ],
+    "multiframe": [
+      "active_frame_count",
+      "active_frame_set",
+      "same_side_count",
+      "opposite_side_count",
+      "temporal_dispersion_ms",
+      "strength_sum",
+      "strength_max",
+      "volume_sum",
+      "overlap_graph_features",
+      "frame_order",
+      "persistence_across_scales"
+    ],
+    "market_state": [
+      "realized_volatility",
+      "sigma60",
+      "volume_regime",
+      "range_regime",
+      "trend_state",
+      "liquidity_proxy",
+      "time_of_session",
+      "day_of_week",
+      "contract_age",
+      "roll_proximity"
+    ],
+    "history": [
+      "prior_touch_count",
+      "zone_age",
+      "time_since_last_event",
+      "event_density",
+      "active_zone_count",
+      "distance_to_nearest_zone"
+    ],
+    "quality": [
+      "missingness",
+      "sequence_integrity",
+      "classification_coverage",
+      "oracle_parity_status",
+      "source_latency"
+    ],
+    "future_catalog": [
+      "cross_instrument_context",
+      "calendar_news_context",
+      "order_book_features"
+    ]
+  },
+  "target_families_catalog": {
+    "status": "catalog_only_requires_separate_authorization",
+    "target_free": [
+      "touch",
+      "revisit",
+      "time_to_touch",
+      "lifecycle_hazard",
+      "competing_risk"
+    ],
+    "predictive": [
+      "first_passage_favorable_before_adverse",
+      "future_signed_excursion",
+      "future_absolute_excursion",
+      "future_return_quantiles",
+      "future_volatility",
+      "time_to_reaction",
+      "probability_cost_threshold_is_covered"
+    ],
+    "economic": [
+      "net_expectancy",
+      "net_utility",
+      "drawdown_contribution",
+      "capacity_adjusted_return"
+    ]
+  },
+  "model_families_catalog": {
+    "mandatory_baselines": [
+      "unconditional_rate",
+      "session_time_baseline",
+      "best_single_frame",
+      "regularized_logistic_or_linear"
+    ],
+    "interpretable": [
+      "GAM",
+      "ExplainableBoostingMachine",
+      "small_tree",
+      "RuleFit"
+    ],
+    "boosting": [
+      "LightGBM",
+      "XGBoost",
+      "CatBoost"
+    ],
+    "time_to_event": [
+      "KaplanMeier",
+      "Cox_if_assumptions_hold",
+      "competing_risks",
+      "survival_boosting"
+    ],
+    "uncertainty": [
+      "cluster_bootstrap",
+      "conformal_prediction",
+      "hierarchical_bayesian_optional"
+    ],
+    "high_complexity_backlog": [
+      "sequence_models",
+      "temporal_convolution",
+      "transformer",
+      "deep_ensemble"
+    ],
+    "complexity_gate": "must_beat_simpler_oof_baseline_by_preregistered_increment"
+  },
+  "validation": {
+    "outer_split": "purged_grouped_by_session",
+    "inner_split": "nested_purged_grouped_by_session",
+    "random_row_split_forbidden": true,
+    "embargo": "at_least_max_label_horizon",
+    "oof_predictions_required": true,
+    "hyperparameter_tuning_inside_inner_folds_only": true,
+    "negative_controls": [
+      "within_session_label_permutation",
+      "time_shifted_features",
+      "random_frame_sets",
+      "truth_known_synthetic_data"
+    ],
+    "multiplicity": [
+      "effective_number_of_tests",
+      "SPA_or_StepM",
+      "maxT_or_RomanoWolf",
+      "FDR_for_exploratory_catalog",
+      "PBO_CSCV",
+      "DeflatedSharpeRatio_when_economic_metrics_open"
+    ],
+    "stability": [
+      "sign_stability",
+      "effect_size_stability",
+      "calibration_stability",
+      "parameter_neighbor_plateau",
+      "session_and_regime_dispersion",
+      "leave_one_contract_out_when_available"
+    ]
+  },
+  "metrics_catalog": {
+    "data_and_semantics": [
+      "row_count",
+      "session_count",
+      "coverage",
+      "missingness",
+      "sequence_integrity",
+      "timestamp_parity",
+      "geometry_parity",
+      "lifecycle_parity"
+    ],
+    "statistical": [
+      "effect_size",
+      "clustered_or_HAC_standard_error",
+      "confidence_interval",
+      "MDE",
+      "power",
+      "permutation_p_value",
+      "stability_frequency"
+    ],
+    "classification": [
+      "log_loss",
+      "Brier_score",
+      "ROC_AUC",
+      "PR_AUC",
+      "calibration_intercept",
+      "calibration_slope",
+      "expected_calibration_error",
+      "lift_vs_baseline"
+    ],
+    "regression": [
+      "MAE",
+      "RMSE",
+      "quantile_loss",
+      "R2_out_of_sample",
+      "directional_accuracy_secondary"
+    ],
+    "survival": [
+      "concordance",
+      "integrated_Brier_score",
+      "cause_specific_calibration"
+    ],
+    "robustness": [
+      "PBO",
+      "DSR",
+      "SPA_StepM",
+      "maxT_adjusted_significance",
+      "parameter_plateau_width",
+      "worst_regime_effect"
+    ],
+    "economic_gated": [
+      "net_expectancy",
+      "profit_factor_with_uncertainty",
+      "turnover",
+      "max_drawdown",
+      "Sharpe",
+      "Sortino",
+      "Calmar",
+      "risk_of_ruin",
+      "capacity",
+      "base_adverse_severe_cost_sensitivity"
+    ],
+    "operational": [
+      "latency_ms",
+      "fill_rate",
+      "slippage_ticks",
+      "research_nt8_signal_agreement",
+      "runtime_seconds",
+      "peak_ram_bytes"
+    ]
+  },
+  "economic_gate": {
+    "status": "closed",
+    "requires_separate_preregistration": true,
+    "cost_scenarios": ["base", "adverse", "severe"],
+    "required_dimensions": [
+      "commissions",
+      "fees",
+      "spread",
+      "slippage",
+      "latency",
+      "fill_probability",
+      "market_impact",
+      "turnover",
+      "capacity"
+    ],
+    "classification_if_gross_only": "not_an_edge",
+    "classification_if_net_nonpositive": "SUB_FEE"
+  },
+  "promotion_funnel": [
+    "REGISTERED",
+    "SEMANTIC_PASS",
+    "DISCOVERY_ONLY",
+    "PREDICTIVE_REPLICATED",
+    "ECONOMIC_PASS",
+    "HOLDOUT_PASS",
+    "FORWARD_PASS",
+    "DEPLOYABLE"
+  ],
+  "terminal_nonpromotion_states": [
+    "ABSTAIN",
+    "REFUTED",
+    "UNSTABLE",
+    "SUB_FEE",
+    "NOT_IMPLEMENTABLE",
+    "DATA_INSUFFICIENT"
+  ]
+}

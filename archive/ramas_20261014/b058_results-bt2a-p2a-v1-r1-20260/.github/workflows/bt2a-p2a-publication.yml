@@ -1,0 +1,40 @@
+name: BT2A P2-A publication integrity
+
+on:
+  push:
+    branches:
+      - results/bt2a-p2a-v1-r1-20260827
+    paths:
+      - 'docs/research/bt2a_p2a_v1_r1_20260827/**'
+      - 'tests/research/test_bt2a_p2a_repository_publication.py'
+      - '.github/workflows/bt2a-p2a-publication.yml'
+  pull_request:
+    paths:
+      - 'docs/research/bt2a_p2a_v1_r1_20260827/**'
+      - 'tests/research/test_bt2a_p2a_repository_publication.py'
+      - '.github/workflows/bt2a-p2a-publication.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bt2a-p2a-publication-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: reconstruct and verify publication
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Verify result, inventories, counts and firewall
+        run: python tests/research/test_bt2a_p2a_repository_publication.py

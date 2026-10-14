@@ -1,0 +1,63 @@
+{
+  "schema_version": "bt2a_nq_selected_configuration_v1",
+  "status": "INFORMAL_EARLY_STOP_NQ_CONFIGURATION",
+  "formal_status_note": "This is NOT SELECTED_STABLE_NQ_CONFIGURATION. The frozen selection protocol (specs/bt2a_nq_target_free_selection_v1.draft.json, eligibility.minimum_contracts_with_events=4) and its finalize()/rank_summaries() were never run to completion: only 2 of 5 NQ contracts (NQ 09-25, NQ 12-25) were computed on Kaggle before Nico stopped the campaign (docs/research/DECISION_NQ_SELECTION_EARLY_STOP_2026-08-29.md). structural_score = 0.45*neighbor_median_exact_jaccard + 0.25*session_coverage + 0.20*(1-contract_hhi) + 0.10*neighbor_count_ratio_stability was never computed for this config. Any consumer must not treat this file as satisfying the formal eligibility rule.",
+  "config_id": "bt2a_nq_7e84981882b0b380",
+  "stage": "oat",
+  "axis": "MinStackedRows",
+  "params": {
+    "TapeWindowTicks": 25,
+    "ScoreMode": "AbsMagnitude",
+    "AbsorptionPct": 90.0,
+    "AbsorptionLookback": 500,
+    "MinHistoryBuckets": 200,
+    "RequireFlowSideMatch": true,
+    "ImbalanceMode": "Diagonal",
+    "TrapVolumeSource": "AggressiveSide",
+    "TicksPerRow": 1,
+    "ImbalanceRatio": 3.0,
+    "MinStackedRows": 1,
+    "MinTrapFrac": 0.2,
+    "MinDeltaFilter": 0.0,
+    "MinTrapVolume": 0.0,
+    "UseWickFilter": true,
+    "WickZonePct": 30.0,
+    "MinExportVolume": 1.0,
+    "InvalidationMode": "CloseThrough",
+    "MaxAgeBars": 2000,
+    "MaxTouches": 0,
+    "DrawZoneBand": true
+  },
+  "informal_evidence": {
+    "contracts_completed": [
+      "NQ 09-25",
+      "NQ 12-25"
+    ],
+    "contracts_not_run": [
+      "NQ 03-26",
+      "NQ 06-26",
+      "NQ 09-26"
+    ],
+    "n_events_by_contract": {
+      "NQ 09-25": 18538,
+      "NQ 12-25": 44546
+    },
+    "n_events_total": 63084,
+    "metric_compared": "n_events (proxy only, not the formal structural_score)",
+    "spearman_rank_correlation_n_events_across_configs_between_the_2_completed_contracts": 0.976,
+    "top10_configs_by_n_events_identical_set_across_the_2_completed_contracts": true,
+    "decision_document": "docs/research/DECISION_NQ_SELECTION_EARLY_STOP_2026-08-29.md",
+    "decision_document_sha256": "5bc32f200edb26bee8a1756463445af60d11f9eb9f2483a248a151915a764c74"
+  },
+  "spec_file": "specs/bt2a_nq_target_free_selection_v1.draft.json",
+  "spec_file_sha256": "9cb7d77e4259da3e48a4392032441aab0f00b921d12ff979029c63baa94fc0b9",
+  "spec_frozen_commit": "0f38ed542a35372dcb0dfe1f57a2d1ed6f29d703",
+  "target_free": true,
+  "authorization": {
+    "authorized_by": "Nico",
+    "authorized_date": "2026-08-29",
+    "authorization_note": "Explicit instruction to write this file using the already-obtained informal 2-contract evidence, for use as the K_ABS parameterization in the simplified NQ Gate 1 (BigTrap2Absorption, GC-style MFE-MAE design), without waiting for the formal 5-contract selection to close."
+  },
+  "downstream_use": "bt2a_gate1_nq_all5 K_ABS parameterization only",
+  "payload_sha256": "bde67943954822712061af02339919e235e6b167b18c451499a133f3b60b1e9b"
+}
