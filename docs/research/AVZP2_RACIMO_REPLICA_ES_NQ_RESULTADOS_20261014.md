@@ -38,6 +38,12 @@ Excursión máxima favorable (MFE) después de la salida, en ticks, antes de vol
 - La MFE es un techo no capturable: un target fijo realiza menos. **Con fricción de ES (≥ 1 tick de spread al entrar a mercado + comisión ≈ 0,3–0,4 tick + slippage en stops) la mediana de MFE casi se agota en costos.**
   Prior honesto: el efecto es real en probabilidad pero **chico en recorrido**; que sea económicamente neto es improbable con entrada a mercado y es una pregunta abierta con entrada pasiva.
 
+## Por qué NQ tiene tan pocos racimos: la barra de 25 operaciones no es la misma barra (medido, sin desenlaces)
+Rango mediano de una barra de 25 operaciones (contrato 06-26, release canónica, ≈250–400 mil barras): **ES 1 tick (media 1,66); NQ 11 ticks (media 12,6)**.
+Una franja de 30 ticks son ~30 barras de rango en ES y ~3 en NQ: **la definición "en ticks" y la barra "25t" no transportan geometría entre instrumentos**
+(el factor para equiparar sería ≈ 7–11×, es decir alturas de 200–330 ticks en NQ, lo que ya es otra hipótesis). Por eso la falla formal de NQ es de geometría/potencia y no un contraejemplo.
+Una réplica en NQ requiere **definir la barra por rango o tiempo equivalente** (p. ej. barras de rango constante o de 1–2 ticks de rango mediano). NO MEDIDO; propuesta para una campaña aparte con su propio manifiesto.
+
 ## Límites declarados
 - La release sólo tiene el contrato líder: las primeras 20 sesiones de cada contrato se excluyen (warm-up del umbral de zonas). ES: 193 sesiones evaluables.
 - Alturas en ticks, sin reescalar por volatilidad; no se probó (NO MEDIDO).
