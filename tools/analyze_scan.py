@@ -19,7 +19,7 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from edgelab.data.liquid_release.calendar_tz import (raw_hour_index, trade_date, violation_by_offset)  # noqa: E402
+from edgelab.data.liquid_release.calendar_tz import (in_break, raw_hour_index, trade_date, violation_by_offset)  # noqa: E402
 
 NS_S = 1_000_000_000
 
@@ -81,7 +81,16 @@ def tz_table(bins: pd.DataFrame, inv: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-def contract_day(bins: pd.DataFrame, inv: pd.DataFrame, tz: pd.DataFrame) -> pd.DataFrame:
+def _p(hist_row: np.ndarray, q: float) -> float:
+    tot = hist_row.sum()
+    if tot == 0:
+        return float("nan")
+    return float(np.searchsorted(np.cumsum(hist_row), q * tot, side="left"))
+
+
+def contract_day(bins: pd.DataFrame, inv: pd.DataFrame, tz: pd.DataFrame):
+    """Censo por (grupo de fuente, contrato, fecha de trading). Los ticks en pausa/fin de semana (según el huso verificado)
+    NO forman sesión: se cuentan aparte (`n_break`). Así un domingo previo a la apertura no fabrica una sesión."""
     meta = inv.set_index("id")[["group", "contract", "instrument", "kind"]]
     bins = bins.join(meta, on="source_id")
     off = tz.set_index("group")["best_offset_h"].to_dict()
@@ -89,12 +98,28 @@ def contract_day(bins: pd.DataFrame, inv: pd.DataFrame, tz: pd.DataFrame) -> pd.
     for grp, b in bins.groupby("group"):
         o = off[grp]
         naive = raw_hour_index(b["raw_date"].to_numpy(), b["raw_hour"].to_numpy())
-        b = b.assign(trade_date=trade_date(naive, o), utc_offset_h=o)
-        pieces.append(b)
+        pieces.append(b.assign(trade_date=trade_date(naive, o), utc_offset_h=o, in_break=in_break(naive, o)))
     allb = pd.concat(pieces, ignore_index=True)
+    H = np.array(allb["spread_hist"].tolist(), dtype=np.int64)
+    reg = ~allb["in_break"].to_numpy()
     sums = ["n", "vol", "n_vol_le0", "off_last", "off_bid", "off_ask", "noquote", "crossed", "locked", "last_gt_ask", "last_lt_bid"]
-    agg = allb.groupby(["group", "contract", "instrument", "kind", "trade_date", "utc_offset_h"], as_index=False).agg(
-        **{k: (k, "sum") for k in sums}, first_ts=("first_ts", "min"), last_ts=("last_ts", "max"))
+    for k in sums:
+        allb[k + "_reg"] = np.where(reg, allb[k], 0)
+    allb["n_break"] = np.where(reg, 0, allb["n"])
+    keys = ["group", "contract", "instrument", "kind", "trade_date", "utc_offset_h"]
+    agg = allb.groupby(keys, as_index=False).agg(
+        **{k + "_reg": (k + "_reg", "sum") for k in sums}, n_break=("n_break", "sum"),
+        n_all=("n", "sum"), first_ts=("first_ts", "min"), last_ts=("last_ts", "max"))
+    # histograma de spread (sólo horario regular) por clave
+    kid = allb.groupby(keys, sort=True).ngroup().to_numpy()
+    Hreg = np.zeros((kid.max() + 1, H.shape[1]), dtype=np.int64)
+    np.add.at(Hreg, kid[reg], H[reg])
+    order = allb.groupby(keys, sort=True).size().index.to_frame(index=False)
+    sp = pd.DataFrame({k: order[k] for k in keys})
+    sp["spread_p50"] = [_p(h, 0.50) for h in Hreg]
+    sp["spread_p99"] = [_p(h, 0.99) for h in Hreg]
+    sp["spread_n"] = Hreg.sum(1)
+    agg = agg.merge(sp, on=keys, how="left")
     return agg, allb
 
 
