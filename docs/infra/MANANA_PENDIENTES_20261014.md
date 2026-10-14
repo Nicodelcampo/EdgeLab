@@ -8,7 +8,7 @@
   (`load_manifest`, `read_asset`). Informe completo: `docs/infra/LIQUID_RELEASE_20261014.md`; D01–D23 en `ISSUE_RESOLUTION_LOG_20261014.json`.
 - Espacio de Kaggle etiquetado (41 datasets con prefijo de estado) e índice `KAGGLE_SPACE_INDEX.md/json` dentro de `edgelab-data-catalog`.
   **No se borró nada.** Candidatos a borrar mañana: los `[REEMPL]`, `[ARCHIVO]`, `[CUARENTENA]` (lista en el índice).
-- Rama local `data/liquid-release-20261014` con los commits; **no se pudo pushear** (git pide credenciales).
+- **Push hecho (14-oct, tras `gh auth login`):** rama `data/liquid-release-20261014` y research en `foundation/f0b-compatibility-probe`.
 
 ## Exports que faltan (detalle por contrato y rango: `MISSING_EXPORTS_20261014.md` / `.csv`)
 Se exportan con el AddOn `EdgeLabTickHistory` (un archivo por día, UTC).
@@ -23,4 +23,3 @@ Se exportan con el AddOn `EdgeLabTickHistory` (un archivo por día, UTC).
 1. Aprobar o ajustar la política de liquidez (hoy propuesta, `approved_by=None`).
 2. Licencia/redistribución de datos CME (ILA); mientras tanto todo privado.
 3. Calendario oficial CME (hoy derivado de los datos; D06 bloqueado hasta tenerlo).
-4. Credenciales git para pushear la rama.
