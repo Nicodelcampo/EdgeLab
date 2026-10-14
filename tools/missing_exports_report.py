@@ -73,6 +73,8 @@ def main():
             rows.append(dict(priority="P1", instrument=inst, contract=contract, first_trade_date=s, last_trade_date=e,
                              sessions=int(((g["trade_date"] >= s) & (g["trade_date"] <= e)).sum()),
                              reason="Incluida desde parquet derivado: falta el export original de texto (.Last.utc.txt por día) para verificar procedencia"))
+    # el período de la release arranca en 2025-07 (primer export disponible): lo anterior no es "faltante", es fuera de alcance
+    rows = [r for r in rows if r["last_trade_date"] >= 20250701]
     df = pd.DataFrame(rows, columns=["priority", "instrument", "contract", "first_trade_date", "last_trade_date", "sessions", "reason"])
     df = df.sort_values(["priority", "instrument", "contract", "first_trade_date"]).reset_index(drop=True)
     out = Path(a.out)
