@@ -12,3 +12,6 @@
 
 ## Línea de tendencia (precisión del usuario, 2026-10-13)
 La línea correcta es una **tangente**: en baja une máximos y el precio queda por debajo (en suba, une mínimos y el precio queda por encima); no puede estar «cruzada por cualquier lado». La EMA solo detecta la zona; la línea se ajusta sobre los extremos. Única referencia hecha a mano: la captura NQ 12-26 (13/10/2026 15:59), pendiente 0,877 px/px, reproducida por `fit_trendline` (0,878).
+
+## Principio de trabajo (usuario, 2026-10-14)
+Primero **conocimiento descriptivo** de las zonas; las hipótesis sobre el precio (continuación, atravesar la línea al volver, etc.) se posponen. Si las hipótesis no se plantean bien, el efecto puede anularse entre contextos distintos (cada contexto empuja en una dirección) y una prueba global daría cero. Orden: (1) anatomía y cómo terminan, (2) contextos y tipología, (3) secuencias, (4) recién entonces hipótesis separadas por contexto, pre-registradas. Código: `edgelab/research/ema_zone_desc.py`, estudio EMAZ-D1 (`tools/ema_zones_study.py` con `desc: true`). La tabla por zona es privada (no se commitea).
