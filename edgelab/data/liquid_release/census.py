@@ -17,7 +17,7 @@ import numpy as np
 import pandas as pd
 
 from edgelab.data.liquid_release.calendar_tz import in_break, raw_hour_index, trade_date
-from edgelab.data.liquid_release.dedupe import adjudicate, find_shifted_duplicates
+from edgelab.data.liquid_release.dedupe import adjudicate, find_shifted_duplicates, refine_ambiguous
 
 HOLDOUT_FIRST_TRADE_DATE = 20261001
 OK_VERDICTS = ("UTC_VERIFIED", "INSUFFICIENT_EVIDENCE", "UTC_WITH_ANOMALIES")
@@ -76,6 +76,10 @@ def annotate(bins: pd.DataFrame, tz: pd.DataFrame):
         drop = set()
         if len(d):
             adj = adjudicate(d, {(r.raw_date, r.raw_hour): bool(r.in_break) for r in b.itertuples()})
+            inst = b["instrument"].iloc[0]
+            peers = bins[(bins["instrument"] == inst) & (bins["group"] != grp)]
+            peer_n = peers.groupby(["raw_date", "raw_hour"])["n"].sum().to_dict()
+            adj = refine_ambiguous(adj, peer_n)
             adj.insert(0, "group", grp)
             dup_tables.append(adj)
             drop = {(r.drop_date, r.drop_hour) for r in adj.itertuples() if r.verdict != "AMBIGUOUS"}

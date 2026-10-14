@@ -2,7 +2,7 @@ import unittest
 
 import pandas as pd
 
-from edgelab.data.liquid_release.dedupe import adjudicate, find_shifted_duplicates
+from edgelab.data.liquid_release.dedupe import adjudicate, find_shifted_duplicates, refine_ambiguous
 
 
 def _bin(d, h, n, **kw):
@@ -32,6 +32,18 @@ class Dedupe(unittest.TestCase):
         bins = pd.DataFrame([_bin(20260617, 3, 10), _bin(20260617, 6, 10),               # n < min_n
                              _bin(20260617, 18, 500), _bin(20260617, 21, 500, fp_px=1)])  # contenido distinto
         self.assertEqual(len(find_shifted_duplicates(bins)), 0)
+
+    def test_ambiguo_se_resuelve_con_actividad_de_pares(self):
+        bins = pd.DataFrame([_bin(20260619, 14, 8003), _bin(20260619, 17, 8003)])
+        a = adjudicate(find_shifted_duplicates(bins), {})
+        self.assertEqual(a.iloc[0]["verdict"], "AMBIGUOUS")
+        # los pares operan a las 14 y NO a las 17 (cierre temprano): la copia es espuria
+        r = refine_ambiguous(a, {(20260619, 14): 5000})
+        self.assertEqual(r.iloc[0]["verdict"], "COPY_IS_LATER_NO_PEER_ACTIVITY")
+        self.assertEqual(int(r.iloc[0]["drop_hour"]), 17)
+        # si los pares también operan a las 17 no hay evidencia: sigue ambiguo
+        r2 = refine_ambiguous(a, {(20260619, 14): 5000, (20260619, 17): 4000})
+        self.assertEqual(r2.iloc[0]["verdict"], "AMBIGUOUS")
 
 
 if __name__ == "__main__":

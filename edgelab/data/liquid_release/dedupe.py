@@ -49,3 +49,18 @@ def adjudicate(dups: pd.DataFrame, in_break: dict) -> pd.DataFrame:
         rows.append(dict(**r._asdict(), verdict=verdict, drop_date=None if drop is None else drop[0],
                          drop_hour=None if drop is None else drop[1]))
     return pd.DataFrame(rows).drop(columns=["Index"], errors="ignore")
+
+
+def refine_ambiguous(adj: pd.DataFrame, peer_n: dict) -> pd.DataFrame:
+    """Resuelve AMBIGUOUS con evidencia del resto del mercado. peer_n[(raw_date, raw_hour)] = ticks de OTRAS fuentes del mismo
+    activo (otros contratos u otras exportaciones) en esa hora. Si en la hora de la copia no hay actividad de pares y en la hora
+    del original sí, la copia es espuria (p. ej. después del cierre temprano de un feriado). Si no hay evidencia, sigue AMBIGUOUS."""
+    adj = adj.copy()
+    for i, r in adj.iterrows():
+        if r["verdict"] != "AMBIGUOUS":
+            continue
+        peer_copy = peer_n.get((r["copy_date"], r["copy_hour"]), 0)
+        peer_orig = peer_n.get((r["orig_date"], r["orig_hour"]), 0)
+        if peer_copy == 0 and peer_orig > 0:
+            adj.loc[i, ["verdict", "drop_date", "drop_hour"]] = ["COPY_IS_LATER_NO_PEER_ACTIVITY", r["copy_date"], r["copy_hour"]]
+    return adj
