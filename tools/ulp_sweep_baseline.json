@@ -508,19 +508,19 @@
     },
     "HFTZonesNQPureV4.cs :: double retro = z.Direction == 1 ? z.Upper - z.EndPrice : z.EndPrice - z.Lower;": {
       "veredicto": "FUERA_DE_ALCANCE",
-      "evidencia": "ciclo de vida de DIBUJO de la zona (Drawn/AwayResolved/VShapePct): no esta portado a Python ni entra en el export de eventos de paridad. Triaje 2026-10-14."
+      "evidencia": "ciclo de vida de DIBUJO de la zona (Drawn/AwayResolved/VShapePct): no esta portado a Python ni entra en el export de eventos de paridad. Triaje 2026-10-14. MEDIDO (forma B): 0/265.205 a tick 0,25; ~0,2 % a tick 0,1; sólo afecta el ciclo de vida de dibujo, no el export de eventos."
     },
     "HFTZonesNQPureV4.cs :: bool completa = (z.TouchedUpper || hi >= z.Upper) && (z.TouchedLower || lo <= z.Lower);": {
       "veredicto": "FUERA_DE_ALCANCE",
-      "evidencia": "ciclo de vida de DIBUJO de la zona (Drawn/AwayResolved/VShapePct): no esta portado a Python ni entra en el export de eventos de paridad. Triaje 2026-10-14."
+      "evidencia": "ciclo de vida de DIBUJO de la zona (Drawn/AwayResolved/VShapePct): no esta portado a Python ni entra en el export de eventos de paridad. Triaje 2026-10-14. MEDIDO (forma B): 0/265.205 a tick 0,25; ~0,2 % a tick 0,1; sólo afecta el ciclo de vida de dibujo, no el export de eventos."
     },
     "HFTZonesNQPureV4.cs :: if (hi >= z.Upper) z.TouchedUpper = true;": {
       "veredicto": "INMUNE_MONOTONO",
-      "evidencia": "ambos operandos son precios de grilla llevados SIN aritmetica: z.Upper = swH/z.Lower = swL, que son Max/Min de Highs/Lows del feed, comparados con hi/lo del feed; Math.Max/Min y >= son monotonos en el indice de tick. Triaje 2026-10-14."
+      "evidencia": "ambos operandos son precios de grilla llevados SIN aritmetica: z.Upper = swH/z.Lower = swL, que son Max/Min de Highs/Lows del feed, comparados con hi/lo del feed; Math.Max/Min y >= son monotonos en el indice de tick. Triaje 2026-10-14. MEDIDO (forma E, grilla sin aritmetica): 0 cambios de lado en 900 decisiones por cada tick evaluado (0,25 a 5e-7)."
     },
     "HFTZonesNQPureV4.cs :: if (lo <= z.Lower) z.TouchedLower = true;": {
       "veredicto": "INMUNE_MONOTONO",
-      "evidencia": "ambos operandos son precios de grilla llevados SIN aritmetica: z.Upper = swH/z.Lower = swL, que son Max/Min de Highs/Lows del feed, comparados con hi/lo del feed; Math.Max/Min y >= son monotonos en el indice de tick. Triaje 2026-10-14."
+      "evidencia": "ambos operandos son precios de grilla llevados SIN aritmetica: z.Upper = swH/z.Lower = swL, que son Max/Min de Highs/Lows del feed, comparados con hi/lo del feed; Math.Max/Min y >= son monotonos en el indice de tick. Triaje 2026-10-14. MEDIDO (forma E, grilla sin aritmetica): 0 cambios de lado en 900 decisiones por cada tick evaluado (0,25 a 5e-7)."
     },
     "VolTicksDef.cs :: (threshold > 0 && ratio >= threshold) ? 1 : 0, High[0], Low[0]));": {
       "veredicto": "NO_ES_PRECIO",
@@ -548,15 +548,15 @@
     },
     "aVolClusterPOISim.cs :: double near = dir > 0 ? upper : lower, far = dir > 0 ? lower : upper;": {
       "veredicto": "FUERA_DE_ALCANCE",
-      "evidencia": "vive en el simulador de NT8 aVolClusterPOISim (SimEnabled): variante de simulacion experimental no portada al bridge; el P&L de research se calcula solo con edgelab/engine.py (CONTRATO_LLM.md), asi que esta comparacion no entra en ningun resultado. Triaje 2026-10-14."
+      "evidencia": "vive en el simulador de NT8 aVolClusterPOISim (SimEnabled): variante de simulacion experimental no portada al bridge; el P&L de research se calcula solo con edgelab/engine.py (CONTRATO_LLM.md), asi que esta comparacion no entra en ningun resultado. Triaje 2026-10-14. MEDIDO (tools/ulp_exposure_expr.py, forma A/B): 0 cambios de lado a tick 0,25; ~4 % de las decisiones de borde cambian de lado a tick 0,1/0,01/0,0001 (GC, CL, 6B): la exposicion es real pero sólo en el simulador de NT8, fuera de los resultados de research."
     },
     "aVolClusterPOISim.cs :: bool hitSl = t.Dir > 0 ? lo <= t.Sl : hi >= t.Sl;": {
       "veredicto": "FUERA_DE_ALCANCE",
-      "evidencia": "vive en el simulador de NT8 aVolClusterPOISim (SimEnabled): variante de simulacion experimental no portada al bridge; el P&L de research se calcula solo con edgelab/engine.py (CONTRATO_LLM.md), asi que esta comparacion no entra en ningun resultado. Triaje 2026-10-14."
+      "evidencia": "vive en el simulador de NT8 aVolClusterPOISim (SimEnabled): variante de simulacion experimental no portada al bridge; el P&L de research se calcula solo con edgelab/engine.py (CONTRATO_LLM.md), asi que esta comparacion no entra en ningun resultado. Triaje 2026-10-14. MEDIDO (tools/ulp_exposure_expr.py, forma A/B): 0 cambios de lado a tick 0,25; ~4 % de las decisiones de borde cambian de lado a tick 0,1/0,01/0,0001 (GC, CL, 6B): la exposicion es real pero sólo en el simulador de NT8, fuera de los resultados de research."
     },
     "aVolClusterPOISim.cs :: bool hitTp = t.Dir > 0 ? hi >= t.Tp : lo <= t.Tp;": {
       "veredicto": "FUERA_DE_ALCANCE",
-      "evidencia": "vive en el simulador de NT8 aVolClusterPOISim (SimEnabled): variante de simulacion experimental no portada al bridge; el P&L de research se calcula solo con edgelab/engine.py (CONTRATO_LLM.md), asi que esta comparacion no entra en ningun resultado. Triaje 2026-10-14."
+      "evidencia": "vive en el simulador de NT8 aVolClusterPOISim (SimEnabled): variante de simulacion experimental no portada al bridge; el P&L de research se calcula solo con edgelab/engine.py (CONTRATO_LLM.md), asi que esta comparacion no entra en ningun resultado. Triaje 2026-10-14. MEDIDO (tools/ulp_exposure_expr.py, forma A/B): 0 cambios de lado a tick 0,25; ~4 % de las decisiones de borde cambian de lado a tick 0,1/0,01/0,0001 (GC, CL, 6B): la exposicion es real pero sólo en el simulador de NT8, fuera de los resultados de research."
     },
     "aVolClusterPOISim.cs :: if (SimMaxBarsInTrade > 0 && CurrentBar - t.EntryBar >= SimMaxBarsInTrade) { SimClose(t, Close[0], CurrentBar, \"TIEMPO\"); continue; }": {
       "veredicto": "NO_ES_PRECIO",
@@ -564,7 +564,7 @@
     },
     "aVolClusterPOISim.cs :: double fav = t.Dir > 0 ? hi - t.Entry : t.Entry - lo;": {
       "veredicto": "FUERA_DE_ALCANCE",
-      "evidencia": "vive en el simulador de NT8 aVolClusterPOISim (SimEnabled): variante de simulacion experimental no portada al bridge; el P&L de research se calcula solo con edgelab/engine.py (CONTRATO_LLM.md), asi que esta comparacion no entra en ningun resultado. Triaje 2026-10-14."
+      "evidencia": "vive en el simulador de NT8 aVolClusterPOISim (SimEnabled): variante de simulacion experimental no portada al bridge; el P&L de research se calcula solo con edgelab/engine.py (CONTRATO_LLM.md), asi que esta comparacion no entra en ningun resultado. Triaje 2026-10-14. MEDIDO (tools/ulp_exposure_expr.py, forma A/B): 0 cambios de lado a tick 0,25; ~4 % de las decisiones de borde cambian de lado a tick 0,1/0,01/0,0001 (GC, CL, 6B): la exposicion es real pero sólo en el simulador de NT8, fuera de los resultados de research."
     },
     "aVolClusterPOISim.cs :: for (int i = simTrades.Count - 1; i >= 0; i--) if (simTrades[i].Open) SimClose(simTrades[i], price, bar, reason);": {
       "veredicto": "NO_ES_PRECIO",
@@ -584,11 +584,11 @@
     },
     "aVolZonePOI.cs :: for (double p = Low[0]; p <= High[0] + TickSize * 0.1; p += TickSize)": {
       "veredicto": "INMUNE_MEDIOTICK",
-      "evidencia": "la comparacion lleva un margen de 0,1 o 0,5 tick (p <= High + TickSize*0.1; Key +- 0.5*TickSize), que absorbe el error de ulp por construccion; ademas aVolZonePOI.cs esta reemplazado por aVolZonePOI2. Triaje 2026-10-14."
+      "evidencia": "la comparacion lleva un margen de 0,1 o 0,5 tick (p <= High + TickSize*0.1; Key +- 0.5*TickSize), que absorbe el error de ulp por construccion; ademas aVolZonePOI.cs esta reemplazado por aVolZonePOI2. Triaje 2026-10-14. MEDIDO (formas C y D): 0 cambios de lado en 1.000 decisiones de margen de medio tick y 0 desvios de iteracion en 200 bucles acumulativos, para todos los ticks evaluados."
     },
     "aVolZonePOI.cs :: if (kv.Key + 0.5 * TickSize >= Low[0] && kv.Key - 0.5 * TickSize <= High[0])": {
       "veredicto": "INMUNE_MEDIOTICK",
-      "evidencia": "la comparacion lleva un margen de 0,1 o 0,5 tick (p <= High + TickSize*0.1; Key +- 0.5*TickSize), que absorbe el error de ulp por construccion; ademas aVolZonePOI.cs esta reemplazado por aVolZonePOI2. Triaje 2026-10-14."
+      "evidencia": "la comparacion lleva un margen de 0,1 o 0,5 tick (p <= High + TickSize*0.1; Key +- 0.5*TickSize), que absorbe el error de ulp por construccion; ademas aVolZonePOI.cs esta reemplazado por aVolZonePOI2. Triaje 2026-10-14. MEDIDO (formas C y D): 0 cambios de lado en 1.000 decisiones de margen de medio tick y 0 desvios de iteracion en 200 bucles acumulativos, para todos los ticks evaluados."
     },
     "aVolZonePOI2.cs :: if (kv.Key < lo || kv.Key > hi) continue;": {
       "veredicto": "NO_ES_PRECIO",
