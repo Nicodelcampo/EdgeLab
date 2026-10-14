@@ -208,7 +208,12 @@ def run_contract(c):
                 float(rng200[t0]) if t0 >= HPOST else np.nan, int(tr), pos, int(te), int(d), int(o2), int(o3a), int(o3b),
                 float(mx), float(np.log(te - t0)) if te > 0 else np.nan, exp,
                 float(cl[t0] - cl[max(0, t0 - TREND)]) / (H - L + 1), float(cl[t0] - cl[max(0, t0 - 100)]) / (H - L + 1),
-                int(end[te]) if te >= 0 else -1, int(end[t0]), int(cl[te]) if te >= 0 else -1)
+                int(end[te]) if te >= 0 else -1, int(end[t0]), int(cl[te]) if te >= 0 else -1,
+                # auditoría externa (H-03/H-04/H-06): cierre en el evento, componentes de O5 y banderas de misma sesión
+                int(cl[t0]), float(rng200[pre_end]) if pre_end >= HPOST else np.nan,
+                float(rng_fwd[te + 1]) if (te >= 0 and te + 1 < n and not np.isnan(rng_fwd[te + 1])) else np.nan,
+                bool(pre_end >= HPOST and send[pre_end - HPOST + 1] == send[pre_end]),
+                bool(te >= 0 and te + HPOST < n and send[te + HPOST] == send[te]))
 
     rows = []
     for (cm, cw, ca) in CELLS:
@@ -239,7 +244,8 @@ def run_contract(c):
                 if got >= NPSEUDO:
                     break
     t = pd.DataFrame(rows, columns=["cell", "contract", "kind", "t0", "L", "H", "h", "session", "clock", "occ", "amp", "trend", "pos",
-                                    "te", "dir", "o2", "o3a", "o3b", "mx_h", "o4", "o5", "trend_h", "mom100_h", "te_end_ns", "t0_end_ns", "close_te"])
+                                    "te", "dir", "o2", "o3a", "o3b", "mx_h", "o4", "o5", "trend_h", "mom100_h", "te_end_ns", "t0_end_ns", "close_te",
+                                    "c0", "rng_pre", "rng_post", "pre_same_session", "post_same_session"])
     t.to_parquet(OUT / ("%s_%s%s_avzp2racgrid.parquet" % (INST, c.replace(" ", "_"), "" if SPEC == 25 else "_s%d" % SPEC)))
     print(c, "sesiones", len(dates), "evaluables", len(ok_dates), "velas", n, "zonas", len(r["zones"]), "filas", len(t),
           "%.0f s" % (time.time() - t0_), flush=True)
