@@ -20,4 +20,4 @@ Primer comando de cada sesión: `python tools/estado.py`. Verificaciones del pro
 - Lo que decide algo vive en el repo, en Markdown. Chat, Notion y Drive son espejos.
 - Los datos crudos, parte de `runs/`, oráculos reales y cuarentenas son local-only: que falten en un clon no prueba que no existan.
 
-**Rama viva:** `foundation/f0b-compatibility-probe` (única línea: `main` se integró el 2026-10-14, ver `docs/DECISIONES_20261014.md`). Ramas auxiliares y qué les falta integrar: `docs/BRANCH_REGISTRY_20261014.md`.
+**Rama viva:** `foundation/f0b-compatibility-probe` (única línea: `main` se integró y se alineó el 2026-10-14, ver `docs/DECISIONES_20261014.md`). Ramas auxiliares y qué les falta integrar: `docs/BRANCH_REGISTRY_20261014.md`.
