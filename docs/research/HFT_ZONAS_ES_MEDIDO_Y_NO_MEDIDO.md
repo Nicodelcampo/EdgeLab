@@ -925,3 +925,9 @@ resultados `docs/research/GEX1_RESULTADOS_20261006.{json,md}`. Sólo informació
     Los reales traían +1 a +3 % de volumen y, en ventanas de 1.000, menos intensidad: no es decaimiento de una ráfaga.
   - NO MEDIDO: control apareado (no por deciles); otros instrumentos; P&L. La confirmación no era virgen para O5.
   - Acta `AVZP2_RACIMO_GRILLA_VOL_RESULTADOS_20261009.md`.
+
+- AVZP2-RACIMO-REPLICA (14/10/2026), ES y NQ 25t sobre la release canónica `liquid_tick_v1`, 7 celdas congeladas, sin P&L:
+  - **ES replica**: compresión 7/7 (−6 a −8 % de rango) y continuación a favor de tendencia con control 6/6 (+4,6 a +6,9 pp), Holm < 0,0001.
+  - **NQ**: O1 4 de 5 celdas evaluables significativas (+5,6 a +7,3 pp; cumple el umbral sin margen); compresión 4 de 5 evaluables → **no cumple formalmente el criterio (≥5 de 7)** por potencia (n 48–1.478).
+  - NO MEDIDO: P&L; escalado por volatilidad; otros instrumentos (YM, RTY); interacción O1 × compresión.
+  - Acta `AVZP2_RACIMO_REPLICA_ES_NQ_RESULTADOS_20261014.md`; manifiesto previo `AVZP2_RACIMO_REPLICA_ES_NQ_MANIFIESTO_20261014.md`.
