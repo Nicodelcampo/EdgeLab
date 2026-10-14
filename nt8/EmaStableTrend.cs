@@ -1,4 +1,4 @@
-// EmaStableTrend.cs v3.2 — zonas de tendencia "tipo trendline" a partir de una EMA (NinjaTrader 8).
+// EmaStableTrend.cs v3.3 (defaults 'largas y permisivas', Preset 0 = manual; sin validar en historia al momento de escribirlo, ver docs/research/ema_trend/) — zonas de tendencia "tipo trendline" a partir de una EMA (NinjaTrader 8).
 //
 // IDEA: una trendline por picos/toques es dificil de detectar; una EMA es mas permisiva y permite programar las interacciones.
 // ZONA = periodo en el que, medido sobre ventanas moviles (todo en cocientes o en unidades de ATR, sin ticks fijos):
@@ -71,31 +71,31 @@ namespace NinjaTrader.NinjaScript.Indicators
 
 				EmaPeriod        = 200;
 				AtrPeriod        = 100;
-				Preset           = 2;
-				MinZoneBars      = 120;
+				Preset           = 0;
+				MinZoneBars      = 150;
 				MinMovePoints    = 0;
 				PivotBars        = 5;
-				TouchTolAtr      = 0.2;
-				ViolFraction     = 0.02;
-				ExtendBars       = 100;
+				TouchTolAtr      = 0.3;
+				ViolFraction     = 0.05;
+				ExtendBars       = 150;
 				MinExtentAtr     = 10;
 				MaxMeanDistAtr   = 4;
-				MaxDistAtr       = 8.5;
+				MaxDistAtr       = 10;
 				MinTouches       = 3;
-				BreakAtr         = 0.5;
+				BreakAtr         = 1.0;
 				RefitBars        = 10;
 
-				WindowBars       = 200;
-				SlopeBars        = 150;
-				MinEmaEfficiency = 0.7;
-				MinEmaDriftAtr   = 0.8;
-				MinSideFraction  = 0.95;
+				WindowBars       = 150;
+				SlopeBars        = 100;
+				MinEmaEfficiency = 0.6;
+				MinEmaDriftAtr   = 0.5;
+				MinSideFraction  = 0.9;
 				MaxGapCV         = 0.0;
-				MaxFarCv         = 0.4;
-				MaxNearCv        = 0.5;
+				MaxFarCv         = 0.6;
+				MaxNearCv        = 0.7;
 				EnvPivotBars     = 10;
 				MinGapAtr        = 2.0;
-				HoldBars         = 66;
+				HoldBars         = 100;
 
 				LineWidth        = 2;
 				LineBrush        = System.Windows.Media.Brushes.CornflowerBlue;
