@@ -932,3 +932,29 @@ resultados `docs/research/GEX1_RESULTADOS_20261006.{json,md}`. Sólo informació
   - NO MEDIDO: P&L; escalado por volatilidad; otros instrumentos (YM, RTY); interacción O1 × compresión.
   - Acta `AVZP2_RACIMO_REPLICA_ES_NQ_RESULTADOS_20261014.md`; manifiesto previo `AVZP2_RACIMO_REPLICA_ES_NQ_MANIFIESTO_20261014.md`.
   - Enmienda 1 (14/10/2026): **MNQ sobre la release saneada replica sus propios resultados** (O5 7/7 −5,9 a −8,2 %; O1 6/6 +4,6 a +7,9 pp): los hallazgos originales no eran artefacto de datos sin sanear. MES (mismo subyacente que ES): O5 7/7, O1 6/6.
+
+# GC presión/progreso V2 y réplica AVZP2 v2 — resultados PROVISIONALES (2026-10-14)
+
+Sin P&L. Holdout intacto. Release v4 (manifiesto db9c42cd…14ce5). Agregados en `gc_pressure_v2_20261014/` y `avzp2_replica_v2_20261014/`.
+
+## GC presión/progreso (manifiesto `GC_PRESSURE_PROGRESS_V2_MANIFIESTO_20261014.md`)
+273 sesiones GC: calibración 60 (congelada), atlas 120, 93 selladas sin leer. 150.731 ventanas no solapadas.
+- P1 primaria (persistencia de flujo vs placebo): Δ +0,069 ticks, IC95 [−0,006; +0,147], p 0,075, Holm 0,150. **No significativa.** MDE 0,108.
+- P1 RTH: Δ +0,133, IC [+0,027; +0,242], p 0,016, Holm 0,048. Magnitud ≈ 0,13 tick, bajo el MDE de 0,154. Por mitades: +0,037 y +0,107, ambas con IC que cruza 0.
+- P1 OTHER: Δ +0,033, p 0,48.
+- P2 (progreso previo grande vs chico): −0,019, p 0,0045, Holm 0,018, **signo contrario a la lectura original** (tras avance fuerte el avance siguiente es menos favorable).
+- Correlación parcial presión vs avance dirigido (control por n° de trades): 0,30; es descriptiva.
+- Dataset: 75 de 180 sesiones marcadas anómalas por huecos > 10 s, con 159.160 huecos en total. Hay que mirar si la causa es liquidez nocturna de GC o un defecto de captura.
+- **Veredicto: DESCRIPTIVO / INFORMACIÓN PROVISIONAL, NO EDGE.** El efecto, si existe, es de décimas de tick, menor que cualquier costo realista. El gráfico de barras naranjas de Notion no se sostiene con este protocolo.
+
+## Réplica AVZP2 v2 (kernels validados, Kaggle, v4)
+Criterios: O5 ≥ 5/7 celdas, O1 ≥ 4/6.
+| Instr | O5 (nulo mirror) | O1 (mirror) | O1 (nulo legacy) |
+|---|---|---|---|
+| ES | 7/7 SÍ | 0/6 NO | 6/6 |
+| MNQ | 7/7 SÍ | 0/6 NO | 6/6 |
+| MES | 7/7 SÍ | 0/6 NO | 6/6 |
+| NQ | 3/7 NO | 0/6 NO | 3/6 |
+- O5 (compresión tras racimo): replica en ES, MNQ y MES con efecto ≈ −0,07 y p ≈ 0; **no replica en NQ** (3/7).
+- O1 (continuación): con el nulo primario (espejo) **no replica en ningún instrumento**. El 6/6 con el nulo legacy es el artefacto que H-03 identificó.
+- Todo PROVISIONAL (purpose=provisional_research). Esto no es un edge: O5 es un estimand de rango, no direccional ni de P&L.
