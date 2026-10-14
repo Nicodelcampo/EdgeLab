@@ -1,0 +1,43 @@
+# EMAZ-D1 — estadística descriptiva de las zonas (NQ 25T, EMA 200, configuración «larga y permisiva» del usuario)
+
+Solo descriptivo; **sin hipótesis ni medidas sobre el precio posterior**. Historia aprobada de NQ 2025-07-01..2026-09-30 (6 contratos), 264 sesiones con al menos una zona. Parámetros: Preset 0 (M150, K100, lado 0,9, eficiencia 0,6, drift 0,5, distancia constante 0,6/0,7, hold 100, extensión 150, ruptura 1,0 ATR, distancia máxima 10 ATR). Tabla por zona privada (no se publica). Resultados completos: `EMAZD1_RESULTADOS.json`.
+
+## Anatomía
+| Atributo | p10 | mediana | p90 |
+|---|---:|---:|---:|
+| Largo (barras de 25 ticks, desde el ancla) | 195 | **247** | 351 |
+| Duración real (minutos) | 2,1 | **6** | 47,5 |
+| Recorrido de precio (ATR) | 11,5 | 20,6 | 32,9 |
+| Recorrido (puntos NQ) | 22,5 | 46,5 | 92,3 |
+| Pendiente (ATR por barra) | 0,05 | 0,08 | 0,13 |
+| Toques de la línea | 3 | 3 | 4 |
+| Distancia media a la EMA (ATR) | 5,2 | 6,8 | 9,4 |
+| Razón acercamiento/alejamiento | 0,36 | 0,48 | 0,60 |
+| Actividad (barras por minuto) | 5,7 | 43 | 117 |
+
+- **1.571 zonas, 6 por sesión (mediana; 136 de 264 sesiones tienen 6 o más), 53 % alcistas.**
+- **Largo en barras ≠ largo en tiempo:** una zona mediana de 247 barras dura ~6 minutos, porque en la apertura de NQ se forman ~43 barras de 25 ticks por minuto. Medidas en ATR (el recorrido) son comparables entre momentos; el largo en barras no.
+
+## Cómo terminan
+82 % por ruptura de la línea, 10 % porque el precio se aleja demasiado (> 10 ATR), 8 % porque deja de cumplirse la EMA. Entre el último toque y el final pasan una mediana de 45 barras (p10 13, p90 132).
+
+## Contextos
+- **Hora (CT) de inicio:** concentradas en la apertura regular: 275 zonas a las 8h, 273 a las 9h, 176 a las 10h, 165 a las 14h; muy pocas de madrugada. Cuidado: la cantidad por hora sigue la cantidad de barras (más negocio, más barras de 25 ticks); falta normalizar por barras disponibles.
+- **Largo y recorrido en ATR casi no cambian con la hora, el día de la semana ni la volatilidad** (terciles de ATR: mediana de largo 249 / 246 / 245; recorrido 20,7 / 21,1 / 19,9 ATR): las medidas en ATR normalizan bien.
+- **Estabilidad temporal:** primera mitad vs segunda: largo 248 / 245, recorrido 21,1 / 20,1 ATR.
+- **Secuencia:** la zona siguiente en la misma sesión va en la misma dirección el 50,3 % de las veces (azar); solo 1,2 % de pares se superponen; mediana de 1.815 barras entre zonas.
+
+## Relaciones entre atributos (Spearman)
+La pendiente se asocia con el recorrido (0,68) y con la distancia a la EMA (0,79); más pendiente → menos largo (−0,23). Toques, volatilidad y actividad son casi independientes del resto.
+
+## Tipología exploratoria (k = 4; proporciones estables entre mitades)
+| Tipo | Parte | Largo | Pendiente | Toques | Dist. EMA (ATR) | Recorrido (ATR) | Alcista |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| 0 «suave y corta» | 38 % | 224 | 0,069 | 3 | 6,0 | 14,9 | 53 % |
+| 1 «empinada y lejana» | 29 % | 237 | 0,114 | 3 | 8,7 | 27,1 | 59 % |
+| 2 «muchos toques» | 9 % | 298 | 0,076 | 5 | 6,5 | 22,4 | 45 % |
+| 3 «larga» | 24 % | 313 | 0,067 | 3 | 6,5 | 22,0 | 49 % |
+Los cuatro tipos aparecen sobre todo en la apertura (8–10 h CT). La agrupación es exploratoria: sirve para plantear contextos, no para concluir.
+
+## Para las próximas preguntas (antes de cualquier hipótesis sobre el precio)
+Normalizar la hora por barras disponibles; medir largo en minutos además de barras; ver si los tipos 1 y 3 (los de mayor recorrido) se concentran en ciertos días/horas; relacionar los toques con volumen/delta; comparar con las zonas de aVolZonePOI2; repetir en ES/YM/GC/MGC.
