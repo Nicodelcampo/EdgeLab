@@ -18,14 +18,18 @@ import pandas as pd
 
 CLOSED_FRAC = 0.05       # < 5 % del volumen de referencia del activo => cerrado
 SHORT_FRAC = 0.50        # < 50 % => sesión corta
-PEERS_OPEN_FRAC = 0.60   # si >= 60 % de los demás activos está OPEN y éste no tiene datos => MISSING_EXPORT
+GROUP_PEERS_OPEN = 0.50  # si >= 50 % de los OTROS activos de su misma clase operó y éste no => MISSING_EXPORT
+GLOBAL_PEERS_OPEN = 0.30 # después del último día con datos de su clase y con >= 30 % del universo operando => MISSING_EXPORT
+# Clases de mercado: los feriados difieren (Navidad: índices de acciones cerrados, FX con ticks) y mirar a todos mezcla horarios.
+CLASSES = {"ES": "equity", "NQ": "equity", "MES": "equity", "MNQ": "equity", "YM": "equity", "MYM": "equity", "RTY": "equity",
+           "GC": "metals", "MGC": "metals", "6E": "fx", "6B": "fx", "6J": "fx", "ZB": "rates", "MBT": "crypto"}
 
 
 def _weekday(td: int) -> int:
     return pd.Timestamp(str(td)).dayofweek
 
 
-def derive_calendar(daily: pd.DataFrame, window: int = 10) -> pd.DataFrame:
+def derive_calendar(daily: pd.DataFrame, window: int = 10, classes: dict | None = None) -> pd.DataFrame:
     """daily: instrument, trade_date, vol (volumen regular total del activo ese día, 0/ausente si no hay datos).
     Devuelve instrument, trade_date, status, ref_vol, vol."""
     daily = daily.copy()
@@ -52,13 +56,27 @@ def derive_calendar(daily: pd.DataFrame, window: int = 10) -> pd.DataFrame:
     cal["status"] = np.select(
         [cal["weekday"] >= 5, ratio >= SHORT_FRAC, ratio >= CLOSED_FRAC, cal["vol"] > 0],
         ["WEEKEND", "OPEN", "SHORT", "SHORT"], default="NO_DATA")
-    # NO_DATA: o feriado (todos cerrados) o export faltante (los pares operaron)
-    weekday_rows = cal[cal["weekday"] < 5]
-    peers = weekday_rows.assign(open_=weekday_rows["status"].isin(["OPEN", "SHORT"])).groupby("trade_date")["open_"].mean()
-    cal["peers_open_frac"] = cal["trade_date"].map(peers)
+    # NO_DATA: feriado propio de su clase o export faltante. Se decide con la clase, no con todo el universo.
+    weekday_rows = cal[cal["weekday"] < 5].copy()
+    weekday_rows["open_"] = weekday_rows["status"].isin(["OPEN", "SHORT"])
+    weekday_rows["cls"] = weekday_rows["instrument"].map(lambda i: (classes or CLASSES).get(i, "other"))
+    glob = weekday_rows.groupby("trade_date")["open_"].mean()
+    cal["peers_open_frac"] = cal["trade_date"].map(glob)
+    cls_open = weekday_rows.groupby(["trade_date", "cls"])["open_"].agg(["sum", "count"])
+    cls_last = weekday_rows[weekday_rows["open_"]].groupby("cls")["trade_date"].max()
+    cal["cls"] = cal["instrument"].map(lambda i: (classes or CLASSES).get(i, "other"))
     nod = cal["status"] == "NO_DATA"
-    cal.loc[nod & (cal["peers_open_frac"] >= PEERS_OPEN_FRAC), "status"] = "MISSING_EXPORT"
-    cal.loc[nod & (cal["peers_open_frac"] < PEERS_OPEN_FRAC), "status"] = "CLOSED"
+    def decide(r):
+        c = cls_open.loc[(r.trade_date, r.cls)] if (r.trade_date, r.cls) in cls_open.index else None
+        others = (c["count"] - 0) - 1 if c is not None else 0
+        grp_frac = (c["sum"] / others) if c is not None and others > 0 else float("nan")   # el propio activo no abrió: no suma
+        if others > 0 and grp_frac >= GROUP_PEERS_OPEN:
+            return "MISSING_EXPORT"
+        if r.trade_date > cls_last.get(r.cls, 0) and r.peers_open_frac >= GLOBAL_PEERS_OPEN:
+            return "MISSING_EXPORT"
+        return "CLOSED"
+    if nod.any():
+        cal.loc[nod, "status"] = [decide(r) for r in cal[nod].itertuples()]
     return cal[["instrument", "trade_date", "status", "vol", "ref_vol", "peers_open_frac"]]
 
 

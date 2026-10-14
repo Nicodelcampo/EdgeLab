@@ -1,0 +1,186 @@
+[
+ {
+  "id": "D01",
+  "priority": "P0",
+  "problem": "Timezone no acreditado",
+  "status": "RESOLVED_WITH_EVIDENCE",
+  "evidence": "Ajuste al calendario CME por grupo de fuentes y por trimestre: 192 de 226 grupos calzan con UTC (violación ≈ 1e-6; ART violaría 4–12 %), con cambio de horario estable. Los 15 con anomalías son MBT (calendario propio) y el NQ nativo explicado en D02.",
+  "residual": "Residual: no hay logs de NinjaTrader ni verificación contra el feed (conexión `Simulation`). Alcance de la evidencia = calendario, no feed."
+ },
+ {
+  "id": "D02",
+  "priority": "P0",
+  "problem": "NQ fuente en cuarentena",
+  "status": "RESOLVED_WITH_EVIDENCE",
+  "evidence": "Causa raíz: el export nativo `NQ 09-26` trae 15 bloques de ticks copiados fila a fila con +3 h exactas (2026-06-17 → 07-02), 532.441 ticks, 100 % dentro del horario sin mercado. El export por día no los tiene. La release descarta las copias; el parquet `nq-preholdout/6` queda en CUARENTENA etiquetado.",
+  "residual": "Residual: por qué el export nativo copia el bloque (requiere logs del exportador)."
+ },
+ {
+  "id": "D03",
+  "priority": "P0",
+  "problem": "ES roll prematuro",
+  "status": "RESOLVED_WITH_EVIDENCE",
+  "evidence": "Los ticks de domingo previos a la apertura no forman sesión. ES permanece en 12-25 durante octubre 2025 y rolla 16-sep-25, 16-dic-25, 17-mar-26, 16-jun-26 y 15-sep-26.",
+  "residual": "Residual: el calendario CME oficial sigue pendiente (D06)."
+ },
+ {
+  "id": "D04",
+  "priority": "P0",
+  "problem": "Máscara retrospectiva",
+  "status": "RESOLVED_WITH_EVIDENCE",
+  "evidence": "La decisión de cada sesión usa sólo D-1 y constantes congeladas; prueba de invariancia por mutación del futuro en `tests/data/test_liquid_release_selection.py`.",
+  "residual": "Las constantes se calibraron descriptivamente sobre toda la muestra pre-holdout: son una PROPUESTA hasta que Nico las apruebe (D07)."
+ },
+ {
+  "id": "D05",
+  "priority": "P0",
+  "problem": "Completitud inventada / ausencia = 0",
+  "status": "OPEN",
+  "evidence": "Estados explícitos por sesión (incluida, sin contrato elegible, indeterminada, contrato elegido sin datos) y por día de calendario (OPEN/SHORT/CLOSED/MISSING_EXPORT). Nunca se emite 'cero verificado'.",
+  "residual": "Falta la matriz rectangular contrato×sesión con evidencia de captura por contrato."
+ },
+ {
+  "id": "D06",
+  "priority": "P0",
+  "problem": "Calendario histórico revisado",
+  "status": "BLOCKED_UPSTREAM",
+  "evidence": "Calendario derivado de los datos (`calendar_derived.parquet`): feriados/cierres tempranos por volumen de todos los activos.",
+  "residual": "Hace falta el calendario histórico oficial de CME (feriados, cierres cortos, DST)."
+ },
+ {
+  "id": "D07",
+  "priority": "P0",
+  "problem": "Liquidez relativa vs absoluta",
+  "status": "OPEN",
+  "evidence": "Límites absolutos por activo (volumen, ticks, spread típico) como política PROPUESTA en `liquidity_policy.json`.",
+  "residual": "`approved_by = null`: requiere aprobación de Nico antes de cualquier uso de research."
+ },
+ {
+  "id": "D08",
+  "priority": "P1",
+  "problem": "Fuentes en conflicto",
+  "status": "RESOLVED_WITH_EVIDENCE",
+  "evidence": "Regla fija por (contrato, sesión): más minutos activos, menor hueco, luego export por día > nativo > parquet derivado. 701 sesiones con diferencias de contenido registradas en `source_conflicts.parquet`; 97 % de las horas comparadas son idénticas (mediana de diferencia: 1 tick).",
+  "residual": "No hay un tercer feed independiente para decidir cuál es 'verdad' cuando difieren por pocos ticks."
+ },
+ {
+  "id": "D09",
+  "priority": "P1",
+  "problem": "Contratos/fechas faltantes",
+  "status": "OPEN",
+  "evidence": "`metadata/MISSING_EXPORTS.md`: 321 sesiones P0 y 275 sesiones P1 con contrato y rango de fechas exactos.",
+  "residual": "Exportar lo listado con el AddOn `EdgeLabTickHistory`; RTY y parte de MYM dependen de parquet derivado."
+ },
+ {
+  "id": "D10",
+  "priority": "P1",
+  "problem": "Esquemas heterogéneos",
+  "status": "RESOLVED_WITH_EVIDENCE",
+  "evidence": "Lectores explícitos por formato (texto NT8 y parquet canonical_tick_v1) con validación de grilla antes del redondeo; tick y valor por tick de 14 activos (incluye MGC, RTY y MBT, que faltaban en el contrato) verificados contra la grilla de los datos.",
+  "residual": "Sin residual conocido."
+ },
+ {
+  "id": "D11",
+  "priority": "P1",
+  "problem": "Grilla/tick y procedencia de quote/agresor",
+  "status": "RESOLVED_WITH_EVIDENCE",
+  "evidence": "Grilla validada fila a fila antes de convertir (STOP si falla); quotes inválidos quedan `-1`; agresor por regla de quotes v1 y 0 si el libro está locked/cruzado/ausente.",
+  "residual": "La procedencia upstream de bid/ask no se puede verificar sin logs."
+ },
+ {
+  "id": "D12",
+  "priority": "P1",
+  "problem": "Identidad local no prueba continuidad upstream",
+  "status": "BLOCKED_UPSTREAM",
+  "evidence": "Se conservan `source_id` (SHA-256 del origen) y `source_row`; no se deduplica por precio/tiempo/volumen iguales; `release_row` se declara distinta de la secuencia del exchange.",
+  "residual": "Sin ID upstream no se puede probar continuidad."
+ },
+ {
+  "id": "D13",
+  "priority": "P1",
+  "problem": "Quotes locked y agresor desconocido",
+  "status": "RESOLVED_WITH_EVIDENCE",
+  "evidence": "Se conservan y se miden por sesión (columnas `locked`, `crossed`, `noquote` del escaneo).",
+  "residual": "Política de uso por indicador pendiente."
+ },
+ {
+  "id": "D14",
+  "priority": "P0",
+  "problem": "Filtro después de lectura / holdout",
+  "status": "RESOLVED_WITH_EVIDENCE",
+  "evidence": "Nuevo lector: row groups por estadísticas de `trade_date`, STOP ante grupo mixto o sin estadísticas; constructor: corte del holdout sobre bytes antes de decodificar. Pruebas con lector espía.",
+  "residual": "`continuous_contract.py` y los lectores legacy NO se tocaron (D18)."
+ },
+ {
+  "id": "D15",
+  "priority": "P0",
+  "problem": "Integridad/versiones débiles",
+  "status": "RESOLVED_WITH_EVIDENCE",
+  "evidence": "Nuevo lector exige manifiesto, tamaño y SHA-256 exactos; prueba de mismo tamaño con distinto contenido.",
+  "residual": "El helper legacy `edgelab_data.py` no se modificó."
+ },
+ {
+  "id": "D16",
+  "priority": "P0",
+  "problem": "Rutas ambiguas",
+  "status": "RESOLVED_WITH_EVIDENCE",
+  "evidence": "Nuevo lector: rutas relativas exactas, sin traversal ni symlink, sin búsqueda por basename.",
+  "residual": "Legacy sin cambios."
+ },
+ {
+  "id": "D17",
+  "priority": "P1",
+  "problem": "Cache no ligada al contenido",
+  "status": "RESOLVED_WITH_EVIDENCE",
+  "evidence": "`cache_key(sha, schema, transform, version)` en el lector nuevo.",
+  "residual": "Las cachés legacy no se migraron."
+ },
+ {
+  "id": "D18",
+  "priority": "P0",
+  "problem": "Wiring protegido no global",
+  "status": "OPEN",
+  "evidence": "El lector nuevo es opt-in y está probado.",
+  "residual": "Falta el mapa de call-sites y conectarlo en autónomo, notebooks y CLI."
+ },
+ {
+  "id": "D19",
+  "priority": "P1",
+  "problem": "Rolls, estado y lookbacks",
+  "status": "RESOLVED_WITH_EVIDENCE",
+  "evidence": "Contrato real por fila, `regime_id` por roll, sin back-adjust ni empalme; el consumidor debe reiniciar estado al cambiar `regime_id`.",
+  "residual": "Los consumidores existentes no se auditaron."
+ },
+ {
+  "id": "D20",
+  "priority": "P1",
+  "problem": "Derivados pueden seguir viejos",
+  "status": "OPEN",
+  "evidence": "Los agregados v1 (1/30/60 s) y la caché de descubrimiento quedaron etiquetados como BLOQUEADOS/ARCHIVO en Kaggle.",
+  "residual": "Regenerar barras desde la release y clasificar resultados históricos por dependencia."
+ },
+ {
+  "id": "D21",
+  "priority": "P1",
+  "problem": "Licencia/privacidad y spot/futuro",
+  "status": "OPEN",
+  "evidence": "Los 41 datasets de la cuenta están en privado; spot (Dukascopy) etiquetado `SPOT` y separado de CME.",
+  "residual": "La decisión de licencia de redistribución sigue siendo de Nico."
+ },
+ {
+  "id": "D22",
+  "priority": "P2",
+  "problem": "Inventarios/pins desactualizados",
+  "status": "RESOLVED_WITH_EVIDENCE",
+  "evidence": "Inventario paginado completo (41 datasets, 248 kernels), mapa en `config/kaggle_space_map_20261014.json` y `KAGGLE_SPACE_INDEX.md`; la release se fija por SHA-256 en `release_manifest.json`.",
+  "residual": "Sin residual."
+ },
+ {
+  "id": "D23",
+  "priority": "P1",
+  "problem": "Warmup, cobertura y claims",
+  "status": "RESOLVED_WITH_EVIDENCE",
+  "evidence": "La primera sesión de cada activo (sin D-1) y las sin contrato elegible se excluyen y listan; no se declara certificación ni edge.",
+  "residual": "Warmup específico de cada indicador queda a cargo del consumidor."
+ }
+]
