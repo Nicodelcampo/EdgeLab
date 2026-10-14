@@ -16,3 +16,7 @@ Nico respondió en chat: **"decidilo vos, ante la duda lo más completo o recien
 7. **Triaje `ulp_sweep`:** 27 expresiones nuevas clasificadas con veredicto y evidencia (15 `NO_ES_PRECIO`, resto `FUERA_DE_ALCANCE`/`INMUNE_*`); ninguna queda como exposición pendiente. No se midió con `ulp_exposure.py`: los veredictos `INMUNE_*` se apoyan en lectura del código, no en medición.
 
 P&L, manifiestos de campaña y holdout **siguen requiriendo OK explícito** (no estaban incluidos en la delegación).
+8. **`origin/main` no se mueve.** Es la rama por defecto con 27 PR abiertos; ya es ancestro de `foundation` (nada se pierde) y la rama viva declarada es `foundation/f0b-compatibility-probe`. Igualar `main` a `foundation` es un fast-forward sin riesgo que se hace sólo si Nico lo pide.
+9. **Ramas auxiliares:** 112 ramas con trabajo propio no se mergean en bloque; quedan registradas en `docs/BRANCH_REGISTRY_20261014.md` y se rescatan por ruta con pruebas cuando una campaña lo necesite.
+10. **R2 ejecutado** (target-free, provisional): `docs/research/R2_RECORRIDO_VS_FRICCION_RESULTADOS_20261014.md`. R3 (dirección a 15–60 min) queda bloqueada hasta el OK de Nico.
+
