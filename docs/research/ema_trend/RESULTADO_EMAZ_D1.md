@@ -57,3 +57,20 @@ Definición: al terminar la zona (cierre de la última barra válida, R), dos fr
 - El precio llega menos a menudo a extenderse una distancia h más allá que a volver una distancia h hacia adentro (0,22 contra 0,30 con franja 0,5 y 200 barras), mientras que el control es simétrico.
 - **Advertencia sobre cómo se mide:** el 82 % de las zonas termina porque el precio rompe la línea en contra de la tendencia. Las barras inmediatamente posteriores empiezan con ese movimiento contrario, así que parte de este resultado es **mecánico** (selección por cómo se define el fin), y el control al azar no tiene ese condicionamiento. No debe leerse como una propiedad del mercado todavía.
 - Próximo paso para quitar el sesgo: medir desde la barra de ruptura (lo único conocido en tiempo real), separar por motivo de fin (ruptura/alejamiento/EMA) y usar un control condicionado a un movimiento contrario de igual tamaño justo antes.
+
+# EMAZ-D3 — corrección del sesgo de EMAZ-D2 (el efecto desaparece)
+Referencia = barra de ruptura (kb = fin + 1, conocida en tiempo real); ventana desde kb+1; control = barra fuera de las zonas **emparejada por el contramovimiento previo** (último cierre y desplazamiento de 20 barras, en ATR, mismo sentido), no al azar. 1.448 zonas (1.282 por ruptura, 161 por alejamiento), 1.447 con control; datos en `EMAZD3_RESULTADOS.json`.
+
+| Franja (× altura) | N barras | share «más allá» zonas | control emparejado | diferencia ± EE (sesiones) | P(llega más allá / adentro) zonas | control |
+|---|---:|---:|---:|---|---|---|
+| 0,5 | 50 | 0,489 | 0,490 | −0,001 ± 0,015 | 0,04 / 0,03 | 0,09 / 0,08 |
+| 0,5 | 100 | 0,500 | 0,497 | +0,003 ± 0,014 | 0,11 / 0,12 | 0,17 / 0,17 |
+| 0,5 | 200 | 0,508 | 0,505 | +0,004 ± 0,014 | 0,25 / 0,27 | 0,31 / 0,26 |
+| 0,5 | 400 | 0,514 | 0,507 | +0,008 ± 0,013 | 0,43 / 0,42 | 0,44 / 0,40 |
+| 0,25 | 100 | 0,496 | 0,496 | −0,000 ± 0,013 | 0,42 / 0,43 | 0,43 / 0,42 |
+| 1,0 | 200 | 0,508 | 0,506 | +0,003 ± 0,014 | 0,03 / 0,04 | 0,09 / 0,07 |
+
+- **El efecto de EMAZ-D2 (−5 a −10 puntos) era mecánico**: con el control emparejado la diferencia es ≈ 0 (± 1,4 puntos) en todas las franjas y ventanas, tanto para fines por ruptura como por alejamiento. El volumen tras el fin de la zona se reparte igual que tras cualquier contramovimiento similar: el fin de una zona no agrega información sobre dónde se opera después.
+- Por contexto (alcista/bajista, pendiente, largo, hora, mitades) los valores van de 0,49 a 0,53 contra 0,49–0,52 del control; con 12 cortes y 1.400 zonas no hay ninguno que se distinga del ruido (pendiente media 0,526 vs 0,504 es el mayor, sin corrección por comparaciones múltiples).
+- Detalle sin resolver: la probabilidad de **llegar** a la franja «más allá» es algo menor en las zonas que en el control (0,25 vs 0,31 con ½ y 200 barras) mientras que «adentro» es igual; no tiene error estándar calculado y puede deberse a un emparejamiento imperfecto.
+- **Velocidad:** esta corrida tardó 64 segundos (EMAZ-D2: ~34 minutos) reutilizando las zonas ya calculadas, cargando solo las columnas necesarias y procesando contratos en paralelo (2 procesos; con 4 se agotó la memoria).
