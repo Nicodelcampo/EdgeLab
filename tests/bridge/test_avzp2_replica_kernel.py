@@ -1,3 +1,6 @@
+
+import pytest
+pytest.importorskip("scipy", reason="scipy no esta en core-bridge-dev.lock; vive en el extra validation")
 """Pruebas del kernel de la réplica AVZP2 (lector embebido, geometría del nulo, constructor y análisis). Todo sintético, sin datos de mercado."""
 import ast
 import hashlib

@@ -1,3 +1,6 @@
+
+import pytest
+pytest.importorskip("scipy", reason="scipy no esta en core-bridge-dev.lock; vive en el extra validation")
 """Prueba sintética de `outcomes` (stage1 de la réplica AVZP2) con la carrera O6 de reversión interna agregada por la auditoría externa.
 No usa datos de mercado: barras construidas a mano. Carga el script por ruta (no es un paquete)."""
 import importlib.util
