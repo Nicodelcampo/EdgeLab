@@ -53,12 +53,15 @@ class _FakeKaggleClient:
             "sha256": hashlib.sha256(payload).hexdigest(),
         }
 
-    def push_kernel(self, slug: str, title: str, script_text: str, accelerator: str = "cpu", dataset_sources=None, enable_internet: bool = False):
-        self.pushed.append(dict(slug=slug, enable_internet=enable_internet, sources=list(dataset_sources or [])))
-        return {"slug": slug, "accelerator": accelerator, "enableInternet": enable_internet, "sources": list(dataset_sources or [])}
+    def push_kernel(self, slug: str, title: str, script_text: str, accelerator: str = "cpu", dataset_sources=None, kernel_sources=None, enable_internet: bool = False):
+        self.pushed.append(dict(slug=slug, enable_internet=enable_internet, sources=list(dataset_sources or []), kernel_sources=list(kernel_sources or [])))
+        return {"slug": slug, "accelerator": accelerator, "enableInternet": enable_internet, "sources": list(dataset_sources or []), "kernelSources": list(kernel_sources or [])}
 
     def get_kernel_status(self, owner: str, slug: str, version_label=None):
         return {"status": "COMPLETE", "owner": owner, "slug": slug}
+
+    def get_kernel_output(self, owner: str, slug: str, page_size: int = 50, page_token=None):
+        return {"owner": owner, "slug": slug, "log": "OK_LOG", "files": [{"fileName": "out.json"}]}
 
 
 class TestKaggleDriveBridge(unittest.TestCase):
@@ -307,6 +310,46 @@ class TestAccionesAmpliadas(unittest.TestCase):
                 process_bridge_request({"request_id": "d10", "action": "download_file_chunked",
                                         "params": {"dataset": "extrano/x", "file": "a.parquet"}}, _FakeKaggleClient(), Path(tmp), policy=pol)
 
+
+    def test_get_kernel_output_y_kernel_sources_restringidos_a_owner(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            cli = _FakeKaggleClient()
+            pol = BridgePolicy(allow_push=True, allowed_source_owners=("nicolasbuttaro",))
+            ok = process_bridge_request(
+                {"request_id": "ko1", "action": "get_kernel_output", "params": {"owner": "nicolasbuttaro", "slug": "edgelab-test"}},
+                cli, Path(tmp), policy=pol,
+            )
+            self.assertEqual(ok["result"]["log"], "OK_LOG")
+            with self.assertRaises(KaggleBridgeError):
+                process_bridge_request(
+                    {"request_id": "ko2", "action": "get_kernel_output", "params": {"owner": "otro", "slug": "edgelab-test"}},
+                    cli, Path(tmp), policy=pol,
+                )
+            ok_push = process_bridge_request(
+                {"request_id": "kp1", "action": "push_kernel", "params": {
+                    "slug": "edgelab-s2", "title": "t", "script": "print(1)",
+                    "dataset_sources": ["nicolasbuttaro/edgelab-liquid-ticks-20261014"],
+                    "kernel_sources": ["nicolasbuttaro/edgelab-s1"],
+                }},
+                cli, Path(tmp), policy=pol,
+            )
+            self.assertEqual(ok_push["status"], "OK")
+            self.assertEqual(cli.pushed[-1]["kernel_sources"], ["nicolasbuttaro/edgelab-s1"])
+            with self.assertRaises(KaggleBridgeError):
+                process_bridge_request(
+                    {"request_id": "kp2", "action": "push_kernel", "params": {
+                        "slug": "edgelab-s2", "title": "t", "script": "print(1)",
+                        "kernel_sources": ["otro/edgelab-s1"],
+                    }},
+                    cli, Path(tmp), policy=pol,
+                )
+
+
+    def test_get_kernel_output_sin_owners_declarados_no_lee_nada(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            with self.assertRaises(KaggleBridgeError):
+                process_bridge_request({"request_id": "ko3", "action": "get_kernel_output", "params": {"owner": "nicolasbuttaro", "slug": "edgelab-test"}},
+                                       _FakeKaggleClient(), Path(tmp), policy=BridgePolicy())
 
 if __name__ == "__main__":
     unittest.main()

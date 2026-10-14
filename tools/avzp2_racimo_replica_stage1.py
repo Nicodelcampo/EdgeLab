@@ -119,7 +119,7 @@ def outcomes(hi, lo, cl, send, t0, L, H, n):
             te = t; d = -1
             break
     if te < 0:
-        return -1, 0, -1, -1, -1, -1.0
+        return -1, 0, -1, -1, -1, -1.0, -1
     edge = H if d == 1 else L
     # O2: llega a edge + d*h antes de volver a cerrar dentro de [L, H]; excursión máxima hasta volver
     o2 = -1
@@ -164,7 +164,28 @@ def outcomes(hi, lo, cl, send, t0, L, H, n):
             if bk:
                 o3b = 0
                 break
-    return te, d, o2, o3a, o3b, mx / h
+    # O6 (reversión interna al centro M = (L+H)/2 vs continuación externa a igual distancia d_in desde cl[te], en <=200 barras de la misma sesión)
+    o6_rev = -1
+    mid = 0.5 * (L + H)
+    d_in = abs(cl[te] - mid)
+    if d_in >= 1.0:
+        lvl_rev = mid
+        lvl_cont = cl[te] + d * d_in
+        for t in range(te + 1, min(te + HPOST, n - 1) + 1):
+            if send[t] != send[te]:
+                break
+            hit_rev = (lo[t] <= lvl_rev) if d == 1 else (hi[t] >= lvl_rev)
+            hit_cont = (hi[t] >= lvl_cont) if d == 1 else (lo[t] <= lvl_cont)
+            if hit_rev and hit_cont:
+                o6_rev = -2
+                break
+            if hit_rev:
+                o6_rev = 1
+                break
+            if hit_cont:
+                o6_rev = 0
+                break
+    return te, d, o2, o3a, o3b, mx / h, o6_rev
 
 
 def run_contract(c):
@@ -197,16 +218,23 @@ def run_contract(c):
         return float(((x >= L) & (x <= H)).mean())
 
     def row(kind, t0, L, H, start0):
-        te, d, o2, o3a, o3b, mx = outcomes(hi, lo, cl, send, t0, L, H, n)
+        te, d, o2, o3a, o3b, mx, o6_rev = outcomes(hi, lo, cl, send, t0, L, H, n)
         tr = np.sign(cl[t0] - cl[max(0, t0 - TREND)])
         pre_end = start0 - 1
         exp = np.nan
-        if te >= 0 and te + HPOST < n and pre_end >= HPOST and rng200[pre_end] > 0 and send[te + HPOST - 1] == send[te]:
+        exp_t0 = np.nan
+        # H-04: la ventana post-salida [te+1, te+HPOST] y la previa [pre_end-HPOST+1, pre_end] deben ser intra-sesión
+        if (te >= 0 and te + HPOST < n and pre_end >= HPOST and rng200[pre_end] > 0
+                and send[te + HPOST] == send[te] and send[pre_end] == send[pre_end - HPOST + 1]):
             exp = float(np.log(max(rng_fwd[te + 1], 1) / rng200[pre_end]))
+        # H-06: mismo numerador contra el rango de las 200 barras que terminan en t0 (separa compresión de regresión a la media desde start0)
+        if (te >= 0 and te + HPOST < n and t0 >= HPOST and rng200[t0] > 0
+                and send[te + HPOST] == send[te] and send[t0] == send[t0 - HPOST + 1]):
+            exp_t0 = float(np.log(max(rng_fwd[te + 1], 1) / rng200[t0]))
         pos = 0 if L <= cl[t0] <= H else (1 if cl[t0] > H else -1)
         return (c, kind, int(t0), int(L), int(H), int(H - L + 1), int(sdate[t0]), int(clock[t0]), occ(t0, L, H),
                 float(rng200[t0]) if t0 >= HPOST else np.nan, int(tr), pos, int(te), int(d), int(o2), int(o3a), int(o3b),
-                float(mx), float(np.log(te - t0)) if te > 0 else np.nan, exp,
+                float(mx), float(np.log(te - t0)) if te > 0 else np.nan, exp, exp_t0, int(o6_rev),
                 float(cl[t0] - cl[max(0, t0 - TREND)]) / (H - L + 1), float(cl[t0] - cl[max(0, t0 - 100)]) / (H - L + 1),
                 int(end[te]) if te >= 0 else -1, int(end[t0]), int(cl[te]) if te >= 0 else -1,
                 # auditoría externa (H-03/H-04/H-06): cierre en el evento, componentes de O5 y banderas de misma sesión
@@ -232,19 +260,28 @@ def run_contract(c):
             if len(cand) == 0:
                 continue
             dl, dh, span = k["low0"] - cl[t0], k["high0"] - cl[t0], t0 - k["start0"]
-            # apareamiento por ocupación: de hasta 200 candidatas, las primeras NPSEUDO con |occ - occ_real| <= 0.05
+            tr_r = int(np.sign(cl[t0] - cl[max(0, t0 - TREND)]))
+            # apareamiento por ocupación y orientación relativa al signo de la tendencia (H-03, auditoría externa):
+            # si sign(trend(b0)) != sign(trend(t0)), se espeja [dl, dh] -> [-dh, -dl] para preservar la distancia al borde del lado de la tendencia
             occ_r = occ(t0, k["low0"], k["high0"])
             got = 0
             for b0 in rng.choice(cand, min(200, 40 * NPSEUDO), replace=True):
-                L_, H_ = int(cl[b0] + dl), int(cl[b0] + dh)
-                if abs(occ(int(b0), L_, H_) - occ_r) > 0.05:
+                b0_i = int(b0)
+                if b0_i - span - 1 < HPOST:
                     continue
-                rows.append((cell,) + row("pseudo", int(b0), L_, H_, int(b0 - span)))
+                tr_b = int(np.sign(cl[b0_i] - cl[max(0, b0_i - TREND)]))
+                if tr_r != 0 and tr_b != 0 and tr_b != tr_r:
+                    L_, H_ = int(cl[b0_i] - dh), int(cl[b0_i] - dl)
+                else:
+                    L_, H_ = int(cl[b0_i] + dl), int(cl[b0_i] + dh)
+                if abs(occ(b0_i, L_, H_) - occ_r) > 0.05:
+                    continue
+                rows.append((cell,) + row("pseudo", b0_i, L_, H_, int(b0_i - span)))
                 got += 1
                 if got >= NPSEUDO:
                     break
     t = pd.DataFrame(rows, columns=["cell", "contract", "kind", "t0", "L", "H", "h", "session", "clock", "occ", "amp", "trend", "pos",
-                                    "te", "dir", "o2", "o3a", "o3b", "mx_h", "o4", "o5", "trend_h", "mom100_h", "te_end_ns", "t0_end_ns", "close_te",
+                                    "te", "dir", "o2", "o3a", "o3b", "mx_h", "o4", "o5", "o5_t0", "o6_rev", "trend_h", "mom100_h", "te_end_ns", "t0_end_ns", "close_te",
                                     "c0", "rng_pre", "rng_post", "pre_same_session", "post_same_session"])
     t.to_parquet(OUT / ("%s_%s%s_avzp2racgrid.parquet" % (INST, c.replace(" ", "_"), "" if SPEC == 25 else "_s%d" % SPEC)))
     print(c, "sesiones", len(dates), "evaluables", len(ok_dates), "velas", n, "zonas", len(r["zones"]), "filas", len(t),

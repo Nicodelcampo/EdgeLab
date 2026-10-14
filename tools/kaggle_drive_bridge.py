@@ -358,12 +358,14 @@ class KaggleClient:
         script_text: str,
         accelerator: str = "cpu",
         dataset_sources: list[str] | None = None,
+        kernel_sources: list[str] | None = None,
         enable_internet: bool = False,
     ) -> Any:
         acc = accelerator.lower().strip()
         if acc not in ("cpu", "gpu"):
             raise KaggleBridgeError("accelerator must be 'cpu' or 'gpu'")
         sources = [s.strip() for s in (dataset_sources or []) if s.strip()]
+        ksources = [s.strip() for s in (kernel_sources or []) if s.strip()]
         return self._rpc_json(
             "kernels.KernelsApiService",
             "SaveKernel",
@@ -374,7 +376,7 @@ class KaggleClient:
                 "language": "python",
                 "kernelType": "script",
                 "datasetDataSources": sources,
-                "kernelDataSources": [],
+                "kernelDataSources": ksources,
                 "competitionDataSources": [],
                 "modelDataSources": [],
                 "categoryIds": [],
@@ -391,6 +393,12 @@ class KaggleClient:
         if version_label:
             payload["versionLabel"] = version_label
         return self._rpc_json("kernels.KernelsApiService", "GetKernelSessionStatus", payload)
+
+    def get_kernel_output(self, owner: str, slug: str, page_size: int = 50, page_token: str | None = None) -> Any:
+        payload: dict[str, Any] = {"userName": owner, "kernelSlug": slug, "pageSize": max(1, min(100, int(page_size)))}
+        if page_token:
+            payload["pageToken"] = str(page_token)
+        return self._rpc_json("kernels.KernelsApiService", "ListKernelSessionOutput", payload)
 
 
 def split_file_into_drive_chunks(
@@ -536,12 +544,14 @@ def _check_push_allowed(params: Mapping[str, Any], policy: BridgePolicy) -> dict
     if bool(params.get("enable_internet", False)):
         raise KaggleBridgeError("enable_internet=True no está permitido por el puente (evita exfiltrar datos privados)")
     sources = [str(s).strip() for s in (params.get("dataset_sources") or []) if str(s).strip()]
-    for s in sources:
+    ksources = [str(s).strip() for s in (params.get("kernel_sources") or []) if str(s).strip()]
+    for s in sources + ksources:
         owner = s.split("/")[0]
         if owner not in policy.allowed_source_owners:
-            raise KaggleBridgeError(f"dataset_source {s!r}: owner no permitido (--allow-source-owner)")
+            raise KaggleBridgeError(f"source {s!r}: owner no permitido (--allow-source-owner)")
     return dict(slug=slug, title=str(params["title"])[:100], script_text=str(params["script"]),
-                accelerator=str(params.get("accelerator", "cpu")), dataset_sources=sources, enable_internet=False)
+                accelerator=str(params.get("accelerator", "cpu")), dataset_sources=sources,
+                kernel_sources=ksources, enable_internet=False)
 
 
 def _git(repo: Path, *args: str, timeout: int = 120) -> str:
@@ -600,7 +610,7 @@ def check_patch(repo: Path, bridge_dir: Path, name: str) -> dict[str, Any]:
         raise KaggleBridgeError(f"no existe patches_for_review/{name}")
     if path.stat().st_size > MAX_PATCH_BYTES:
         raise KaggleBridgeError("parche demasiado grande")
-    r = subprocess.run(["git", "-C", str(repo), "apply", "--check", "--verbose", str(path)], capture_output=True, timeout=120)
+    r = subprocess.run(["git", "-C", str(repo), "apply", "--check", "--verbose", "--ignore-space-change", str(path)], capture_output=True, timeout=120)
     return {"patch": name, "sha256": _sha256_file(path), "applies_cleanly": r.returncode == 0,
             "detail": (r.stderr or r.stdout).decode("utf-8", errors="replace")[:1500],
             "note": "NO se aplicó. La revisión del diff y la aplicación son humanas o del agente local tras revisión; nunca automáticas."}
@@ -697,6 +707,19 @@ def process_bridge_request(
             slug=str(params["slug"]),
             version_label=params.get("version_label"),
         )
+    elif action == "get_kernel_output":
+        owner = str(params["owner"]).strip()
+        slug = str(params["slug"]).strip()
+        if not _SLUG_RE.match(slug):
+            raise KaggleBridgeError("slug inválido")
+        if owner not in policy.allowed_source_owners:                      # sin owners declarados = nadie permitido (no se leen salidas ajenas)
+            raise KaggleBridgeError(f"get_kernel_output: owner {owner!r} no permitido (--allow-source-owner)")
+        result = client.get_kernel_output(
+            owner=owner,
+            slug=slug,
+            page_size=int(params.get("page_size", 50)),
+            page_token=params.get("page_token"),
+        )
     else:
         raise KaggleBridgeError(f"Unsupported action: {action!r}")
 
@@ -729,7 +752,7 @@ def watch_bridge_directory(
 
     status_file = bridge_dir / "bridge_status.json"
     actions = ["ping", "search_datasets", "list_my_datasets", "list_dataset_files", "inspect_dataset",
-               "read_dataset_file_preview", "download_file_chunked", "get_kernel_status"]
+               "read_dataset_file_preview", "download_file_chunked", "get_kernel_status", "get_kernel_output"]
     if policy.repos:
         actions += ["git_head_info", "git_export_delta", "check_patch"]
     if policy.allow_push:

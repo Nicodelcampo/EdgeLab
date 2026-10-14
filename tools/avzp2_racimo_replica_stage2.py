@@ -37,10 +37,15 @@ def main():
             continue
         P = prep(d)
         res["O5|" + c] = beta(P, P["y_O5"].to_numpy(float))
+        if "o5_t0" in P.columns:
+            res["O5t0|" + c] = beta(P, P["o5_t0"].to_numpy(float))
+        if "o6_rev" in P.columns:
+            y_o6 = np.where(P["o6_rev"].isin([0, 1]), P["o6_rev"].to_numpy(float), np.nan)
+            res["O6rev|" + c] = beta(P, y_o6)
         if c in O1_CELLS:
             res["O1|" + c] = beta(P, P["y_O1"].to_numpy(float), extra=("trD", "moD"))
             res["O1sin|" + c] = beta(P, P["y_O1"].to_numpy(float))        # descriptivo: sin control (no entra a Holm)
-    primarias = {k: v for k, v in res.items() if not k.startswith("O1sin") and n_real[k.split("|")[1]] >= MIN_RAC}
+    primarias = {k: v for k, v in res.items() if k.startswith(("O5|", "O1|")) and n_real[k.split("|")[1]] >= MIN_RAC}
     holm(primarias)
     for k, v in primarias.items():
         v["evaluable"] = True

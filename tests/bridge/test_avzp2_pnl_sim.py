@@ -75,5 +75,40 @@ class Runner(unittest.TestCase):
         self.assertEqual(select_events(t, ["c"]).t0.tolist(), [1])
 
 
+    def test_quote_centinela_no_corrompe_salida_ni_entrada(self):
+        ts, last, bid, ask = mk([100, 100, 100, 100, 100])
+        ask_bad = ask.copy(); ask_bad[1] = float(1 << 40)
+        self.assertEqual(simulate_bracket(ts, last, bid, ask_bad, 0, 1, 5, 5, 10**9)["reason"], "NO_QUOTE")
+        bid_bad = bid.copy(); bid_bad[3] = -1.0              # el tick del vencimiento no tiene quote: sale en el siguiente VÁLIDO (no a -1)
+        r = simulate_bracket(ts, last, bid_bad, ask, 0, 1, 10, 10, max_ns=3000)
+        self.assertEqual(r["reason"], "TIME"); self.assertEqual(r["exit_idx"], 4)
+        self.assertTrue(np.isfinite(r["gross"]) and r["gross"] > -5)
+        bid_all_bad = bid.copy(); bid_all_bad[3:] = -1.0     # no hay ningún quote válido en o después del vencimiento
+        r2 = simulate_bracket(ts, last, bid_all_bad, ask, 0, 1, 10, 10, max_ns=3000)
+        self.assertEqual(r2["reason"], "NO_QUOTE_EXIT"); self.assertTrue(np.isnan(r2["gross"]))
+
+    def test_session_end_usa_el_ultimo_quote_valido(self):
+        ts, last, bid, ask = mk([100, 100, 101, 101, 101, 101])
+        bid_bad = bid.copy(); bid_bad[5] = -1.0              # el último tick de la sesión no tiene quote
+        r = simulate_bracket(ts, last, bid_bad, ask, 0, 1, 10, 10, max_ns=10**9, close_at_session_end=True)
+        self.assertEqual(r["reason"], "SESSION_END"); self.assertEqual(r["exit_idx"], 4)
+
+    def test_close_at_session_end_y_no_overlap(self):
+        import pandas as pd
+        ts, last, bid, ask = mk([100, 100, 101, 101, 101, 101])
+        r = simulate_bracket(ts, last, bid, ask, 0, 1, 10, 10, max_ns=10**9, close_at_session_end=True)
+        self.assertEqual(r["reason"], "SESSION_END")
+        self.assertTrue(np.isfinite(r["gross"]))
+        ev = pd.DataFrame([
+            dict(cell="c", contract="X", session=1, t0=0, te_end_ns=0, dir=1),
+            dict(cell="c", contract="X", session=1, t0=1, te_end_ns=1000, dir=1),
+        ])
+        res = run_events(ev, lambda c, s: (ts, last, bid, ask),
+                         dict(tp=10, sl=10, slip_stop=0.0, comm_ticks=0.0, max_seconds=100, close_at_session_end=True, no_overlap=True))
+        self.assertEqual(res.reason.tolist(), ["SESSION_END", "SKIPPED_OVERLAP"])
+        sm = summarize(res)
+        self.assertEqual(sm["n_operaciones"], 1)
+
+
 if __name__ == "__main__":
     unittest.main()
