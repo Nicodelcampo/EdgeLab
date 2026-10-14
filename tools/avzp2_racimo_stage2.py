@@ -38,10 +38,13 @@ def beta(d, y, extra=()):
                 n_sesiones=int(G))
 
 
-def prep(t):
+def prep(t, rank_method="first"):
+    """rank_method='first' reproduce las actas del 08-14/oct (empates rotos por orden de fila); 'average' (H-09 de la auditoría externa)
+    no depende del orden de las filas: los empates exactos caen en el mismo decil."""
     t = t.copy()
-    t["occD"] = pd.qcut(t.occ.rank(method="first"), 10, labels=False)
-    t["ampT"] = pd.qcut(t.amp.fillna(t.amp.median()).rank(method="first"), 3, labels=False)
+    rk = lambda s: s.rank(method=rank_method)
+    t["occD"] = pd.qcut(rk(t.occ), 10, labels=False, duplicates="drop")
+    t["ampT"] = pd.qcut(rk(t.amp.fillna(t.amp.median())), 3, labels=False, duplicates="drop")
     out = t.te >= 0
     t["y_O1"] = np.where(out & (t.trend != 0), (t.dir == t.trend).astype(float), np.nan)
     t["y_O2"] = np.where(t.o2 >= 0, (t.o2 == 1).astype(float), np.nan)
@@ -50,11 +53,11 @@ def prep(t):
     t["y_O4"] = t.o4
     t["y_O5"] = t.o5
     if "trend_h" in t:                       # auditoría de O1: magnitud de la tendencia (signo ya está en O1)
-        t["trD"] = pd.qcut(t.trend_h.abs().rank(method="first"), 10, labels=False)
-        t["moD"] = pd.qcut((t.mom100_h * np.sign(t.trend_h).replace(0, 1)).rank(method="first"), 10, labels=False)
+        t["trD"] = pd.qcut(rk(t.trend_h.abs()), 10, labels=False, duplicates="drop")
+        t["moD"] = pd.qcut(rk(t.mom100_h * np.sign(t.trend_h).replace(0, 1)), 10, labels=False, duplicates="drop")
     if "vol_occ" in t:                       # enmienda 2 de la grilla: actividad previa (volumen e intensidad)
         for c, k in (("vol_occ", "voD"), ("vol_100", "v1D"), ("dur_occ", "duD"), ("dur_100", "d1D")):
-            t[k] = pd.qcut(t[c].fillna(t[c].median()).rank(method="first"), 10, labels=False)
+            t[k] = pd.qcut(rk(t[c].fillna(t[c].median())), 10, labels=False, duplicates="drop")
     return t
 
 

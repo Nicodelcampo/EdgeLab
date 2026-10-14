@@ -15,18 +15,97 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-RELEASE = Path(os.environ.get("RELEASE_DIR", r"D:\edgelab_release_work\dl_check"))   # release canónica descargada de Kaggle (SHA verificado)
-OUT = Path(os.environ.get("AVCL_OUT", "D:/edgelab_release_work/avzp2_replica_v2"))
+KAGGLE = Path("/kaggle/input").exists()
+HOLDOUT_FIRST_TRADE_DATE = 20261001
+HOLDOUT_FIRST_TS_NS = 1_790_805_600_000_000_000        # 2026-09-30T22:00:00Z: apertura CME de la sesión del 2026-10-01
+if KAGGLE:                                              # kernel de Kaggle: código del dataset edgelab-code-avcl-fast + release como dataset
+    OUT = Path(os.environ.get("AVCL_OUT", "/kaggle/working"))
+    _inp = Path("/kaggle/input")
+    _code = next((p.parent.parent for r in [_inp, *_inp.glob("datasets/*")] for p in r.glob("edgelab-code-avcl-fast/**/edgelab/__init__.py")), None)
+    if _code is None:
+        raise RuntimeError("STOP: no se encontró el dataset de código edgelab-code-avcl-fast")
+    sys.path.insert(0, str(_code))
+    _rel = os.environ.get("RELEASE_DIR")
+    RELEASE = Path(_rel) if _rel else next((p.parent for p in sorted(_inp.rglob("release_manifest.json"))), None)
+    if RELEASE is None:
+        raise RuntimeError("STOP: no se encontró release_manifest.json en /kaggle/input")
+else:                                                   # local: repo + release descargada de Kaggle
+    RELEASE = Path(os.environ.get("RELEASE_DIR", r"D:\edgelab_release_work\dl_check"))
+    OUT = Path(os.environ.get("AVCL_OUT", "D:/edgelab_release_work/avzp2_replica_v3"))
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 OUT.mkdir(parents=True, exist_ok=True)
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from scipy.stats import norm  # noqa: E402
 from edgelab.bridge import bars as B  # noqa: E402
 from edgelab.bridge import ticks as T  # noqa: E402
 from edgelab.bridge.sessions import session_end_ns  # noqa: E402
-import importlib.util  # noqa: E402
-_sp = importlib.util.spec_from_file_location("release_reader", os.environ.get("RELEASE_READER", "E:/EdgeLab-data/edgelab/data/liquid_release/release_reader.py"))
-_rr = importlib.util.module_from_spec(_sp); sys.modules["release_reader"] = _rr; _sp.loader.exec_module(_rr)   # lector seguro de la release (rama data/liquid-release-20261014)
-read_asset = _rr.read_asset
+import hashlib  # noqa: E402
+import pyarrow.parquet as pq  # noqa: E402
+
+
+def preflight_footer(pf):
+    """COPIA de edgelab.data.liquid_release.release_reader.preflight_footer (un test verifica que se comportan igual).
+    STOP de custodia ANTES de leer cualquier payload: ambos relojes en TODOS los row groups; sin estadísticas, con nulls o con
+    fecha/timestamp reservados se detiene."""
+    names = pf.schema_arrow.names
+    cols = {}
+    for col in ("trade_date", "ts_utc_ns"):
+        if col not in names:
+            raise RuntimeError(f"STOP: el archivo no tiene columna {col}")
+        cols[col] = names.index(col)
+    for g in range(pf.metadata.num_row_groups):
+        rg = pf.metadata.row_group(g)
+        for col, ci in cols.items():
+            st = rg.column(ci).statistics
+            if st is None or not st.has_min_max:
+                raise RuntimeError(f"STOP: row group {g} sin estadísticas de {col}")
+            if st.null_count:
+                raise RuntimeError(f"STOP: row group {g} con nulls en {col}")
+            limit = HOLDOUT_FIRST_TRADE_DATE if col == "trade_date" else HOLDOUT_FIRST_TS_NS
+            if int(st.max) >= limit:
+                raise RuntimeError(f"STOP: row group {g} contiene {col} reservado (max {int(st.max)} >= {limit})")
+
+
+def read_asset(release_dir, asset, start_trade_date, end_trade_date, *, columns=None, verify_hash=True, purpose=None):
+    """Lector mínimo equivalente al de la release: manifiesto, ruta relativa, tamaño, SHA-256, preflight de footers y sólo los row
+    groups pedidos por trade_date (STOP si un grupo cruza el borde del rango). `purpose` obligatorio y distinto de 'research'."""
+    if purpose not in ("audit", "provisional_research"):
+        raise RuntimeError("STOP: declarar purpose='audit' o 'provisional_research' (research exige aprobación externa de Nico)")
+    root = Path(release_dir)
+    man = json.loads((root / "release_manifest.json").read_text(encoding="utf-8"))
+    if man.get("schema") != "edgelab_liquid_release_v1":
+        raise RuntimeError("STOP: esquema de manifiesto desconocido")
+    if end_trade_date >= HOLDOUT_FIRST_TRADE_DATE:
+        raise RuntimeError("STOP: el rango pedido alcanza el holdout")
+    e = man["assets"][asset]
+    rel = e["file"]
+    if os.path.isabs(rel) or ".." in Path(rel).parts:
+        raise RuntimeError("STOP: ruta del manifiesto no relativa")
+    f = root / rel
+    if f.stat().st_size != int(e["bytes"]):
+        raise RuntimeError("STOP: tamaño distinto al del manifiesto")
+    if verify_hash:
+        h = hashlib.sha256()
+        with open(f, "rb") as fh:
+            while True:
+                b = fh.read(16 << 20)
+                if not b:
+                    break
+                h.update(b)
+        if h.hexdigest() != e["sha256"]:
+            raise RuntimeError("STOP: SHA-256 distinto al del manifiesto")
+    pf = pq.ParquetFile(f)
+    preflight_footer(pf)
+    ci = pf.schema_arrow.names.index("trade_date")
+    keep = []
+    for g in range(pf.metadata.num_row_groups):
+        st = pf.metadata.row_group(g).column(ci).statistics
+        lo, hi = int(st.min), int(st.max)
+        if hi < start_trade_date or lo > end_trade_date:
+            continue
+        if lo < start_trade_date or hi > end_trade_date:
+            raise RuntimeError("STOP: row group cruza el borde del rango pedido")
+        keep.append(g)
+    return pf.read_row_groups(keep, columns=columns) if keep else pf.schema_arrow.empty_table().select(columns)
 
 END_NS = pd.Timestamp("2026-09-30 22:00", tz="UTC").value
 CT = "America/Chicago"
@@ -60,7 +139,7 @@ def load_contract(c):
     """Ticks del contrato c desde la release (sólo sus sesiones seleccionadas) sin la pausa CME 16:00-17:00 CT."""
     si = pd.read_parquet(RELEASE / "metadata" / "session_index.parquet")
     d_ = si[(si.instrument == INST) & (si.contract == c) & (si.status == "SELECTED")].trade_date
-    t = read_asset(RELEASE, INST, int(d_.min()), int(d_.max()), verify_hash=False, purpose="provisional_research",
+    t = read_asset(RELEASE, INST, int(d_.min()), int(d_.max()), verify_hash=os.environ.get("VERIFY_HASH", "1") == "1", purpose="provisional_research",
                    columns=["ts_utc_ns", "price_ticks", "volume", "bid_ticks", "ask_ticks", "contract", "trade_date"])
     import pyarrow.compute as pc
     m = pc.equal(t.column("contract").cast("string"), c).to_numpy(zero_copy_only=False)
@@ -88,6 +167,15 @@ from edgelab.bridge.indicators.avolzonepoi2 import run as zp2_run, _racimo  # no
 SPEC = int(os.environ.get("AVCL_SPEC", 25))      # ticks (operaciones) por barra; ES/MNQ 25; NQ-normalizada 3 (manifiesto REPLICA-NQ-BARRA)
 ZP2_PARAMS = dict(ob_away_heights=6.0, ob_max_inside_pct=4.0, racimo_min=0, racimo_bars=500, racimo_altura_ticks=30)
 CELLS = [(6, 500, 30)] + [(m, 1000, a) for m in (4, 5, 6) for a in (30, 45)]   # congeladas en el manifiesto REPLICA
+
+
+def pseudo_box(c_b0, dl, dh, tr_real, tr_pseudo):
+    """Caja [L, H] de un pseudo-racimo ubicado en una barra con cierre c_b0, copiando los desplazamientos (dl, dh) del racimo real.
+    Si las tendencias previas (signo) son opuestas se espeja: [dl, dh] -> [-dh, -dl]. Así la distancia al borde del lado de la tendencia
+    del pseudo es igual a la del real (H-03)."""
+    if tr_real != 0 and tr_pseudo != 0 and tr_pseudo != tr_real:
+        return int(c_b0 - dh), int(c_b0 - dl)
+    return int(c_b0 + dl), int(c_b0 + dh)
 
 
 def racimos_de(zones, m, w, a):
@@ -261,22 +349,31 @@ def run_contract(c):
                 continue
             dl, dh, span = k["low0"] - cl[t0], k["high0"] - cl[t0], t0 - k["start0"]
             tr_r = int(np.sign(cl[t0] - cl[max(0, t0 - TREND)]))
-            # apareamiento por ocupación y orientación relativa al signo de la tendencia (H-03, auditoría externa):
-            # si sign(trend(b0)) != sign(trend(t0)), se espeja [dl, dh] -> [-dh, -dl] para preservar la distancia al borde del lado de la tendencia
             occ_r = occ(t0, k["low0"], k["high0"])
+            # NULO ESPEJADO (primario; H-03 de la auditoría externa): apareamiento por ocupación y por orientación relativa al signo de la
+            # tendencia: si sign(trend(b0)) != sign(trend(t0)) se espeja [dl, dh] -> [-dh, -dl], preservando la distancia al borde del lado de la tendencia.
             got = 0
             for b0 in rng.choice(cand, min(200, 40 * NPSEUDO), replace=True):
                 b0_i = int(b0)
                 if b0_i - span - 1 < HPOST:
                     continue
                 tr_b = int(np.sign(cl[b0_i] - cl[max(0, b0_i - TREND)]))
-                if tr_r != 0 and tr_b != 0 and tr_b != tr_r:
-                    L_, H_ = int(cl[b0_i] - dh), int(cl[b0_i] - dl)
-                else:
-                    L_, H_ = int(cl[b0_i] + dl), int(cl[b0_i] + dh)
+                L_, H_ = pseudo_box(int(cl[b0_i]), dl, dh, tr_r, tr_b)
                 if abs(occ(b0_i, L_, H_) - occ_r) > 0.05:
                     continue
                 rows.append((cell,) + row("pseudo", b0_i, L_, H_, int(b0_i - span)))
+                got += 1
+                if got >= NPSEUDO:
+                    break
+            # NULO LEGACY (sensibilidad; idéntico al de las actas del 14-oct): copia (dl, dh) sin tener en cuenta el signo de la tendencia del pseudo.
+            # Se genera en la MISMA corrida para medir directamente cuánto del efecto de O1 depende del nulo.
+            rng2 = np.random.default_rng(zlib.crc32((c + "|" + cell + "|k%d" % t0).encode()))
+            got = 0
+            for b0 in rng2.choice(cand, min(200, 40 * NPSEUDO), replace=True):
+                L_, H_ = int(cl[b0] + dl), int(cl[b0] + dh)
+                if abs(occ(int(b0), L_, H_) - occ_r) > 0.05:
+                    continue
+                rows.append((cell,) + row("pseudo_legacy", int(b0), L_, H_, int(b0 - span)))
                 got += 1
                 if got >= NPSEUDO:
                     break
@@ -288,10 +385,34 @@ def run_contract(c):
           "%.0f s" % (time.time() - t0_), flush=True)
 
 
+def _contract_order(k):
+    mm, yy = k.split()[-1].split("-")
+    return int(yy), int(mm)
+
+
+def pin_check():
+    """Si EXPECT_MANIFEST_SHA256 está definido, el manifiesto de la release visible debe tener EXACTAMENTE ese SHA-256 (pin por contenido:
+    no depende del número de versión de Kaggle)."""
+    exp = os.environ.get("EXPECT_MANIFEST_SHA256", "").strip().lower()
+    if exp:
+        got = hashlib.sha256((RELEASE / "release_manifest.json").read_bytes()).hexdigest()
+        if got != exp:
+            raise RuntimeError("STOP: el manifiesto de la release (%s...) no es el esperado (%s...)" % (got[:12], exp[:12]))
+        print("manifiesto verificado:", got, flush=True)
+
+
 def main():
-    for c in [x.strip() for x in os.environ["AVCL_CONTRACTS"].split(",") if x.strip()]:
+    pin_check()
+    cs = [x.strip() for x in os.environ.get("AVCL_CONTRACTS", "").split(",") if x.strip()]
+    if not cs:                                           # por defecto: todos los contratos del activo con sesiones seleccionadas
+        si = pd.read_parquet(RELEASE / "metadata" / "session_index.parquet")
+        cs = sorted(si[(si.instrument == INST) & (si.status == "SELECTED")].contract.unique(), key=_contract_order)
+    for c in cs:
         run_contract(c)
         gc.collect()
+    fn = globals().get("run_analysis")                   # lo agrega el constructor del kernel (build_avzp2_replica_kernel.py)
+    if fn and os.environ.get("AVCL_ANALYZE", "1") == "1":
+        fn()
 
 
 if __name__ == "__main__":
