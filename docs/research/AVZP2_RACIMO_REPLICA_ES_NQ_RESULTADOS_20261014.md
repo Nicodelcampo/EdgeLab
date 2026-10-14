@@ -42,7 +42,7 @@ Excursión máxima favorable (MFE) después de la salida, en ticks, antes de vol
 Rango mediano de una barra de 25 operaciones (contrato 06-26, release canónica, ≈250–400 mil barras): **ES 1 tick (media 1,66); NQ 11 ticks (media 12,6)**.
 Una franja de 30 ticks son ~30 barras de rango en ES y ~3 en NQ: **la definición "en ticks" y la barra "25t" no transportan geometría entre instrumentos**
 (el factor para equiparar sería ≈ 7–11×, es decir alturas de 200–330 ticks en NQ, lo que ya es otra hipótesis). Por eso la falla formal de NQ es de geometría/potencia y no un contraejemplo.
-Una réplica en NQ requiere **definir la barra por rango o tiempo equivalente** (p. ej. barras de rango constante o de 1–2 ticks de rango mediano). NO MEDIDO; propuesta para una campaña aparte con su propio manifiesto.
+Normalizar por conteo es inviable: el rango escala ≈ √n, así que igualar el rango de ES en NQ pediría < 1 operación por barra. Una réplica en NQ requiere **barras de rango constante o de tiempo** (no existen aún en `edgelab.bridge.bars` para este indicador). NO MEDIDO; campaña aparte con su propio manifiesto. El parámetro `AVCL_SPEC` del stage1 queda disponible para ese trabajo.
 
 ## Límites declarados
 - La release sólo tiene el contrato líder: las primeras 20 sesiones de cada contrato se excluyen (warm-up del umbral de zonas). ES: 193 sesiones evaluables.

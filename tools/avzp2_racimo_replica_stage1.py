@@ -85,7 +85,7 @@ import numba  # noqa: E402
 import zlib  # noqa: E402
 from edgelab.bridge.indicators.avolzonepoi2 import run as zp2_run, _racimo  # noqa: E402
 
-SPEC = 25
+SPEC = int(os.environ.get("AVCL_SPEC", 25))      # ticks (operaciones) por barra; ES/MNQ 25; NQ-normalizada 3 (manifiesto REPLICA-NQ-BARRA)
 ZP2_PARAMS = dict(ob_away_heights=6.0, ob_max_inside_pct=4.0, racimo_min=0, racimo_bars=500, racimo_altura_ticks=30)
 CELLS = [(6, 500, 30)] + [(m, 1000, a) for m in (4, 5, 6) for a in (30, 45)]   # congeladas en el manifiesto REPLICA
 
@@ -239,7 +239,7 @@ def run_contract(c):
                     break
     t = pd.DataFrame(rows, columns=["cell", "contract", "kind", "t0", "L", "H", "h", "session", "clock", "occ", "amp", "trend", "pos",
                                     "te", "dir", "o2", "o3a", "o3b", "mx_h", "o4", "o5", "trend_h", "mom100_h"])
-    t.to_parquet(OUT / ("%s_%s_avzp2racgrid.parquet" % (INST, c.replace(" ", "_"))))
+    t.to_parquet(OUT / ("%s_%s%s_avzp2racgrid.parquet" % (INST, c.replace(" ", "_"), "" if SPEC == 25 else "_s%d" % SPEC)))
     print(c, "sesiones", len(dates), "evaluables", len(ok_dates), "velas", n, "zonas", len(r["zones"]), "filas", len(t),
           "%.0f s" % (time.time() - t0_), flush=True)
 
