@@ -60,7 +60,7 @@ def process_contract(args):
 def main():
     import edgelab_data as ed, concurrent.futures as cf, multiprocessing as mp
     t0 = time.time(); ed.check_inputs((INST, DESDE, HASTA)); sess = ed.sessions(INST, DESDE, HASTA)
-    zd = Path(CFG["zones_dir"]); csv = next(zd.rglob("zones_table*.csv")); Zdf = pd.read_csv(csv); print("zonas en la tabla", len(Zdf), flush=True)
+    csv = next(p for r in ([Path("/kaggle/input"), *Path("/kaggle/input").glob("datasets/*")] if KAGGLE else [Path(CFG.get("zones_dir", "."))]) for p in r.rglob("zones_table*.csv")); Zdf = pd.read_csv(csv); print("zonas en la tabla", len(Zdf), flush=True)
     jobs = []
     for c in sorted(sess.contract.unique(), key=lambda x: (x[-2:], x[-5:-3])):
         ds, fl, a, b = contract_rows(c, sess); zs = Zdf[Zdf.contract == c].to_dict("records")
@@ -78,4 +78,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception:
+        import traceback; (OUT / "ERROR.json").write_text(json.dumps(dict(traceback=traceback.format_exc()[-3000:]), indent=1)); print("ERROR", flush=True); raise
