@@ -61,6 +61,8 @@ def manifest_contrast(inv: pd.DataFrame) -> pd.DataFrame:
 
 
 def tz_table(bins: pd.DataFrame, inv: pd.DataFrame) -> pd.DataFrame:
+    """Huso por grupo. Veredicto por evidencia: con >= 5.000 ticks, UTC se acepta si la violación del calendario CME es
+    <= 0,5 % y ART (-3) viola >= 2 pp más; los trimestres con >= 5.000 ticks y violación > 0,5 % quedan listados."""
     g = inv.set_index("id")["group"]
     bins = bins.assign(group=bins["source_id"].map(g))
     rows = []
@@ -69,16 +71,29 @@ def tz_table(bins: pd.DataFrame, inv: pd.DataFrame) -> pd.DataFrame:
         v = violation_by_offset(agg)
         best = min(v, key=v.get)
         d = dict(group=grp, rows=int(agg["n"].sum()), best_offset_h=best, viol_best=v[best], viol_utc=v[0], viol_art=v[-3])
-        # estabilidad por trimestre: offset óptimo en cada tramo
         agg["q"] = pd.to_datetime(agg["raw_date"].astype(str)).dt.to_period("Q").astype(str)
-        per = {}
+        badq = {}
         for q, bq in agg.groupby("q"):
-            vq = violation_by_offset(bq)
-            per[q] = min(vq, key=vq.get)
-        d["best_by_quarter"] = json.dumps(per)
-        d["offset_stable"] = len(set(per.values())) == 1
+            if bq["n"].sum() < 5000:
+                continue
+            vq = violation_by_offset(bq, offsets=(0, -3))
+            if vq[0] > 0.005:
+                badq[q] = round(vq[0], 5)
+        d["quarters_off_schedule"] = json.dumps(badq)
+        if d["rows"] < 5000:
+            d["verdict"] = "INSUFFICIENT_EVIDENCE"
+        elif v[0] <= 0.005 and v[-3] - v[0] >= 0.02 and not badq:
+            d["verdict"] = "UTC_VERIFIED"
+        elif v[0] <= 0.05 and best == 0:
+            d["verdict"] = "UTC_WITH_ANOMALIES"
+        else:
+            d["verdict"] = "NOT_VERIFIED"
         rows.append(d)
-    return pd.DataFrame(rows)
+    out = pd.DataFrame(rows)
+    # sin evidencia suficiente se declara offset 0 (UTC declarado por el exportador) sólo para poder calcular fechas:
+    # el veredicto manda, no el offset
+    out.loc[out["verdict"] == "INSUFFICIENT_EVIDENCE", "best_offset_h"] = 0
+    return out
 
 
 def _p(hist_row: np.ndarray, q: float) -> float:
@@ -143,8 +158,8 @@ def main():
     cd.to_parquet(out / "contract_day.parquet", index=False)
     allb.drop(columns=["spread_hist"]).to_parquet(out / "bins_with_trade_date.parquet", index=False)
     summ = dict(sources=int(len(inv)), rows=int(inv["rows_ok"].fillna(0).sum()), groups=int(tz.shape[0]),
-                tz_offsets=tz["best_offset_h"].value_counts().to_dict(),
-                tz_unstable=tz.loc[~tz["offset_stable"], "group"].tolist(),
+                tz_verdicts=tz["verdict"].value_counts().to_dict(),
+                tz_not_verified=tz.loc[tz["verdict"].isin(["NOT_VERIFIED", "UTC_WITH_ANOMALIES"]), "group"].tolist(),
                 b_manifest=mc["manifest"].value_counts().to_dict() if len(mc) else {},
                 b_sha_match=mc["sha_match"].value_counts(dropna=False).to_dict() if "sha_match" in mc else {},
                 b_ticks_match=mc["ticks_match"].value_counts(dropna=False).to_dict() if "ticks_match" in mc else {})

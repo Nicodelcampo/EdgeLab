@@ -13,7 +13,8 @@ from edgelab.data.liquid_release.nt8_text import iter_decoded
 N_SPREAD = 34        # bin 0 = locked (spread 0 ticks), 1..32 = ticks, 33 = >=33 ticks
 GRID_TOL = 1e-6
 _SUM_KEYS = ("n", "vol", "n_vol_le0", "off_last", "off_bid", "off_ask", "noquote", "crossed", "locked",
-             "last_gt_ask", "last_lt_bid")
+             "last_gt_ask", "last_lt_bid", "fp_ts", "fp_px", "fp_bid", "fp_ask", "n_min")
+_MAX_KEYS = ("max_gap_ns",)
 
 
 class HourlyAccumulator:
@@ -22,10 +23,12 @@ class HourlyAccumulator:
         self.rows = {}
         self.nonmono = 0
         self.prev_ts = None
+        self.prev_ts_before = None
         self.dup_consecutive = 0
         self.prev_row = None
         self.min_ts = None
         self.max_ts = None
+        self.prev_min_id = None          # minuto (date*1440+hh*60+mm) del último tick del lote anterior
 
     def add(self, b: dict):
         n = len(b["date"])
@@ -35,6 +38,7 @@ class HourlyAccumulator:
         # monotonía y duplicados exactos consecutivos (informativo: timestamps iguales NO son duplicación)
         dts = np.diff(ts)
         self.nonmono += int((dts < 0).sum())
+        self.prev_ts_before = self.prev_ts
         if self.prev_ts is not None and ts[0] < self.prev_ts:
             self.nonmono += 1
         same = ((dts == 0) & (last[1:] == last[:-1]) & (bid[1:] == bid[:-1]) & (ask[1:] == ask[:-1])
@@ -68,12 +72,41 @@ class HourlyAccumulator:
             return np.bincount(inv, weights=mask.astype(np.float64), minlength=m).astype(np.int64)
 
         hist = np.bincount((inv * N_SPREAD + sbin)[has_sp], minlength=m * N_SPREAD).reshape(m, N_SPREAD)
+        # huellas de contenido (enteros exactos, independientes de cómo se parta el archivo en lotes)
+        hstart = (np.floor_divide(ts, 3_600_000_000_000)) * 3_600_000_000_000
+        gaps = np.empty(n, dtype=np.int64)
+        gaps[1:] = dts
+        gaps[0] = ts[0] - self.prev_ts_before if self.prev_ts_before is not None else 0
+        gaps = np.maximum(gaps, 0)
+        v_ts = (ts - hstart) // 1000
+        v_px = np.rint(gl).astype(np.int64)
+        v_bid = np.where(bid > 0, np.rint(gb), 0).astype(np.int64)
+        v_ask = np.where(ask > 0, np.rint(ga), 0).astype(np.int64)
+        if (np.diff(inv) >= 0).all():                       # caso normal: bins contiguos -> sumas por segmento
+            fp_ts, fp_px = np.add.reduceat(v_ts, first), np.add.reduceat(v_px, first)
+            fp_bid, fp_ask = np.add.reduceat(v_bid, first), np.add.reduceat(v_ask, first)
+            max_gap = np.maximum.reduceat(gaps, first)
+        else:                                               # archivo desordenado: camino lento pero exacto
+            fp_ts = np.zeros(m, dtype=np.int64); fp_px = np.zeros(m, dtype=np.int64)
+            fp_bid = np.zeros(m, dtype=np.int64); fp_ask = np.zeros(m, dtype=np.int64)
+            max_gap = np.zeros(m, dtype=np.int64)
+            np.add.at(fp_ts, inv, v_ts); np.add.at(fp_px, inv, v_px)
+            np.add.at(fp_bid, inv, v_bid); np.add.at(fp_ask, inv, v_ask)
+            np.maximum.at(max_gap, inv, gaps)
+        # minutos activos distintos por hora (los datos están ordenados en el tiempo)
+        mid = b["date"].astype(np.int64) * 1440 + b["hour"] * 60 + (ts // 60_000_000_000) % 60
+        newmin = np.empty(n, dtype=bool)
+        newmin[1:] = mid[1:] != mid[:-1]
+        newmin[0] = self.prev_min_id is None or mid[0] != self.prev_min_id
+        n_min = np.bincount(inv, weights=newmin.astype(np.float64), minlength=m).astype(np.int64)
+        self.prev_min_id = int(mid[-1])
         cols = dict(n=np.bincount(inv, minlength=m).astype(np.int64),
                     vol=np.bincount(inv, weights=vf, minlength=m).astype(np.int64),
                     n_vol_le0=cnt(vol <= 0), off_last=cnt(off_last), off_bid=cnt(off_bid), off_ask=cnt(off_ask),
                     noquote=cnt(noquote), crossed=cnt(crossed), locked=cnt(locked),
                     last_gt_ask=cnt((~noquote) & (last > ask + 1e-12)), last_lt_bid=cnt((~noquote) & (last < bid - 1e-12)),
-                    first_ts=ts[first], last_ts=ts[last_idx])
+                    first_ts=ts[first], last_ts=ts[last_idx], fp_ts=fp_ts, fp_px=fp_px, fp_bid=fp_bid, fp_ask=fp_ask,
+                    n_min=n_min, max_gap_ns=max_gap)
         for i, k in enumerate(uk):
             r = self.rows.get(int(k))
             if r is None:
@@ -81,6 +114,8 @@ class HourlyAccumulator:
             else:
                 for kk in _SUM_KEYS:
                     r[kk] += int(cols[kk][i])
+                for kk in _MAX_KEYS:
+                    r[kk] = max(r[kk], int(cols[kk][i]))
                 r["first_ts"] = min(r["first_ts"], int(cols["first_ts"][i]))
                 r["last_ts"] = max(r["last_ts"], int(cols["last_ts"][i]))
                 r["hist"] += hist[i]

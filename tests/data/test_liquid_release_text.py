@@ -68,5 +68,16 @@ class TextReader(unittest.TestCase):
         self.assertEqual(info["rows_ok"], 3)
 
 
+    def test_hueco_maximo_minutos_y_huella(self):
+        lines = ["20260930 100000 0000000;100.25;100.00;100.25;3", "20260930 100001 0000000;100.25;100.00;100.25;2",
+                 "20260930 102500 0000000;100.50;100.25;100.50;4", "20260930 102530 0000000;100.50;100.25;100.50;1"]
+        df, _ = scan_file(_write(lines), 0.25, chunk_bytes=64)           # lotes chicos: el resultado no puede depender de ellos
+        df2, _ = scan_file(_write(lines), 0.25)
+        self.assertEqual(int(df["max_gap_ns"].iloc[0]), (24 * 60 + 59) * 1_000_000_000)   # 100001 -> 102500
+        self.assertEqual(int(df["n_min"].iloc[0]), 2)                                      # minutos 10:00 y 10:25
+        for c in ("fp_ts", "fp_px", "fp_bid", "fp_ask", "n", "vol", "max_gap_ns", "n_min"):
+            self.assertEqual(int(df[c].iloc[0]), int(df2[c].iloc[0]), c)
+
+
 if __name__ == "__main__":
     unittest.main()
