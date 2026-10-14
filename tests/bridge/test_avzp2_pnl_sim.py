@@ -6,7 +6,7 @@ from pathlib import Path
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "tools"))
-from avzp2_pnl_sim import simulate_bracket, require_approval  # noqa: E402
+from avzp2_pnl_sim import simulate_bracket, require_approval, run_events, summarize, select_events  # noqa: E402
 
 
 def mk(prices, spread=1):
@@ -52,6 +52,27 @@ class Bracket(unittest.TestCase):
         os.environ.pop("NICO_PNL_OK", None)
         with self.assertRaises(SystemExit):
             require_approval(__file__)
+
+
+class Runner(unittest.TestCase):
+    def test_run_events_y_resumen_sinteticos(self):
+        import pandas as pd
+        ts, last, bid, ask = mk([100, 100, 101, 102, 103, 104, 105, 104, 100, 96, 95, 95])
+        ev = pd.DataFrame([dict(cell="c", contract="X", session=1, t0=0, te_end_ns=0, dir=1),
+                           dict(cell="c", contract="X", session=1, t0=1, te_end_ns=7000, dir=1),
+                           dict(cell="c", contract="X", session=2, t0=2, te_end_ns=0, dir=1)])
+        loader = lambda c, s: (ts, last, bid, ask) if s == 1 else (ts[:2], last[:2], bid[:2], ask[:2])
+        res = run_events(ev, loader, dict(tp=3, sl=3, slip_stop=0.0, comm_ticks=0.5, max_seconds=100))
+        self.assertEqual(res.reason.tolist(), ["TP", "SL", "NO_DATA"])
+        sm = summarize(res)
+        self.assertEqual(sm["n_eventos"], 3); self.assertEqual(sm["n_operaciones"], 2)
+        self.assertAlmostEqual(sm["tasa_tp"], 0.5)
+
+    def test_select_events_solo_a_favor_y_con_salida(self):
+        import pandas as pd
+        t = pd.DataFrame(dict(cell=["c"] * 4, contract=["X"] * 4, kind=["real", "real", "pseudo", "real"], t0=[1, 2, 3, 4],
+                              te=[5, 6, 7, -1], trend=[1, 1, 1, 1], dir=[1, -1, 1, 1]))
+        self.assertEqual(select_events(t, ["c"]).t0.tolist(), [1])
 
 
 if __name__ == "__main__":

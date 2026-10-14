@@ -57,6 +57,34 @@ def simulate_bracket(ts, last, bid, ask, entry_ns, side, tp, sl, max_ns, slip_st
     return dict(reason=reason, gross=float(gross), net=float(gross - comm_ticks), exit_idx=int(j[k]), entry=entry)
 
 
+def run_events(events, ticks_for_session, params):
+    """Corre el bracket de cada evento. `events`: DataFrame con session, te_end_ns, dir, cell, contract, t0.
+    `ticks_for_session(contract, session) -> (ts, last, bid, ask)` (arrays ordenados). `params`: tp, sl, slip_stop, comm_ticks, max_seconds.
+    Devuelve un DataFrame con una fila por evento (incluye NO_DATA/NO_QUOTE/NO_EXIT_IN_DATA: nada se descarta en silencio)."""
+    import pandas as pd
+    rows = []
+    cache = {}
+    for e in events.itertuples():
+        key = (e.contract, int(e.session))
+        if key not in cache:
+            cache.clear()
+            cache[key] = ticks_for_session(*key)
+        ts, last, bid, ask = cache[key]
+        r = simulate_bracket(ts, last, bid, ask, int(e.te_end_ns), int(e.dir), params["tp"], params["sl"],
+                             int(e.te_end_ns) + int(params["max_seconds"] * 1e9), params["slip_stop"], params["comm_ticks"])
+        rows.append(dict(cell=e.cell, contract=e.contract, session=int(e.session), t0=int(e.t0), side=int(e.dir), **r))
+    return pd.DataFrame(rows)
+
+
+def summarize(res):
+    """Expectativa por operación en ticks (bruto y neto) sobre las operaciones con salida; cuenta el resto por separado."""
+    ok = res[res.reason.isin(["TP", "SL", "TIME"])]
+    out = dict(n_eventos=int(len(res)), n_operaciones=int(len(ok)), razones=res.reason.value_counts().to_dict())
+    if len(ok):
+        out.update(bruto_medio=float(ok.gross.mean()), neto_medio=float(ok.net.mean()), tasa_tp=float((ok.reason == "TP").mean()))
+    return out
+
+
 def manifest_sha(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
@@ -69,11 +97,18 @@ def require_approval(manifest_path):
         sys.exit("STOP: el sha256 aprobado no coincide con el manifiesto actual (¿cambió después de la aprobación?).")
 
 
+def select_events(t, cells):
+    """Regla (a) del manifiesto: una entrada por racimo real que sale en la sesión, a favor de la tendencia previa (dir == trend != 0)."""
+    r = t[(t.kind == "real") & (t.te >= 0) & (t.trend != 0) & (t["dir"] == t.trend) & t.cell.isin(cells)]
+    return r.drop_duplicates(["cell", "contract", "t0"])
+
+
 def main():
     manifest = Path(__file__).resolve().parents[1] / "docs" / "research" / "AVZP2_PNL_MANIFIESTO_PROPUESTO_20261014.md"
     require_approval(manifest)
     print(json.dumps(dict(estado="aprobado", manifest_sha256=manifest_sha(manifest))))
-    sys.exit("El runner de ejecución se completa al aprobarse el manifiesto (parámetros de costos pendientes de Nico).")
+    sys.exit("Aprobado, pero falta el archivo de parámetros congelados (tp, sl, comisión, max_seconds) y el loader de la release: "
+             "se conectan con `run_events(select_events(...), loader, params)` al recibir las comisiones reales de Nico.")
 
 
 if __name__ == "__main__":
