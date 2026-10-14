@@ -1,3 +1,11 @@
+## Estado actual — GC A soporte TERMINAL COMPLETE, diagnóstico registrado
+
+Kernel138584908/v1 `edgelab-gc-a-support-diagnostic-v1`: COMPLETE, 1 intención cerrada/1 job/1 poll. Fuente1e86c07d/bundleb4eca447/plan0201ee0951f6; recibo4886936d byteexacto, auditor PASS. LeerGC_A_SUPPORT_CLOSEOUT/RECEIPT/BOOT/REVIEW/ANALYSIS/KNOWLEDGE_PROPOSAL/LAUNCH.
+
+707.465ticks/6train;76.284observadas/44.374elegibles/31.910UNKNOWN;A_ONLY2,BOTH0. Otros4sinpresiónactual170;sinprevia9;sinavance3;sinrango2;sinrecorrido39. Cuello actual en6fechas/4celdas agregadas;no omisión alcanza soporte2000. Sin outcomes,evaluación,nuevosumbrales/modelos/QA;no ausencia física ni edge. Runner18,908s/boot23,960s, no speedup comparativo. 959ResearchOps+18navegación+11focales PASS prelaunch;9focales PASS al cierre (4 nuevas pruebas sparse/dense ceros). La falsa alarma de igualdad dict se corrigió sin rerun ni modificar recibos.
+
+Próximo: nueva representación continua y trayectorias intermedias, preregistradas y target-free para soporte; no quitar filtros ni tuning contra evaluación previa. PropuestaNOcanónica;GC-AE previo inconcluso/intacto. Journals originales `gc-a-support-0201ee0951f6-{dispatch,watch}.sqlite`,noreset/replay;JSON no reconstruye custodia. Daemon/24x7/Brainwriter/holdout/P&L/merge/deploy cerrados. No nuevo job activo ENESTACAMPAÑA, no declaración global de cuenta. Debajo solo historia, no autorización de reenviar.
+
 ## GC A soporte — SEND_STARTED, ACK pendiente; NO reenviar
 
 959ResearchOpsPASS363,302s/18navegaciónPASS0,182s/11focalPASS. Fuente1e86c07d/bundleb4eca447/plan0201ee0951f6,33archivosbyteexactos. Journalsnuevos `gc-a-support-0201ee0951f6-{dispatch,watch}.sqlite`:1intención/1job/6polls,SEND_STARTEDpersistidoantesdeprovider. Sólotraining,nooutcomes/noevaluación/nofit/nuevosthresholds;previoGC-AEterminalsinsoporteintacto. Anteambigüedad,reconciliarremoto,noreset/reenvío. LeerGC_A_SUPPORT_LAUNCH/IMPLEMENTATION/PROTOCOL. Abajo:historia.
