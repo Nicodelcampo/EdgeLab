@@ -26,7 +26,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 570 |
+| `docs/research` | 571 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 11 |
@@ -39,6 +39,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | RESULTADOS | 2 | `RESULTADOS_PILOTO_SOPORTE_EXP_REV_GRID_20261015.md` | 2026-10-15 | MEDIDO (desarrollo; solo camino de precios, sin modelo ni indicador) |
 | REPORTE | 1 | `REPORTE_PARA_GEMINI_REVISION_CORREDOR_20261015.md` | 2026-10-15 | PROPUESTA — solicitud de revisión cruzada (no es un resultado confirmatorio) |
 | PROPUESTA | 2 | `PROPUESTA_MODELO_REVERSION_GRILLA_MULTIESCALA_20261015.md` | 2026-10-15 | PROPUESTA — NO APROBADA, NO EJECUTADA. Nada de este documento autoriza medir ret |
+| PAUTAS | 1 | `PAUTAS_PARA_GEMINI_CONTINUACION_EXP_REV_GRID_20261015.md` | 2026-10-15 | VIGENTE (instrucciones de trabajo; Claude tiene pocos créditos y delega la conti |
 | MANIFIESTO | 35 | `MANIFIESTO_PASADA3_CONFIRMATORIA_CORREDOR_20261015.md` | 2026-10-15 | BORRADOR PARA AUDITORÍA Y OK DE NICO. NO EJECUTAR. Ninguna medición sobre retorn |
 | INVESTIGACION | 3 | `INVESTIGACION_IA_GRILLA_PRECIO_VOLUMEN_REVERSION_20261015.md` | 2026-10-15 | PROPUESTA (investigación bibliográfica y de diseño; nada entrenado ni medido) |
 | ESTADO | 3 | `ESTADO_IDEA_ENTRENAMIENTO_IA_20261015.md` | 2026-10-15 | VIGENTE (se actualiza al cierre de cada hito) |
@@ -94,7 +95,6 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | TBZ | 1 | `TBZ_E2_PARAMETRIZACION_HOLISTICA_20260924.md` | 2026-09-24 | - |
 | RESEARCH | 1 | `RESEARCH_TRANSICION_BORDE_ZONA_EXPANSION_20260924.md` | 2026-09-24 | INVESTIGACIÓN + PROPUESTA DE FAMILIA. No registrada, no medida. Registrarla la d |
 | PARTICIONES | 1 | `PARTICIONES_Y_POTENCIA_L2_20260924.md` | 2026-09-24 | - |
-| FAMILIA | 3 | `FAMILIA_TBZ_FRANJAS_BAJA_PERMANENCIA_20260924.md` | 2026-09-24 | REGISTRADA (OK de Nico, 24/09: "registrala unificada pero diferenciando sus vari |
 
 ## Superados (7)
 
