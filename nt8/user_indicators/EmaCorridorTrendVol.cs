@@ -85,8 +85,18 @@ namespace NinjaTrader.NinjaScript.Indicators
 			public int    SecEndBar;
 			public double Lo;
 			public double Hi;
+			public double BoxLo;
+			public double BoxHi;
 			public string Tag;
 		}
+		private class ActiveMid
+		{
+			public int    StartBar;
+			public int    EndBar;
+			public string Tag;
+			public double Price;
+		}
+		private List<ActiveMid>   midLines;
 		private List<DateTime>    tkTime;
 		private List<double>      tkPx;
 		private List<double>      tkVol;
@@ -197,6 +207,9 @@ namespace NinjaTrader.NinjaScript.Indicators
 				DrawSector         = true;
 				AnchorsOnlyFlagged = true;
 				AnchorLifeBars     = 150;
+				ShowMidLine        = true;
+				MidLineBars        = 300;
+				MidBrush           = Brushes.Gold;
 				HvBarUseClose      = false;
 				PocBrush           = Brushes.Magenta;
 				VaBrush            = Brushes.DarkOrange;
@@ -226,6 +239,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 				pending = new List<PendingZone>();
 				volHist = new List<double>();
 				anchors = new List<ActiveAnchor>();
+				midLines = new List<ActiveMid>();
 				ticksSincePurge = 0;
 
 				ema      = EMA(EmaPeriod);
@@ -335,6 +349,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 
 			ProcessPendingZones();
 			DrawActiveAnchors();
+			DrawMidLines();
 
 			int minBarsNeeded = Math.Max(Math.Max(pWindowBars + LookbackOriginBars, pSlopeBars), Math.Max(EmaPeriod, AtrPeriod)) + 5;
 			if (CurrentBar < minBarsNeeded)
@@ -810,6 +825,8 @@ namespace NinjaTrader.NinjaScript.Indicators
 			z.SecEndBar   = endBar + fwd;                    // hasta una distancia igual a su ancho
 			z.Lo          = lo;
 			z.Hi          = hi;
+			z.BoxLo       = boxLo;
+			z.BoxHi       = boxHi;
 			z.Tag         = tag;
 			pending.Add(z);
 		}
@@ -904,6 +921,22 @@ namespace NinjaTrader.NinjaScript.Indicators
 		}
 
 		// Redibuja cada ancla activa como linea horizontal desde el inicio del sector hasta la barra actual (o hasta que vence)
+		// Redibuja cada linea del 50 % hasta que cumple MidLineBars barras desde el inicio del sector (el objeto queda dibujado al vencer)
+		private void DrawMidLines()
+		{
+			for (int mi = midLines.Count - 1; mi >= 0; mi--)
+			{
+				ActiveMid m = midLines[mi];
+				int endBar   = Math.Min(CurrentBar, m.EndBar);
+				int startAgo = CurrentBar - m.StartBar;
+				int endAgo   = CurrentBar - endBar;
+				if (startAgo > endAgo)
+					Draw.Line(this, m.Tag + "MID50", false, startAgo, m.Price, endAgo, m.Price, MidBrush, DashStyleHelper.Solid, 2);
+				if (CurrentBar >= m.EndBar)
+					midLines.RemoveAt(mi);
+			}
+		}
+
 		private void DrawActiveAnchors()
 		{
 			for (int ai = anchors.Count - 1; ai >= 0; ai--)
@@ -994,6 +1027,17 @@ namespace NinjaTrader.NinjaScript.Indicators
 					an.Dir       = z.Dir;
 					an.Flagged   = flagged;
 					anchors.Add(an);
+				}
+
+				// Linea al 50 % de la caja de la zona, solo si el sector termino marcado (rectangulo amarillo); se extiende MidLineBars barras desde el inicio del sector
+				if (flagged && ShowMidLine)
+				{
+					ActiveMid mid = new ActiveMid();
+					mid.StartBar = z.SecStartBar;
+					mid.EndBar   = z.SecStartBar + MidLineBars;
+					mid.Tag      = z.Tag;
+					mid.Price    = Instrument.MasterInstrument.RoundToTickSize(0.5 * (z.BoxLo + z.BoxHi));
+					midLines.Add(mid);
 				}
 
 				if (DrawSector)
@@ -1254,6 +1298,25 @@ namespace NinjaTrader.NinjaScript.Indicators
 		[Display(Name = "Barra de maximo volumen: usar cierre", Order = 12, GroupName = "5. Volumen de sector",
 			Description = "false = punto medio del rango de la barra; true = su cierre.")]
 		public bool HvBarUseClose { get; set; }
+
+		[Display(Name = "Linea al 50 % en zonas marcadas", Order = 20, GroupName = "5. Volumen de sector",
+			Description = "Dibuja una linea horizontal al 50 % del alto de la caja de las zonas cuyo sector termino marcado (rectangulo amarillo).")]
+		public bool ShowMidLine { get; set; }
+
+		[Range(10, 5000)]
+		[Display(Name = "Linea al 50 %: barras de extension", Order = 21, GroupName = "5. Volumen de sector",
+			Description = "Barras que se extiende la linea del 50 %, contadas desde el inicio del sector.")]
+		public int MidLineBars { get; set; }
+
+		[XmlIgnore]
+		[Display(Name = "Color linea al 50 %", Order = 22, GroupName = "5. Volumen de sector")]
+		public Brush MidBrush { get; set; }
+		[Browsable(false)]
+		public string MidBrushSerialize
+		{
+			get { return Serialize.BrushToString(MidBrush); }
+			set { MidBrush = Serialize.StringToBrush(value); }
+		}
 
 		[XmlIgnore]
 		[Display(Name = "Color POC", Order = 13, GroupName = "5. Volumen de sector")]

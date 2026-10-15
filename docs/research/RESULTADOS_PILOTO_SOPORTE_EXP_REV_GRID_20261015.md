@@ -60,3 +60,15 @@ Mismo método, decisiones cada 15 s (≈1.660 por sesión), ES descubrimiento (1
 | 24/12 | 120 | 0,058 | 0,239 | 0,703 | 493 | 0,432 |
 **Lectura:** a ≤ 60 s en ES el dilema es económico, no de datos. Con barreras chicas (8 ticks) hay mucho soporte pero el acierto necesario para cubrir la fricción es 72 %; con barreras que cubren la fricción con holgura (16–24 ticks) casi todo vence por timeout (85–95 %). Con fricción de toma (3,5 ticks) la pista L2 de horizonte corto sólo tiene sentido si (a) se cambia el objetivo a **información calibrada** (probabilidades de movimiento del mid) y se evalúa la economía con entradas pasivas y su modelo de llenado, o (b) se usa el libro como contexto para horizontes de 5–30 min, donde la pista de ticks ya mostró soporte (§ anterior). Hay N de sobra (≈ 75.000 episodios independientes a 60 s): el límite no es el tamaño de la muestra.
 
+## Soporte en la ventana L2 de ES (decisión de Nico: "la segunda", libro como contexto de 5–30 min)
+`tools/grid_support_pilot/support_pilot_l2window.py`: mismas decisiones cada 60 s en RTH, usando los trades del L1 local (contrato principal por sesión; `ts_us` ART→UTC sumando 3 h). **85 sesiones con RTH (28-jun a 14-oct-2026).** Resultados en `grid_support_pilot_20261015/GRID_SUPPORT_PILOT_L2WINDOW.json`.
+| X/Y | T (s) | R | C | timeout | `p_eq` |
+|---|---|---|---|---|---|
+| 24/24 | 1800 | 0,368 | 0,368 | 0,263 | 0,574 |
+| 32/32 | 900 | 0,185 | 0,185 | 0,630 | 0,555 |
+| **32/32** | **1800** | 0,284 | 0,284 | **0,431** | 0,555 |
+| 32/32 | 3600 | 0,374 | 0,374 | 0,240 | 0,555 |
+| 48/32 | 1800 | 0,152 | 0,303 | 0,544 | 0,444 |
+| 48/48 | 1800 | 0,164 | 0,164 | 0,671 | 0,537 |
+**Lectura:** en la ventana L2 (más reciente y más corta) la etiqueta 32/32 a 1800 s resuelve **56,9 %** (vs 61,7 % en descubrimiento de ticks): resuelve menos, pero tiene soporte. Para la pista "libro como contexto" conviene fijar el horizonte en **1800 s** (o 24/24 a 1800 s si se acepta `p_eq` 57,4 %), no menos. Con ≈ 85 sesiones y 1800 s, son ≈ 14 episodios independientes por sesión (~1.200 en total): **el N es el límite de la pista L2**, no la etiqueta. Por eso el libro entra como **capa de contexto sobre el modelo de ticks** (entrenado con todo el historial), no como modelo autónomo.
+
