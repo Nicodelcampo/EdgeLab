@@ -93,3 +93,11 @@ Reutiliza los roles A1–A7 del manifiesto de la Pasada 3. Atención especial: A
 4. ¿Autorizás la extracción de la tabla de eventos+variables de ES vía Kaggle (target-free en las variables; incluye la etiqueta de la carrera de barreras, que es el retorno)?
 
 *Aporte al referente:* permite buscar con amplitud la mejora del efecto bruto sin gastar la confirmación: el desarrollo ocurre sobre datos ya quemados, el juez es un nulo que incluye toda la búsqueda y el filtro sale congelado, simple y con su potencia declarada.
+
+## 13. Enmiendas por auditoría externa (2026-10-15)
+Aplican las enmiendas 1–9 de `MANIFIESTO_PASADA3_CONFIRMATORIA_CORREDOR_20261015.md` §13. Efectos específicos en esta fase:
+- **Respuestas de Nico a las 4 preguntas de §12: sí a las 4.** ES (299 sesiones) es desarrollo; consecuencia declarada por HOLDOUT-A3: esta familia no tiene replicación de ES.
+- **Dos detectores.** La extracción corre `DET_PY` (regresión: debe reproducir las cifras de Pasada 2) y `DET_NT8` (`SMA(Range)`, el del indicador). Todo filtro se desarrolla y se congela sobre `DET_NT8`.
+- **Objetivo y economía.** Se guardan por evento los desenlaces R/C/0 y el **retorno al vencimiento** de los no resueltos; la métrica `ΔE` usa P&L realizado en ticks (con timeouts) y la fricción de R2. La decisión de selección usa `ΔE` y calibración, no sólo el acierto.
+- **Controles.** Baseline continuo fuerte (hora + volatilidad + trayectoria + intensidad) como comparación obligatoria de T2–T4. Ablaciones que se reentrenan: sin volumen / sin indicador-contexto / sólo trayectoria.
+- **Fuera de esta fase:** CNN/mapa de calor/riesgos competitivos (quedan para la propuesta del modelo de reversión).

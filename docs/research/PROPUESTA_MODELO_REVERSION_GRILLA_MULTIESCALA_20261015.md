@@ -263,3 +263,14 @@ Etapa 0 (target-free): conteo de sesiones y expansiones, auditoría de datos, es
 
 ---
 *Aporte al referente:* reduce la distancia al edge neto fijando de antemano qué se mide, contra qué nulo, con qué presupuesto de hipótesis y qué refuta la idea, de modo que un resultado positivo o negativo sea interpretable y no una selección a posteriori.
+
+## Errata tras auditoría externa (2026-10-15)
+Ver `docs/audits`-style reporte `Auditoria_grilla_reversion_y_entrenamiento.md`. Correcciones a esta propuesta (prevalecen):
+- **Objetivo:** primer paso R / C / 0 (reversión antes que continuación, o ninguna en T) con censura explícita; el punto exacto de giro y el mapa softmax 2D se posponen (celdas no excluyentes). Cabeza temporal de riesgos competitivos en tiempo discreto como segunda etapa.
+- **Espejo:** robustez/equivariancia, **no** control nulo; se elimina R2 de §2 como criterio de refutación (que el espejo conserve la señal no es refutación).
+- **No significación ≠ refutación:** separar sin evidencia, sin potencia y equivalencia frente a un margen económico preregistrado.
+- **Fórmula económica:** `p_eq = (Y+c)/(X+Y)`; con timeouts `EV = P(R)·X − P(C)·Y + P(0)·E[ret_timeout] − E[costos]`. Mi afirmación de que 2:1 "exige mayor probabilidad" era incorrecta: lo que cambia son las probabilidades de cruce.
+- **Preentrenamiento:** sólo con el entrenamiento de cada fold (no "toda la release").
+- **Particiones:** HOLDOUT-A3 (descubrimiento hasta 2026-03-31, replicación abr–sep una vez por familia, holdout desde 2026-10-01); no usar el corte genérico pre-octubre.
+- **Grilla:** contexto amplio en tres escalas (fina/media/amplia), no recortado al rectángulo; el centrado no puede usar el fill del siguiente tick; conservar volumen y conteo totales y máscaras de cobertura.
+- **Modelos:** baseline continuo fuerte (hora, volatilidad, trayectoria, intensidad) vs elastic net, LightGBM, MLP, CNN multiescala pequeña (< 1 M de parámetros).
