@@ -26,7 +26,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 563 |
+| `docs/research` | 564 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 11 |
@@ -35,6 +35,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 
 | Familia | Docs | Ultimo | Fecha | Estado |
 |---|---:|---|---|---|
+| RESULTADOS | 1 | `RESULTADOS_ADENDA_D_DESARROLLO_CORREDOR_20261015.md` | 2026-10-15 | - |
 | PROPUESTA | 2 | `PROPUESTA_MODELO_REVERSION_GRILLA_MULTIESCALA_20261015.md` | 2026-10-15 | PROPUESTA — NO APROBADA, NO EJECUTADA. Nada de este documento autoriza medir ret |
 | MANIFIESTO | 35 | `MANIFIESTO_PASADA3_CONFIRMATORIA_CORREDOR_20261015.md` | 2026-10-15 | BORRADOR PARA AUDITORÍA Y OK DE NICO. NO EJECUTAR. Ninguna medición sobre retorn |
 | INVESTIGACION | 3 | `INVESTIGACION_IA_GRILLA_PRECIO_VOLUMEN_REVERSION_20261015.md` | 2026-10-15 | PROPUESTA (investigación bibliográfica y de diseño; nada entrenado ni medido) |
@@ -94,7 +95,6 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | ENMIENDA | 3 | `ENMIENDA_PROPUESTA_HOLDOUT_L2_20260924.md` | 2026-09-24 | FIRMADA por Nico el 2026-09-24 (chat). Incorporada al North Star (nuevo sha256 d |
 | ATLAS | 1 | `ATLAS_CAPA_DESCRIPTIVA_20260924.md` | 2026-09-24 | - |
 | SOLICITUD | 1 | `SOLICITUD_DEEP_RESEARCH_L2_20260923.md` | 2026-09-23 | - |
-| PR56 | 1 | `PR56_CURRENTNESS_AUDIT_20260923.md` | 2026-09-23 | - |
 
 ## Superados (7)
 
@@ -106,7 +106,8 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 - `docs/research/EDGEREPLICA_OOS_POST_PUBLICACION_PROTOCOLO_20261006.md` — SUPERADO 2026-10-06. Nico decidió tratar esto como exploración, sin custodia de 
 - `docs/research/PARIDAD_AVOLCLUSTERPOI_ESTADO_2026-09-02.md` — SUPERADO
 
-## Documentos nuevos sin `Estado:` (2)
+## Documentos nuevos sin `Estado:` (3)
 
 - docs/research/AUDITORIA_CORRIDA_KAGGLE_ES_MULTIRES_CORRIDOR_V4_20261015.md: falta `Estado:` en el encabezado
 - docs/research/AUDITORIA_PASADA2_CORRIDOR_ES_V4_20261015.md: falta `Estado:` en el encabezado
+- docs/research/RESULTADOS_ADENDA_D_DESARROLLO_CORREDOR_20261015.md: falta `Estado:` en el encabezado
