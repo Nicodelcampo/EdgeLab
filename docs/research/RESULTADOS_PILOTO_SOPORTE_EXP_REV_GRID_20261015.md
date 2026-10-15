@@ -45,3 +45,18 @@ Episodios independientes aproximados en las 178 sesiones: ≈ 14.950 a T=300 s, 
 La pista **L2** entrena con los datos L2 disponibles (≈ 100 sesiones de ES). La pista **sin L2 (ticks)** entrena con **todo el historial de ticks**. Para que esto sea compatible con HOLDOUT-A3 hay que decidir explícitamente si "todo el historial" incluye abril–septiembre de 2026 (la ventana de replicación) y/o otros instrumentos: usarlas para entrenar **consume la replicación de esta familia**. El holdout (≥ 2026-10-01) sigue sellado. Se anota como pendiente de enmienda formal si Nico quiere esa ventana; el piloto usó sólo descubrimiento.
 
 *Aporte al referente:* mide con datos que la etiqueta de 300 s era inviable por falta de resolución y acota los horizontes y barreras donde el modelo de grilla tiene soporte, antes de gastar cómputo.
+
+## Piloto de horizontes cortos (pista L2) — `edgelab-grid-support-pilot-short-v1`
+Mismo método, decisiones cada 15 s (≈1.660 por sesión), ES descubrimiento (178 sesiones). Resultados en `docs/research/grid_support_pilot_20261015/GRID_SUPPORT_PILOT_SHORT.json`.
+| X/Y (ticks) | T (s) | R | C | timeout | resueltos/sesión | `p_eq` (fricción 3,546) |
+|---|---|---|---|---|---|---|
+| 8/8 | 60 | 0,243 | 0,243 | 0,514 | 808 | **0,722** |
+| 8/8 | 120 | 0,335 | 0,335 | 0,330 | 1.113 | 0,722 |
+| 12/12 | 60 | 0,134 | 0,134 | 0,732 | 445 | 0,648 |
+| 12/12 | 120 | 0,223 | 0,223 | 0,555 | 739 | 0,648 |
+| 16/16 | 60 | 0,075 | 0,075 | 0,850 | 249 | 0,611 |
+| 16/16 | 120 | 0,146 | 0,146 | 0,708 | 484 | 0,611 |
+| 24/24 | 60 | 0,025 | 0,025 | 0,950 | 84 | 0,574 |
+| 24/12 | 120 | 0,058 | 0,239 | 0,703 | 493 | 0,432 |
+**Lectura:** a ≤ 60 s en ES el dilema es económico, no de datos. Con barreras chicas (8 ticks) hay mucho soporte pero el acierto necesario para cubrir la fricción es 72 %; con barreras que cubren la fricción con holgura (16–24 ticks) casi todo vence por timeout (85–95 %). Con fricción de toma (3,5 ticks) la pista L2 de horizonte corto sólo tiene sentido si (a) se cambia el objetivo a **información calibrada** (probabilidades de movimiento del mid) y se evalúa la economía con entradas pasivas y su modelo de llenado, o (b) se usa el libro como contexto para horizontes de 5–30 min, donde la pista de ticks ya mostró soporte (§ anterior). Hay N de sobra (≈ 75.000 episodios independientes a 60 s): el límite no es el tamaño de la muestra.
+

@@ -29,11 +29,12 @@ DISC_START, DISC_END = 20250718, 20260331
 HOLDOUT_TRADE_DATE = 20261001
 HOLDOUT_UTC_NS = 1790812800000000000
 CHI = ZoneInfo("America/Chicago")
-DECISION_STEP_S = 60
+DECISION_STEP_S = int(os.environ.get("PILOT_STEP", "60"))
 RTH_MIN = (510, 930)                      # 08:30 - 15:30 CT en minutos
-LEVELS = np.array([16, 24, 32, 48, 64, 96, 128], dtype=np.int64)      # ticks
-PAIRS = [(24, 24), (32, 32), (48, 32), (48, 48), (64, 32), (64, 64), (96, 48)]   # (X objetivo, Y parada)
-HORIZONS_S = [300, 600, 900, 1800, 3600]
+# Configuracion por defecto = piloto de horizontes largos; PILOT_PAIRS="8:8,12:12" y PILOT_H="15,30,60" dan el piloto de horizontes cortos (pista L2)
+PAIRS = [tuple(int(v) for v in s.split(":")) for s in os.environ.get("PILOT_PAIRS", "24:24,32:32,48:32,48:48,64:32,64:64,96:48").split(",")]   # (X objetivo, Y parada)
+HORIZONS_S = [int(v) for v in os.environ.get("PILOT_H", "300,600,900,1800,3600").split(",")]
+LEVELS = np.array(sorted({v for p in PAIRS for v in p}), dtype=np.int64)      # ticks
 FRICTION_ES = 3.546
 OUT = ["R", "C", "AMBIGUOUS", "TIMEOUT", "CENSORED"]
 

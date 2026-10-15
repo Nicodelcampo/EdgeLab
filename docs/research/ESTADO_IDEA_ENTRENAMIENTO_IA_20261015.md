@@ -50,4 +50,5 @@ Entran DeepLOB, Transformers, fundacionales y RL; se sube a Kaggle privado el L2
 - **Piloto de soporte medido** (ES, 178 sesiones de descubrimiento): 32 vs 32 ticks a 300 s resuelve sólo 18,5 % (81,5 % timeouts); 32/32 a 1800 s resuelve 61,7 %. La etiqueta del borrador del otro agente debe cambiar de horizonte.
 - **Revisión cruzada con Gemini:** confirma que el corredor no tiene efecto neto; ver `REVISION_RESPUESTA_GEMINI_20261015.md` para las cinco reservas.
 - **L2 de ES en Kaggle:** subida en curso (nuevo intento desde el directorio del dataset para evitar un error de ruta del CLI en Windows).
+- **Piloto de horizontes cortos (pista L2):** a ≤ 60 s en ES, barreras de 8 ticks exigen 72 % de acierto y barreras de 16–24 ticks vencen por timeout en 85–95 % de los casos: **la pista L2 de horizonte corto con entradas a mercado no tiene viabilidad económica en ES**; replantear como (a) información calibrada del mid con entradas pasivas y modelo de llenado, o (b) libro como contexto en horizontes de 5–30 min. Decisión pendiente de Nico.
 
