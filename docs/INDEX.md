@@ -26,7 +26,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 554 |
+| `docs/research` | 555 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 11 |
@@ -35,6 +35,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 
 | Familia | Docs | Ultimo | Fecha | Estado |
 |---|---:|---|---|---|
+| REVISION | 3 | `REVISION_CLAUDE_LOCAL_CIERRE_AVZP2_Y_PARCHES_V2_20261014.md` | 2026-10-14 | VIGENTE |
 | REFERENCIA | 1 | `REFERENCIA_COSTOS_PROPS_BROKERS_20261014.md` | 2026-10-14 | referencia, no medición. Sin P&L, sin retornos. Insumo para el ledger de costos  |
 | R3 | 3 | `R3_DIRECCION_15_60M_RESULTADOS_20261014.md` | 2026-10-14 | PROVISIONAL (partición de descubrimiento; la replicación no se abrió) |
 | R2 | 2 | `R2_RECORRIDO_VS_FRICCION_RESULTADOS_20261014.md` | 2026-10-14 | PROVISIONAL (descriptivo, target-free; release v4 aprobada, purpose=provisional_ |
@@ -84,7 +85,6 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | HFT | 8 | `HFT_REVERSION_EXPLORATORIA_MNQ_20260926.md` | 2026-09-26 | exploratorio y descriptivo. No es una búsqueda sobre P&L: no hay entradas, costo |
 | ETIQUETADO | 1 | `ETIQUETADO_PICOS_Y_ML_20260926.md` | 2026-09-26 | herramienta lista; sin etiquetas todavía. Idea de Nico: él marca en el visor dón |
 | TBZ | 1 | `TBZ_E2_PARAMETRIZACION_HOLISTICA_20260924.md` | 2026-09-24 | - |
-| REVISION | 2 | `REVISION_CIEGA_DE_SPECS_20260924.md` | 2026-09-24 | - |
 | RESEARCH | 1 | `RESEARCH_TRANSICION_BORDE_ZONA_EXPANSION_20260924.md` | 2026-09-24 | INVESTIGACIÓN + PROPUESTA DE FAMILIA. No registrada, no medida. Registrarla la d |
 | PARTICIONES | 1 | `PARTICIONES_Y_POTENCIA_L2_20260924.md` | 2026-09-24 | - |
 | FAMILIA | 3 | `FAMILIA_TBZ_FRANJAS_BAJA_PERMANENCIA_20260924.md` | 2026-09-24 | REGISTRADA (OK de Nico, 24/09: "registrala unificada pero diferenciando sus vari |

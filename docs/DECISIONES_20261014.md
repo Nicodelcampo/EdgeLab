@@ -25,3 +25,7 @@ P&L, manifiestos de campaña y holdout **siguen requiriendo OK explícito** (no 
 14. **CI remoto verificado:** tras la unificación los tres workflows de GitHub (`CI`, `CPU base and installed wheel`, `Navigation contracts`) quedan en verde sobre `5fa33da4` (los primeros intentos fallaron por `scipy` ausente en el lock de CI y por el import de `pyarrow` en `edge_brain`; ambos corregidos con causa raíz, sin relajar pruebas).
 15. **Tarea programada `EdgeLab_DailyDataHealth` instalada** (diaria 20:30; sólo lectura y copia incremental del L2 a `D:`): detecta captura cortada y respaldo atrasado. Reversible con `Unregister-ScheduledTask`.
 16. **Hallazgo:** NT8 dejó de grabar el Market Replay (último `.nrd` válido entre 2026-09-24 y 2026-09-28); sin captura nueva no hay holdout L2 ni más N. Ver `docs/infra/CAPTURA_CONTINUA_RUNBOOK.md`.
+17. **Tarea `EdgeLab_DailyDataHealth` desactivada** a pedido de Nico (revisa a mano); el script y el runbook quedan. Reactivable con `Enable-ScheduledTask`.
+18. **R3 aprobado por Nico** ("R3: Apruebo") y ejecutado: `docs/research/R3_DIRECCION_15_60M_RESULTADOS_20261014.md` (sin efecto detectado; replicación no abierta).
+19. **Borrado de Kaggle:** Nico decide **no borrar** los datasets reemplazados por ahora; no se borra nada.
+20. **Captura de datos nuevos:** Nico usa un addon propio (L2 y ticks); Market Replay deja de ser necesario. Falta definir carpeta/esquema del addon L2.

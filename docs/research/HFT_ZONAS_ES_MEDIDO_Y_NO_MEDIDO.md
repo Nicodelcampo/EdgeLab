@@ -967,3 +967,7 @@ Criterios: O5 ≥ 5/7 celdas, O1 ≥ 4/6.
 - MEDIDO (manifiesto aprobado y congelado antes; 5 activos, 90 celdas, 2025-07 → 2026-03): **SIN EFECTO DETECTADO** en las primarias (NQ, 15 min, A y B) y ninguna celda sobrevive a Holm sobre 90. Acierto medio 49,6 % (A) y 49,3 % (B); retorno bruto medio +0,79 y +0,06 ticks frente a una fricción de 3,3–7,9. Replicación NO abierta (0 sobrevivientes). Acta `R3_DIRECCION_15_60M_RESULTADOS_20261014.md`.
 - NO MEDIDO: horizontes 30–60 min con potencia suficiente (MDE 5–8 pp), otras señales, régimen/subasta, IB, stops y ejecución, replicación 2026-04 → 2026-09, holdout.
 
+## AVZP2 — cierre direccional (alcance acotado) — 14/10/2026
+- MEDIDO (kernels 08 y 09 y réplica v2, release v4, verificado contra las salidas crudas): O1 con nulo espejado 0/6 en ES, MES, MNQ, NQ; O6rev 0/7 (ES, MNQ) y 0/4 (NQ); interacción con `session_auction` v3 0/6 tras Holm en ES y MNQ; carrera al centro ES `6_1000_30`: 26,87 % vs 25,44 % pseudo (p 0,328), por debajo del break-even. **Cerrado sólo para esas definiciones/activos/estimandos.** O5 vigente como estado de compresión (NQ 6/6, MGC 6/6, ES/MES/MNQ 7/7; GC 4/6; 6E 2/6). Revisión: `REVISION_CLAUDE_LOCAL_CIERRE_AVZP2_Y_PARCHES_V2_20261014.md` (corrige 3 cifras de O5_t0 y el break-even citado).
+- NO MEDIDO: otras definiciones de racimo, P&L, ejecución, regímenes distintos de `session_auction`.
+
