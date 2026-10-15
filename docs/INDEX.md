@@ -26,7 +26,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 557 |
+| `docs/research` | 558 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 11 |
@@ -35,6 +35,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 
 | Familia | Docs | Ultimo | Fecha | Estado |
 |---|---:|---|---|---|
+| INVESTIGACION | 3 | `INVESTIGACION_IA_GRILLA_PRECIO_VOLUMEN_REVERSION_20261015.md` | 2026-10-15 | PROPUESTA (investigación bibliográfica y de diseño; nada entrenado ni medido) |
 | EMACORRIDORTRENDVOL | 2 | `EMACORRIDORTRENDVOL_VARIANTE_20261015.md` | 2026-10-15 | VIGENTE (indicador compilado y verificado con csc; no probado en gráfico) |
 | REVISION | 3 | `REVISION_CLAUDE_LOCAL_CIERRE_AVZP2_Y_PARCHES_V2_20261014.md` | 2026-10-14 | VIGENTE |
 | REFERENCIA | 1 | `REFERENCIA_COSTOS_PROPS_BROKERS_20261014.md` | 2026-10-14 | referencia, no medición. Sin P&L, sin retornos. Insumo para el ledger de costos  |
@@ -70,7 +71,6 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | PREREG | 5 | `PREREG_TOXIC_ES_ESTABILIDAD_20260929.md` | 2026-09-29 | - |
 | PENDIENTES | 1 | `PENDIENTES_L2_APLICACIONES_20260929.md` | 2026-09-29 | PENDIENTE DE INVESTIGACIÓN. Autorización de Nico en chat: registrar las opciones |
 | IPC | 1 | `IPC_MNQ_HYBRID_DRAFT_20260929.md` | 2026-09-29 | IMPLEMENTADO, PRUEBAS SINTÉTICAS PASS; SIN CALIBRACIÓN NI CENSO REAL MNQ. |
-| INVESTIGACION | 2 | `INVESTIGACION_ES_NQ_L2_ESPEJO_IPC_20260929.md` | 2026-09-29 | DIAGNÓSTICO TARGET-FREE HECHO / DISEÑO PROPUESTO / SIN NUEVOS OUTCOMES. |
 | EJECUCION | 1 | `EJECUCION_IB_VWAP_PMH_PML_NQ_20260929.md` | 2026-09-29 | - |
 | AUDITORIA | 9 | `AUDITORIA_PRECONGELAMIENTO_ES_ESCALONADAS_20260929.md` | 2026-09-29 | - |
 | PARIDAD | 8 | `PARIDAD_PROVEEDOR_LUCID_NT8_20260928.md` | 2026-09-28 | - |
