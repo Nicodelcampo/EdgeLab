@@ -202,6 +202,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 				TailPct            = 25;
 				BeyondPct          = 25;
 				ForwardWidthPct    = 200;
+				ForwardBars        = 0;
 				LookbackZones      = 50;
 				MinPriorZones      = 20;
 				VolPercentile      = 90;
@@ -819,7 +820,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 				lo = boxLo - beyondH;
 				hi = boxLo + tailH;
 			}
-			int fwd = Math.Max(1, (int)Math.Round(ForwardWidthPct / 100.0 * width));
+			int fwd = ForwardBars > 0 ? ForwardBars : Math.Max(1, (int)Math.Round(ForwardWidthPct / 100.0 * width));   // ForwardBars > 0: largo fijo en barras elegido por el usuario
 
 			PendingZone z = new PendingZone();
 			z.Dir         = dir;
@@ -1319,6 +1320,11 @@ namespace NinjaTrader.NinjaScript.Indicators
 		[Display(Name = "Barra de maximo volumen: usar cierre", Order = 12, GroupName = "5. Volumen de sector",
 			Description = "false = punto medio del rango de la barra; true = su cierre.")]
 		public bool HvBarUseClose { get; set; }
+
+		[Range(0, 5000)]
+		[Display(Name = "Largo de la ventana amarilla en barras (0 = usar el % del ancho)", Order = 3, GroupName = "5. Volumen de sector",
+			Description = "Si es mayor que 0, la ventana amarilla mide exactamente esta cantidad de barras desde el final de la zona, ignorando el porcentaje. 0 = usa 'Ancho hacia adelante %'.")]
+		public int ForwardBars { get; set; }
 
 		[Display(Name = "Linea al 50 % en zonas marcadas", Order = 20, GroupName = "5. Volumen de sector",
 			Description = "Dibuja una linea horizontal al 50 % del alto de la caja de las zonas cuyo sector termino marcado (rectangulo amarillo).")]
