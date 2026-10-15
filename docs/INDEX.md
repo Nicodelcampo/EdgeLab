@@ -26,7 +26,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 555 |
+| `docs/research` | 556 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 11 |
@@ -35,6 +35,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 
 | Familia | Docs | Ultimo | Fecha | Estado |
 |---|---:|---|---|---|
+| EMACORRIDORTRENDVOL | 1 | `EMACORRIDORTRENDVOL_VARIANTE_20261015.md` | 2026-10-15 | VIGENTE (indicador compilado y verificado con csc; no probado en gráfico) |
 | REVISION | 3 | `REVISION_CLAUDE_LOCAL_CIERRE_AVZP2_Y_PARCHES_V2_20261014.md` | 2026-10-14 | VIGENTE |
 | REFERENCIA | 1 | `REFERENCIA_COSTOS_PROPS_BROKERS_20261014.md` | 2026-10-14 | referencia, no medición. Sin P&L, sin retornos. Insumo para el ledger de costos  |
 | R3 | 3 | `R3_DIRECCION_15_60M_RESULTADOS_20261014.md` | 2026-10-14 | PROVISIONAL (partición de descubrimiento; la replicación no se abrió) |
@@ -94,7 +95,6 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | PROPUESTA | 1 | `PROPUESTA_ARCHIVADA_CAMPANA_MULTIINSTRUMENTO_20260923.md` | 2026-09-23 | ARCHIVADA por decisión de Nico. No aprobada, no ejecutada. No se corrió ninguna  |
 | PR56 | 1 | `PR56_CURRENTNESS_AUDIT_20260923.md` | 2026-09-23 | - |
 | L2 | 4 | `L2_VISOR_RESOLUCION_20260923.md` | 2026-09-23 | - |
-| EDGE | 17 | `EDGE_BRAIN_AUDITORIA_Y_DIRECCION_20260923.md` | 2026-09-23 | - |
 
 ## Superados (7)
 
