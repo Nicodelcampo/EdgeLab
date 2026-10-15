@@ -12,7 +12,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 
 | Area | Documentos |
 |---|---:|
-| `docs` | 102 |
+| `docs` | 103 |
 | `docs/amendments` | 6 |
 | `docs/audit` | 4 |
 | `docs/audits` | 63 |

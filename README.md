@@ -10,8 +10,9 @@ Estado: **0 edges promovidos** (`EDGES_DISCOVERED.md`). Objetivo rector: `docs/N
 3. **`docs/MODULES.md`** — cada módulo: función, entradas, salidas, dependencias, documento y tests (generado desde `config/modules.json`).
 4. **`docs/DOCUMENTATION_PROTOCOL.md`** — dónde va cada documento, encabezado obligatorio y cómo evitar pérdida de información.
 5. **`docs/INDEX.md`** / `docs/INDEX.csv` — catálogo de toda la documentación, por familia y estado.
-6. `docs/ESTADO_Y_PENDIENTES.md` — estado y pendientes de repo y Kaggle (corte 2026-10-10, línea `main`, ya integrada).
-7. `PENDIENTE.md` (decisiones abiertas) · `docs/research/HFT_ZONAS_ES_MEDIDO_Y_NO_MEDIDO.md` (qué está medido).
+6. **`docs/PENDIENTES_DE_NICO_20261014.md`** — lo único que falta y que sólo puede cerrar Nico (captura NT8, exports, copia externa de L2, OK de R3).
+7. `docs/ESTADO_Y_PENDIENTES.md` — estado y pendientes de repo y Kaggle (corte 2026-10-10, línea `main`, ya integrada).
+8. `PENDIENTE.md` (decisiones abiertas) · `docs/research/HFT_ZONAS_ES_MEDIDO_Y_NO_MEDIDO.md` (qué está medido).
 
 Primer comando de cada sesión: `python tools/estado.py`. Verificaciones del producto: `python tools/check_modules.py` y `python tools/docs_index.py --check`.
 
