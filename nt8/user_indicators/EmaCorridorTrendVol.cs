@@ -95,6 +95,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 			public int    EndBar;
 			public string Tag;
 			public double Price;
+			public int    Kind;      // 0 = 50 %, 1 = 25 % desde el inicio
 		}
 		private List<ActiveMid>   midLines;
 		private List<DateTime>    tkTime;
@@ -207,6 +208,8 @@ namespace NinjaTrader.NinjaScript.Indicators
 				DrawSector         = true;
 				AnchorsOnlyFlagged = true;
 				AnchorLifeBars     = 150;
+				ShowQuarterLine    = true;
+				QuarterBrush       = Brushes.Orange;
 				ShowMidLine        = true;
 				MidLineBars        = 300;
 				MidBrush           = Brushes.Gold;
@@ -931,7 +934,12 @@ namespace NinjaTrader.NinjaScript.Indicators
 				int startAgo = CurrentBar - m.StartBar;
 				int endAgo   = CurrentBar - endBar;
 				if (startAgo > endAgo)
-					Draw.Line(this, m.Tag + "MID50", false, startAgo, m.Price, endAgo, m.Price, MidBrush, DashStyleHelper.Solid, 2);
+				{
+					if (m.Kind == 1)
+						Draw.Line(this, m.Tag + "MID25", false, startAgo, m.Price, endAgo, m.Price, QuarterBrush, DashStyleHelper.Dash, 2);
+					else
+						Draw.Line(this, m.Tag + "MID50", false, startAgo, m.Price, endAgo, m.Price, MidBrush, DashStyleHelper.Solid, 2);
+				}
 				if (CurrentBar >= m.EndBar)
 					midLines.RemoveAt(mi);
 			}
@@ -1038,6 +1046,18 @@ namespace NinjaTrader.NinjaScript.Indicators
 					mid.Tag      = z.Tag;
 					mid.Price    = Instrument.MasterInstrument.RoundToTickSize(0.5 * (z.BoxLo + z.BoxHi));
 					midLines.Add(mid);
+				}
+				// Linea al 25 % del alto de la caja medido desde el INICIO (origen) del movimiento: piso de la caja en una suba, techo en una baja
+				if (flagged && ShowQuarterLine)
+				{
+					ActiveMid q = new ActiveMid();
+					q.StartBar = z.SecStartBar;
+					q.EndBar   = z.SecStartBar + MidLineBars;
+					q.Tag      = z.Tag;
+					q.Kind     = 1;
+					double qp  = z.Dir > 0 ? z.BoxLo + 0.25 * (z.BoxHi - z.BoxLo) : z.BoxHi - 0.25 * (z.BoxHi - z.BoxLo);
+					q.Price    = Instrument.MasterInstrument.RoundToTickSize(qp);
+					midLines.Add(q);
 				}
 
 				if (DrawSector)
@@ -1307,6 +1327,20 @@ namespace NinjaTrader.NinjaScript.Indicators
 		[Display(Name = "Linea al 50 %: barras de extension", Order = 21, GroupName = "5. Volumen de sector",
 			Description = "Barras que se extiende la linea del 50 %, contadas desde el inicio del sector.")]
 		public int MidLineBars { get; set; }
+
+		[Display(Name = "Linea al 25 % desde el inicio", Order = 23, GroupName = "5. Volumen de sector",
+			Description = "Linea al 25 % del alto de la caja medido desde el origen del movimiento (piso en suba, techo en baja), en zonas marcadas; misma extension que la del 50 %.")]
+		public bool ShowQuarterLine { get; set; }
+
+		[XmlIgnore]
+		[Display(Name = "Color linea al 25 %", Order = 24, GroupName = "5. Volumen de sector")]
+		public Brush QuarterBrush { get; set; }
+		[Browsable(false)]
+		public string QuarterBrushSerialize
+		{
+			get { return Serialize.BrushToString(QuarterBrush); }
+			set { QuarterBrush = Serialize.StringToBrush(value); }
+		}
 
 		[XmlIgnore]
 		[Display(Name = "Color linea al 50 %", Order = 22, GroupName = "5. Volumen de sector")]
