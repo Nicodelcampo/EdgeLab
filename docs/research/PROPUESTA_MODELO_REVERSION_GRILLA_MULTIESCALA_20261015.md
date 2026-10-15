@@ -276,3 +276,14 @@ Ver `docs/audits`-style reporte `Auditoria_grilla_reversion_y_entrenamiento.md`.
 - **Modelos:** baseline continuo fuerte (hora, volatilidad, trayectoria, intensidad) vs elastic net, LightGBM, MLP, CNN multiescala pequeña (< 1 M de parámetros).
 
 > Corrección (2026-10-15): el hash de `NORTH_STAR.md` citado originalmente en este documento (`ed4293b5…`) era el de una versión anterior (stale). El valor vigente, verificado con `tests/test_north_star_hash.py`, es `05df5c7c…`. Los scripts de Pasada 2 conservan la constante vieja; no afecta resultados.
+
+## Enmienda de Nico (2026-10-15): se incluyen DeepLOB, Transformers, modelos fundacionales y aprendizaje por refuerzo
+Decisión: **entran** al panel como retadores. Se retira la lista "no recomendado" de §7. Condiciones para que cuenten como evidencia:
+| Familia | Cómo se incluye | Insumo | Compuerta |
+|---|---|---|---|
+| DeepLOB-style (conv + inception + LSTM) | sobre los tiles y la secuencia de barras/ticks comprimida; **no** hay libro de profundidad en la release (sólo `bid_ticks`/`ask_ticks` de tope): se declara como adaptación, no réplica | tiles + mejor precio | misma etiqueta/folds que la CNN |
+| Transformer chico (PatchTST/TLOB-style, atención sobre parches de tiempo y de variables) | ≤ pocos M de parámetros, parches de las escalas de los tiles | tiles / barras | presupuesto de GPU fijado de antemano |
+| Modelo fundacional (Kronos, Chronos, TimesFM) | primero como **extractor congelado** (embeddings de barras OHLCV → cabeza LightGBM/MLP); ajuste fino (LoRA) sólo con el entrenamiento de cada fold | barras OHLCV por escala | sólo si hay licencia/pesos y se reproduce sin red en Kaggle |
+| Aprendizaje por refuerzo | **capa de política** (entrada/salida/tamaño) sobre probabilidades calibradas, no predictor; requiere simulador de fills con costos y trade-through | probabilidades + simulador | no antes de tener simulador validado; baseline = regla de umbral |
+Reglas comunes: mismas etiquetas, particiones, purga/embargo y baseline continuo fuerte; presupuesto de hiperparámetros declarado; ≥ 5 semillas; cada modelo suma al número efectivo de hipótesis y a la corrección por multiplicidad; preentrenamiento y ajuste sólo con el entrenamiento del fold; GPU sólo en Kaggle. Orden: baselines → CNN → DeepLOB-style → Transformer chico → fundacional congelado → RL (último).
+
