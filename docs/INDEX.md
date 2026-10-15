@@ -26,7 +26,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 560 |
+| `docs/research` | 562 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 11 |
@@ -36,9 +36,10 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | Familia | Docs | Ultimo | Fecha | Estado |
 |---|---:|---|---|---|
 | PROPUESTA | 2 | `PROPUESTA_MODELO_REVERSION_GRILLA_MULTIESCALA_20261015.md` | 2026-10-15 | PROPUESTA — NO APROBADA, NO EJECUTADA. Nada de este documento autoriza medir ret |
+| MANIFIESTO | 35 | `MANIFIESTO_PASADA3_CONFIRMATORIA_CORREDOR_20261015.md` | 2026-10-15 | BORRADOR PARA AUDITORÍA Y OK DE NICO. NO EJECUTAR. Ninguna medición sobre retorn |
 | INVESTIGACION | 3 | `INVESTIGACION_IA_GRILLA_PRECIO_VOLUMEN_REVERSION_20261015.md` | 2026-10-15 | PROPUESTA (investigación bibliográfica y de diseño; nada entrenado ni medido) |
 | EMACORRIDORTRENDVOL | 2 | `EMACORRIDORTRENDVOL_VARIANTE_20261015.md` | 2026-10-15 | VIGENTE (indicador compilado y verificado con csc; no probado en gráfico) |
-| AUDITORIA | 10 | `AUDITORIA_CORRIDA_KAGGLE_ES_MULTIRES_CORRIDOR_V4_20261015.md` | 2026-10-15 | - |
+| AUDITORIA | 11 | `AUDITORIA_PASADA2_CORRIDOR_ES_V4_20261015.md` | 2026-10-15 | - |
 | REVISION | 3 | `REVISION_CLAUDE_LOCAL_CIERRE_AVZP2_Y_PARCHES_V2_20261014.md` | 2026-10-14 | VIGENTE |
 | REFERENCIA | 1 | `REFERENCIA_COSTOS_PROPS_BROKERS_20261014.md` | 2026-10-14 | referencia, no medición. Sin P&L, sin retornos. Insumo para el ledger de costos  |
 | R3 | 3 | `R3_DIRECCION_15_60M_RESULTADOS_20261014.md` | 2026-10-14 | PROVISIONAL (partición de descubrimiento; la replicación no se abrió) |
@@ -66,7 +67,6 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | CANONICAL | 1 | `CANONICAL_DATA_AUDIT_20261004.md` | 2026-10-04 | - |
 | RESULTADO | 38 | `RESULTADO_MNQ_L2_V2_PRIMERA_SESION_TARGETFREE_20260930.md` | 2026-09-30 | - |
 | PREPARACION | 2 | `PREPARACION_MNQ_ESCALONADAS_L2_20260930.md` | 2026-09-30 | PREPARADO / NO MEDIDO EN MNQ REAL. R02/I-3; no rescate de climas. |
-| MANIFIESTO | 34 | `MANIFIESTO_MNQ_ESCALONADAS_ESCALAS_20260930.md` | 2026-09-30 | - |
 | ENTREGA | 2 | `ENTREGA_LOCAL_L2_GC_ES_20260930.md` | 2026-09-30 | - |
 | BORRADOR | 3 | `BORRADOR_PROTOCOLO_ESPEJO_L2_PREDICTIBILIDAD_20260930.md` | 2026-09-30 | - |
 | PROTOCOLO | 4 | `PROTOCOLO_CONTEXTOS_L2_ES_MES_MNQ_20260929.md` | 2026-09-29 | escrito antes de extraer ni entrenar (pedido de Nico: «ejecutá todos los pasos») |
@@ -106,6 +106,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 - `docs/research/EDGEREPLICA_OOS_POST_PUBLICACION_PROTOCOLO_20261006.md` — SUPERADO 2026-10-06. Nico decidió tratar esto como exploración, sin custodia de 
 - `docs/research/PARIDAD_AVOLCLUSTERPOI_ESTADO_2026-09-02.md` — SUPERADO
 
-## Documentos nuevos sin `Estado:` (1)
+## Documentos nuevos sin `Estado:` (2)
 
 - docs/research/AUDITORIA_CORRIDA_KAGGLE_ES_MULTIRES_CORRIDOR_V4_20261015.md: falta `Estado:` en el encabezado
+- docs/research/AUDITORIA_PASADA2_CORRIDOR_ES_V4_20261015.md: falta `Estado:` en el encabezado
