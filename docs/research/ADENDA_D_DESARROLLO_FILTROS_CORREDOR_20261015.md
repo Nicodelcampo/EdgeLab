@@ -2,7 +2,7 @@
 
 Estado: **BORRADOR PARA OK DE NICO. NO EJECUTAR.** Es una búsqueda sobre retornos: aplica el STOP de `CLAUDE.md`.
 Fecha: 2026-10-15 · Depende de `MANIFIESTO_PASADA3_CONFIRMATORIA_CORREDOR_20261015.md` (respuestas 1–3 de Nico: **sí**: confirmación en NQ/YM con ES histórico como desarrollo y regresión; `HA` como primaria sin cambios; `HB` exploratoria).
-Referente rector: `docs/NORTH_STAR.md` (sha256 del cuerpo declarado `ed4293b5587bb38b3070dba739b2b5f93a949402be0428c98e05ef385593a5f8`; el auditor de gobernanza debe recomputarlo).
+Referente rector: `docs/NORTH_STAR.md` (sha256 del cuerpo declarado `05df5c7c3ec4cf3a1f14f62bb8e2ade4b61dd29203b610a308964ac46995f421`; el auditor de gobernanza debe recomputarlo).
 
 ## 0. Idea en seis líneas
 1. Nico quiere aplicar **todas las herramientas posibles** para filtrar y afinar la precisión de `HA` (y `HB`), bajo la hipótesis de que hay un efecto bruto que se puede multiplicar.
@@ -101,3 +101,5 @@ Aplican las enmiendas 1–9 de `MANIFIESTO_PASADA3_CONFIRMATORIA_CORREDOR_202610
 - **Objetivo y economía.** Se guardan por evento los desenlaces R/C/0 y el **retorno al vencimiento** de los no resueltos; la métrica `ΔE` usa P&L realizado en ticks (con timeouts) y la fricción de R2. La decisión de selección usa `ΔE` y calibración, no sólo el acierto.
 - **Controles.** Baseline continuo fuerte (hora + volatilidad + trayectoria + intensidad) como comparación obligatoria de T2–T4. Ablaciones que se reentrenan: sin volumen / sin indicador-contexto / sólo trayectoria.
 - **Fuera de esta fase:** CNN/mapa de calor/riesgos competitivos (quedan para la propuesta del modelo de reversión).
+
+> Corrección (2026-10-15): el hash de `NORTH_STAR.md` citado originalmente en este documento (`ed4293b5…`) era el de una versión anterior (stale). El valor vigente, verificado con `tests/test_north_star_hash.py`, es `05df5c7c…`. Los scripts de Pasada 2 conservan la constante vieja; no afecta resultados.

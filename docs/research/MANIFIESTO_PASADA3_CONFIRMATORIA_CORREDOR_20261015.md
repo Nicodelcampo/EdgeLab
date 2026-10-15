@@ -1,7 +1,7 @@
 # Manifiesto propuesto — Pasada 3 confirmatoria de `EmaCorridorTrend` (familia `EXP-CORRIDOR-CONF`)
 
 Estado: **BORRADOR PARA AUDITORÍA Y OK DE NICO. NO EJECUTAR.** Ninguna medición sobre retornos corre sin aprobación (STOP de `CLAUDE.md`).
-Fecha: 2026-10-15 · Referente rector: `docs/NORTH_STAR.md`, sha256 del cuerpo (valor declarado en `CLAUDE.md`) `ed4293b5587bb38b3070dba739b2b5f93a949402be0428c98e05ef385593a5f8`; el auditor de gobernanza debe recomputarlo con `tests/test_north_star_hash.py`.
+Fecha: 2026-10-15 · Referente rector: `docs/NORTH_STAR.md`, sha256 del cuerpo (valor declarado en `CLAUDE.md`) `05df5c7c3ec4cf3a1f14f62bb8e2ade4b61dd29203b610a308964ac46995f421`; el auditor de gobernanza debe recomputarlo con `tests/test_north_star_hash.py`.
 Antecedentes: `AUDITORIA_CORRIDA_KAGGLE_ES_MULTIRES_CORRIDOR_V4_20261015.md`, `AUDITORIA_PASADA2_CORRIDOR_ES_V4_20261015.md`.
 Familia nueva registrada: `EXP-CORRIDOR-CONF`. No hereda resultados ni presupuesto de multiplicidad de otras familias; **hereda como hipótesis** (no como evidencia) los candidatos de Pasadas 1–2.
 
@@ -117,3 +117,5 @@ Fuente: `Auditoria_grilla_reversion_y_entrenamiento.md` (auditor externo) más v
 7. **Umbral de pendiente.** `STEEP_SLOPE` usó la mediana de toda la muestra (incluye el futuro de cada evento). Se reemplaza por un umbral numérico fijo calculado en desarrollo y congelado.
 8. **Causalidad de anclas y features.** Cada feature lleva `available_at` ≥ el instante en que realmente se conoce (cierre de la zona o fin del sector); el dibujo del indicador (líneas desde el inicio del sector) no se usa como dato. Prueba técnica: ejecución por prefijos = ejecución streaming.
 9. **Preentrenamiento / normalización** sólo con el entrenamiento de cada partición; nada aprendido con períodos de evaluación.
+
+> Corrección (2026-10-15): el hash de `NORTH_STAR.md` citado originalmente en este documento (`ed4293b5…`) era el de una versión anterior (stale). El valor vigente, verificado con `tests/test_north_star_hash.py`, es `05df5c7c…`. Los scripts de Pasada 2 conservan la constante vieja; no afecta resultados.

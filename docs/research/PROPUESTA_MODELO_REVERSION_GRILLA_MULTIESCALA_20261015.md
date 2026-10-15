@@ -3,7 +3,7 @@
 Estado: **PROPUESTA — NO APROBADA, NO EJECUTADA.** Nada de este documento autoriza medir retornos. Requiere (a) auditoría de agentes independientes (sección 14) y (b) OK explícito de Nico (regla STOP del `CLAUDE.md`).
 Fecha: 2026-10-15
 Familia nueva a registrar: `EXP-REV-GRID` (independiente de BigTrap2, LUX-IMB, YM-PRERANGE, aVolCluster, HFTZones; no hereda resultados, poblaciones, costos ni presupuesto de multiplicidad de ninguna).
-Referente rector: `docs/NORTH_STAR.md`, sha256 del cuerpo previo al marcador `SHA256-BODY-ABOVE` = `ed4293b5587bb38b3070dba739b2b5f93a949402be0428c98e05ef385593a5f8` (valor declarado en `CLAUDE.md`; el auditor de gobernanza debe recomputarlo con `tests/test_north_star_hash.py` antes de aprobar).
+Referente rector: `docs/NORTH_STAR.md`, sha256 del cuerpo previo al marcador `SHA256-BODY-ABOVE` = `05df5c7c3ec4cf3a1f14f62bb8e2ade4b61dd29203b610a308964ac46995f421` (valor declarado en `CLAUDE.md`; el auditor de gobernanza debe recomputarlo con `tests/test_north_star_hash.py` antes de aprobar).
 Documentos previos que esta propuesta usa y no reemplaza: `INVESTIGACION_IA_GRILLA_PRECIO_VOLUMEN_REVERSION_20261015.md`, `R2_RECORRIDO_VS_FRICCION_*`, `R3_DIRECCION_15_60M_*`, `EMACORRIDORTRENDVOL_VARIANTE_20261015.md`, `EMACORRIDORTRENDVOL_ANCLAS_20261015.md`.
 
 ---
@@ -274,3 +274,5 @@ Ver `docs/audits`-style reporte `Auditoria_grilla_reversion_y_entrenamiento.md`.
 - **Particiones:** HOLDOUT-A3 (descubrimiento hasta 2026-03-31, replicación abr–sep una vez por familia, holdout desde 2026-10-01); no usar el corte genérico pre-octubre.
 - **Grilla:** contexto amplio en tres escalas (fina/media/amplia), no recortado al rectángulo; el centrado no puede usar el fill del siguiente tick; conservar volumen y conteo totales y máscaras de cobertura.
 - **Modelos:** baseline continuo fuerte (hora, volatilidad, trayectoria, intensidad) vs elastic net, LightGBM, MLP, CNN multiescala pequeña (< 1 M de parámetros).
+
+> Corrección (2026-10-15): el hash de `NORTH_STAR.md` citado originalmente en este documento (`ed4293b5…`) era el de una versión anterior (stale). El valor vigente, verificado con `tests/test_north_star_hash.py`, es `05df5c7c…`. Los scripts de Pasada 2 conservan la constante vieja; no afecta resultados.
