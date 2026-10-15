@@ -26,7 +26,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 558 |
+| `docs/research` | 559 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 11 |
@@ -35,6 +35,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 
 | Familia | Docs | Ultimo | Fecha | Estado |
 |---|---:|---|---|---|
+| PROPUESTA | 2 | `PROPUESTA_MODELO_REVERSION_GRILLA_MULTIESCALA_20261015.md` | 2026-10-15 | PROPUESTA — NO APROBADA, NO EJECUTADA. Nada de este documento autoriza medir ret |
 | INVESTIGACION | 3 | `INVESTIGACION_IA_GRILLA_PRECIO_VOLUMEN_REVERSION_20261015.md` | 2026-10-15 | PROPUESTA (investigación bibliográfica y de diseño; nada entrenado ni medido) |
 | EMACORRIDORTRENDVOL | 2 | `EMACORRIDORTRENDVOL_VARIANTE_20261015.md` | 2026-10-15 | VIGENTE (indicador compilado y verificado con csc; no probado en gráfico) |
 | REVISION | 3 | `REVISION_CLAUDE_LOCAL_CIERRE_AVZP2_Y_PARCHES_V2_20261014.md` | 2026-10-14 | VIGENTE |
@@ -92,7 +93,6 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | ENMIENDA | 3 | `ENMIENDA_PROPUESTA_HOLDOUT_L2_20260924.md` | 2026-09-24 | FIRMADA por Nico el 2026-09-24 (chat). Incorporada al North Star (nuevo sha256 d |
 | ATLAS | 1 | `ATLAS_CAPA_DESCRIPTIVA_20260924.md` | 2026-09-24 | - |
 | SOLICITUD | 1 | `SOLICITUD_DEEP_RESEARCH_L2_20260923.md` | 2026-09-23 | - |
-| PROPUESTA | 1 | `PROPUESTA_ARCHIVADA_CAMPANA_MULTIINSTRUMENTO_20260923.md` | 2026-09-23 | ARCHIVADA por decisión de Nico. No aprobada, no ejecutada. No se corrió ninguna  |
 | PR56 | 1 | `PR56_CURRENTNESS_AUDIT_20260923.md` | 2026-09-23 | - |
 | L2 | 4 | `L2_VISOR_RESOLUCION_20260923.md` | 2026-09-23 | - |
 
