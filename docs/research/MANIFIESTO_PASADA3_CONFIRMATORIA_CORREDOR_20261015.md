@@ -98,3 +98,10 @@ A1 causalidad (entrada ≥ `cls_b+1`, características al instante de entrada, s
 6. Regla de apertura del holdout de ES (N ≥ 1.800 eventos o 12 meses).
 
 *Aporte al referente:* convierte un barrido que seleccionó ganadores sobre sus propios datos en una confirmación sobre datos no usados, con la economía y la falta de potencia declaradas de antemano; así un resultado, positivo o no, es interpretable.
+
+## 12. Respuestas de Nico (2026-10-15)
+- P1 (ES histórico sólo como desarrollo/regresión; confirmación en NQ y YM + holdout de ES): **sí**.
+- P2 (`HA` como primaria sin cambios): **sí**.
+- P3 (`HB` exploratoria sin potencia): **sí**.
+- P4–P6: pendientes (por defecto: 100T literal, `orig_px` sólo nivel descriptivo, holdout de ES a N ≥ 1.800 o 12 meses).
+- Adicional: Nico pidió aplicar todas las herramientas posibles para filtrar y mejorar la precisión del efecto bruto. Se canaliza con `ADENDA_D_DESARROLLO_FILTROS_CORREDOR_20261015.md` (desarrollo sobre ES, NQ/YM sellados, nulo del pipeline). Esa adenda requiere su propio OK antes de correr.

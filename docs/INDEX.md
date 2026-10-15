@@ -26,7 +26,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 562 |
+| `docs/research` | 563 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 11 |
@@ -40,6 +40,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | INVESTIGACION | 3 | `INVESTIGACION_IA_GRILLA_PRECIO_VOLUMEN_REVERSION_20261015.md` | 2026-10-15 | PROPUESTA (investigación bibliográfica y de diseño; nada entrenado ni medido) |
 | EMACORRIDORTRENDVOL | 2 | `EMACORRIDORTRENDVOL_VARIANTE_20261015.md` | 2026-10-15 | VIGENTE (indicador compilado y verificado con csc; no probado en gráfico) |
 | AUDITORIA | 11 | `AUDITORIA_PASADA2_CORRIDOR_ES_V4_20261015.md` | 2026-10-15 | - |
+| ADENDA | 1 | `ADENDA_D_DESARROLLO_FILTROS_CORREDOR_20261015.md` | 2026-10-15 | BORRADOR PARA OK DE NICO. NO EJECUTAR. Es una búsqueda sobre retornos: aplica el |
 | REVISION | 3 | `REVISION_CLAUDE_LOCAL_CIERRE_AVZP2_Y_PARCHES_V2_20261014.md` | 2026-10-14 | VIGENTE |
 | REFERENCIA | 1 | `REFERENCIA_COSTOS_PROPS_BROKERS_20261014.md` | 2026-10-14 | referencia, no medición. Sin P&L, sin retornos. Insumo para el ledger de costos  |
 | R3 | 3 | `R3_DIRECCION_15_60M_RESULTADOS_20261014.md` | 2026-10-14 | PROVISIONAL (partición de descubrimiento; la replicación no se abrió) |
@@ -94,7 +95,6 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | ATLAS | 1 | `ATLAS_CAPA_DESCRIPTIVA_20260924.md` | 2026-09-24 | - |
 | SOLICITUD | 1 | `SOLICITUD_DEEP_RESEARCH_L2_20260923.md` | 2026-09-23 | - |
 | PR56 | 1 | `PR56_CURRENTNESS_AUDIT_20260923.md` | 2026-09-23 | - |
-| L2 | 4 | `L2_VISOR_RESOLUCION_20260923.md` | 2026-09-23 | - |
 
 ## Superados (7)
 
