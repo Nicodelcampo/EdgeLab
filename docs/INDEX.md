@@ -20,7 +20,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/campaigns` | 9 |
 | `docs/foundation` | 2 |
 | `docs/incidents` | 15 |
-| `docs/infra` | 21 |
+| `docs/infra` | 22 |
 | `docs/notion` | 2 |
 | `docs/parity` | 5 |
 | `docs/parity_coverage` | 13 |
