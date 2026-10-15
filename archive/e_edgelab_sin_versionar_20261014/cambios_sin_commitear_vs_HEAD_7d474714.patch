@@ -1,0 +1,860 @@
+diff --git a/.claude/launch.json b/.claude/launch.json
+index f7733469..1874b9bf 100644
+--- a/.claude/launch.json
++++ b/.claude/launch.json
+@@ -4,8 +4,46 @@
+     {
+       "name": "visor",
+       "runtimeExecutable": ".venv/Scripts/python",
+-      "runtimeArgs": ["-m", "http.server", "8088", "--bind", "127.0.0.1", "--directory", "viewer/nt8_bridge"],
++      "runtimeArgs": [
++        "-m",
++        "http.server",
++        "8088",
++        "--bind",
++        "127.0.0.1",
++        "--directory",
++        "viewer/nt8_bridge"
++      ],
+       "port": 8088
++    },
++    {
++      "name": "visor-gex",
++      "runtimeExecutable": "E:/EdgeLab/.venv/Scripts/python.exe",
++      "runtimeArgs": ["-m", "http.server", "8097", "--bind", "127.0.0.1", "--directory", "E:/EdgeLab-gex/viewer/nt8_bridge"],
++      "port": 8097
++    },
++    {
++      "name": "visor-avcl",
++      "runtimeExecutable": "E:/EdgeLab/.venv/Scripts/python.exe",
++      "runtimeArgs": ["E:/EdgeLab-gex/viewer/nt8_bridge/server_avcl.py", "8099", "--sesiones", "5", "--ticks", "25"],
++      "port": 8099
++    },
++    {
++      "name": "visor-etiquetas",
++      "runtimeExecutable": "E:/EdgeLab/.venv/Scripts/python.exe",
++      "runtimeArgs": [
++        "E:/EdgeLab-unified-viewer/viewer/nt8_bridge/server.py",
++        "8093"
++      ],
++      "port": 8093
++    },
++    {
++      "name": "visor-unificado",
++      "runtimeExecutable": "E:/EdgeLab/.venv/Scripts/python.exe",
++      "runtimeArgs": [
++        "E:/EdgeLab-unified-viewer/viewer/nt8_bridge/server.py",
++        "8095"
++      ],
++      "port": 8095
+     }
+   ]
+-}
++}
+\ No newline at end of file
+diff --git a/viewer/nt8_bridge/bundles/manifest.js b/viewer/nt8_bridge/bundles/manifest.js
+index 9c2387c7..18c0d65a 100644
+--- a/viewer/nt8_bridge/bundles/manifest.js
++++ b/viewer/nt8_bridge/bundles/manifest.js
+@@ -1,4 +1,70 @@
+ window.ASSET_CATALOG = [
++  {
++    "id": "EURUSD_CFD",
++    "name": "EURUSD CFD \u00b7 JForex (25 Tick / M1 / M5 / M15)",
++    "group": "EURUSD Spot / CFD (JForex)",
++    "instrument": "EURUSD",
++    "contract": "EURUSD CFD",
++    "tick_size": 1e-05,
++    "precision": 5,
++    "candles": 48712,
++    "zones": 2777,
++    "rolls": 0,
++    "parity_status": "PARITY_ABSTAIN",
++    "profile": "SCALED_FUNNEL_V1"
++  },
++  {
++    "id": "MBT_07-26_ESPEJO",
++    "name": "MBT 07-26 \u00b7 Espejo (5m / 15m / 25t)",
++    "group": "MBT (Espejo Impulsos)",
++    "instrument": "MBT",
++    "contract": "MBT 07-26",
++    "tick_size": 5.0,
++    "precision": 1,
++    "candles": 13081,
++    "zones": 0,
++    "rolls": 0,
++    "parity_status": "PARITY_ABSTAIN"
++  },
++  {
++    "id": "MBT_ESPEJO",
++    "name": "MBT \u00b7 Espejo (5m / 15m / 25t)",
++    "group": "MBT (Espejo Impulsos)",
++    "instrument": "MBT",
++    "contract": "MBT 07-26",
++    "tick_size": 5.0,
++    "precision": 1,
++    "candles": 13081,
++    "zones": 0,
++    "rolls": 0,
++    "parity_status": "PARITY_ABSTAIN"
++  },
++  {
++    "id": "MYM_03-26_ESPEJO",
++    "name": "MYM 03-26 \u00b7 Espejo (5m / 15m / 25t)",
++    "group": "MYM (Espejo Impulsos)",
++    "instrument": "MYM",
++    "contract": "MYM 03-26",
++    "tick_size": 1.0,
++    "precision": 0,
++    "candles": 25289,
++    "zones": 0,
++    "rolls": 0,
++    "parity_status": "PARITY_ABSTAIN"
++  },
++  {
++    "id": "MYM_ESPEJO",
++    "name": "MYM \u00b7 Espejo (5m / 15m / 25t)",
++    "group": "MYM (Espejo Impulsos)",
++    "instrument": "MYM",
++    "contract": "MYM 03-26",
++    "tick_size": 1.0,
++    "precision": 0,
++    "candles": 25289,
++    "zones": 0,
++    "rolls": 0,
++    "parity_status": "PARITY_ABSTAIN"
++  },
+   {
+     "id": "ES_03-26_ESPEJO",
+     "name": "ES 03-26 \u00b7 Espejo (5m / 15m / 25t)",
+diff --git a/viewer/nt8_bridge/index.html b/viewer/nt8_bridge/index.html
+index c5946dbd..b451dc8a 100644
+--- a/viewer/nt8_bridge/index.html
++++ b/viewer/nt8_bridge/index.html
+@@ -910,6 +910,38 @@
+       <div style="display:flex; flex-direction:column; gap:5px; font-size:10px;">
+         <label style="display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" id="hud-chk-s2"><span>★ Sólo vueltas simétricas (S2v2)</span></label>
+         <label style="display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" id="hud-chk-nl"><span>🟣 Sólo con zona «no lista» (vacío vol.)</span></label>
++        <label style="display:flex; align-items:center; gap:6px; cursor:pointer; color:#38bdf8; font-weight:600;"><input type="checkbox" id="hud-chk-t2"><span>🎯 Ruptura 2º Tercil (Equilibrio Óptimo)</span></label>
++        <div id="hud-t2-nav" style="display:none; justify-content:space-between; align-items:center; background:rgba(2,132,199,0.18); border:1px solid rgba(56,189,248,0.35); border-radius:4px; padding:3px 8px; margin:1px 0 3px 0; font-size:10px;">
++          <button id="btn-t2-prev" style="background:#0284c7; color:#fff; border:none; border-radius:3px; padding:2px 8px; cursor:pointer; font-weight:bold; font-size:11px;" title="Disparo anterior">◀ Ant</button>
++          <span id="hud-t2-count" style="color:#38bdf8; font-weight:700; font-size:10.5px;">0 / 0</span>
++          <button id="btn-t2-next" style="background:#0284c7; color:#fff; border:none; border-radius:3px; padding:2px 8px; cursor:pointer; font-weight:bold; font-size:11px;" title="Siguiente disparo">Sig ▶</button>
++        </div>
++        <label style="display:flex; align-items:center; gap:6px; cursor:pointer; color:#34d399; font-weight:600;"><input type="checkbox" id="hud-chk-ext"><span>🚀 Alejamiento post-espejo</span></label>
++        <div id="hud-ext-controls" style="display:none; flex-direction:column; gap:4px; background:rgba(16,185,129,0.15); border:1px solid rgba(52,211,153,0.35); border-radius:4px; padding:4px 8px; margin:1px 0 3px 0; font-size:10px;">
++          <div style="display:flex; justify-content:space-between; align-items:center;">
++            <span style="color:#94a3b8;">Alejamiento:</span>
++            <select id="hud-ext-thr" style="background:#0f172a; color:#34d399; border:1px solid rgba(52,211,153,0.5); border-radius:3px; padding:1px 4px; font-size:10px; font-weight:bold; cursor:pointer;">
++              <option value="0.25" selected>> 25% del espejo</option>
++              <option value="0.10">> 10% del espejo</option>
++              <option value="0.05">> 5% del espejo</option>
++              <option value="0.50">> 50% del espejo</option>
++            </select>
++          </div>
++          <div style="display:flex; justify-content:space-between; align-items:center;">
++            <span style="color:#94a3b8;">Reingreso máx:</span>
++            <select id="hud-reentry-thr" style="background:#0f172a; color:#fbbf24; border:1px solid rgba(251,191,36,0.5); border-radius:3px; padding:1px 4px; font-size:10px; font-weight:bold; cursor:pointer;">
++              <option value="0.10" selected>≤ 10% del espejo</option>
++              <option value="0.05">≤ 5% del espejo</option>
++              <option value="0.00">0% (sin reingreso)</option>
++              <option value="0.20">≤ 20% del espejo</option>
++            </select>
++          </div>
++          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px;">
++            <button id="btn-ext-prev" style="background:#059669; color:#fff; border:none; border-radius:3px; padding:2px 8px; cursor:pointer; font-weight:bold; font-size:11px;" title="Disparo anterior">◀ Ant</button>
++            <span id="hud-ext-count" style="color:#34d399; font-weight:700; font-size:10.5px;">0 / 0</span>
++            <button id="btn-ext-next" style="background:#059669; color:#fff; border:none; border-radius:3px; padding:2px 8px; cursor:pointer; font-weight:bold; font-size:11px;" title="Siguiente disparo">Sig ▶</button>
++          </div>
++        </div>
+         <label style="display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" id="hud-chk-box" checked><span>📦 Caja sombreada del rango A–B</span></label>
+       </div>
+     </div>
+@@ -1288,12 +1320,18 @@
+     <div style="background: var(--tb-bg); padding: 8px 10px; border-radius: 4px; border: 1px solid var(--tb-border);">
+       <div style="font-weight: 700; font-size: 11px; margin-bottom: 6px;">🪞 Calibración de Zonas Espejo</div>
+       <div style="display:flex;flex-direction:column;gap:5px;font-size:10.5px;">
+-        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="chk-esp-completed" checked><span><b>Sólo zonas espejadas</b> (MIRROR_COMPLETED)</span></label>
++        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="chk-esp-completed"><span><b>Sólo zonas espejadas</b> (MIRROR_COMPLETED) — <i>sesgo de supervivencia: sin los fracasados no es evidencia</i></span></label>
+         <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="chk-esp-imp" checked><span>Trazar <b>Ida (A→B)</b> y <b>Vuelta (B→A)</b></span></label>
+         <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="chk-esp-box" checked><span>Caja sombreada de la zona espejada</span></label>
+         <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="chk-esp-nl" checked><span><b>Zona «no lista»</b> (tramo cruzado sin volumen)</span></label>
+         <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="chk-esp-inef"><span>Sólo impulsos ineficientes (I1 ∨ I2)</span></label>
+         <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="chk-esp-s2"><span>Sólo vueltas parecidas (S2v2: vel/tiempo)</span></label>
++        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;color:#0284c7;font-weight:600;"><input type="checkbox" id="chk-esp-t2"><span>🎯 <b>Ruptura 2º Tercil</b> (Equilibrio Óptimo)</span></label>
++        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;color:#10b981;font-weight:600;"><input type="checkbox" id="chk-esp-ext"><span>🚀 <b>Alejamiento post-espejo</b> (reingreso ≤ 10%)</span></label>
++        <label style="display:flex;align-items:center;gap:6px;" title="Mínimo de distancia de los tramos (W = |B − A|) en ticks. Vacío = el del slider de permisividad. Sirve para instrumentos con tick chico (GC: 0,1).">
++          <span><b>W mínimo</b> (ticks, pisa el slider):</span>
++          <input type="number" id="inp-esp-minw" min="1" step="1" placeholder="slider" style="width:70px;font-size:10.5px;padding:1px 4px;">
++        </label>
+         <div id="lbl-esp-status" style="font-size:9.5px;color:#666;line-height:1.35;margin-top:2px;"></div>
+         <div style="font-size:9px;color:#888;line-height:1.35;margin-top:4px;">
+           <b>Guía de calibración:</b><br>
+@@ -2345,16 +2383,31 @@
+     4: { name: "Nivel 4 · Permisivo", min_w: 13, max_bars: 25, atr_k: 2.2, desc: "Oscilaciones y giros medianos (W ≥ 13 t, 25 velas)" },
+     5: { name: "Nivel 5 · Ultra Permisivo", min_w: 9, max_bars: 30, atr_k: 1.5, desc: "Micro-espejos y rebotes rápidos (W ≥ 9 t, 30 velas)" }
+   };
+-  var espejo = { on: false, key: null, res: null, completed: true, imp: true, box: true, nl: true, inef: false, s2: false, nlOnly: false, permLevel: 3 };
++  var espejo = { on: false, key: null, res: null, completed: false, imp: true, box: true, nl: true, inef: false, s2: false, nlOnly: false, t2Only: false, extOnly: false, extThr: 0.25, reentryThr: 0.10, permLevel: 3, t2Events: [], t2CurrentIdx: 0, extEvents: [], extCurrentIdx: 0 };
++
++  // 28/09 (Nico): W mínimo recordado por instrumento. GC (tick 0,1) con el W del slider (17 t) da ~28 mil impulsos en
++  // 25t y congela la página al cargar; arranca con 100 t. Vacío en el campo = volver al slider (se guarda 0).
++  var ESP_MINW_DEFAULT = { GC: 100, MGC: 100 };
++  function espejoSyncMinW() {
++    var inst = (state.data && state.data.meta && state.data.meta.instrument) || "";
++    if (espejo.minWInst === inst) return;
++    espejo.minWInst = inst;
++    var saved = null;
++    try { saved = localStorage.getItem("esp_minw_" + inst); } catch (e) {}
++    espejo.minW = saved !== null ? (parseInt(saved, 10) || 0) : (ESP_MINW_DEFAULT[inst] || 0);
++    var inp = document.getElementById("inp-esp-minw"); if (inp) inp.value = espejo.minW > 0 ? espejo.minW : "";
++  }
+ 
+   function espejoCompute() {
+     var cd = activeCandlesArr(); if (!cd || cd.length < 50) { espejo.res = null; return null; }
++    espejoSyncMinW();
+     var bk = state.activeBarKey || (state.run && state.run.bar_key) || "";
+     var isTime = /time|min/i.test(bk);
+     var lvl = espejo.permLevel || 3;
+     var cfg = PERM_CONFIGS[lvl] || PERM_CONFIGS[3];
+     var prm = isTime ? { atr_k: cfg.atr_k, max_bars: cfg.max_bars } : { min_w: cfg.min_w, max_bars: cfg.max_bars };
+-    var key = (state.currentAssetId || "") + "|" + bk + "|" + cd.length + "|" + cd[cd.length - 1].time + "|lvl" + lvl;
++    if (!isTime && espejo.minW > 0) prm.min_w = espejo.minW;     // 28/09 (Nico): W mínimo manual, pisa el del slider
++    var key = (state.currentAssetId || "") + "|" + bk + "|" + cd.length + "|" + cd[cd.length - 1].time + "|lvl" + lvl + "|w" + (espejo.minW || 0) + "|ext" + (espejo.extThr !== undefined ? espejo.extThr : 0.25) + "|re" + (espejo.reentryThr !== undefined ? espejo.reentryThr : 0.10);
+     if (espejo.key === key) return espejo.res;
+     var tick = (state.data && state.data.meta && state.data.meta.tick_size) || 0.25, n = cd.length;
+     var t = new Float64Array(n), O = new Float64Array(n), H = new Float64Array(n), L = new Float64Array(n), C = new Float64Array(n), V = new Float64Array(n), S = [], last = new Uint8Array(n), ses = 0;
+@@ -2365,13 +2418,128 @@
+     }
+     espejo.res = EspejoImpulsos.run(t, O, H, L, C, V, S, last, prm);
+     espejo.key = key;
++
++    // Precomputar eventos causales de Ruptura en 2º Tercil (Equilibrio Óptimo)
++    var t2List = [];
++    espejo.res.impulses.forEach(function (m) {
++      m.isT2 = false;
++      m.t2CrossBar = null;
++      m.pT2 = null;
++      if (m.estado_final === "IMP_UNCONFIRMED") return;
++      if (m.no_lista_lo === null || m.no_lista_hi === null) return;
++      var d = m.dir, a = m.A, b_val = m.B, lo = m.no_lista_lo, hi = m.no_lista_hi;
++      var mid = (lo + hi) / 2.0;
++      var p = (d === 1) ? (mid - a) / (b_val - a) : (a - mid) / (a - b_val);
++      if (p < (1.0 / 3.0) || p >= (2.0 / 3.0)) return;
++      m.isT2 = true;
++      m.pT2 = p;
++      var i_b = m.bar_B, i_end = (m.bar_final !== null ? m.bar_final : n - 1);
++      for (var k = i_b + 1; k <= Math.min(i_end, n - 1); k++) {
++        if (d === 1 && H[k] > b_val) break;
++        if (d === -1 && L[k] < b_val) break;
++        if ((d === 1 && C[k] < lo) || (d === -1 && C[k] > hi)) {
++          m.t2CrossBar = k;
++          m.t2EntryPrice = C[k] * tick;
++          t2List.push(m);
++          break;
++        }
++      }
++    });
++    espejo.t2Events = t2List;
++    var t2NavCount = document.getElementById("hud-t2-count");
++    if (t2NavCount && t2List.length > 0) {
++      t2NavCount.textContent = (espejo.t2CurrentIdx + 1) + " / " + t2List.length;
++    }
++
++    // Precomputar eventos de Alejamiento / Extensión post-espejo (con tolerancia de reingreso máx)
++    var extList = [];
++    var extThr = espejo.extThr !== undefined ? espejo.extThr : 0.25;
++    var reentryThr = espejo.reentryThr !== undefined ? espejo.reentryThr : 0.10;
++    espejo.res.impulses.forEach(function (m) {
++      m.isExt = false;
++      m.extCrossBar = null;
++      m.extThrUsed = extThr;
++      m.reentryThrUsed = reentryThr;
++      m.extTargetPrice = null;
++      m.reentryLimitPrice = null;
++      if (m.estado_final !== "MIRROR_COMPLETED" || m.bar_final === null) return;
++      var d = m.dir, a = m.A, w = m.W, b_comp = m.bar_final;
++      var reqDist = extThr * w;
++      var maxReentry = reentryThr * w;
++      var targetPrice = (d === 1) ? a - reqDist : a + reqDist;
++      var limitPrice = (d === 1) ? a + maxReentry : a - maxReentry;
++      m.extTargetPrice = targetPrice * tick;
++      m.reentryLimitPrice = limitPrice * tick;
++
++      var reached = false;
++      var reentered = false;
++      var extBar = null;
++
++      // 1. Verificar si la misma vela de completitud ya alcanzó la distancia
++      if (d === 1) {
++        if (L[b_comp] <= a - reqDist) {
++          reached = true;
++          extBar = b_comp;
++        }
++        if (C[b_comp] > a + maxReentry) {
++          reentered = true;
++        }
++      } else {
++        if (H[b_comp] >= a + reqDist) {
++          reached = true;
++          extBar = b_comp;
++        }
++        if (C[b_comp] < a - maxReentry) {
++          reentered = true;
++        }
++      }
++
++      // 2. Verificar velas posteriores mientras no reingrese más allá de maxReentry
++      var maxCheck = Math.min(n - 1, b_comp + 200);
++      for (var k = b_comp + 1; k <= maxCheck; k++) {
++        if (d === 1) {
++          if (H[k] > a + maxReentry) {
++            reentered = true;
++            break;
++          }
++          if (!reached && L[k] <= a - reqDist) {
++            reached = true;
++            extBar = k;
++            break;
++          }
++        } else {
++          if (L[k] < a - maxReentry) {
++            reentered = true;
++            break;
++          }
++          if (!reached && H[k] >= a + reqDist) {
++            reached = true;
++            extBar = k;
++            break;
++          }
++        }
++        if (reached) break;
++      }
++
++      if (reached && !reentered) {
++        m.isExt = true;
++        m.extCrossBar = extBar;
++        extList.push(m);
++      }
++    });
++    espejo.extEvents = extList;
++    var extNavCount = document.getElementById("hud-ext-count");
++    if (extNavCount && extList.length > 0) {
++      extNavCount.textContent = (espejo.extCurrentIdx + 1) + " / " + extList.length;
++    }
++
+     var st = {}; espejo.res.impulses.forEach(function (m) { var k = m.estado_final || "abierto"; st[k] = (st[k] || 0) + 1; });
+     var lb = document.getElementById("lbl-esp-status");
+     if (lb) {
+       var nComp = st["MIRROR_COMPLETED"] || 0;
+       var total = espejo.res.impulses.length;
+       lb.innerHTML = "<b>" + nComp + " espejos completados</b> (" + total + " impulsos totales)<br>" +
+-        "<span style='color:#777;'>" + (isTime ? (cfg.atr_k + "·ATR, " + cfg.max_bars + " velas") : (cfg.min_w + " t, " + cfg.max_bars + " velas")) + " · fallidos " + (st["MIRROR_FAILED"] || 0) + " · vencidos " + (st["MIRROR_EXPIRED"] || 0) + "</span>";
++        "<span style='color:#777;'>" + (isTime ? (cfg.atr_k + "·ATR, " + cfg.max_bars + " velas") : ((espejo.minW > 0 ? espejo.minW : cfg.min_w) + " t, " + cfg.max_bars + " velas")) + " · fallidos " + (st["MIRROR_FAILED"] || 0) + " · vencidos " + (st["MIRROR_EXPIRED"] || 0) + "</span>";
+     }
+     return espejo.res;
+   }
+@@ -2395,6 +2563,8 @@
+       if (espejo.inef && !m.ineficiente) return;
+       if (espejo.s2 && !m.S2v2) return;
+       if (espejo.nlOnly && m.no_lista_lo === null) return;
++      if (espejo.t2Only && (!m.isT2 || m.t2CrossBar === null)) return;
++      if (espejo.extOnly && (!m.isExt || m.extCrossBar === null)) return;
+ 
+       var iEnd = m.bar_final !== null ? m.bar_final : n - 1;
+       if (cd[Math.min(n - 1, iEnd)].time < vr.from || cd[m.bar_A].time > vr.to) return;
+@@ -2402,7 +2572,7 @@
+       if (![xA, xB, xE, yA, yB].every(isFinite)) return;
+ 
+       var isComp = (m.estado_final === "MIRROR_COMPLETED");
+-      if (isComp) visibleMirrorsCount++;
++      if (isComp || espejo.t2Only || espejo.extOnly) visibleMirrorsCount++;
+ 
+       var yTop = Math.min(yA, yB), boxH = Math.abs(yB - yA);
+       var xSpan = Math.max(1, xE - xA);
+@@ -2428,11 +2598,26 @@
+         var y1 = Y(m.no_lista_lo), y2 = Y(m.no_lista_hi);
+         if (isFinite(y1) && isFinite(y2)) {
+           var yNlTop = Math.min(y1, y2), hNl = Math.abs(y2 - y1);
+-          ctx.fillStyle = "rgba(139, 92, 246, 0.22)";
+-          ctx.fillRect(xA, yNlTop, xSpan, hNl);
+-          ctx.strokeStyle = "rgba(124, 58, 237, 0.75)";
+-          ctx.lineWidth = 1.2;
+-          ctx.strokeRect(xA, yNlTop, xSpan, hNl);
++          if (m.isT2) {
++            ctx.fillStyle = "rgba(168, 85, 247, 0.28)";
++            ctx.fillRect(xA, yNlTop, xSpan, hNl);
++            ctx.strokeStyle = "rgba(192, 132, 252, 0.95)";
++            ctx.lineWidth = 1.8;
++            ctx.strokeRect(xA, yNlTop, xSpan, hNl);
++            ctx.font = "bold 9px -apple-system, Segoe UI, sans-serif";
++            var t2Tag = "🟣 2º TERCIL (" + (m.pT2 * 100).toFixed(0) + "%)";
++            var twTag = ctx.measureText(t2Tag).width;
++            ctx.fillStyle = "rgba(15, 23, 42, 0.85)";
++            ctx.fillRect(xA + 4, yNlTop - 11, twTag + 6, 11);
++            ctx.fillStyle = "#c084fc";
++            ctx.fillText(t2Tag, xA + 7, yNlTop - 2);
++          } else {
++            ctx.fillStyle = "rgba(139, 92, 246, 0.22)";
++            ctx.fillRect(xA, yNlTop, xSpan, hNl);
++            ctx.strokeStyle = "rgba(124, 58, 237, 0.75)";
++            ctx.lineWidth = 1.2;
++            ctx.strokeRect(xA, yNlTop, xSpan, hNl);
++          }
+         }
+       }
+ 
+@@ -2497,6 +2682,124 @@
+         }
+       }
+ 
++      // 5. SEÑAL CAUSAL DE DISPARO EN 2º TERCIL (cierre de vela 25t del otro lado del rectángulo)
++      if (m.isT2 && m.t2CrossBar !== null) {
++        var kBar = m.t2CrossBar;
++        var xCross = X(kBar);
++        if (isFinite(xCross)) {
++          var cClose = cd[kBar].close;
++          var cHigh = cd[kBar].high;
++          var cLow = cd[kBar].low;
++          var yCross = Y(Math.round(cClose / tick));
++          var yHigh = Y(Math.round(cHigh / tick));
++          var yLow = Y(Math.round(cLow / tick));
++          var isLong = (m.dir === -1); // impulso previo bajista -> rotura alcista del rectángulo hacia nivel A
++          var col = isLong ? "#38bdf8" : "#fb923c";
++          var colBg = isLong ? "rgba(2, 132, 199, 0.92)" : "rgba(234, 88, 12, 0.92)";
++          var arrowTxt = isLong ? "▲" : "▼";
++          var signalTxt = "🎯 T2 " + (isLong ? "LONG" : "SHORT") + " · " + cClose.toFixed(1);
++
++          // Anillo con pulso en el precio de cierre de la vela de ruptura
++          ctx.beginPath();
++          ctx.arc(xCross, yCross, 6, 0, 6.2832);
++          ctx.strokeStyle = col;
++          ctx.lineWidth = 2;
++          ctx.stroke();
++          ctx.fillStyle = "#ffffff";
++          ctx.beginPath();
++          ctx.arc(xCross, yCross, 2.5, 0, 6.2832);
++          ctx.fill();
++
++          // Flecha direccional
++          ctx.font = "bold 13px -apple-system, Segoe UI, sans-serif";
++          ctx.fillStyle = col;
++          ctx.textAlign = "center";
++          var arrowY = isLong ? yLow + 14 : yHigh - 7;
++          ctx.fillText(arrowTxt, xCross, arrowY);
++
++          // Badge con el texto de disparo
++          ctx.font = "bold 10px -apple-system, Segoe UI, sans-serif";
++          var bW = ctx.measureText(signalTxt).width + 8;
++          var badgeY = isLong ? yLow + 18 : yHigh - 27;
++          ctx.fillStyle = colBg;
++          ctx.fillRect(xCross - bW / 2, badgeY, bW, 14);
++          ctx.strokeStyle = "#ffffff";
++          ctx.lineWidth = 0.8;
++          ctx.strokeRect(xCross - bW / 2, badgeY, bW, 14);
++          ctx.fillStyle = "#ffffff";
++          ctx.fillText(signalTxt, xCross, badgeY + 10.5);
++          ctx.textAlign = "start"; // restaurar alineación
++
++          // Línea de proyección punteada hacia Nivel A (objetivo)
++          ctx.setLineDash([3, 3]);
++          ctx.strokeStyle = isLong ? "rgba(56, 189, 248, 0.75)" : "rgba(251, 146, 60, 0.75)";
++          ctx.lineWidth = 1.5;
++          ctx.beginPath();
++          ctx.moveTo(xCross, yCross);
++          ctx.lineTo(xE, yA);
++          ctx.stroke();
++          ctx.setLineDash([]);
++        }
++      }
++
++      // 5. MARCADOR VISUAL DE EXTENSIÓN / ALEJAMIENTO POST-ESPEJO (> 25% W con reingreso ≤ 10%)
++      if (m.isExt && m.extCrossBar !== null) {
++        var xExt = X(m.extCrossBar);
++        var reqDist = (m.extThrUsed !== undefined ? m.extThrUsed : 0.25) * m.W;
++        var pTarget = (m.dir === 1) ? m.A - reqDist : m.A + reqDist;
++        var yTarget = Y(pTarget);
++        if (isFinite(xExt) && isFinite(yTarget)) {
++          // Línea punteada de nivel de extensión alcanzado (verde esmeralda)
++          ctx.strokeStyle = "rgba(52, 211, 153, 0.85)";
++          ctx.lineWidth = 1.4;
++          ctx.setLineDash([3, 3]);
++          ctx.beginPath();
++          ctx.moveTo(xA, yTarget);
++          ctx.lineTo(Math.max(xE, xExt) + 40, yTarget);
++          ctx.stroke();
++
++          // Línea punteada de tolerancia de reingreso máximo al espejo (ámbar) si reingreso > 0
++          var reThr = (m.reentryThrUsed !== undefined ? m.reentryThrUsed : 0.10);
++          if (reThr > 0) {
++            var pReentry = (m.dir === 1) ? m.A + reThr * m.W : m.A - reThr * m.W;
++            var yReentry = Y(pReentry);
++            if (isFinite(yReentry)) {
++              ctx.strokeStyle = "rgba(251, 191, 36, 0.55)";
++              ctx.lineWidth = 1.0;
++              ctx.setLineDash([2, 4]);
++              ctx.beginPath();
++              ctx.moveTo(xA, yReentry);
++              ctx.lineTo(Math.max(xE, xExt) + 25, yReentry);
++              ctx.stroke();
++            }
++          }
++          ctx.setLineDash([]);
++
++          // Badge indicador con porcentajes de extensión y reingreso
++          var extPct = Math.round((m.extThrUsed !== undefined ? m.extThrUsed : 0.25) * 100);
++          var rePct = Math.round(reThr * 100);
++          var pctLabel = "🚀 +" + extPct + "% W (Reingr ≤ " + rePct + "%)";
++          ctx.font = "bold 9.5px -apple-system, Segoe UI, sans-serif";
++          var bW = ctx.measureText(pctLabel).width + 8;
++          var bY = (m.dir === 1) ? yTarget + 4 : yTarget - 16;
++          ctx.fillStyle = "rgba(6, 78, 59, 0.92)";
++          ctx.fillRect(xExt - bW / 2, bY, bW, 14);
++          ctx.strokeStyle = "#34d399";
++          ctx.lineWidth = 1;
++          ctx.strokeRect(xExt - bW / 2, bY, bW, 14);
++          ctx.fillStyle = "#34d399";
++          ctx.textAlign = "center";
++          ctx.fillText(pctLabel, xExt, bY + 10.5);
++          ctx.textAlign = "start";
++
++          // Punto de cruce
++          ctx.fillStyle = "#10b981";
++          ctx.beginPath();
++          ctx.arc(xExt, yTarget, 4, 0, 6.2832);
++          ctx.fill();
++        }
++      }
++
+       // Marcador de desenlace si no es completado
+       if (!isComp && m.estado_final && FIN[m.estado_final]) {
+         ctx.fillStyle = "rgb(" + FIN[m.estado_final] + ")";
+@@ -2507,9 +2810,28 @@
+ 
+     // Actualizar contadores dinámicos del HUD
+     var hudCount = document.getElementById("hud-count-badge");
+-    if (hudCount) hudCount.textContent = visibleMirrorsCount + (visibleMirrorsCount === 1 ? " espejo" : " espejos");
++    if (hudCount) {
++      if (espejo.extOnly) {
++        var extTxt = Math.round((espejo.extThr !== undefined ? espejo.extThr : 0.25) * 100);
++        var reTxt = Math.round((espejo.reentryThr !== undefined ? espejo.reentryThr : 0.10) * 100);
++        hudCount.textContent = visibleMirrorsCount + (visibleMirrorsCount === 1 ? (" alejado > " + extTxt + "% (reingr. ≤ " + reTxt + "%)") : (" alejados > " + extTxt + "% (reingr. ≤ " + reTxt + "%)"));
++      } else if (espejo.t2Only) {
++        hudCount.textContent = visibleMirrorsCount + (visibleMirrorsCount === 1 ? " ruptura T2" : " rupturas T2");
++      } else {
++        hudCount.textContent = visibleMirrorsCount + (visibleMirrorsCount === 1 ? " espejo" : " espejos");
++      }
++    }
+     var hudMin = document.getElementById("hud-min-text");
+-    if (hudMin) hudMin.textContent = "Nivel " + (espejo.permLevel || 3) + " (" + visibleMirrorsCount + ")";
++    if (hudMin) {
++      if (espejo.extOnly) {
++        var extTxt = Math.round((espejo.extThr !== undefined ? espejo.extThr : 0.25) * 100);
++        hudMin.textContent = "🚀 Ext >" + extTxt + "% (" + visibleMirrorsCount + ")";
++      } else if (espejo.t2Only) {
++        hudMin.textContent = "🎯 T2 (" + visibleMirrorsCount + ")";
++      } else {
++        hudMin.textContent = "Nivel " + (espejo.permLevel || 3) + " (" + visibleMirrorsCount + ")";
++      }
++    }
+   }
+ 
+   function initEspejoHud() {
+@@ -2533,7 +2855,7 @@
+       if (desc) {
+         desc.textContent = isTime
+           ? ("Filtro: W ≥ " + cfg.atr_k + "·ATR(14), máx " + cfg.max_bars + " velas")
+-          : ("Filtro: W ≥ " + cfg.min_w + " ticks, máx " + cfg.max_bars + " velas");
++          : ("Filtro: W ≥ " + (espejo.minW > 0 ? espejo.minW + " ticks (manual)" : cfg.min_w + " ticks") + ", máx " + cfg.max_bars + " velas");
+       }
+     }
+ 
+@@ -2571,6 +2893,130 @@
+       });
+     }
+ 
++    var chkT2 = document.getElementById("hud-chk-t2");
++    var navT2 = document.getElementById("hud-t2-nav");
++    var btnPrev = document.getElementById("btn-t2-prev");
++    var btnNext = document.getElementById("btn-t2-next");
++    var lblT2Count = document.getElementById("hud-t2-count");
++
++    function syncT2Nav() {
++      if (!navT2) return;
++      navT2.style.display = espejo.t2Only ? "flex" : "none";
++      if (lblT2Count && espejo.t2Events && espejo.t2Events.length > 0) {
++        lblT2Count.textContent = (espejo.t2CurrentIdx + 1) + " / " + espejo.t2Events.length;
++      }
++    }
++
++    if (chkT2) {
++      chkT2.addEventListener("change", function () {
++        espejo.t2Only = chkT2.checked;
++        var modalT2 = document.getElementById("chk-esp-t2");
++        if (modalT2) modalT2.checked = chkT2.checked;
++        syncT2Nav();
++        requestDraw();
++      });
++    }
++
++    if (btnPrev) {
++      btnPrev.addEventListener("click", function () {
++        if (!espejo.t2Events || espejo.t2Events.length === 0) return;
++        espejo.t2CurrentIdx = (espejo.t2CurrentIdx - 1 + espejo.t2Events.length) % espejo.t2Events.length;
++        var ev = espejo.t2Events[espejo.t2CurrentIdx];
++        if (ev && chart && typeof chart.timeScale === "function") {
++          var bar = ev.t2CrossBar || ev.bar_B;
++          chart.timeScale().setVisibleLogicalRange({ from: bar - 35, to: bar + 65 });
++          syncT2Nav();
++        }
++      });
++    }
++
++    if (btnNext) {
++      btnNext.addEventListener("click", function () {
++        if (!espejo.t2Events || espejo.t2Events.length === 0) return;
++        espejo.t2CurrentIdx = (espejo.t2CurrentIdx + 1) % espejo.t2Events.length;
++        var ev = espejo.t2Events[espejo.t2CurrentIdx];
++        if (ev && chart && typeof chart.timeScale === "function") {
++          var bar = ev.t2CrossBar || ev.bar_B;
++          chart.timeScale().setVisibleLogicalRange({ from: bar - 35, to: bar + 65 });
++          syncT2Nav();
++        }
++      });
++    }
++
++    var chkExt = document.getElementById("hud-chk-ext");
++    var navExt = document.getElementById("hud-ext-controls");
++    var selExtThr = document.getElementById("hud-ext-thr");
++    var btnExtPrev = document.getElementById("btn-ext-prev");
++    var btnExtNext = document.getElementById("btn-ext-next");
++    var lblExtCount = document.getElementById("hud-ext-count");
++
++    function syncExtNav() {
++      if (!navExt) return;
++      navExt.style.display = espejo.extOnly ? "flex" : "none";
++      if (lblExtCount && espejo.extEvents && espejo.extEvents.length > 0) {
++        lblExtCount.textContent = (espejo.extCurrentIdx + 1) + " / " + espejo.extEvents.length;
++      }
++    }
++
++    if (chkExt) {
++      chkExt.addEventListener("change", function () {
++        espejo.extOnly = chkExt.checked;
++        var modalExt = document.getElementById("chk-esp-ext");
++        if (modalExt) modalExt.checked = chkExt.checked;
++        espejo.key = null;
++        syncExtNav();
++        requestDraw();
++      });
++    }
++
++    if (selExtThr) {
++      selExtThr.addEventListener("change", function (e) {
++        espejo.extThr = parseFloat(e.target.value) || 0.25;
++        espejo.key = null;
++        espejo.extCurrentIdx = 0;
++        syncExtNav();
++        requestDraw();
++      });
++    }
++
++    var selReentryThr = document.getElementById("hud-reentry-thr");
++    if (selReentryThr) {
++      selReentryThr.addEventListener("change", function (e) {
++        espejo.reentryThr = parseFloat(e.target.value);
++        if (isNaN(espejo.reentryThr)) espejo.reentryThr = 0.10;
++        espejo.key = null;
++        espejo.extCurrentIdx = 0;
++        syncExtNav();
++        requestDraw();
++      });
++    }
++
++    if (btnExtPrev) {
++      btnExtPrev.addEventListener("click", function () {
++        if (!espejo.extEvents || espejo.extEvents.length === 0) return;
++        espejo.extCurrentIdx = (espejo.extCurrentIdx - 1 + espejo.extEvents.length) % espejo.extEvents.length;
++        var ev = espejo.extEvents[espejo.extCurrentIdx];
++        if (ev && chart && typeof chart.timeScale === "function") {
++          var bar = ev.extCrossBar || ev.bar_final;
++          chart.timeScale().setVisibleLogicalRange({ from: bar - 35, to: bar + 65 });
++          syncExtNav();
++        }
++      });
++    }
++
++    if (btnExtNext) {
++      btnExtNext.addEventListener("click", function () {
++        if (!espejo.extEvents || espejo.extEvents.length === 0) return;
++        espejo.extCurrentIdx = (espejo.extCurrentIdx + 1) % espejo.extEvents.length;
++        var ev = espejo.extEvents[espejo.extCurrentIdx];
++        if (ev && chart && typeof chart.timeScale === "function") {
++          var bar = ev.extCrossBar || ev.bar_final;
++          chart.timeScale().setVisibleLogicalRange({ from: bar - 35, to: bar + 65 });
++          syncExtNav();
++        }
++      });
++    }
++
+     // Minimizar / Expandir panel
+     if (btnCollapse) {
+       btnCollapse.addEventListener("click", function () {
+@@ -2625,8 +3071,28 @@
+     }
+   }
+ 
+-  [["chk-esp-completed", "completed"], ["chk-esp-imp", "imp"], ["chk-esp-box", "box"], ["chk-esp-nl", "nl"], ["chk-esp-inef", "inef"], ["chk-esp-s2", "s2"]].forEach(function (q) {
+-    var el = document.getElementById(q[0]); if (el) el.addEventListener("change", function () { espejo[q[1]] = el.checked; requestDraw(); });
++  (function () {
++    var inp = document.getElementById("inp-esp-minw"); if (!inp) return;
++    inp.addEventListener("change", function () {
++      var v = parseInt(inp.value, 10); espejo.minW = (v > 0) ? v : 0; espejo.key = null;
++      try { localStorage.setItem("esp_minw_" + (espejo.minWInst || ""), String(espejo.minW)); } catch (e) {}
++      requestDraw();
++    });
++  })();
++  [["chk-esp-completed", "completed"], ["chk-esp-imp", "imp"], ["chk-esp-box", "box"], ["chk-esp-nl", "nl"], ["chk-esp-inef", "inef"], ["chk-esp-s2", "s2"], ["chk-esp-t2", "t2Only"], ["chk-esp-ext", "extOnly"]].forEach(function (q) {
++    var el = document.getElementById(q[0]); if (el) el.addEventListener("change", function () {
++      espejo[q[1]] = el.checked;
++      if (q[1] === "t2Only") {
++        var hT2 = document.getElementById("hud-chk-t2"); if (hT2) hT2.checked = el.checked;
++        var nT2 = document.getElementById("hud-t2-nav"); if (nT2) nT2.style.display = el.checked ? "flex" : "none";
++      }
++      if (q[1] === "extOnly") {
++        var hExt = document.getElementById("hud-chk-ext"); if (hExt) hExt.checked = el.checked;
++        var nExt = document.getElementById("hud-ext-controls"); if (nExt) nExt.style.display = el.checked ? "flex" : "none";
++        espejo.key = null;
++      }
++      requestDraw();
++    });
+   });
+ 
+   function tbzxPick(px, py) {
+@@ -2958,7 +3424,9 @@
+     peaksDet.data = null;
+     fetch("bundles/peaks_det/" + aid + ".json", { cache: "reload" }).then(function (r) { if (!r.ok) throw 0; return r.json(); })
+       .then(function (d) { peaksDet.data = d; var el = document.getElementById("lbl-det-status");
+-        if (el) { var pp = d.parametros; el.textContent = "Modelo v0: " + d.zonas.length + " zonas (" + d.zonas_por_dia + "/día) · en lo que marcaste: cobertura " + Math.round(pp.cobertura * 100) + "% · precisión " + Math.round(pp.precision * 100) + "% (con el supuesto de ventana revisada)"; }
++        if (el) { var pp = d.parametros;
++          el.textContent = (pp && pp.cobertura != null) ? "Modelo v0: " + d.zonas.length + " zonas (" + d.zonas_por_dia + "/día) · en lo que marcaste: cobertura " + Math.round(pp.cobertura * 100) + "% · precisión " + Math.round(pp.precision * 100) + "% (con el supuesto de ventana revisada)"
++                                                        : d.zonas.length + " zonas cargadas" + (d.variante ? " (" + d.variante + ")" : "") + "."; }
+         requestDraw(); })
+       .catch(function () { var el = document.getElementById("lbl-det-status"); if (el) el.textContent = "Sin detecciones para este activo (tools/peaks_learn.py)."; });
+   }
+@@ -3296,7 +3764,7 @@
+   function drawZones(ctxArg, wArg, hArg) {
+     if (!ctxArg) { if (window.__EDGELAB_ZONES_PRIM__) window.__EDGELAB_ZONES_PRIM__.update(); return; }
+     var ctx = ctxArg;
+-    if (!state.run || state.zonesHidden) return;
++    if (!state.run) return;               // «Zonas» apagado (zonesHidden) oculta SÓLO las zonas HFT, no las demás capas (27/09)
+ 
+     var tsc = chart.timeScale();
+     var vr = realVisibleRange();
+@@ -3306,8 +3774,14 @@
+     drawL2Depth(ctx, vr, w, hCanvas);
+     drawTrades(ctx, vr, w, hCanvas);
+     drawManipulationMarkers(ctx, vr, w, hCanvas);
+-    drawMaVwap(ctx, w, hCanvas); drawEvx(ctx, w, hCanvas); drawAxf(ctx, w, hCanvas); drawLabels(ctx, w, hCanvas); drawTbz(ctx, vr, w, hCanvas); drawTbzE2(ctx, vr, w, hCanvas); drawTbzx(ctx, vr, w, hCanvas); drawEspejo(ctx, vr, w, hCanvas);
+-    if (((tbze2Opt.on || tbzx.on || evx.on || axf.on) && tbze2Opt.solo) || (typeof rev !== "undefined" && rev.on)) return;   // en revisión ✓/✗ sólo se ve la zona a juzgar             // revisión TBZ-E2 sin las zonas HFT encima
++    // cada capa aislada (27/09): una capa que falla (p. ej. configuración guardada en el navegador para otro activo) no
++    // puede impedir que se dibujen las demás; el error queda en la consola con el nombre de la capa
++    [["ma_vwap", function () { drawMaVwap(ctx, w, hCanvas); }], ["evx", function () { drawEvx(ctx, w, hCanvas); }],
++     ["axf", function () { drawAxf(ctx, w, hCanvas); }], ["etiquetas", function () { drawLabels(ctx, w, hCanvas); }],
++     ["tbz", function () { drawTbz(ctx, vr, w, hCanvas); }], ["tbze2", function () { drawTbzE2(ctx, vr, w, hCanvas); }],
++     ["tbzx", function () { drawTbzx(ctx, vr, w, hCanvas); }], ["espejo", function () { drawEspejo(ctx, vr, w, hCanvas); }]
++    ].forEach(function (L) { try { ctx.save(); L[1](); } catch (err) { console.error("capa " + L[0] + ":", err); } finally { ctx.restore(); } });
++    if (state.zonesHidden || ((tbze2Opt.on || tbzx.on || evx.on || axf.on) && tbze2Opt.solo) || (typeof rev !== "undefined" && rev.on)) return;   // en revisión ✓/✗ sólo se ve la zona a juzgar             // revisión TBZ-E2 sin las zonas HFT encima
+ 
+     var opacityVal = (activeProps.opacidad || 30) / 100;
+     var showLabels = activeProps.mostrar_texto !== false;
+@@ -4133,6 +4607,14 @@
+     });
+     if (rev.on && rev.cur) {
+       var z = rev.cur, zx0 = XI(z.i0, z.t0), zx1 = XI(z.i1, z.t1), zy0 = Y(z.p1), zy1 = Y(z.p0);
++      // CORTINA (27/09, pedido de Nico): tapa todo lo posterior al último pico (+2 velas de confirmación), para juzgar la
++      // forma de la zona sin ver si el precio volvió. Opaca: no es ciega por CSS del chart, pero no deja ver el futuro.
++      var lp = z.picos && z.picos.length ? z.picos[z.picos.length - 1] : [z.i1, z.t1], cx = XI(lp[0] + 2, cd[lp[0] + 2] ? cd[lp[0] + 2].time : lp[1]);
++      if (isFinite(cx) && cx < w) {
++        ctx.fillStyle = state.isDark ? "#1f2937" : "#e5e7eb"; ctx.fillRect(Math.max(0, cx), 0, w - Math.max(0, cx), h);
++        ctx.fillStyle = state.isDark ? "#9ca3af" : "#6b7280"; ctx.font = "600 12px 'Segoe UI', sans-serif";
++        ctx.fillText("futuro oculto: juzgá sólo la forma de la zona", Math.max(0, cx) + 10, 22);
++      }
+       if (!drawPeakPath(ctx, z, XI, Y, "#111", 2.5, true)) {
+         ctx.strokeStyle = "#111"; ctx.lineWidth = 3; ctx.setLineDash([6, 3]);
+         ctx.strokeRect(zx0 - 3, zy0 - 3, zx1 - zx0 + 6, Math.max(2, zy1 - zy0) + 6); ctx.setLineDash([]);
+@@ -5751,10 +6233,35 @@
+     });
+   });
+   document.addEventListener("change", function (e) { if (e.target && /^chk-show-l2/.test(e.target.id)) syncL2Chips(); });
++  // 28/09 (Nico): serie de 100 ticks derivada de la de 25: 4 velas de 25t agrupadas dentro de la sesión (hueco > 30 min
++  // = sesión nueva; la cola incompleta de la sesión no forma vela), la misma regla que usan las mediciones (ESPEJO-NICO,
++  // CONT-TPSL). Sólo para visualizar; no se escribe en ningún bundle.
++  function addDerivedTick100(data) {
++    if (!data || !data.bar_series || !data.bar_series["tick_25"] || data.bar_series["tick_100"]) return;
++    var src = data.bar_series["tick_25"].candles || [], out = [], grp = [];
++    function flush() {
++      if (grp.length === 4) {
++        var h = -Infinity, l = Infinity, v = 0;
++        grp.forEach(function (c) { if (c.high > h) h = c.high; if (c.low < l) l = c.low; v += c.volume || 0; });
++        out.push({ time: grp[3].time, open: grp[0].open, high: h, low: l, close: grp[3].close, volume: v });
++      }
++      grp = [];
++    }
++    for (var i = 0; i < src.length; i++) {
++      if (i && src[i].time - src[i - 1].time > 1800) grp = [];
++      grp.push(src[i]);
++      if (grp.length === 4) flush();
++    }
++    // tiempos estrictamente crecientes para el gráfico (varias velas pueden cerrar en el mismo segundo)
++    for (var k = 1; k < out.length; k++) if (out[k].time <= out[k - 1].time) out[k].time = out[k - 1].time + 1;
++    data.bar_series["tick_100"] = { kind: "tick_100", name: "100 Tick (4 × 25t, derivada)", candles: out };
++  }
++
+   function applyLoadedAsset(data, options) {
+     options = options || {};
+     setTimeout(syncL2Chips, 0);
+     normalizeRuns(data);
++    addDerivedTick100(data);
+     state.data = data;
+     var m = data.meta;
+     state.currentAssetId = m.id || state.currentAssetId;
+@@ -5830,7 +6337,9 @@
+       state.activeBarKey = activeBk;
+       state.run = { id: "none", name: "Espejo", indicator: "EspejoImpulsos", zones: [] };
+       if (data.bar_series && data.bar_series[activeBk]) {
+-        series.setData(data.bar_series[activeBk].candles);
++        // 28/09: sin corridas se cargaban las velas crudas; en 25t varias cierran en el mismo segundo y el gráfico
++        // fallaba («Value is null»). Mismo saneo de tiempos que switchTimeframe/selectRun.
++        series.setData(getMonotonicCandles(data.bar_series[activeBk].candles));
+         chart.timeScale().fitContent();
+       }
+       var lblEl = document.getElementById("lbl-tf-name");
+@@ -6658,6 +7167,27 @@
+       espejo.on = true;
+       indSel = "espejo";
+     }
++    if (params.get("t2") === "1") {
++      espejo.t2Only = true;
++      var hT2 = document.getElementById("hud-chk-t2"); if (hT2) hT2.checked = true;
++      var sT2 = document.getElementById("chk-esp-t2"); if (sT2) sT2.checked = true;
++      var nT2 = document.getElementById("hud-t2-nav"); if (nT2) nT2.style.display = "flex";
++    }
++    if (params.get("ext") === "1") {
++      espejo.extOnly = true;
++      var hExt = document.getElementById("hud-chk-ext"); if (hExt) hExt.checked = true;
++      var sExt = document.getElementById("chk-esp-ext"); if (sExt) sExt.checked = true;
++      var nExt = document.getElementById("hud-ext-controls"); if (nExt) nExt.style.display = "flex";
++      if (params.get("ext_thr")) {
++        espejo.extThr = parseFloat(params.get("ext_thr")) || 0.25;
++        var selThr = document.getElementById("hud-ext-thr"); if (selThr) selThr.value = String(espejo.extThr);
++      }
++      if (params.get("reentry_thr")) {
++        espejo.reentryThr = parseFloat(params.get("reentry_thr"));
++        if (isNaN(espejo.reentryThr)) espejo.reentryThr = 0.10;
++        var selReThr = document.getElementById("hud-reentry-thr"); if (selReThr) selReThr.value = String(espejo.reentryThr);
++      }
++    }
+     if (qAsset && window.ASSET_CATALOG && (/^[A-Za-z0-9]+_CONT$/.test(qAsset) || window.ASSET_CATALOG.some(function(a){ return a.id === qAsset; }))) {
+       loadAsset(qAsset, opts);
+     } else if (window.BUNDLE_6E_CONT) {
