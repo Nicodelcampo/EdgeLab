@@ -38,3 +38,9 @@ Los contratos de esta fase los deduje por el ciclo de vencimientos (MGC bimestra
 
 ## Después de exportar
 Avisame la carpeta: valido tamaños y esquema, las integro a una release v5 (reconstrucción, verificación, auditoría en Kaggle y aprobación con el SHA nuevo) y las subo **una sola vez** junto con lo que aporte el addon.
+
+## Resultado de la primera corrida (2026-10-14, conexión «Simulation»)
+- `DESCARGAR MGC 08-25 …` (31 s por día): de 43 días probados, **1 con datos** (2025-08-26, 2 ticks) y 42 `NO_DATA`; se detuvo a mano.
+- `PROBAR MGC 08-25;MGC 10-25;MGC 12-25`: `MGC 08-25` y `MGC 12-25` sin datos en los 10 días de muestra; **NT8 no conoce `MGC 10-25`** (error).
+- **Lectura:** con la conexión «Simulation» NT8 sólo entrega lo que ya está en su base local; MGC antes del 2025-10-08 (primera sesión de la release) nunca tuvo tick en esta máquina. Esas 46 sesiones **no son recuperables con esta conexión** (hacen falta los datos del proveedor real) y no son un defecto de la release: están fuera de su cobertura.
+- **Regla operativa:** correr siempre **Probar** antes de **Descargar** (10 días en ~3 s contra ~31 s por día) y descargar sólo los contratos/rangos que muestren datos. Para historia nueva, conectar el proveedor real con el que se hicieron los exports anteriores.
