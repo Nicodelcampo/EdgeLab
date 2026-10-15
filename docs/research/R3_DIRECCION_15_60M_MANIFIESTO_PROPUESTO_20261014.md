@@ -1,12 +1,20 @@
 # R3 — Dirección a 15–60 min en índices y metales (manifiesto PROPUESTO)
 
-Estado: PROPUESTA (requiere el OK explícito de Nico antes de correr; STOP de `CLAUDE.md`)
+Estado: VIGENTE — APROBADO por Nico en chat el 2026-10-14 ("R3: Apruebo"); congelado antes de medir
 Fecha: 2026-10-14
 Familia / módulo: research · roadmap R3
 North Star: `05df5c7c3ec4cf3a1f14f62bb8e2ade4b61dd29203b610a308964ac46995f421`
 Procedencia: release `liquid_tick_v1` v4 (manifiesto `db9c42cdb714634b131fc8ff886cda67771bea6070d27c0e56e2d2fd6eb14ce5`, aprobada: `docs/infra/RELEASE_APPROVAL_20261014.md`); R2: `docs/research/R2_RECORRIDO_VS_FRICCION_RESULTADOS_20261014.md`.
 
-> Este documento es el paquete que el protocolo exige **antes** de tocar retornos: manifiesto, número efectivo de hipótesis, riesgos y datos faltantes. **Nada de esto se ejecutó.** Si Nico aprueba, el manifiesto se congela con un commit propio y recién entonces se mide.
+> Aprobado por Nico ("R3: Apruebo", 2026-10-14) con las 2 celdas primarias, una sola apertura de la replicación y el rango de comisión (0,28–1,15 ticks) como cuenta de referencia (aún sin elegir broker). Este commit lo congela **antes** de medir.
+
+## 0. Definiciones fijadas al congelar (no se cambian después de ver resultados)
+- **Decisión:** para cada (L, H) los puntos de decisión son los minutos `m = L + j·H` (j ≥ 0) con `m + H ≤ 390` de la sesión regular 08:30–15:00 CT. Señal con los minutos `[m−L, m)`; **entrada = primer precio de trade del minuto `m`** (tick siguiente a la señal), **salida = último precio de trade del minuto `m+H−1`**. Retorno firmado `r = signo·(salida − entrada)` en ticks. Sin signo (empate) la ventana se descarta.
+- **A:** `signo = sign(último precio del minuto m−1 − primer precio del minuto m−L)`. **B:** `signo = sign(Σ volumen·agresor en los minutos [m−L, m))`, agresor ∈ {−1, 0, +1} del release.
+- **Neto:** `r − F`, con `F` = spread medio RTH + comisión + 2 ticks (R2). **La supervivencia se decide con `F` alta** (conservadora); `F` baja se informa.
+- **Inferencia:** media neta por celda con bootstrap estacionario de sesiones (2.000 remuestreos, bloque medio de 5 sesiones, semilla 20261014). **Primarias** (NQ, L=15, H=15; familias A y B): sobreviven si el límite inferior del IC 95 % de la media neta es > 0. **Secundarias** (las 90 celdas): sobreviven si el p unilateral ajustado por Holm sobre las 90 es < 0,05. Se publican las 90 celdas completas, sobrevivan o no.
+- **Replicación:** `2026-04-01 → 2026-09-30`, **una sola ejecución** (el script crea `REPLICATION_OPENED.json` y se niega a repetir), sólo sobre las celdas sobrevivientes del descubrimiento, con el mismo `F` alto; una celda se confirma si el límite inferior del IC 95 % de la media neta en replicación es > 0 y el signo coincide.
+- Sin selección por valor, sin ajuste de umbrales ni de ventanas tras ver resultados; holdout `trade_date ≥ 20261001` no se lee.
 
 ## 1. Pregunta y justificación económica
 R2 mostró que a 15–60 min el movimiento neto en índices y metales es 5–15 veces la fricción: el obstáculo no es el tamaño sino predecir la dirección. ¿Existe una señal causal, simple y pre-registrada que acierte la dirección del siguiente tramo de 15–60 min con una tasa neta de fricción positiva, en una partición de replicación que no se usó para elegirla?

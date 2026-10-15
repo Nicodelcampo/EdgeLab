@@ -36,7 +36,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | Familia | Docs | Ultimo | Fecha | Estado |
 |---|---:|---|---|---|
 | REFERENCIA | 1 | `REFERENCIA_COSTOS_PROPS_BROKERS_20261014.md` | 2026-10-14 | referencia, no medición. Sin P&L, sin retornos. Insumo para el ledger de costos  |
-| R3 | 2 | `R3_DIRECCION_15_60M_MANIFIESTO_PROPUESTO_20261014.md` | 2026-10-14 | PROPUESTA (requiere el OK explícito de Nico antes de correr; STOP de CLAUDE.md) |
+| R3 | 2 | `R3_DIRECCION_15_60M_MANIFIESTO_PROPUESTO_20261014.md` | 2026-10-14 | VIGENTE — APROBADO por Nico en chat el 2026-10-14 ("R3: Apruebo"); congelado ant |
 | R2 | 2 | `R2_RECORRIDO_VS_FRICCION_RESULTADOS_20261014.md` | 2026-10-14 | PROVISIONAL (descriptivo, target-free; release v4 aprobada, purpose=provisional_ |
 | PLAN | 13 | `PLAN_HACIA_EDGE_NETO_20261014.md` | 2026-10-14 | PROPUESTA |
 | INVENTARIO | 1 | `INVENTARIO_LINEA_MAIN_20261014.md` | 2026-10-14 | VIGENTE (unificación ejecutada el 2026-10-14; ver docs/DECISIONES_20261014.md) |
