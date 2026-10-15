@@ -1,15 +1,16 @@
-﻿// EmaCorridorTrendVol.cs — VARIANTE de EmaCorridorTrend v4.0 con PRUEBA DE VOLUMEN DE SECTOR (2026-10-15).
+// EmaCorridorTrendVol.cs — VARIANTE de EmaCorridorTrend v4.0 con PRUEBA DE VOLUMEN DE SECTOR (2026-10-15).
 //
 // QUE AGREGA (el detector de zonas es identico al original):
-//   Para cada zona terminada se define un SECTOR de evaluacion:
-//     - ancho: el ULTIMO TailPct % de la zona (por defecto 25 %) + BeyondPct % de su ancho MAS ALLA del fin (por defecto 25 %);
-//     - alto: la BANDA del canal en el extremo final de la zona, entre la tangente estructural (TL) y la banda de picos lejanos (FAR),
-//       extendida en horizontal (son las dos lineas azules horizontales del ejemplo).
+//   Para cada zona terminada se define un SECTOR de evaluacion en el eje de PRECIO y de TIEMPO:
+//     - precio: el ULTIMO TailPct % del ALTO del rectangulo de la zona (por defecto 25 %) + los BeyondPct % SIGUIENTES de ese alto, MAS ALLA
+//       del extremo en la direccion de la tendencia (por defecto 25 %). En una suba: [max - 25 % del alto, max + 25 % del alto];
+//       en una baja: [min - 25 % del alto, min + 25 % del alto];
+//     - tiempo: desde el FINAL del rectangulo hasta una distancia igual a su ancho (ForwardWidthPct = 100 %).
 //   Se mide el VOLUMEN OPERADO dentro de ese sector (ticks con tiempo y precio dentro del rectangulo), con una serie extra de 1 tick.
 //   La zona se MARCA si su volumen de sector es MAYOR al percentil VolPercentile (por defecto 90) de los volumenes de ese mismo sector
 //   en las LookbackZones zonas anteriores (por defecto 50), exigiendo al menos MinPriorZones zonas previas (por defecto 20).
 //
-// CAUSALIDAD: una zona se sabe terminada recien cuando la tendencia se rompe, y el sector llega hasta BeyondPct % mas alla de su fin;
+// CAUSALIDAD: una zona se sabe terminada recien cuando la tendencia se rompe, y el sector se extiende un ancho de zona hacia adelante;
 //   la evaluacion se hace cuando cerro la barra SIGUIENTE al final del sector, usando solo ticks con tiempo <= esa barra. La marca llega
 //   TARDE respecto del fin de la zona: sirve para clasificar y para medir lo que viene despues, no como senal de entrada en el fin.
 // SALIDAS: plot VolFlag = +1/-1 (direccion de la zona) en la barra en que se evalua una zona marcada; 0 en el resto.
@@ -169,6 +170,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 				// 5. Volumen de sector
 				TailPct            = 25;
 				BeyondPct          = 25;
+				ForwardWidthPct    = 100;
 				LookbackZones      = 50;
 				MinPriorZones      = 20;
 				VolPercentile      = 90;
@@ -727,78 +729,55 @@ namespace NinjaTrader.NinjaScript.Indicators
 			return lo;
 		}
 
-		// Misma regresion que DrawZoneCorridor: devuelve la banda de precio del canal (TL..FAR) en el extremo final de la zona
-		private bool ComputeBandAtEnd(int dir, int origin, int endBarRaw, out int endBar, out double lo, out double hi)
+		// Rectangulo de la zona (mismos limites que DrawZoneCorridor): fin de barra, maximo y minimo de precio entre origen y fin
+		private bool ComputeBoxAtEnd(int origin, int endBarRaw, out int endBar, out double minLo, out double maxHi)
 		{
-			lo = 0.0; hi = 0.0;
+			minLo = 1e18; maxHi = -1e18;
 			endBar = Math.Max(origin + 15, endBarRaw);
 			if (endBar > CurrentBar)
 				endBar = CurrentBar;
 			int nSpan = endBar - origin + 1;
 			if (nSpan < 10)
 				return false;
-
-			double xMean = 0.5 * (nSpan - 1);
-			double ySum  = 0.0;
 			for (int k = 0; k < nSpan; k++)
 			{
 				int ago = CurrentBar - (origin + k);
-				ySum += 0.5 * (High[ago] + Low[ago]);
+				if (High[ago] > maxHi) maxHi = High[ago];
+				if (Low[ago]  < minLo) minLo = Low[ago];
 			}
-			double yMean = ySum / nSpan;
-			double sxx = 0.0, sxy = 0.0;
-			for (int k = 0; k < nSpan; k++)
-			{
-				int    ago = CurrentBar - (origin + k);
-				double dx  = k - xMean;
-				double dy  = 0.5 * (High[ago] + Low[ago]) - yMean;
-				sxx += dx * dx;
-				sxy += dx * dy;
-			}
-			double slope     = sxx > 1e-12 ? sxy / sxx : 0.0;
-			double intercept = yMean - slope * xMean;
-
-			List<double> upRes = new List<double>(nSpan);
-			List<double> dnRes = new List<double>(nSpan);
-			for (int k = 0; k < nSpan; k++)
-			{
-				int    ago = CurrentBar - (origin + k);
-				double reg = intercept + slope * k;
-				upRes.Add(High[ago] - reg);
-				dnRes.Add(reg - Low[ago]);
-			}
-			upRes.Sort();
-			dnRes.Sort();
-			int    idx90 = Math.Min(nSpan - 1, Math.Max(0, (int)Math.Round(0.90 * (nSpan - 1))));
-			double upOff = Math.Max(TickSize, upRes[idx90]);
-			double dnOff = Math.Max(TickSize, dnRes[idx90]);
-			double yEnd  = intercept + slope * (nSpan - 1);
-
-			// Banda entre la tangente (lado de los pullbacks) y la banda de picos lejanos, en el extremo final
-			double a = yEnd + upOff;
-			double b = yEnd - dnOff;
-			lo = Math.Min(a, b);
-			hi = Math.Max(a, b);
-			return true;
+			return maxHi > minLo;
 		}
 
 		private void RegisterZone(int dir, int origin, int endBarRaw, string tag)
 		{
 			int endBar;
-			double lo, hi;
-			if (!ComputeBandAtEnd(dir, origin, endBarRaw, out endBar, out lo, out hi))
+			double boxLo, boxHi;
+			if (!ComputeBoxAtEnd(origin, endBarRaw, out endBar, out boxLo, out boxHi))
 				return;
 
-			int width  = endBar - origin + 1;
-			int tail   = Math.Max(1, (int)Math.Round(TailPct / 100.0 * width));
-			int beyond = Math.Max(0, (int)Math.Round(BeyondPct / 100.0 * width));
+			double height  = boxHi - boxLo;
+			int    width   = endBar - origin + 1;
+			double tailH   = TailPct   / 100.0 * height;      // ultimo TailPct % del alto, del lado del extremo de la tendencia
+			double beyondH = BeyondPct / 100.0 * height;      // BeyondPct % mas alla del extremo
+			double lo, hi;
+			if (dir > 0)
+			{
+				lo = boxHi - tailH;
+				hi = boxHi + beyondH;
+			}
+			else
+			{
+				lo = boxLo - beyondH;
+				hi = boxLo + tailH;
+			}
+			int fwd = Math.Max(1, (int)Math.Round(ForwardWidthPct / 100.0 * width));
 
 			PendingZone z = new PendingZone();
 			z.Dir         = dir;
 			z.OriginBar   = origin;
 			z.EndBar      = endBar;
-			z.SecStartBar = Math.Max(origin, endBar - tail + 1);
-			z.SecEndBar   = endBar + beyond;
+			z.SecStartBar = endBar + 1;                      // desde el borde derecho del rectangulo
+			z.SecEndBar   = endBar + fwd;                    // hasta una distancia igual a su ancho
 			z.Lo          = lo;
 			z.Hi          = hi;
 			z.Tag         = tag;
@@ -1032,14 +1011,19 @@ namespace NinjaTrader.NinjaScript.Indicators
 			set { DownTrendBrush = Serialize.StringToBrush(value); }
 		}
 		[NinjaScriptProperty] [Range(1, 100)]
-		[Display(Name = "Tail % de la zona (final)", Order = 1, GroupName = "5. Volumen de sector",
-			Description = "Porcentaje final del ancho de la zona que entra al sector de evaluacion (25 = ultimo cuarto).")]
+		[Display(Name = "Tail % del ALTO de la zona (lado del extremo)", Order = 1, GroupName = "5. Volumen de sector",
+			Description = "Ultimo porcentaje del alto del rectangulo de la zona, del lado del extremo de la tendencia, que entra al sector (25 = ultimo cuarto).")]
 		public int TailPct { get; set; }
 
 		[NinjaScriptProperty] [Range(0, 200)]
-		[Display(Name = "Beyond % mas alla del fin", Order = 2, GroupName = "5. Volumen de sector",
-			Description = "Porcentaje del ancho de la zona que se agrega DESPUES del fin (0 = solo el tramo final de la zona).")]
+		[Display(Name = "Beyond % del ALTO mas alla del extremo", Order = 2, GroupName = "5. Volumen de sector",
+			Description = "Porcentaje del alto del rectangulo que se agrega MAS ALLA del extremo, en la direccion de la tendencia (0 = solo el tramo final).")]
 		public int BeyondPct { get; set; }
+
+		[NinjaScriptProperty] [Range(10, 400)]
+		[Display(Name = "Ancho hacia adelante % del ancho de la zona", Order = 2, GroupName = "5. Volumen de sector",
+			Description = "Desde el final del rectangulo hasta esta distancia, en % del ancho del rectangulo (100 = igual al rectangulo).")]
+		public int ForwardWidthPct { get; set; }
 
 		[NinjaScriptProperty] [Range(5, 500)]
 		[Display(Name = "Zonas anteriores a comparar", Order = 3, GroupName = "5. Volumen de sector")]
@@ -1085,3 +1069,60 @@ namespace NinjaTrader.NinjaScript.Indicators
 		#endregion
 	}
 }
+
+#region NinjaScript generated code. Neither change nor remove.
+
+namespace NinjaTrader.NinjaScript.Indicators
+{
+	public partial class Indicator : NinjaTrader.Gui.NinjaScript.IndicatorRenderBase
+	{
+		private EmaCorridorTrendVol[] cacheEmaCorridorTrendVol;
+		public EmaCorridorTrendVol EmaCorridorTrendVol(int emaPeriod, int atrPeriod, int preset, int minZoneBars, double minMovePoints, int lookbackOriginBars, int graceBars, int breakConfirmBars, double hardBreakEmaAtr, int windowBars, int slopeBars, int blockBars, double minEmaEfficiency, double minEmaMono, double minEmaSlopeAtr, double minSideFraction, double minGapAtr, double maxCounterCloseAtr, double maxFarDisp, double maxNearDisp, double minPriceR2, bool showChannelLines, bool showZoneBox, int zoneOpacity, int lineWidth, int tailPct, int beyondPct, int forwardWidthPct, int lookbackZones, int minPriorZones, int volPercentile, int keepTickBars, bool drawSector)
+		{
+			return EmaCorridorTrendVol(Input, emaPeriod, atrPeriod, preset, minZoneBars, minMovePoints, lookbackOriginBars, graceBars, breakConfirmBars, hardBreakEmaAtr, windowBars, slopeBars, blockBars, minEmaEfficiency, minEmaMono, minEmaSlopeAtr, minSideFraction, minGapAtr, maxCounterCloseAtr, maxFarDisp, maxNearDisp, minPriceR2, showChannelLines, showZoneBox, zoneOpacity, lineWidth, tailPct, beyondPct, forwardWidthPct, lookbackZones, minPriorZones, volPercentile, keepTickBars, drawSector);
+		}
+
+		public EmaCorridorTrendVol EmaCorridorTrendVol(ISeries<double> input, int emaPeriod, int atrPeriod, int preset, int minZoneBars, double minMovePoints, int lookbackOriginBars, int graceBars, int breakConfirmBars, double hardBreakEmaAtr, int windowBars, int slopeBars, int blockBars, double minEmaEfficiency, double minEmaMono, double minEmaSlopeAtr, double minSideFraction, double minGapAtr, double maxCounterCloseAtr, double maxFarDisp, double maxNearDisp, double minPriceR2, bool showChannelLines, bool showZoneBox, int zoneOpacity, int lineWidth, int tailPct, int beyondPct, int forwardWidthPct, int lookbackZones, int minPriorZones, int volPercentile, int keepTickBars, bool drawSector)
+		{
+			if (cacheEmaCorridorTrendVol != null)
+				for (int idx = 0; idx < cacheEmaCorridorTrendVol.Length; idx++)
+					if (cacheEmaCorridorTrendVol[idx] != null && cacheEmaCorridorTrendVol[idx].EmaPeriod == emaPeriod && cacheEmaCorridorTrendVol[idx].AtrPeriod == atrPeriod && cacheEmaCorridorTrendVol[idx].Preset == preset && cacheEmaCorridorTrendVol[idx].MinZoneBars == minZoneBars && cacheEmaCorridorTrendVol[idx].MinMovePoints == minMovePoints && cacheEmaCorridorTrendVol[idx].LookbackOriginBars == lookbackOriginBars && cacheEmaCorridorTrendVol[idx].GraceBars == graceBars && cacheEmaCorridorTrendVol[idx].BreakConfirmBars == breakConfirmBars && cacheEmaCorridorTrendVol[idx].HardBreakEmaAtr == hardBreakEmaAtr && cacheEmaCorridorTrendVol[idx].WindowBars == windowBars && cacheEmaCorridorTrendVol[idx].SlopeBars == slopeBars && cacheEmaCorridorTrendVol[idx].BlockBars == blockBars && cacheEmaCorridorTrendVol[idx].MinEmaEfficiency == minEmaEfficiency && cacheEmaCorridorTrendVol[idx].MinEmaMono == minEmaMono && cacheEmaCorridorTrendVol[idx].MinEmaSlopeAtr == minEmaSlopeAtr && cacheEmaCorridorTrendVol[idx].MinSideFraction == minSideFraction && cacheEmaCorridorTrendVol[idx].MinGapAtr == minGapAtr && cacheEmaCorridorTrendVol[idx].MaxCounterCloseAtr == maxCounterCloseAtr && cacheEmaCorridorTrendVol[idx].MaxFarDisp == maxFarDisp && cacheEmaCorridorTrendVol[idx].MaxNearDisp == maxNearDisp && cacheEmaCorridorTrendVol[idx].MinPriceR2 == minPriceR2 && cacheEmaCorridorTrendVol[idx].ShowChannelLines == showChannelLines && cacheEmaCorridorTrendVol[idx].ShowZoneBox == showZoneBox && cacheEmaCorridorTrendVol[idx].ZoneOpacity == zoneOpacity && cacheEmaCorridorTrendVol[idx].LineWidth == lineWidth && cacheEmaCorridorTrendVol[idx].TailPct == tailPct && cacheEmaCorridorTrendVol[idx].BeyondPct == beyondPct && cacheEmaCorridorTrendVol[idx].ForwardWidthPct == forwardWidthPct && cacheEmaCorridorTrendVol[idx].LookbackZones == lookbackZones && cacheEmaCorridorTrendVol[idx].MinPriorZones == minPriorZones && cacheEmaCorridorTrendVol[idx].VolPercentile == volPercentile && cacheEmaCorridorTrendVol[idx].KeepTickBars == keepTickBars && cacheEmaCorridorTrendVol[idx].DrawSector == drawSector && cacheEmaCorridorTrendVol[idx].EqualsInput(input))
+						return cacheEmaCorridorTrendVol[idx];
+			return CacheIndicator<EmaCorridorTrendVol>(new EmaCorridorTrendVol(){ EmaPeriod = emaPeriod, AtrPeriod = atrPeriod, Preset = preset, MinZoneBars = minZoneBars, MinMovePoints = minMovePoints, LookbackOriginBars = lookbackOriginBars, GraceBars = graceBars, BreakConfirmBars = breakConfirmBars, HardBreakEmaAtr = hardBreakEmaAtr, WindowBars = windowBars, SlopeBars = slopeBars, BlockBars = blockBars, MinEmaEfficiency = minEmaEfficiency, MinEmaMono = minEmaMono, MinEmaSlopeAtr = minEmaSlopeAtr, MinSideFraction = minSideFraction, MinGapAtr = minGapAtr, MaxCounterCloseAtr = maxCounterCloseAtr, MaxFarDisp = maxFarDisp, MaxNearDisp = maxNearDisp, MinPriceR2 = minPriceR2, ShowChannelLines = showChannelLines, ShowZoneBox = showZoneBox, ZoneOpacity = zoneOpacity, LineWidth = lineWidth, TailPct = tailPct, BeyondPct = beyondPct, ForwardWidthPct = forwardWidthPct, LookbackZones = lookbackZones, MinPriorZones = minPriorZones, VolPercentile = volPercentile, KeepTickBars = keepTickBars, DrawSector = drawSector }, input, ref cacheEmaCorridorTrendVol);
+		}
+	}
+}
+
+namespace NinjaTrader.NinjaScript.MarketAnalyzerColumns
+{
+	public partial class MarketAnalyzerColumn : MarketAnalyzerColumnBase
+	{
+		public Indicators.EmaCorridorTrendVol EmaCorridorTrendVol(int emaPeriod, int atrPeriod, int preset, int minZoneBars, double minMovePoints, int lookbackOriginBars, int graceBars, int breakConfirmBars, double hardBreakEmaAtr, int windowBars, int slopeBars, int blockBars, double minEmaEfficiency, double minEmaMono, double minEmaSlopeAtr, double minSideFraction, double minGapAtr, double maxCounterCloseAtr, double maxFarDisp, double maxNearDisp, double minPriceR2, bool showChannelLines, bool showZoneBox, int zoneOpacity, int lineWidth, int tailPct, int beyondPct, int forwardWidthPct, int lookbackZones, int minPriorZones, int volPercentile, int keepTickBars, bool drawSector)
+		{
+			return indicator.EmaCorridorTrendVol(Input, emaPeriod, atrPeriod, preset, minZoneBars, minMovePoints, lookbackOriginBars, graceBars, breakConfirmBars, hardBreakEmaAtr, windowBars, slopeBars, blockBars, minEmaEfficiency, minEmaMono, minEmaSlopeAtr, minSideFraction, minGapAtr, maxCounterCloseAtr, maxFarDisp, maxNearDisp, minPriceR2, showChannelLines, showZoneBox, zoneOpacity, lineWidth, tailPct, beyondPct, forwardWidthPct, lookbackZones, minPriorZones, volPercentile, keepTickBars, drawSector);
+		}
+
+		public Indicators.EmaCorridorTrendVol EmaCorridorTrendVol(ISeries<double> input , int emaPeriod, int atrPeriod, int preset, int minZoneBars, double minMovePoints, int lookbackOriginBars, int graceBars, int breakConfirmBars, double hardBreakEmaAtr, int windowBars, int slopeBars, int blockBars, double minEmaEfficiency, double minEmaMono, double minEmaSlopeAtr, double minSideFraction, double minGapAtr, double maxCounterCloseAtr, double maxFarDisp, double maxNearDisp, double minPriceR2, bool showChannelLines, bool showZoneBox, int zoneOpacity, int lineWidth, int tailPct, int beyondPct, int forwardWidthPct, int lookbackZones, int minPriorZones, int volPercentile, int keepTickBars, bool drawSector)
+		{
+			return indicator.EmaCorridorTrendVol(input, emaPeriod, atrPeriod, preset, minZoneBars, minMovePoints, lookbackOriginBars, graceBars, breakConfirmBars, hardBreakEmaAtr, windowBars, slopeBars, blockBars, minEmaEfficiency, minEmaMono, minEmaSlopeAtr, minSideFraction, minGapAtr, maxCounterCloseAtr, maxFarDisp, maxNearDisp, minPriceR2, showChannelLines, showZoneBox, zoneOpacity, lineWidth, tailPct, beyondPct, forwardWidthPct, lookbackZones, minPriorZones, volPercentile, keepTickBars, drawSector);
+		}
+	}
+}
+
+namespace NinjaTrader.NinjaScript.Strategies
+{
+	public partial class Strategy : NinjaTrader.Gui.NinjaScript.StrategyRenderBase
+	{
+		public Indicators.EmaCorridorTrendVol EmaCorridorTrendVol(int emaPeriod, int atrPeriod, int preset, int minZoneBars, double minMovePoints, int lookbackOriginBars, int graceBars, int breakConfirmBars, double hardBreakEmaAtr, int windowBars, int slopeBars, int blockBars, double minEmaEfficiency, double minEmaMono, double minEmaSlopeAtr, double minSideFraction, double minGapAtr, double maxCounterCloseAtr, double maxFarDisp, double maxNearDisp, double minPriceR2, bool showChannelLines, bool showZoneBox, int zoneOpacity, int lineWidth, int tailPct, int beyondPct, int forwardWidthPct, int lookbackZones, int minPriorZones, int volPercentile, int keepTickBars, bool drawSector)
+		{
+			return indicator.EmaCorridorTrendVol(Input, emaPeriod, atrPeriod, preset, minZoneBars, minMovePoints, lookbackOriginBars, graceBars, breakConfirmBars, hardBreakEmaAtr, windowBars, slopeBars, blockBars, minEmaEfficiency, minEmaMono, minEmaSlopeAtr, minSideFraction, minGapAtr, maxCounterCloseAtr, maxFarDisp, maxNearDisp, minPriceR2, showChannelLines, showZoneBox, zoneOpacity, lineWidth, tailPct, beyondPct, forwardWidthPct, lookbackZones, minPriorZones, volPercentile, keepTickBars, drawSector);
+		}
+
+		public Indicators.EmaCorridorTrendVol EmaCorridorTrendVol(ISeries<double> input , int emaPeriod, int atrPeriod, int preset, int minZoneBars, double minMovePoints, int lookbackOriginBars, int graceBars, int breakConfirmBars, double hardBreakEmaAtr, int windowBars, int slopeBars, int blockBars, double minEmaEfficiency, double minEmaMono, double minEmaSlopeAtr, double minSideFraction, double minGapAtr, double maxCounterCloseAtr, double maxFarDisp, double maxNearDisp, double minPriceR2, bool showChannelLines, bool showZoneBox, int zoneOpacity, int lineWidth, int tailPct, int beyondPct, int forwardWidthPct, int lookbackZones, int minPriorZones, int volPercentile, int keepTickBars, bool drawSector)
+		{
+			return indicator.EmaCorridorTrendVol(input, emaPeriod, atrPeriod, preset, minZoneBars, minMovePoints, lookbackOriginBars, graceBars, breakConfirmBars, hardBreakEmaAtr, windowBars, slopeBars, blockBars, minEmaEfficiency, minEmaMono, minEmaSlopeAtr, minSideFraction, minGapAtr, maxCounterCloseAtr, maxFarDisp, maxNearDisp, minPriceR2, showChannelLines, showZoneBox, zoneOpacity, lineWidth, tailPct, beyondPct, forwardWidthPct, lookbackZones, minPriorZones, volPercentile, keepTickBars, drawSector);
+		}
+	}
+}
+
+#endregion
