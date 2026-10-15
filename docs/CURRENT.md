@@ -18,7 +18,7 @@ el head real que ve el PR — confuso para cualquiera que solo tenga acceso al r
 - **Edges promovidos: 0.** Medido y refutado/acotado: HFTZones, BigTrap2 imán, AVZP2 O1; O5 real pero sin expectativa neta; GC presión/progreso de décimas de tick (`docs/research/HFT_ZONAS_ES_MEDIDO_Y_NO_MEDIDO.md`).
 - **Pendientes que sólo cierra Nico:** `docs/PENDIENTES_DE_NICO_20261014.md` (captura L2 cortada desde 2026-09-28, 309 exports P0, copia externa de L2, OK de R3, cuenta de referencia, borrado de Kaggle).
 - **Costos de referencia:** `docs/research/REFERENCIA_COSTOS_PROPS_BROKERS_20261014.md`. Fricción de ES ≈ 3,4–3,6 ticks por viaje.
-- **R2 hecho (provisional):** el recorrido a 15–60 min supera con holgura la fricción en índices y metales; el acierto direccional mínimo ronda 52–61 %; FX y ZB no cubren la fricción a ≤ 30 min (`docs/research/R2_RECORRIDO_VS_FRICCION_RESULTADOS_20261014.md`). **Próximo paso (R3):** manifiesto de dirección a 15–60 min en índices (NQ primero), con N efectivo de hipótesis; requiere OK de Nico. P&L y holdout siguen bloqueados hasta ese OK.
+- **R2 hecho (provisional):** el recorrido a 15–60 min supera con holgura la fricción en índices y metales; el acierto direccional mínimo ronda 52–61 %; FX y ZB no cubren la fricción a ≤ 30 min (`docs/research/R2_RECORRIDO_VS_FRICCION_RESULTADOS_20261014.md`). **R3 ejecutado (aprobado por Nico):** dirección a 15–60 min (familias A y B, 5 activos, 90 celdas) en descubrimiento: **sin efecto detectado**, 0 sobrevivientes, replicación no abierta (`docs/research/R3_DIRECCION_15_60M_RESULTADOS_20261014.md`). P&L y holdout siguen bloqueados hasta nuevo OK.
 
 > Lo que sigue es el corte del 2026-09-26, conservado como histórico. Si contradice lo de arriba, manda lo de arriba.
 

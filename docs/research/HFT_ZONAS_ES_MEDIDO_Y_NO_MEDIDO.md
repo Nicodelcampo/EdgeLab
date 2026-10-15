@@ -963,3 +963,7 @@ Criterios: O5 ≥ 5/7 celdas, O1 ≥ 4/6.
 - MEDIDO (target-free, 14 activos, 3.838 sesiones, release v4): el recorrido (`R`) y el desplazamiento neto (`|D|`) a 5–60 min superan la fricción de viaje redondo con holgura en ES/MES/NQ/MNQ/YM/RTY/GC/MGC; a 15 min la mediana de `|D|` es 16 ticks en ES (F≈3,6) y 83 en NQ (F≈6,2). El acierto direccional mínimo para cubrir la fricción es ≈ 61 % (ES 15 m), ≈ 54 % (NQ 15 m), ≈ 52–56 % a 60 min. FX y ZB: el movimiento ≤ 30 min no cubre la fricción. Acta `R2_RECORRIDO_VS_FRICCION_RESULTADOS_20261014.md`.
 - NO MEDIDO: dirección/predictibilidad (ninguna señal), P&L, efecto de stops, slippage real, fills pasivos, comisión real de la cuenta elegida.
 
+## R3 — dirección a 15–60 min (familias A y B) — 14/10/2026 (PROVISIONAL, descubrimiento)
+- MEDIDO (manifiesto aprobado y congelado antes; 5 activos, 90 celdas, 2025-07 → 2026-03): **SIN EFECTO DETECTADO** en las primarias (NQ, 15 min, A y B) y ninguna celda sobrevive a Holm sobre 90. Acierto medio 49,6 % (A) y 49,3 % (B); retorno bruto medio +0,79 y +0,06 ticks frente a una fricción de 3,3–7,9. Replicación NO abierta (0 sobrevivientes). Acta `R3_DIRECCION_15_60M_RESULTADOS_20261014.md`.
+- NO MEDIDO: horizontes 30–60 min con potencia suficiente (MDE 5–8 pp), otras señales, régimen/subasta, IB, stops y ejecución, replicación 2026-04 → 2026-09, holdout.
+
