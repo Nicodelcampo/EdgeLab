@@ -35,13 +35,17 @@ Umbral de pendiente (congelable): mediana de `slope_ticks` en NT8 P1 RTH = **0,3
 - **Ninguna herramienta lleva el neto a positivo:** el mejor `E_sel` es −1,28 ticks (T5) contra −2,45 sin filtro.
 - T5 es el único con signo positivo en los 5 pliegues, pero **decae**: +6,43 (n=40), +1,23 (n=95), −0,91, −2,24, −2,78 (n=193 en el último). Es el patrón típico de selección sobre poco soporte que no se sostiene.
 - El baseline continuo hace +0,24 como mucho: **el indicador no agrega información sobre un modelo simple de hora/volatilidad/trayectoria** en esta medición.
-- Nulo del pipeline (300 repeticiones por desplazamiento circular de etiquetas): ver §5 (**en curso al momento de redactar**).
+- Nulo del pipeline (300 repeticiones): ver §5, **p = 0,239**.
 
 ## 4. HB (F2D, 500T, preset 2, ES, RTH, purgado)
 NT8 STEEP: N=388 eventos, **sólo 72 resueltos (81 % timeouts)**, acierto 59,7 %, bruto +3,04 [−3,1; +8,9], neto −0,50 [−6,7; +5,4]. Sin potencia; el "N=73" de Pasada 2 era el conteo de resueltos. No se optimiza.
 
 ## 5. Nulo del pipeline
-(se completa al terminar la corrida; ver `data/corridor_dev/analysis_NT8_P1_F1A_RTH.json`.)
+300 repeticiones (desplazamiento circular de etiquetas por la serie ordenada de eventos, pipeline completo T1–T5 en cada una; semilla 20261015). Estadístico: la mayor mejora ΔE entre herramientas.
+- Observado: **+0,94 ticks** (T5).
+- Nulo: media **0,68**, mediana 0,64, p90 1,33, p95 1,64, máximo 2,45.
+- **p_pipeline = 0,239**: el pipeline encuentra una "mejora" igual o mayor en ~24 % de los casos sin información en las variables. **No hay evidencia de que algún filtro mejore `HA`** (corte de Adenda D: p < 0,05).
+- Salida de la fase (Adenda D §9, caso 3): no se congela filtro; `HA` no tiene mejora demostrada ni siquiera en desarrollo.
 
 ## 6. Lectura (alcance preciso)
 1. `HA` tal como está definida **no es rentable neta de fricción en ES** y, con timeouts, su efecto bruto ni siquiera es distinguible de cero. Esto vale para el detector, la población, la etiqueta (barrera 1,0H, horizonte 400 barras, entrada al cierre) y la fricción declarados.
