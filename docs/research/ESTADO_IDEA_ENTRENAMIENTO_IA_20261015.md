@@ -44,3 +44,10 @@ Entran DeepLOB, Transformers, fundacionales y RL; se sube a Kaggle privado el L2
 - Auditoría independiente del manifiesto antes de entrenar.
 
 *Aporte al referente:* concentra en un solo lugar qué idea de entrenamiento sigue viva, con qué datos y bajo qué reglas, y qué la bloquea, para que el próximo paso reduzca la distancia a un edge neto y no repita lo que ya midió negativo.
+
+## Actualización (2026-10-15, tarde)
+- **Decisión de Nico:** la pista L2 entrena con los pocos datos disponibles; la pista sin L2 entrena con **todo el historial de ticks** (ver costo respecto de HOLDOUT-A3 en `RESULTADOS_PILOTO_SOPORTE_EXP_REV_GRID_20261015.md`).
+- **Piloto de soporte medido** (ES, 178 sesiones de descubrimiento): 32 vs 32 ticks a 300 s resuelve sólo 18,5 % (81,5 % timeouts); 32/32 a 1800 s resuelve 61,7 %. La etiqueta del borrador del otro agente debe cambiar de horizonte.
+- **Revisión cruzada con Gemini:** confirma que el corredor no tiene efecto neto; ver `REVISION_RESPUESTA_GEMINI_20261015.md` para las cinco reservas.
+- **L2 de ES en Kaggle:** subida en curso (nuevo intento desde el directorio del dataset para evitar un error de ruta del CLI en Windows).
+
