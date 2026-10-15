@@ -7,6 +7,7 @@ from .observer import observe
 from .design import Draft,audit_draft
 from .dispatch import DispatchLedger,Reviewer
 from .checkpoints import CheckpointLedger
+from .kaggle_runs import KagglePolicy,KaggleRunLedger,KaggleRunController,KaggleCli
 
 def _bounded_json(path):
     if path.is_symlink() or path.stat().st_size>65536:raise ValueError('bounded regular file required')
@@ -14,7 +15,7 @@ def _bounded_json(path):
     if len(raw)>65536:raise ValueError('file grew beyond limit')
     return json.loads(raw)
 
-def _status(queue_path,dispatch_path,checkpoint_path):
+def _status(queue_path,dispatch_path,checkpoint_path,kaggle_path=None):
     """Read-only composite view across the three durable ledgers. Never writes, never
     initializes anything: an absent/invalid ledger is reported, not created or repaired."""
     def safe(fn):
@@ -24,6 +25,7 @@ def _status(queue_path,dispatch_path,checkpoint_path):
     out['queue']=safe(lambda:Store(queue_path).verify()) if queue_path else {'status':'NOT_CONFIGURED'}
     out['dispatch']=safe(lambda:DispatchLedger(dispatch_path).verify()) if dispatch_path else {'status':'NOT_CONFIGURED'}
     out['checkpoint']=safe(lambda:CheckpointLedger(checkpoint_path).verify()) if checkpoint_path else {'status':'NOT_CONFIGURED'}
+    out['kaggle']=safe(lambda:KaggleRunLedger(kaggle_path).verify()) if kaggle_path else {'status':'NOT_CONFIGURED'}
     return out
 
 def main(argv=None):
@@ -56,7 +58,12 @@ def main(argv=None):
     a=s.add_parser('checkpoint-record');a.add_argument('--checkpoint-state',type=Path,required=True);a.add_argument('receipt',type=Path)
     a=s.add_parser('checkpoint-pending');a.add_argument('--checkpoint-state',type=Path,required=True)
     a=s.add_parser('checkpoint-verify');a.add_argument('--checkpoint-state',type=Path,required=True)
-    a=s.add_parser('status');a.add_argument('--dispatch-state',type=Path);a.add_argument('--checkpoint-state',type=Path)
+    a=s.add_parser('status');a.add_argument('--dispatch-state',type=Path);a.add_argument('--checkpoint-state',type=Path);a.add_argument('--kaggle-state',type=Path)
+    a=s.add_parser('kaggle-init');a.add_argument('--kaggle-state',type=Path,required=True);a.add_argument('--owner',required=True);a.add_argument('--dataset',action='append',required=True);a.add_argument('--max-runs',type=int,default=20);a.add_argument('--max-concurrent',type=int,default=3)
+    a=s.add_parser('kaggle-submit');a.add_argument('--kaggle-state',type=Path,required=True);a.add_argument('run_id');a.add_argument('kernel_dir',type=Path);a.add_argument('--expect',action='append',required=True)
+    a=s.add_parser('kaggle-poll');a.add_argument('--kaggle-state',type=Path,required=True)
+    a=s.add_parser('kaggle-collect');a.add_argument('--kaggle-state',type=Path,required=True);a.add_argument('run_id');a.add_argument('dest_root',type=Path)
+    a=s.add_parser('kaggle-verify');a.add_argument('--kaggle-state',type=Path,required=True);a.add_argument('--expected-tip')
     args=p.parse_args(argv)
     if args.command=='snapshot-queue':
         from .snapshots import export_queue
@@ -105,7 +112,16 @@ def main(argv=None):
     elif args.command=='checkpoint-verify':
         result=CheckpointLedger(args.checkpoint_state).verify()
     elif args.command=='status':
-        result=_status(args.state,args.dispatch_state,args.checkpoint_state)
+        result=_status(args.state,args.dispatch_state,args.checkpoint_state,args.kaggle_state)
+    elif args.command=='kaggle-init':
+        ledger=KaggleRunLedger(args.kaggle_state);ledger.initialize(KagglePolicy(args.owner,tuple(args.dataset),args.max_runs,args.max_concurrent));result=ledger.verify()
+    elif args.command=='kaggle-verify':
+        result=KaggleRunLedger(args.kaggle_state).verify(args.expected_tip)
+    elif args.command in ('kaggle-submit','kaggle-poll','kaggle-collect'):
+        ctl=KaggleRunController(KaggleRunLedger(args.kaggle_state),KaggleCli())
+        if args.command=='kaggle-submit':result=ctl.submit(args.run_id,args.kernel_dir,args.expect)
+        elif args.command=='kaggle-poll':result=ctl.poll()
+        else:result=ctl.collect(args.run_id,args.dest_root)
     else:
         store=Store(args.state)
         if args.command=='init':store.initialize(Policy(args.attempts,args.seconds));result=store.verify()
