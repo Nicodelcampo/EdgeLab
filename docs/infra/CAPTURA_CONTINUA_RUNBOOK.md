@@ -16,7 +16,7 @@ El límite de EdgeLab es el número de sesiones (P-53): R3 sólo detecta efectos
 python tools/daily_data_health.py --l2-root E:/l2_parquet --backup-root D:/_BACKUP_L2_20261014/l2_parquet --ticks-root E:/EdgeLab/data/nt8_reexport_20261005 --out runs/daily_data_health.json --backup
 ```
 Sale 1 y lista las alertas si: un contrato activo lleva más de 3 días hábiles sin sesión nueva; el último export de ticks tiene más de 5 días; o el respaldo no coincide con el origen. Sólo se alerta sobre el contrato más reciente de cada producto (un contrato vencido no es una falla).
-Para correrlo solo cada día: tarea programada de Windows (`schtasks /Create /SC DAILY /ST 20:30 /TN EdgeLab_DailyDataHealth /TR "<python> <repo>\tools\daily_data_health.py ..."`). **No se instaló**: es configuración persistente en la PC de Nico y espera su OK.
+Para correrlo solo cada día: tarea programada de Windows (`schtasks /Create /SC DAILY /ST 20:30 /TN EdgeLab_DailyDataHealth /TR "<python> <repo>\tools\daily_data_health.py ..."`). **Instalada el 2026-10-14** (decisión delegada, ver `docs/DECISIONES_20261014.md`): tarea de Windows `EdgeLab_DailyDataHealth`, todos los días 20:30, con `--backup`; escribe `runs/daily_data_health.json`. Es de sólo lectura salvo la copia incremental a `D:\_BACKUP_L2_20261014`. Para quitarla: `Unregister-ScheduledTask -TaskName EdgeLab_DailyDataHealth -Confirm:$false`.
 
 ## Qué hacer ante una alerta
 1. **Captura L2/ticks cortada:** abrir NT8 y verificar el gráfico/AddOn de captura de ese contrato y el cambio de contrato (roll a 12-26 / 03-27); reexportar los días faltantes (`docs/infra/MISSING_EXPORTS_20261014.md` lista el formato por día).
@@ -25,3 +25,8 @@ Para correrlo solo cada día: tarea programada de Windows (`schtasks /Create /SC
 
 ## Estado verificado el 2026-10-14
 `daily_data_health.py` sobre `E:\l2_parquet`: **no hay L2 convertido posterior al 2026-09-27** en ningún producto activo (12-26), y MBT se detuvo el 2026-07-30; el último archivo de la carpeta de ticks re-exportados es del 2026-10-05. Hay que revisar en NT8 si la captura sigue activa o si sólo falta convertir lo capturado. Respaldo: 0 faltantes, 0 diferencias (7.201 archivos de `l2_parquet`).
+
+## Causa probable del corte (verificada en la PC el 2026-10-14)
+- No hay ningún CSV/Parquet de L2 ni de ticks posterior al 2026-09-28 en `E:\l2*`, `E:\DatosNT8`, `E:\EdgeLab\data` ni `Documents\NinjaTrader 8`.
+- En `Documents\NinjaTrader 8\db\replay` (donde NT8 graba el Market Replay) el último archivo de cada instrumento es del **2026-09-24 al 2026-09-28** y todos terminan en `.nrd.invalid.<fecha>`: desde esa fecha **NT8 dejó de grabar** (o los últimos quedaron marcados inválidos). NT8 está abierto hoy (proceso iniciado 18:59).
+- **Acción (sólo en NT8, la hace Nico):** Tools → Options → Market data → activar *Record market replay data* y mantener NT8 conectado al feed durante la sesión; confirmar que aparecen archivos `.nrd` nuevos, sin sufijo `.invalid`, en `db\replay\<instrumento>`; luego convertir con `tools/convert_l2_to_parquet.py`. El chequeo diario avisará cuando vuelvan a llegar sesiones.
