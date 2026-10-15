@@ -26,7 +26,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 568 |
+| `docs/research` | 569 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 11 |
@@ -35,7 +35,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 
 | Familia | Docs | Ultimo | Fecha | Estado |
 |---|---:|---|---|---|
-| REVISION | 4 | `REVISION_PAQUETE_EXP_REV_GRID_KAGGLE_20261015.md` | 2026-10-15 | REVISIÓN — lectura de documentos y código; no se ejecutó nada del paquete ni se  |
+| REVISION | 5 | `REVISION_RESPUESTA_GEMINI_20261015.md` | 2026-10-15 | REVISIÓN — lectura de dos documentos y verificación puntual contra datos y códig |
 | RESULTADOS | 1 | `RESULTADOS_ADENDA_D_DESARROLLO_CORREDOR_20261015.md` | 2026-10-15 | - |
 | REPORTE | 1 | `REPORTE_PARA_GEMINI_REVISION_CORREDOR_20261015.md` | 2026-10-15 | PROPUESTA — solicitud de revisión cruzada (no es un resultado confirmatorio) |
 | PROPUESTA | 2 | `PROPUESTA_MODELO_REVERSION_GRILLA_MULTIESCALA_20261015.md` | 2026-10-15 | PROPUESTA — NO APROBADA, NO EJECUTADA. Nada de este documento autoriza medir ret |
