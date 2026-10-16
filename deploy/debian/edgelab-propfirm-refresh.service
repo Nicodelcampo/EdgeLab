@@ -1,0 +1,13 @@
+[Unit]
+Description=Refrescar las reglas públicas de Lucid y avisar si cambiaron
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=edgelab
+WorkingDirectory=/opt/edgelab/EdgeLab
+Environment=HOME=/opt/edgelab
+ExecStart=/opt/edgelab/venv/bin/python tools/propfirm_refresh.py --out /var/lib/edgelab-autopilot/state/propfirm_crawl
+ProtectSystem=strict
+ReadWritePaths=/var/lib/edgelab-autopilot
+NoNewPrivileges=true

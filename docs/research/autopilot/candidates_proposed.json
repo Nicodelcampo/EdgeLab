@@ -1,0 +1,31 @@
+[
+ {
+  "run_id": "ou-2",
+  "kind": "study",
+  "family": "OU_MID",
+  "group": "ZB",
+  "script": "tools/ou2_mid.py",
+  "prereg": "docs/research/autopilot/drafts/OU-2.md",
+  "n_trials": 4,
+  "n_tests_holm": 4,
+  "needs": [
+   "ZB:2025-07-01:2026-09-30"
+  ],
+  "extra_datasets": [],
+  "internet": false,
+  "env": {
+   "OU2_CFG": "{\"cells\": [[5, 60], [5, 240], [15, 240], [60, 240]], \"desde\": \"2025-07-01\", \"hasta\": \"2026-09-30\", \"inst\": \"ZB\", \"mode\": \"ou2\", \"n_planned\": 4, \"nperm\": 5000, \"seed\": 20261019}"
+  },
+  "est_seconds": 3600,
+  "decision_rule": "holm",
+  "notes": "Reversi\u00f3n de ZB a 5-15 min con precio medio bid/ask (descarta rebote bid-ask)",
+  "origin": {
+   "ZB_REV_5_15": {
+    "sample": "mid_price_version",
+    "tests": [
+     "ou2/"
+    ]
+   }
+  }
+ }
+]

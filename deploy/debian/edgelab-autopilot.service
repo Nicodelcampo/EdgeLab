@@ -1,0 +1,25 @@
+[Unit]
+Description=EdgeLab autopilot (un ciclo: cerrar corridas, analizar, lanzar según la configuración)
+After=network-online.target
+Wants=network-online.target
+ConditionPathExists=!/var/lib/edgelab-autopilot/PAUSE
+
+[Service]
+Type=oneshot
+User=edgelab
+Group=edgelab
+WorkingDirectory=/opt/edgelab/EdgeLab
+Environment=HOME=/opt/edgelab
+EnvironmentFile=-/etc/edgelab/autopilot.env
+# código FIJADO a una release: no se actualiza solo en cada ciclo (cambiar de versión es una acción explícita: deploy/debian/update.sh <sha>)
+ExecStart=/opt/edgelab/venv/bin/python -m edgelab.autopilot --root /var/lib/edgelab-autopilot/state/autopilot_runs --config /etc/edgelab/autopilot.json --candidates /etc/edgelab/candidates.json
+ExecStopPost=-/opt/edgelab/EdgeLab/deploy/debian/sync_state.sh
+TimeoutStartSec=900
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/var/lib/edgelab-autopilot /opt/edgelab/EdgeLab
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+CapabilityBoundingSet=
+MemoryMax=3G

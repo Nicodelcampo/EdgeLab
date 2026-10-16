@@ -1,0 +1,250 @@
+[
+ {
+  "run_id": "idm-1",
+  "kind": "study",
+  "family": "IDM",
+  "group": "MULTI",
+  "script": "tools/study_slot_effect.py",
+  "prereg": "docs/research/autopilot/drafts/IDM-1.md",
+  "n_trials": 10,
+  "needs": [
+   "ES:2025-07-01:2026-09-30",
+   "NQ:2025-07-01:2026-09-30",
+   "YM:2025-07-01:2026-09-30",
+   "GC:2025-07-01:2026-09-30",
+   "ZB:2025-07-01:2026-09-30",
+   "6E:2025-07-01:2026-09-30",
+   "6J:2025-07-01:2026-09-30"
+  ],
+  "extra_datasets": [
+   "nicolasbuttaro/edgelab-dukascopy-es-usa500",
+   "nicolasbuttaro/edgelab-dukascopy-xauusd-ticks-m1"
+  ],
+  "internet": true,
+  "env": {
+   "STUDY_CFG": "{\"gamma_source\": \"ES_spot\", \"mode\": \"idm\", \"n_planned\": 10, \"sources\": [\"ES\", \"NQ\", \"YM\", \"GC\", \"ZB\", \"6E\", \"6J\", \"ES_spot\", \"GC_spot\"], \"spot_ranges\": {\"ES_spot\": [\"ES\", \"2018-01-01\", \"2025-06-30\"], \"GC_spot\": [\"GC\", \"2022-07-01\", \"2025-06-30\"]}}"
+  },
+  "est_seconds": 1500,
+  "decision_rule": "holm",
+  "notes": "Momentum intrad\u00eda \u00abresto del d\u00eda \u2192 \u00faltima media hora\u00bb y su modulaci\u00f3n por gamma bajo",
+  "origin": {
+   "GEX_I2D_ROD_LH": "30min_window"
+  }
+ },
+ {
+  "run_id": "slot-1",
+  "kind": "study",
+  "family": "SLOT_REVERSAL",
+  "group": "MULTI",
+  "script": "tools/study_slot_effect.py",
+  "prereg": "docs/research/autopilot/drafts/SLOT-1.md",
+  "n_trials": 7,
+  "needs": [
+   "ES:2025-07-01:2026-09-30",
+   "NQ:2025-07-01:2026-09-30",
+   "YM:2025-07-01:2026-09-30",
+   "6E:2025-07-01:2026-09-30",
+   "6J:2025-07-01:2026-09-30",
+   "ZB:2025-07-01:2026-09-30"
+  ],
+  "extra_datasets": [
+   "nicolasbuttaro/edgelab-dukascopy-es-usa500"
+  ],
+  "internet": false,
+  "env": {
+   "STUDY_CFG": "{\"horizon_min\": 15, \"mode\": \"slot_corr\", \"n_planned\": 7, \"slots\": [\"04:30\"], \"sources\": [\"ES\", \"NQ\", \"YM\", \"6E\", \"6J\", \"ZB\", \"ES_spot\"], \"spot_ranges\": {\"ES_spot\": [\"ES\", \"2018-01-01\", \"2025-06-30\"]}}"
+  },
+  "est_seconds": 900,
+  "decision_rule": "holm",
+  "notes": "Reversi\u00f3n de 15 min a las 04:30 CT en otros activos (generalizaci\u00f3n del hallazgo d\u00e9bil de GC)",
+  "origin": {
+   "GC_0430_REV15": "other_assets_same_slot"
+  }
+ },
+ {
+  "run_id": "idm-2",
+  "kind": "study",
+  "family": "IDM_JUMP",
+  "group": "GC_MULTI",
+  "script": "tools/study_slot_effect.py",
+  "prereg": "docs/research/autopilot/drafts/IDM-2.md",
+  "n_trials": 8,
+  "needs": [
+   "ES:2025-07-01:2026-09-30",
+   "NQ:2025-07-01:2026-09-30",
+   "YM:2025-07-01:2026-09-30",
+   "ZB:2025-07-01:2026-09-30",
+   "6E:2025-07-01:2026-09-30",
+   "6J:2025-07-01:2026-09-30",
+   "GC:2025-07-01:2026-09-30"
+  ],
+  "extra_datasets": [
+   "nicolasbuttaro/edgelab-dukascopy-es-usa500",
+   "nicolasbuttaro/edgelab-dukascopy-xauusd-ticks-m1"
+  ],
+  "internet": false,
+  "env": {
+   "STUDY_CFG": "{\"mode\": \"idm_jump\", \"n_planned\": 8, \"reference_sources\": [\"GC\"], \"sources\": [\"GC_spot_old\", \"ES_spot\", \"ES\", \"NQ\", \"YM\", \"ZB\", \"6E\", \"6J\"], \"spot_ranges\": {\"ES_spot\": [\"ES\", \"2018-01-01\", \"2025-06-30\"], \"GC_spot_old\": [\"GC\", \"2022-07-01\", \"2025-06-30\"]}}"
+  },
+  "est_seconds": 1200,
+  "decision_rule": "holm",
+  "notes": "Momentum de la \u00faltima media hora en GC: \u00bflo explican los saltos del d\u00eda? Prueba en spot 2022-2025 (muestra no usada para esta versi\u00f3n) y en otros activos",
+  "origin": {
+   "GC_LH_MOMENTUM": {
+    "sample": "older_spot_jump_decomposition",
+    "tests": [
+     "idmj/GC_spot_old"
+    ]
+   }
+  }
+ },
+ {
+  "run_id": "universe-sigma-20261015",
+  "kind": "benchmark",
+  "family": "INFRA",
+  "group": "MULTI",
+  "script": "tools/universe_sigma.py",
+  "prereg": "docs/autopilot/ARQUITECTURA.md",
+  "n_trials": 0,
+  "needs": [
+   "ES:2025-07-01:2026-09-30",
+   "NQ:2025-07-01:2026-09-30",
+   "YM:2025-07-01:2026-09-30",
+   "GC:2025-07-01:2026-09-30",
+   "ZB:2025-07-01:2026-09-30",
+   "6E:2025-07-01:2026-09-30",
+   "6J:2025-07-01:2026-09-30"
+  ],
+  "est_seconds": 900,
+  "notes": "mapa descriptivo de volatilidad por instrumento x franja x horizonte (dise\u00f1o del universo)",
+  "decision_rule": "holm",
+  "origin": {}
+ },
+ {
+  "run_id": "scan-1",
+  "kind": "study",
+  "family": "SLOT_SCAN",
+  "group": "MULTI",
+  "script": "tools/study_slot_effect.py",
+  "prereg": "docs/research/autopilot/drafts/SCAN-1.md",
+  "n_trials": 495,
+  "n_tests_holm": 20,
+  "needs": [
+   "6E:2025-07-01:2026-09-30",
+   "ES:2025-07-01:2026-09-30",
+   "GC:2025-07-01:2026-09-30",
+   "NQ:2025-07-01:2026-09-30",
+   "YM:2025-07-01:2026-09-30"
+  ],
+  "extra_datasets": [
+   "nicolasbuttaro/edgelab-dukascopy-es-usa500",
+   "nicolasbuttaro/edgelab-dukascopy-xauusd-ticks-m1"
+  ],
+  "internet": false,
+  "env": {
+   "STUDY_CFG": "{\"mode\": \"slot_scan\", \"n_planned\": 20, \"nperm\": 10000, \"scans\": [{\"disc\": \"ES_spot\", \"name\": \"ES\", \"rep\": \"ES\"}, {\"disc\": \"GC_spot_old\", \"name\": \"GC\", \"rep\": \"GC\"}, {\"disc\": \"NQ\", \"name\": \"NQ\", \"rep\": \"NQ\", \"split\": 0.6}, {\"disc\": \"YM\", \"name\": \"YM\", \"rep\": \"YM\", \"split\": 0.6}, {\"disc\": \"6E\", \"name\": \"6E\", \"rep\": \"6E\", \"split\": 0.6}], \"seed\": 20261016, \"spot_ranges\": {\"ES_spot\": [\"ES\", \"2018-01-01\", \"2025-06-30\"], \"GC_spot_old\": [\"GC\", \"2022-07-01\", \"2025-06-30\"]}}"
+  },
+  "est_seconds": 2400,
+  "decision_rule": "holm",
+  "notes": "Barrido de franjas (07:00-14:30 CT) en GC, NQ, ES, YM y 6E: momentum y reversi\u00f3n, descubrimiento \u2192 r\u00e9plica",
+  "origin": {
+   "UNIVERSE_SCAN_1": {
+    "sample": "scan_1",
+    "tests": null
+   }
+  }
+ },
+ {
+  "run_id": "pnl-1",
+  "kind": "study",
+  "family": "PNL_EVAL",
+  "group": "GC_ES",
+  "script": "tools/study_slot_effect.py",
+  "prereg": "docs/research/autopilot/drafts/PNL-1.md",
+  "n_trials": 5,
+  "n_tests_holm": 2,
+  "needs": [
+   "ES:2025-07-01:2026-09-30",
+   "GC:2025-07-01:2026-09-30"
+  ],
+  "extra_datasets": [
+   "nicolasbuttaro/edgelab-dukascopy-es-usa500",
+   "nicolasbuttaro/edgelab-dukascopy-xauusd-ticks-m1"
+  ],
+  "internet": false,
+  "env": {
+   "STUDY_CFG": "{\"mode\": \"strategy_pnl\", \"n_planned\": 2, \"nperm\": 20000, \"rules\": [{\"descriptive\": [\"GC_spot_new\"], \"dir\": \"momentum\", \"discovery\": [\"GC\"], \"entry\": \"14:30\", \"filter\": \"none\", \"hold_min\": 30, \"inst\": \"GC\", \"name\": \"GC_ROD_LH_ALL\", \"oos\": [\"GC_spot_old\"], \"pred\": \"rod\"}, {\"descriptive\": [\"GC_spot_new\"], \"dir\": \"momentum\", \"discovery\": [\"GC\"], \"entry\": \"14:30\", \"filter\": \"bigmove_q67\", \"hold_min\": 30, \"inst\": \"GC\", \"name\": \"GC_ROD_LH_BIG\", \"oos\": [\"GC_spot_old\"], \"pred\": \"rod\"}, {\"descriptive\": [\"GC\", \"GC_spot_new\"], \"dir\": \"momentum\", \"discovery\": [\"GC_spot_old\"], \"entry\": \"13:30\", \"filter\": \"none\", \"hold_min\": 15, \"inst\": \"GC\", \"name\": \"GC_PREV15_1330_MOM\", \"pred\": \"prev_15\"}, {\"descriptive\": [\"ES\"], \"dir\": \"reversion\", \"discovery\": [\"ES_spot\"], \"entry\": \"07:30\", \"filter\": \"none\", \"hold_min\": 60, \"inst\": \"ES\", \"name\": \"ES_PREV60_0730_REV\", \"pred\": \"prev_60\"}, {\"descriptive\": [\"ES\"], \"dir\": \"momentum\", \"discovery\": [\"ES_spot\"], \"entry\": \"12:30\", \"filter\": \"none\", \"hold_min\": 30, \"inst\": \"ES\", \"name\": \"ES_PREV30_1230_MOM\", \"pred\": \"prev_30\"}], \"seed\": 20261017, \"spot_ranges\": {\"ES_spot\": [\"ES\", \"2018-01-01\", \"2025-06-30\"], \"GC_spot_new\": [\"GC\", \"2025-07-01\", \"2026-09-30\"], \"GC_spot_old\": [\"GC\", \"2022-07-01\", \"2025-06-30\"]}}"
+  },
+  "est_seconds": 900,
+  "decision_rule": "holm",
+  "notes": "P&L neto de reglas operables de las pistas en reserva: GC \u00faltimo 30 min (2 variantes) y celdas de SCAN-1 en GC y ES",
+  "origin": {
+   "PNL_EVAL_1": {
+    "sample": "pnl_1",
+    "tests": [
+     "pnl/"
+    ]
+   }
+  }
+ },
+ {
+  "run_id": "vio-1",
+  "kind": "study",
+  "family": "VIO_ZONES",
+  "group": "MGC",
+  "script": "tools/vio1_zones.py",
+  "prereg": "docs/research/autopilot/drafts/VIO-1.md",
+  "n_trials": 39,
+  "n_tests_holm": 4,
+  "needs": [
+   "MGC:2025-07-01:2026-09-30"
+  ],
+  "extra_datasets": [
+   "nicolasbuttaro/edgelab-code-zones"
+  ],
+  "internet": false,
+  "env": {
+   "VIO_CFG": "{\"D\": [10, 16, 20, 30, 40, 60], \"bar_ticks\": 25, \"cost_ticks\": 6.8, \"desde\": \"2025-07-01\", \"hasta\": \"2026-09-30\", \"inst\": \"MGC\", \"mode\": \"vio1\", \"n_planned\": 4, \"nperm\": 10000, \"seed\": 20261018, \"split\": 0.6, \"tick_usd\": 1.0, \"violet_params\": {}, \"zone_params\": {\"ob_away_heights\": 6.0, \"ob_max_inside_pct\": 4.0, \"racimo_altura_ticks\": 30, \"racimo_bars\": 500, \"racimo_min\": 6}}"
+  },
+  "est_seconds": 2400,
+  "decision_rule": "holm",
+  "notes": "Zonas violeta (l\u00f3gica de aVolClusterPOI) sobre las zonas de aVolZonePOI2 en MGC 25 ticks: \u00bfel precio que vuelve a una distancia D de la zona llega m\u00e1s a la zona que a D m\u00e1s lejos? \u00bfhay un TP/SL con esperanza neta positiva?",
+  "origin": {
+   "VIO_ZONES_MGC": {
+    "sample": "vio_1",
+    "tests": [
+     "vio/"
+    ]
+   }
+  }
+ },
+ {
+  "run_id": "ou-2",
+  "kind": "study",
+  "family": "OU_MID",
+  "group": "ZB",
+  "script": "tools/ou2_mid.py",
+  "prereg": "docs/research/autopilot/drafts/OU-2.md",
+  "n_trials": 4,
+  "n_tests_holm": 4,
+  "needs": [
+   "ZB:2025-07-01:2026-09-30"
+  ],
+  "extra_datasets": [],
+  "internet": false,
+  "env": {
+   "OU2_CFG": "{\"cells\": [[5, 60], [5, 240], [15, 240], [60, 240]], \"desde\": \"2025-07-01\", \"hasta\": \"2026-09-30\", \"inst\": \"ZB\", \"mode\": \"ou2\", \"n_planned\": 4, \"nperm\": 5000, \"seed\": 20261019}"
+  },
+  "est_seconds": 3600,
+  "decision_rule": "holm",
+  "notes": "Reversi\u00f3n de ZB a 5-15 min con precio medio bid/ask (descarta rebote bid-ask)",
+  "origin": {
+   "ZB_REV_5_15": {
+    "sample": "mid_price_version",
+    "tests": [
+     "ou2/"
+    ]
+   }
+  }
+ }
+]
