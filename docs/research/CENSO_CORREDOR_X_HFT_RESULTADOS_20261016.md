@@ -32,7 +32,7 @@ Zonas HFT (sin absorb): **7.841** en 178 sesiones (**44,1 por sesión**).
 4. **Potencia:** una diferencia de ~4–5 pp en P(llegar)/P(atravesar) es detectable en la comparación global; las superficies condicionadas (edad, volumen, virginidad, distancia) tendrán MDE mayor y requerirán rejilla chica.
 
 ## Reservas (verificar antes del manifiesto)
-- **Densidad de zonas HFT: 44 por sesión (sin absorb) frente a una mediana de 158 por sesión en el oráculo de NT8 de ES 03-26.** La diferencia puede deberse a que el oráculo incluye zonas absorb (aquí excluidas), a diferencias entre los ticks del oráculo y los de la release, o a un problema real de paridad en estos contratos. **Hay que comparar el conteo del port con `mostrar_absorb=True` contra el oráculo de ES 03-26 sesión por sesión** antes de interpretar prevalencias.
+- **Densidad de zonas HFT — RESUELTA (2026-10-16):** el oráculo de NT8 de ES 03-26 (`runs/oraculo_espurev2flat_ES_snapshot.sqlite`, 9.486 zonas, 62 sesiones) se compone de **6.685 `Absorb` (70 %)**, **2.800 `Predator`** y **1 `Ultra`**. Sin absorb quedan **2.801 zonas ≈ 45,2 por sesión**, que coincide con las **44,1 por sesión** del censo (7.841 en 178 sesiones). La "mediana de 158 por sesión" incluía las zonas absorb. Queda por repetir, si se quiere, la comparación sesión por sesión sólo de las zonas no absorb.
 - El efecto de diseño 2 del MDE es un supuesto; hay que medir el clustering por sesión.
 - La extensión se midió en barras de 100T de la serie de este censo; el gráfico debe usar la misma serie.
 - Impulsos con origen reubicado y confirmación tardía: W usa sólo lo conocido en `conf_bar` (causal); la versión retrospectiva (50 % de la extensión final) no se midió.
@@ -40,6 +40,6 @@ Zonas HFT (sin absorb): **7.841** en 178 sesiones (**44,1 por sesión**).
 - No se midieron desenlaces (llegar/atravesar) ni retornos; el holdout (≥ 2026-10-01) no se abrió.
 
 ## Siguiente paso propuesto
-(1) Verificar la densidad de zonas contra el oráculo (con y sin absorb). (2) Registrar la familia, congelar W, presencia (tocada), extensión primaria y la rejilla chica de variables, con número efectivo de hipótesis y MDE. (3) Con OK de Nico (STOP), medir los desenlaces en descubrimiento.
+(1) (hecho: densidad verificada contra la composición del oráculo.) (2) Registrar la familia, congelar W, presencia (tocada), extensión primaria y la rejilla chica de variables, con número efectivo de hipótesis y MDE. (3) Con OK de Nico (STOP), medir los desenlaces en descubrimiento.
 
 *Aporte al referente:* muestra que la definición de "zona HFT tocada en el 50 % inicial" separa los impulsos en dos grupos de tamaño suficiente (≈ 2.900 vs 2.400) con MDE ≈ 4–5 pp, antes de gastar presupuesto de hipótesis, y señala la discrepancia de densidad de zonas que hay que cerrar primero.
