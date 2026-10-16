@@ -58,3 +58,21 @@ Distribución de zonas tocadas (preset 1, fija 600): 0 zonas = 2.415; 1 zona = 1
 
 **Lectura:** el requisito de ≥ 2 zonas deja **1.670 impulsos (31 % del total)** en 166 sesiones con fija 600: tamaño suficiente (MDE ≈ 4,7–5,7 pp). Para contrastarlo hay tres controles posibles, a elegir antes de medir: (a) todos los de < 2 (3.642, mezcla ninguno + uno), (b) sólo los de **0 zonas** (2.415, contraste más limpio), (c) sólo los de **exactamente 1** (1.227, aísla el efecto de la segunda zona). Recomiendo declarar (b) como primario y (c) como secundario, y reportar la relación dosis-respuesta (0, 1, 2, ≥ 3 zonas).
 
+## Corrección de Nico (2026-10-16): zonas al inicio del impulso, camino libre en la segunda mitad
+**Lectura correcta de las franjas:** *A dónde* = las zonas HFT del **inicio** del impulso (primera mitad); *Por dónde* = la **segunda mitad**, que debe estar **libre** de zonas (el camino de la inversión); *Desde dónde* = el extremo del impulso donde empieza la inversión, que no necesita tener zonas. El objetivo es apuntar a la inversión del impulso hacia las zonas de su inicio.
+
+**Definición causal nueva (por extensión del impulso):** se decide al **cierre de la zona del corredor** (`cls_b`, cuando la tendencia se rompe: es el disparador natural de la inversión). A esa altura ya se conocen `origin_bar` y `end_bar`, así que las mitades se miden sobre `origin..end_bar` sin mirar el futuro. (La versión anterior, por `conf_bar`, queda como sensibilidad.) Se reejecutó el censo con ambas definiciones (kernel `edgelab-corredor-hft-census-v1`, nueva versión) y la tabla completa está en `corredor_hft_census_20261016/CENSO_VARIANTE_PRIMERA_K_SEGUNDA_CERO_END.csv`.
+
+**Resultados (preset 1; control = 0 zonas tocadas en ambas mitades)**
+| extensión | ≥ k zonas tocadas en la 1.ª mitad | 2.ª mitad | n objetivo | n control | sesiones | MDE80 (p0 0,2) |
+|---|---|---|---|---|---|---|
+| fija 300 | ≥ 1 | sin toque | 1.241 | 2.403 | 174 | 5,5 pp |
+| **fija 600** | **≥ 1** | **sin toque** | **1.270** | **1.952** | **173** | **5,7 pp** |
+| fija 600 | **≥ 2** | sin toque | **599** | 1.952 | 153 | 7,4 pp |
+| fija 1200 | ≥ 1 | sin toque | 1.212 | 1.480 | 176 | 6,1 pp |
+| fija 600 | ≥ 1 | sin ninguna **activa** | 28 | 1.952 | 24 | 30 pp |
+| fija 600 | ≥ 2 | sin ninguna **activa** | 1 | 1.952 | 1 | — |
+Preset 2, fija 600: ≥ 1 y sin toque 1.567 (control 2.818, MDE 5,0 pp); ≥ 2 y sin toque 683 (MDE 6,8 pp). Con la definición por `conf_bar`: ≥ 2 en la 1.ª y 0 en la 2.ª = 443 impulsos (preset 1, fija 600).
+
+**Lectura:** (1) **"Ninguna" en la segunda mitad tiene que significar "ninguna tocada"**: pedir "ninguna zona activa" es casi imposible (con zonas que duran 600 barras casi siempre hay alguna vigente: 28 impulsos). (2) La variante primaria que queda con potencia razonable es **≥ 1 zona tocada en la 1.ª mitad y ninguna tocada en la 2.ª** (1.270 vs control 1.952; MDE ≈ 5,7 pp). (3) **Exigir ≥ 2 deja 599 impulsos** (MDE ≈ 7,4 pp): es detectable sólo un efecto grande; conviene tratarla como secundaria. (4) Al ser las mitades sobre la extensión completa, el censo quedó causal respecto de `cls_b`; los desenlaces deben medirse **desde `cls_b`** hacia adelante.
+

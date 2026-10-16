@@ -89,12 +89,18 @@ def run_census(sessions_list, out_dir):
                 continue
             w_end = ob + (cf - ob) // 2
             lo_w, hi_w = lo_b[ob:w_end + 1], hi_b[ob:w_end + 1]
+            eb = int(z[3])                                                    # barra del extremo del impulso; la mitad se mide sobre origin..end_bar (conocida al CIERRE de la zona, cls_b)
+            w_end_e = ob + (eb - ob) // 2
+            lo_e1, hi_e1 = lo_b[ob:w_end_e + 1], hi_b[ob:w_end_e + 1]
+            lo_e2, hi_e2 = lo_b[w_end_e + 1:eb + 1], hi_b[w_end_e + 1:eb + 1]
+            row_e_ok = eb > ob + 1
+            lo_w2, hi_w2 = lo_b[w_end + 1:cf + 1], hi_b[w_end + 1:cf + 1]      # el OTRO 50 %: (w_end, conf_bar], conocido en conf_bar
             row = dict(preset=pid, session_id=sid, trade_date=sess_td.get(sid), zone_id=int(z[0]), imp_dir=int(z[1]), origin_bar=ob, conf_bar=cf,
                        conf_len=cf - ob, w_bars=w_end - ob + 1, h_ticks=float(z[10]), score=float(z[12]))
             h = hft.get(sid)
             if h is None:
                 for name, _ in variants:
-                    row.update({f"{name}_n_act": 0, f"{name}_n_touch": 0, f"{name}_inside": 0})
+                    row.update({f"{name}_n_act": 0, f"{name}_n_touch": 0, f"{name}_inside": 0, f"{name}_n_act2": 0, f"{name}_n_touch2": 0, f"{name}_e1_touch": 0, f"{name}_e2_touch": 0, f"{name}_e2_act": 0})
                 rows.append(row); continue
             if sid not in cache:
                 end_ns, lo_z, hi_z, dr = h
@@ -107,6 +113,19 @@ def run_census(sessions_list, out_dir):
             for name, ext in variants:
                 na, nt, ni = presence_for_impulse(lo_w, hi_w, ob, cb[sel], lo_z[sel], hi_z[sel], mb[sel], ext)
                 row.update({f"{name}_n_act": na, f"{name}_n_touch": nt, f"{name}_inside": ni})
+                sel2 = cb < cf                                            # zonas conocidas antes del final de la segunda mitad
+                if len(lo_w2) > 0:
+                    na2, nt2, _ = presence_for_impulse(lo_w2, hi_w2, w_end + 1, cb[sel2], lo_z[sel2], hi_z[sel2], mb[sel2], ext)
+                else:
+                    na2, nt2 = 0, 0
+                row.update({f"{name}_n_act2": na2, f"{name}_n_touch2": nt2})
+                if row_e_ok:      # definicion por extension del impulso (origin..end_bar), decision al cierre de la zona
+                    s1, s2 = cb < w_end_e, cb < eb
+                    _, te1, _ = presence_for_impulse(lo_e1, hi_e1, ob, cb[s1], lo_z[s1], hi_z[s1], mb[s1], ext)
+                    ae2, te2, _ = presence_for_impulse(lo_e2, hi_e2, w_end_e + 1, cb[s2], lo_z[s2], hi_z[s2], mb[s2], ext) if len(lo_e2) else (0, 0, 0)
+                    row.update({f"{name}_e1_touch": te1, f"{name}_e2_touch": te2, f"{name}_e2_act": ae2})
+                else:
+                    row.update({f"{name}_e1_touch": -1, f"{name}_e2_touch": -1, f"{name}_e2_act": -1})
             rows.append(row)
         print(f"preset {pid}: impulsos={sum(1 for r in rows if r['preset'] == pid)} ({time.time() - t0:.0f}s)", flush=True)
     df = pd.DataFrame(rows)
