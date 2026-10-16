@@ -19,7 +19,7 @@ if [ ! -d $S/state ]; then
 fi
 # 3) entorno Python
 sudo -u edgelab python3 -m venv $H/venv
-sudo -u edgelab $H/venv/bin/pip install -q numpy pandas pyarrow scipy jsonschema
+sudo -u edgelab $H/venv/bin/pip install -q numpy pandas pyarrow scipy numba jsonschema
 # 4) configuración (no pisa lo existente)
 [ -f /etc/edgelab/autopilot.json ] || install -o edgelab -g edgelab -m 0644 $H/EdgeLab/deploy/debian/autopilot.example.json /etc/edgelab/autopilot.json
 [ -f /etc/edgelab/candidates.json ] || echo '[]' | install -o edgelab -g edgelab -m 0644 /dev/stdin /etc/edgelab/candidates.json
