@@ -3,7 +3,7 @@
 # Variables opcionales: REPO_URL, CODE_BRANCH (rama de código a seguir; por defecto la rama de trabajo actual del proyecto).
 set -euo pipefail
 REPO_URL=${REPO_URL:-https://github.com/Nicodelcampo/EdgeLab.git}
-CODE_BRANCH=${CODE_BRANCH:-claude/vibrant-clarke-s9z6e2}
+CODE_BRANCH=${CODE_BRANCH:-feat/agente-sv1-consolidacion}
 H=/opt/edgelab; S=/var/lib/edgelab-autopilot
 apt-get update -qq && apt-get install -y -qq git python3-venv python3-pip curl ca-certificates
 id edgelab >/dev/null 2>&1 || useradd --system --create-home --home-dir $H --shell /usr/sbin/nologin edgelab
@@ -20,6 +20,9 @@ fi
 # 3) entorno Python
 sudo -u edgelab python3 -m venv $H/venv
 sudo -u edgelab $H/venv/bin/pip install -q numpy pandas pyarrow scipy numba jsonschema
+# 3b) CLI de Claude para los roles (suscripción por CLAUDE_CODE_OAUTH_TOKEN en /etc/edgelab/autopilot.env; nunca API key)
+if [ ! -x $H/.local/bin/claude ]; then sudo -u edgelab env HOME=$H bash -c 'curl -fsSL https://claude.ai/install.sh | bash' || echo "AVISO: no se pudo instalar el CLI de Claude; los roles quedan apagados"; fi
+install -d -o edgelab -g edgelab -m 0700 $H/.claude
 # 4) configuración (no pisa lo existente)
 [ -f /etc/edgelab/autopilot.json ] || install -o edgelab -g edgelab -m 0644 $H/EdgeLab/deploy/debian/autopilot.example.json /etc/edgelab/autopilot.json
 [ -f /etc/edgelab/candidates.json ] || echo '[]' | install -o edgelab -g edgelab -m 0644 /dev/stdin /etc/edgelab/candidates.json

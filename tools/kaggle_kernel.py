@@ -7,6 +7,7 @@ para ese host (no hay tokens en este archivo). Verificado el 2026-10-04: push (H
   python tools/kaggle_kernel.py output --slug dueño/slug --file discovery_parity.json --out local.json
 Solo datos que ya estén en datasets privados de Kaggle; respetar siempre la custodia (nada desde 2026-10-01)."""
 import argparse,hashlib,json,os,re,subprocess,sys
+sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
 API="https://www.kaggle.com/api/v1"
 REF=re.compile(r"^[a-z0-9][a-z0-9-]{0,48}/[a-z0-9][a-z0-9-]{0,48}$")
 def validate_push(slug,datasets,owner=None):
@@ -18,7 +19,8 @@ def validate_push(slug,datasets,owner=None):
     if bad:raise SystemExit(f"NO SE LANZA: datasets fuera de la cuenta {owner!r}: {bad}")
     return owner
 def curl(args,body=None):
-    cmd=["curl","-sS","-m","120"]+args
+    from kaggle_auth import curl_auth
+    cmd=["curl","-sS","-m","120"]+curl_auth(args[0])+args
     if body is not None:cmd+=["-H","Content-Type: application/json","--data-binary","@-"]
     r=subprocess.run(cmd,input=body,capture_output=True,text=True);return r.stdout
 def main():

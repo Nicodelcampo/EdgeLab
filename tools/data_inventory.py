@@ -9,13 +9,14 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from edgelab.catalog.scan import scan_parquet
+sys.path.insert(0,str(Path(__file__).resolve().parent));from kaggle_auth import curl_auth
 OWNER="nicolasbuttaro";TMP=Path("/data/tmp_inventory");TEXT_EXT=(".md",".txt",".json",".sha256",".csv",".yml",".yaml",".jsonl")
 
 def api(path:str)->dict|list:
     import random
     err=""
     for k in range(7):
-        r=subprocess.run(["curl","-sS","--fail-with-body",f"https://www.kaggle.com/api/v1/{path}"],capture_output=True,text=True)
+        u=f"https://www.kaggle.com/api/v1/{path}";r=subprocess.run(["curl","-sS","--fail-with-body",*curl_auth(u),u],capture_output=True,text=True)
         if r.returncode==0:return json.loads(r.stdout)
         err=(r.stdout[:150]+r.stderr[:100])
         if "404" in err:break
@@ -42,7 +43,7 @@ def download(slug:str,name:str,dest:Path,owner:str=OWNER)->None:
     import random
     dest.parent.mkdir(parents=True,exist_ok=True);err=""
     for k in range(5):
-        r=subprocess.run(["curl","-sSL","--fail","-o",str(dest),f"https://www.kaggle.com/api/v1/datasets/download/{owner}/{slug}?fileName={quote(name)}"],capture_output=True,text=True)
+        u=f"https://www.kaggle.com/api/v1/datasets/download/{owner}/{slug}?fileName={quote(name)}";r=subprocess.run(["curl","-sSL","--fail",*curl_auth(u),"-o",str(dest),u],capture_output=True,text=True)
         if r.returncode==0:return
         err=r.stderr[:200]
         if "404" in err:break

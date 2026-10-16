@@ -12,7 +12,8 @@ import edgelab_data as ed
 from data_inventory import list_files
 
 def _curl(url):
-    r=subprocess.run(["curl","-sS","-m","120",url],capture_output=True,text=True);return json.loads(r.stdout)
+    from kaggle_auth import curl_auth
+    r=subprocess.run(["curl","-sS","-m","120",*curl_auth(url),url],capture_output=True,text=True);return json.loads(r.stdout)
 def version_of(ds):
     """Versión actual del dataset en Kaggle (se registra al lanzar; no se usa `latest` a ciegas)."""
     owner,slug=ds.split("/");return _curl(f"https://www.kaggle.com/api/v1/datasets/view/{owner}/{slug}").get("currentVersionNumber")

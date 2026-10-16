@@ -10,6 +10,7 @@ User=edgelab
 Group=edgelab
 WorkingDirectory=/opt/edgelab/EdgeLab
 Environment=HOME=/opt/edgelab
+Environment=PATH=/opt/edgelab/.local/bin:/usr/local/bin:/usr/bin:/bin
 EnvironmentFile=-/etc/edgelab/autopilot.env
 # código FIJADO a una release: no se actualiza solo en cada ciclo (cambiar de versión es una acción explícita: deploy/debian/update.sh <sha>)
 ExecStart=/opt/edgelab/venv/bin/python -m edgelab.autopilot --root /var/lib/edgelab-autopilot/state/autopilot_runs --config /etc/edgelab/autopilot.json --candidates /etc/edgelab/candidates.json
@@ -19,7 +20,7 @@ NoNewPrivileges=true
 PrivateTmp=true
 ProtectSystem=strict
 ProtectHome=read-only
-ReadWritePaths=/var/lib/edgelab-autopilot /opt/edgelab/EdgeLab
+ReadWritePaths=/var/lib/edgelab-autopilot /opt/edgelab
 RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
 CapabilityBoundingSet=
 MemoryMax=1536M

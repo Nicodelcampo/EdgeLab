@@ -28,8 +28,15 @@ def main():
     except Exception as e: chk("mandato presente", False, str(e))
     rc = next((x for x in (Path("/var/lib/edgelab-autopilot/state/propfirm_crawl/RULES_CHANGED"), ROOT / "artifacts/propfirm/crawl/RULES_CHANGED") if x.exists()), ROOT / "artifacts/propfirm/crawl/RULES_CHANGED"); chk("reglas de Lucid sin cambios desde la línea base", not rc.exists(), "correr tools/propfirm_refresh.py, revisar RULES_CHANGED.json y actualizar el mandato", fatal=False)
     chk("git", bool(shutil.which("git"))); chk("curl", bool(shutil.which("curl")))
-    netrc = Path.home() / ".netrc"; chk("credencial de Kaggle (~/.netrc 0600 o KAGGLE_KEY)", (netrc.exists() and oct(netrc.stat().st_mode)[-3:] == "600" and "kaggle.com" in netrc.read_text()) or bool(os.environ.get("KAGGLE_KEY")), "")
-    r = subprocess.run(["curl", "-sS", "-m", "30", "-o", "/dev/null", "-w", "%{http_code}", "https://www.kaggle.com/api/v1/kernels/list?user=nicolasbuttaro&pageSize=1"], capture_output=True, text=True)
+    if cfg.get("roles_ledger"):                                    # roles LLM: CLI de Claude + token de la suscripción (nunca API key)
+        chk("CLI de Claude en el PATH (roles)", bool(shutil.which("claude")), "deploy/debian/install.sh lo instala en /opt/edgelab/.local/bin")
+        chk("CLAUDE_CODE_OAUTH_TOKEN en el entorno (claude setup-token)", bool(os.environ.get("CLAUDE_CODE_OAUTH_TOKEN")), "/etc/edgelab/autopilot.env", fatal=False)
+        chk("sin ANTHROPIC_API_KEY (se usa la suscripción, no la API)", not os.environ.get("ANTHROPIC_API_KEY"), "", fatal=False)
+    sys.path.insert(0, str(ROOT / "tools")); from kaggle_auth import curl_auth, header_file
+    netrc = Path.home() / ".netrc"; hf = header_file()
+    chk("credencial de Kaggle (cabecera Bearer 0600, ~/.netrc 0600 o KAGGLE_KEY)", (hf is not None and oct(hf.stat().st_mode)[-3:] == "600") or (netrc.exists() and oct(netrc.stat().st_mode)[-3:] == "600" and "kaggle.com" in netrc.read_text()) or bool(os.environ.get("KAGGLE_KEY")), "")
+    u = "https://www.kaggle.com/api/v1/kernels/list?user=nicolasbuttaro&pageSize=1"
+    r = subprocess.run(["curl", "-sS", "-m", "30", "-o", "/dev/null", "-w", "%{http_code}", *curl_auth(u), u], capture_output=True, text=True)
     chk("API de Kaggle responde con credencial", r.stdout.strip() == "200", "HTTP " + r.stdout.strip())
     kill = Path(cfg.get("kill_switch", "PAUSE")); chk("kill switch no activo", not kill.exists(), str(kill), fatal=False)
     if a.root and (Path(a.root) / "heartbeat.json").exists():
