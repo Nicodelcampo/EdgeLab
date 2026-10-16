@@ -40,7 +40,7 @@ class Rev:
 def run(tmp_path, cands, decision="PROMOTE", **kw):
     r = repo(tmp_path); cp = tmp_path / "candidates.json"; log = tmp_path / "promociones.jsonl"; rev = Rev(decision)
     out = promover_auto(cands, draft_fn=draft, to_runspec=to_rs, runner=rev, repo=r, candidates_path=cp, log_path=log, **kw)
-    rows = [json.loads(l) for l in log.read_text().splitlines()] if log.exists() else []
+    rows = [json.loads(l) for l in log.read_text(encoding="utf-8").splitlines()] if log.exists() else []   # el jsonl se escribe en UTF-8; sin esto falla en Windows
     return out, r, cp, rows, rev
 
 

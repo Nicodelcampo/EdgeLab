@@ -1,5 +1,6 @@
 # Auditoría de la corrida Kaggle `ES_MULTIRES_CORRIDOR_ZONES_V4` (EmaCorridorTrend, 4 resoluciones, 299 sesiones)
 
+Estado: PROVISIONAL (auditoría de un solo auditor)
 Fecha: 2026-10-15 · Auditor: Claude (un solo auditor; **no** es el panel independiente de la propuesta `PROPUESTA_MODELO_REVERSION_GRILLA_MULTIESCALA_20261015.md`)
 Objeto auditado: reporte y JSON consolidados en `EdgeLab_Bridge/resultados_claude_local/` (`RESULTADOS_EMPIRICOS_KAGGLE_ES_MULTIRES_CORRIDOR_ZONES_V4_20261015.{md,json}`), salidas crudas `outbox/out_k16_poll2` (v1) y `out_k18_poll1` (v2), script `edgelab_es_multires_corridor_zones_v4_fast_v2.py`, dossier `DOSSIER_REPRODUCIBILIDAD_Y_AUDITORIA_PASADA1_...md`.
 

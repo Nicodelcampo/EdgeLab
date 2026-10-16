@@ -1,5 +1,6 @@
 # Auditoría de la Pasada 2 (EmaCorridorTrend v4.0, ES) — batería anti-sobreajuste
 
+Estado: PROVISIONAL (auditoría de un solo auditor)
 Fecha: 2026-10-15 · Auditor: Claude (un solo auditor) · Objeto: `REPORTE_PASADA2_...md`, `RESULTADOS_PASADA2_...json` (kernel 138895158, v2), script `edgelab_es_corridor_pass2_falsification_v4_sym.py` (sha256 `10e8fa9f22693b9269754e73b8fafe18b7694ccc70702f9a843ebea7b584c0ec`). Continúa `AUDITORIA_CORRIDA_KAGGLE_ES_MULTIRES_CORRIDOR_V4_20261015.md`.
 
 ## Veredicto

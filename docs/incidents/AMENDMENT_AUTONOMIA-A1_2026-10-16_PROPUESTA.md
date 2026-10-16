@@ -1,6 +1,6 @@
-# Enmienda AUTONOMIA-A1 — delegación de la promoción al agente — PROPUESTA (sin firmar)
+# Enmienda AUTONOMIA-A1 — delegación de la promoción al agente — PROPUESTA (firmada en chat, pendiente de commit en NORTH_STAR)
 
-Estado: PROPUESTA. Redactada por gonzasib-claude el 2026-10-16 a pedido de Nico ("la idea del sistema es que la promoción humana no sea necesaria"; "sí"). **No tiene efecto hasta que Nico la commitee como propia y agregue el texto a `docs/NORTH_STAR.md`**, refrescando la autocita del hash y `tests/test_north_star_hash.py`. Base: `docs/research/AGENTE_ESPIRAL_20261004.md` §8.3.
+Estado: PROPUESTA. **Firmada y aprobada por Nico en el chat el 2026-10-16** ("firmo, apruebo y mergea"): `docs/DECISIONES_20261016.md`. Sigue sin efecto en el código hasta que Nico commitee el texto en `docs/NORTH_STAR.md` (condición (d): el agente no puede tocar ese documento). Redactada por gonzasib-claude el 2026-10-16 a pedido de Nico ("la idea del sistema es que la promoción humana no sea necesaria"; "sí"). **No tiene efecto hasta que Nico la commitee como propia y agregue el texto a `docs/NORTH_STAR.md`**, refrescando la autocita del hash y `tests/test_north_star_hash.py`. Base: `docs/research/AGENTE_ESPIRAL_20261004.md` §8.3.
 
 ## Texto propuesto para `docs/NORTH_STAR.md`
 

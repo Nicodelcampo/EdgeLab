@@ -1,5 +1,6 @@
 # Resultados de la fase D (desarrollo) — filtros sobre `HA` (F1A, 100T, ES, 299 sesiones)
 
+Estado: PROVISIONAL (desarrollo, no confirmatorio)
 Fecha: 2026-10-15 · Estado: **DESARROLLO sobre ES (datos ya quemados para confirmar, HOLDOUT-A3 regla 1 y 4)**. No es evidencia confirmatoria. NQ, YM y holdout (≥ 2026-10-01) **no se abrieron**.
 Autorización: Nico, "sí a las 4" (Adenda D §12). Manifiesto: `MANIFIESTO_PASADA3_CONFIRMATORIA_CORREDOR_20261015.md` (+ §13) y `ADENDA_D_DESARROLLO_FILTROS_CORREDOR_20261015.md` (+ §13).
 Procedencia: kernel Kaggle `edgelab-es-corridor-dev-events-v1` (id 138900273, v1, sin GPU ni internet); script generado por `tools/corridor_pass2/build_dev_script.py` (Pasada 2 sha256 `10e8fa9f22693b9269754e73b8fafe18b7694ccc70702f9a843ebea7b584c0ec` + adenda + `DET_NT8`); análisis local `tools/corridor_pass2/dev_filters_analysis.py`. Tabla de eventos: `data/corridor_dev/ES_CORRIDOR_DEV_EVENTS.csv` (local, gitignorada).

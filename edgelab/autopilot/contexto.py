@@ -20,6 +20,7 @@ PRIORIDADES = [
     "Holdout desde la sesión CME del 2026-10-01: prohibido para diseñar o elegir.",
     "Mirar hacia atrás para encontrar el patrón es válido sólo para proponer; confirmar exige datos que no se usaron para encontrarlo. Cada vuelta sobre los mismos datos suma pruebas.",
     "Fricción primero: elegir escenarios (instrumento, horario, régimen, horizonte) donde el movimiento esperado sea al menos 3 veces la fricción por viaje; no proponer análisis donde la fricción probablemente gana.",
+    "Fills pasivos sólo por replay tick a tick con máquina de estados causal (espera acotada, cancelación si el precio escapa, excursiones medidas después del fill, stop primero): el modelo 'tocó el precio en la ventana' infló ~0,6 ticks/op en ES (k32). Una partición es réplica sólo si el registro de la familia la declara sin usar. Un gate diseñado después de ver la pérdida es una prueba nueva.",
 ]
 LENTES = {
     "puente_mecanismo": "Llevá un hallazgo de información ya medido a un mecanismo económico publicado que lo explique y predecí algo nuevo.",

@@ -42,3 +42,10 @@ def test_mejoras_globales_o_sobre_reglas_son_solo_humano(tmp_path):
     assert reg.proponer("modulo", "relajar guarda", "x", archivos=["edgelab/autopilot/guard.py"])["estado"] == "SOLO_HUMANO"
     assert reg.proponer("global", "cambiar FDR", "x")["estado"] == "SOLO_HUMANO"
     assert len(reg.abiertas()) == 3
+
+
+def test_lecciones_k32_en_prioridades_y_catalogo():
+    import json, pathlib
+    assert any("replay tick a tick" in p and "réplica" in p for p in PRIORIDADES)
+    cat = json.loads((pathlib.Path(__file__).resolve().parents[1] / "config/autopilot/herramientas.json").read_text(encoding="utf-8"))
+    assert {"replay_causal_fills_pasivos", "aprendizaje_continuo_con_embargo"} <= {t["id"] for t in cat["tecnicas"]}

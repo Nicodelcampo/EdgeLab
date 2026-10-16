@@ -16,7 +16,9 @@ def instrumento(c) -> str:
 
 
 def evaluar(c) -> dict:
-    """ratio = movimiento esperado (ticks, declarado en cfg['mov_esperado_ticks'] desde evidencia previa) / fricción RT."""
+    """ratio = movimiento esperado (ticks, declarado en cfg['mov_esperado_ticks'] desde evidencia previa) / fricción RT.
+    mov_esperado_ticks es el movimiento bruto que la operación captura tras el fill (replay causal), no la amplitud nominal
+    del objetivo: k32 (2026-10-16) tenía zonas de 16 ticks con edge bruto de 0,2 a 0,85 ticks/op, ratio < 0,25."""
     inst = instrumento(c); costo = FRICCION_RT_TICKS.get(inst)
     mov = (getattr(c, "cfg", {}) or {}).get("mov_esperado_ticks")
     if costo is None:
