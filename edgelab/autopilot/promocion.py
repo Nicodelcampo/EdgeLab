@@ -16,7 +16,7 @@ from __future__ import annotations
 import hashlib, json, subprocess, time
 from pathlib import Path
 
-from . import guard
+from . import friccion, guard
 from .contexto import novedad
 from .spec import RunSpec
 
@@ -43,6 +43,8 @@ def chequeos_mecanicos(c, rs: dict | None, retiradas: list, ya: set) -> list:
     nueva, parecida, sim = novedad({"familia": c.title, "mecanismo": ""}, retiradas)        # por título: el "por qué" diluye la similitud
     if not nueva: e.append(f"repite una familia retirada ({parecida}, similitud {sim})")
     if rs is not None and RunSpec.from_dict(rs).spec_hash() in ya: e.append("el mismo RunSpec ya se lanzó o se promovió")
+    f = friccion.evaluar(c)
+    if getattr(c, "utility_class", "bridgeable") != "info" and not f["ok"]: e.append("fricción: " + f["motivo"])   # los estudios sólo de información quedan exentos
     return e
 
 
@@ -53,10 +55,11 @@ def promover_auto(candidatas, *, draft_fn, to_runspec, runner, repo: Path, candi
     have = {c["run_id"] for c in cur} | set()
     hashes = set(ya_hashes) | {RunSpec.from_dict(c).spec_hash() for c in cur}
     out, promovidas = [], 0
+    candidatas = sorted(candidatas, key=lambda c: -float(c.score) * friccion.peso(c))      # primero donde la fricción pesa menos
     for c in candidatas:
         if promovidas >= max_por_ciclo: break
         rs = to_runspec(c)
-        row = dict(ts=time.time(), cid=c.cid, score=round(float(c.score), 6))
+        row = dict(ts=time.time(), cid=c.cid, score=round(float(c.score), 6), friccion=friccion.evaluar(c))
         errs = chequeos_mecanicos(c, rs, list(retiradas), hashes)
         if not errs and rs["run_id"] in have: errs = ["ya está en candidates.json"]
         if errs:

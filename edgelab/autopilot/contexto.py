@@ -18,6 +18,7 @@ PRIORIDADES = [
     "Preferir lo que más reduce la distancia a un edge operable por unidad de cómputo. Evitar refinamientos triviales.",
     "Toda prueba cuenta para la multiplicidad de por vida. Proponer de más infla N_eff.",
     "Holdout desde la sesión CME del 2026-10-01: prohibido para diseñar o elegir.",
+    "Fricción primero: elegir escenarios (instrumento, horario, régimen, horizonte) donde el movimiento esperado sea al menos 3 veces la fricción por viaje; no proponer análisis donde la fricción probablemente gana.",
 ]
 LENTES = {
     "puente_mecanismo": "Llevá un hallazgo de información ya medido a un mecanismo económico publicado que lo explique y predecí algo nuevo.",
@@ -41,6 +42,7 @@ def elegir_lente(historial: list) -> str:
 def armar_paquete(*, tablero: dict, vacios: list, fichas: list, retiradas: list, lente: str, max_chars: int = 12000) -> dict:
     """Determinista y acotado. Recorta por prioridad: primero fichas, después vacíos; prioridades y lente nunca se recortan."""
     p = dict(prioridades=PRIORIDADES, lente=dict(nombre=lente, consigna=LENTES[lente]), tablero=tablero,
+             friccion=__import__('edgelab.autopilot.friccion', fromlist=['x']).tabla_para_contexto(),
              vacios=list(vacios), fichas=list(fichas), prohibido=dict(familias_retiradas=list(retiradas),
              reglas=["no abrir holdout", "no P&L sin manifiesto y STOP", "a lo sumo 3 parámetros libres", "sin código"]))
     while len(json.dumps(p, ensure_ascii=False)) > max_chars and (p["fichas"] or p["vacios"]):

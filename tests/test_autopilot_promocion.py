@@ -4,7 +4,7 @@ from pathlib import Path
 from edgelab.autopilot.generate import Candidate
 from edgelab.autopilot.promocion import promover_auto
 
-CFG = {"inst": "MES", "desde": "2025-07-01", "hasta": "2026-03-31", "x": 1}
+CFG = {"inst": "ES", "desde": "2025-07-01", "hasta": "2026-03-31", "x": 1, "mov_esperado_ticks": 20}
 
 
 def repo(tmp_path):
@@ -23,7 +23,7 @@ def cand(cid, template="slot", trials=10, title=None):
 def to_rs(c):
     if not c.template: return None
     return dict(run_id=c.cid.lower(), kind="study", family="SLOT", group="MES", script="tools/study.py", prereg=f"docs/research/autopilot/drafts/{c.cid}.md",
-                n_trials=c.n_trials, needs=["MES:2025-07-01:2026-03-31"], env={"STUDY_CFG": json.dumps(c.cfg, sort_keys=True)})
+                n_trials=c.n_trials, needs=["ES:2025-07-01:2026-03-31"], env={"STUDY_CFG": json.dumps(c.cfg, sort_keys=True)})
 
 
 def draft(c):
@@ -69,7 +69,24 @@ def test_one_promotion_per_cycle(tmp_path):
 def test_guards_still_apply_after_promotion(tmp_path):
     bad = cand("HO-1"); bad.cfg = dict(CFG, hasta="2026-10-15")
     def to_rs_holdout(c):
-        d = to_rs(c); d["needs"] = ["MES:2025-07-01:2026-10-15"]; return d
+        d = to_rs(c); d["needs"] = ["ES:2025-07-01:2026-10-15"]; return d
     r = repo(tmp_path); cp = tmp_path / "c.json"; log = tmp_path / "p.jsonl"
     out = promover_auto([bad], draft_fn=draft, to_runspec=to_rs_holdout, runner=Rev("PROMOTE"), repo=r, candidates_path=cp, log_path=log)
     assert out == [("HO-1", "RECHAZADA_GUARDAS")] and not cp.exists()
+
+
+def test_friction_blocks_where_friction_likely_wins_and_orders_by_it(tmp_path):
+    caro = cand("MNQ-1"); caro.cfg = dict(CFG, inst="MNQ", mov_esperado_ticks=12)        # 12 / 7,91 = 1,5 < 3
+    sin = cand("YM-1"); sin.cfg = dict(CFG, inst="YM")                                   # sin fricción medida
+    info = cand("INFO-1"); info.cfg = dict(CFG, inst="MNQ", mov_esperado_ticks=5); info.utility_class = "info"
+    out, _, _, rows, rev = run(tmp_path, [caro, sin, info], max_por_ciclo=3)
+    d = dict(out)
+    assert d["MNQ-1"] == "RECHAZADA_MECANICO" and d["YM-1"] == "RECHAZADA_MECANICO" and d["INFO-1"] == "PROMOVIDA"
+    motivos = {r["cid"]: r.get("motivos", []) for r in rows}
+    assert any("fricción" in m for m in motivos["MNQ-1"]) and any("no se transporta" in m for m in motivos["YM-1"])
+
+def test_low_friction_candidate_goes_first(tmp_path):
+    barato = cand("ES-1"); barato.score = 0.2                                             # ratio 20/3,55 = 5,6
+    caro = cand("NQ-1"); caro.score = 0.3; caro.cfg = dict(CFG, inst="NQ", mov_esperado_ticks=9)   # ratio 1,46: peso 0,49
+    out, *_ = run(tmp_path, [caro, barato])
+    assert out[0] == ("ES-1", "PROMOVIDA")
