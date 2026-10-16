@@ -16,7 +16,7 @@ from __future__ import annotations
 import hashlib, json, subprocess, time
 from pathlib import Path
 
-from . import friccion, guard
+from . import friccion, guard, herramientas
 from .contexto import novedad
 from .spec import RunSpec
 
@@ -45,6 +45,7 @@ def chequeos_mecanicos(c, rs: dict | None, retiradas: list, ya: set) -> list:
     if rs is not None and RunSpec.from_dict(rs).spec_hash() in ya: e.append("el mismo RunSpec ya se lanzó o se promovió")
     f = friccion.evaluar(c)
     if getattr(c, "utility_class", "bridgeable") != "info" and not f["ok"]: e.append("fricción: " + f["motivo"])   # los estudios sólo de información quedan exentos
+    e += herramientas.faltantes(c)                                                           # medir sólo con técnicas con paridad probada
     return e
 
 
@@ -80,6 +81,7 @@ def promover_auto(candidatas, *, draft_fn, to_runspec, runner, repo: Path, candi
             _log(log_path, dict(row, decision="RECHAZADA_GUARDAS", motivos=g, prereg_commit=sha)); out.append((c.cid, "RECHAZADA_GUARDAS")); continue
         cur.append(rs); have.add(rs["run_id"]); hashes.add(RunSpec.from_dict(rs).spec_hash())
         candidates_path.write_text(json.dumps(cur, indent=1))
+        for t in (c.cfg or {}).get("tecnicas", []): herramientas.registrar_uso(log_path.parent / "herramientas.jsonl", t, rs["run_id"], "lanzada")
         _log(log_path, dict(row, decision="PROMOVIDA", run_id=rs["run_id"], prereg=rs["prereg"], prereg_commit=sha,
                             prereg_sha256=hashlib.sha256(texto.encode()).hexdigest(), revisor=rev["output"]))
         out.append((c.cid, "PROMOVIDA")); promovidas += 1

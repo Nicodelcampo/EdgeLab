@@ -43,10 +43,11 @@ def elegir_lente(historial: list) -> str:
     return sorted(LENTES, key=lambda k: (uso[k], -hits[k], k))[0]
 
 
-def armar_paquete(*, tablero: dict, vacios: list, fichas: list, retiradas: list, lente: str, max_chars: int = 12000) -> dict:
-    """Determinista y acotado. Recorta por prioridad: primero fichas, después vacíos; prioridades y lente nunca se recortan."""
+def armar_paquete(*, tablero: dict, vacios: list, fichas: list, retiradas: list, lente: str, max_chars: int = 12000, ledger_herramientas=None) -> dict:
+    """Determinista y acotado. Recorta por prioridad: primero fichas, después vacíos; prioridades, lente y herramientas nunca se recortan."""
+    from . import friccion, herramientas
     p = dict(prioridades=PRIORIDADES, lente=dict(nombre=lente, consigna=LENTES[lente]), tablero=tablero,
-             friccion=__import__('edgelab.autopilot.friccion', fromlist=['x']).tabla_para_contexto(),
+             friccion=friccion.tabla_para_contexto(), herramientas=herramientas.para_contexto(ledger=ledger_herramientas),
              vacios=list(vacios), fichas=list(fichas), prohibido=dict(familias_retiradas=list(retiradas),
              reglas=["no abrir holdout", "no P&L sin manifiesto y STOP", "a lo sumo 3 parámetros libres", "sin código"]))
     while len(json.dumps(p, ensure_ascii=False)) > max_chars and (p["fichas"] or p["vacios"]):

@@ -35,6 +35,8 @@ Los hallazgos del sistema son «exploratorios»: pasar a un candidato requiere r
 ## 5. Aprendizaje
 `brain.py` escribe cada corrida analizada como episodio append-only en el hipocampo (éxitos y fracasos por igual; lecciones solo PROPOSED/LOW). El libro SQLite (`ledger.py`) guarda telemetría (segundos, fallos, spec) para `advise`.
 
+**Kit de herramientas** (`herramientas.py`, catálogo `config/autopilot/herramientas.json`; diseño en `KIT_DE_HERRAMIENTAS_Y_MEJORA_20261016.md`): cada técnica tiene estado `verificada` / `propuesta` / `falta`. El proponente recibe el catálogo con el rendimiento acumulado de cada técnica; la promoción rechaza candidatas que midan con técnicas sin paridad; lo que falta se pide como mejora de módulo (sólo humano).
+
 ## 6. Despliegue en Debian (`deploy/debian/`)
 `install.sh` crea el usuario `edgelab`, el venv y el repo; `edgelab-autopilot.timer` dispara un ciclo `oneshot` cada 10 min (`systemd` reinicia solo ante caídas del host y cada ciclo es idempotente). Servicio endurecido (`ProtectSystem=strict`, sin capacidades, 2 GB de memoria). Credenciales de Kaggle solo en `/etc/edgelab/autopilot.env` (0600), nunca en el repo. Parada de emergencia: `touch /var/lib/edgelab-autopilot/PAUSE`.
 
