@@ -12,29 +12,34 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 
 | Area | Documentos |
 |---|---:|
-| `docs` | 103 |
+| `docs` | 104 |
 | `docs/amendments` | 6 |
 | `docs/audit` | 4 |
 | `docs/audits` | 63 |
+| `docs/autopilot` | 7 |
 | `docs/bridge` | 1 |
 | `docs/campaigns` | 9 |
+| `docs/data_catalog` | 11 |
 | `docs/foundation` | 2 |
-| `docs/incidents` | 15 |
+| `docs/incidents` | 16 |
 | `docs/infra` | 22 |
 | `docs/notion` | 2 |
 | `docs/parity` | 5 |
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 571 |
+| `docs/research` | 606 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
-| `raiz` | 11 |
+| `raiz` | 12 |
 
 ## Familias en `docs/research` (por actividad reciente)
 
 | Familia | Docs | Ultimo | Fecha | Estado |
 |---|---:|---|---|---|
+| INFORME | 6 | `INFORME_EXTERNO_K32_REPLICACION_RRE_20261016.md` | 2026-10-16 | PROVISIONAL (informe externo, no verificado en el repo; ver AUDITORIA_K32_REPLIC |
+| CORREDOR | 1 | `CORREDOR_EMA_MEDIDO_Y_NO_MEDIDO.md` | 2026-10-16 | VIGENTE (registro vivo; se actualiza en el mismo commit que cualquier resultado  |
+| AUDITORIA | 12 | `AUDITORIA_K32_REPLICACION_RRE_20261016.md` | 2026-10-16 | PROVISIONAL (un solo auditor: gonzasib-claude; sin acceso al kernel ni a los JSO |
 | REVISION | 5 | `REVISION_RESPUESTA_GEMINI_20261015.md` | 2026-10-15 | REVISIÓN — lectura de dos documentos y verificación puntual contra datos y códig |
 | RESULTADOS | 2 | `RESULTADOS_PILOTO_SOPORTE_EXP_REV_GRID_20261015.md` | 2026-10-15 | MEDIDO (desarrollo; solo camino de precios, sin modelo ni indicador) |
 | REPORTE | 1 | `REPORTE_PARA_GEMINI_REVISION_CORREDOR_20261015.md` | 2026-10-15 | PROPUESTA — solicitud de revisión cruzada (no es un resultado confirmatorio) |
@@ -44,8 +49,6 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | INVESTIGACION | 3 | `INVESTIGACION_IA_GRILLA_PRECIO_VOLUMEN_REVERSION_20261015.md` | 2026-10-15 | PROPUESTA (investigación bibliográfica y de diseño; nada entrenado ni medido) |
 | ESTADO | 3 | `ESTADO_IDEA_ENTRENAMIENTO_IA_20261015.md` | 2026-10-15 | VIGENTE (se actualiza al cierre de cada hito) |
 | EMACORRIDORTRENDVOL | 2 | `EMACORRIDORTRENDVOL_VARIANTE_20261015.md` | 2026-10-15 | VIGENTE (indicador compilado y verificado con csc; no probado en gráfico) |
-| CORREDOR | 1 | `CORREDOR_EMA_MEDIDO_Y_NO_MEDIDO.md` | 2026-10-15 | VIGENTE (registro vivo; se actualiza en el mismo commit que cualquier resultado  |
-| AUDITORIA | 11 | `AUDITORIA_PASADA2_CORRIDOR_ES_V4_20261015.md` | 2026-10-15 | - |
 | ADENDA | 1 | `ADENDA_D_DESARROLLO_FILTROS_CORREDOR_20261015.md` | 2026-10-15 | BORRADOR PARA OK DE NICO. NO EJECUTAR. Es una búsqueda sobre retornos: aplica el |
 | REFERENCIA | 1 | `REFERENCIA_COSTOS_PROPS_BROKERS_20261014.md` | 2026-10-14 | referencia, no medición. Sin P&L, sin retornos. Insumo para el ledger de costos  |
 | R3 | 3 | `R3_DIRECCION_15_60M_RESULTADOS_20261014.md` | 2026-10-14 | PROVISIONAL (partición de descubrimiento; la replicación no se abrió) |
@@ -55,6 +58,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | HANDOFF | 14 | `HANDOFF_2026-10-14_DATOS_L2_Y_INTEGRACION.md` | 2026-10-14 | VIGENTE |
 | GC | 1 | `GC_PRESSURE_PROGRESS_V2_MANIFIESTO_20261014.md` | 2026-10-14 | fase RTH (08:30–15:00 CT) / OTHER, y dirección del flujo previo (±1). Celdas fas |
 | AVZP2 | 10 | `AVZP2_RACIMO_REPLICA_ES_NQ_RESULTADOS_20261014.md` | 2026-10-14 | PROVISIONAL. Todo lo de esta acta se calculó sobre la release liquid_tick_v1 v3, |
+| GEX1 | 3 | `GEX1_ERRATA_I2D_20261012.md` | 2026-10-12 | - |
 | AVZVOL | 21 | `AVZVOL_VENCIMIENTOS_Y_FUENTE_20261011.md` | 2026-10-11 | - |
 | LITCHECK | 1 | `LITCHECK_SSRN_20261009.md` | 2026-10-09 | PRE_REGISTERED_EXPLORATORY (hipótesis, métricas y reglas fijadas en |
 | KAGGLE | 4 | `KAGGLE_RUN_HARNESS_GAPS_20261009.md` | 2026-10-09 | GAPS_IDENTIFIED → se actualiza al final (sección 4) con lo que se implementó. |
@@ -65,7 +69,6 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | PENDIENTE | 1 | `PENDIENTE_AVCL_SIM_NQ5T_20261006.md` | 2026-10-06 | OBSERVACIÓN VISUAL, no evidencia. Registrada para no perderla; requiere prueba f |
 | IDEA | 10 | `IDEA_LUXIMB_TENDENCIA_DESANDADA_20261006.md` | 2026-10-06 | PENDIENTE, no ejecutada. Pertenece a la familia LUX-IMB (H-COND-1_LUX-IMB_PROTOC |
 | HFTV4 | 2 | `HFTV4_RETORNO_RESULTADOS_20261006.md` | 2026-10-06 | - |
-| GEX1 | 2 | `GEX1_RESULTADOS_20261006.md` | 2026-10-06 | - |
 | EXPLO | 1 | `EXPLO_ASIMETRIA_EXCURSION_20261006.md` | 2026-10-06 | - |
 | ESTADOS | 1 | `ESTADOS_MERCADO_LITERATURA_Y_DISENO_20261006.md` | 2026-10-06 | - |
 | EDGEREPLICA | 1 | `EDGEREPLICA_OOS_POST_PUBLICACION_PROTOCOLO_20261006.md` | 2026-10-06 | SUPERADO 2026-10-06. Nico decidió tratar esto como exploración, sin custodia de  |
@@ -94,7 +97,6 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | ETIQUETADO | 1 | `ETIQUETADO_PICOS_Y_ML_20260926.md` | 2026-09-26 | herramienta lista; sin etiquetas todavía. Idea de Nico: él marca en el visor dón |
 | TBZ | 1 | `TBZ_E2_PARAMETRIZACION_HOLISTICA_20260924.md` | 2026-09-24 | - |
 | RESEARCH | 1 | `RESEARCH_TRANSICION_BORDE_ZONA_EXPANSION_20260924.md` | 2026-09-24 | INVESTIGACIÓN + PROPUESTA DE FAMILIA. No registrada, no medida. Registrarla la d |
-| PARTICIONES | 1 | `PARTICIONES_Y_POTENCIA_L2_20260924.md` | 2026-09-24 | - |
 
 ## Superados (7)
 
@@ -106,8 +108,6 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 - `docs/research/EDGEREPLICA_OOS_POST_PUBLICACION_PROTOCOLO_20261006.md` — SUPERADO 2026-10-06. Nico decidió tratar esto como exploración, sin custodia de 
 - `docs/research/PARIDAD_AVOLCLUSTERPOI_ESTADO_2026-09-02.md` — SUPERADO
 
-## Documentos nuevos sin `Estado:` (3)
+## Documentos nuevos sin `Estado:` (0)
 
-- docs/research/AUDITORIA_CORRIDA_KAGGLE_ES_MULTIRES_CORRIDOR_V4_20261015.md: falta `Estado:` en el encabezado
-- docs/research/AUDITORIA_PASADA2_CORRIDOR_ES_V4_20261015.md: falta `Estado:` en el encabezado
-- docs/research/RESULTADOS_ADENDA_D_DESARROLLO_CORREDOR_20261015.md: falta `Estado:` en el encabezado
+Ninguno.

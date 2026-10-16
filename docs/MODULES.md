@@ -39,6 +39,7 @@ Capas (una dependencia nunca apunta a una capa superior):
 | 6 | `edge-factory` | Fabrica de hipotesis | experimental | Orquestador y esquemas para generar y registrar hipotesis con justificacion economica y condicion de refutacion. | edge-brain, config-core | `docs/HIPOTESIS_PENDIENTES.md` | `tests` |
 | 6 | `governance` | Gobernanza y documentacion | core | North Star, protocolo de documentacion, registro de edges, canal auditor, contratos de validacion y compuertas de holdout. Define las reglas; ningun modulo las sobrescribe. | - | `docs/DOCUMENTATION_PROTOCOL.md` | `tests/test_north_star_hash.py` |
 | 7 | `agent-bridge` | Puente multi-IA (Drive/Kaggle) | experimental | Permite que agentes sin red o sin datos (Gemini, Notion) pidan lecturas y kernels a la PC local por una carpeta de Drive, con politica de acciones permitidas y parches solo para revision. | kaggle-custody | `docs/research/HANDOFF_2026-10-14_DATOS_L2_Y_INTEGRACION.md` | `tests/bridge` |
+| 7 | `autopilot` | Agente autonomo (autopilot) | experimental | Ciclo autonomo: paquete de contexto y lentes para el proponente, roles LLM aislados, criterio de friccion, promocion automatica con pre-registro committeado, ejecucion en Kaggle, sala de Chaski y mejora recursiva acotada. No promueve edges: lanza y registra corridas. | kaggle-custody, research | `docs/autopilot/ARQUITECTURA.md` | `tests/test_autopilot.py`, `tests/test_autopilot_promocion.py`, `tests/test_autopilot_contexto_mejora.py`, `tests/test_autopilot_roles.py`, `tests/test_autopilot_sala.py` |
 | 7 | `notion-workers` | Workers de Notion (linea main) | experimental | Integraciones de Notion (auditor y operaciones de investigacion). Traidos de main el 2026-10-14; el auditor de datos vive ademas en la rama feat/research-ops-supervisor-mvp. | - | `docs/research/INVENTARIO_LINEA_MAIN_20261014.md` | **sin tests** |
 | 7 | `viewer` | Visor | experimental | Visualizacion de barras, zonas y L2 para inspeccion humana. | bridge-kernels | `docs/research/VIEWER_UNIFICATION_PROPOSAL_20260921.md` | **sin tests** |
 
@@ -75,6 +76,8 @@ graph LR
   edge_factory --> edge_brain
   edge_factory --> config_core
   agent_bridge --> kaggle_custody
+  autopilot --> kaggle_custody
+  autopilot --> research
   viewer --> bridge_kernels
 ```
 
@@ -104,5 +107,6 @@ graph LR
 - **edge-factory** — entra: ideas, especificaciones de instrumento; sale: hipotesis registradas.
 - **governance** — entra: decisiones de Nico; sale: reglas, estado vivo.
 - **agent-bridge** — entra: pedidos JSON; sale: respuestas JSON, snapshots de codigo.
+- **autopilot** — entra: candidatas, tablero y fichas de literatura, config/autopilot/*.json; sale: pre-registros, candidates.json, promociones.jsonl, llm_calls.sqlite.
 - **notion-workers** — entra: paginas de Notion; sale: auditorias.
 - **viewer** — entra: bundles de barras y zonas; sale: vistas HTML.

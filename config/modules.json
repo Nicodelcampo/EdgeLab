@@ -641,6 +641,40 @@
       "depends_on": [],
       "doc": "docs/research/INVENTARIO_LINEA_MAIN_20261014.md",
       "tests": []
+    },
+    {
+      "id": "autopilot",
+      "name": "Agente autonomo (autopilot)",
+      "layer": 7,
+      "status": "experimental",
+      "function": "Ciclo autonomo: paquete de contexto y lentes para el proponente, roles LLM aislados, criterio de friccion, promocion automatica con pre-registro committeado, ejecucion en Kaggle, sala de Chaski y mejora recursiva acotada. No promueve edges: lanza y registra corridas.",
+      "paths": [
+        "edgelab/autopilot",
+        "tools/autopilot_generate.py"
+      ],
+      "inputs": [
+        "candidatas",
+        "tablero y fichas de literatura",
+        "config/autopilot/*.json"
+      ],
+      "outputs": [
+        "pre-registros",
+        "candidates.json",
+        "promociones.jsonl",
+        "llm_calls.sqlite"
+      ],
+      "depends_on": [
+        "kaggle-custody",
+        "research"
+      ],
+      "doc": "docs/autopilot/ARQUITECTURA.md",
+      "tests": [
+        "tests/test_autopilot.py",
+        "tests/test_autopilot_promocion.py",
+        "tests/test_autopilot_contexto_mejora.py",
+        "tests/test_autopilot_roles.py",
+        "tests/test_autopilot_sala.py"
+      ]
     }
   ],
   "unowned_ok": [

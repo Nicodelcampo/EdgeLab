@@ -1,0 +1,17 @@
+[Unit]
+Description=EdgeLab autopilot: regenerar borradores de candidatas (NO los promueve)
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=edgelab
+WorkingDirectory=/opt/edgelab/EdgeLab
+Environment=HOME=/opt/edgelab
+Environment=PATH=/opt/edgelab/.local/bin:/usr/local/bin:/usr/bin:/bin
+EnvironmentFile=-/etc/edgelab/autopilot.env
+ExecStart=/opt/edgelab/venv/bin/python tools/autopilot_generate.py draft --out /var/lib/edgelab-autopilot/state/autopilot_drafts --runtime /var/lib/edgelab-autopilot/state/autopilot_runs/evidence_runtime.jsonl --ledger /var/lib/edgelab-autopilot/state/autopilot_runs/runs.sqlite
+# promoción automática: no hace nada mientras auto_promocion=false (enmienda AUTONOMIA-A1 sin firmar)
+ExecStart=/opt/edgelab/venv/bin/python tools/autopilot_generate.py auto-promote --candidates /etc/edgelab/candidates.json --config /etc/edgelab/autopilot.json --runtime /var/lib/edgelab-autopilot/state/autopilot_runs/evidence_runtime.jsonl --ledger /var/lib/edgelab-autopilot/state/autopilot_runs/runs.sqlite
+ReadWritePaths=/var/lib/edgelab-autopilot /opt/edgelab
+ProtectSystem=strict
+NoNewPrivileges=true

@@ -1,0 +1,31 @@
+# Despliegue del autopilot en Debian: lista de pasos (≈ 20 min)
+
+Estado: probado con ejecutores simulados (15 tests), una corrida de humo real en Kaggle y dos campañas reales lanzadas por el propio autopilot (IDM-1, SLOT-1). Ensayado el 2026-10-16 en Debian 13 (WSL): instalación, doctor (LISTO con credencial Bearer), protegidos OK y un ciclo `propose` pausado. **Falta la prueba en SV1**: los pasos 1–7.
+
+## Lo que ya está hecho
+Instalador, servicios systemd endurecidos (ciclo cada 10 min, regeneración diaria de borradores), sincronización de estado a la rama `autopilot/state` (único escritor), doctor de preflight, kill switch, latido, `--status`, guardas (holdout, pre-registro committeado, configuración textual en el pre-registro, archivos protegidos), alpha-investing, selector, generador de candidatas, evidencia viva, puente al Edge Brain.
+
+## Mandato del agente
+El agente se rige por [`MANDATO.md`](../../MANDATO.md) (edges útiles para challenges y combinables; no pequeños, inestables ni sin diversificación). Está protegido por hash. **Antes de arrancar en modo `execute`, confirmá en `config/autopilot/mandate.json` las reglas reales del challenge y los umbrales** (hoy son valores de ejemplo).
+
+## Lo que falta de tu lado (los «pocos detalles»)
+1. **Máquina:** Debian 12+, 2 vCPU / 4 GB RAM / 20 GB disco, salida HTTPS a `www.kaggle.com`, `github.com`, `storage.googleapis.com`, `squeezemetrics.com` (DIX). No necesita GPU (el cómputo pesado va a Kaggle).
+2. **Instalar:** `sudo CODE_BRANCH=<rama de código> bash deploy/debian/install.sh` (clona el repo y el clon de estado, crea el venv y copia los servicios).
+3. **Credencial de Kaggle:** token nuevo de kaggle.com → Settings → API. Con el formato `KGAT_…`: `read -rs KAGGLE_API_TOKEN && export KAGGLE_API_TOKEN && sudo -E bash deploy/debian/setup_kaggle_credentials.sh` (queda como cabecera Bearer 0600, sólo para www.kaggle.com). Con usuario y clave viejos: `sudo KAGGLE_USERNAME=... KAGGLE_KEY=... bash deploy/debian/setup_kaggle_credentials.sh`.
+3b. **Claude para los roles:** el instalador deja el CLI en `/opt/edgelab/.local/bin`. Con tu cuenta, en cualquier máquina, `claude setup-token`; pegá el resultado como `CLAUDE_CODE_OAUTH_TOKEN=...` en `/etc/edgelab/autopilot.env` (0600). Nunca `ANTHROPIC_API_KEY`. Los roles y la sala se encienden en `/etc/edgelab/autopilot.json` (`roles_ledger`, `sala`).
+4. **Deploy key de GitHub** (solo para publicar el estado): `sudo -u edgelab ssh-keygen -t ed25519 -f /opt/edgelab/.ssh/id_ed25519 -N ''`, agregar la clave pública como *deploy key con escritura* y cambiar el remoto del clon de estado a SSH. Sin ella el autopilot funciona igual y el estado queda local (`sync_state.sh` avisa y sigue).
+5. **Candidatas:** `/etc/edgelab/candidates.json` empieza vacío. Copiá ahí las promovidas (`python tools/autopilot_generate.py promote ...`) después de revisar el borrador y de que el pre-registro esté committeado en la rama de código.
+6. **Protegidos:** `python tools/autopilot_protect.py check` debe dar OK; cada cambio legítimo a gates/guardas exige que un humano refresque el manifiesto y lo committee.
+7. **Doctor y primer ciclo (modo propose):** `sudo -u edgelab /opt/edgelab/venv/bin/python tools/autopilot_doctor.py --config /etc/edgelab/autopilot.json` → debe decir LISTO; luego `sudo systemctl start edgelab-autopilot.service` y revisar `--status`. Recién después, en `/etc/edgelab/autopilot.json` poner `"mode": "execute"` y `sudo systemctl enable --now edgelab-autopilot.timer edgelab-autopilot-generate.timer edgelab-propfirm-refresh.timer`.
+
+## Operación
+- Estado: `sudo -u edgelab /opt/edgelab/venv/bin/python -m edgelab.autopilot --root /var/lib/edgelab-autopilot/state/autopilot_runs --config /etc/edgelab/autopilot.json --candidates /etc/edgelab/candidates.json --status`
+- Parada de emergencia: `touch /var/lib/edgelab-autopilot/PAUSE` (o `systemctl disable --now edgelab-autopilot.timer`). Para reanudar, borrar el archivo.
+- Registro de pruebas: el autopilot escribe su propio `trial_registry.jsonl` en el clon de estado; para sumarlo al contador global, copiarlo a `docs/research/autopilot_runs/` del repo de código y correr `python tools/registro_global.py` (idempotente).
+- Qué mira el humano: `REPORT.md` de borradores (rama `autopilot/state`), `autopilot.log.jsonl`, la riqueza de alfa y los hallazgos exploratorios.
+
+## Límites que conviene tener presentes
+- El autopilot no opera ni promueve: solo lanza y analiza estudios pre-registrados. Un hallazgo es exploratorio hasta que se replica en datos no usados.
+- Si la riqueza de alfa se agota, deja de lanzar campañas nuevas hasta que haya réplicas que la recarguen.
+- `max_per_day` y `max_concurrent` acotan el uso de cómputo de Kaggle (cuota de GPU/CPU de tu cuenta).
+- Las claves nunca van al repo ni a la configuración: solo `.netrc` (0600) y la deploy key.

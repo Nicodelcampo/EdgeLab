@@ -1,7 +1,7 @@
 # Familia EmaCorridorTrend sobre ES — qué está medido y qué NO
 
 Estado: VIGENTE (registro vivo; se actualiza en el mismo commit que cualquier resultado nuevo)
-Fecha: 2026-10-15
+Fecha: 2026-10-16
 Familia / módulo: EXP-CORRIDOR (independiente de HFTZones, BigTrap2, aVolCluster, LUX-IMB, YM-PRERANGE)
 Referente rector: `docs/NORTH_STAR.md` (cuerpo sha256 `05df5c7c3ec4cf3a1f14f62bb8e2ade4b61dd29203b610a308964ac46995f421`)
 
@@ -31,6 +31,9 @@ Referente rector: `docs/NORTH_STAR.md` (cuerpo sha256 `05df5c7c3ec4cf3a1f14f62bb
 - Pasada 1 (barrido de ~10.250 celdas) y Pasada 2 (343 pruebas) **no confirman edge**: ver `AUDITORIA_CORRIDA_KAGGLE_ES_MULTIRES_CORRIDOR_V4_20261015.md` y `AUDITORIA_PASADA2_CORRIDOR_ES_V4_20261015.md`.
 - Hash de NORTH_STAR citado como `ed4293b5…` en documentos del 2026-10-15: era stale; vigente `05df5c7c…`.
 - Clasificación RTH de Pasada 2 (medias horas UTC fijas) incorrecta la mitad del año; corregida con hora real de Chicago en la fase D.
+
+## Informes externos (no verificados en el repo)
+- **k32** (`EXP-REV-PREREGISTERED-REPLICATION-AND-CONTINUAL-AI-20261016`, kernel Kaggle 138964727, recibido 2026-10-16): reversión al cierre de barras 100T en micro-zonas de 16 ticks (`P_REENTRY_F1A_P1/P2`), 3–5 op/sesión, con fills pasivos por replay tick a tick causal. En las 153 sesiones que el informe llama OOS (feb–mar + abr–sep 2026) la mejor variante da **−1,30 y −1,60 ticks/op netos**; DSR ≈ 0. **Refuta la familia a esa escala**, coherente con `HA` neto −2,01. Lo que el informe llama "121 sesiones vírgenes abr–sep" **no lo es** según este registro (ver NO MEDIDO): no cuenta como replicación. Auditoría: `AUDITORIA_K32_REPLICACION_RRE_20261016.md`; informe íntegro: `INFORME_EXTERNO_K32_REPLICACION_RRE_20261016.md`.
 
 Resultados: `RESULTADOS_ADENDA_D_DESARROLLO_CORREDOR_20261015.md`. Código: `tools/corridor_pass2/` (Pasada 2 sha256 `10e8fa9f…`).
 
