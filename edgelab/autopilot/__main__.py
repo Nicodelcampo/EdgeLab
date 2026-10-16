@@ -34,6 +34,8 @@ def main():
         print(json.dumps(rep, default=str), flush=True)
         if cfg.get("sala"):                                       # y el resumen después
             from .sala import reportar
+            from .mejora import diagnosticar
+            rep["diagnostico"] = diagnosticar([rep], pilot.status())
             reportar(Path(a.root), rep, pilot.status(), runner=runner if cfg["sala"].get("cronista") else None)
         if not a.loop: break
         time.sleep(a.loop)

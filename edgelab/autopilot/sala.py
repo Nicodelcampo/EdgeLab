@@ -23,7 +23,8 @@ def hechos(tick: dict, status: dict) -> dict:
     return dict(evento=tick.get("event"), lanzada=tick.get("launched"), propuesta=tick.get("proposed"),
                 cerradas=tick.get("closed", []), bloqueadas=[b[0] for b in tick.get("blocked", [])],
                 modo=status.get("mode"), pausado=status.get("paused"), alfa=round(float(status.get("alpha_wealth") or 0), 6),
-                corriendo=[r.get("run_id") for r in status.get("running", [])], envio_incierto=status.get("send_uncertain", []))
+                corriendo=[r.get("run_id") for r in status.get("running", [])], envio_incierto=status.get("send_uncertain", []),
+                diagnostico=tick.get("diagnostico", []))
 
 
 def plantilla(h: dict) -> str:
@@ -34,6 +35,8 @@ def plantilla(h: dict) -> str:
     if h["corriendo"]: partes.append("Corriendo: " + ", ".join(h["corriendo"]) + ".")
     if h["envio_incierto"]: partes.append("ATENCIÓN, envío incierto (conciliar a mano): " + ", ".join(map(str, h["envio_incierto"])) + ".")
     if h["bloqueadas"]: partes.append(f"Bloqueadas por guardas: {len(h['bloqueadas'])}.")
+    for d in h.get("diagnostico", []):
+        if not d["automatica"]: partes.append(f"REQUIERE HUMANO: {d['sintoma']} -> {d['accion']}.")
     return " ".join(partes)
 
 
