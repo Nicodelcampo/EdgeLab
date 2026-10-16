@@ -16,7 +16,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/amendments` | 6 |
 | `docs/audit` | 4 |
 | `docs/audits` | 63 |
-| `docs/autopilot` | 7 |
+| `docs/autopilot` | 8 |
 | `docs/bridge` | 1 |
 | `docs/campaigns` | 9 |
 | `docs/data_catalog` | 11 |
@@ -28,7 +28,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 606 |
+| `docs/research` | 608 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 12 |
@@ -37,9 +37,9 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 
 | Familia | Docs | Ultimo | Fecha | Estado |
 |---|---:|---|---|---|
-| INFORME | 6 | `INFORME_EXTERNO_K32_REPLICACION_RRE_20261016.md` | 2026-10-16 | PROVISIONAL (informe externo, no verificado en el repo; ver AUDITORIA_K32_REPLIC |
+| INFORME | 7 | `INFORME_EXTERNO_K32_REPLICACION_RRE_20261016.md` | 2026-10-16 | PROVISIONAL (informe externo, no verificado en el repo; ver AUDITORIA_K32_REPLIC |
 | CORREDOR | 1 | `CORREDOR_EMA_MEDIDO_Y_NO_MEDIDO.md` | 2026-10-16 | VIGENTE (registro vivo; se actualiza en el mismo commit que cualquier resultado  |
-| AUDITORIA | 12 | `AUDITORIA_K32_REPLICACION_RRE_20261016.md` | 2026-10-16 | PROVISIONAL (un solo auditor: gonzasib-claude; sin acceso al kernel ni a los JSO |
+| AUDITORIA | 13 | `AUDITORIA_K32_REPLICACION_RRE_20261016.md` | 2026-10-16 | PROVISIONAL (un solo auditor: gonzasib-claude; sin acceso al kernel ni a los JSO |
 | REVISION | 5 | `REVISION_RESPUESTA_GEMINI_20261015.md` | 2026-10-15 | REVISIÓN — lectura de dos documentos y verificación puntual contra datos y códig |
 | RESULTADOS | 2 | `RESULTADOS_PILOTO_SOPORTE_EXP_REV_GRID_20261015.md` | 2026-10-15 | MEDIDO (desarrollo; solo camino de precios, sin modelo ni indicador) |
 | REPORTE | 1 | `REPORTE_PARA_GEMINI_REVISION_CORREDOR_20261015.md` | 2026-10-15 | PROPUESTA — solicitud de revisión cruzada (no es un resultado confirmatorio) |

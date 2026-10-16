@@ -49,3 +49,25 @@ def test_lecciones_k32_en_prioridades_y_catalogo():
     assert any("replay tick a tick" in p and "réplica" in p for p in PRIORIDADES)
     cat = json.loads((pathlib.Path(__file__).resolve().parents[1] / "config/autopilot/herramientas.json").read_text(encoding="utf-8"))
     assert {"replay_causal_fills_pasivos", "aprendizaje_continuo_con_embargo"} <= {t["id"] for t in cat["tecnicas"]}
+
+
+def test_kit_de_herramientas_en_el_paquete_y_rendimiento(tmp_path):
+    from edgelab.autopilot import herramientas as H
+    cat = H.cargar()
+    assert {t["estado"] for t in cat.values()} <= set(H.ESTADOS) and "corredores_densidad_hp007" in cat
+    led = tmp_path / "h.jsonl"
+    H.registrar_uso(led, "dsr_pbo", "r1", "lanzada"); H.registrar_uso(led, "dsr_pbo", "r1", "hit")
+    assert H.rendimiento(led)["dsr_pbo"] == dict(usos=1, hits=1, nulos=0, fallos=0)
+    p = armar_paquete(tablero={}, vacios=[], fichas=[], retiradas=[], lente="artefacto", max_chars=500, ledger_herramientas=led)
+    ids = {t["id"]: t for t in p["herramientas"]["tecnicas"]}
+    assert ids["dsr_pbo"]["rendimiento"]["hits"] == 1 and "encoder_tri_franja_film" in ids   # nunca se recorta
+
+def test_tecnica_sin_paridad_bloquea_y_se_pide_como_mejora(tmp_path):
+    from edgelab.autopilot import herramientas as H
+    class C: cid = "X-1"; cfg = {"tecnicas": ["dsr_pbo", "encoder_tri_franja_film", "inventada"]}
+    errs = H.faltantes(C())
+    assert len(errs) == 2 and any("inventada" in e for e in errs)
+    reg = RegistroMejoras(tmp_path / "m.jsonl")
+    pedidas = H.pedir_mejoras(C(), reg)
+    assert len(pedidas) == 2 and {m["estado"] for m in pedidas} == {"PROPUESTA"} and all(m["ambito"] == "modulo" for m in pedidas)
+    assert all("revisión de PR" in m["aceptacion"] for m in pedidas)       # nunca se aplica sola: tests verdes + revisión humana

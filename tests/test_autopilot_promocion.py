@@ -90,3 +90,11 @@ def test_low_friction_candidate_goes_first(tmp_path):
     caro = cand("NQ-1"); caro.score = 0.3; caro.cfg = dict(CFG, inst="NQ", mov_esperado_ticks=9)   # ratio 1,46: peso 0,49
     out, *_ = run(tmp_path, [caro, barato])
     assert out[0] == ("ES-1", "PROMOVIDA")
+
+
+def test_tecnica_sin_paridad_rechaza_en_mecanico(tmp_path):
+    c = cand("T-1"); c.cfg = dict(CFG, tecnicas=["encoder_tri_franja_film"])
+    ok = cand("T-2"); ok.cfg = dict(CFG, tecnicas=["corredores_densidad_hp007"])
+    out, _, _, rows, _ = run(tmp_path, [c, ok], max_por_ciclo=2)
+    d = dict(out); assert d["T-1"] == "RECHAZADA_MECANICO" and d["T-2"] == "PROMOVIDA"
+    assert (tmp_path / "herramientas.jsonl").exists()
