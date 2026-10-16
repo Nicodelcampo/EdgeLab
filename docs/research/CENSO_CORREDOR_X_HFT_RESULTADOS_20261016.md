@@ -43,3 +43,18 @@ Zonas HFT (sin absorb): **7.841** en 178 sesiones (**44,1 por sesión**).
 (1) (hecho: densidad verificada contra la composición del oráculo.) (2) Registrar la familia, congelar W, presencia (tocada), extensión primaria y la rejilla chica de variables, con número efectivo de hipótesis y MDE. (3) Con OK de Nico (STOP), medir los desenlaces en descubrimiento.
 
 *Aporte al referente:* muestra que la definición de "zona HFT tocada en el 50 % inicial" separa los impulsos en dos grupos de tamaño suficiente (≈ 2.900 vs 2.400) con MDE ≈ 4–5 pp, antes de gastar presupuesto de hipótesis, y señala la discrepancia de densidad de zonas que hay que cerrar primero.
+
+## Variante pedida por Nico: al menos 2 zonas HFT distintas tocadas en W
+Se deriva del mismo censo (columna `*_n_touch` = zonas HFT distintas tocadas por el precio en W); no requirió volver a correr Kaggle. Tabla completa (k = 1, 2, 3) en `corredor_hft_census_20261016/CENSO_VARIANTE_K_ZONAS_TOCADAS.csv`.
+
+| preset | extensión | n con ≥ 2 | n con < 2 (control amplio) | prevalencia | sesiones con ≥ 1 | MDE80 aprox. (p0 0,2 / 0,4) |
+|---|---|---|---|---|---|---|
+| 1 | fija 300 | 1.180 | 4.132 | 22,2 % | 159 | 5,2 / 6,4 pp |
+| **1** | **fija 600** | **1.670** | **3.642** | **31,4 %** | **166** | **4,7 / 5,7 pp** |
+| 1 | fija 1200 | 2.157 | 3.155 | 40,6 % | 170 | 4,4 / 5,4 pp |
+| 1 | dinámica (hasta mitigar) | 2.781 | 2.531 | 52,4 % | 170 | 4,4 / 5,3 pp |
+| 2 | fija 600 | 2.184 | 5.176 | 29,7 % | 169 | 4,0 / 4,9 pp |
+Distribución de zonas tocadas (preset 1, fija 600): 0 zonas = 2.415; 1 zona = 1.227; 2 = 733; 3 = 354; 4 = 257; 5 = 116; ≥ 6 = 210. Entre los 1.670 con ≥ 2, 501 terminan W dentro de alguna zona (mediana de 3 zonas tocadas). Con ≥ 3: 937 impulsos (17,6 %), MDE 5,7–7,0 pp.
+
+**Lectura:** el requisito de ≥ 2 zonas deja **1.670 impulsos (31 % del total)** en 166 sesiones con fija 600: tamaño suficiente (MDE ≈ 4,7–5,7 pp). Para contrastarlo hay tres controles posibles, a elegir antes de medir: (a) todos los de < 2 (3.642, mezcla ninguno + uno), (b) sólo los de **0 zonas** (2.415, contraste más limpio), (c) sólo los de **exactamente 1** (1.227, aísla el efecto de la segunda zona). Recomiendo declarar (b) como primario y (c) como secundario, y reportar la relación dosis-respuesta (0, 1, 2, ≥ 3 zonas).
+
