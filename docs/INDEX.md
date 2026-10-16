@@ -26,7 +26,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 571 |
+| `docs/research` | 572 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 11 |
@@ -35,6 +35,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 
 | Familia | Docs | Ultimo | Fecha | Estado |
 |---|---:|---|---|---|
+| DEFINICION | 1 | `DEFINICION_INICIAL_CORREDOR_X_HFT_20261016.md` | 2026-10-16 | BORRADOR — definición inicial para que Nico y Gemini la diseñen en detalle y la  |
 | REVISION | 5 | `REVISION_RESPUESTA_GEMINI_20261015.md` | 2026-10-15 | REVISIÓN — lectura de dos documentos y verificación puntual contra datos y códig |
 | RESULTADOS | 2 | `RESULTADOS_PILOTO_SOPORTE_EXP_REV_GRID_20261015.md` | 2026-10-15 | MEDIDO (desarrollo; solo camino de precios, sin modelo ni indicador) |
 | REPORTE | 1 | `REPORTE_PARA_GEMINI_REVISION_CORREDOR_20261015.md` | 2026-10-15 | PROPUESTA — solicitud de revisión cruzada (no es un resultado confirmatorio) |
@@ -94,7 +95,6 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | ETIQUETADO | 1 | `ETIQUETADO_PICOS_Y_ML_20260926.md` | 2026-09-26 | herramienta lista; sin etiquetas todavía. Idea de Nico: él marca en el visor dón |
 | TBZ | 1 | `TBZ_E2_PARAMETRIZACION_HOLISTICA_20260924.md` | 2026-09-24 | - |
 | RESEARCH | 1 | `RESEARCH_TRANSICION_BORDE_ZONA_EXPANSION_20260924.md` | 2026-09-24 | INVESTIGACIÓN + PROPUESTA DE FAMILIA. No registrada, no medida. Registrarla la d |
-| PARTICIONES | 1 | `PARTICIONES_Y_POTENCIA_L2_20260924.md` | 2026-09-24 | - |
 
 ## Superados (7)
 
