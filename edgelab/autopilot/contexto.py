@@ -18,6 +18,7 @@ PRIORIDADES = [
     "Preferir lo que más reduce la distancia a un edge operable por unidad de cómputo. Evitar refinamientos triviales.",
     "Toda prueba cuenta para la multiplicidad de por vida. Proponer de más infla N_eff.",
     "Holdout desde la sesión CME del 2026-10-01: prohibido para diseñar o elegir.",
+    "Mirar hacia atrás para encontrar el patrón es válido sólo para proponer; confirmar exige datos que no se usaron para encontrarlo. Cada vuelta sobre los mismos datos suma pruebas.",
     "Fricción primero: elegir escenarios (instrumento, horario, régimen, horizonte) donde el movimiento esperado sea al menos 3 veces la fricción por viaje; no proponer análisis donde la fricción probablemente gana.",
 ]
 LENTES = {
@@ -27,6 +28,8 @@ LENTES = {
     "otro_instrumento": "Trasladá el efecto más robusto a otro instrumento o escala sin cambiar a la vez la métrica.",
     "abogado_del_diablo": "Formulá la hipótesis que, si es cierta, explicaría el éxito más fuerte SIN que sea un edge. Que sea refutable.",
     "costo_y_ejecucion": "Diseñá la medición que decide si el mejor efecto vivo puede pagar costos reales (spread, comisión, slippage).",
+    "ingenieria_inversa": "Tomá un resultado ya medido (ganadoras vs. perdedoras, o eventos que el detector descartó) y preguntá qué estado previo lo habría anticipado. Lo que encuentres es una HIPÓTESIS nueva: debe probarse en una muestra que no participó del hallazgo, nunca en la misma.",
+    "meta_etiquetado": "Sobre una señal primaria viva, proponé un filtro secundario (meta-labeling) entrenado sólo con predicciones fuera de pliegue, con su partición de evaluación declarada antes y su conteo de pruebas.",
 }
 
 
