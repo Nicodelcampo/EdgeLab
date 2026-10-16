@@ -28,7 +28,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 607 |
+| `docs/research` | 608 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 12 |
@@ -40,6 +40,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | INFORME | 6 | `INFORME_EXTERNO_K32_REPLICACION_RRE_20261016.md` | 2026-10-16 | PROVISIONAL (informe externo, no verificado en el repo; ver AUDITORIA_K32_REPLIC |
 | DEFINICION | 1 | `DEFINICION_INICIAL_CORREDOR_X_HFT_20261016.md` | 2026-10-16 | BORRADOR — definición inicial para que Nico y Gemini la diseñen en detalle y la  |
 | CORREDOR | 1 | `CORREDOR_EMA_MEDIDO_Y_NO_MEDIDO.md` | 2026-10-16 | VIGENTE (registro vivo; se actualiza en el mismo commit que cualquier resultado  |
+| CENSO | 4 | `CENSO_CORREDOR_X_HFT_RESULTADOS_20261016.md` | 2026-10-16 | MEDIDO (censo; sin desenlaces ni retornos) |
 | AUDITORIA | 12 | `AUDITORIA_K32_REPLICACION_RRE_20261016.md` | 2026-10-16 | PROVISIONAL (un solo auditor: gonzasib-claude; sin acceso al kernel ni a los JSO |
 | REVISION | 5 | `REVISION_RESPUESTA_GEMINI_20261015.md` | 2026-10-15 | REVISIÓN — lectura de dos documentos y verificación puntual contra datos y códig |
 | RESULTADOS | 2 | `RESULTADOS_PILOTO_SOPORTE_EXP_REV_GRID_20261015.md` | 2026-10-15 | MEDIDO (desarrollo; solo camino de precios, sin modelo ni indicador) |
@@ -96,7 +97,6 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | IVC | 2 | `IVC_RESULTADOS_20260926.md` | 2026-09-26 | - |
 | HFT | 8 | `HFT_REVERSION_EXPLORATORIA_MNQ_20260926.md` | 2026-09-26 | exploratorio y descriptivo. No es una búsqueda sobre P&L: no hay entradas, costo |
 | ETIQUETADO | 1 | `ETIQUETADO_PICOS_Y_ML_20260926.md` | 2026-09-26 | herramienta lista; sin etiquetas todavía. Idea de Nico: él marca en el visor dón |
-| TBZ | 1 | `TBZ_E2_PARAMETRIZACION_HOLISTICA_20260924.md` | 2026-09-24 | - |
 
 ## Superados (7)
 
