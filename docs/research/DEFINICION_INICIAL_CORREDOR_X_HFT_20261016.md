@@ -4,7 +4,7 @@ Estado: BORRADOR — definición inicial para que Nico y Gemini la diseñen en d
 Fecha: 2026-10-16
 Familia / módulo: EXP-CORREDOR-HFT (confluencia; debe registrarse como familia nueva con ledger propio antes de medir)
 Referente rector: `docs/NORTH_STAR.md` (cuerpo sha256 `05df5c7c3ec4cf3a1f14f62bb8e2ade4b61dd29203b610a308964ac46995f421`)
-Decisiones de Nico (2026-10-16): se usa el detector HFT `HFTZonesESPureV2` tal cual (paridad supuesta ≈ 99 %; respaldada por oráculo del archivo con hash `dc114e6d…`, medida en ES 03-26); el indicador de impulsos depende de las barras, así que **todo se mide en barras de 100 ticks** (100T); zonas absorb no se usan.
+Decisiones de Nico (2026-10-16): se usa el detector HFT **`HFTZonesESPureV2Flat`** (el que "anda bien"; el `HFTZonesESPureV2` del gráfico conserva el error `isDown-first` y **no** se usa); paridad ≈ 99 % medida en ES 03-26 (9.481/9.486 zonas exactas) con el port de Python de ese detector, parámetros por defecto del `.cs`; el indicador de impulsos depende de las barras, así que **todo se mide en barras de 100 ticks** (100T); zonas absorb no se usan.
 
 ## 1. Pregunta
 Si en el **50 % inicial de un impulso** del indicador del corredor hay **al menos una zona HFT activa** (creada antes o dentro de esa ventana, mientras siga vigente), ¿cambia la probabilidad de que el precio (a) **llegue** a esa zona y (b) la **atraviese en dirección contraria a la de la zona**? ¿Y qué tiene que haber hecho el precio (virginidad de la zona, tiempo desde su creación, volumen operado desde su creación, alejamiento en ticks) para que esa probabilidad supere al azar, si lo supera?
