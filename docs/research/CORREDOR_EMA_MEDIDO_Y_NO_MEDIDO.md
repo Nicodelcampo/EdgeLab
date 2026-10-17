@@ -27,6 +27,12 @@ Referente rector: `docs/NORTH_STAR.md` (cuerpo sha256 `05df5c7c3ec4cf3a1f14f62bb
 - Prueba de prefijo vs streaming de las features.
 - Replicación de ES: **no disponible** para esta familia (las 299 sesiones, incluida la ventana abr–sep, se inspeccionaron para diseñar: HOLDOUT-A3 regla 1 y 4).
 
+## k36 y K37 (corredor x HFT con retornos, ES 100T) — 2026-10-17
+- **k36** (178 sesiones de descubrimiento, 7 variantes x 3 universos, DSR m=44): **sin efecto detectado**. En el walk-forward ninguna variante supera costos (neto limite inmediato -0.6 a -1.5 ticks). Auditoria: `docs/research/k36_audit_20261017/`. El +1.38 de C2 en las ultimas 32 sesiones es una submuestra afortunada (walk-forward: -0.61).
+- **K37** (`EXP-K37-CORREDOR-HFT-LADDER-TRAP-REPLICATION-V1`, replicacion trade_date 2026-04-01 a 2026-09-30, 121 sesiones, 116 con impulsos U1, una sola variante pre-registrada): veredicto **NO_SOPORTADA**. Neto pasivo realista, ARM_NOLADDER: **-1.99 ticks por trade** (IC 97.5 % [-2.95, -1.03], n=1.732); bruto -0.11 (el bruto del base en descubrimiento era +0.68). Nulo de exclusion aleatoria p = 0.47. Prueba de prefijo HFT v2: 1.145 zonas verificadas, diferencias 0.0. Resultados: `docs/research/k37_results_20261017/EXP_K37_RESULTS_20261017.json` (sha256 `ccfa83cc...50a0`).
+- **Alcance de la muerte:** invalida exactamente "excluir impulsos con escalera opuesta sin barrer, operando la reversion simetrica 2 etapas tras impulsos de U1 (preset 1, fija 600, HFT tocada en W1), ES, ejecucion pasiva, costo 1.546 ticks". No dice nada sobre otros instrumentos, otras salidas ni otras poblaciones. Consume la replicacion abr-sep de la familia corredor x HFT.
+- **No medido:** impulsos sin HFT en W1 operados como reversion; otros costos/ejecuciones; NQ/YM; el holdout >= 2026-10-01 (intacto).
+
 ## Retractaciones y correcciones
 - Pasada 1 (barrido de ~10.250 celdas) y Pasada 2 (343 pruebas) **no confirman edge**: ver `AUDITORIA_CORRIDA_KAGGLE_ES_MULTIRES_CORRIDOR_V4_20261015.md` y `AUDITORIA_PASADA2_CORRIDOR_ES_V4_20261015.md`.
 - Hash de NORTH_STAR citado como `ed4293b5…` en documentos del 2026-10-15: era stale; vigente `05df5c7c…`.
