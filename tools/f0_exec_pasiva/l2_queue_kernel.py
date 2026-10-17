@@ -302,12 +302,18 @@ def main():
     # hora de inicio de sesion (modo) para descartar relojes corridos
     starts = []
     for d, c, p in sel:
-        starts.append(int(pq.read_table(p, columns=["ts_us"]).slice(0, 1)["ts_us"][0].as_py()) % 86_400_000_000)
-    modal = int(np.bincount((np.asarray(starts) // 60_000_000).astype(int)).argmax()) * 60_000_000
+        tcol = pq.read_table(p, columns=["ts_us"])["ts_us"]
+        # sesiones vacias o casi vacias (feriados/fines de semana marcados PASS): sin hora de inicio, se saltean
+        starts.append(int(tcol[0].as_py()) % 86_400_000_000 if len(tcol) >= 100000 else -1)
+    valid_starts = np.asarray([x for x in starts if x >= 0])
+    modal = int(np.bincount((valid_starts // 60_000_000).astype(int)).argmax()) * 60_000_000
     acc, samples = defaultdict(list), {"Mp": [], "MaAll": []}
     statuses = defaultdict(int)
     used = []
     for (d, c, p), st in zip(sel, starts):
+        if st < 0:
+            statuses["skip_empty_session"] += 1
+            continue
         if abs(st - modal) > 600_000_000:
             statuses["skip_clock_shifted"] += 1
             continue
