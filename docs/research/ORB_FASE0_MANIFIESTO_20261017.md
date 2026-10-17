@@ -67,3 +67,10 @@ Estrategia con stops/objetivos, ML/3 franjas/grillas (pendiente separado: `PENDI
 
 ## 9. Ejecucion propuesta
 Un kernel Kaggle de una pasada por activo (CPU), salida `EXP_ORB_F0_RESULTS_<activo>.json`, codigo y manifiesto congelados por commit antes de correr; registro MEDIDO/NO MEDIDO de `ORB-FUT` en el mismo commit que el resultado.
+
+## 10. Autorizacion y orden de ejecucion (registro, 2026-10-17)
+- Nico, en chat: "opcion B, y despues A". Se ejecuta **0A ahora** (sin retornos, ES y NQ por separado) y **0B despues**, con su propio kernel congelado por commit antes de correr.
+- Uso del dataset `edgelab-liquid-ticks-20261014` (CANDIDATE) aprobado para esta fase.
+- Como el MDE de la seccion 5 depende de la SD de la extension (que mide 0B), **0A publica banderas preliminares** (N, costo/ancho, integridad) y una **grilla de MDE para SD en {0.5, 1, 1.5, 2} R**; el veredicto GO/NO_GO final se emite despues de 0B.
+- Implementacion de 0A (kernel `edgelab-orb-f0a-v1`): descubrimiento 2025-07-18..2026-03-31 y ventana limpia 2026-07-16..2026-09-30; las sesiones intermedias solo alimentan ATR/volumen/gap causales. Segundo camino independiente (barras de 1 minuto por `groupby`) para ancho y minuto del primer cruce; cualquier discrepancia se reporta como `second_path_disagreements`.
+- Costo de ejecucion: de los ticks del dataset (bid/ask en la fila del trade, con la cotizacion vieja como limite declarado); la cotizacion L1 continua de `edgelab-l2-es` no se usa en 0A.
