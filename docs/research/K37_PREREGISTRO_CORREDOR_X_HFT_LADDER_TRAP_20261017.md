@@ -18,8 +18,8 @@ variante, sin ranking ni ML, y con la ejecucion realista como metrica primaria.
   por trade con ejecucion pasiva realista.
 - **Justificacion economica:** una escalera de ordenes opuesta sin barrer es liquidez que frena el recorrido hacia el objetivo; excluirla
   reduce la cola de stops sin cambiar la geometria. Mecanismo plausible, no medido fuera de muestra.
-- **Como podria refutarse:** si el limite inferior unilateral (97.5 %) de la media neta pasiva no supera 0, **o** el nulo de desplazamiento
-  circular no se rechaza, la hipotesis queda no soportada. Se espera esto como resultado mas probable (ver 7).
+- **Como podria refutarse:** si el limite inferior unilateral (97.5 %) de la media neta pasiva no supera 0, **o** el nulo de exclusion
+  aleatoria no se rechaza, la hipotesis queda no soportada. Se espera esto como resultado mas probable (ver 7).
 - Secundaria (informativa, no decide): diferencia neta ARM_NOLADDER vs ARM_LADDER (Holm sobre las 2 pruebas).
 
 ## 2. Poblacion y espacio de eventos (regla de poblacion)
@@ -29,7 +29,7 @@ Espacio considerado: (a) todos los impulsos del corredor `DET_NT8` en 100T estri
 **Elegida: (b) = U1.** Razon: es la unica con control de buen tamano y definicion cerrada en k34; (a) no tiene hipotesis de mecanismo;
 (c) y (d) tienen n chico; (e) duplica zonas. Se declara que (a), (c), (d), (e) **no se miden aqui** ni se transportan resultados a ellas.
 - Instrumento: **ES** unicamente (sin NQ/YM/6E). Barras 100T estrictas por sesion. HFT = `HFTZonesESPureV2Flat` (puerto Python, sin absorb).
-- Ventana de datos: **replicacion HOLDOUT-A3 abril-septiembre 2026** (`docs/CURRENT.md`: "abr-sep = replicacion, una vez por familia").
+- Ventana de datos: **replicacion HOLDOUT-A3, trade_date 2026-04-01 a 2026-09-30** (`docs/CURRENT.md`: "abr-sep = replicacion, una vez por familia").
   Descubrimiento (2025-07-18 a 2026-03-31, 178 sesiones) queda para fijar parametros **ya fijados abajo**: no se reajusta nada.
 - Holdout forward desde 2026-10-01: **no se toca.**
 - **Dependencia abierta:** confirmar que existen ticks ES 06-26 y 09-26 pre-2026-10-01 completos y auditados (continuidad entre sesiones, `outside_regular`,
@@ -48,7 +48,7 @@ Espacio considerado: (a) todos los impulsos del corredor `DET_NT8` en 100T estri
 - Estimando: media de ticks netos por trade (pasivo realista, 1.546t). Tambien se publican bruto, neto limite inmediato y por mes (descriptivo).
 - Error estandar **clusterizado por sesion**; limite unilateral 97.5 %.
 - Pruebas decisoras: m = 1 (H1). Secundaria: Holm sobre 2. El DSR se reporta con m = 44 (numero heredado de k36) como cota conservadora.
-- Nulo: desplazamiento circular de zonas HFT dentro de la sesion, 1.000 repeticiones (k36 uso 100), mismo numero de trades por dia.
+- Nulo (CORRECCION respecto del borrador: el nulo de k36 desplaza circularmente los *scores del ranking*, que K37 no tiene): **exclusion aleatoria**: se excluyen al azar tantos impulsos de U1 como marca el flag (sin mirar el flag), se aplica la misma regla de una posicion a la vez, 2.000 repeticiones; p = (1 + #{media nula >= observada})/2001.
 - Dos canales: se publica ademas la distribucion completa (cuantiles de ticks por trade) y MAE/MFE medianos; el efecto no direccional no aplica a esta salida.
 
 ## 5. Potencia (estimacion, no medicion)
@@ -56,7 +56,7 @@ Base k35 sin filtrar: 2.219 trades en 145 sesiones, se clusterizado del bruto 0.
 quita ~10 %), se ~ 0.41-0.45 ticks. **MDE (80 %, unilateral 2.5 %) ~ 1.2 ticks netos.** Es un supuesto de clustering heredado, a medir al correr.
 
 ## 6. Criterios (definidos antes de mirar)
-- **SOPORTADA:** limite inferior 97.5 % de la media neta pasiva > 0 **y** p del nulo circular <= 0.025 **y** prueba de prefijo v2 con >= 200 zonas verificadas.
+- **SOPORTADA:** limite inferior 97.5 % de la media neta pasiva > 0 **y** p del nulo de exclusion aleatoria <= 0.025 **y** prueba de prefijo v2 con >= 200 zonas verificadas.
 - **NO SOPORTADA (cierra la linea):** limite superior 97.5 % de la media neta pasiva < +0.5 ticks.
 - **ABSTENCION (sin poder):** cualquier otro caso; no se promueve ni se reintenta sobre la misma ventana.
 - Un resultado positivo no es un edge: pasaria a replicacion forward (holdout >= 2026-10-01, una sola apertura) y a ejecucion real.
@@ -75,3 +75,9 @@ Gastar la unica replicacion de la familia en esto solo tiene sentido si se quier
 - Aplicar `prefix_test_nontrivial.patch` y **correr** la prueba en Kaggle (el parche esta escrito y verificado solo de sintaxis; no se ejecuto).
 - Congelar este manifiesto por hash en un commit antes de abrir los datos de replicacion.
 - Registrar la familia/variante en `docs/research/*_MEDIDO_Y_NO_MEDIDO.md` en el mismo commit que el resultado.
+
+## 10. Autorizacion y ejecucion (registro)
+- 2026-10-17: Nico autoriza en chat "tenes mi ok para todo" (ejecutar con este manifiesto, opcion A). Se registra que el borrador recomendaba la opcion B.
+- Guardas del kernel: aborta sin medir retornos si hay < 80 sesiones en la ventana, si aparece cualquier sesion >= 2026-10-01, o si la prueba de prefijo HFT v2 falla.
+- Salida: `EXP_K37_RESULTS_20261017.json`; veredicto automatico segun la seccion 6.
+- Aclaracion de medicion (como en k36): la media pasiva se calcula sobre los trades con fill pasivo; el neto limite inmediato sobre todos.
