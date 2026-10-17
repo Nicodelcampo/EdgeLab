@@ -1,0 +1,61 @@
+--- kernel_k36_v1_source.py
++++ kernel_k36_v1_prefixfix.py
+@@ -2932,20 +2932,50 @@
+     diff_future_pert = float(np.max(np.abs(z_pert[0, :13] - z_test[:13])))
+     assert diff_future_pert == 0.0, f"Future perturbation leaked into cls_b: {diff_future_pert}"
+ 
+-    # 3. Prueba de available_at = end_ts en HFT:
++    # 3. Prueba de available_at = end_ts en HFT (v2, NO VACUA).
++    # Defecto de k36: se cortaba en cls_b de la PRIMERA zona del corredor, temprano en la
++    # sesion; ahi habia 0 zonas HFT (n_hft_zones_verified_at_prefix=0) y `0 == 0` pasaba
++    # sin verificar nada. Ahora: cortes tardios en varias sesiones, se exige un minimo de
++    # zonas realmente verificadas y se compara IDENTIDAD de cada zona, no solo el conteo.
++    MIN_ZONES_VERIFIED = 200
++    MIN_SESSIONS_WITH_ZONES = 5
+     prm = HFT_Params(mostrar_absorb=False)
+-    zs_full = [z for z in hft_run(s0["ts_utc_ns"], s0["prices"], s0["vol"], HFT_TICK, prm) if "ABSORB" not in str(z.bucket).upper()]
+-    ts_cut_ns = int(ts_end0[cls_b_test])
+-    m_tk_pref = s0["ts_utc_ns"] <= ts_cut_ns
+-    zs_pref = [z for z in hft_run(s0["ts_utc_ns"][m_tk_pref], s0["prices"][m_tk_pref], s0["vol"][m_tk_pref], HFT_TICK, prm) if "ABSORB" not in str(z.bucket).upper()]
+-    zs_full_before = [z for z in zs_full if z.end_ts * 1_000_000 <= ts_cut_ns]
+-    assert len(zs_pref) == len(zs_full_before), f"HFT prefix mismatch: {len(zs_pref)} vs {len(zs_full_before)}"
++
++    def _sig(z):
++        return (int(z.start_ts), int(z.end_ts), str(z.bucket), int(z.dir))
++
++    verified_total, sessions_ok = 0, 0
++    for s_v in sessions_list:
++        ts_v = s_v["ts_utc_ns"]
++        if len(ts_v) < 1000:
++            continue
++        zs_full_v = [z for z in hft_run(ts_v, s_v["prices"], s_v["vol"], HFT_TICK, prm)
++                     if "ABSORB" not in str(z.bucket).upper()]
++        got_here = 0
++        for frac in (0.5, 0.75, 0.9):
++            ts_cut_v = int(ts_v[int(len(ts_v) * frac)])
++            m_v = ts_v <= ts_cut_v
++            zs_pref_v = [z for z in hft_run(ts_v[m_v], s_v["prices"][m_v], s_v["vol"][m_v], HFT_TICK, prm)
++                         if "ABSORB" not in str(z.bucket).upper()]
++            full_before_v = [z for z in zs_full_v if z.end_ts * 1_000_000 <= ts_cut_v]
++            assert sorted(map(_sig, zs_pref_v)) == sorted(map(_sig, full_before_v)), (
++                "HFT prefix identity mismatch (sesion %s, corte %.2f): %d vs %d zonas"
++                % (s_v.get("session_id"), frac, len(zs_pref_v), len(full_before_v)))
++            got_here += len(zs_pref_v)
++        verified_total += got_here
++        sessions_ok += 1 if got_here > 0 else 0
++        if verified_total >= MIN_ZONES_VERIFIED and sessions_ok >= MIN_SESSIONS_WITH_ZONES:
++            break
++    assert verified_total >= MIN_ZONES_VERIFIED and sessions_ok >= MIN_SESSIONS_WITH_ZONES, (
++        "prueba de prefijo HFT VACUA: %d zonas verificadas en %d sesiones" % (verified_total, sessions_ok))
+ 
+     return {
+         "prefix_vs_streaming_max_abs_diff": diff_zone_prefix,
+         "future_perturbation_invariance_max_abs_diff": diff_future_pert,
+         "hft_available_at_end_ts_prefix_exact_match": True,
+-        "n_hft_zones_verified_at_prefix": len(zs_pref),
++        "hft_prefix_test_version": 2,
++        "n_hft_zones_verified_at_prefix": verified_total,
++        "n_sessions_with_hft_zones_verified": sessions_ok,
+     }
+ 
+ 
