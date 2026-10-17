@@ -5223,9 +5223,17 @@ def f0_process_session(ts, px, bid, ask, outreg, i_dec, acc, samples, full_grid)
                         samples["adv2"].append(np.array([(Mp[m_a] <= -2.0).sum(), m_a.sum()], dtype=np.float64))
 
 
+def _merge_sides(rows):
+    """Cada sesion aporta DOS filas consecutivas (compra, venta). El cluster es la SESION: se suman antes de la linealizacion."""
+    R = np.asarray(rows, dtype=np.float64)
+    if len(R) % 2 == 0 and len(R) > 0:
+        R = R.reshape(-1, 2, R.shape[1]).sum(axis=1)
+    return R
+
+
 def f0_cluster(rows, num_col, den_col):
     """Razon sum(num)/sum(den) con SE clusterizado por sesion (linealizacion, Liang-Zeger)."""
-    R = np.asarray(rows, dtype=np.float64)
+    R = _merge_sides(rows)
     num, den = R[:, num_col], R[:, den_col]
     N = den.sum()
     if N <= 0 or len(R) < 2:
@@ -5251,7 +5259,7 @@ def f0_contrast(rows1, rows2):
 
 def f0_astar(rows):
     """A* = mean(Mp | fill) - mean(Ma sobre TODAS las decisiones). Linealizacion por sesion de la diferencia de dos razones."""
-    R = np.asarray(rows, dtype=np.float64)
+    R = _merge_sides(rows)
     nF, sMp = R[:, 2], R[:, 4]
     nAll, sMa = R[:, 6], R[:, 7]
     NF, NA = nF.sum(), nAll.sum()

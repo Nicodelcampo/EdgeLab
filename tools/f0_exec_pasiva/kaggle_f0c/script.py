@@ -201,8 +201,16 @@ def process_session(path, acc, samples):
     return "ok"
 
 
-def cluster_ratio(rows, num_col, den_col):
+def _merge_sides(rows):
+    """Cada sesion aporta DOS filas consecutivas (compra, venta). El cluster es la SESION: se suman antes de la linealizacion."""
     R = np.asarray(rows, dtype=np.float64)
+    if len(R) % 2 == 0 and len(R) > 0:
+        R = R.reshape(-1, 2, R.shape[1]).sum(axis=1)
+    return R
+
+
+def cluster_ratio(rows, num_col, den_col):
+    R = _merge_sides(rows)
     N = R[:, den_col].sum()
     if N <= 0 or len(R) < 2:
         return float("nan"), float("nan")
@@ -213,7 +221,7 @@ def cluster_ratio(rows, num_col, den_col):
 
 
 def astar(rows):
-    R = np.asarray(rows, dtype=np.float64)
+    R = _merge_sides(rows)
     nF, sMp, nAll, sMa = R[:, 2], R[:, 4], R[:, 6], R[:, 7]
     NF, NA = nF.sum(), nAll.sum()
     if NF <= 0 or NA <= 0 or len(R) < 2:
@@ -244,7 +252,7 @@ def summarize(acc):
             "F_fill": F, "se_F": seF, "Mp_ticks": Mp, "MaAll_ticks": MaAll,
             "Astar_ticks": A, "se_Astar": seA,
             "Astar_lo975_onesided": A - 1.96 * seA, "Astar_hi975_onesided": A + 1.96 * seA,
-            "value_per_intent_passive_ticks": F * Mp, "n_sessions": len(rows)}
+            "value_per_intent_passive_ticks": F * Mp, "n_sessions": len(rows) // 2}
     return out
 
 
