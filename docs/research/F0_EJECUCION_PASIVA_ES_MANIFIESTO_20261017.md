@@ -79,3 +79,13 @@ congelados por commit **antes** de abrir la ventana de confirmacion. Registro ME
 2. **(B) Aprobar solo el tramo de fill** (E1) y dejar el markout para despues, o
 3. **(C) Pedir cambios** (poblacion, reglas de fill, criterios).
 Mi recomendacion: **(A)**: el markout es lo que decide si el pasivo sirve, y la medicion es de una sola celda primaria, sin busqueda.
+
+## 11. Autorizacion y hallazgo L2 (registro, 2026-10-17)
+- Nico aprueba la **opcion A** en chat ("opcion A"), incluida la apertura unica de la ventana de confirmacion 2026-04-01..09-30 y el uso del dataset L1 CANDIDATE.
+- **L2 de ES en Kaggle (verificado en `L2_RELEASE_MANIFEST.json`):** dataset privado `nicolasbuttaro/edgelab-l2-es-20261015`, 177 archivos-sesion (ES_09-26 y ES_12-26, **solapados en fechas**),
+  2026-06-28 a 2026-10-14; por sesion: `l2_depth` (MBP-10), `l1_quotes` (cotizaciones con tamanos) y agregados `.npz`. QA: 174 PASS y 3 marcadas (2026-08-11 cruzado en ambos contratos; ES_12-26 2026-07-17).
+  **`research_allowed = false`** ("L2 sin auditoria de payload ni aprobacion externa; solo preparacion tecnica"). Ventana de desarrollo L2 firmada: 2026-07-01..2026-10-31; holdout L2 2026-11-01..12-31 sin datos.
+  Limitaciones declaradas: agresor L2 heuristico sin validar (no se usa), 5 archivos con reloj corrido (P-84), hay que elegir un contrato principal por sesion.
+  **Consecuencias para F0:** (1) el L2 **no cubre** la ventana de descubrimiento de ticks (empieza 2026-06-28), solo el tramo jul-sep de la confirmacion; (2) las sesiones de octubre caen en el holdout de ticks (>= 2026-10-01): **no se usan**;
+  (3) como la bandera `research_allowed` es falsa, **la Fase 0C (cola real con L2) queda fuera hasta que Nico levante esa bandera o apruebe el uso**. Cuando se habilite, usaria `l1_quotes` (resuelve la cotizacion vieja de L1) y `l2_depth` (posicion en cola) sobre ~jul-sep 2026 sin tocar octubre.
+- Ejecucion F0 (T1/T2, ticks L1) autorizada: kernel `edgelab-f0-exec-pasiva-es-v1`.
