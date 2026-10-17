@@ -161,14 +161,17 @@ def f0_process_session(ts, px, bid, ask, outreg, i_dec, acc, samples, full_grid)
                         m_obs = sm & win_ok
                         m_fill = m_obs & filled
                         m_a = sm & okh
+                        m_all = sm & (th_a <= t_end)          # referencia agresiva INCONDICIONAL (todas las decisiones)
                         acc[(tau, h, ri, sname)].append(np.array([
                             m_obs.sum(), m_fill.sum(), m_a.sum(),
-                            A[m_a].sum(), Mp[m_a].sum(), Ma[m_a].sum()], dtype=np.float64))
+                            A[m_a].sum(), Mp[m_a].sum(), Ma[m_a].sum(),
+                            m_all.sum(), Ma[m_all].sum()], dtype=np.float64))
                     if is_primary and full_grid:
                         m_a = okh
                         samples["A"].append(A[m_a].astype(np.float32))
                         samples["Mp"].append(Mp[m_a].astype(np.float32))
                         samples["Ma"].append(Ma[m_a].astype(np.float32))
+                        samples.setdefault("MaAll", []).append(Ma[th_a <= t_end].astype(np.float32))
                         samples["adv2"].append(np.array([(Mp[m_a] <= -2.0).sum(), m_a.sum()], dtype=np.float64))
 
 
@@ -187,17 +190,30 @@ def f0_cluster(rows, num_col, den_col):
 
 
 def f0_contrast(rows1, rows2):
-    R1, R2 = np.asarray(rows1, dtype=np.float64), np.asarray(rows2, dtype=np.float64)
-    n1, n2 = R1[:, 2].sum(), R2[:, 2].sum()
-    if n1 <= 0 or n2 <= 0:
+    """Diferencia de A* entre dos estratos (mismas sesiones, mismo orden): SE por linealizacion."""
+    a1, _s1, c1 = f0_astar(rows1)
+    a2, _s2, c2 = f0_astar(rows2)
+    if a1 != a1 or a2 != a2 or len(c1) != len(c2):
         return float("nan"), float("nan")
-    m1, m2 = R1[:, 3].sum() / n1, R2[:, 3].sum() / n2
-    G = max(len(R1), len(R2))
-    c = np.zeros(G)
-    c[:len(R1)] += (R1[:, 3] - m1 * R1[:, 2]) / n1
-    c[:len(R2)] -= (R2[:, 3] - m2 * R2[:, 2]) / n2
+    c = c1 - c2
+    G = len(c)
     se = math.sqrt((G / (G - 1.0)) * float(np.sum(c * c)))
-    return float(m1 - m2), se
+    return float(a1 - a2), se
+
+
+def f0_astar(rows):
+    """A* = mean(Mp | fill) - mean(Ma sobre TODAS las decisiones). Linealizacion por sesion de la diferencia de dos razones."""
+    R = np.asarray(rows, dtype=np.float64)
+    nF, sMp = R[:, 2], R[:, 4]
+    nAll, sMa = R[:, 6], R[:, 7]
+    NF, NA = nF.sum(), nAll.sum()
+    if NF <= 0 or NA <= 0 or len(R) < 2:
+        return float("nan"), float("nan"), np.zeros(len(R))
+    mMp, mMa = sMp.sum() / NF, sMa.sum() / NA
+    c = (sMp - mMp * nF) / NF - (sMa - mMa * nAll) / NA
+    G = len(R)
+    se = math.sqrt((G / (G - 1.0)) * float(np.sum(c * c)))
+    return float(mMp - mMa), se, c
 
 
 def f0_summarize(acc):
@@ -209,13 +225,21 @@ def f0_summarize(acc):
         A, seA, _, nA = f0_cluster(rows, 3, 2)
         Mp, seMp, _, _ = f0_cluster(rows, 4, 2)
         Ma, seMa, _, _ = f0_cluster(rows, 5, 2)
+        Astar, seAs, _ = f0_astar(rows)
+        MaAll, _, _, _ = f0_cluster(rows, 7, 6)
         out["tau%d_h%d_%s_%s" % (tau, h, F0_RULES[ri], sname)] = {
             "F_fill": F, "se_F": seF, "n_obs": nobs, "A_ticks": A, "se_A": seA, "n_A": nA,
-            "A_lo975_onesided": A - 1.96 * seA if seA == seA else float("nan"),
-            "A_hi975_onesided": A + 1.96 * seA if seA == seA else float("nan"),
-            "Mp_ticks": Mp, "Ma_ticks": Ma, "n_sessions": G}
-        if F == F and F < 1 and A == A:
-            out["tau%d_h%d_%s_%s" % (tau, h, F0_RULES[ri], sname)]["g_star_breakeven_edge_ticks"] = F * A / (1.0 - F)
+            "Mp_ticks": Mp, "Ma_paired_filled_ticks": Ma, "MaAll_ticks": MaAll, "n_sessions": G,
+            "A_paired_filled_ticks_DIAGNOSTIC_equals_spread_by_construction": A,
+            "Astar_ticks": Astar, "se_Astar": seAs,
+            "Astar_lo975_onesided": Astar - 1.96 * seAs if seAs == seAs else float("nan"),
+            "Astar_hi975_onesided": Astar + 1.96 * seAs if seAs == seAs else float("nan")}
+        if F == F and F < 1 and Astar == Astar:
+            out["tau%d_h%d_%s_%s" % (tau, h, F0_RULES[ri], sname)]["g_star_breakeven_edge_ticks"] = F * Astar / (1.0 - F)
+        # valor por intento si no hay edge: F*Mp (no llena = 0) contra Ma incondicional
+        if F == F and Mp == Mp and MaAll == MaAll:
+            out["tau%d_h%d_%s_%s" % (tau, h, F0_RULES[ri], sname)]["value_per_intent_passive_ticks"] = F * Mp
+            out["tau%d_h%d_%s_%s" % (tau, h, F0_RULES[ri], sname)]["value_per_intent_aggressive_ticks"] = MaAll
     return out
 
 
@@ -333,25 +357,26 @@ def main_f0():
     qs = (5, 25, 50, 75, 95)
     dist = {"A_q": [float(np.percentile(A_all, q)) for q in qs] if len(A_all) else [],
             "Mp_q": [float(np.percentile(Mp_all, q)) for q in qs] if len(Mp_all) else [],
-            "Ma_q": [float(np.percentile(Ma_all, q)) for q in qs] if len(Ma_all) else [],
+            "Ma_paired_filled_q": [float(np.percentile(Ma_all, q)) for q in qs] if len(Ma_all) else [],
+            "MaAll_q": [float(np.percentile(np.concatenate(samples["MaAll"]), q)) for q in qs] if samples.get("MaAll") else [],
             "frac_fills_adverse_ge_2ticks": float(adv[0] / max(adv[1], 1.0))}
 
-    F, lo, hi = prim_d["F_fill"], prim_d["A_lo975_onesided"], prim_d["A_hi975_onesided"]
-    sign_stable = bool(prim_c["A_ticks"] == prim_c["A_ticks"] and prim_c["A_ticks"] > 0)
+    F, lo, hi = prim_d["F_fill"], prim_d["Astar_lo975_onesided"], prim_d["Astar_hi975_onesided"]
+    sign_stable = bool(prim_c["Astar_ticks"] == prim_c["Astar_ticks"] and prim_c["Astar_ticks"] > 0)
     if F >= 0.30 and lo > 0.25 and sign_stable:
         verdict = "PASIVO_RECUPERA"
     elif hi < 0.25 or F < 0.10:
         verdict = "PASIVO_NO_CONVIENE"
     else:
         verdict = "ABSTENCION"
-    buy, sell = S_d[pk + "_SIDE_buy"]["A_ticks"], S_d[pk + "_SIDE_sell"]["A_ticks"]
+    buy, sell = S_d[pk + "_SIDE_buy"]["Astar_ticks"], S_d[pk + "_SIDE_sell"]["Astar_ticks"]
     summary = {
-        "spec_id": "EXP-F0-EJECUCION-PASIVA-ES-V1", "manifest": "F0_EJECUCION_PASIVA_ES_MANIFIESTO_20261017.md",
+        "spec_id": "EXP-F0-EJECUCION-PASIVA-ES-V1-A1", "manifest": "F0_EJECUCION_PASIVA_ES_MANIFIESTO_20261017.md",
         "windows": {"discovery": [F0_START_D, F0_SPLIT_D], "confirmation": [F0_SPLIT_D + 1, F0_END_D]},
         "n_sessions": {"discovery": n_sess_d, "confirmation": n_sess_c}, "quote_valid_fraction": q_frac,
         "sanity": sanity, "holdout_touched": False, "primary_discovery": prim_d, "primary_confirmation": prim_c,
         "VERDICT_PRIMARY": verdict, "sign_stable_confirmation": sign_stable,
-        "side_symmetry_check": {"A_buy": buy, "A_sell": sell, "abs_diff": abs(buy - sell),
+        "side_symmetry_check": {"Astar_buy": buy, "Astar_sell": sell, "abs_diff": abs(buy - sell),
                                  "flag_gt_0.2tick": bool(abs(buy - sell) > 0.2)},
         "contrasts_discovery_holm3": cont, "distribution_primary_discovery": dist,
         "grid_discovery": S_d, "grid_confirmation": S_c,

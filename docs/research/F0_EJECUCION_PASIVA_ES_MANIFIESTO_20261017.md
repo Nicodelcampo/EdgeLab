@@ -89,3 +89,15 @@ Mi recomendacion: **(A)**: el markout es lo que decide si el pasivo sirve, y la 
   **Consecuencias para F0:** (1) el L2 **no cubre** la ventana de descubrimiento de ticks (empieza 2026-06-28), solo el tramo jul-sep de la confirmacion; (2) las sesiones de octubre caen en el holdout de ticks (>= 2026-10-01): **no se usan**;
   (3) como la bandera `research_allowed` es falsa, **la Fase 0C (cola real con L2) queda fuera hasta que Nico levante esa bandera o apruebe el uso**. Cuando se habilite, usaria `l1_quotes` (resuelve la cotizacion vieja de L1) y `l2_depth` (posicion en cola) sobre ~jul-sep 2026 sin tocar octubre.
 - Ejecucion F0 (T1/T2, ticks L1) autorizada: kernel `edgelab-f0-exec-pasiva-es-v1`.
+
+## 12. Enmienda A1 (2026-10-17): error de implementacion del estimando E4, detectado antes de interpretar
+**Que paso.** La primera corrida del kernel (`edgelab-f0-exec-pasiva-es-v1`, version 1, commit `8e6be699`) devolvio `PASIVO_RECUPERA`
+con `A(60 s) = +1.10` ticks (confirmacion +1.10, F = 0.86). Ese veredicto es **invalido**, y se anula.
+**Por que es invalido.** El manifiesto (secc. 3) definia `A(h) = M_p(h) - M_a(h)` sin precisar sobre que decisiones se evalua `M_a`; el kernel lo implemento **pareado sobre las mismas decisiones
+que se llenaron**. Ambos brazos quedan condicionados al mismo futuro, y entonces la diferencia es el spread por construccion: A = 1.005 ticks con spread de 1 tick y 2.587 con spread >= 2
+(evidencia en `k36_audit/../f0_results_20261017/`). Esa cantidad **no mide seleccion adversa**: la esconde. No es un hallazgo.
+**Estimando corregido (A*), unico cambio.** `A*(h) = media(M_p | fill) - media(M_a sobre TODAS las decisiones)`: la referencia agresiva es **incondicional**, que es lo que se
+compara con una orden pasiva que solo ejecuta cuando se llena (la seleccion adversa vive en ese condicionamiento). Mismos criterios de la secc. 6, aplicados a `A*`; mismas guardas; mismos datos y ventanas;
+contrastes S1-S3 y `g*` sobre `A*`. Se agrega `valor por intento` (F*M_p vs M_a incondicional) como lectura sin edge. La version pareada queda como diagnostico.
+**Honestidad de proceso.** La ventana de confirmacion ya se leyo en la corrida invalida; la corrida corregida **no es una segunda apertura independiente**: es el mismo dato con el estimando
+correcto. La correccion se decide por logica (el pareado es el spread por construccion), no por la direccion del resultado; de hecho empeora el resultado para el pasivo.
