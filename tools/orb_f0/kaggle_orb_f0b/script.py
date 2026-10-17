@@ -349,13 +349,20 @@ def main():
 # ORB Fase 0B (descriptiva, toca precios posteriores a la ruptura; manifiesto seccion 4).
 # E_t = signo(ruptura) x (P_t - nivel_roto) / ancho_del_rango, sin stop ni objetivo. Una celda primaria:
 # rango de 15 min, ruptura por toque (primer print fuera del rango), E a 11:30 y a 15:45 ET.
-# Nulo: lado elegido al azar por dia (misma ruta, mismos niveles). Sin grilla de decision.
+# Nulo (A2): permutacion de signos entre dias conservando el desplazamiento de cada dia. Sin grilla de decision.
 # ======================================================================================
 NULL_REPS = 2000
 HORIZONS = {"1130": 120, "1545": 375}           # minutos desde 09:30
 
 
 def price_at(ts, px, t):
+    """A2: ultimo print ESTRICTAMENTE anterior al reloj t (causal; coincide con el camino por minutos)."""
+    i = int(np.searchsorted(ts, t, side="left")) - 1
+    return int(px[i]) if i >= 0 else None
+
+
+def price_at_incl(ts, px, t):
+    """Diagnostico A2: convencion anterior (print en t incluido)."""
     i = int(np.searchsorted(ts, t, side="right")) - 1
     return int(px[i]) if i >= 0 else None
 
@@ -398,6 +405,8 @@ def session_ext(td, ts, px):
             d["P_" + tag] = P
             P2 = int(last_by_min[last_by_min.index <= mins - 1].iloc[-1]) if (last_by_min.index <= mins - 1).any() else None
             d["P2_" + tag] = P2
+            d["Pincl_" + tag] = price_at_incl(ts, px, t)
+            d["n_at_t_" + tag] = int((ts == t).sum())
             # contrafactuales con el mismo camino: largo desde hi y corto desde lo
             d["Eup_" + tag] = (P - hi) / width
             d["Edn_" + tag] = (lo - P) / width
@@ -415,6 +424,8 @@ def session_ext(td, ts, px):
                     d["E_" + tag] = sgn * (P - lvl) / width
                     d["Eentry_" + tag] = sgn * (P - d["entry_px"]) / width
                     d["Eabs_" + tag] = abs(P - lvl) / width
+                    d["s_" + tag] = sgn
+                    d["D_" + tag] = (P - lvl) / width
         out[W] = d
     return out, None
 
@@ -437,26 +448,27 @@ def summarize_ext(R, W, tag, rng):
     Ee = np.array([d["Eentry_" + tag] for d in rows])
     Ea = np.array([d["Eabs_" + tag] for d in rows])
     mu, se, lo, hi, n = ci_mean(E)
-    # nulo: lado al azar por dia sobre TODOS los dias validos con la misma ruta (E_up / E_dn)
-    full = [r[W] for r in R if W in r]
-    eup = np.array([d["Eup_" + tag] for d in full])
-    edn = np.array([d["Edn_" + tag] for d in full])
-    # restringido a los dias con ruptura antes del horizonte (misma poblacion que E)
-    idx = [i for i, d in enumerate(full) if ("E_" + tag) in d]
-    eup_b, edn_b = eup[idx], edn[idx]
-    coin = rng.integers(0, 2, size=(NULL_REPS, len(idx)))
-    null_means = np.where(coin == 1, eup_b[None, :], edn_b[None, :]).mean(axis=1)
+    # A2 - nulo de deriva (manifiesto secc. 4): se PERMUTAN los signos de ruptura entre los dias, conservando el
+    # desplazamiento D_i = (P_t - nivel_roto_i)/ancho_i de cada dia (y por tanto la deriva del periodo).
+    sg = np.array([d["s_" + tag] for d in rows])
+    D = np.array([d["D_" + tag] for d in rows])
+    null_means = np.array([float((sg[rng.permutation(len(sg))] * D).mean()) for _ in range(NULL_REPS)])
     p_null = float((1 + np.sum(null_means >= mu)) / (NULL_REPS + 1.0))
+    p_two = float((1 + np.sum(np.abs(null_means - null_means.mean()) >= abs(mu - null_means.mean()))) / (NULL_REPS + 1.0))
+    eup = np.array([d["Eup_" + tag] for d in rows])
+    edn = np.array([d["Edn_" + tag] for d in rows])
     # SD de la extension firmada (insumo del MDE)
     return {"n_days": int(n), "mean_E": mu, "se": se, "ci95": [lo, hi], "sd": float(E.std(ddof=1)),
             "quantiles_E_5_25_50_75_95": [float(np.percentile(E, q)) for q in (5, 25, 50, 75, 95)],
             "mean_E_from_entry_print": float(Ee.mean()), "mean_abs_extension": float(Ea.mean()),
             "frac_E_positive": float((E > 0).mean()),
             "mean_E_long_from_hi_all_days": float(eup.mean()), "mean_E_short_from_lo_all_days": float(edn.mean()),
-            "null_random_side": {"mean": float(null_means.mean()), "p975": float(np.percentile(null_means, 97.5)),
-                                 "p_value_one_sided": p_null},
+            "null_sign_permutation": {"mean": float(null_means.mean()), "p975": float(np.percentile(null_means, 97.5)),
+                                 "p_value_one_sided": p_null, "p_value_two_sided": p_two},
             "MDE_80pct_2p5onesided_R": float(2.8 * E.std(ddof=1) / math.sqrt(n)),
-            "second_path_price_disagreements": int(sum(1 for d in rows if d["P_" + tag] != d["P2_" + tag]))}
+            "second_path_price_disagreements": int(sum(1 for d in rows if d["P_" + tag] != d["P2_" + tag])),
+            "diag_incl_convention_price_differs_from_strict": int(sum(1 for d in rows if d["P_" + tag] != d["Pincl_" + tag])),
+            "diag_days_with_print_exactly_at_t": int(sum(1 for d in rows if d["n_at_t_" + tag] > 0))}
 
 
 def run_asset_b(asset):
@@ -485,18 +497,17 @@ def run_asset_b(asset):
     # veredicto automatico (manifiesto secc. 5) sobre la celda primaria: 15 min, E al cierre 15:45, DISC
     p = out["DISC"]["W%d_1545" % PRIMARY_W]
     cl = out["CLEAN"]["W%d_1545" % PRIMARY_W]
-    a0 = None
     verdict = "ABSTENCION"
     if p:
         mde_ok = p["MDE_80pct_2p5onesided_R"] <= 0.30
         n_ok = p["n_days"] >= 150
         within = (p["ci95"][0] >= -0.10) and (p["ci95"][1] <= 0.10)
-        if p["n_days"] < 100 or (within and p["null_random_side"]["p_value_one_sided"] > 0.10):
+        if p["n_days"] < 100 or (within and p["null_sign_permutation"]["p_value_one_sided"] > 0.10):
             verdict = "NO_GO"
         elif n_ok and mde_ok:
             verdict = "GO_FASE1"
         out["gate_inputs"] = {"n_ok_ge_150": n_ok, "MDE_ok_le_0.30R": mde_ok, "ci95_within_pm0.10R": within,
-                              "p_null": p["null_random_side"]["p_value_one_sided"]}
+                              "p_null": p["null_sign_permutation"]["p_value_one_sided"]}
     out["VERDICT_PRIMARY_GATE_0B"] = verdict
     out["clean_window_primary_cell_descriptive"] = cl
     out["elapsed_seconds"] = round(time.time() - t0, 1)
@@ -506,9 +517,9 @@ def run_asset_b(asset):
 def main_b():
     out_dir = Path(os.environ.get("STUDY_OUT", "/kaggle/working"))
     out_dir.mkdir(parents=True, exist_ok=True)
-    summary = {"spec_id": "EXP-ORB-F0B-V1", "manifest": "ORB_FASE0_MANIFIESTO_20261017.md (secc. 4 y 5)",
+    summary = {"spec_id": "EXP-ORB-F0B-V2-A2", "manifest": "ORB_FASE0_MANIFIESTO_20261017.md (secc. 4 y 5)",
                "windows": WINDOWS, "holdout_touched": False,
-               "definition": "E_t = sign(break) * (P_t - broken_level) / OR_width; sin stop ni objetivo; nulo = lado al azar por dia"}
+               "definition": "E_t = sign(break) * (P_t - broken_level) / OR_width; sin stop ni objetivo; nulo = permutacion de signos entre dias (A2)"}
     for asset in ("ES", "NQ"):
         try:
             summary[asset] = run_asset_b(asset)
