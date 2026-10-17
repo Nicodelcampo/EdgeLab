@@ -96,25 +96,24 @@ def iter_sessions(pfile: Path):
             cols["ask_ticks"].astype(np.int64), cols["volume"].astype(np.float64), cols["outside_regular"].astype(np.int8)
 
 
-def open_ns_for(ts_first_rth: int) -> int:
-    d = datetime.fromtimestamp(ts_first_rth / 1e9, ET)
-    o = datetime(d.year, d.month, d.day, 9, 30, tzinfo=ET)
+def open_ns_for(td: int) -> int:
+    """09:30 ET del trade_date (la sesion Globex del trade_date empieza el dia anterior a las 18:00 ET)."""
+    o = datetime(td // 10000, (td // 100) % 100, td % 100, 9, 30, tzinfo=ET)
     return int(o.timestamp()) * 1_000_000_000
 
 
 def session_core(td, ts, px, bid, ask, vol, outreg):
     """Devuelve (record, descarte). record = dict con lo necesario para la Fase 0A (camino 1: ticks)."""
-    rth_idx = np.flatnonzero(outreg == 0)
-    if len(rth_idx) < 500:
+    # `outside_regular` NO sirve como bandera RTH en este release (diagnostico 2026-10-17: vale 0 en todo el
+    # dia Globex 18:00-17:00 ET). RTH se define por RELOJ: 09:30 a 16:00 ET del trade_date.
+    open_ns = open_ns_for(int(td))
+    close_ns = open_ns + 390 * NS_MIN
+    sel = (ts >= open_ns) & (ts <= close_ns)
+    if sel.sum() < 500:
         return None, "sin_rth"
-    i0 = rth_idx[0]
-    open_ns = open_ns_for(int(ts[i0]))
-    if not (open_ns <= ts[i0] <= open_ns + 300 * 1_000_000_000):
+    ts, px, bid, ask, vol = ts[sel], px[sel], bid[sel], ask[sel], vol[sel]
+    if not (open_ns <= ts[0] <= open_ns + 300 * 1_000_000_000):
         return None, "primer_print_fuera_de_0930_0935"
-    sel = ts >= open_ns
-    ts, px, bid, ask, vol, outreg = ts[sel], px[sel], bid[sel], ask[sel], vol[sel], outreg[sel]
-    keep = outreg == 0
-    ts, px, bid, ask, vol = ts[keep], px[keep], bid[keep], ask[keep], vol[keep]
     t1030 = open_ns + 60 * NS_MIN
     w = ts < t1030
     if w.sum() < 100:
@@ -122,7 +121,7 @@ def session_core(td, ts, px, bid, ask, vol, outreg):
     if (np.diff(ts[w]) > MAX_GAP_NS).any():
         return None, "hueco_mayor_60s_0930_1030"
     rec = {"td": td, "open_ns": open_ns, "open_px": int(px[0]), "rth_hi": int(px.max()), "rth_lo": int(px.min()),
-           "rth_close": int(px[-1]), "early_close": bool(ts[-1] < open_ns + 330 * NS_MIN), "n_ticks": int(len(ts))}
+           "rth_close": int(px[-1]), "early_close": bool(((ts >= open_ns + 330 * NS_MIN) & (ts < open_ns + 375 * NS_MIN)).sum() < 100), "n_ticks": int(len(ts))}
     h1130, h1545 = open_ns + 120 * NS_MIN, open_ns + 375 * NS_MIN
     rec["windows"] = {}
     for W in OR_MINS:

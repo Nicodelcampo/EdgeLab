@@ -74,3 +74,9 @@ Un kernel Kaggle de una pasada por activo (CPU), salida `EXP_ORB_F0_RESULTS_<act
 - Como el MDE de la seccion 5 depende de la SD de la extension (que mide 0B), **0A publica banderas preliminares** (N, costo/ancho, integridad) y una **grilla de MDE para SD en {0.5, 1, 1.5, 2} R**; el veredicto GO/NO_GO final se emite despues de 0B.
 - Implementacion de 0A (kernel `edgelab-orb-f0a-v1`): descubrimiento 2025-07-18..2026-03-31 y ventana limpia 2026-07-16..2026-09-30; las sesiones intermedias solo alimentan ATR/volumen/gap causales. Segundo camino independiente (barras de 1 minuto por `groupby`) para ancho y minuto del primer cruce; cualquier discrepancia se reporta como `second_path_disagreements`.
 - Costo de ejecucion: de los ticks del dataset (bid/ask en la fila del trade, con la cotizacion vieja como limite declarado); la cotizacion L1 continua de `edgelab-l2-es` no se usa en 0A.
+
+## 11. Enmienda A1 (2026-10-17): `outside_regular` no es una bandera RTH utilizable
+La primera corrida de 0A (`edgelab-orb-f0a-v1`, version 1) descarto **todas** las sesiones por la guarda de primer print (0 sesiones validas, sin ningun resultado). Un diagnostico (`edgelab-orb-diag-rth-v1`) mostro la causa:
+en `edgelab-liquid-ticks-20261014`, `outside_regular` vale 0 en **toda** la sesion Globex (18:00 ET del dia anterior a 17:00 ET), por lo que no marca el RTH. La guarda funciono como corresponde.
+Correccion unica: **RTH se define por reloj** (09:30 a 16:00 ET del `trade_date`, con DST); el resto de definiciones y criterios no cambia. No se miro ningun resultado de mercado en la corrida fallida.
+**Consecuencia fuera de ORB (registrada en `EXEC_PASIVA_ES_MEDIDO_Y_NO_MEDIDO.md`):** el contraste S3 de F0 ("primera media hora vs resto") uso `outside_regular == 0` y, por lo tanto, midio la primera media hora tras las **18:00 ET (apertura Globex)**, no la apertura de las 09:30. Su resultado (sin efecto, p = 0,47) no habla de la apertura de Nueva York.
