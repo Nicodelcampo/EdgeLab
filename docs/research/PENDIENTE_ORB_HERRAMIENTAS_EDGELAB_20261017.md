@@ -10,3 +10,5 @@ Para retomarla hace falta, antes de cualquier medicion:
 2. Su rendimiento base **neto de costos** y su N de operaciones (potencia/MDE).
 3. Un manifiesto pre-registrado (poblacion, una variante, nulo, criterios) y OK explicito; nada se ajusta sobre las mismas operaciones.
 Antecedente a tener en cuenta: en corredor x HFT (k34/k36/K37) esas herramientas no encontraron efecto neto de costos; el aporte mas transferible hasta ahora es de **ejecucion** (F0).
+
+**Actualizacion 2026-10-17:** la definicion de ORB, los antecedentes (EXP-043: ORB 5-min ES/NQ refutado) y la propuesta de Fase 0 estan en `ORB_FASE0_MANIFIESTO_20261017.md`. Este pendiente sigue abierto para despues de la Fase 0.
