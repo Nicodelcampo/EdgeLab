@@ -15,7 +15,8 @@ from __future__ import annotations
 import dataclasses, hashlib, json, os, re, sqlite3, subprocess, time
 from pathlib import Path
 
-HAIKU, OPUS = "haiku", "opus"
+# Versiones FIJADAS (reproducibilidad: cada llamada registra el modelo exacto). Se pueden cambiar por configuración (`modelos`).
+HAIKU, SONNET, OPUS = "claude-haiku-5-5", "claude-sonnet-5-5", "claude-opus-5-5"
 SECRET = re.compile(r"(KGAT_|gho_|ghp_|github_pat_|sk-ant-|BEGIN [A-Z ]*PRIVATE KEY|KAGGLE_KEY|password|passwd|secret)", re.I)
 LOCAL_PATH = re.compile(r"(^|[\s'\"])(/(etc|home|opt|var|root|mnt)/|[A-Za-z]:[\\/])")
 PRIVATE_KEYS = {"holdout", "private", "d2", "secrets", "credentials", "token"}
@@ -39,11 +40,32 @@ ROLES = {
     "proponente": dict(model=OPUS, daily_cap=6, schema=_obj({
         "familia": S, "mecanismo": S, "prediccion": S, "refutacion": S,
         "parametros_libres": {"type": "array", "maxItems": 3, "items": S}, "refs": {"type": "array", "maxItems": 10, "items": S}}),
-        system="Proponés UNA familia de hipótesis falsable con a lo sumo 3 parámetros libres, usando sólo primitivas del registro recibido. Sin código."),
+        system="Proponés UNA familia de hipótesis falsable con a lo sumo 3 parámetros libres, usando sólo primitivas del registro recibido. Sin código. Ponderá TODO el paquete: tablero, fichas del research propio, del cerebro y de papers; citá en refs las fichas que usaste (su campo ref). Lo ya medido o retirado no se repropone; los papers no son evidencia propia."),
     "revisor": dict(model=OPUS, daily_cap=10, schema=_obj({
         "decision": {"enum": ["PROMOTE", "KILL", "DERIVE"]}, "razon": S, "regla_nueva": S}),
-        system="Adjudicás una familia con métricas públicas. Sos independiente del proponente. Ante la duda, KILL o DERIVE, nunca PROMOTE."),
+        system="Adjudicás una familia con métricas públicas. Sos independiente del proponente. Si vienen antecedentes (research propio y papers del proyecto, con ref), contrastá el borrador con ellos: si repite algo ya medido o muerto, o contradice un resultado propio sin explicarlo, KILL. Criterios del dueño: macro antes que micro (la fricción mata lo chico); un edge condicionado a régimen vale si el régimen se detecta en tiempo real y está pre-registrado; preferí lo que diversifica una cartera de varias estrategias. Ante la duda, KILL o DERIVE, nunca PROMOTE."),
+    # Segunda opinión SÓLO ante un PROMOTE del revisor: otro modelo, otra consigna, sin ver la razón del primero.
+    "revisor2": dict(model=SONNET, daily_cap=10, schema=_obj({
+        "decision": {"enum": ["PROMOTE", "KILL", "DERIVE"]}, "razon": S, "riesgo_principal": S}),
+        system="Sos un segundo revisor escéptico e independiente. Recibís un pre-registro, métricas públicas y antecedentes del proyecto. Buscá activamente por qué NO debería lanzarse: repetición de algo ya medido, multiplicidad excesiva, fricción que gana, sesgo de selección, look-ahead. Sólo PROMOTE si no encontrás un motivo concreto. Ante la duda, KILL."),
+    # Auditor post-corrida: compara lo corrido contra lo pre-registrado. Los chequeos mecánicos ya vienen hechos.
+    "auditor": dict(model=SONNET, daily_cap=20, schema=_obj({
+        "veredicto": {"enum": ["CONFORME", "DESVIO", "SOSPECHA_FUGA"]},
+        "desvios": {"type": "array", "maxItems": 10, "items": S}, "razon": S}),
+        system="Auditás una corrida terminada contra su pre-registro. Recibís el texto del pre-registro, la especificación lanzada, la decisión numérica y los chequeos mecánicos. Marcá DESVIO si se corrió algo distinto de lo pre-registrado (pruebas no planeadas, otra métrica, otro período, otra regla de decisión) y SOSPECHA_FUGA si algo sugiere uso de datos del holdout o de información futura. No reinterpretes los números ni opines sobre si el efecto es interesante."),
+    # Abogado del diablo: sólo sobre hallazgos (hit). Propone la explicación no-edge más plausible y cómo refutarla.
+    "abogado": dict(model=OPUS, daily_cap=6, schema=_obj({
+        "explicacion_alternativa": S, "tipo": {"enum": ["artefacto", "look_ahead", "costos", "multiplicidad", "regimen", "datos", "otro"]},
+        "prueba_refutadora": S, "gravedad": {"enum": ["baja", "media", "alta"]}}),
+        system="Recibís un hallazgo exploratorio (pasó Holm) con su pre-registro y antecedentes. Formulá la explicación NO-edge más plausible (artefacto de microestructura, look-ahead, costos, multiplicidad, régimen, datos) y la prueba concreta y barata que la refutaría. No digas si es un edge."),
 }
+
+
+def configurar_modelos(modelos: dict | None) -> None:
+    """Permite fijar otras versiones desde la configuración: {"revisor2": "claude-sonnet-5-5", ...}. Rol desconocido = error."""
+    for rol, m in (modelos or {}).items():
+        if rol not in ROLES: raise ValueError(f"rol desconocido en modelos: {rol}")
+        ROLES[rol]["model"] = str(m)
 
 
 class UnsafeInput(ValueError):

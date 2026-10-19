@@ -57,6 +57,8 @@ MBT = InstrumentSpec(symbol="MBT", tick_size=5.0, tick_value=0.5, multiplier=0.1
 MES = InstrumentSpec(symbol="MES", tick_size=0.25, tick_value=1.25, multiplier=5.0)
 MNQ = InstrumentSpec(symbol="MNQ", tick_size=0.25, tick_value=0.5, multiplier=2.0)
 MYM = InstrumentSpec(symbol="MYM", tick_size=1.0, tick_value=0.5, multiplier=0.5)
+# MGC — Micro Gold: 10 oz, tick 0.1 = USD 1 (catalog.json de datasets).
+MGC = InstrumentSpec(symbol="MGC", tick_size=0.1, tick_value=1.0, multiplier=10.0)
 
 INSTRUMENT_SPECS: dict[str, InstrumentSpec] = {
     "6E": SIX_E,
@@ -71,6 +73,7 @@ INSTRUMENT_SPECS: dict[str, InstrumentSpec] = {
     "MES": MES,
     "MNQ": MNQ,
     "MYM": MYM,
+    "MGC": MGC,
 }
 
 

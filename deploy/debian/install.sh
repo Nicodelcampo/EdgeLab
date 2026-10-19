@@ -1,15 +1,17 @@
 #!/usr/bin/env bash
 # Instala el autopilot en un Debian 12+ (como root). No instala credenciales: ver LEEME.md (setup_kaggle_credentials.sh y deploy key).
-# Variables opcionales: REPO_URL, CODE_BRANCH (rama de código a seguir; por defecto la rama de trabajo actual del proyecto).
+# Obligatoria: CODE_REF = sha o tag REVISADO que va a correr el servicio (queda fijado; cambiarlo es `update.sh <ref>`).
+# Opcional: REPO_URL.
 set -euo pipefail
 REPO_URL=${REPO_URL:-https://github.com/Nicodelcampo/EdgeLab.git}
-CODE_BRANCH=${CODE_BRANCH:-feat/agente-sv1-consolidacion}
+: "${CODE_REF:?definí CODE_REF=<sha o tag revisado> (el servicio nunca corre la punta de una rama)}"
 H=/opt/edgelab; S=/var/lib/edgelab-autopilot
 apt-get update -qq && apt-get install -y -qq git python3-venv python3-pip curl ca-certificates
 id edgelab >/dev/null 2>&1 || useradd --system --create-home --home-dir $H --shell /usr/sbin/nologin edgelab
 install -d -o edgelab -g edgelab $S /etc/edgelab
 # 1) código (solo fast-forward)
-[ -d $H/EdgeLab ] || sudo -u edgelab git clone --branch "$CODE_BRANCH" "$REPO_URL" $H/EdgeLab
+[ -d $H/EdgeLab ] || sudo -u edgelab git clone "$REPO_URL" $H/EdgeLab
+(cd $H/EdgeLab && sudo -u edgelab git fetch -q origin && sudo -u edgelab git checkout -q --detach "$CODE_REF" && git rev-parse HEAD)
 # 2) estado (otro clon, rama autopilot/state; único escritor)
 if [ ! -d $S/state ]; then
   sudo -u edgelab git clone "$REPO_URL" $S/state
@@ -25,11 +27,18 @@ if [ ! -x $H/.local/bin/claude ]; then sudo -u edgelab env HOME=$H bash -c 'curl
 install -d -o edgelab -g edgelab -m 0700 $H/.claude
 # 4) configuración (no pisa lo existente)
 [ -f /etc/edgelab/autopilot.json ] || install -o edgelab -g edgelab -m 0644 $H/EdgeLab/deploy/debian/autopilot.example.json /etc/edgelab/autopilot.json
-[ -f /etc/edgelab/candidates.json ] || echo '[]' | install -o edgelab -g edgelab -m 0644 /dev/stdin /etc/edgelab/candidates.json
+# candidatas y promociones viven en el estado (escribibles por el servicio endurecido y sincronizadas a autopilot/state)
+C=$S/state/autopilot_runs/candidates.json
+if [ ! -f $C ]; then
+  if [ -f /etc/edgelab/candidates.json ]; then install -o edgelab -g edgelab -m 0644 /etc/edgelab/candidates.json $C && mv /etc/edgelab/candidates.json /etc/edgelab/candidates.json.migrado
+  else echo '[]' | install -o edgelab -g edgelab -m 0644 /dev/stdin $C; fi
+fi
+install -d -o edgelab -g edgelab $S/backups
 [ -f /etc/edgelab/autopilot.env ] || install -o edgelab -g edgelab -m 0600 /dev/null /etc/edgelab/autopilot.env
 # 5) systemd
-cp $H/EdgeLab/deploy/debian/edgelab-autopilot{,-generate}.{service,timer} /etc/systemd/system/ 2>/dev/null || true
-cp $H/EdgeLab/deploy/debian/edgelab-propfirm-refresh.service $H/EdgeLab/deploy/debian/edgelab-propfirm-refresh.timer /etc/systemd/system/
-cp $H/EdgeLab/deploy/debian/edgelab-autopilot.service $H/EdgeLab/deploy/debian/edgelab-autopilot.timer $H/EdgeLab/deploy/debian/edgelab-autopilot-generate.service $H/EdgeLab/deploy/debian/edgelab-autopilot-generate.timer /etc/systemd/system/
+for u in edgelab-autopilot.service edgelab-autopilot.timer edgelab-autopilot-generate.service edgelab-autopilot-generate.timer \
+         edgelab-propfirm-refresh.service edgelab-propfirm-refresh.timer edgelab-watchdog.service edgelab-watchdog.timer edgelab-alerta@.service; do
+  cp $H/EdgeLab/deploy/debian/$u /etc/systemd/system/
+done
 systemctl daemon-reload
 echo "Instalado. Siguiente: LEEME.md (credencial de Kaggle, deploy key, doctor, primer ciclo en modo propose)."

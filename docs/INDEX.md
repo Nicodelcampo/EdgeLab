@@ -16,10 +16,11 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/amendments` | 6 |
 | `docs/audit` | 4 |
 | `docs/audits` | 63 |
-| `docs/autopilot` | 7 |
+| `docs/autopilot` | 11 |
 | `docs/bridge` | 1 |
 | `docs/campaigns` | 9 |
 | `docs/data_catalog` | 11 |
+| `docs/decisions` | 1 |
 | `docs/foundation` | 2 |
 | `docs/incidents` | 16 |
 | `docs/infra` | 22 |
@@ -28,7 +29,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 610 |
+| `docs/research` | 654 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 12 |
@@ -37,9 +38,9 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 
 | Familia | Docs | Ultimo | Fecha | Estado |
 |---|---:|---|---|---|
-| REVISION | 6 | `REVISION_RESULTADOS_K34_CORREDOR_X_HFT_20261016.md` | 2026-10-16 | REVISIÓN — lectura del informe (las tres copias .docx son el mismo documento) y  |
+| REVISION | 7 | `REVISION_RESULTADOS_K34_CORREDOR_X_HFT_20261016.md` | 2026-10-16 | REVISIÓN — lectura del informe (las tres copias .docx son el mismo documento) y  |
 | INFORME | 6 | `INFORME_EXTERNO_K32_REPLICACION_RRE_20261016.md` | 2026-10-16 | PROVISIONAL (informe externo, no verificado en el repo; ver AUDITORIA_K32_REPLIC |
-| HANDOFF | 15 | `HANDOFF_CORREDOR_X_HFT_PARA_GEMINI_20261016.md` | 2026-10-16 | VIGENTE (instrucciones de trabajo; la corrida de desenlaces NO está autorizada t |
+| HANDOFF | 16 | `HANDOFF_CORREDOR_X_HFT_PARA_GEMINI_20261016.md` | 2026-10-16 | VIGENTE (instrucciones de trabajo; la corrida de desenlaces NO está autorizada t |
 | DEFINICION | 1 | `DEFINICION_INICIAL_CORREDOR_X_HFT_20261016.md` | 2026-10-16 | BORRADOR — definición inicial para que Nico y Gemini la diseñen en detalle y la  |
 | CORREDOR | 1 | `CORREDOR_EMA_MEDIDO_Y_NO_MEDIDO.md` | 2026-10-16 | VIGENTE (registro vivo; se actualiza en el mismo commit que cualquier resultado  |
 | CENSO | 4 | `CENSO_CORREDOR_X_HFT_RESULTADOS_20261016.md` | 2026-10-16 | MEDIDO (censo; sin desenlaces ni retornos) |
@@ -60,7 +61,9 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | INVENTARIO | 1 | `INVENTARIO_LINEA_MAIN_20261014.md` | 2026-10-14 | VIGENTE (unificación ejecutada el 2026-10-14; ver docs/DECISIONES_20261014.md) |
 | GC | 1 | `GC_PRESSURE_PROGRESS_V2_MANIFIESTO_20261014.md` | 2026-10-14 | fase RTH (08:30–15:00 CT) / OTHER, y dirección del flujo previo (±1). Celdas fas |
 | AVZP2 | 10 | `AVZP2_RACIMO_REPLICA_ES_NQ_RESULTADOS_20261014.md` | 2026-10-14 | PROVISIONAL. Todo lo de esta acta se calculó sobre la release liquid_tick_v1 v3, |
-| GEX1 | 3 | `GEX1_ERRATA_I2D_20261012.md` | 2026-10-12 | - |
+| PROPFIRM | 3 | `PROPFIRM_LUCID_REFERENCIAS_20261013.md` | 2026-10-13 | - |
+| EXTERNAL | 1 | `EXTERNAL_FINDING_MNQ_PHENOMENA_V4_20261013.md` | 2026-10-13 | - |
+| GEX1 | 5 | `GEX1_ERRATA_I2D_20261012.md` | 2026-10-12 | - |
 | AVZVOL | 21 | `AVZVOL_VENCIMIENTOS_Y_FUENTE_20261011.md` | 2026-10-11 | - |
 | LITCHECK | 1 | `LITCHECK_SSRN_20261009.md` | 2026-10-09 | PRE_REGISTERED_EXPLORATORY (hipótesis, métricas y reglas fijadas en |
 | KAGGLE | 4 | `KAGGLE_RUN_HARNESS_GAPS_20261009.md` | 2026-10-09 | GAPS_IDENTIFIED → se actualiza al final (sección 4) con lo que se implementó. |
@@ -69,13 +72,17 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | VTD | 8 | `VTD_VOL1_RESULTADOS_20261006.md` | 2026-10-06 | - |
 | REGIMEN | 2 | `REGIMEN_ETAPA0_RESULTADOS_20261006.md` | 2026-10-06 | - |
 | PENDIENTE | 1 | `PENDIENTE_AVCL_SIM_NQ5T_20261006.md` | 2026-10-06 | OBSERVACIÓN VISUAL, no evidencia. Registrada para no perderla; requiere prueba f |
-| IDEA | 10 | `IDEA_LUXIMB_TENDENCIA_DESANDADA_20261006.md` | 2026-10-06 | PENDIENTE, no ejecutada. Pertenece a la familia LUX-IMB (H-COND-1_LUX-IMB_PROTOC |
+| IDEA | 11 | `IDEA_LUXIMB_TENDENCIA_DESANDADA_20261006.md` | 2026-10-06 | PENDIENTE, no ejecutada. Pertenece a la familia LUX-IMB (H-COND-1_LUX-IMB_PROTOC |
 | HFTV4 | 2 | `HFTV4_RETORNO_RESULTADOS_20261006.md` | 2026-10-06 | - |
+| GEX | 3 | `GEX_FUENTES_Y_EVIDENCIA_20261006.md` | 2026-10-06 | INVESTIGACIÓN, nada ejecutado sobre retornos. Complementa la información que Nic |
 | EXPLO | 1 | `EXPLO_ASIMETRIA_EXCURSION_20261006.md` | 2026-10-06 | - |
 | ESTADOS | 1 | `ESTADOS_MERCADO_LITERATURA_Y_DISENO_20261006.md` | 2026-10-06 | - |
 | EDGEREPLICA | 1 | `EDGEREPLICA_OOS_POST_PUBLICACION_PROTOCOLO_20261006.md` | 2026-10-06 | SUPERADO 2026-10-06. Nico decidió tratar esto como exploración, sin custodia de  |
 | AVCL | 25 | `AVCL_VOL3_ROBUSTEZ_MANIFIESTO_20261006.md` | 2026-10-06 | - |
+| GEX1B | 2 | `GEX1B_RESULTADO_20261005.md` | 2026-10-05 | - |
 | CANONICAL | 1 | `CANONICAL_DATA_AUDIT_20261004.md` | 2026-10-04 | - |
+| FUNNEL | 1 | `FUNNEL_AUDIT_20261003.md` | 2026-10-03 | - |
+| CUDA | 2 | `CUDA_PARITY_RESULT_20261003.md` | 2026-10-03 | - |
 | RESULTADO | 38 | `RESULTADO_MNQ_L2_V2_PRIMERA_SESION_TARGETFREE_20260930.md` | 2026-09-30 | - |
 | PREPARACION | 2 | `PREPARACION_MNQ_ESCALONADAS_L2_20260930.md` | 2026-09-30 | PREPARADO / NO MEDIDO EN MNQ REAL. R02/I-3; no rescate de climas. |
 | ENTREGA | 2 | `ENTREGA_LOCAL_L2_GC_ES_20260930.md` | 2026-09-30 | - |
@@ -91,12 +98,6 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | DECISION | 4 | `DECISION_PROVEEDOR_CANONICO_NT8_20260928.md` | 2026-09-28 | - |
 | DISENO | 3 | `DISENO_IPC_ABANICO_DE_MECANISMOS_20260927.md` | 2026-09-27 | DISEÑO. Nada medido con esto. Pedido enfático de Nico: iterar sobre todas las ma |
 | TBZX | 1 | `TBZX_R3_ACTA_CIERRE_20260926.md` | 2026-09-26 | TBZX_R3_CERRADA con el alcance de abajo. Abr–jun (confirmación) y holdout intact |
-| REGISTRO | 1 | `REGISTRO_FAMILIA_ESPEJO_IND_20260926.md` | 2026-09-26 | REGISTRO + PROPUESTA DE DEFINICIÓN. No hay código. Se implementa sólo después de |
-| PROPFIRM | 2 | `PROPFIRM_REGLAS_DETALLADAS_20260926.md` | 2026-09-26 | herramienta y datos de reglas. No corre búsquedas nuevas sobre retornos; cruza v |
-| PROMPT | 2 | `PROMPT_SESION_LOCAL_INDICADOR_ESPEJO_20260926.md` | 2026-09-26 | - |
-| IVC | 2 | `IVC_RESULTADOS_20260926.md` | 2026-09-26 | - |
-| HFT | 8 | `HFT_REVERSION_EXPLORATORIA_MNQ_20260926.md` | 2026-09-26 | exploratorio y descriptivo. No es una búsqueda sobre P&L: no hay entradas, costo |
-| ETIQUETADO | 1 | `ETIQUETADO_PICOS_Y_ML_20260926.md` | 2026-09-26 | herramienta lista; sin etiquetas todavía. Idea de Nico: él marca en el visor dón |
 
 ## Superados (7)
 

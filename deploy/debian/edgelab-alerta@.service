@@ -1,0 +1,10 @@
+[Unit]
+Description=EdgeLab: alerta por falla de %i
+
+[Service]
+Type=oneshot
+User=edgelab
+Group=edgelab
+WorkingDirectory=/opt/edgelab/EdgeLab
+EnvironmentFile=-/etc/edgelab/autopilot.env
+ExecStart=/opt/edgelab/venv/bin/python tools/autopilot_watchdog.py --state /var/lib/edgelab-autopilot/state/autopilot_runs --falla %i

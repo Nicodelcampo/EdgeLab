@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""CPU exploratory outcome runner with a supplied frozen split.
+"""CPU exploratory outcome runner with a supplied frozen split (+ optional EF0 custody and E4 multiplicity).
 
 This is not an input-file/features firewall or authority to open market data.
 """
@@ -22,6 +22,14 @@ def main():
     parser.add_argument("--backend", choices=["cpu"], default="cpu")
     parser.add_argument("--max-hold-bars", type=int, default=200)
     parser.add_argument("--max-matrix-bytes", type=int, default=512*1024*1024)
+    parser.add_argument("--min-trades", type=int, default=30)
+    parser.add_argument("--holdout-first-date", type=int, default=None, help="abort if any trade date is >= this value")
+    parser.add_argument("--campaign-id", default=None)
+    parser.add_argument("--trial-registry", default=None, help="hash-chained global trial counter (required for --e4)")
+    parser.add_argument("--seen-ledger", default=None)
+    parser.add_argument("--e4", action="store_true", help="also run EF3/EF4: max-null under randomized direction, plateau, global trial count")
+    parser.add_argument("--nsims", type=int, default=500)
+    parser.add_argument("--seed", type=int, default=20261004)
     args = parser.parse_args()
     root = Path(args.arrays)
     load = lambda name: np.load(root / f"{name}.npy", mmap_mode="r", allow_pickle=False)
@@ -41,9 +49,14 @@ def main():
     runner = FunnelRunner(trade_dates=trade_dates, signal_idx=load("signal_bar_idx"),
                           signal_dir=load("signal_dir"), high=load("high_ticks"), low=load("low_ticks"),
                           bid_open=load("bid_open_ticks"), ask_open=load("ask_open_ticks"),
-                          configs=configs, out_dir=args.out, backend="cpu", frozen_split=frozen)
-    print(json.dumps(runner.run_e1_e3(max_hold_bars=args.max_hold_bars,
+                          configs=configs, out_dir=args.out, backend="cpu", frozen_split=frozen,
+                          holdout_first_date=args.holdout_first_date, campaign_id=args.campaign_id,
+                          trial_registry=args.trial_registry, seen_ledger=args.seen_ledger)
+    print(json.dumps(runner.run_e1_e3(min_trades=args.min_trades, max_hold_bars=args.max_hold_bars,
                                      max_matrix_bytes=args.max_matrix_bytes), indent=2, allow_nan=False))
+    if args.e4:
+        print(json.dumps(runner.run_e4(n_sims=args.nsims, seed=args.seed, min_trades=args.min_trades,
+                                       max_hold_bars=args.max_hold_bars, max_matrix_bytes=args.max_matrix_bytes), indent=2, default=str))
 
 if __name__ == "__main__":
     main()

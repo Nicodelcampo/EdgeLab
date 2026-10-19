@@ -124,3 +124,13 @@ def iter_screen_batches(sig, dirs, high, low, bid_open, ask_open, sls, tps,
         if matrix.nbytes > max_matrix_bytes:
             raise RuntimeError("screen backend exceeded matrix budget")
         yield first, last, matrix, dev
+
+
+def kernel_manifest(backend):
+    """Identity of the screening kernel: id, source hash, precision, determinism. Logged with every run."""
+    import hashlib,inspect
+    if backend=="gpu":
+        src=_GPU_SRC;prec="float32"
+    else:
+        src=inspect.getsource(_cpu.py_func);prec="float64"
+    return {"kernel_id":"edgelab_funnel_screen","kernel_version":"v1","backend":backend,"precision":prec,"deterministic":True,"seeded":False,"source_sha256":hashlib.sha256(src.encode()).hexdigest()}

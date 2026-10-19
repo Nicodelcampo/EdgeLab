@@ -42,6 +42,13 @@ def stage_window(trade_dates, signal_idx, stage_dates, max_hold_bars=200):
 
 
 def bounded_batches(*args, **kwargs):
-    """Compatibility name; the public iterator owns one-matrix budgeting."""
+    """Compatibility name; the public iterator owns one-matrix budgeting.
+    Defensive check kept from EF0: a backend that returns a matrix above the budget is rejected, never trusted."""
     from .screen import iter_screen_batches
-    yield from iter_screen_batches(*args, **kwargs)
+    budget = kwargs.get("max_matrix_bytes", 512*1024*1024)
+    if args and len(args[0]) * 8 > budget:
+        raise ValueError("matrix budget cannot fit one float64 column; chunk signals explicitly")
+    for start, end, matrix, device in iter_screen_batches(*args, **kwargs):
+        if matrix.nbytes > budget:
+            raise RuntimeError("screen backend exceeded matrix budget")
+        yield start, end, matrix, device

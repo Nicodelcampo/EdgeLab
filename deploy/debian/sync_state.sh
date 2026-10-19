@@ -5,8 +5,12 @@
 set -euo pipefail
 STATE=/var/lib/edgelab-autopilot/state
 cd "$STATE"
+# respaldo diario de la base SQLite (no va a git): copia consistente con la API de backup, se conservan 14 días
+B=/var/lib/edgelab-autopilot/backups; mkdir -p "$B"
+[ -f autopilot_runs/runs.sqlite ] && [ ! -f "$B/runs-$(date -u +%F).sqlite" ] && /opt/edgelab/venv/bin/python -c "import sqlite3,sys;s=sqlite3.connect(sys.argv[1]);d=sqlite3.connect(sys.argv[2]);s.backup(d);d.close()" autopilot_runs/runs.sqlite "$B/runs-$(date -u +%F).sqlite" || true
+ls -1t "$B"/runs-*.sqlite 2>/dev/null | tail -n +15 | xargs -r rm -f
 [ -n "$(git status --porcelain)" ] || exit 0
 # lista blanca: solo los archivos de estado conocidos (no logs arbitrarios ni la base SQLite, que se respalda aparte)
-for f in alpha.json evidence_runtime.jsonl trial_registry.jsonl autopilot.log.jsonl heartbeat.json promociones.jsonl sala_outbox.jsonl sala_aprobaciones.jsonl mejoras.jsonl; do [ -f autopilot_runs/$f ] && git add autopilot_runs/$f; done
+for f in alpha.json evidence_runtime.jsonl trial_registry.jsonl autopilot.log.jsonl heartbeat.json promociones.jsonl sala_outbox.jsonl sala_aprobaciones.jsonl mejoras.jsonl candidates.json propuestas.jsonl alertas.jsonl biblioteca_manifiesto.json edge_brain_ledger.jsonl auditorias.jsonl pedidos_humano.jsonl; do [ -f autopilot_runs/$f ] && git add autopilot_runs/$f; done
 git -c user.name=edgelab-autopilot -c user.email=autopilot@localhost commit -qm "autopilot: estado $(date -u +%FT%TZ)" || exit 0
 git push -q origin HEAD:autopilot/state || echo "sync_state: no se pudo hacer push (¿deploy key?); el estado queda local" >&2

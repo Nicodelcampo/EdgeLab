@@ -33,8 +33,9 @@ def draft(c):
 class Rev:
     def __init__(self, decision): self.decision, self.calls = decision, 0
     def call(self, role, payload):
-        assert role == "revisor" and "borrador" in payload; self.calls += 1
-        return {"status": "OK", "output": {"decision": self.decision, "razon": "x", "regla_nueva": ""}}
+        assert role in ("revisor", "revisor2") and "borrador" in payload; self.calls += 1
+        d = self.decision2 if role == "revisor2" and hasattr(self, "decision2") else self.decision
+        return {"status": "OK", "output": {"decision": d, "razon": "x", "regla_nueva": ""}}
 
 
 def run(tmp_path, cands, decision="PROMOTE", **kw):
@@ -90,3 +91,32 @@ def test_low_friction_candidate_goes_first(tmp_path):
     caro = cand("NQ-1"); caro.score = 0.3; caro.cfg = dict(CFG, inst="NQ", mov_esperado_ticks=9)   # ratio 1,46: peso 0,49
     out, *_ = run(tmp_path, [caro, barato])
     assert out[0] == ("ES-1", "PROMOVIDA")
+
+
+def test_publica_prereg_en_rama_y_sin_remoto_rechaza(tmp_path):
+    # sin remoto: el push falla -> la candidata NO entra (un pre-registro no publicado no es trazable)
+    out, r, cp, rows, _ = run(tmp_path, [cand("SLOT-9")], publicar=True)
+    assert out == [("SLOT-9", "RECHAZADA_NO_PUBLICADA")] and not cp.exists()
+    # con remoto: queda en autopilot/prereg/<run_id>, con antecedentes registrados y bajo el lock del estado
+    t2 = tmp_path / "b"; t2.mkdir(); bare = t2 / "remote.git"; subprocess.run(["git", "init", "-q", "--bare", str(bare)], check=True)
+    r2 = repo(t2); subprocess.run(["git", "remote", "add", "origin", str(bare)], cwd=r2, check=True)
+    cp2, log2 = t2 / "candidates.json", t2 / "promociones.jsonl"
+    out = promover_auto([cand("SLOT-8")], draft_fn=draft, to_runspec=to_rs, runner=Rev("PROMOTE"), repo=r2, candidates_path=cp2, log_path=log2,
+                        publicar=True, lock_path=t2 / ".lock", antecedentes_fn=lambda c: [{"ref": "docs/x.md#L1", "pasaje": "ya medido"}])
+    assert out == [("SLOT-8", "PROMOVIDA")]
+    ramas = subprocess.run(["git", "branch", "--list"], cwd=bare, capture_output=True, text=True).stdout
+    row = json.loads(log2.read_text().splitlines()[-1])
+    assert "autopilot/prereg/slot-8" in ramas and row["prereg_rama"] == "autopilot/prereg/slot-8" and row["antecedentes"] == ["docs/x.md#L1"]
+
+
+def test_doble_revision_segundo_kill_rechaza(tmp_path):
+    r = repo(tmp_path); cp = tmp_path / "candidates.json"; log = tmp_path / "promociones.jsonl"
+    rev = Rev("PROMOTE"); rev.decision2 = "KILL"
+    out = promover_auto([cand("SLOT-9")], draft_fn=draft, to_runspec=to_rs, runner=rev, repo=r, candidates_path=cp, log_path=log)
+    assert out == [("SLOT-9", "RECHAZADA_REVISOR2")] and not cp.exists() and rev.calls == 2
+    assert json.loads(log.read_text().splitlines()[-1])["revisor2"]["decision"] == "KILL"
+
+
+def test_revisor2_no_se_llama_si_el_primero_mata(tmp_path):
+    out, _, _, _, rev = run(tmp_path, [cand("SLOT-9")], decision="KILL")
+    assert out == [("SLOT-9", "RECHAZADA_REVISOR")] and rev.calls == 1

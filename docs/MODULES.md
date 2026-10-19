@@ -20,14 +20,17 @@ Capas (una dependencia nunca apunta a una capa superior):
 | 0 | `nt8-capture` | Captura NT8 | core | Indicadores y AddOns C# que exportan ticks, barras, zonas y L2 desde NinjaTrader 8; lectores de exports. | - | `docs/nt8_bridge.md` | `tests/data` |
 | 1 | `config-core` | Configuracion e instrumentos | core | Rutas portables, especificaciones de contrato (tick, valor, comisiones) y configuracion unica. Punto unico de verdad para parametros de instrumento. | - | `docs/research/HANDOFF_2026-10-14_DATOS_L2_Y_INTEGRACION.md` | `tests/foundation` |
 | 1 | `sessions` | Sesiones y regimenes | core | Ventanas intradia, matrices de sesion y estado de regimen causal. | config-core | `docs/research/cme_equity_index_calendar_20260902` | `tests/data` |
+| 2 | `data-catalog` | Catálogo de datos (escaneo y construcción) | experimental | Escanea los datasets de Kaggle/locales y construye el catálogo y el resolver de sesiones aprobadas. | data-custody | `docs/data_catalog/README.md` | **sin tests** |
 | 2 | `data-custody` | Datos y custodia | core | Contratos continuos, regimen de contrato, calendario CME, compuertas de sesion y de datos de research (fail-closed), identidad de eventos, L2. | config-core, sessions, nt8-capture | `docs/nt8_bridge.md` | `tests/data` |
 | 2 | `kaggle-custody` | Custodia y ejecucion en Kaggle | core | Identidad, integridad, inventario, sellado y lectura en streaming de datasets Kaggle; publicacion y etiquetado del espacio. | config-core | `docs/infra/KAGGLE_BORRADO_CANDIDATOS_20261014.md` | `tests/data` |
 | 2 | `liquid-release` | Release liquida de ticks | core | Construye, verifica, audita y publica la release canonica liquid_tick_v1: un contrato liquido por sesion, doble reloj, sin holdout, con manifiesto y SHA-256. Lector con preflight de ambos relojes. Incluye el auditor independiente de contenido (originado en el agente de Notion, commit 5aac8bb3) que corre dentro de Kaggle y emite un recibo agregado. | data-custody, sessions, kaggle-custody | `docs/infra/LIQUID_RELEASE_20261014.md` | `tests/data`, `tests/test_liquid_release_payload_audit.py`, `tests/test_daily_data_health.py` |
 | 2 | `research-data-gate` | Compuerta de datos de research (linea main) | core | Compuerta opt-in fail-closed para lectores de datos de research y guard de acceso Kaggle; los lectores legacy aun no estan cableados. Traído de main el 2026-10-14. | data-custody | `docs/research/INVENTARIO_LINEA_MAIN_20261014.md` | **sin tests** |
 | 3 | `bridge-kernels` | Barras, footprint e indicadores (paridad con NT8) | core | Construye barras y footprint canonicos, kernels de indicadores en Python y verifica paridad contra los oraculos de NT8. | data-custody, sessions | `docs/nt8_indicator_parity_contract.md` | `tests/bridge` |
 | 4 | `context` | Contexto causal | experimental | Constructores de contexto target-free (HMM, compuerta L2) para condicionar mediciones. | bridge-kernels, data-custody | `docs/research/PROTOCOLO_CONTEXTOS_L2_NQ_20260928.md` | `tests/research` |
+| 4 | `discovery` | Descubrimiento por familias (escaneo con nulo de máximo) | experimental | Barrido de familias de features con nulo de máximo por sesión (CPU/GPU), réplica cronológica D0/D1 y D2 sellado. | stats, funnel | `edgelab/discovery/README.md` | `tests/test_discovery.py` |
+| 4 | `equivalence` | Equivalencia CFD/spot contra futuros | experimental | Mide la equivalencia entre proxies (Dukascopy) y futuros CME para usarlos como complemento de potencia. | data-custody | `edgelab/equivalence/README.md` | `tests/test_equivalence.py` |
 | 4 | `external-models` | Modelos externos | experimental | Features de modelos preentrenados (Kronos y sucesores) con causalidad y almacen point-in-time. | data-custody | `docs/external_model_contract.md` | `tests/external` |
-| 4 | `funnel` | Funnel exploratorio CPU (linea main) | experimental | Screening exploratorio de CPU con separacion de etapas D0/D1; paridad GPU pendiente. Traído de main el 2026-10-14 (PR #63-#106, linea AVZVOL). | stats | `docs/research/INVENTARIO_LINEA_MAIN_20261014.md` | **sin tests** |
+| 4 | `funnel` | Funnel exploratorio CPU (linea main) | experimental | Screening exploratorio de CPU con separacion de etapas D0/D1; paridad GPU pendiente. Traído de main el 2026-10-14 (PR #63-#106, linea AVZVOL). | stats | `docs/research/INVENTARIO_LINEA_MAIN_20261014.md` | `tests/test_funnel.py`, `tests/test_funnel_isolation.py`, `tests/test_funnel_multiplicity.py`, `tests/test_funnel_stage_integration.py` |
 | 4 | `gex` | GEX (exposicion gamma) | experimental | Reconstruccion diaria de niveles de gamma para condicionar regimenes. | data-custody | `docs/research/GEX_FUENTES_Y_GATES_2026-08-13.md` | **sin tests** |
 | 4 | `research` | Embudo de investigacion | core | Campanas de medicion pre-registradas: nulos, geometria de zonas, embudos por familia, costos, potencia. Produce actas; no promueve edges por si mismo. | data-custody, bridge-kernels, stats, context | `docs/research_funnel_playbook.md` | `tests/research` |
 | 4 | `stats` | Estadistica de validacion | core | Bootstrap estacionario, estimand por cluster/sesion, efecto minimo detectable y primitivos de auditoria estadistica (DSR, MCPT, PBO). | - | `docs/edge_validation_contract.md` | `tests/stats` |
@@ -39,7 +42,7 @@ Capas (una dependencia nunca apunta a una capa superior):
 | 6 | `edge-factory` | Fabrica de hipotesis | experimental | Orquestador y esquemas para generar y registrar hipotesis con justificacion economica y condicion de refutacion. | edge-brain, config-core | `docs/HIPOTESIS_PENDIENTES.md` | `tests` |
 | 6 | `governance` | Gobernanza y documentacion | core | North Star, protocolo de documentacion, registro de edges, canal auditor, contratos de validacion y compuertas de holdout. Define las reglas; ningun modulo las sobrescribe. | - | `docs/DOCUMENTATION_PROTOCOL.md` | `tests/test_north_star_hash.py` |
 | 7 | `agent-bridge` | Puente multi-IA (Drive/Kaggle) | experimental | Permite que agentes sin red o sin datos (Gemini, Notion) pidan lecturas y kernels a la PC local por una carpeta de Drive, con politica de acciones permitidas y parches solo para revision. | kaggle-custody | `docs/research/HANDOFF_2026-10-14_DATOS_L2_Y_INTEGRACION.md` | `tests/bridge` |
-| 7 | `autopilot` | Agente autonomo (autopilot) | experimental | Ciclo autonomo: paquete de contexto y lentes para el proponente, roles LLM aislados, criterio de friccion, promocion automatica con pre-registro committeado, ejecucion en Kaggle, sala de Chaski y mejora recursiva acotada. No promueve edges: lanza y registra corridas. | kaggle-custody, research | `docs/autopilot/ARQUITECTURA.md` | `tests/test_autopilot.py`, `tests/test_autopilot_promocion.py`, `tests/test_autopilot_contexto_mejora.py`, `tests/test_autopilot_roles.py`, `tests/test_autopilot_sala.py` |
+| 7 | `autopilot` | Agente autonomo (autopilot) | experimental | Ciclo autonomo: paquete de contexto y lentes para el proponente, roles LLM aislados, criterio de friccion, promocion automatica con pre-registro committeado, ejecucion en Kaggle, sala de Chaski y mejora recursiva acotada. No promueve edges: lanza y registra corridas. Biblioteca trazable del proyecto, doble revisión, auditor post-corrida y abogado del diablo. | kaggle-custody, research | `docs/autopilot/ARQUITECTURA_MULTIAGENTE.md` | `tests/test_autopilot.py`, `tests/test_autopilot_promocion.py`, `tests/test_autopilot_contexto_mejora.py`, `tests/test_autopilot_roles.py`, `tests/test_autopilot_sala.py`, `tests/test_autopilot_conocimiento.py`, `tests/test_autopilot_auditoria.py`, `tests/test_autopilot_pedidos.py` |
 | 7 | `notion-workers` | Workers de Notion (linea main) | experimental | Integraciones de Notion (auditor y operaciones de investigacion). Traidos de main el 2026-10-14; el auditor de datos vive ademas en la rama feat/research-ops-supervisor-mvp. | - | `docs/research/INVENTARIO_LINEA_MAIN_20261014.md` | **sin tests** |
 | 7 | `viewer` | Visor | experimental | Visualizacion de barras, zonas y L2 para inspeccion humana. | bridge-kernels | `docs/research/VIEWER_UNIFICATION_PROPOSAL_20260921.md` | **sin tests** |
 
@@ -48,6 +51,7 @@ Capas (una dependencia nunca apunta a una capa superior):
 ```mermaid
 graph LR
   sessions --> config_core
+  data_catalog --> data_custody
   data_custody --> config_core
   data_custody --> sessions
   data_custody --> nt8_capture
@@ -60,6 +64,9 @@ graph LR
   bridge_kernels --> sessions
   context --> bridge_kernels
   context --> data_custody
+  discovery --> stats
+  discovery --> funnel
+  equivalence --> data_custody
   external_models --> data_custody
   funnel --> stats
   gex --> data_custody
@@ -88,12 +95,15 @@ graph LR
 - **nt8-capture** — entra: NinjaTrader 8; sale: exports de ticks, CSV de oraculo, L2 CSV.
 - **config-core** — entra: config/*.toml; sale: Config, especificaciones de instrumento.
 - **sessions** — entra: calendario de sesiones, precios; sale: matrices de sesion, estado de regimen.
+- **data-catalog** — entra: listados de Kaggle, archivos locales; sale: docs/data_catalog/RESOLVER.json, DATASETS.md.
 - **data-custody** — entra: exports NT8, calendario oficial CME; sale: series de contrato, decisiones de sesion, gates de datos.
 - **kaggle-custody** — entra: datasets Kaggle; sale: inventarios, sellos, indice del espacio.
 - **liquid-release** — entra: exports NT8 por contrato, calendario; sale: release_manifest.json, Parquet por activo, metadata/*.
 - **research-data-gate** — entra: pines SHA-256, manifiestos de campana; sale: admision de lectura.
 - **bridge-kernels** — entra: ticks, oraculos NT8; sale: barras, zonas, reportes de paridad.
 - **context** — entra: barras, L2; sale: etiquetas de contexto.
+- **discovery** — entra: arrays por sesión; sale: resultados de escaneo.
+- **equivalence** — entra: ticks/M1 de proxy y futuro; sale: informes de equivalencia.
 - **external-models** — entra: series; sale: features PIT.
 - **funnel** — entra: tablas de eventos; sale: screens exploratorios.
 - **gex** — entra: cadenas de opciones; sale: niveles GEX diarios.
