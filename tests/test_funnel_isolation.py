@@ -38,16 +38,20 @@ class IsolationTests(unittest.TestCase):
     def test_float64_budget_and_minimum_column(self):
         # Resolve the lazy relative import without importing Numba/CUDA.
         fake=types.ModuleType('fake_funnel.screen')
-        def batches(*args,**kw):
-            ns=len(args[0]);nc=len(args[6]);b=max(1,kw['max_matrix_bytes']//(ns*4))
-            for start in range(0,nc,b):
-                end=min(nc,start+b);yield start,end,np.zeros((ns,end-start),np.float64),None
-        fake.iter_screen_batches=batches
+        def make(bytes_per_cell):   # a backend that sizes batches with float32 math but returns float64 overspends
+            def batches(*args,**kw):
+                ns=len(args[0]);nc=len(args[6]);b=max(1,kw['max_matrix_bytes']//(ns*bytes_per_cell))
+                for start in range(0,nc,b):
+                    end=min(nc,start+b);yield start,end,np.zeros((ns,end-start),np.float64),None
+            return batches
+        args=(np.array([0,1]),np.array([1,-1]),*[np.ones(4,np.int32)]*4,np.array([1,2,3]),np.array([1,2,3]))
         with patch.object(iso,'__package__','fake_funnel'),patch.dict(sys.modules,{'fake_funnel.screen':fake}):
-            args=(np.array([0,1]),np.array([1,-1]),*[np.ones(4,np.int32)]*4,np.array([1,2,3]),np.array([1,2,3]))
+            fake.iter_screen_batches=make(8)
             out=list(iso.bounded_batches(*args,max_matrix_bytes=16))
             self.assertEqual([(a,b) for a,b,_,_ in out],[(0,1),(1,2),(2,3)])
             self.assertTrue(all(x.nbytes<=16 for _,_,x,_ in out))
+            fake.iter_screen_batches=make(4)
+            with self.assertRaises(RuntimeError):list(iso.bounded_batches(*args,max_matrix_bytes=16))
             with self.assertRaises(ValueError): list(iso.bounded_batches(*args,max_matrix_bytes=8))
     def test_mutating_d2_cannot_change_stage_oracle(self):
         td=np.repeat([1,2,3],8);sig=np.arange(24);w=iso.stage_window(td,sig,[2],2)
@@ -73,6 +77,7 @@ class RunnerRouteTests(unittest.TestCase):
         splits=types.ModuleType('fake_runner.splits')
         splits.make_splits=lambda td:types.SimpleNamespace(d0_dates=(1,),d1_dates=(2,),d2_dates=(3,),split_hash='synthetic')
         splits.mask_for=lambda *a,**kw:None
+        splits.validate_split=lambda split,td:split
         splits.to_dict=lambda s:dict(d0_dates=[1],d1_dates=[2],d2_dates=[3],split_hash=s.split_hash)
         artifacts=[]
         surv=types.ModuleType('fake_runner.survivors')

@@ -104,7 +104,7 @@ def test_runner_gpu_route_is_closed_without_silent_fallback(tmp_path,backend):
 
 
 def test_split_hash_is_not_permission_to_open_d2(tmp_path):
-    runner=FunnelRunner(**inputs(),configs=configs(),out_dir=tmp_path/"no")
+    runner=FunnelRunner(**inputs(),configs=configs(),out_dir=tmp_path/"no",allow_unguarded=True)  # synthetic: no frozen split
     with pytest.raises(PermissionError):runner.d2_mask(unlock_token=runner.split.split_hash)
 
 

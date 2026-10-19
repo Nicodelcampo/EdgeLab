@@ -148,8 +148,10 @@ def test_arrays_entrypoint_end_to_end(tmp_path):
     for n,v in dict(trade_date=td,signal_bar_idx=sig,signal_dir=d,high_ticks=h,low_ticks=l,bid_open_ticks=bo,ask_open_ticks=ao).items():np.save(a/f'{n}.npy',v)
     reg=tmp_path/'reg.json';reg.write_text(json.dumps({'family_id':'F','candidates':[{k:v for k,v in c.items() if k!='family_id'} for c in _cfg()]}))
     root=Path(__file__).resolve().parents[1];base=[sys.executable,str(root/'tools/run_funnel_arrays.py'),'--arrays',str(a),'--registry',str(reg),'--out',str(tmp_path/'o'),'--backend','cpu']
-    bad=subprocess.run(base,capture_output=True,text=True,cwd=root);assert bad.returncode!=0   # guard/counter are mandatory
-    p=subprocess.run(base+['--holdout-first-date','20270101','--campaign-id','t','--trial-registry',str(tmp_path/'tr.jsonl'),'--min-trades','5','--e4','--nsims','20'],capture_output=True,text=True,cwd=root)
+    bad=subprocess.run(base,capture_output=True,text=True,cwd=root);assert bad.returncode!=0   # frozen split is mandatory
+    from edgelab.funnel.splits import make_splits,to_dict
+    sp=tmp_path/'split.json';sp.write_text(json.dumps(to_dict(make_splits(td))))
+    p=subprocess.run(base+['--split',str(sp),'--holdout-first-date','20270101','--campaign-id','t','--trial-registry',str(tmp_path/'tr.jsonl'),'--min-trades','5','--e4','--nsims','20'],capture_output=True,text=True,cwd=root)
     assert p.returncode==0,p.stderr[-800:]
     import pyarrow.parquet as pq
     t=pq.read_table(tmp_path/'o'/'trials.parquet');assert t.num_rows==9

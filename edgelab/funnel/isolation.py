@@ -27,7 +27,7 @@ def stage_window(trade_dates, signal_idx, stage_dates, max_hold_bars=200):
         raise ValueError('trade_dates must be nonempty, 1D and chronological')
     if sig.ndim != 1 or sig.dtype.kind not in 'iu' or np.any(sig < 0) or np.any(sig >= len(td)):
         raise ValueError('signal indices must be integer indices inside bars')
-    if isinstance(max_hold_bars, bool) or not isinstance(max_hold_bars, (int, np.integer)) or max_hold_bars < 0:
+    if isinstance(max_hold_bars, bool) or not isinstance(max_hold_bars, (int, np.integer)) or max_hold_bars < 0 or max_hold_bars >= np.iinfo(np.int32).max:
         raise ValueError('max_hold_bars must be a nonnegative integer')
     bars = np.flatnonzero(np.isin(td, stage_dates))
     if not len(bars):
@@ -41,36 +41,14 @@ def stage_window(trade_dates, signal_idx, stage_dates, max_hold_bars=200):
     return StageWindow(np.flatnonzero(eligible), start, stop, int(np.count_nonzero(in_stage & ~eligible)))
 
 
-def bounded_batches(sig, dirs, high, low, bid_open, ask_open, sls, tps,
-                    multipliers=None, max_hold_bars=200, fees=.5,
-                    backend='auto', max_matrix_bytes=512*1024*1024):
-    """Bound one returned matrix using worst-case float64, not GPU float32.
-
-    This is NOT a total host/device/process memory ceiling: price arrays,
-    transfers, allocator pools, and caller-retained batches are additional.
-    Reject a budget unable to fit one column; do not silently exceed it.
-    """
+def bounded_batches(*args, **kwargs):
+    """Compatibility name; the public iterator owns one-matrix budgeting.
+    Defensive check kept from EF0: a backend that returns a matrix above the budget is rejected, never trusted."""
     from .screen import iter_screen_batches
-    if len(sls) != len(tps) or len(sig) != len(dirs):
-        raise ValueError('signal/configuration lengths disagree')
-    if any(np.asarray(a).ndim != 1 for a in (sig, dirs, high, low, bid_open, ask_open, sls, tps)):
-        raise ValueError('screen inputs must be 1D')
-    if any(len(a) != len(high) for a in (low, bid_open, ask_open)):
-        raise ValueError('bar array lengths disagree')
-    if not np.isin(dirs, [-1, 1]).all():
-        raise ValueError('directions must be +/-1')
-    if np.any(np.asarray(sls) <= 0) or np.any(np.asarray(tps) <= 0):
-        raise ValueError('SL/TP must be positive')
-    if not isinstance(max_matrix_bytes, (int, np.integer)) or max_matrix_bytes <= 0:
-        raise ValueError('matrix budget must be a positive integer')
-    if not len(sig) or not len(sls):
-        return
-    if len(sig)*8 > max_matrix_bytes:
-        raise ValueError('matrix budget cannot fit one float64 column; chunk signals explicitly')
-    for start, end, matrix, device in iter_screen_batches(
-            sig, dirs, high, low, bid_open, ask_open, sls, tps,
-            multipliers, max_hold_bars, fees, backend,
-            max_matrix_bytes=max_matrix_bytes//2):
-        if matrix.nbytes > max_matrix_bytes:
-            raise RuntimeError('screen backend exceeded matrix budget')
+    budget = kwargs.get("max_matrix_bytes", 512*1024*1024)
+    if args and len(args[0]) * 8 > budget:
+        raise ValueError("matrix budget cannot fit one float64 column; chunk signals explicitly")
+    for start, end, matrix, device in iter_screen_batches(*args, **kwargs):
+        if matrix.nbytes > budget:
+            raise RuntimeError("screen backend exceeded matrix budget")
         yield start, end, matrix, device
